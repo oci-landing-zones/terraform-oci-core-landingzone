@@ -141,15 +141,20 @@ variableGroups:
       - "tt_vcn1_web_subnet_cidr"
       - "tt_vcn1_web_subnet_dns"
       - "tt_vcn1_web_subnet_is_private"
-      - "tt_vcn1_web_subnet_bastion_svc_cidrs"
+      #- "tt_vcn1_web_subnet_bastion_svc_cidrs"
       - "tt_vcn1_app_subnet_name"
       - "tt_vcn1_app_subnet_cidr"
       - "tt_vcn1_app_subnet_dns"
-      - "tt_vcn1_app_subnet_bastion_svc_cidrs"
+      #- "tt_vcn1_app_subnet_bastion_svc_cidrs"
       - "tt_vcn1_db_subnet_name"
       - "tt_vcn1_db_subnet_cidr"
       - "tt_vcn1_db_subnet_dns"
-      - "tt_vcn1_db_subnet_bastion_svc_cidrs"
+      #- "tt_vcn1_db_subnet_bastion_svc_cidrs"
+      - "tt_vcn1_bastion_subnet_name"
+      - "tt_vcn1_bastion_subnet_cidr"
+      - "tt_vcn1_bastion_subnet_dns"
+      - "tt_vcn1_bastion_is_access_via_public_endpoint"
+      - "tt_vcn1_bastion_subnet_allowed_cidrs"
       # - "add_tt_vcn1_extra1_subnet"
       # - "tt_vcn1_extra1_subnet_name"
       # - "tt_vcn1_extra1_subnet_cidr"
@@ -894,22 +899,22 @@ variables:
         - customize_tt_vcn1_subnets
         - add_tt_vcn1
 
-  tt_vcn1_web_subnet_bastion_svc_cidrs:
-    type: array
-    items:
-      type: string
-    uniqueItems: true
-    maxItems: 3
-    minItems: 1
-    title: "List of CIDRs allowed to SSH into the Web Subnet"
-    description: "Enter the CIDRs allowed to connect to Web subnet over SSH. Leave empty for no access."
-    required: false
-    visible: 
-      and:
-        - customize_net
-        - customize_tt_vcn1_subnets
-        - add_tt_vcn1
-        - tt_vcn1_web_subnet_is_private
+  # tt_vcn1_web_subnet_bastion_svc_cidrs:
+  #   type: array
+  #   items:
+  #     type: string
+  #   uniqueItems: true
+  #   maxItems: 3
+  #   minItems: 1
+  #   title: "List of CIDRs allowed to SSH into the Web Subnet"
+  #   description: "Enter the CIDRs allowed to connect to Web subnet over SSH. Leave empty for no access."
+  #   required: false
+  #   visible: 
+  #     and:
+  #       - customize_net
+  #       - customize_tt_vcn1_subnets
+  #       - add_tt_vcn1
+  #       - tt_vcn1_web_subnet_is_private
   
   tt_vcn1_app_subnet_name:
     type: string
@@ -944,21 +949,21 @@ variables:
         - customize_tt_vcn1_subnets
         - add_tt_vcn1      
 
-  tt_vcn1_app_subnet_bastion_svc_cidrs:
-    type: array
-    items:
-      type: string
-    uniqueItems: true
-    maxItems: 3
-    minItems: 1
-    title: "List of CIDRs allowed to SSH into the Application Subnet"
-    description: "Enter the CIDRs allowed to connect to the application subnet over SSH. Leave empty for no access."
-    required: false
-    visible: 
-      and:
-        - customize_net
-        - customize_tt_vcn1_subnets
-        - add_tt_vcn1
+  # tt_vcn1_app_subnet_bastion_svc_cidrs:
+  #   type: array
+  #   items:
+  #     type: string
+  #   uniqueItems: true
+  #   maxItems: 3
+  #   minItems: 1
+  #   title: "List of CIDRs allowed to SSH into the Application Subnet"
+  #   description: "Enter the CIDRs allowed to connect to the application subnet over SSH. Leave empty for no access."
+  #   required: false
+  #   visible: 
+  #     and:
+  #       - customize_net
+  #       - customize_tt_vcn1_subnets
+  #       - add_tt_vcn1
 
   tt_vcn1_db_subnet_name:
     type: string
@@ -993,21 +998,79 @@ variables:
         - customize_tt_vcn1_subnets
         - add_tt_vcn1      
 
-  tt_vcn1_db_subnet_bastion_svc_cidrs:
-    type: array
-    items:
-      type: string
-    uniqueItems: true
-    maxItems: 3
-    minItems: 1
-    title: "List of CIDRs allowed to SSH into the Database Subnet"
-    description: "Enter the CIDRs allowed to connect to the Database subnet over SSH. Leave empty for no access."
+  # tt_vcn1_db_subnet_bastion_svc_cidrs:
+  #   type: array
+  #   items:
+  #     type: string
+  #   uniqueItems: true
+  #   maxItems: 3
+  #   minItems: 1
+  #   title: "List of CIDRs allowed to SSH into the Database Subnet"
+  #   description: "Enter the CIDRs allowed to connect to the Database subnet over SSH. Leave empty for no access."
+  #   required: false
+  #   visible: 
+  #     and:
+  #       - customize_net
+  #       - customize_tt_vcn1_subnets
+  #       - add_tt_vcn1
+
+  tt_vcn1_bastion_subnet_name:
+    type: string
+    title: "Bastion Subnet Name"
+    description: "Enter the Bastion subnet name."
     required: false
     visible: 
       and:
         - customize_net
         - customize_tt_vcn1_subnets
         - add_tt_vcn1
+
+  tt_vcn1_bastion_subnet_cidr:
+    type: string
+    title: "Bastion Subnet CIDR block"
+    description: "Enter the Bastion subnet CIDR block. A /29 block is usually enough, unless you plan on deploying a large number of Bastion servers. It must be within the VCN CIDR blocks."
+    required: false
+    visible: 
+      and:
+        - customize_net
+        - customize_tt_vcn1_subnets
+        - add_tt_vcn1
+
+  tt_vcn1_bastion_subnet_dns:
+    type: string
+    title: "Bastion Subnet DNS name"
+    description: "Enter the Bastion subnet DNS name. Use only letters and numbers, no special characters."
+    required: false
+    visible: 
+      and:
+        - customize_net
+        - customize_tt_vcn1_subnets
+        - add_tt_vcn1     
+  
+  tt_vcn1_bastion_is_access_via_public_endpoint:
+    type: boolean
+    title: "Will the Bastion server (Jump Host) be accessed via a public endpoint?"
+    description: "If checked, the Landing Zone is configured with a public subnet for Bastion connectivity. By default, a private subnet is deployed. Use this private subnet to deploy OCI Bastion service."
+    visible: 
+      and:
+        - customize_net
+        - customize_tt_vcn1_subnets
+        - add_tt_vcn1
+  
+  tt_vcn1_bastion_subnet_allowed_cidrs:
+    type: array
+    items:
+      type: string
+    uniqueItems: true
+    title: "List of CIDR blocks allowed to SSH into the public Bastion Subnet where the Bastion server (Jump Host) is going to be deployed"
+    description: "These CIDRs are allowed to SSH into the the Bastion server (Jump Host) that is eventually deployed in the public Bastion subnet. Leave it empty for no access."
+    required: false
+    visible: 
+      and:
+        - customize_net
+        - customize_tt_vcn1_subnets
+        - add_tt_vcn1
+        - tt_vcn1_bastion_is_access_via_public_endpoint       
       
   add_tt_vcn2:
     type: boolean

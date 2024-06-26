@@ -343,7 +343,7 @@ locals {
                 ]
                 egress_rules = [
                   {
-                    description  = "Egress to Mgmt subnet on SSH port. Required by Bastion service port forwarding session."
+                    description  = "Egress to Mgmt subnet on SSH port. Required by Bastion service session."
                     stateless    = false
                     protocol     = "TCP"
                     dst          = coalesce(var.hub_vcn_mgmt_subnet_cidr, cidrsubnet(var.hub_vcn_cidrs[0],2,3))
@@ -352,7 +352,7 @@ locals {
                     dst_port_max = "22"
                   },
                   {
-                    description  = "Egress to Mgmt subnet on HTTP port. Required by Bastion service port forwarding session."
+                    description  = "Egress to Mgmt subnet on HTTP port. Required by Bastion service session."
                     stateless    = false
                     protocol     = "TCP"
                     dst          = coalesce(var.hub_vcn_mgmt_subnet_cidr, cidrsubnet(var.hub_vcn_cidrs[0],2,3))
