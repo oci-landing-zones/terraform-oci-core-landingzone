@@ -2,12 +2,12 @@
 # ----- IAM - Base Compartments
 #-------------------------------------------------------
 variable "enclosing_compartment_options" {
-  type = string
+  type    = string
   default = "Yes, deploy new"
 }
 variable "enclosing_compartment_parent_ocid" {
-  type = string
-  default = null
+  type        = string
+  default     = null
   description = "The enclosing compartment parent compartment OCID."
 }
 variable "existing_enclosing_compartment_ocid" {
@@ -16,51 +16,51 @@ variable "existing_enclosing_compartment_ocid" {
   description = "The enclosing compartment OCID where Landing Zone compartments will be created. If not provided and use_enclosing_compartment is true, an enclosing compartment is created under the root compartment."
 }
 variable "customize_default_compartments" {
-  type = bool
+  type    = bool
   default = false
 }
 variable "enclosing_cmp_name" {
-  type = string
+  type    = string
   default = null
 }
 variable "deploy_network_cmp" {
-  type = bool
+  type    = bool
   default = true
 }
 variable "network_cmp_name" {
-  type = string
+  type    = string
   default = null
 }
 variable "deploy_security_cmp" {
-  type = bool
+  type    = bool
   default = true
 }
 variable "security_cmp_name" {
-  type = string
+  type    = string
   default = null
 }
 variable "deploy_app_cmp" {
-  type = bool
+  type    = bool
   default = true
 }
 variable "app_cmp_name" {
-  type = string
+  type    = string
   default = null
 }
 variable "deploy_database_cmp" {
-  type = bool
+  type    = bool
   default = true
 }
 variable "database_cmp_name" {
-  type = string
+  type    = string
   default = null
 }
 variable "deploy_exainfra_cmp" {
-  type = bool
+  type    = bool
   default = false
 }
 variable "exainfra_cmp_name" {
-  type = string
+  type    = string
   default = ""
 }
 
@@ -68,19 +68,19 @@ variable "exainfra_cmp_name" {
 # ----- IAM - Workload Compartments
 #-------------------------------------------------------
 variable "deploy_app_workload_cmps" {
-  type = bool
+  type    = bool
   default = false
 }
 variable "app_workload_cmp_names" {
-  type = list(string)
+  type    = list(string)
   default = []
 }
 variable "deploy_database_workload_cmps" {
-  type = bool
+  type    = bool
   default = false
 }
 variable "database_workload_cmp_names" {
-  type = list(string)
+  type    = list(string)
   default = []
 }
 
@@ -88,15 +88,15 @@ variable "database_workload_cmp_names" {
 # ----- IAM - Identity Domains
 #-------------------------------------------------------
 variable "deploy_id_domain" {
-  type = bool
+  type    = bool
   default = false
 }
 variable "id_domain_name" {
-  type = string
+  type    = string
   default = null
 }
 variable "id_domain_type" {
-  type = string
+  type    = string
   default = "free"
 }
 
@@ -104,7 +104,7 @@ variable "id_domain_type" {
 # ----- IAM - Groups
 #-------------------------------------------------------
 variable "groups_options" {
-  type = string
+  type    = string
   default = "Yes"
 }
 variable "rm_existing_iam_admin_group_name" {
@@ -222,27 +222,27 @@ variable "existing_storage_admin_group_name" {
 # ----- IAM - Dynamic Groups
 #-------------------------------------------------------
 variable "dyn_groups_options" {
-  type = string
+  type    = string
   default = "Yes"
 }
 variable "existing_security_fun_dyn_group_name" {
-  type    = string
-  default = ""
+  type        = string
+  default     = ""
   description = "Existing security dynamic group."
 }
 variable "existing_appdev_fun_dyn_group_name" {
-  type    = string
-  default = ""
+  type        = string
+  default     = ""
   description = "Existing appdev dynamic group."
 }
 variable "existing_compute_agent_dyn_group_name" {
-  type    = string
-  default = ""
+  type        = string
+  default     = ""
   description = "Existing compute agent dynamic group for management agent access."
 }
 variable "existing_database_kms_dyn_group_name" {
-  type    = string
-  default = ""
+  type        = string
+  default     = ""
   description = "Existing database dynamic group for database to access keys."
 }
 
@@ -260,7 +260,7 @@ variable "policies_in_root_compartment" {
 }
 
 variable "enable_template_policies" {
-  type = bool
-  default = false
+  type        = bool
+  default     = false
   description = "Whether policies should be created based on metadata associated to compartments. This is an alternative way of managing policies, enabled by the CIS Landing Zone standalone IAM policy module: https://github.com/oracle-quickstart/terraform-oci-cis-landing-zone-iam/tree/main/policies. When set to true, the grants to resources belonging to a specific compartment are combined into a single policy that is attached to the compartment itself. This differs from the default approach, where grants are combined per grantee and attached to the enclosing compartment."
 }

@@ -8,7 +8,7 @@ locals {
   regions_map_reverse = { for r in data.oci_identity_regions.these.regions : r.name => r.key } # All regions indexed by region name.
   home_region_key     = data.oci_identity_tenancy.this.home_region_key                         # Home region key obtained from the tenancy data source
   region_key          = lower(local.regions_map_reverse[var.region])                           # Region key obtained from the region name
-  
+
   ### Network
   anywhere                    = "0.0.0.0/0"
   valid_service_gateway_cidrs = ["all-${local.region_key}-services-in-oracle-services-network", "oci-${local.region_key}-objectstorage"]
@@ -45,12 +45,12 @@ locals {
   display_outputs = true
 
   # Tags
-  landing_zone_tags = {"cis-landing-zone" : fileexists("${path.module}/../release.txt") ? "${var.service_label}-quickstart/${file("${path.module}/../release.txt")}" : "${var.service_label}-quickstart"}
+  landing_zone_tags = { "cis-landing-zone" : fileexists("${path.module}/../release.txt") ? "${var.service_label}-quickstart/${file("${path.module}/../release.txt")}" : "${var.service_label}-quickstart" }
 
   is_windows = substr(pathexpand("~"), 0, 1) == "/" ? false : true
 
   void = "__VOID__"
-  
+
 }
 
 # resource "null_resource" "wait_on_compartments" {

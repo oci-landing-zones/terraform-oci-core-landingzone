@@ -24,20 +24,20 @@ variable "service_label" {
   }
 }
 variable "cis_level" {
-  type = string
-  default = "2"
+  type        = string
+  default     = "2"
   description = "Determines CIS OCI Benchmark Level to apply on Landing Zone managed resources. Level 1 is be practical and prudent. Level 2 is intended for environments where security is more critical than manageability and usability. Level 2 drives the creation of an OCI Vault, buckets encryption with a customer managed key, write logs for buckets and the usage of specific policies in Security Zones."
 }
 variable "extend_landing_zone_to_new_region" {
-  default = false
-  type    = bool
+  default     = false
+  type        = bool
   description = "Whether Landing Zone is being extended to another region. When set to true, compartments, groups, policies and resources at the home region are not provisioned. Use this when you want to provision a Landing Zone in a new region, but reuse existing Landing Zone resources in the home region."
 }
 variable "customize_iam" {
-  type = bool
+  type    = bool
   default = false
 }
 variable "customize_net" {
-  type = bool
+  type    = bool
   default = false
 }
