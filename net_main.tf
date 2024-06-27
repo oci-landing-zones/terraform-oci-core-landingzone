@@ -15,7 +15,7 @@ locals {
         default_compartment_id = local.network_compartment_id
         network_configuration_categories = {
             "THREE-TIER-VCN" = {
-                vcns = merge(local.tt_vcn_1, local.tt_vcn_2, local.tt_vcn_3, local.hub_vcn)
+                vcns = merge(local.tt_vcn_1, local.tt_vcn_2, local.tt_vcn_3, local.hub_vcn, local.exa_vcn_1, local.exa_vcn_2, local.exa_vcn_3)
                 non_vcn_specific_gateways = local.drg
             }
         }         

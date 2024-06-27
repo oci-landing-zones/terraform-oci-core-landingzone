@@ -56,6 +56,39 @@ locals {
                               type = "VCN"
                           }
                       }
+                    } : {},
+                    (var.add_exa_vcn1 == true && var.exa_vcn1_attach_to_drg == true) ? {
+                      "EXA-VCN-1-ATTACHMENT" = {
+                        display_name = "${coalesce(var.exa_vcn1_name, "${var.service_label}-exadata-vcn-1")}-attachment"
+                        # DRG route table for the VCN attachment. It defines the next hop for traffic that enters the DRG via this attachment.
+                        drg_route_table_key = ((local.hub_options[var.hub_options] == 1 || local.hub_options[var.hub_options] == 2) && length(var.exa_vcn1_routable_vcns) > 0) ? "EXA-VCN-1-DRG-ROUTE-TABLE" : null
+                        network_details = {
+                          attached_resource_key = "EXA-VCN-1"
+                          type                  = "VCN"
+                        }
+                      }
+                    } : {},
+                    (var.add_exa_vcn2 == true && var.exa_vcn2_attach_to_drg == true) ? {
+                      "EXA-VCN-2-ATTACHMENT" = {
+                        display_name = "${coalesce(var.exa_vcn2_name, "${var.service_label}-exadata-vcn-2")}-attachment"
+                        # DRG route table for the VCN attachment. It defines the next hop for traffic that enters the DRG via this attachment.
+                        drg_route_table_key = ((local.hub_options[var.hub_options] == 1 || local.hub_options[var.hub_options] == 2) && length(var.exa_vcn2_routable_vcns) > 0) ? "EXA-VCN-2-DRG-ROUTE-TABLE" : null
+                        network_details = {
+                          attached_resource_key = "EXA-VCN-2"
+                          type                  = "VCN"
+                        }
+                      }
+                    } : {},
+                    (var.add_exa_vcn3 == true && var.exa_vcn3_attach_to_drg == true) ? {
+                      "EXA-VCN-3-ATTACHMENT" = {
+                        display_name = "${coalesce(var.exa_vcn3_name, "${var.service_label}-exadata-vcn-3")}-attachment"
+                        # DRG route table for the VCN attachment. It defines the next hop for traffic that enters the DRG via this attachment.
+                        drg_route_table_key = ((local.hub_options[var.hub_options] == 1 || local.hub_options[var.hub_options] == 2) && length(var.exa_vcn3_routable_vcns) > 0) ? "EXA-VCN-3-DRG-ROUTE-TABLE" : null
+                        network_details = {
+                          attached_resource_key = "EXA-VCN-3"
+                          type                  = "VCN"
+                        }
+                      }
                     } : {}
                 )
                 drg_route_tables = merge(
@@ -81,6 +114,24 @@ locals {
                       "TT-VCN-3-DRG-ROUTE-TABLE" = {
                           display_name    = "${coalesce(var.tt_vcn3_name,"${var.service_label}-three-tier-vcn-3")}-drg-route-table"
                           import_drg_route_distribution_key = "TT-VCN-3-DRG-IMPORT-ROUTE-DISTRIBUTION"
+                      }
+                    } : {},
+                    (var.add_exa_vcn1 == true && var.exa_vcn1_attach_to_drg == true && length(var.exa_vcn1_routable_vcns) > 0) ? {
+                      "EXA-VCN-1-DRG-ROUTE-TABLE" = {
+                        display_name                      = "${coalesce(var.exa_vcn1_name, "${var.service_label}-exadata-vcn-1")}-drg-route-table"
+                        import_drg_route_distribution_key = "EXA-VCN-1-DRG-IMPORT-ROUTE-DISTRIBUTION"
+                      }
+                    } : {},
+                    (var.add_exa_vcn2 == true && var.exa_vcn2_attach_to_drg == true && length(var.exa_vcn2_routable_vcns) > 0) ? {
+                      "EXA-VCN-2-DRG-ROUTE-TABLE" = {
+                        display_name                      = "${coalesce(var.exa_vcn2_name, "${var.service_label}-exadata-vcn-2")}-drg-route-table"
+                        import_drg_route_distribution_key = "EXA-VCN-2-DRG-IMPORT-ROUTE-DISTRIBUTION"
+                      }
+                    } : {},
+                    (var.add_exa_vcn3 == true && var.exa_vcn3_attach_to_drg == true && length(var.exa_vcn3_routable_vcns) > 0) ? {
+                      "EXA-VCN-3-DRG-ROUTE-TABLE" = {
+                        display_name                      = "${coalesce(var.exa_vcn3_name, "${var.service_label}-exadata-vcn-3")}-drg-route-table"
+                        import_drg_route_distribution_key = "EXA-VCN-3-DRG-IMPORT-ROUTE-DISTRIBUTION"
                       }
                     } : {}
                 )
@@ -250,6 +301,135 @@ locals {
                           } : {}
                         )  
                       }  
+                    } : {},
+                    (var.add_exa_vcn1 == true && var.exa_vcn1_attach_to_drg == true) ? {
+                      # This import distribution makes its importing DRG route tables to have the referred drg_attachment_key as the next-hop attachment.
+                      # In this case, the "Hub VCN ingress route table for the DRG" is imported by those DRG route tables.
+                      "EXA-VCN-1-DRG-IMPORT-ROUTE-DISTRIBUTION" = {
+                        display_name      = "exadata-vcn-1-drg-import-route-distribution"
+                        distribution_type = "IMPORT"
+                        statements = merge(
+                          (local.hub_options[var.hub_options] == 3 && var.hub_vcn_attach_to_drg == true) ? {
+                            "EXA-VCN-1-HUB-VCN-STMT" = {
+                              action   = "ACCEPT",
+                              priority = 1,
+                              match_criteria = {
+                                match_type         = "DRG_ATTACHMENT_ID",
+                                attachment_type    = "VCN",
+                                drg_attachment_key = "HUB-VCN-ATTACHMENT"
+                              }
+                            }
+                          } : {},
+                          (local.hub_options[var.hub_options] == 1 && contains(var.exa_vcn1_routable_vcns, "EXA-VCN-2")) ? {
+                            "EXA-VCN-2-STMT" = {
+                              action   = "ACCEPT",
+                              priority = 2,
+                              match_criteria = {
+                                match_type         = "DRG_ATTACHMENT_ID",
+                                attachment_type    = "VCN",
+                                drg_attachment_key = "EXA-VCN-2-ATTACHMENT"
+                              }
+                            }
+                          } : {},
+                          (local.hub_options[var.hub_options] == 1 && contains(var.exa_vcn1_routable_vcns, "EXA-VCN-3")) ? {
+                            "EXA-VCN-3-STMT" = {
+                              action   = "ACCEPT",
+                              priority = 3,
+                              match_criteria = {
+                                match_type         = "DRG_ATTACHMENT_ID",
+                                attachment_type    = "VCN",
+                                drg_attachment_key = "EXA-VCN-3-ATTACHMENT"
+                              }
+                            }
+                          } : {}
+                        )
+                      }
+                    } : {},
+                    (var.add_exa_vcn2 == true && var.exa_vcn2_attach_to_drg == true) ? {
+                      # This import distribution makes its importing DRG route tables to have the referred drg_attachment_key as the next-hop attachment.
+                      # In this case, the "Hub VCN ingress route table for the DRG" is imported by those DRG route tables.
+                      "EXA-VCN-2-DRG-IMPORT-ROUTE-DISTRIBUTION" = {
+                        display_name      = "exadata-vcn-2-drg-import-route-distribution"
+                        distribution_type = "IMPORT"
+                        statements = merge(
+                          (local.hub_options[var.hub_options] == 3 && var.hub_vcn_attach_to_drg == true) ? {
+                            "EXA-VCN-2-HUB-VCN-STMT" = {
+                              action   = "ACCEPT",
+                              priority = 1,
+                              match_criteria = {
+                                match_type         = "DRG_ATTACHMENT_ID",
+                                attachment_type    = "VCN",
+                                drg_attachment_key = "HUB-VCN-ATTACHMENT"
+                              }
+                            }
+                          } : {},
+                          (local.hub_options[var.hub_options] == 1 && contains(var.exa_vcn2_routable_vcns, "EXA-VCN-1")) ? {
+                            "EXA-VCN-1-STMT" = {
+                              action   = "ACCEPT",
+                              priority = 2,
+                              match_criteria = {
+                                match_type         = "DRG_ATTACHMENT_ID",
+                                attachment_type    = "VCN",
+                                drg_attachment_key = "EXA-VCN-1-ATTACHMENT"
+                              }
+                            }
+                          } : {},
+                          (local.hub_options[var.hub_options] == 1 && contains(var.exa_vcn2_routable_vcns, "EXA-VCN-3")) ? {
+                            "EXA-VCN-3-STMT" = {
+                              action   = "ACCEPT",
+                              priority = 3,
+                              match_criteria = {
+                                match_type         = "DRG_ATTACHMENT_ID",
+                                attachment_type    = "VCN",
+                                drg_attachment_key = "EXA-VCN-3-ATTACHMENT"
+                              }
+                            }
+                          } : {}
+                        )
+                      }
+                    } : {},
+                    (var.add_exa_vcn3 == true && var.exa_vcn3_attach_to_drg == true) ? {
+                      # This import distribution makes its importing DRG route tables to have the referred drg_attachment_key as the next-hop attachment.
+                      # In this case, the "Hub VCN ingress route table for the DRG" is imported by those DRG route tables.
+                      "EXA-VCN-3-DRG-IMPORT-ROUTE-DISTRIBUTION" = {
+                        display_name      = "exadata-vcn-3-drg-import-route-distribution"
+                        distribution_type = "IMPORT"
+                        statements = merge(
+                          (local.hub_options[var.hub_options] == 3 && var.hub_vcn_attach_to_drg == true) ? {
+                            "EXA-VCN-3-HUB-VCN-STMT" = {
+                              action   = "ACCEPT",
+                              priority = 1,
+                              match_criteria = {
+                                match_type         = "DRG_ATTACHMENT_ID",
+                                attachment_type    = "VCN",
+                                drg_attachment_key = "HUB-VCN-ATTACHMENT"
+                              }
+                            }
+                          } : {},
+                          (local.hub_options[var.hub_options] == 1 && contains(var.exa_vcn3_routable_vcns, "EXA-VCN-1")) ? {
+                            "EXA-VCN-1-STMT" = {
+                              action   = "ACCEPT",
+                              priority = 2,
+                              match_criteria = {
+                                match_type         = "DRG_ATTACHMENT_ID",
+                                attachment_type    = "VCN",
+                                drg_attachment_key = "EXA-VCN-1-ATTACHMENT"
+                              }
+                            }
+                          } : {},
+                          (local.hub_options[var.hub_options] == 1 && contains(var.exa_vcn3_routable_vcns, "EXA-VCN-2")) ? {
+                            "EXA-VCN-2-STMT" = {
+                              action   = "ACCEPT",
+                              priority = 3,
+                              match_criteria = {
+                                match_type         = "DRG_ATTACHMENT_ID",
+                                attachment_type    = "VCN",
+                                drg_attachment_key = "EXA-VCN-2-ATTACHMENT"
+                              }
+                            }
+                          } : {}
+                        )
+                      }
                     } : {}
                 )
             }
