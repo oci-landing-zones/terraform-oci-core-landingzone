@@ -212,7 +212,40 @@ locals {
                       drg_attachment_key = "TT-VCN-3-ATTACHMENT"
                     }
                   }
-                } : {}
+                } : {},
+                (local.hub_options[var.hub_options] == 1 && contains(var.tt_vcn1_routable_vcns, "EXA-VCN-1")) ? {
+                  "EXA-VCN-1-STMT" = {
+                    action = "ACCEPT",
+                    priority = 4,
+                    match_criteria = {
+                      match_type = "DRG_ATTACHMENT_ID",
+                      attachment_type = "VCN",
+                      drg_attachment_key = "EXA-VCN-1-ATTACHMENT"
+                    }
+                  }
+                } : {},
+                (local.hub_options[var.hub_options] == 1 && contains(var.tt_vcn1_routable_vcns, "EXA-VCN-2")) ? {
+                  "EXA-VCN-2-STMT" = {
+                    action = "ACCEPT",
+                    priority = 5,
+                    match_criteria = {
+                      match_type = "DRG_ATTACHMENT_ID",
+                      attachment_type = "VCN",
+                      drg_attachment_key = "EXA-VCN-2-ATTACHMENT"
+                    }
+                  }
+                } : {},
+                (local.hub_options[var.hub_options] == 1 && contains(var.tt_vcn1_routable_vcns, "EXA-VCN-3")) ? {
+                  "EXA-VCN-3-STMT" = {
+                    action = "ACCEPT",
+                    priority = 6,
+                    match_criteria = {
+                      match_type = "DRG_ATTACHMENT_ID",
+                      attachment_type = "VCN",
+                      drg_attachment_key = "EXA-VCN-3-ATTACHMENT"
+                    }
+                  }
+                } : {},
               )
             }
           } : {},
@@ -255,7 +288,40 @@ locals {
                       drg_attachment_key = "TT-VCN-3-ATTACHMENT"
                     }
                   }
-                } : {}
+                } : {},
+                (local.hub_options[var.hub_options] == 1 && contains(var.tt_vcn2_routable_vcns, "EXA-VCN-1")) ? {
+                  "EXA-VCN-1-STMT" = {
+                    action = "ACCEPT",
+                    priority = 4,
+                    match_criteria = {
+                      match_type = "DRG_ATTACHMENT_ID",
+                      attachment_type = "VCN",
+                      drg_attachment_key = "EXA-VCN-1-ATTACHMENT"
+                    }
+                  }
+                } : {},
+                (local.hub_options[var.hub_options] == 1 && contains(var.tt_vcn2_routable_vcns, "EXA-VCN-2")) ? {
+                  "EXA-VCN-2-STMT" = {
+                    action = "ACCEPT",
+                    priority = 5,
+                    match_criteria = {
+                      match_type = "DRG_ATTACHMENT_ID",
+                      attachment_type = "VCN",
+                      drg_attachment_key = "EXA-VCN-2-ATTACHMENT"
+                    }
+                  }
+                } : {},
+                (local.hub_options[var.hub_options] == 1 && contains(var.tt_vcn2_routable_vcns, "EXA-VCN-3")) ? {
+                  "EXA-VCN-3-STMT" = {
+                    action = "ACCEPT",
+                    priority = 6,
+                    match_criteria = {
+                      match_type = "DRG_ATTACHMENT_ID",
+                      attachment_type = "VCN",
+                      drg_attachment_key = "EXA-VCN-3-ATTACHMENT"
+                    }
+                  }
+                } : {},
               )
             }
           } : {},
@@ -298,7 +364,40 @@ locals {
                       drg_attachment_key = "TT-VCN-2-ATTACHMENT"
                     }
                   }
-                } : {}
+                } : {},
+                (local.hub_options[var.hub_options] == 1 && contains(var.tt_vcn3_routable_vcns, "EXA-VCN-1")) ? {
+                  "EXA-VCN-1-STMT" = {
+                    action = "ACCEPT",
+                    priority = 4,
+                    match_criteria = {
+                      match_type = "DRG_ATTACHMENT_ID",
+                      attachment_type = "VCN",
+                      drg_attachment_key = "EXA-VCN-1-ATTACHMENT"
+                    }
+                  }
+                } : {},
+                (local.hub_options[var.hub_options] == 1 && contains(var.tt_vcn3_routable_vcns, "EXA-VCN-2")) ? {
+                  "EXA-VCN-2-STMT" = {
+                    action = "ACCEPT",
+                    priority = 5,
+                    match_criteria = {
+                      match_type = "DRG_ATTACHMENT_ID",
+                      attachment_type = "VCN",
+                      drg_attachment_key = "EXA-VCN-2-ATTACHMENT"
+                    }
+                  }
+                } : {},
+                (local.hub_options[var.hub_options] == 1 && contains(var.tt_vcn3_routable_vcns, "EXA-VCN-3")) ? {
+                  "EXA-VCN-3-STMT" = {
+                    action = "ACCEPT",
+                    priority = 6,
+                    match_criteria = {
+                      match_type = "DRG_ATTACHMENT_ID",
+                      attachment_type = "VCN",
+                      drg_attachment_key = "EXA-VCN-3-ATTACHMENT"
+                    }
+                  }
+                } : {},
               )
             }
           } : {},
@@ -341,7 +440,40 @@ locals {
                       drg_attachment_key = "EXA-VCN-3-ATTACHMENT"
                     }
                   }
-                } : {}
+                } : {},
+                (local.hub_options[var.hub_options] == 1 && contains(var.exa_vcn1_routable_vcns, "TT-VCN-1")) ? {
+                  "TT-VCN-1-STMT" = {
+                    action = "ACCEPT",
+                    priority = 4,
+                    match_criteria = {
+                      match_type = "DRG_ATTACHMENT_ID",
+                      attachment_type = "VCN",
+                      drg_attachment_key = "TT-VCN-1-ATTACHMENT"
+                    }
+                  }
+                } : {},
+                (local.hub_options[var.hub_options] == 1 && contains(var.exa_vcn1_routable_vcns, "TT-VCN-2")) ? {
+                  "TT-VCN-2-STMT" = {
+                    action = "ACCEPT",
+                    priority = 5,
+                    match_criteria = {
+                      match_type = "DRG_ATTACHMENT_ID",
+                      attachment_type = "VCN",
+                      drg_attachment_key = "TT-VCN-2-ATTACHMENT"
+                    }
+                  }
+                } : {},
+                (local.hub_options[var.hub_options] == 1 && contains(var.exa_vcn1_routable_vcns, "TT-VCN-3")) ? {
+                  "TT-VCN-3-STMT" = {
+                    action = "ACCEPT",
+                    priority = 6,
+                    match_criteria = {
+                      match_type = "DRG_ATTACHMENT_ID",
+                      attachment_type = "VCN",
+                      drg_attachment_key = "TT-VCN-3-ATTACHMENT"
+                    }
+                  }
+                } : {},
               )
             }
           } : {},
@@ -384,7 +516,40 @@ locals {
                       drg_attachment_key = "EXA-VCN-3-ATTACHMENT"
                     }
                   }
-                } : {}
+                } : {},
+                (local.hub_options[var.hub_options] == 1 && contains(var.exa_vcn2_routable_vcns, "TT-VCN-1")) ? {
+                  "TT-VCN-1-STMT" = {
+                    action = "ACCEPT",
+                    priority = 4,
+                    match_criteria = {
+                      match_type = "DRG_ATTACHMENT_ID",
+                      attachment_type = "VCN",
+                      drg_attachment_key = "TT-VCN-1-ATTACHMENT"
+                    }
+                  }
+                } : {},
+                (local.hub_options[var.hub_options] == 1 && contains(var.exa_vcn2_routable_vcns, "TT-VCN-2")) ? {
+                  "TT-VCN-2-STMT" = {
+                    action = "ACCEPT",
+                    priority = 5,
+                    match_criteria = {
+                      match_type = "DRG_ATTACHMENT_ID",
+                      attachment_type = "VCN",
+                      drg_attachment_key = "TT-VCN-2-ATTACHMENT"
+                    }
+                  }
+                } : {},
+                (local.hub_options[var.hub_options] == 1 && contains(var.exa_vcn2_routable_vcns, "TT-VCN-3")) ? {
+                  "TT-VCN-3-STMT" = {
+                    action = "ACCEPT",
+                    priority = 6,
+                    match_criteria = {
+                      match_type = "DRG_ATTACHMENT_ID",
+                      attachment_type = "VCN",
+                      drg_attachment_key = "TT-VCN-3-ATTACHMENT"
+                    }
+                  }
+                } : {},
               )
             }
           } : {},
@@ -427,7 +592,40 @@ locals {
                       drg_attachment_key = "EXA-VCN-2-ATTACHMENT"
                     }
                   }
-                } : {}
+                } : {},
+                (local.hub_options[var.hub_options] == 1 && contains(var.exa_vcn3_routable_vcns, "TT-VCN-1")) ? {
+                  "TT-VCN-1-STMT" = {
+                    action = "ACCEPT",
+                    priority = 4,
+                    match_criteria = {
+                      match_type = "DRG_ATTACHMENT_ID",
+                      attachment_type = "VCN",
+                      drg_attachment_key = "TT-VCN-1-ATTACHMENT"
+                    }
+                  }
+                } : {},
+                (local.hub_options[var.hub_options] == 1 && contains(var.exa_vcn3_routable_vcns, "TT-VCN-2")) ? {
+                  "TT-VCN-2-STMT" = {
+                    action = "ACCEPT",
+                    priority = 5,
+                    match_criteria = {
+                      match_type = "DRG_ATTACHMENT_ID",
+                      attachment_type = "VCN",
+                      drg_attachment_key = "TT-VCN-2-ATTACHMENT"
+                    }
+                  }
+                } : {},
+                (local.hub_options[var.hub_options] == 1 && contains(var.exa_vcn3_routable_vcns, "TT-VCN-3")) ? {
+                  "TT-VCN-3-STMT" = {
+                    action = "ACCEPT",
+                    priority = 6,
+                    match_criteria = {
+                      match_type = "DRG_ATTACHMENT_ID",
+                      attachment_type = "VCN",
+                      drg_attachment_key = "TT-VCN-3-ATTACHMENT"
+                    }
+                  }
+                } : {},
               )
             }
           } : {}
