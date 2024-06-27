@@ -339,6 +339,42 @@ locals {
           )
         }
       }
+      security_lists = {
+        "EXA-VCN-2-CLIENT-SUBNET-SL" = {
+          display_name = "${coalesce(var.exa_vcn2_client_subnet_name, "${var.service_label}-exadata-vcn-2-client-subnet")}-security-list"
+          ingress_rules = [
+            {
+              description = "Allows SSH connections from hosts in Exadata client subnet."
+              stateless   = false
+              protocol    = "TCP"
+              src         = coalesce(var.exa_vcn2_client_subnet_cidr, cidrsubnet(var.exa_vcn2_cidrs[0], 9, 96))
+              src_type     = "CIDR_BLOCK"
+              dst_port_min = 22
+              dst_port_max = 22
+            }
+          ]
+          egress_rules = [
+            {
+              description = "Allows SSH connections to hosts in Exadata client subnet."
+              stateless   = false
+              protocol    = "TCP"
+              dst         = coalesce(var.exa_vcn2_client_subnet_cidr, cidrsubnet(var.exa_vcn2_cidrs[0], 9, 96))
+              dst_type     = "CIDR_BLOCK"
+              dst_port_min = 22
+              dst_port_max = 22
+            },
+            {
+              description = "Allows the initiation of ICMP connections to hosts in Exadata VCN."
+              stateless   = false
+              protocol    = "UDP"
+              dst         = var.exa_vcn2_cidrs
+              dst_type    = "CIDR_BLOCK"
+              icmp_type   = 3
+              icmp_code   = 4
+            }
+          ]
+        }
+      }
       network_security_groups = {
         "EXA-VCN-2-CLIENT-NSG" = {
           display_name = "client-nsg"
@@ -555,6 +591,42 @@ locals {
               }
             }
           )
+        }
+      }
+      security_lists = {
+        "EXA-VCN-3-CLIENT-SUBNET-SL" = {
+          display_name = "${coalesce(var.exa_vcn3_client_subnet_name, "${var.service_label}-exadata-vcn-3-client-subnet")}-security-list"
+          ingress_rules = [
+            {
+              description = "Allows SSH connections from hosts in Exadata client subnet."
+              stateless   = false
+              protocol    = "TCP"
+              src         = coalesce(var.exa_vcn3_client_subnet_cidr, cidrsubnet(var.exa_vcn3_cidrs[0], 9, 96))
+              src_type     = "CIDR_BLOCK"
+              dst_port_min = 22
+              dst_port_max = 22
+            }
+          ]
+          egress_rules = [
+            {
+              description = "Allows SSH connections to hosts in Exadata client subnet."
+              stateless   = false
+              protocol    = "TCP"
+              dst         = coalesce(var.exa_vcn3_client_subnet_cidr, cidrsubnet(var.exa_vcn3_cidrs[0], 9, 96))
+              dst_type     = "CIDR_BLOCK"
+              dst_port_min = 22
+              dst_port_max = 22
+            },
+            {
+              description = "Allows the initiation of ICMP connections to hosts in Exadata VCN."
+              stateless   = false
+              protocol    = "UDP"
+              dst         = var.exa_vcn3_cidrs
+              dst_type    = "CIDR_BLOCK"
+              icmp_type   = 3
+              icmp_code   = 4
+            }
+          ]
         }
       }
       network_security_groups = {
