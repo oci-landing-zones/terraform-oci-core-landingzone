@@ -169,7 +169,34 @@ locals {
                     attachment_type    = "VCN",
                     drg_attachment_key = "TT-VCN-3-ATTACHMENT"
                   }
-                }
+                },
+                "EXA-VCN-1-STMT" = {
+                  action   = "ACCEPT",
+                  priority = 4,
+                  match_criteria = {
+                    match_type         = "DRG_ATTACHMENT_ID",
+                    attachment_type    = "VCN",
+                    drg_attachment_key = "EXA-VCN-1-ATTACHMENT"
+                  }
+                },
+                "EXA-VCN-2-STMT" = {
+                  action   = "ACCEPT",
+                  priority = 5,
+                  match_criteria = {
+                    match_type         = "DRG_ATTACHMENT_ID",
+                    attachment_type    = "VCN",
+                    drg_attachment_key = "EXA-VCN-2-ATTACHMENT"
+                  }
+                },
+                "EXA-VCN-3-STMT" = {
+                  action   = "ACCEPT",
+                  priority = 6,
+                  match_criteria = {
+                    match_type         = "DRG_ATTACHMENT_ID",
+                    attachment_type    = "VCN",
+                    drg_attachment_key = "EXA-VCN-3-ATTACHMENT"
+                  }
+                },
               }
             }
           } : {},

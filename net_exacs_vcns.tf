@@ -8,7 +8,7 @@ locals {
       is_ipv6enabled                   = false
       is_oracle_gua_allocation_enabled = false
       cidr_blocks                      = var.exa_vcn1_cidrs,
-      dns_label                        = replace(coalesce(var.exa_vcn1_dns, "${var.service_label}-exadata-vcn-1"), "-", "")
+      dns_label                        = replace(coalesce(var.exa_vcn1_dns, "${var.service_label}-exa-vcn-1"), "-", "")
       block_nat_traffic                = false
       subnets = {
         "EXA-VCN-1-CLIENT-SUBNET" = {
@@ -136,7 +136,7 @@ locals {
               description = "Allows the initiation of ICMP connections to hosts in Exadata VCN."
               stateless   = false
               protocol    = "UDP"
-              dst         = var.exa_vcn1_cidrs
+              dst         = coalesce(var.exa_vcn1_client_subnet_cidr, cidrsubnet(var.exa_vcn1_cidrs[0], 9, 96))
               dst_type    = "CIDR_BLOCK"
               icmp_type   = 3
               icmp_code   = 4
@@ -286,7 +286,7 @@ locals {
       is_ipv6enabled                   = false
       is_oracle_gua_allocation_enabled = false
       cidr_blocks                      = var.exa_vcn2_cidrs,
-      dns_label                        = replace(coalesce(var.exa_vcn2_dns, "${var.service_label}-exadata-vcn-2"), "-", "")
+      dns_label                        = replace(coalesce(var.exa_vcn2_dns, "${var.service_label}-exa-vcn-2"), "-", "")
       block_nat_traffic                = false
       subnets = {
         "EXA-VCN-2-CLIENT-SUBNET" = {
@@ -414,7 +414,7 @@ locals {
               description = "Allows the initiation of ICMP connections to hosts in Exadata VCN."
               stateless   = false
               protocol    = "UDP"
-              dst         = var.exa_vcn2_cidrs
+              dst         = coalesce(var.exa_vcn2_client_subnet_cidr, cidrsubnet(var.exa_vcn2_cidrs[0], 9, 96))
               dst_type    = "CIDR_BLOCK"
               icmp_type   = 3
               icmp_code   = 4
@@ -564,7 +564,7 @@ locals {
       is_ipv6enabled                   = false
       is_oracle_gua_allocation_enabled = false
       cidr_blocks                      = var.exa_vcn3_cidrs,
-      dns_label                        = replace(coalesce(var.exa_vcn3_dns, "${var.service_label}-exadata-vcn-3"), "-", "")
+      dns_label                        = replace(coalesce(var.exa_vcn3_dns, "${var.service_label}-exa-vcn-3"), "-", "")
       block_nat_traffic                = false
       subnets = {
         "EXA-VCN-3-CLIENT-SUBNET" = {
@@ -692,7 +692,7 @@ locals {
               description = "Allows the initiation of ICMP connections to hosts in Exadata VCN."
               stateless   = false
               protocol    = "UDP"
-              dst         = var.exa_vcn3_cidrs
+              dst         = coalesce(var.exa_vcn3_client_subnet_cidr, cidrsubnet(var.exa_vcn3_cidrs[0], 9, 96))
               dst_type    = "CIDR_BLOCK"
               icmp_type   = 3
               icmp_code   = 4
