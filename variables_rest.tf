@@ -107,7 +107,7 @@ variable "enable_cloud_guard" {
 variable "enable_cloud_guard_cloned_recipes" {
   type        = bool
   description = "Whether cloned recipes are attached to the managed Cloud Guard target. If false, Oracle managed recipes are attached."
-  default     = false
+  default     = true
 }
 variable "cloud_guard_reporting_region" {
   description = "Cloud Guard reporting region, where Cloud Guard reporting resources are kept. If not set, it defaults to home region."
