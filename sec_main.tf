@@ -38,21 +38,21 @@ locals {
 
     security_zones = {
       SECURITY-ZONE = {
-        name           = "vision-security-zone"
+        name           = "lz-security-zone"
         compartment_id = local.security_zone_target_compartments
         recipe_key     = "CIS-L1-RECIPE"
       }
     }
     recipes = {
       CIS-L1-RECIPE = {
-        name                    = "vision-security-zone-cis-level-1-recipe"
+        name                    = "lz-security-zone-cis-level-1-recipe"
         description             = "CIS Level 1 recipe"
         compartment_id          = local.security_zone_target_compartments
         security_policies_ocids = var.security_policies
         cis_level               = "1"
       }
       CIS-L2-RECIPE = {
-        name                    = "vision-security-zone-cis-level-2-recipe"
+        name                    = "lz-security-zone-cis-level-2-recipe"
         description             = "CIS Level 2 recipe"
         compartment_id          = local.security_zone_target_compartments
         security_policies_ocids = var.security_policies
