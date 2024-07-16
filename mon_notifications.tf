@@ -13,7 +13,7 @@ module "lz_notifications" {
   # depends_on = [null_resource.wait_on_compartments]
   source               = "github.com/oracle-quickstart/terraform-oci-cis-landing-zone-observability/events"
   events_configuration = local.regional_events_configuration
-  topics_dependency    = module.lz_topics.topics
+  topics_dependency    = module.lz_regional_topics.topics
 }
 
 module "lz_home_region_notifications" {

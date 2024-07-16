@@ -15,7 +15,7 @@ locals {
 module "lz_alarms" {
   source               = "github.com/oracle-quickstart/terraform-oci-cis-landing-zone-observability/alarms"
   alarms_configuration = local.alarms_configuration
-  topics_dependency    = module.lz_topics.topics
+  topics_dependency    = module.lz_regional_topics.topics
 }
 
 locals {

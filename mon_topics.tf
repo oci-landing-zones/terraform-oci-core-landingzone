@@ -18,7 +18,7 @@ module "lz_home_region_topics" {
   notifications_configuration = local.home_region_notifications_configuration
 }
 
-module "lz_topics" {
+module "lz_regional_topics" {
   source = "github.com/oracle-quickstart/terraform-oci-cis-landing-zone-observability/notifications"
   # depends_on = [ null_resource.wait_on_compartments ]
   notifications_configuration = local.regional_notifications_configuration
