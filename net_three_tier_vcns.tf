@@ -49,14 +49,14 @@ locals {
                     display_name               = coalesce(var.tt_vcn1_bastion_subnet_name,"${var.service_label}-three-tier-vcn-1-bastion-subnet")
                     dns_label                  = replace(coalesce(var.tt_vcn1_bastion_subnet_dns,"bastion-subnet"),"-","")
                     ipv6cidr_blocks            = []
-                    prohibit_internet_ingress  = var.tt_vcn1_bastion_is_access_via_public_endpoint
-                    prohibit_public_ip_on_vnic = var.tt_vcn1_bastion_is_access_via_public_endpoint
+                    prohibit_internet_ingress  = var.tt_vcn1_bastion_is_access_via_public_endpoint == true ? false : true
+                    prohibit_public_ip_on_vnic = var.tt_vcn1_bastion_is_access_via_public_endpoint == true ? false : true
                     route_table_key            = "TT-VCN-1-BASTION-SUBNET-ROUTE-TABLE"
-                    security_list_key          = "TT-VCN-1-BASTION-SUBNET-SL"
+                    security_list_key          = var.tt_vcn1_bastion_is_access_via_public_endpoint == false ? "TT-VCN-1-BASTION-SUBNET-SL" : null
                 }
             }
 
-            security_lists = {
+            security_lists = var.tt_vcn1_bastion_is_access_via_public_endpoint == false ? { # The bastion subnet security list is only applicable to Bastion service endpoints, which are private.
               "TT-VCN-1-BASTION-SUBNET-SL" = {
                 display_name = "${coalesce(var.tt_vcn1_bastion_subnet_name,"${var.service_label}-three-tier-vcn-1-bastion-subnet")}-security-list"
                 ingress_rules = [
@@ -91,7 +91,7 @@ locals {
                   }
                 ]
               }
-            }
+            } : null
 
             route_tables = {
                 "TT-VCN-1-WEB-SUBNET-ROUTE-TABLE" = {
@@ -219,14 +219,14 @@ locals {
                     display_name = "bastion-nsg"
                     ingress_rules = { 
                         for cidr in var.tt_vcn1_bastion_subnet_allowed_cidrs : "INGRESS-FROM-${cidr}-RULE" => {
-                                description  = "Ingress from ${cidr} on port 22."
-                                stateless    = false
-                                protocol     = "TCP"
-                                src          = cidr
-                                src_type     = "CIDR_BLOCK"
-                                dst_port_min = 22
-                                dst_port_max = 22
-                        }
+                            description  = "Ingress from ${cidr} on port 22."
+                            stateless    = false
+                            protocol     = "TCP"
+                            src          = cidr
+                            src_type     = "CIDR_BLOCK"
+                            dst_port_min = 22
+                            dst_port_max = 22
+                        } if var.tt_vcn1_bastion_is_access_via_public_endpoint == true # Ingress rule only for jump hosts later deployed in the bastion public subnet.
                     }    
                     egress_rules = {
                         "EGRESS-TO-LBR-NSG-RULE" = {
@@ -505,8 +505,56 @@ locals {
                     prohibit_internet_ingress  = true
                     prohibit_public_ip_on_vnic = true
                     route_table_key            = "TT-VCN-2-DB-SUBNET-ROUTE-TABLE"
-                    }
-            }
+                }
+                "TT-VCN-2-BASTION-SUBNET" = {
+                    cidr_block                 = coalesce(var.tt_vcn2_bastion_subnet_cidr, cidrsubnet(var.tt_vcn2_cidrs[0],9,96))
+                    dhcp_options_key           = "default_dhcp_options"
+                    display_name               = coalesce(var.tt_vcn2_bastion_subnet_name,"${var.service_label}-three-tier-vcn-2-bastion-subnet")
+                    dns_label                  = replace(coalesce(var.tt_vcn2_bastion_subnet_dns,"bastion-subnet"),"-","")
+                    ipv6cidr_blocks            = []
+                    prohibit_internet_ingress  = var.tt_vcn2_bastion_is_access_via_public_endpoint == true ? false : true
+                    prohibit_public_ip_on_vnic = var.tt_vcn2_bastion_is_access_via_public_endpoint == true ? false : true
+                    route_table_key            = "TT-VCN-2-BASTION-SUBNET-ROUTE-TABLE"
+                    security_list_key          = var.tt_vcn2_bastion_is_access_via_public_endpoint == false ? "TT-VCN-2-BASTION-SUBNET-SL" : null
+                }
+            }    
+
+            security_lists = var.tt_vcn2_bastion_is_access_via_public_endpoint == false ? { # The bastion subnet security list is only applicable to Bastion service endpoints, which are private.
+              "TT-VCN-2-BASTION-SUBNET-SL" = {
+                display_name = "${coalesce(var.tt_vcn2_bastion_subnet_name,"${var.service_label}-three-tier-vcn-2-bastion-subnet")}-security-list"
+                ingress_rules = [
+                  {
+                    description  = "Ingress on UDP type 3 code 4."
+                    stateless    = false
+                    protocol     = "UDP"
+                    src          = "0.0.0.0/0"
+                    src_type     = "CIDR_BLOCK"
+                    icmp_type    = 3
+                    icmp_code    = 4
+                  },
+                  {
+                    description  = "Ingress from ${coalesce(var.tt_vcn2_bastion_subnet_name,"${var.service_label}-three-tier-vcn-2-bastion-subnet")} on SSH port. Required for connecting Bastion service endpoint to Bastion host."
+                    stateless    = false
+                    protocol     = "TCP"
+                    src          = coalesce(var.tt_vcn2_bastion_subnet_cidr, cidrsubnet(var.tt_vcn2_cidrs[0],9,96))
+                    src_type     = "CIDR_BLOCK"
+                    dst_port_min = 22
+                    dst_port_max = 22
+                  }
+                ]
+                egress_rules = [
+                  {
+                    description  = "Egress to ${coalesce(var.tt_vcn2_bastion_subnet_name,"${var.service_label}-three-tier-vcn-2-bastion-subnet")} on SSH port. Required for connecting Bastion service endpoint to Bastion host."
+                    stateless    = false
+                    protocol     = "TCP"
+                    dst          = coalesce(var.tt_vcn2_bastion_subnet_cidr, cidrsubnet(var.tt_vcn2_cidrs[0],9,96))
+                    dst_type     = "CIDR_BLOCK"
+                    dst_port_min = 22
+                    dst_port_max = 22
+                  }
+                ]
+              }
+            } : null
 
             route_tables = {
                 "TT-VCN-2-WEB-SUBNET-ROUTE-TABLE" = {
@@ -623,20 +671,43 @@ locals {
                         }  
                     )
                 }
+                "TT-VCN-2-BASTION-SUBNET-ROUTE-TABLE" = {
+                    display_name = "bastion-subnet-route-table"
+                    route_rules = merge(
+                        {
+                            "INTERNET-RULE" = {
+                                network_entity_key = var.tt_vcn2_bastion_is_access_via_public_endpoint == false ? "TT-VCN-2-NAT-GATEWAY" : "TT-VCN-2-INTERNET-GATEWAY"
+                                description        = "To Internet."
+                                destination        = "0.0.0.0/0"
+                                destination_type   = "CIDR_BLOCK"
+                            }
+                        },
+                        {    
+                            "OSN-RULE" = {
+                                network_entity_key = "TT-VCN-2-SERVICE-GATEWAY"
+                                description        = "To Oracle Services Network."
+                                destination        = var.tt_vcn2_bastion_is_access_via_public_endpoint == false ? "all-services" : "objectstorage"
+                                destination_type   = "SERVICE_CIDR_BLOCK"
+                            }
+                        }  
+                    )
+                }
             }
 
             network_security_groups = {
                 "TT-VCN-2-BASTION-NSG" = {
                     display_name = "bastion-nsg"
-                    ingress_rules = { for cidr in var.tt_vcn2_web_subnet_bastion_svc_cidrs : "INGRESS-FROM-${cidr}-RULE" => {
-                        description  = "Ingress from ${cidr} on port 22."
-                        stateless    = false
-                        protocol     = "TCP"
-                        src          = cidr
-                        src_type     = "CIDR_BLOCK"
-                        dst_port_min = 22
-                        dst_port_max = 22
-                    }},
+                    ingress_rules = { 
+                        for cidr in var.tt_vcn2_bastion_subnet_allowed_cidrs : "INGRESS-FROM-${cidr}-RULE" => {
+                            description  = "Ingress from ${cidr} on port 22."
+                            stateless    = false
+                            protocol     = "TCP"
+                            src          = cidr
+                            src_type     = "CIDR_BLOCK"
+                            dst_port_min = 22
+                            dst_port_max = 22
+                        } if var.tt_vcn2_bastion_is_access_via_public_endpoint == true # Ingress rule only for jump hosts later deployed in the bastion public subnet.
+                    },
                     egress_rules = {
                         "EGRESS-TO-LBR-RULE" = {
                             description = "Egress to LBR NSG."
@@ -861,8 +932,56 @@ locals {
                     prohibit_internet_ingress  = true
                     prohibit_public_ip_on_vnic = true
                     route_table_key            = "TT-VCN-3-DB-SUBNET-ROUTE-TABLE"
-                    }
+                }
+                "TT-VCN-3-BASTION-SUBNET" = {
+                    cidr_block                 = coalesce(var.tt_vcn3_bastion_subnet_cidr, cidrsubnet(var.tt_vcn3_cidrs[0],9,96))
+                    dhcp_options_key           = "default_dhcp_options"
+                    display_name               = coalesce(var.tt_vcn3_bastion_subnet_name,"${var.service_label}-three-tier-vcn-3-bastion-subnet")
+                    dns_label                  = replace(coalesce(var.tt_vcn3_bastion_subnet_dns,"bastion-subnet"),"-","")
+                    ipv6cidr_blocks            = []
+                    prohibit_internet_ingress  = var.tt_vcn3_bastion_is_access_via_public_endpoint == true ? false : true
+                    prohibit_public_ip_on_vnic = var.tt_vcn3_bastion_is_access_via_public_endpoint == true ? false : true
+                    route_table_key            = "TT-VCN-3-BASTION-SUBNET-ROUTE-TABLE"
+                    security_list_key          = var.tt_vcn3_bastion_is_access_via_public_endpoint == false ? "TT-VCN-3-BASTION-SUBNET-SL" : null
+                }
             }
+
+            security_lists = var.tt_vcn3_bastion_is_access_via_public_endpoint == false ? { # The bastion subnet security list is only applicable to Bastion service endpoints, which are private.
+              "TT-VCN-3-BASTION-SUBNET-SL" = {
+                display_name = "${coalesce(var.tt_vcn3_bastion_subnet_name,"${var.service_label}-three-tier-vcn-3-bastion-subnet")}-security-list"
+                ingress_rules = [
+                  {
+                    description  = "Ingress on UDP type 3 code 4."
+                    stateless    = false
+                    protocol     = "UDP"
+                    src          = "0.0.0.0/0"
+                    src_type     = "CIDR_BLOCK"
+                    icmp_type    = 3
+                    icmp_code    = 4
+                  },
+                  {
+                    description  = "Ingress from ${coalesce(var.tt_vcn3_bastion_subnet_name,"${var.service_label}-three-tier-vcn-3-bastion-subnet")} on SSH port. Required for connecting Bastion service endpoint to Bastion host."
+                    stateless    = false
+                    protocol     = "TCP"
+                    src          = coalesce(var.tt_vcn3_bastion_subnet_cidr, cidrsubnet(var.tt_vcn3_cidrs[0],9,96))
+                    src_type     = "CIDR_BLOCK"
+                    dst_port_min = 22
+                    dst_port_max = 22
+                  }
+                ]
+                egress_rules = [
+                  {
+                    description  = "Egress to ${coalesce(var.tt_vcn3_bastion_subnet_name,"${var.service_label}-three-tier-vcn-3-bastion-subnet")} on SSH port. Required for connecting Bastion service endpoint to Bastion host."
+                    stateless    = false
+                    protocol     = "TCP"
+                    dst          = coalesce(var.tt_vcn3_bastion_subnet_cidr, cidrsubnet(var.tt_vcn3_cidrs[0],9,96))
+                    dst_type     = "CIDR_BLOCK"
+                    dst_port_min = 22
+                    dst_port_max = 22
+                  }
+                ]
+              }
+            } : null
 
             route_tables = {
                 "TT-VCN-3-WEB-SUBNET-ROUTE-TABLE" = {
@@ -979,20 +1098,43 @@ locals {
                         }  
                     )
                 }
+                "TT-VCN-3-BASTION-SUBNET-ROUTE-TABLE" = {
+                    display_name = "bastion-subnet-route-table"
+                    route_rules = merge(
+                        {
+                            "INTERNET-RULE" = {
+                                network_entity_key = var.tt_vcn3_bastion_is_access_via_public_endpoint == false ? "TT-VCN-3-NAT-GATEWAY" : "TT-VCN-3-INTERNET-GATEWAY"
+                                description        = "To Internet."
+                                destination        = "0.0.0.0/0"
+                                destination_type   = "CIDR_BLOCK"
+                            }
+                        },
+                        {    
+                            "OSN-RULE" = {
+                                network_entity_key = "TT-VCN-3-SERVICE-GATEWAY"
+                                description        = "To Oracle Services Network."
+                                destination        = var.tt_vcn3_bastion_is_access_via_public_endpoint == false ? "all-services" : "objectstorage"
+                                destination_type   = "SERVICE_CIDR_BLOCK"
+                            }
+                        }  
+                    )
+                }
             }
             
             network_security_groups = {
                 "TT-VCN-3-BASTION-NSG" = {
                     display_name = "bastion-nsg"
-                    ingress_rules = { for cidr in var.tt_vcn3_web_subnet_bastion_svc_cidrs : "INGRESS-FROM-${cidr}-RULE" => {
-                        description  = "Ingress from ${cidr} on port 22."
-                        stateless    = false
-                        protocol     = "TCP"
-                        src          = cidr
-                        src_type     = "CIDR_BLOCK"
-                        dst_port_min = 22
-                        dst_port_max = 22
-                    }},
+                    ingress_rules = { 
+                        for cidr in var.tt_vcn3_bastion_subnet_allowed_cidrs : "INGRESS-FROM-${cidr}-RULE" => {
+                            description  = "Ingress from ${cidr} on port 22."
+                            stateless    = false
+                            protocol     = "TCP"
+                            src          = cidr
+                            src_type     = "CIDR_BLOCK"
+                            dst_port_min = 22
+                            dst_port_max = 22
+                        } if var.tt_vcn3_bastion_is_access_via_public_endpoint == true # Ingress rule only for jump hosts later deployed in the bastion public subnet.
+                    },
                     egress_rules = {
                         "EGRESS-TO-LBR-RULE" = {
                             description = "Egress to LBR NSG."

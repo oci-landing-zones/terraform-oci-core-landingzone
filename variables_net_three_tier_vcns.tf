@@ -137,10 +137,6 @@ variable "tt_vcn2_web_subnet_is_private" {
     type = bool
     default = false
 }
-variable "tt_vcn2_web_subnet_bastion_svc_cidrs" {
-    type = list(string)
-    default = []
-}
 variable "tt_vcn2_app_subnet_name" {
     type = string
     default = null
@@ -152,10 +148,6 @@ variable "tt_vcn2_app_subnet_cidr" {
 variable "tt_vcn2_app_subnet_dns" {
     type = string
     default = null
-}
-variable "tt_vcn2_app_subnet_bastion_svc_cidrs" {
-    type = list(string)
-    default = []
 }
 variable "tt_vcn2_db_subnet_name" {
     type = string
@@ -169,10 +161,27 @@ variable "tt_vcn2_db_subnet_dns" {
     type = string
     default = null
 }
-variable "tt_vcn2_db_subnet_bastion_svc_cidrs" {
+variable "tt_vcn2_bastion_subnet_name" {
+    type = string
+    default = null
+}
+variable "tt_vcn2_bastion_subnet_cidr" {
+    type = string
+    default = null
+}
+variable "tt_vcn2_bastion_subnet_dns" {
+    type = string
+    default = null
+}
+variable "tt_vcn2_bastion_is_access_via_public_endpoint" {
+    type = bool
+    default = false
+}
+variable "tt_vcn2_bastion_subnet_allowed_cidrs" {
     type = list(string)
     default = []
 }
+
 variable "add_tt_vcn3" {
     type = bool
     default = false
@@ -221,10 +230,6 @@ variable "tt_vcn3_web_subnet_is_private" {
     type = bool
     default = false
 }
-variable "tt_vcn3_web_subnet_bastion_svc_cidrs" {
-    type = list(string)
-    default = []
-}
 variable "tt_vcn3_app_subnet_name" {
     type = string
     default = null
@@ -236,10 +241,6 @@ variable "tt_vcn3_app_subnet_cidr" {
 variable "tt_vcn3_app_subnet_dns" {
     type = string
     default = null
-}
-variable "tt_vcn3_app_subnet_bastion_svc_cidrs" {
-    type = list(string)
-    default = []
 }
 variable "tt_vcn3_db_subnet_name" {
     type = string
@@ -253,7 +254,23 @@ variable "tt_vcn3_db_subnet_dns" {
     type = string
     default = null
 }
-variable "tt_vcn3_db_subnet_bastion_svc_cidrs" {
+variable "tt_vcn3_bastion_subnet_name" {
+    type = string
+    default = null
+}
+variable "tt_vcn3_bastion_subnet_cidr" {
+    type = string
+    default = null
+}
+variable "tt_vcn3_bastion_subnet_dns" {
+    type = string
+    default = null
+}
+variable "tt_vcn3_bastion_is_access_via_public_endpoint" {
+    type = bool
+    default = false
+}
+variable "tt_vcn3_bastion_subnet_allowed_cidrs" {
     type = list(string)
     default = []
 }
