@@ -69,6 +69,10 @@ variable "tt_vcn1_db_subnet_dns" {
     type = string
     default = null
 }
+variable "deploy_tt_vcn1_bastion_subnet" {
+    type = bool
+    default = false
+}
 variable "tt_vcn1_bastion_subnet_name" {
     type = string
     default = null
@@ -160,6 +164,10 @@ variable "tt_vcn2_db_subnet_cidr" {
 variable "tt_vcn2_db_subnet_dns" {
     type = string
     default = null
+}
+variable "deploy_tt_vcn2_bastion_subnet" {
+    type = bool
+    default = false
 }
 variable "tt_vcn2_bastion_subnet_name" {
     type = string
@@ -253,6 +261,10 @@ variable "tt_vcn3_db_subnet_cidr" {
 variable "tt_vcn3_db_subnet_dns" {
     type = string
     default = null
+}
+variable "deploy_tt_vcn3_bastion_subnet" {
+    type = bool
+    default = false
 }
 variable "tt_vcn3_bastion_subnet_name" {
     type = string
