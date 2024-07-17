@@ -252,7 +252,78 @@ variableGroups:
 
   - title: "Networking - OKE VCNs"
     variables:
-      - "add_oke_vcn1"  
+      - "add_oke_vcn1"
+      - "oke_vcn1_cni_type"
+      - "oke_vcn1_name"
+      - "oke_vcn1_cidrs"
+      - "oke_vcn1_dns"
+      - "oke_vcn1_attach_to_drg"
+      - "oke_vcn1_routable_vcns"
+      - "customize_oke_vcn1_subnets"
+      - "oke_vcn1_services_subnet_name"
+      - "oke_vcn1_services_subnet_cidr"
+      - "oke_vcn1_services_subnet_dns"
+      - "oke_vcn1_workers_subnet_name"
+      - "oke_vcn1_workers_subnet_cidr"
+      - "oke_vcn1_workers_subnet_dns"
+      - "oke_vcn1_api_subnet_name"
+      - "oke_vcn1_api_subnet_cidr"
+      - "oke_vcn1_api_subnet_dns"
+      - "oke_vcn1_pods_subnet_name"
+      - "oke_vcn1_pods_subnet_cidr"
+      - "oke_vcn1_pods_subnet_dns"
+      - "add_oke_vcn1_mgmt_subnet"
+      - "oke_vcn1_mgmt_subnet_name"
+      - "oke_vcn1_mgmt_subnet_cidr"
+      - "oke_vcn1_mgmt_subnet_dns"
+      - "add_oke_vcn2"
+      - "oke_vcn2_cni_type"
+      - "oke_vcn2_name"
+      - "oke_vcn2_cidrs"
+      - "oke_vcn2_dns"
+      - "oke_vcn2_attach_to_drg"
+      - "oke_vcn2_routable_vcns"
+      - "customize_oke_vcn2_subnets"
+      - "oke_vcn2_services_subnet_name"
+      - "oke_vcn2_services_subnet_cidr"
+      - "oke_vcn2_services_subnet_dns"
+      - "oke_vcn2_workers_subnet_name"
+      - "oke_vcn2_workers_subnet_cidr"
+      - "oke_vcn2_workers_subnet_dns"
+      - "oke_vcn2_api_subnet_name"
+      - "oke_vcn2_api_subnet_cidr"
+      - "oke_vcn2_api_subnet_dns"
+      - "oke_vcn2_pods_subnet_name"
+      - "oke_vcn2_pods_subnet_cidr"
+      - "oke_vcn2_pods_subnet_dns"
+      - "add_oke_vcn2_mgmt_subnet"
+      - "oke_vcn2_mgmt_subnet_name"
+      - "oke_vcn2_mgmt_subnet_cidr"
+      - "oke_vcn2_mgmt_subnet_dns"
+      - "add_oke_vcn3"
+      - "oke_vcn3_cni_type"
+      - "oke_vcn3_name"
+      - "oke_vcn3_cidrs"
+      - "oke_vcn3_dns"
+      - "oke_vcn3_attach_to_drg"
+      - "oke_vcn3_routable_vcns"
+      - "customize_oke_vcn3_subnets"
+      - "oke_vcn3_services_subnet_name"
+      - "oke_vcn3_services_subnet_cidr"
+      - "oke_vcn3_services_subnet_dns"
+      - "oke_vcn3_workers_subnet_name"
+      - "oke_vcn3_workers_subnet_cidr"
+      - "oke_vcn3_workers_subnet_dns"
+      - "oke_vcn3_api_subnet_name"
+      - "oke_vcn3_api_subnet_cidr"
+      - "oke_vcn3_api_subnet_dns"
+      - "oke_vcn3_pods_subnet_name"
+      - "oke_vcn3_pods_subnet_cidr"
+      - "oke_vcn3_pods_subnet_dns"
+      - "add_oke_vcn3_mgmt_subnet"
+      - "oke_vcn3_mgmt_subnet_name"
+      - "oke_vcn3_mgmt_subnet_cidr"
+      - "oke_vcn3_mgmt_subnet_dns"
     visible: customize_net   
 
   - title: "Networking - Hub & Spoke Topology"
@@ -830,7 +901,7 @@ variables:
 
   tt_vcn1_name:
     type: string
-    title: "VCN name (label: TT-VCN-1)"
+    title: "VCN Name (label: TT-VCN-1)"
     description: "Enter the VCN name. Otherwise a default name is provided. The label above should be used in the 'Routable VCNs' field of other VCNs for constraining network traffic in a Hub/Spoke topology."
     required: false
     visible: 
@@ -845,7 +916,7 @@ variables:
     uniqueItems: true
     maxItems: 3
     minItems: 1
-    title: "List of CIDR blocks"
+    title: "List of CIDR Blocks"
     description: "Enter the list of CIDR blocks for the VCN."
     required: false
     visible: 
@@ -1132,7 +1203,7 @@ variables:
 #-------------------------------------------------------
   tt_vcn2_name:
     type: string
-    title: "VCN name (label: TT-VCN-2)"
+    title: "VCN Name (label: TT-VCN-2)"
     description: "Enter the VCN name. Otherwise a default name is provided. The label above should be used in the 'Routable VCNs' field of other VCNs for constraining network traffic in a Hub/Spoke topology."
     required: false
     visible: 
@@ -1147,7 +1218,7 @@ variables:
     uniqueItems: true
     maxItems: 3
     minItems: 1
-    title: "List of CIDR blocks"
+    title: "List of CIDR Blocks"
     description: "The list of CIDR blocks for the VCN."
     required: false
     visible: 
@@ -1365,7 +1436,7 @@ variables:
 #-------------------------------------------------------
   tt_vcn3_name:
     type: string
-    title: "VCN name (label: TT-VCN-3)"
+    title: "VCN Name (label: TT-VCN-3)"
     description: "Enter the VCN name. Otherwise a default name is provided. The label above should be used in the 'Routable VCNs' field of other VCNs for constraining network traffic in a Hub/Spoke topology."
     required: false
     visible: 
@@ -1380,7 +1451,7 @@ variables:
     uniqueItems: true
     maxItems: 3
     minItems: 1
-    title: "List of CIDR blocks"
+    title: "List of CIDR Blocks"
     description: "The list of CIDR blocks for the VCN."
     required: false
     visible: 
@@ -1598,7 +1669,7 @@ variables:
 
   exa_vcn1_name:
     type: string
-    title: "VCN name (label: EXA-VCN-1)"
+    title: "VCN Name (label: EXA-VCN-1)"
     description: "Enter the VCN name. Otherwise a default name is provided. The label above should be used in the 'Routable VCNs' field of other VCNs for constraining network traffic in a Hub/Spoke topology."
     required: false
     visible:
@@ -1613,7 +1684,7 @@ variables:
     uniqueItems: true
     maxItems: 3
     minItems: 1
-    title: "List of CIDR blocks"
+    title: "List of CIDR Blocks"
     description: "Enter the list of CIDR blocks for the VCN."
     required: false
     visible:
@@ -1662,10 +1733,10 @@ variables:
         - customize_net
         - add_exa_vcn1
 
-  exa_vcn1_client_subnet_cidr:
+  exa_vcn1_client_subnet_name:
     type: string
-    title: "Client Subnet CIDR block"
-    description: "Enter the Client subnet CIDR block. It must be within the VCN CIDR blocks."
+    title: "Client Subnet Name"
+    description: "Enter the Client subnet name."
     required: false
     visible:
       and:
@@ -1673,10 +1744,10 @@ variables:
         - customize_exa_vcn1_subnets
         - add_exa_vcn1
 
-  exa_vcn1_client_subnet_name:
+  exa_vcn1_client_subnet_cidr:
     type: string
-    title: "Client Subnet Name"
-    description: "Enter the Client subnet name."
+    title: "Client Subnet CIDR block"
+    description: "Enter the Client subnet CIDR block. It must be within the VCN CIDR blocks."
     required: false
     visible:
       and:
@@ -1695,10 +1766,10 @@ variables:
         - customize_exa_vcn1_subnets
         - add_exa_vcn1
 
-  exa_vcn1_backup_subnet_cidr:
+  exa_vcn1_backup_subnet_name:
     type: string
-    title: "Backup Subnet CIDR block"
-    description: "Enter the Backup subnet CIDR block. It must be within the VCN CIDR blocks."
+    title: "Backup Subnet Name"
+    description: "Enter the Backup subnet name."
     required: false
     visible:
       and:
@@ -1706,10 +1777,10 @@ variables:
         - customize_exa_vcn1_subnets
         - add_exa_vcn1
 
-  exa_vcn1_backup_subnet_name:
+  exa_vcn1_backup_subnet_cidr:
     type: string
-    title: "Backup Subnet Name"
-    description: "Enter the Backup subnet name."
+    title: "Backup Subnet CIDR block"
+    description: "Enter the Backup subnet CIDR block. It must be within the VCN CIDR blocks."
     required: false
     visible:
       and:
@@ -1739,7 +1810,7 @@ variables:
 
   exa_vcn2_name:
     type: string
-    title: "VCN name (label: EXA-VCN-2)"
+    title: "VCN Name (label: EXA-VCN-2)"
     description: "Enter the VCN name. Otherwise a default name is provided. The label above should be used in the 'Routable VCNs' field of other VCNs for constraining network traffic in a Hub/Spoke topology."
     required: false
     visible:
@@ -1754,7 +1825,7 @@ variables:
     uniqueItems: true
     maxItems: 3
     minItems: 1
-    title: "List of CIDR blocks"
+    title: "List of CIDR Blocks"
     description: "Enter the list of CIDR blocks for the VCN."
     required: false
     visible:
@@ -1803,10 +1874,10 @@ variables:
         - customize_net
         - add_exa_vcn2
 
-  exa_vcn2_client_subnet_cidr:
+  exa_vcn2_client_subnet_name:
     type: string
-    title: "Client Subnet CIDR block"
-    description: "Enter the Client subnet CIDR block. It must be within the VCN CIDR blocks."
+    title: "Client Subnet Name"
+    description: "Enter the Client subnet name."
     required: false
     visible:
       and:
@@ -1814,10 +1885,10 @@ variables:
         - customize_exa_vcn2_subnets
         - add_exa_vcn2
 
-  exa_vcn2_client_subnet_name:
+  exa_vcn2_client_subnet_cidr:
     type: string
-    title: "Client Subnet Name"
-    description: "Enter the Client subnet name."
+    title: "Client Subnet CIDR block"
+    description: "Enter the Client subnet CIDR block. It must be within the VCN CIDR blocks."
     required: false
     visible:
       and:
@@ -1836,10 +1907,10 @@ variables:
         - customize_exa_vcn2_subnets
         - add_exa_vcn2
 
-  exa_vcn2_backup_subnet_cidr:
+  exa_vcn2_backup_subnet_name:
     type: string
-    title: "Backup Subnet CIDR block"
-    description: "Enter the Backup subnet CIDR block. It must be within the VCN CIDR blocks."
+    title: "Backup Subnet Name"
+    description: "Enter the Backup subnet name."
     required: false
     visible:
       and:
@@ -1847,10 +1918,10 @@ variables:
         - customize_exa_vcn2_subnets
         - add_exa_vcn2
 
-  exa_vcn2_backup_subnet_name:
+  exa_vcn2_backup_subnet_cidr:
     type: string
-    title: "Backup Subnet Name"
-    description: "Enter the Backup subnet name."
+    title: "Backup Subnet CIDR block"
+    description: "Enter the Backup subnet CIDR block. It must be within the VCN CIDR blocks."
     required: false
     visible:
       and:
@@ -1881,7 +1952,7 @@ variables:
 
   exa_vcn3_name:
     type: string
-    title: "VCN name (label: EXA-VCN-3)"
+    title: "VCN Name (label: EXA-VCN-3)"
     description: "Enter the VCN name. Otherwise a default name is provided. The label above should be used in the 'Routable VCNs' field of other VCNs for constraining network traffic in a Hub/Spoke topology."
     required: false
     visible:
@@ -1896,7 +1967,7 @@ variables:
     uniqueItems: true
     maxItems: 3
     minItems: 1
-    title: "List of CIDR blocks"
+    title: "List of CIDR Blocks"
     description: "Enter the list of CIDR blocks for the VCN."
     required: false
     visible:
@@ -1945,10 +2016,10 @@ variables:
         - customize_net
         - add_exa_vcn3
 
-  exa_vcn3_client_subnet_cidr:
+  exa_vcn3_client_subnet_name:
     type: string
-    title: "Client Subnet CIDR block"
-    description: "Enter the Client subnet CIDR block. It must be within the VCN CIDR blocks."
+    title: "Client Subnet Name"
+    description: "Enter the Client subnet name."
     required: false
     visible:
       and:
@@ -1956,10 +2027,10 @@ variables:
         - customize_exa_vcn3_subnets
         - add_exa_vcn3
 
-  exa_vcn3_client_subnet_name:
+  exa_vcn3_client_subnet_cidr:
     type: string
-    title: "Client Subnet Name"
-    description: "Enter the Client subnet name."
+    title: "Client Subnet CIDR block"
+    description: "Enter the Client subnet CIDR block. It must be within the VCN CIDR blocks."
     required: false
     visible:
       and:
@@ -1978,10 +2049,10 @@ variables:
         - customize_exa_vcn3_subnets
         - add_exa_vcn3
 
-  exa_vcn3_backup_subnet_cidr:
+  exa_vcn3_backup_subnet_name:
     type: string
-    title: "Backup Subnet CIDR block"
-    description: "Enter the Backup subnet CIDR block. It must be within the VCN CIDR blocks."
+    title: "Backup Subnet Name"
+    description: "Enter the Backup subnet name."
     required: false
     visible:
       and:
@@ -1989,10 +2060,10 @@ variables:
         - customize_exa_vcn3_subnets
         - add_exa_vcn3
 
-  exa_vcn3_backup_subnet_name:
+  exa_vcn3_backup_subnet_cidr:
     type: string
-    title: "Backup Subnet Name"
-    description: "Enter the Backup subnet name."
+    title: "Backup Subnet CIDR block"
+    description: "Enter the Backup subnet CIDR block. It must be within the VCN CIDR blocks."
     required: false
     visible:
       and:
@@ -2014,12 +2085,828 @@ variables:
 # ------------------------------------------------------
 # ----- Networking - OKE VCN 1
 #-------------------------------------------------------
+
   add_oke_vcn1:
     type: boolean
-    title: "Add OKE VCN?"
-    description: "Click to add a VCN configured for OKE deployment, with at least three subnets: service (public by default), workers (private) and API endpoint (private). You can add up to two extra private subnets: mgmt (private) for cluster management and pods (private) for Native Pod Networking (NPN)."
+    title: "Add OKE VCN (label: OKE-VCN-1)?"
+    description: "Click to add a VCN configured for OKE deployment, with at least three subnets: service (public by default), workers (private) and API endpoint (private). Additionally, a private subnet for pods deployment is created if the OKE CNI Type is 'Native'. You can also enable an extra private subnet for managing the OKE cluster."
     visible: customize_net  
 
+  oke_vcn1_cni_type:
+    type: enum
+    title: "OKE CNI Type"
+    description: "CNI type of OKE clusters (ex: Flannel or Native)"
+    enum:
+      - "Native"
+      - "Flannel"
+    visible:
+      and:
+      - customize_net
+      - add_oke_vcn1
+    required: true
+
+  oke_vcn1_name:
+    type: string
+    title: "VCN Name (label: OKE-VCN-1)"
+    description: "Enter the VCN name. Otherwise a default name is provided. The label above should be used in the 'Routable VCNs' field of other VCNs for constraining network traffic in a Hub/Spoke topology."
+    required: false
+    visible:
+      and:
+        - customize_net
+        - add_oke_vcn1
+
+  oke_vcn1_cidrs:
+    type: array
+    items:
+      type: string
+    uniqueItems: true
+    maxItems: 3
+    minItems: 1
+    title: "List of CIDR Blocks"
+    description: "The list of CIDR blocks for the VCN."
+    required: false
+    visible:
+      and:
+        - customize_net
+        - add_oke_vcn1
+
+  oke_vcn1_dns:
+    type: string
+    title: "VCN DNS"
+    description: "The VCN DNS name."
+    required: false
+    visible:
+      and:
+        - customize_net
+        - add_oke_vcn1
+
+  oke_vcn1_attach_to_drg:
+    type: boolean
+    title: "Attach this VCN to DRG (Dynamic Routing Gateway)?"
+    description: "Check to route private traffic to/from this VCN via a new or existing DRG."
+    visible:
+      and:
+        - customize_net
+        - add_oke_vcn1
+
+  oke_vcn1_routable_vcns:
+    type: array
+    items:
+      type: string
+    uniqueItems: true
+    title: "Routable VCNs"
+    description: "Enter the VCN labels that this VCN can send traffic to. Only applicable for Hub/Spoke topology where a DRG is deployed as the hub."
+    visible:
+      and:
+        - customize_net
+        - add_oke_vcn1
+        - oke_vcn1_attach_to_drg
+
+  customize_oke_vcn1_subnets:
+    type: boolean
+    title: "Customize VCN Subnets?"
+    description: "Check to customize default subnets settings."
+    visible:
+      and:
+        - customize_net
+        - add_oke_vcn1
+
+  oke_vcn1_api_subnet_name:
+    type: string
+    title: "API Subnet Name"
+    description: "The API subnet name."
+    required: false
+    visible:
+      and:
+        - customize_net
+        - customize_oke_vcn1_subnets
+        - add_oke_vcn1
+
+  oke_vcn1_api_subnet_cidr:
+    type: string
+    title: "API Subnet CIDR block"
+    description: "It must be within the VCN CIDR blocks."
+    required: false
+    visible:
+      and:
+        - customize_net
+        - customize_oke_vcn1_subnets
+        - add_oke_vcn1
+
+  oke_vcn1_api_subnet_dns:
+    type: string
+    title: "API Subnet DNS name"
+    description: "Use only letters and numbers, no special characters."
+    required: false
+    visible:
+      and:
+        - customize_net
+        - customize_oke_vcn1_subnets
+        - add_oke_vcn1
+
+  oke_vcn1_workers_subnet_name:
+    type: string
+    title: "Workers Subnet Name"
+    description: "The workers subnet name."
+    required: false
+    visible:
+      and:
+        - customize_net
+        - customize_oke_vcn1_subnets
+        - add_oke_vcn1
+
+  oke_vcn1_workers_subnet_cidr:
+    type: string
+    title: "Workers Subnet CIDR block"
+    description: "It must be within the VCN CIDR blocks."
+    required: false
+    visible:
+      and:
+        - customize_net
+        - customize_oke_vcn1_subnets
+        - add_oke_vcn1
+
+  oke_vcn1_workers_subnet_dns:
+    type: string
+    title: "Workers Subnet DNS name"
+    description: "Use only letters and numbers, no special characters."
+    required: false
+    visible:
+      and:
+        - customize_net
+        - customize_oke_vcn1_subnets
+        - add_oke_vcn1
+
+  oke_vcn1_services_subnet_name:
+    type: string
+    title: "Services Subnet Name"
+    description: "The services subnet name."
+    required: false
+    visible:
+      and:
+        - customize_net
+        - customize_oke_vcn1_subnets
+        - add_oke_vcn1
+
+  oke_vcn1_services_subnet_cidr:
+    type: string
+    title: "Services Subnet CIDR block"
+    description: "It must be within the VCN CIDR blocks."
+    required: false
+    visible:
+      and:
+        - customize_net
+        - customize_oke_vcn1_subnets
+        - add_oke_vcn1
+
+  oke_vcn1_services_subnet_dns:
+    type: string
+    title: "Services Subnet DNS name"
+    description: "Use only letters and numbers, no special characters."
+    required: false
+    visible:
+      and:
+        - customize_net
+        - customize_oke_vcn1_subnets
+        - add_oke_vcn1
+
+  add_oke_vcn1_mgmt_subnet:
+    type: boolean
+    title: "Add Management Subnet?"
+    description: "Check to add a private subnet for cluster management."
+    visible:
+      and:
+        - customize_net
+        - customize_oke_vcn1_subnets
+        - add_oke_vcn1
+
+  oke_vcn1_mgmt_subnet_name:
+    type: string
+    title: "Mgmt Subnet Name"
+    description: "The mgmt subnet name."
+    required: false
+    visible:
+      and:
+        - customize_net
+        - customize_oke_vcn1_subnets
+        - add_oke_vcn1
+        - add_oke_vcn1_mgmt_subnet
+
+  oke_vcn1_mgmt_subnet_cidr:
+    type: string
+    title: "Mgmt Subnet CIDR block"
+    description: "It must be within the VCN CIDR blocks."
+    required: false
+    visible:
+      and:
+        - customize_net
+        - customize_oke_vcn1_subnets
+        - add_oke_vcn1
+        - add_oke_vcn1_mgmt_subnet
+
+  oke_vcn1_mgmt_subnet_dns:
+    type: string
+    title: "Mgmt Subnet DNS name"
+    description: "Use only letters and numbers, no special characters."
+    required: false
+    visible:
+      and:
+        - customize_net
+        - customize_oke_vcn1_subnets
+        - add_oke_vcn1
+        - add_oke_vcn1_mgmt_subnet
+
+  oke_vcn1_pods_subnet_name:
+    type: string
+    title: "Pods Subnet Name"
+    description: "The pods subnet name."
+    required: false
+    visible:
+      and:
+        - customize_net
+        - customize_oke_vcn1_subnets
+        - add_oke_vcn1
+        - eq:
+            - ${oke_vcn1_cni_type}
+            - "Native"
+
+  oke_vcn1_pods_subnet_cidr:
+    type: string
+    title: "Pods Subnet CIDR block"
+    description: "It must be within the VCN CIDR blocks."
+    required: false
+    visible:
+      and:
+        - customize_net
+        - customize_oke_vcn1_subnets
+        - add_oke_vcn1
+        - eq:
+            - ${oke_vcn1_cni_type}
+            - "Native"
+
+  oke_vcn1_pods_subnet_dns:
+    type: string
+    title: "Pods Subnet DNS name"
+    description: "Use only letters and numbers, no special characters."
+    required: false
+    visible:
+      and:
+        - customize_net
+        - customize_oke_vcn1_subnets
+        - add_oke_vcn1
+        - eq:
+            - ${oke_vcn1_cni_type}
+            - "Native"
+
+  # ------------------------------------------------------
+  # ----- Networking - OKE VCN 2
+  #-------------------------------------------------------
+  add_oke_vcn2:
+    type: boolean
+    title: "Add OKE VCN (label: OKE-VCN-2)?"
+    description: "Click to add a VCN configured for OKE deployment, with at least three subnets: service (public by default), workers (private) and API endpoint (private). Additionally, a private subnet for pods deployment is created if the OKE CNI Type is 'Native'. You can also enable an extra private subnet for managing the OKE cluster."
+    visible: customize_net
+
+  oke_vcn2_cni_type:
+    type: enum
+    title: "OKE CNI Type"
+    description: "CNI type of OKE clusters (ex: Flannel or Native)"
+    enum:
+      - "Native"
+      - "Flannel"
+    visible:
+      and:
+      - customize_net
+      - add_oke_vcn2
+    required: true
+
+  oke_vcn2_name:
+    type: string
+    title: "VCN Name (label: OKE-VCN-2)"
+    description: "Enter the VCN name. Otherwise a default name is provided. The label above should be used in the 'Routable VCNs' field of other VCNs for constraining network traffic in a Hub/Spoke topology."
+    required: false
+    visible:
+      and:
+        - customize_net
+        - add_oke_vcn2
+
+  oke_vcn2_cidrs:
+    type: array
+    items:
+      type: string
+    uniqueItems: true
+    maxItems: 3
+    minItems: 1
+    title: "List of CIDR Blocks"
+    description: "The list of CIDR blocks for the VCN."
+    required: false
+    visible:
+      and:
+        - customize_net
+        - add_oke_vcn2
+
+  oke_vcn2_dns:
+    type: string
+    title: "VCN DNS"
+    description: "The VCN DNS name."
+    required: false
+    visible:
+      and:
+        - customize_net
+        - add_oke_vcn2
+
+  oke_vcn2_attach_to_drg:
+    type: boolean
+    title: "Attach this VCN to DRG (Dynamic Routing Gateway)?"
+    description: "Check to route private traffic to/from this VCN via a new or existing DRG."
+    visible:
+      and:
+        - customize_net
+        - add_oke_vcn2
+
+  oke_vcn2_routable_vcns:
+    type: array
+    items:
+      type: string
+    uniqueItems: true
+    title: "Routable VCNs"
+    description: "Enter the VCN labels that this VCN can send traffic to. Only applicable for Hub/Spoke topology where a DRG is deployed as the hub."
+    visible:
+      and:
+        - customize_net
+        - add_oke_vcn2
+        - oke_vcn2_attach_to_drg
+
+  customize_oke_vcn2_subnets:
+    type: boolean
+    title: "Customize VCN Subnets?"
+    description: "Check to customize default subnets settings."
+    visible:
+      and:
+        - customize_net
+        - add_oke_vcn2
+
+  oke_vcn2_api_subnet_name:
+    type: string
+    title: "API Subnet Name"
+    description: "The API subnet name."
+    required: false
+    visible:
+      and:
+        - customize_net
+        - customize_oke_vcn2_subnets
+        - add_oke_vcn2
+
+  oke_vcn2_api_subnet_cidr:
+    type: string
+    title: "API Subnet CIDR block"
+    description: "It must be within the VCN CIDR blocks."
+    required: false
+    visible:
+      and:
+        - customize_net
+        - customize_oke_vcn2_subnets
+        - add_oke_vcn2
+
+  oke_vcn2_api_subnet_dns:
+    type: string
+    title: "API Subnet DNS name"
+    description: "Use only letters and numbers, no special characters."
+    required: false
+    visible:
+      and:
+        - customize_net
+        - customize_oke_vcn2_subnets
+        - add_oke_vcn2
+
+  oke_vcn2_workers_subnet_name:
+    type: string
+    title: "Workers Subnet Name"
+    description: "The workers subnet name."
+    required: false
+    visible:
+      and:
+        - customize_net
+        - customize_oke_vcn2_subnets
+        - add_oke_vcn2
+
+  oke_vcn2_workers_subnet_cidr:
+    type: string
+    title: "Workers Subnet CIDR block"
+    description: "It must be within the VCN CIDR blocks."
+    required: false
+    visible:
+      and:
+        - customize_net
+        - customize_oke_vcn2_subnets
+        - add_oke_vcn2
+
+  oke_vcn2_workers_subnet_dns:
+    type: string
+    title: "Workers Subnet DNS name"
+    description: "Use only letters and numbers, no special characters."
+    required: false
+    visible:
+      and:
+        - customize_net
+        - customize_oke_vcn2_subnets
+        - add_oke_vcn2
+
+  oke_vcn2_services_subnet_name:
+    type: string
+    title: "Services Subnet Name"
+    description: "The services subnet name."
+    required: false
+    visible:
+      and:
+        - customize_net
+        - customize_oke_vcn2_subnets
+        - add_oke_vcn1
+
+  oke_vcn2_services_subnet_cidr:
+    type: string
+    title: "Services Subnet CIDR block"
+    description: "It must be within the VCN CIDR blocks."
+    required: false
+    visible:
+      and:
+        - customize_net
+        - customize_oke_vcn2_subnets
+        - add_oke_vcn2
+
+  oke_vcn2_services_subnet_dns:
+    type: string
+    title: "Services Subnet DNS name"
+    description: "Use only letters and numbers, no special characters."
+    required: false
+    visible:
+      and:
+        - customize_net
+        - customize_oke_vcn2_subnets
+        - add_oke_vcn2
+
+  add_oke_vcn2_mgmt_subnet:
+    type: boolean
+    title: "Add Management Subnet?"
+    description: "Check to add a private subnet for cluster management."
+    visible:
+      and:
+        - customize_net
+        - customize_oke_vcn2_subnets
+        - add_oke_vcn2
+
+  oke_vcn2_mgmt_subnet_name:
+    type: string
+    title: "Mgmt Subnet Name"
+    description: "The mgmt subnet name."
+    required: false
+    visible:
+      and:
+        - customize_net
+        - customize_oke_vcn2_subnets
+        - add_oke_vcn2
+        - add_oke_vcn2_mgmt_subnet
+
+  oke_vcn2_mgmt_subnet_cidr:
+    type: string
+    title: "Mgmt Subnet CIDR block"
+    description: "It must be within the VCN CIDR blocks."
+    required: false
+    visible:
+      and:
+        - customize_net
+        - customize_oke_vcn2_subnets
+        - add_oke_vcn2
+        - add_oke_vcn2_mgmt_subnet
+
+  oke_vcn2_mgmt_subnet_dns:
+    type: string
+    title: "Mgmt Subnet DNS name"
+    description: "Use only letters and numbers, no special characters."
+    required: false
+    visible:
+      and:
+        - customize_net
+        - customize_oke_vcn2_subnets
+        - add_oke_vcn2
+        - add_oke_vcn2_mgmt_subnet
+
+  oke_vcn2_pods_subnet_name:
+    type: string
+    title: "Pods Subnet Name"
+    description: "The pods subnet name."
+    required: false
+    visible:
+      and:
+        - customize_net
+        - customize_oke_vcn2_subnets
+        - add_oke_vcn2
+        - eq:
+          - ${oke_vcn2_cni_type}
+          - "Native"
+
+  oke_vcn2_pods_subnet_cidr:
+    type: string
+    title: "Pods Subnet CIDR block"
+    description: "It must be within the VCN CIDR blocks."
+    required: false
+    visible:
+      and:
+        - customize_net
+        - customize_oke_vcn2_subnets
+        - add_oke_vcn2
+        - add_oke_vcn2_pods_subnet
+        - eq:
+          - ${oke_vcn2_cni_type}
+          - "Native"
+
+  oke_vcn2_pods_subnet_dns:
+    type: string
+    title: "Pods Subnet DNS name"
+    description: "Use only letters and numbers, no special characters."
+    required: false
+    visible:
+      and:
+        - customize_net
+        - customize_oke_vcn2_subnets
+        - add_oke_vcn2
+        - eq:
+            - ${oke_vcn2_cni_type}
+            - "Native"
+  # ------------------------------------------------------
+  # ----- Networking - OKE VCN 3
+  #-------------------------------------------------------
+  add_oke_vcn3:
+    type: boolean
+    title: "Add OKE VCN (label: OKE-VCN-3)?"
+    description: "Click to add a VCN configured for OKE deployment, with at least three subnets: service (public by default), workers (private) and API endpoint (private). Additionally, a private subnet for pods deployment is created if the OKE CNI Type is 'Native'. You can also enable an extra private subnet for managing the OKE cluster."
+    visible: customize_net
+
+  oke_vcn3_cni_type:
+    type: enum
+    title: "OKE CNI Type"
+    description: "CNI type of OKE clusters (ex: Flannel or Native)"
+    enum:
+      - "Native"
+      - "Flannel"
+    visible:
+      and:
+        - customize_net
+        - add_oke_vcn3
+    required: true
+
+  oke_vcn3_name:
+    type: string
+    title: "VCN Name (label: OKE-VCN-3)"
+    description: "Enter the VCN name. Otherwise a default name is provided. The label above should be used in the 'Routable VCNs' field of other VCNs for constraining network traffic in a Hub/Spoke topology."
+    required: false
+    visible:
+      and:
+        - customize_net
+        - add_oke_vcn3
+
+  oke_vcn3_cidrs:
+    type: array
+    items:
+      type: string
+    uniqueItems: true
+    maxItems: 3
+    minItems: 1
+    title: "List of CIDR Blocks"
+    description: "The list of CIDR blocks for the VCN."
+    required: false
+    visible:
+      and:
+        - customize_net
+        - add_oke_vcn3
+
+  oke_vcn3_dns:
+    type: string
+    title: "VCN DNS"
+    description: "The VCN DNS name."
+    required: false
+    visible:
+      and:
+        - customize_net
+        - add_oke_vcn3
+
+  oke_vcn3_attach_to_drg:
+    type: boolean
+    title: "Attach this VCN to DRG (Dynamic Routing Gateway)?"
+    description: "Check to route private traffic to/from this VCN via a new or existing DRG."
+    visible:
+      and:
+        - customize_net
+        - add_oke_vcn3
+
+  oke_vcn3_routable_vcns:
+    type: array
+    items:
+      type: string
+    uniqueItems: true
+    title: "Routable VCNs"
+    description: "Enter the VCN labels that this VCN can send traffic to. Only applicable for Hub/Spoke topology where a DRG is deployed as the hub."
+    visible:
+      and:
+        - customize_net
+        - add_oke_vcn3
+        - oke_vcn3_attach_to_drg
+
+  customize_oke_vcn3_subnets:
+    type: boolean
+    title: "Customize VCN Subnets?"
+    description: "Check to customize default subnets settings."
+    visible:
+      and:
+        - customize_net
+        - add_oke_vcn3
+
+  oke_vcn3_api_subnet_name:
+    type: string
+    title: "API Subnet Name"
+    description: "The API subnet name."
+    required: false
+    visible:
+      and:
+        - customize_net
+        - customize_oke_vcn3_subnets
+        - add_oke_vcn3
+
+  oke_vcn3_api_subnet_cidr:
+    type: string
+    title: "API Subnet CIDR block"
+    description: "It must be within the VCN CIDR blocks."
+    required: false
+    visible:
+      and:
+        - customize_net
+        - customize_oke_vcn3_subnets
+        - add_oke_vcn3
+
+  oke_vcn3_api_subnet_dns:
+    type: string
+    title: "API Subnet DNS name"
+    description: "Use only letters and numbers, no special characters."
+    required: false
+    visible:
+      and:
+        - customize_net
+        - customize_oke_vcn3_subnets
+        - add_oke_vcn3
+
+  oke_vcn3_workers_subnet_name:
+    type: string
+    title: "Workers Subnet Name"
+    description: "The workers subnet name."
+    required: false
+    visible:
+      and:
+        - customize_net
+        - customize_oke_vcn3_subnets
+        - add_oke_vcn3
+
+  oke_vcn3_workers_subnet_cidr:
+    type: string
+    title: "Workers Subnet CIDR block"
+    description: "It must be within the VCN CIDR blocks."
+    required: false
+    visible:
+      and:
+        - customize_net
+        - customize_oke_vcn3_subnets
+        - add_oke_vcn3
+
+  oke_vcn3_workers_subnet_dns:
+    type: string
+    title: "Workers Subnet DNS name"
+    description: "Use only letters and numbers, no special characters."
+    required: false
+    visible:
+      and:
+        - customize_net
+        - customize_oke_vcn3_subnets
+        - add_oke_vcn3
+
+  oke_vcn3_services_subnet_name:
+    type: string
+    title: "Services Subnet Name"
+    description: "The services subnet name."
+    required: false
+    visible:
+      and:
+        - customize_net
+        - customize_oke_vcn3_subnets
+        - add_oke_vcn1
+
+  oke_vcn3_services_subnet_cidr:
+    type: string
+    title: "Services Subnet CIDR block"
+    description: "It must be within the VCN CIDR blocks."
+    required: false
+    visible:
+      and:
+        - customize_net
+        - customize_oke_vcn3_subnets
+        - add_oke_vcn3
+
+  oke_vcn3_services_subnet_dns:
+    type: string
+    title: "Services Subnet DNS name"
+    description: "Use only letters and numbers, no special characters."
+    required: false
+    visible:
+      and:
+        - customize_net
+        - customize_oke_vcn3_subnets
+        - add_oke_vcn3
+
+  add_oke_vcn3_mgmt_subnet:
+    type: boolean
+    title: "Add Management Subnet?"
+    description: "Check to add a private subnet for cluster management."
+    visible:
+      and:
+        - customize_net
+        - customize_oke_vcn3_subnets
+        - add_oke_vcn3
+
+  oke_vcn3_mgmt_subnet_name:
+    type: string
+    title: "Mgmt Subnet Name"
+    description: "The mgmt subnet name."
+    required: false
+    visible:
+      and:
+        - customize_net
+        - customize_oke_vcn3_subnets
+        - add_oke_vcn3
+        - add_oke_vcn3_mgmt_subnet
+
+  oke_vcn3_mgmt_subnet_cidr:
+    type: string
+    title: "Mgmt Subnet CIDR block"
+    description: "It must be within the VCN CIDR blocks."
+    required: false
+    visible:
+      and:
+        - customize_net
+        - customize_oke_vcn3_subnets
+        - add_oke_vcn3
+        - add_oke_vcn3_mgmt_subnet
+
+  oke_vcn3_mgmt_subnet_dns:
+    type: string
+    title: "Mgmt Subnet DNS name"
+    description: "Use only letters and numbers, no special characters."
+    required: false
+    visible:
+      and:
+        - customize_net
+        - customize_oke_vcn3_subnets
+        - add_oke_vcn3
+        - add_oke_vcn3_mgmt_subnet
+
+  oke_vcn3_pods_subnet_name:
+    type: string
+    title: "Pods Subnet Name"
+    description: "The pods subnet name."
+    required: false
+    visible:
+      and:
+        - customize_net
+        - customize_oke_vcn3_subnets
+        - add_oke_vcn3
+        - eq:
+          - ${oke_vcn3_cni_type}
+          - "Native"
+
+  oke_vcn3_pods_subnet_cidr:
+    type: string
+    title: "Pods Subnet CIDR block"
+    description: "It must be within the VCN CIDR blocks."
+    required: false
+    visible:
+      and:
+        - customize_net
+        - customize_oke_vcn3_subnets
+        - add_oke_vcn3
+        - eq:
+          - ${oke_vcn3_cni_type}
+          - "Native"
+
+  oke_vcn3_pods_subnet_dns:
+    type: string
+    title: "Pods Subnet DNS name"
+    description: "Use only letters and numbers, no special characters."
+    required: false
+    visible:
+      and:
+        - customize_net
+        - customize_oke_vcn3_subnets
+        - add_oke_vcn3
+        - eq:
+          - ${oke_vcn3_cni_type}
+          - "Native"
 # ------------------------------------------------------
 # ----- Networking - Hub
 #-------------------------------------------------------

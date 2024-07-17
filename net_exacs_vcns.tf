@@ -44,14 +44,6 @@ locals {
                 destination_type   = "SERVICE_CIDR_BLOCK"
               }
             },
-            {
-              "ANYWHERE-RULE" = { # TODO: need a good name
-                network_entity_key = "HUB-DRG"
-                description        = "Traffic destined to ${local.anywhere} goes to DRG."
-                destination        = local.anywhere
-                destination_type   = "CIDR_BLOCK"
-              }
-            },
             { for cidr in var.exa_vcn2_cidrs : "EXA-VCN-2-${cidr}-RULE" =>
               {
                 network_entity_key = "HUB-DRG"
@@ -91,6 +83,30 @@ locals {
                 destination        = cidr
                 destination_type   = "CIDR_BLOCK"
               } if local.hub_options[var.hub_options] != 0 && var.add_tt_vcn3 == true && var.tt_vcn3_attach_to_drg == true && (length(var.exa_vcn1_routable_vcns) == 0 || contains(var.exa_vcn1_routable_vcns, "TT-VCN-3"))
+            },
+            { for cidr in var.oke_vcn1_cidrs : "OKE-VCN-1-${cidr}-RULE" =>
+              {
+                network_entity_key = "HUB-DRG"
+                description        = "To DRG."
+                destination        = cidr
+                destination_type   = "CIDR_BLOCK"
+              } if local.hub_options[var.hub_options] != 0 && var.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true && (length(var.exa_vcn2_routable_vcns) == 0 || contains(var.exa_vcn2_routable_vcns, "OKE-VCN-1"))
+            },
+            { for cidr in var.oke_vcn2_cidrs : "OKE-VCN-2-${cidr}-RULE" =>
+              {
+                network_entity_key = "HUB-DRG"
+                description        = "To DRG."
+                destination        = cidr
+                destination_type   = "CIDR_BLOCK"
+              } if local.hub_options[var.hub_options] != 0 && var.add_oke_vcn2 == true && var.oke_vcn2_attach_to_drg == true && (length(var.exa_vcn2_routable_vcns) == 0 || contains(var.exa_vcn2_routable_vcns, "OKE-VCN-2"))
+            },
+            { for cidr in var.oke_vcn3_cidrs : "OKE-VCN-3-${cidr}-RULE" =>
+              {
+                network_entity_key = "HUB-DRG"
+                description        = "To DRG."
+                destination        = cidr
+                destination_type   = "CIDR_BLOCK"
+              } if local.hub_options[var.hub_options] != 0 && var.add_oke_vcn3 == true && var.oke_vcn3_attach_to_drg == true && (length(var.exa_vcn2_routable_vcns) == 0 || contains(var.exa_vcn2_routable_vcns, "OKE-VCN-3"))
             }
           )
         }
@@ -113,10 +129,10 @@ locals {
           display_name = "${coalesce(var.exa_vcn1_client_subnet_name, "${var.service_label}-exadata-vcn-1-client-subnet")}-security-list"
           ingress_rules = [
             {
-              description = "Allows SSH connections from hosts in Exadata client subnet."
-              stateless   = false
-              protocol    = "TCP"
-              src         = coalesce(var.exa_vcn1_client_subnet_cidr, cidrsubnet(var.exa_vcn1_cidrs[0], 9, 96))
+              description  = "Allows SSH connections from hosts in Exadata client subnet."
+              stateless    = false
+              protocol     = "TCP"
+              src          = coalesce(var.exa_vcn1_client_subnet_cidr, cidrsubnet(var.exa_vcn1_cidrs[0], 9, 96))
               src_type     = "CIDR_BLOCK"
               dst_port_min = 22
               dst_port_max = 22
@@ -124,10 +140,10 @@ locals {
           ]
           egress_rules = [
             {
-              description = "Allows SSH connections to hosts in Exadata client subnet."
-              stateless   = false
-              protocol    = "TCP"
-              dst         = coalesce(var.exa_vcn1_client_subnet_cidr, cidrsubnet(var.exa_vcn1_cidrs[0], 9, 96))
+              description  = "Allows SSH connections to hosts in Exadata client subnet."
+              stateless    = false
+              protocol     = "TCP"
+              dst          = coalesce(var.exa_vcn1_client_subnet_cidr, cidrsubnet(var.exa_vcn1_cidrs[0], 9, 96))
               dst_type     = "CIDR_BLOCK"
               dst_port_min = 22
               dst_port_max = 22
@@ -157,7 +173,7 @@ locals {
                 src_type     = "CIDR_BLOCK"
                 dst_port_min = 22
                 dst_port_max = 22
-              }
+              } if (local.hub_options[var.hub_options] == 3 || local.hub_options[var.hub_options] == 4) && var.exa_vcn1_attach_to_drg == true && var.add_exa_vcn1 == true
             },
             { for cidr in var.hub_vcn_cidrs : "INGRESS-FROM-SQLNET-${cidr}-RULE" =>
               {
@@ -168,7 +184,7 @@ locals {
                 src_type    = "CIDR_BLOCK"
                 dst_port_min : 1521
                 dst_port_max : 1522
-              }
+              } if (local.hub_options[var.hub_options] == 3 || local.hub_options[var.hub_options] == 4) && var.exa_vcn1_attach_to_drg == true && var.add_exa_vcn1 == true
             },
             { for cidr in var.hub_vcn_cidrs : "INGRESS-FROM-ONS-${cidr}-RULE" =>
               {
@@ -179,7 +195,7 @@ locals {
                 src_type    = "CIDR_BLOCK"
                 dst_port_min : 6200,
                 dst_port_max : 6200
-              }
+              } if (local.hub_options[var.hub_options] == 3 || local.hub_options[var.hub_options] == 4) && var.exa_vcn1_attach_to_drg == true && var.add_exa_vcn1 == true
             },
             {
               "INGRESS-FROM-SSH-CLIENT-RULE" = {
@@ -322,14 +338,6 @@ locals {
                 destination_type   = "SERVICE_CIDR_BLOCK"
               }
             },
-            {
-              "ANYWHERE-RULE" = { # TODO: need a good name
-                network_entity_key = "HUB-DRG"
-                description        = "Traffic destined to ${local.anywhere} goes to DRG."
-                destination        = local.anywhere
-                destination_type   = "CIDR_BLOCK"
-              }
-            },
             { for cidr in var.exa_vcn1_cidrs : "EXA-VCN-1-${cidr}-RULE" =>
               {
                 network_entity_key = "HUB-DRG"
@@ -369,6 +377,30 @@ locals {
                 destination        = cidr
                 destination_type   = "CIDR_BLOCK"
               } if local.hub_options[var.hub_options] != 0 && var.add_tt_vcn3 == true && var.tt_vcn3_attach_to_drg == true && (length(var.exa_vcn2_routable_vcns) == 0 || contains(var.exa_vcn2_routable_vcns, "TT-VCN-3"))
+            },
+            { for cidr in var.oke_vcn1_cidrs : "OKE-VCN-1-${cidr}-RULE" =>
+              {
+                network_entity_key = "HUB-DRG"
+                description        = "To DRG."
+                destination        = cidr
+                destination_type   = "CIDR_BLOCK"
+              } if local.hub_options[var.hub_options] != 0 && var.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true && (length(var.exa_vcn2_routable_vcns) == 0 || contains(var.exa_vcn2_routable_vcns, "OKE-VCN-1"))
+            },
+            { for cidr in var.oke_vcn2_cidrs : "OKE-VCN-2-${cidr}-RULE" =>
+              {
+                network_entity_key = "HUB-DRG"
+                description        = "To DRG."
+                destination        = cidr
+                destination_type   = "CIDR_BLOCK"
+              } if local.hub_options[var.hub_options] != 0 && var.add_oke_vcn2 == true && var.oke_vcn2_attach_to_drg == true && (length(var.exa_vcn2_routable_vcns) == 0 || contains(var.exa_vcn2_routable_vcns, "OKE-VCN-2"))
+            },
+            { for cidr in var.oke_vcn3_cidrs : "OKE-VCN-3-${cidr}-RULE" =>
+              {
+                network_entity_key = "HUB-DRG"
+                description        = "To DRG."
+                destination        = cidr
+                destination_type   = "CIDR_BLOCK"
+              } if local.hub_options[var.hub_options] != 0 && var.add_oke_vcn3 == true && var.oke_vcn3_attach_to_drg == true && (length(var.exa_vcn2_routable_vcns) == 0 || contains(var.exa_vcn2_routable_vcns, "OKE-VCN-3"))
             }
           )
         }
@@ -391,10 +423,10 @@ locals {
           display_name = "${coalesce(var.exa_vcn2_client_subnet_name, "${var.service_label}-exadata-vcn-2-client-subnet")}-security-list"
           ingress_rules = [
             {
-              description = "Allows SSH connections from hosts in Exadata client subnet."
-              stateless   = false
-              protocol    = "TCP"
-              src         = coalesce(var.exa_vcn2_client_subnet_cidr, cidrsubnet(var.exa_vcn2_cidrs[0], 9, 96))
+              description  = "Allows SSH connections from hosts in Exadata client subnet."
+              stateless    = false
+              protocol     = "TCP"
+              src          = coalesce(var.exa_vcn2_client_subnet_cidr, cidrsubnet(var.exa_vcn2_cidrs[0], 9, 96))
               src_type     = "CIDR_BLOCK"
               dst_port_min = 22
               dst_port_max = 22
@@ -402,10 +434,10 @@ locals {
           ]
           egress_rules = [
             {
-              description = "Allows SSH connections to hosts in Exadata client subnet."
-              stateless   = false
-              protocol    = "TCP"
-              dst         = coalesce(var.exa_vcn2_client_subnet_cidr, cidrsubnet(var.exa_vcn2_cidrs[0], 9, 96))
+              description  = "Allows SSH connections to hosts in Exadata client subnet."
+              stateless    = false
+              protocol     = "TCP"
+              dst          = coalesce(var.exa_vcn2_client_subnet_cidr, cidrsubnet(var.exa_vcn2_cidrs[0], 9, 96))
               dst_type     = "CIDR_BLOCK"
               dst_port_min = 22
               dst_port_max = 22
@@ -435,7 +467,7 @@ locals {
                 src_type     = "CIDR_BLOCK"
                 dst_port_min = 22
                 dst_port_max = 22
-              }
+              } if (local.hub_options[var.hub_options] == 3 || local.hub_options[var.hub_options] == 4) && var.exa_vcn2_attach_to_drg == true && var.add_exa_vcn2 == true
             },
             { for cidr in var.hub_vcn_cidrs : "INGRESS-FROM-SQLNET-${cidr}-RULE" =>
               {
@@ -446,7 +478,7 @@ locals {
                 src_type    = "CIDR_BLOCK"
                 dst_port_min : 1521
                 dst_port_max : 1522
-              }
+              } if (local.hub_options[var.hub_options] == 3 || local.hub_options[var.hub_options] == 4) && var.exa_vcn2_attach_to_drg == true && var.add_exa_vcn2 == true
             },
             { for cidr in var.hub_vcn_cidrs : "INGRESS-FROM-ONS-${cidr}-RULE" =>
               {
@@ -457,7 +489,7 @@ locals {
                 src_type    = "CIDR_BLOCK"
                 dst_port_min : 6200,
                 dst_port_max : 6200
-              }
+              } if (local.hub_options[var.hub_options] == 3 || local.hub_options[var.hub_options] == 4) && var.exa_vcn2_attach_to_drg == true && var.add_exa_vcn2 == true
             },
             {
               "INGRESS-FROM-SSH-CLIENT-RULE" = {
@@ -600,14 +632,6 @@ locals {
                 destination_type   = "SERVICE_CIDR_BLOCK"
               }
             },
-            {
-              "ANYWHERE-RULE" = { # TODO: need a good name
-                network_entity_key = "HUB-DRG"
-                description        = "Traffic destined to ${local.anywhere} goes to DRG."
-                destination        = local.anywhere
-                destination_type   = "CIDR_BLOCK"
-              }
-            },
             { for cidr in var.exa_vcn1_cidrs : "EXA-VCN-1-${cidr}-RULE" =>
               {
                 network_entity_key = "HUB-DRG"
@@ -647,6 +671,30 @@ locals {
                 destination        = cidr
                 destination_type   = "CIDR_BLOCK"
               } if local.hub_options[var.hub_options] != 0 && var.add_tt_vcn3 == true && var.tt_vcn3_attach_to_drg == true && (length(var.exa_vcn3_routable_vcns) == 0 || contains(var.exa_vcn3_routable_vcns, "TT-VCN-3"))
+            },
+            { for cidr in var.oke_vcn1_cidrs : "OKE-VCN-1-${cidr}-RULE" =>
+              {
+                network_entity_key = "HUB-DRG"
+                description        = "To DRG."
+                destination        = cidr
+                destination_type   = "CIDR_BLOCK"
+              } if local.hub_options[var.hub_options] != 0 && var.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true && (length(var.exa_vcn2_routable_vcns) == 0 || contains(var.exa_vcn2_routable_vcns, "OKE-VCN-1"))
+            },
+            { for cidr in var.oke_vcn2_cidrs : "OKE-VCN-2-${cidr}-RULE" =>
+              {
+                network_entity_key = "HUB-DRG"
+                description        = "To DRG."
+                destination        = cidr
+                destination_type   = "CIDR_BLOCK"
+              } if local.hub_options[var.hub_options] != 0 && var.add_oke_vcn2 == true && var.oke_vcn2_attach_to_drg == true && (length(var.exa_vcn2_routable_vcns) == 0 || contains(var.exa_vcn2_routable_vcns, "OKE-VCN-2"))
+            },
+            { for cidr in var.oke_vcn3_cidrs : "OKE-VCN-3-${cidr}-RULE" =>
+              {
+                network_entity_key = "HUB-DRG"
+                description        = "To DRG."
+                destination        = cidr
+                destination_type   = "CIDR_BLOCK"
+              } if local.hub_options[var.hub_options] != 0 && var.add_oke_vcn3 == true && var.oke_vcn3_attach_to_drg == true && (length(var.exa_vcn2_routable_vcns) == 0 || contains(var.exa_vcn2_routable_vcns, "OKE-VCN-3"))
             }
           )
         }
@@ -669,10 +717,10 @@ locals {
           display_name = "${coalesce(var.exa_vcn3_client_subnet_name, "${var.service_label}-exadata-vcn-3-client-subnet")}-security-list"
           ingress_rules = [
             {
-              description = "Allows SSH connections from hosts in Exadata client subnet."
-              stateless   = false
-              protocol    = "TCP"
-              src         = coalesce(var.exa_vcn3_client_subnet_cidr, cidrsubnet(var.exa_vcn3_cidrs[0], 9, 96))
+              description  = "Allows SSH connections from hosts in Exadata client subnet."
+              stateless    = false
+              protocol     = "TCP"
+              src          = coalesce(var.exa_vcn3_client_subnet_cidr, cidrsubnet(var.exa_vcn3_cidrs[0], 9, 96))
               src_type     = "CIDR_BLOCK"
               dst_port_min = 22
               dst_port_max = 22
@@ -680,10 +728,10 @@ locals {
           ]
           egress_rules = [
             {
-              description = "Allows SSH connections to hosts in Exadata client subnet."
-              stateless   = false
-              protocol    = "TCP"
-              dst         = coalesce(var.exa_vcn3_client_subnet_cidr, cidrsubnet(var.exa_vcn3_cidrs[0], 9, 96))
+              description  = "Allows SSH connections to hosts in Exadata client subnet."
+              stateless    = false
+              protocol     = "TCP"
+              dst          = coalesce(var.exa_vcn3_client_subnet_cidr, cidrsubnet(var.exa_vcn3_cidrs[0], 9, 96))
               dst_type     = "CIDR_BLOCK"
               dst_port_min = 22
               dst_port_max = 22
@@ -713,7 +761,7 @@ locals {
                 src_type     = "CIDR_BLOCK"
                 dst_port_min = 22
                 dst_port_max = 22
-              }
+              } if (local.hub_options[var.hub_options] == 3 || local.hub_options[var.hub_options] == 4) && var.exa_vcn3_attach_to_drg == true && var.add_exa_vcn3 == true
             },
             { for cidr in var.hub_vcn_cidrs : "INGRESS-FROM-SQLNET-${cidr}-RULE" =>
               {
@@ -724,7 +772,7 @@ locals {
                 src_type    = "CIDR_BLOCK"
                 dst_port_min : 1521
                 dst_port_max : 1522
-              }
+              } if (local.hub_options[var.hub_options] == 3 || local.hub_options[var.hub_options] == 4) && var.exa_vcn3_attach_to_drg == true && var.add_exa_vcn3 == true
             },
             { for cidr in var.hub_vcn_cidrs : "INGRESS-FROM-ONS-${cidr}-RULE" =>
               {
@@ -735,7 +783,7 @@ locals {
                 src_type    = "CIDR_BLOCK"
                 dst_port_min : 6200,
                 dst_port_max : 6200
-              }
+              } if (local.hub_options[var.hub_options] == 3 || local.hub_options[var.hub_options] == 4) && var.exa_vcn3_attach_to_drg == true && var.add_exa_vcn3 == true
             },
             {
               "INGRESS-FROM-SSH-CLIENT-RULE" = {
