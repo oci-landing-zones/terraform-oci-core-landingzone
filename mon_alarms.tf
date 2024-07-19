@@ -37,7 +37,7 @@ locals {
   #--------------------------------------------------------------------
   compute_alarms = length(var.compute_admin_email_endpoints) > 0 ? {
     COMPUTE-ALARM-HIGH-CPU = {
-      compartment_id           = local.appdev_compartment_id
+      compartment_id           = local.app_compartment_id
       display_name             = "${var.service_label}-high-cpu-alarm"
       preconfigured_alarm_type = "high-cpu-alarm"
       destination_topic_ids    = ["COMPUTE-TOPIC"]
@@ -46,7 +46,7 @@ locals {
       is_enabled               = var.create_alarms_as_enabled
     }
     COMPUTE-ALARM-INSTANCE-STATUS = {
-      compartment_id           = local.appdev_compartment_id
+      compartment_id           = local.app_compartment_id
       display_name             = "${var.service_label}-instance-status-alarm"
       preconfigured_alarm_type = "instance-status-alarm"
       destination_topic_ids    = ["COMPUTE-TOPIC"]
@@ -55,7 +55,7 @@ locals {
       is_enabled               = var.create_alarms_as_enabled
     }
     COMPUTE-ALARM-VM-MAINTENANCE-STATUS = {
-      compartment_id           = local.appdev_compartment_id
+      compartment_id           = local.app_compartment_id
       display_name             = "${var.service_label}-vm-maintenance-alarm"
       preconfigured_alarm_type = "vm-maintenance-alarm"
       destination_topic_ids    = ["COMPUTE-TOPIC"]
@@ -64,7 +64,7 @@ locals {
       is_enabled               = var.create_alarms_as_enabled
     }
     COMPUTE-ALARM-BARE-METAL-HEALTH-STATUS = {
-      compartment_id           = local.appdev_compartment_id
+      compartment_id           = local.app_compartment_id
       display_name             = "${var.service_label}-bare-metal-unhealthy-alarm"
       preconfigured_alarm_type = "bare-metal-unhealthy-alarm"
       destination_topic_ids    = ["COMPUTE-TOPIC"]
@@ -73,7 +73,7 @@ locals {
       is_enabled               = var.create_alarms_as_enabled
     }
     COMPUTE-ALARM-HIGH-MEMORY = {
-      compartment_id           = local.appdev_compartment_id
+      compartment_id           = local.app_compartment_id
       display_name             = "${var.service_label}-high-memory-alarm"
       preconfigured_alarm_type = "high-memory-alarm"
       destination_topic_ids    = ["COMPUTE-TOPIC"]

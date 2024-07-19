@@ -96,7 +96,7 @@ locals {
   storage_events_key = "STORAGE-EVENTS"
   storage_events = length(var.storage_admin_email_endpoints) > 0 ? {
     (local.storage_events_key) = {
-      compartment_id                  = local.appdev_compartment_id
+      compartment_id                  = local.app_compartment_id
       event_display_name              = "${var.service_label}-notify-on-storage-changes-rule"
       event_description               = "Landing Zone events rule to detect when storage resources are created, updated or deleted."
       preconfigured_events_categories = ["storage"]
@@ -164,7 +164,7 @@ locals {
   compute_events_key = "COMPUTE-EVENTS"
   compute_events = length(var.compute_admin_email_endpoints) > 0 ? {
     (local.compute_events_key) = {
-      compartment_id                  = local.appdev_compartment_id
+      compartment_id                  = local.app_compartment_id
       event_display_name              = "${var.service_label}-notify-on-compute-changes-rule"
       event_description               = "Landing Zone events rule to detect when compute related resources are created, updated or deleted."
       preconfigured_events_categories = ["compute"]

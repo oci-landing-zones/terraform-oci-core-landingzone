@@ -101,7 +101,7 @@ locals {
   compute_topic_key = "COMPUTE-TOPIC"
   compute_topic = length(var.compute_admin_email_endpoints) > 0 ? {
     (local.compute_topic_key) = {
-      compartment_id = local.appdev_compartment_id
+      compartment_id = local.app_compartment_id
       name           = "${var.service_label}-compute-topic"
       description    = "Landing Zone topic for compute performance related notifications."
       defined_tags   = local.topics_defined_tags
@@ -139,7 +139,7 @@ locals {
   storage_topic_key = "STORAGE-TOPIC"
   storage_topic = length(var.storage_admin_email_endpoints) > 0 ? {
     (local.storage_topic_key) = {
-      compartment_id = local.appdev_compartment_id
+      compartment_id = local.app_compartment_id
       name           = "${var.service_label}-storage-topic"
       description    = "Landing Zone topic for storage performance related notifications."
       defined_tags   = local.topics_defined_tags
