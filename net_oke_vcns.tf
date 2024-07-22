@@ -2,6 +2,7 @@
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 
 locals {
+  
   oke_vcn_1 = var.add_oke_vcn1 == true ? {
     "OKE-VCN-1" = {
       display_name                     = coalesce(var.oke_vcn1_name, "${var.service_label}-oke-vcn-1")
@@ -122,7 +123,7 @@ locals {
                   description        = "To DRG."
                   destination        = cidr
                   destination_type   = "CIDR_BLOCK"
-                } if local.hub_options[var.hub_options] != 0 && var.add_oke_vcn2 == true && var.oke_vcn2_attach_to_drg == true && (length(var.oke_vcn1_routable_vcns) == 0 || contains(var.oke_vcn1_routable_vcns, "OKE-VCN-2"))
+                } if local.hub_options[var.hub_deployment_option] != 0 && var.add_oke_vcn2 == true && var.oke_vcn2_attach_to_drg == true && (length(var.oke_vcn1_routable_vcns) == 0 || contains(var.oke_vcn1_routable_vcns, "OKE-VCN-2"))
               },
               { for cidr in var.oke_vcn3_cidrs : "OKE-VCN-3-${cidr}-RULE" =>
                 {
@@ -130,7 +131,7 @@ locals {
                   description        = "To DRG."
                   destination        = cidr
                   destination_type   = "CIDR_BLOCK"
-                } if local.hub_options[var.hub_options] != 0 && var.add_oke_vcn3 == true && var.oke_vcn3_attach_to_drg == true && (length(var.oke_vcn1_routable_vcns) == 0 || contains(var.oke_vcn1_routable_vcns, "OKE-VCN-3"))
+                } if local.hub_options[var.hub_deployment_option] != 0 && var.add_oke_vcn3 == true && var.oke_vcn3_attach_to_drg == true && (length(var.oke_vcn1_routable_vcns) == 0 || contains(var.oke_vcn1_routable_vcns, "OKE-VCN-3"))
               },
               { for cidr in var.tt_vcn1_cidrs : "TT-VCN-1-${cidr}-RULE" =>
                 {
@@ -138,7 +139,7 @@ locals {
                   description        = "To DRG."
                   destination        = cidr
                   destination_type   = "CIDR_BLOCK"
-                } if local.hub_options[var.hub_options] != 0 && var.add_tt_vcn1 == true && var.tt_vcn1_attach_to_drg == true && (length(var.oke_vcn1_routable_vcns) == 0 || contains(var.oke_vcn1_routable_vcns, "TT-VCN-1"))
+                } if local.hub_options[var.hub_deployment_option] != 0 && var.add_tt_vcn1 == true && var.tt_vcn1_attach_to_drg == true && (length(var.oke_vcn1_routable_vcns) == 0 || contains(var.oke_vcn1_routable_vcns, "TT-VCN-1"))
               },
               { for cidr in var.tt_vcn2_cidrs : "TT-VCN-2-${cidr}-RULE" =>
                 {
@@ -146,7 +147,7 @@ locals {
                   description        = "To DRG."
                   destination        = cidr
                   destination_type   = "CIDR_BLOCK"
-                } if local.hub_options[var.hub_options] != 0 && var.add_tt_vcn2 == true && var.tt_vcn2_attach_to_drg == true && (length(var.oke_vcn1_routable_vcns) == 0 || contains(var.oke_vcn1_routable_vcns, "TT-VCN-2"))
+                } if local.hub_options[var.hub_deployment_option] != 0 && var.add_tt_vcn2 == true && var.tt_vcn2_attach_to_drg == true && (length(var.oke_vcn1_routable_vcns) == 0 || contains(var.oke_vcn1_routable_vcns, "TT-VCN-2"))
               },
               { for cidr in var.tt_vcn3_cidrs : "TT-VCN-3-${cidr}-RULE" =>
                 {
@@ -154,7 +155,7 @@ locals {
                   description        = "To DRG."
                   destination        = cidr
                   destination_type   = "CIDR_BLOCK"
-                } if local.hub_options[var.hub_options] != 0 && var.add_tt_vcn3 == true && var.tt_vcn3_attach_to_drg == true && (length(var.oke_vcn1_routable_vcns) == 0 || contains(var.oke_vcn1_routable_vcns, "TT-VCN-3"))
+                } if local.hub_options[var.hub_deployment_option] != 0 && var.add_tt_vcn3 == true && var.tt_vcn3_attach_to_drg == true && (length(var.oke_vcn1_routable_vcns) == 0 || contains(var.oke_vcn1_routable_vcns, "TT-VCN-3"))
               },
               { for cidr in var.exa_vcn1_cidrs : "EXA-VCN-1-${cidr}-RULE" =>
                 {
@@ -162,7 +163,7 @@ locals {
                   description        = "To DRG."
                   destination        = cidr
                   destination_type   = "CIDR_BLOCK"
-                } if local.hub_options[var.hub_options] != 0 && var.add_exa_vcn1 == true && var.exa_vcn1_attach_to_drg == true && (length(var.oke_vcn1_routable_vcns) == 0 || contains(var.oke_vcn1_routable_vcns, "EXA-VCN-1"))
+                } if local.hub_options[var.hub_deployment_option] != 0 && var.add_exa_vcn1 == true && var.exa_vcn1_attach_to_drg == true && (length(var.oke_vcn1_routable_vcns) == 0 || contains(var.oke_vcn1_routable_vcns, "EXA-VCN-1"))
               },
               { for cidr in var.exa_vcn2_cidrs : "EXA-VCN-2-${cidr}-RULE" =>
                 {
@@ -170,7 +171,7 @@ locals {
                   description        = "To DRG."
                   destination        = cidr
                   destination_type   = "CIDR_BLOCK"
-                } if local.hub_options[var.hub_options] != 0 && var.add_exa_vcn2 == true && var.exa_vcn2_attach_to_drg == true && (length(var.oke_vcn1_routable_vcns) == 0 || contains(var.oke_vcn1_routable_vcns, "EXA-VCN-2"))
+                } if local.hub_options[var.hub_deployment_option] != 0 && var.add_exa_vcn2 == true && var.exa_vcn2_attach_to_drg == true && (length(var.oke_vcn1_routable_vcns) == 0 || contains(var.oke_vcn1_routable_vcns, "EXA-VCN-2"))
               },
               { for cidr in var.exa_vcn3_cidrs : "EXA-VCN-3-${cidr}-RULE" =>
                 {
@@ -178,7 +179,7 @@ locals {
                   description        = "To DRG."
                   destination        = cidr
                   destination_type   = "CIDR_BLOCK"
-                } if local.hub_options[var.hub_options] != 0 && var.add_exa_vcn3 == true && var.exa_vcn3_attach_to_drg == true && (length(var.oke_vcn1_routable_vcns) == 0 || contains(var.oke_vcn1_routable_vcns, "EXA-VCN-3"))
+                } if local.hub_options[var.hub_deployment_option] != 0 && var.add_exa_vcn3 == true && var.exa_vcn3_attach_to_drg == true && (length(var.oke_vcn1_routable_vcns) == 0 || contains(var.oke_vcn1_routable_vcns, "EXA-VCN-3"))
               }
             )
           }
@@ -238,7 +239,7 @@ locals {
                   description        = "To DRG."
                   destination        = cidr
                   destination_type   = "CIDR_BLOCK"
-                } if local.hub_options[var.hub_options] != 0 && var.add_oke_vcn2 == true && var.oke_vcn2_attach_to_drg == true && (length(var.oke_vcn1_routable_vcns) == 0 || contains(var.oke_vcn1_routable_vcns, "OKE-VCN-2"))
+                } if local.hub_options[var.hub_deployment_option] != 0 && var.add_oke_vcn2 == true && var.oke_vcn2_attach_to_drg == true && (length(var.oke_vcn1_routable_vcns) == 0 || contains(var.oke_vcn1_routable_vcns, "OKE-VCN-2"))
               },
               { for cidr in var.oke_vcn3_cidrs : "OKE-VCN-3-${cidr}-RULE" =>
                 {
@@ -246,7 +247,7 @@ locals {
                   description        = "To DRG."
                   destination        = cidr
                   destination_type   = "CIDR_BLOCK"
-                } if local.hub_options[var.hub_options] != 0 && var.add_oke_vcn3 == true && var.oke_vcn3_attach_to_drg == true && (length(var.oke_vcn1_routable_vcns) == 0 || contains(var.oke_vcn1_routable_vcns, "OKE-VCN-3"))
+                } if local.hub_options[var.hub_deployment_option] != 0 && var.add_oke_vcn3 == true && var.oke_vcn3_attach_to_drg == true && (length(var.oke_vcn1_routable_vcns) == 0 || contains(var.oke_vcn1_routable_vcns, "OKE-VCN-3"))
               },
               { for cidr in var.tt_vcn1_cidrs : "TT-VCN-1-${cidr}-RULE" =>
                 {
@@ -254,7 +255,7 @@ locals {
                   description        = "To DRG."
                   destination        = cidr
                   destination_type   = "CIDR_BLOCK"
-                } if local.hub_options[var.hub_options] != 0 && var.add_tt_vcn1 == true && var.tt_vcn1_attach_to_drg == true && (length(var.oke_vcn1_routable_vcns) == 0 || contains(var.oke_vcn1_routable_vcns, "TT-VCN-1"))
+                } if local.hub_options[var.hub_deployment_option] != 0 && var.add_tt_vcn1 == true && var.tt_vcn1_attach_to_drg == true && (length(var.oke_vcn1_routable_vcns) == 0 || contains(var.oke_vcn1_routable_vcns, "TT-VCN-1"))
               },
               { for cidr in var.tt_vcn2_cidrs : "TT-VCN-2-${cidr}-RULE" =>
                 {
@@ -262,7 +263,7 @@ locals {
                   description        = "To DRG."
                   destination        = cidr
                   destination_type   = "CIDR_BLOCK"
-                } if local.hub_options[var.hub_options] != 0 && var.add_tt_vcn2 == true && var.tt_vcn2_attach_to_drg == true && (length(var.oke_vcn1_routable_vcns) == 0 || contains(var.oke_vcn1_routable_vcns, "TT-VCN-2"))
+                } if local.hub_options[var.hub_deployment_option] != 0 && var.add_tt_vcn2 == true && var.tt_vcn2_attach_to_drg == true && (length(var.oke_vcn1_routable_vcns) == 0 || contains(var.oke_vcn1_routable_vcns, "TT-VCN-2"))
               },
               { for cidr in var.tt_vcn3_cidrs : "TT-VCN-3-${cidr}-RULE" =>
                 {
@@ -270,7 +271,7 @@ locals {
                   description        = "To DRG."
                   destination        = cidr
                   destination_type   = "CIDR_BLOCK"
-                } if local.hub_options[var.hub_options] != 0 && var.add_tt_vcn3 == true && var.tt_vcn3_attach_to_drg == true && (length(var.oke_vcn1_routable_vcns) == 0 || contains(var.oke_vcn1_routable_vcns, "TT-VCN-3"))
+                } if local.hub_options[var.hub_deployment_option] != 0 && var.add_tt_vcn3 == true && var.tt_vcn3_attach_to_drg == true && (length(var.oke_vcn1_routable_vcns) == 0 || contains(var.oke_vcn1_routable_vcns, "TT-VCN-3"))
               },
               { for cidr in var.exa_vcn1_cidrs : "EXA-VCN-1-${cidr}-RULE" =>
                 {
@@ -278,7 +279,7 @@ locals {
                   description        = "To DRG."
                   destination        = cidr
                   destination_type   = "CIDR_BLOCK"
-                } if local.hub_options[var.hub_options] != 0 && var.add_exa_vcn1 == true && var.exa_vcn1_attach_to_drg == true && (length(var.oke_vcn1_routable_vcns) == 0 || contains(var.oke_vcn1_routable_vcns, "EXA-VCN-1"))
+                } if local.hub_options[var.hub_deployment_option] != 0 && var.add_exa_vcn1 == true && var.exa_vcn1_attach_to_drg == true && (length(var.oke_vcn1_routable_vcns) == 0 || contains(var.oke_vcn1_routable_vcns, "EXA-VCN-1"))
               },
               { for cidr in var.exa_vcn2_cidrs : "EXA-VCN-2-${cidr}-RULE" =>
                 {
@@ -286,7 +287,7 @@ locals {
                   description        = "To DRG."
                   destination        = cidr
                   destination_type   = "CIDR_BLOCK"
-                } if local.hub_options[var.hub_options] != 0 && var.add_exa_vcn2 == true && var.exa_vcn2_attach_to_drg == true && (length(var.oke_vcn1_routable_vcns) == 0 || contains(var.oke_vcn1_routable_vcns, "EXA-VCN-2"))
+                } if local.hub_options[var.hub_deployment_option] != 0 && var.add_exa_vcn2 == true && var.exa_vcn2_attach_to_drg == true && (length(var.oke_vcn1_routable_vcns) == 0 || contains(var.oke_vcn1_routable_vcns, "EXA-VCN-2"))
               },
               { for cidr in var.exa_vcn3_cidrs : "EXA-VCN-3-${cidr}-RULE" =>
                 {
@@ -294,7 +295,7 @@ locals {
                   description        = "To DRG."
                   destination        = cidr
                   destination_type   = "CIDR_BLOCK"
-                } if local.hub_options[var.hub_options] != 0 && var.add_exa_vcn3 == true && var.exa_vcn3_attach_to_drg == true && (length(var.oke_vcn1_routable_vcns) == 0 || contains(var.oke_vcn1_routable_vcns, "EXA-VCN-3"))
+                } if local.hub_options[var.hub_deployment_option] != 0 && var.add_exa_vcn3 == true && var.exa_vcn3_attach_to_drg == true && (length(var.oke_vcn1_routable_vcns) == 0 || contains(var.oke_vcn1_routable_vcns, "EXA-VCN-3"))
               }
 
             )
@@ -940,6 +941,7 @@ locals {
       }
     }
   } : {}
+
   oke_vcn_2 = var.add_oke_vcn2 == true ? {
     "OKE-VCN-2" = {
       display_name                     = coalesce(var.oke_vcn2_name, "${var.service_label}-oke-vcn-2")
@@ -1748,6 +1750,7 @@ locals {
       }
     }
   } : {}
+
   oke_vcn_3 = var.add_oke_vcn3 == true ? {
     "OKE-VCN-3" = {
       display_name                     = coalesce(var.oke_vcn3_name, "${var.service_label}-oke-vcn-3")

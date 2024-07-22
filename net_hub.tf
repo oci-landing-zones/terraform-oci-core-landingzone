@@ -3,15 +3,32 @@
 
 locals {
 
-  drg = (local.hub_options[var.hub_options] != 0) ? {
+  hub_options = {
+    "No"                                    = 0,
+    "Yes, new DRG as hub"                   = 1,
+    "Yes, existing DRG as hub"              = 2,
+    "Yes, new VCN as hub with new DRG"      = 3
+    "Yes, new VCN as hub with existing DRG" = 4
+  }
+
+  firewall_options = {
+    "No"                                    = "NO",
+    "Palo Alto Networks VM-Series Firewall" = "PALOALTO",
+    "Fortinet FortiGate Firewall"           = "FORTINET",
+    "Check Point CloudGuard Firewall"       = "CHECKPOINT",
+    "Cisco Secure Firewall"                 = "CISCO",
+    "OCI Firewall Service"                  = "OCI"
+  }
+
+  drg = (local.hub_options[var.hub_deployment_option] != 0) ? {
     # "dynamic_routing_gateways" is for creating a new DRG.
     # "inject_into_existing_drgs" is for reusing an existing DRG.
-    (local.hub_options[var.hub_options] == 1 || local.hub_options[var.hub_options] == 3) ? "dynamic_routing_gateways" : "inject_into_existing_drgs" = {
+    (local.hub_options[var.hub_deployment_option] == 1 || local.hub_options[var.hub_deployment_option] == 3) ? "dynamic_routing_gateways" : "inject_into_existing_drgs" = {
       "HUB-DRG" = {
-        display_name = (local.hub_options[var.hub_options] == 1 || local.hub_options[var.hub_options] == 3) ? "${var.service_label}-hub-drg" : null
-        drg_id       = (local.hub_options[var.hub_options] == 2 || local.hub_options[var.hub_options] == 4) ? var.existing_drg_ocid : null
+        display_name = (local.hub_options[var.hub_deployment_option] == 1 || local.hub_options[var.hub_deployment_option] == 3) ? "${var.service_label}-hub-drg" : null
+        drg_id       = (local.hub_options[var.hub_deployment_option] == 2 || local.hub_options[var.hub_deployment_option] == 4) ? var.existing_drg_ocid : null
         drg_attachments = merge(
-          (local.hub_options[var.hub_options] == 3) ? {
+          (local.hub_options[var.hub_deployment_option] == 3) ? {
             "HUB-VCN-ATTACHMENT" = {
               display_name = "${coalesce(var.hub_vcn_name, "${var.service_label}-hub-vcn")}-attachment"
               # DRG route table for the Hub VCN attachment. It defines the next hop for traffic that enters the DRG via this attachment.
@@ -28,7 +45,7 @@ locals {
             "TT-VCN-1-ATTACHMENT" = {
               display_name = "${coalesce(var.tt_vcn1_name, "${var.service_label}-three-tier-vcn-1")}-attachment"
               # DRG route table for the VCN attachment. It defines the next hop for traffic that enters the DRG via this attachment.
-              drg_route_table_key = ((local.hub_options[var.hub_options] == 1 || local.hub_options[var.hub_options] == 2) && length(var.tt_vcn1_routable_vcns) > 0) ? "TT-VCN-1-DRG-ROUTE-TABLE" : null
+              drg_route_table_key = ((local.hub_options[var.hub_deployment_option] == 1 || local.hub_options[var.hub_deployment_option] == 2) && length(var.tt_vcn1_routable_vcns) > 0) ? "TT-VCN-1-DRG-ROUTE-TABLE" : null
               network_details = {
                 attached_resource_key = "TT-VCN-1"
                 type                  = "VCN"
@@ -39,7 +56,7 @@ locals {
             "TT-VCN-2-ATTACHMENT" = {
               display_name = "${coalesce(var.tt_vcn2_name, "${var.service_label}-three-tier-vcn-2")}-attachment"
               # DRG route table for the VCN attachment. It defines the next hop for traffic that enters the DRG via this attachment.
-              drg_route_table_key = ((local.hub_options[var.hub_options] == 1 || local.hub_options[var.hub_options] == 2) && length(var.tt_vcn2_routable_vcns) > 0) ? "TT-VCN-2-DRG-ROUTE-TABLE" : null
+              drg_route_table_key = ((local.hub_options[var.hub_deployment_option] == 1 || local.hub_options[var.hub_deployment_option] == 2) && length(var.tt_vcn2_routable_vcns) > 0) ? "TT-VCN-2-DRG-ROUTE-TABLE" : null
               network_details = {
                 attached_resource_key = "TT-VCN-2"
                 type                  = "VCN"
@@ -50,7 +67,7 @@ locals {
             "TT-VCN-3-ATTACHMENT" = {
               display_name = "${coalesce(var.tt_vcn3_name, "${var.service_label}-three-tier-vcn-3")}-attachment"
               # DRG route table for the VCN attachment. It defines the next hop for traffic that enters the DRG via this attachment.
-              drg_route_table_key = ((local.hub_options[var.hub_options] == 1 || local.hub_options[var.hub_options] == 2) && length(var.tt_vcn3_routable_vcns) > 0) ? "TT-VCN-3-DRG-ROUTE-TABLE" : null
+              drg_route_table_key = ((local.hub_options[var.hub_deployment_option] == 1 || local.hub_options[var.hub_deployment_option] == 2) && length(var.tt_vcn3_routable_vcns) > 0) ? "TT-VCN-3-DRG-ROUTE-TABLE" : null
               network_details = {
                 attached_resource_key = "TT-VCN-3"
                 type                  = "VCN"
@@ -61,7 +78,7 @@ locals {
             "EXA-VCN-1-ATTACHMENT" = {
               display_name = "${coalesce(var.exa_vcn1_name, "${var.service_label}-exadata-vcn-1")}-attachment"
               # DRG route table for the VCN attachment. It defines the next hop for traffic that enters the DRG via this attachment.
-              drg_route_table_key = ((local.hub_options[var.hub_options] == 1 || local.hub_options[var.hub_options] == 2) && length(var.exa_vcn1_routable_vcns) > 0) ? "EXA-VCN-1-DRG-ROUTE-TABLE" : null
+              drg_route_table_key = ((local.hub_options[var.hub_deployment_option] == 1 || local.hub_options[var.hub_deployment_option] == 2) && length(var.exa_vcn1_routable_vcns) > 0) ? "EXA-VCN-1-DRG-ROUTE-TABLE" : null
               network_details = {
                 attached_resource_key = "EXA-VCN-1"
                 type                  = "VCN"
@@ -72,7 +89,7 @@ locals {
             "EXA-VCN-2-ATTACHMENT" = {
               display_name = "${coalesce(var.exa_vcn2_name, "${var.service_label}-exadata-vcn-2")}-attachment"
               # DRG route table for the VCN attachment. It defines the next hop for traffic that enters the DRG via this attachment.
-              drg_route_table_key = ((local.hub_options[var.hub_options] == 1 || local.hub_options[var.hub_options] == 2) && length(var.exa_vcn2_routable_vcns) > 0) ? "EXA-VCN-2-DRG-ROUTE-TABLE" : null
+              drg_route_table_key = ((local.hub_options[var.hub_deployment_option] == 1 || local.hub_options[var.hub_deployment_option] == 2) && length(var.exa_vcn2_routable_vcns) > 0) ? "EXA-VCN-2-DRG-ROUTE-TABLE" : null
               network_details = {
                 attached_resource_key = "EXA-VCN-2"
                 type                  = "VCN"
@@ -83,7 +100,7 @@ locals {
             "EXA-VCN-3-ATTACHMENT" = {
               display_name = "${coalesce(var.exa_vcn3_name, "${var.service_label}-exadata-vcn-3")}-attachment"
               # DRG route table for the VCN attachment. It defines the next hop for traffic that enters the DRG via this attachment.
-              drg_route_table_key = ((local.hub_options[var.hub_options] == 1 || local.hub_options[var.hub_options] == 2) && length(var.exa_vcn3_routable_vcns) > 0) ? "EXA-VCN-3-DRG-ROUTE-TABLE" : null
+              drg_route_table_key = ((local.hub_options[var.hub_deployment_option] == 1 || local.hub_options[var.hub_deployment_option] == 2) && length(var.exa_vcn3_routable_vcns) > 0) ? "EXA-VCN-3-DRG-ROUTE-TABLE" : null
               network_details = {
                 attached_resource_key = "EXA-VCN-3"
                 type                  = "VCN"
@@ -94,7 +111,7 @@ locals {
             "OKE-VCN-1-ATTACHMENT" = {
               display_name = "${coalesce(var.oke_vcn1_name, "${var.service_label}-oke-vcn-1")}-attachment"
               # DRG route table for the VCN attachment. It defines the next hop for traffic that enters the DRG via this attachment.
-              drg_route_table_key = ((local.hub_options[var.hub_options] == 1 || local.hub_options[var.hub_options] == 2) && length(var.oke_vcn1_routable_vcns) > 0) ? "OKE-VCN-1-DRG-ROUTE-TABLE" : null
+              drg_route_table_key = ((local.hub_options[var.hub_deployment_option] == 1 || local.hub_options[var.hub_deployment_option] == 2) && length(var.oke_vcn1_routable_vcns) > 0) ? "OKE-VCN-1-DRG-ROUTE-TABLE" : null
               network_details = {
                 attached_resource_key = "OKE-VCN-1"
                 type                  = "VCN"
@@ -105,7 +122,7 @@ locals {
             "OKE-VCN-2-ATTACHMENT" = {
               display_name = "${coalesce(var.oke_vcn2_name, "${var.service_label}-oke-vcn-2")}-attachment"
               # DRG route table for the VCN attachment. It defines the next hop for traffic that enters the DRG via this attachment.
-              drg_route_table_key = ((local.hub_options[var.hub_options] == 1 || local.hub_options[var.hub_options] == 2) && length(var.oke_vcn2_routable_vcns) > 0) ? "OKE-VCN-2-DRG-ROUTE-TABLE" : null
+              drg_route_table_key = ((local.hub_options[var.hub_deployment_option] == 1 || local.hub_options[var.hub_deployment_option] == 2) && length(var.oke_vcn2_routable_vcns) > 0) ? "OKE-VCN-2-DRG-ROUTE-TABLE" : null
               network_details = {
                 attached_resource_key = "OKE-VCN-2"
                 type                  = "VCN"
@@ -116,7 +133,7 @@ locals {
             "OKE-VCN-3-ATTACHMENT" = {
               display_name = "${coalesce(var.oke_vcn3_name, "${var.service_label}-oke-vcn-3")}-attachment"
               # DRG route table for the VCN attachment. It defines the next hop for traffic that enters the DRG via this attachment.
-              drg_route_table_key = ((local.hub_options[var.hub_options] == 1 || local.hub_options[var.hub_options] == 2) && length(var.oke_vcn3_routable_vcns) > 0) ? "OKE-VCN-3-DRG-ROUTE-TABLE" : null
+              drg_route_table_key = ((local.hub_options[var.hub_deployment_option] == 1 || local.hub_options[var.hub_deployment_option] == 2) && length(var.oke_vcn3_routable_vcns) > 0) ? "OKE-VCN-3-DRG-ROUTE-TABLE" : null
               network_details = {
                 attached_resource_key = "OKE-VCN-3"
                 type                  = "VCN"
@@ -125,7 +142,7 @@ locals {
           } : {}
         )
         drg_route_tables = merge(
-          (local.hub_options[var.hub_options] == 3) ? {
+          (local.hub_options[var.hub_deployment_option] == 3) ? {
             "HUB-VCN-DRG-ROUTE-TABLE" = {
               display_name                      = "${coalesce(var.hub_vcn_name, "${var.service_label}-hub-vcn")}-drg-route-table"
               import_drg_route_distribution_key = "HUB-VCN-DRG-IMPORT-ROUTE-DISTRIBUTION"
@@ -188,7 +205,7 @@ locals {
 
         )
         drg_route_distributions = merge(
-          (local.hub_options[var.hub_options] == 3) ? {
+          (local.hub_options[var.hub_deployment_option] == 3) ? {
             # This import distribution makes its importing DRG route tables to have the referred drg_attachment_key as the next-hop attachment.
             # In this case, since there's no "VCN ingress route table for the DRG", the VCN CIDRs and subnet CIDRs of the underlying VCN are imported by those DRG route tables.
             "HUB-VCN-DRG-IMPORT-ROUTE-DISTRIBUTION" = {
@@ -304,7 +321,7 @@ locals {
               display_name      = "three-tier-vcn-1-drg-import-route-distribution"
               distribution_type = "IMPORT"
               statements = merge(
-                (local.hub_options[var.hub_options] == 3) ? {
+                (local.hub_options[var.hub_deployment_option] == 3) ? {
                   "TT-VCN-1-HUB-VCN-STMT" = {
                     action   = "ACCEPT",
                     priority = 1,
@@ -315,7 +332,7 @@ locals {
                     }
                   }
                 } : {},
-                (local.hub_options[var.hub_options] == 1 && contains(var.tt_vcn1_routable_vcns, "TT-VCN-2")) ? {
+                (local.hub_options[var.hub_deployment_option] == 1 && contains(var.tt_vcn1_routable_vcns, "TT-VCN-2")) ? {
                   "TT-VCN-2-STMT" = {
                     action   = "ACCEPT",
                     priority = 2,
@@ -326,7 +343,7 @@ locals {
                     }
                   }
                 } : {},
-                (local.hub_options[var.hub_options] == 1 && contains(var.tt_vcn1_routable_vcns, "TT-VCN-3")) ? {
+                (local.hub_options[var.hub_deployment_option] == 1 && contains(var.tt_vcn1_routable_vcns, "TT-VCN-3")) ? {
                   "TT-VCN-3-STMT" = {
                     action   = "ACCEPT",
                     priority = 3,
@@ -337,7 +354,7 @@ locals {
                     }
                   }
                 } : {},
-                (local.hub_options[var.hub_options] == 1 && contains(var.tt_vcn1_routable_vcns, "EXA-VCN-1")) ? {
+                (local.hub_options[var.hub_deployment_option] == 1 && contains(var.tt_vcn1_routable_vcns, "EXA-VCN-1")) ? {
                   "EXA-VCN-1-STMT" = {
                     action   = "ACCEPT",
                     priority = 4,
@@ -348,7 +365,7 @@ locals {
                     }
                   }
                 } : {},
-                (local.hub_options[var.hub_options] == 1 && contains(var.tt_vcn1_routable_vcns, "EXA-VCN-2")) ? {
+                (local.hub_options[var.hub_deployment_option] == 1 && contains(var.tt_vcn1_routable_vcns, "EXA-VCN-2")) ? {
                   "EXA-VCN-2-STMT" = {
                     action   = "ACCEPT",
                     priority = 5,
@@ -359,7 +376,7 @@ locals {
                     }
                   }
                 } : {},
-                (local.hub_options[var.hub_options] == 1 && contains(var.tt_vcn1_routable_vcns, "EXA-VCN-3")) ? {
+                (local.hub_options[var.hub_deployment_option] == 1 && contains(var.tt_vcn1_routable_vcns, "EXA-VCN-3")) ? {
                   "EXA-VCN-3-STMT" = {
                     action   = "ACCEPT",
                     priority = 6,
@@ -370,7 +387,7 @@ locals {
                     }
                   }
                 } : {},
-                (local.hub_options[var.hub_options] == 1 && contains(var.tt_vcn1_routable_vcns, "OKE-VCN-1")) ? {
+                (local.hub_options[var.hub_deployment_option] == 1 && contains(var.tt_vcn1_routable_vcns, "OKE-VCN-1")) ? {
                   "OKE-VCN-1-STMT" = {
                     action   = "ACCEPT",
                     priority = 7,
@@ -381,7 +398,7 @@ locals {
                     }
                   }
                 } : {},
-                (local.hub_options[var.hub_options] == 1 && contains(var.tt_vcn1_routable_vcns, "OKE-VCN-2")) ? {
+                (local.hub_options[var.hub_deployment_option] == 1 && contains(var.tt_vcn1_routable_vcns, "OKE-VCN-2")) ? {
                   "OKE-VCN-2-STMT" = {
                     action   = "ACCEPT",
                     priority = 8,
@@ -392,7 +409,7 @@ locals {
                     }
                   }
                 } : {},
-                (local.hub_options[var.hub_options] == 1 && contains(var.tt_vcn1_routable_vcns, "OKE-VCN-3")) ? {
+                (local.hub_options[var.hub_deployment_option] == 1 && contains(var.tt_vcn1_routable_vcns, "OKE-VCN-3")) ? {
                   "OKE-VCN-3-STMT" = {
                     action   = "ACCEPT",
                     priority = 9,
@@ -413,7 +430,7 @@ locals {
               display_name      = "three-tier-vcn-2-drg-import-route-distribution"
               distribution_type = "IMPORT"
               statements = merge(
-                (local.hub_options[var.hub_options] == 3) ? {
+                (local.hub_options[var.hub_deployment_option] == 3) ? {
                   "TT-VCN-2-HUB-VCN-STMT" = {
                     action   = "ACCEPT",
                     priority = 1,
@@ -424,7 +441,7 @@ locals {
                     }
                   }
                 } : {},
-                (local.hub_options[var.hub_options] == 1 && contains(var.tt_vcn2_routable_vcns, "TT-VCN-1")) ? {
+                (local.hub_options[var.hub_deployment_option] == 1 && contains(var.tt_vcn2_routable_vcns, "TT-VCN-1")) ? {
                   "TT-VCN-1-STMT" = {
                     action   = "ACCEPT",
                     priority = 2,
@@ -435,7 +452,7 @@ locals {
                     }
                   }
                 } : {},
-                (local.hub_options[var.hub_options] == 1 && contains(var.tt_vcn2_routable_vcns, "TT-VCN-3")) ? {
+                (local.hub_options[var.hub_deployment_option] == 1 && contains(var.tt_vcn2_routable_vcns, "TT-VCN-3")) ? {
                   "TT-VCN-3-STMT" = {
                     action   = "ACCEPT",
                     priority = 3,
@@ -446,7 +463,7 @@ locals {
                     }
                   }
                 } : {},
-                (local.hub_options[var.hub_options] == 1 && contains(var.tt_vcn2_routable_vcns, "EXA-VCN-1")) ? {
+                (local.hub_options[var.hub_deployment_option] == 1 && contains(var.tt_vcn2_routable_vcns, "EXA-VCN-1")) ? {
                   "EXA-VCN-1-STMT" = {
                     action   = "ACCEPT",
                     priority = 4,
@@ -457,7 +474,7 @@ locals {
                     }
                   }
                 } : {},
-                (local.hub_options[var.hub_options] == 1 && contains(var.tt_vcn2_routable_vcns, "EXA-VCN-2")) ? {
+                (local.hub_options[var.hub_deployment_option] == 1 && contains(var.tt_vcn2_routable_vcns, "EXA-VCN-2")) ? {
                   "EXA-VCN-2-STMT" = {
                     action   = "ACCEPT",
                     priority = 5,
@@ -468,7 +485,7 @@ locals {
                     }
                   }
                 } : {},
-                (local.hub_options[var.hub_options] == 1 && contains(var.tt_vcn2_routable_vcns, "EXA-VCN-3")) ? {
+                (local.hub_options[var.hub_deployment_option] == 1 && contains(var.tt_vcn2_routable_vcns, "EXA-VCN-3")) ? {
                   "EXA-VCN-3-STMT" = {
                     action   = "ACCEPT",
                     priority = 6,
@@ -479,7 +496,7 @@ locals {
                     }
                   }
                 } : {},
-                (local.hub_options[var.hub_options] == 1 && contains(var.tt_vcn1_routable_vcns, "OKE-VCN-1")) ? {
+                (local.hub_options[var.hub_deployment_option] == 1 && contains(var.tt_vcn1_routable_vcns, "OKE-VCN-1")) ? {
                   "OKE-VCN-1-STMT" = {
                     action   = "ACCEPT",
                     priority = 7,
@@ -490,7 +507,7 @@ locals {
                     }
                   }
                 } : {},
-                (local.hub_options[var.hub_options] == 1 && contains(var.tt_vcn1_routable_vcns, "OKE-VCN-2")) ? {
+                (local.hub_options[var.hub_deployment_option] == 1 && contains(var.tt_vcn1_routable_vcns, "OKE-VCN-2")) ? {
                   "OKE-VCN-2-STMT" = {
                     action   = "ACCEPT",
                     priority = 8,
@@ -501,7 +518,7 @@ locals {
                     }
                   }
                 } : {},
-                (local.hub_options[var.hub_options] == 1 && contains(var.tt_vcn1_routable_vcns, "OKE-VCN-3")) ? {
+                (local.hub_options[var.hub_deployment_option] == 1 && contains(var.tt_vcn1_routable_vcns, "OKE-VCN-3")) ? {
                   "OKE-VCN-3-STMT" = {
                     action   = "ACCEPT",
                     priority = 9,
@@ -522,7 +539,7 @@ locals {
               display_name      = "three-tier-vcn-3-drg-import-route-distribution"
               distribution_type = "IMPORT"
               statements = merge(
-                (local.hub_options[var.hub_options] == 3) ? {
+                (local.hub_options[var.hub_deployment_option] == 3) ? {
                   "TT-VCN-3-HUB-VCN-STMT" = {
                     action   = "ACCEPT",
                     priority = 1,
@@ -533,7 +550,7 @@ locals {
                     }
                   }
                 } : {},
-                (local.hub_options[var.hub_options] == 1 && contains(var.tt_vcn3_routable_vcns, "TT-VCN-1")) ? {
+                (local.hub_options[var.hub_deployment_option] == 1 && contains(var.tt_vcn3_routable_vcns, "TT-VCN-1")) ? {
                   "TT-VCN-1-STMT" = {
                     action   = "ACCEPT",
                     priority = 2,
@@ -544,7 +561,7 @@ locals {
                     }
                   }
                 } : {},
-                (local.hub_options[var.hub_options] == 1 && contains(var.tt_vcn3_routable_vcns, "TT-VCN-2")) ? {
+                (local.hub_options[var.hub_deployment_option] == 1 && contains(var.tt_vcn3_routable_vcns, "TT-VCN-2")) ? {
                   "TT-VCN-2-STMT" = {
                     action   = "ACCEPT",
                     priority = 3,
@@ -555,7 +572,7 @@ locals {
                     }
                   }
                 } : {},
-                (local.hub_options[var.hub_options] == 1 && contains(var.tt_vcn3_routable_vcns, "EXA-VCN-1")) ? {
+                (local.hub_options[var.hub_deployment_option] == 1 && contains(var.tt_vcn3_routable_vcns, "EXA-VCN-1")) ? {
                   "EXA-VCN-1-STMT" = {
                     action   = "ACCEPT",
                     priority = 4,
@@ -566,7 +583,7 @@ locals {
                     }
                   }
                 } : {},
-                (local.hub_options[var.hub_options] == 1 && contains(var.tt_vcn3_routable_vcns, "EXA-VCN-2")) ? {
+                (local.hub_options[var.hub_deployment_option] == 1 && contains(var.tt_vcn3_routable_vcns, "EXA-VCN-2")) ? {
                   "EXA-VCN-2-STMT" = {
                     action   = "ACCEPT",
                     priority = 5,
@@ -577,7 +594,7 @@ locals {
                     }
                   }
                 } : {},
-                (local.hub_options[var.hub_options] == 1 && contains(var.tt_vcn3_routable_vcns, "EXA-VCN-3")) ? {
+                (local.hub_options[var.hub_deployment_option] == 1 && contains(var.tt_vcn3_routable_vcns, "EXA-VCN-3")) ? {
                   "EXA-VCN-3-STMT" = {
                     action   = "ACCEPT",
                     priority = 6,
@@ -588,7 +605,7 @@ locals {
                     }
                   }
                 } : {},
-                (local.hub_options[var.hub_options] == 1 && contains(var.tt_vcn1_routable_vcns, "OKE-VCN-1")) ? {
+                (local.hub_options[var.hub_deployment_option] == 1 && contains(var.tt_vcn1_routable_vcns, "OKE-VCN-1")) ? {
                   "OKE-VCN-1-STMT" = {
                     action   = "ACCEPT",
                     priority = 7,
@@ -599,7 +616,7 @@ locals {
                     }
                   }
                 } : {},
-                (local.hub_options[var.hub_options] == 1 && contains(var.tt_vcn1_routable_vcns, "OKE-VCN-2")) ? {
+                (local.hub_options[var.hub_deployment_option] == 1 && contains(var.tt_vcn1_routable_vcns, "OKE-VCN-2")) ? {
                   "OKE-VCN-2-STMT" = {
                     action   = "ACCEPT",
                     priority = 8,
@@ -610,7 +627,7 @@ locals {
                     }
                   }
                 } : {},
-                (local.hub_options[var.hub_options] == 1 && contains(var.tt_vcn1_routable_vcns, "OKE-VCN-3")) ? {
+                (local.hub_options[var.hub_deployment_option] == 1 && contains(var.tt_vcn1_routable_vcns, "OKE-VCN-3")) ? {
                   "OKE-VCN-3-STMT" = {
                     action   = "ACCEPT",
                     priority = 9,
@@ -631,7 +648,7 @@ locals {
               display_name      = "exadata-vcn-1-drg-import-route-distribution"
               distribution_type = "IMPORT"
               statements = merge(
-                (local.hub_options[var.hub_options] == 3) ? {
+                (local.hub_options[var.hub_deployment_option] == 3) ? {
                   "EXA-VCN-1-HUB-VCN-STMT" = {
                     action   = "ACCEPT",
                     priority = 1,
@@ -642,7 +659,7 @@ locals {
                     }
                   }
                 } : {},
-                (local.hub_options[var.hub_options] == 1 && contains(var.exa_vcn1_routable_vcns, "EXA-VCN-2")) ? {
+                (local.hub_options[var.hub_deployment_option] == 1 && contains(var.exa_vcn1_routable_vcns, "EXA-VCN-2")) ? {
                   "EXA-VCN-2-STMT" = {
                     action   = "ACCEPT",
                     priority = 2,
@@ -653,7 +670,7 @@ locals {
                     }
                   }
                 } : {},
-                (local.hub_options[var.hub_options] == 1 && contains(var.exa_vcn1_routable_vcns, "EXA-VCN-3")) ? {
+                (local.hub_options[var.hub_deployment_option] == 1 && contains(var.exa_vcn1_routable_vcns, "EXA-VCN-3")) ? {
                   "EXA-VCN-3-STMT" = {
                     action   = "ACCEPT",
                     priority = 3,
@@ -664,7 +681,7 @@ locals {
                     }
                   }
                 } : {},
-                (local.hub_options[var.hub_options] == 1 && contains(var.exa_vcn1_routable_vcns, "TT-VCN-1")) ? {
+                (local.hub_options[var.hub_deployment_option] == 1 && contains(var.exa_vcn1_routable_vcns, "TT-VCN-1")) ? {
                   "TT-VCN-1-STMT" = {
                     action   = "ACCEPT",
                     priority = 4,
@@ -675,7 +692,7 @@ locals {
                     }
                   }
                 } : {},
-                (local.hub_options[var.hub_options] == 1 && contains(var.exa_vcn1_routable_vcns, "TT-VCN-2")) ? {
+                (local.hub_options[var.hub_deployment_option] == 1 && contains(var.exa_vcn1_routable_vcns, "TT-VCN-2")) ? {
                   "TT-VCN-2-STMT" = {
                     action   = "ACCEPT",
                     priority = 5,
@@ -686,7 +703,7 @@ locals {
                     }
                   }
                 } : {},
-                (local.hub_options[var.hub_options] == 1 && contains(var.exa_vcn1_routable_vcns, "TT-VCN-3")) ? {
+                (local.hub_options[var.hub_deployment_option] == 1 && contains(var.exa_vcn1_routable_vcns, "TT-VCN-3")) ? {
                   "TT-VCN-3-STMT" = {
                     action   = "ACCEPT",
                     priority = 6,
@@ -697,7 +714,7 @@ locals {
                     }
                   }
                 } : {},
-                (local.hub_options[var.hub_options] == 1 && contains(var.tt_vcn1_routable_vcns, "OKE-VCN-1")) ? {
+                (local.hub_options[var.hub_deployment_option] == 1 && contains(var.tt_vcn1_routable_vcns, "OKE-VCN-1")) ? {
                   "OKE-VCN-1-STMT" = {
                     action   = "ACCEPT",
                     priority = 7,
@@ -708,7 +725,7 @@ locals {
                     }
                   }
                 } : {},
-                (local.hub_options[var.hub_options] == 1 && contains(var.tt_vcn1_routable_vcns, "OKE-VCN-2")) ? {
+                (local.hub_options[var.hub_deployment_option] == 1 && contains(var.tt_vcn1_routable_vcns, "OKE-VCN-2")) ? {
                   "OKE-VCN-2-STMT" = {
                     action   = "ACCEPT",
                     priority = 8,
@@ -719,7 +736,7 @@ locals {
                     }
                   }
                 } : {},
-                (local.hub_options[var.hub_options] == 1 && contains(var.tt_vcn1_routable_vcns, "OKE-VCN-3")) ? {
+                (local.hub_options[var.hub_deployment_option] == 1 && contains(var.tt_vcn1_routable_vcns, "OKE-VCN-3")) ? {
                   "OKE-VCN-3-STMT" = {
                     action   = "ACCEPT",
                     priority = 9,
@@ -740,7 +757,7 @@ locals {
               display_name      = "exadata-vcn-2-drg-import-route-distribution"
               distribution_type = "IMPORT"
               statements = merge(
-                (local.hub_options[var.hub_options] == 3) ? {
+                (local.hub_options[var.hub_deployment_option] == 3) ? {
                   "EXA-VCN-2-HUB-VCN-STMT" = {
                     action   = "ACCEPT",
                     priority = 1,
@@ -751,7 +768,7 @@ locals {
                     }
                   }
                 } : {},
-                (local.hub_options[var.hub_options] == 1 && contains(var.exa_vcn2_routable_vcns, "EXA-VCN-1")) ? {
+                (local.hub_options[var.hub_deployment_option] == 1 && contains(var.exa_vcn2_routable_vcns, "EXA-VCN-1")) ? {
                   "EXA-VCN-1-STMT" = {
                     action   = "ACCEPT",
                     priority = 2,
@@ -762,7 +779,7 @@ locals {
                     }
                   }
                 } : {},
-                (local.hub_options[var.hub_options] == 1 && contains(var.exa_vcn2_routable_vcns, "EXA-VCN-3")) ? {
+                (local.hub_options[var.hub_deployment_option] == 1 && contains(var.exa_vcn2_routable_vcns, "EXA-VCN-3")) ? {
                   "EXA-VCN-3-STMT" = {
                     action   = "ACCEPT",
                     priority = 3,
@@ -773,7 +790,7 @@ locals {
                     }
                   }
                 } : {},
-                (local.hub_options[var.hub_options] == 1 && contains(var.exa_vcn2_routable_vcns, "TT-VCN-1")) ? {
+                (local.hub_options[var.hub_deployment_option] == 1 && contains(var.exa_vcn2_routable_vcns, "TT-VCN-1")) ? {
                   "TT-VCN-1-STMT" = {
                     action   = "ACCEPT",
                     priority = 4,
@@ -784,7 +801,7 @@ locals {
                     }
                   }
                 } : {},
-                (local.hub_options[var.hub_options] == 1 && contains(var.exa_vcn2_routable_vcns, "TT-VCN-2")) ? {
+                (local.hub_options[var.hub_deployment_option] == 1 && contains(var.exa_vcn2_routable_vcns, "TT-VCN-2")) ? {
                   "TT-VCN-2-STMT" = {
                     action   = "ACCEPT",
                     priority = 5,
@@ -795,7 +812,7 @@ locals {
                     }
                   }
                 } : {},
-                (local.hub_options[var.hub_options] == 1 && contains(var.exa_vcn2_routable_vcns, "TT-VCN-3")) ? {
+                (local.hub_options[var.hub_deployment_option] == 1 && contains(var.exa_vcn2_routable_vcns, "TT-VCN-3")) ? {
                   "TT-VCN-3-STMT" = {
                     action   = "ACCEPT",
                     priority = 6,
@@ -806,7 +823,7 @@ locals {
                     }
                   }
                 } : {},
-                (local.hub_options[var.hub_options] == 1 && contains(var.tt_vcn1_routable_vcns, "OKE-VCN-1")) ? {
+                (local.hub_options[var.hub_deployment_option] == 1 && contains(var.tt_vcn1_routable_vcns, "OKE-VCN-1")) ? {
                   "OKE-VCN-1-STMT" = {
                     action   = "ACCEPT",
                     priority = 7,
@@ -817,7 +834,7 @@ locals {
                     }
                   }
                 } : {},
-                (local.hub_options[var.hub_options] == 1 && contains(var.tt_vcn1_routable_vcns, "OKE-VCN-2")) ? {
+                (local.hub_options[var.hub_deployment_option] == 1 && contains(var.tt_vcn1_routable_vcns, "OKE-VCN-2")) ? {
                   "OKE-VCN-2-STMT" = {
                     action   = "ACCEPT",
                     priority = 8,
@@ -828,7 +845,7 @@ locals {
                     }
                   }
                 } : {},
-                (local.hub_options[var.hub_options] == 1 && contains(var.tt_vcn1_routable_vcns, "OKE-VCN-3")) ? {
+                (local.hub_options[var.hub_deployment_option] == 1 && contains(var.tt_vcn1_routable_vcns, "OKE-VCN-3")) ? {
                   "OKE-VCN-3-STMT" = {
                     action   = "ACCEPT",
                     priority = 9,
@@ -849,7 +866,7 @@ locals {
               display_name      = "exadata-vcn-3-drg-import-route-distribution"
               distribution_type = "IMPORT"
               statements = merge(
-                (local.hub_options[var.hub_options] == 3) ? {
+                (local.hub_options[var.hub_deployment_option] == 3) ? {
                   "EXA-VCN-3-HUB-VCN-STMT" = {
                     action   = "ACCEPT",
                     priority = 1,
@@ -860,7 +877,7 @@ locals {
                     }
                   }
                 } : {},
-                (local.hub_options[var.hub_options] == 1 && contains(var.exa_vcn3_routable_vcns, "EXA-VCN-1")) ? {
+                (local.hub_options[var.hub_deployment_option] == 1 && contains(var.exa_vcn3_routable_vcns, "EXA-VCN-1")) ? {
                   "EXA-VCN-1-STMT" = {
                     action   = "ACCEPT",
                     priority = 2,
@@ -871,7 +888,7 @@ locals {
                     }
                   }
                 } : {},
-                (local.hub_options[var.hub_options] == 1 && contains(var.exa_vcn3_routable_vcns, "EXA-VCN-2")) ? {
+                (local.hub_options[var.hub_deployment_option] == 1 && contains(var.exa_vcn3_routable_vcns, "EXA-VCN-2")) ? {
                   "EXA-VCN-2-STMT" = {
                     action   = "ACCEPT",
                     priority = 3,
@@ -882,7 +899,7 @@ locals {
                     }
                   }
                 } : {},
-                (local.hub_options[var.hub_options] == 1 && contains(var.exa_vcn3_routable_vcns, "TT-VCN-1")) ? {
+                (local.hub_options[var.hub_deployment_option] == 1 && contains(var.exa_vcn3_routable_vcns, "TT-VCN-1")) ? {
                   "TT-VCN-1-STMT" = {
                     action   = "ACCEPT",
                     priority = 4,
@@ -893,7 +910,7 @@ locals {
                     }
                   }
                 } : {},
-                (local.hub_options[var.hub_options] == 1 && contains(var.exa_vcn3_routable_vcns, "TT-VCN-2")) ? {
+                (local.hub_options[var.hub_deployment_option] == 1 && contains(var.exa_vcn3_routable_vcns, "TT-VCN-2")) ? {
                   "TT-VCN-2-STMT" = {
                     action   = "ACCEPT",
                     priority = 5,
@@ -904,7 +921,7 @@ locals {
                     }
                   }
                 } : {},
-                (local.hub_options[var.hub_options] == 1 && contains(var.exa_vcn3_routable_vcns, "TT-VCN-3")) ? {
+                (local.hub_options[var.hub_deployment_option] == 1 && contains(var.exa_vcn3_routable_vcns, "TT-VCN-3")) ? {
                   "TT-VCN-3-STMT" = {
                     action   = "ACCEPT",
                     priority = 6,
@@ -915,7 +932,7 @@ locals {
                     }
                   }
                 } : {},
-                (local.hub_options[var.hub_options] == 1 && contains(var.tt_vcn1_routable_vcns, "OKE-VCN-1")) ? {
+                (local.hub_options[var.hub_deployment_option] == 1 && contains(var.tt_vcn1_routable_vcns, "OKE-VCN-1")) ? {
                   "OKE-VCN-1-STMT" = {
                     action   = "ACCEPT",
                     priority = 7,
@@ -926,7 +943,7 @@ locals {
                     }
                   }
                 } : {},
-                (local.hub_options[var.hub_options] == 1 && contains(var.tt_vcn1_routable_vcns, "OKE-VCN-2")) ? {
+                (local.hub_options[var.hub_deployment_option] == 1 && contains(var.tt_vcn1_routable_vcns, "OKE-VCN-2")) ? {
                   "OKE-VCN-2-STMT" = {
                     action   = "ACCEPT",
                     priority = 8,
@@ -937,7 +954,7 @@ locals {
                     }
                   }
                 } : {},
-                (local.hub_options[var.hub_options] == 1 && contains(var.tt_vcn1_routable_vcns, "OKE-VCN-3")) ? {
+                (local.hub_options[var.hub_deployment_option] == 1 && contains(var.tt_vcn1_routable_vcns, "OKE-VCN-3")) ? {
                   "OKE-VCN-3-STMT" = {
                     action   = "ACCEPT",
                     priority = 9,
@@ -958,7 +975,7 @@ locals {
               display_name      = "oke-vcn-1-drg-import-route-distribution"
               distribution_type = "IMPORT"
               statements = merge(
-                (local.hub_options[var.hub_options] == 3) ? {
+                (local.hub_options[var.hub_deployment_option] == 3) ? {
                   "OKE-VCN-1-HUB-VCN-STMT" = {
                     action   = "ACCEPT",
                     priority = 1,
@@ -969,7 +986,7 @@ locals {
                     }
                   }
                 } : {},
-                (local.hub_options[var.hub_options] == 1 && contains(var.oke_vcn1_routable_vcns, "OKE-VCN-2")) ? {
+                (local.hub_options[var.hub_deployment_option] == 1 && contains(var.oke_vcn1_routable_vcns, "OKE-VCN-2")) ? {
                   "OKE-VCN-2-STMT" = {
                     action   = "ACCEPT",
                     priority = 2,
@@ -980,7 +997,7 @@ locals {
                     }
                   }
                 } : {},
-                (local.hub_options[var.hub_options] == 1 && contains(var.oke_vcn1_routable_vcns, "OKE-VCN-3")) ? {
+                (local.hub_options[var.hub_deployment_option] == 1 && contains(var.oke_vcn1_routable_vcns, "OKE-VCN-3")) ? {
                   "OKE-VCN-3-STMT" = {
                     action   = "ACCEPT",
                     priority = 3,
@@ -991,7 +1008,7 @@ locals {
                     }
                   }
                 } : {},
-                (local.hub_options[var.hub_options] == 1 && contains(var.oke_vcn1_routable_vcns, "EXA-VCN-1")) ? {
+                (local.hub_options[var.hub_deployment_option] == 1 && contains(var.oke_vcn1_routable_vcns, "EXA-VCN-1")) ? {
                   "EXA-VCN-1-STMT" = {
                     action   = "ACCEPT",
                     priority = 4,
@@ -1002,7 +1019,7 @@ locals {
                     }
                   }
                 } : {},
-                (local.hub_options[var.hub_options] == 1 && contains(var.oke_vcn1_routable_vcns, "EXA-VCN-2")) ? {
+                (local.hub_options[var.hub_deployment_option] == 1 && contains(var.oke_vcn1_routable_vcns, "EXA-VCN-2")) ? {
                   "EXA-VCN-2-STMT" = {
                     action   = "ACCEPT",
                     priority = 5,
@@ -1013,7 +1030,7 @@ locals {
                     }
                   }
                 } : {},
-                (local.hub_options[var.hub_options] == 1 && contains(var.oke_vcn1_routable_vcns, "EXA-VCN-3")) ? {
+                (local.hub_options[var.hub_deployment_option] == 1 && contains(var.oke_vcn1_routable_vcns, "EXA-VCN-3")) ? {
                   "EXA-VCN-3-STMT" = {
                     action   = "ACCEPT",
                     priority = 6,
@@ -1024,7 +1041,7 @@ locals {
                     }
                   }
                 } : {},
-                (local.hub_options[var.hub_options] == 1 && contains(var.oke_vcn1_routable_vcns, "TT-VCN-1")) ? {
+                (local.hub_options[var.hub_deployment_option] == 1 && contains(var.oke_vcn1_routable_vcns, "TT-VCN-1")) ? {
                   "TT-VCN-1-STMT" = {
                     action   = "ACCEPT",
                     priority = 7,
@@ -1035,7 +1052,7 @@ locals {
                     }
                   }
                 } : {},
-                (local.hub_options[var.hub_options] == 1 && contains(var.oke_vcn1_routable_vcns, "TT-VCN-2")) ? {
+                (local.hub_options[var.hub_deployment_option] == 1 && contains(var.oke_vcn1_routable_vcns, "TT-VCN-2")) ? {
                   "TT-VCN-2-STMT" = {
                     action   = "ACCEPT",
                     priority = 8,
@@ -1046,7 +1063,7 @@ locals {
                     }
                   }
                 } : {},
-                (local.hub_options[var.hub_options] == 1 && contains(var.oke_vcn1_routable_vcns, "TT-VCN-3")) ? {
+                (local.hub_options[var.hub_deployment_option] == 1 && contains(var.oke_vcn1_routable_vcns, "TT-VCN-3")) ? {
                   "TT-VCN-3-STMT" = {
                     action   = "ACCEPT",
                     priority = 9,
@@ -1067,7 +1084,7 @@ locals {
               display_name      = "oke-vcn-2-drg-import-route-distribution"
               distribution_type = "IMPORT"
               statements = merge(
-                (local.hub_options[var.hub_options] == 3) ? {
+                (local.hub_options[var.hub_deployment_option] == 3) ? {
                   "OKE-VCN-2-HUB-VCN-STMT" = {
                     action   = "ACCEPT",
                     priority = 1,
@@ -1078,7 +1095,7 @@ locals {
                     }
                   }
                 } : {},
-                (local.hub_options[var.hub_options] == 1 && contains(var.oke_vcn2_routable_vcns, "OKE-VCN-1")) ? {
+                (local.hub_options[var.hub_deployment_option] == 1 && contains(var.oke_vcn2_routable_vcns, "OKE-VCN-1")) ? {
                   "OKE-VCN-1-STMT" = {
                     action   = "ACCEPT",
                     priority = 2,
@@ -1089,7 +1106,7 @@ locals {
                     }
                   }
                 } : {},
-                (local.hub_options[var.hub_options] == 1 && contains(var.oke_vcn2_routable_vcns, "OKE-VCN-3")) ? {
+                (local.hub_options[var.hub_deployment_option] == 1 && contains(var.oke_vcn2_routable_vcns, "OKE-VCN-3")) ? {
                   "OKE-VCN-3-STMT" = {
                     action   = "ACCEPT",
                     priority = 3,
@@ -1100,7 +1117,7 @@ locals {
                     }
                   }
                 } : {},
-                (local.hub_options[var.hub_options] == 1 && contains(var.oke_vcn2_routable_vcns, "EXA-VCN-1")) ? {
+                (local.hub_options[var.hub_deployment_option] == 1 && contains(var.oke_vcn2_routable_vcns, "EXA-VCN-1")) ? {
                   "EXA-VCN-1-STMT" = {
                     action   = "ACCEPT",
                     priority = 4,
@@ -1111,7 +1128,7 @@ locals {
                     }
                   }
                 } : {},
-                (local.hub_options[var.hub_options] == 1 && contains(var.oke_vcn2_routable_vcns, "EXA-VCN-2")) ? {
+                (local.hub_options[var.hub_deployment_option] == 1 && contains(var.oke_vcn2_routable_vcns, "EXA-VCN-2")) ? {
                   "EXA-VCN-2-STMT" = {
                     action   = "ACCEPT",
                     priority = 5,
@@ -1122,7 +1139,7 @@ locals {
                     }
                   }
                 } : {},
-                (local.hub_options[var.hub_options] == 1 && contains(var.oke_vcn2_routable_vcns, "EXA-VCN-3")) ? {
+                (local.hub_options[var.hub_deployment_option] == 1 && contains(var.oke_vcn2_routable_vcns, "EXA-VCN-3")) ? {
                   "EXA-VCN-3-STMT" = {
                     action   = "ACCEPT",
                     priority = 6,
@@ -1133,7 +1150,7 @@ locals {
                     }
                   }
                 } : {},
-                (local.hub_options[var.hub_options] == 1 && contains(var.oke_vcn2_routable_vcns, "TT-VCN-1")) ? {
+                (local.hub_options[var.hub_deployment_option] == 1 && contains(var.oke_vcn2_routable_vcns, "TT-VCN-1")) ? {
                   "TT-VCN-1-STMT" = {
                     action   = "ACCEPT",
                     priority = 7,
@@ -1144,7 +1161,7 @@ locals {
                     }
                   }
                 } : {},
-                (local.hub_options[var.hub_options] == 1 && contains(var.oke_vcn2_routable_vcns, "TT-VCN-2")) ? {
+                (local.hub_options[var.hub_deployment_option] == 1 && contains(var.oke_vcn2_routable_vcns, "TT-VCN-2")) ? {
                   "TT-VCN-2-STMT" = {
                     action   = "ACCEPT",
                     priority = 8,
@@ -1155,7 +1172,7 @@ locals {
                     }
                   }
                 } : {},
-                (local.hub_options[var.hub_options] == 1 && contains(var.oke_vcn2_routable_vcns, "TT-VCN-3")) ? {
+                (local.hub_options[var.hub_deployment_option] == 1 && contains(var.oke_vcn2_routable_vcns, "TT-VCN-3")) ? {
                   "TT-VCN-3-STMT" = {
                     action   = "ACCEPT",
                     priority = 9,
@@ -1176,7 +1193,7 @@ locals {
               display_name      = "oke-vcn-3-drg-import-route-distribution"
               distribution_type = "IMPORT"
               statements = merge(
-                (local.hub_options[var.hub_options] == 3) ? {
+                (local.hub_options[var.hub_deployment_option] == 3) ? {
                   "OKE-VCN-3-HUB-VCN-STMT" = {
                     action   = "ACCEPT",
                     priority = 1,
@@ -1187,7 +1204,7 @@ locals {
                     }
                   }
                 } : {},
-                (local.hub_options[var.hub_options] == 1 && contains(var.oke_vcn3_routable_vcns, "OKE-VCN-1")) ? {
+                (local.hub_options[var.hub_deployment_option] == 1 && contains(var.oke_vcn3_routable_vcns, "OKE-VCN-1")) ? {
                   "OKE-VCN-1-STMT" = {
                     action   = "ACCEPT",
                     priority = 2,
@@ -1198,7 +1215,7 @@ locals {
                     }
                   }
                 } : {},
-                (local.hub_options[var.hub_options] == 1 && contains(var.oke_vcn3_routable_vcns, "OKE-VCN-3")) ? {
+                (local.hub_options[var.hub_deployment_option] == 1 && contains(var.oke_vcn3_routable_vcns, "OKE-VCN-3")) ? {
                   "OKE-VCN-3-STMT" = {
                     action   = "ACCEPT",
                     priority = 3,
@@ -1209,7 +1226,7 @@ locals {
                     }
                   }
                 } : {},
-                (local.hub_options[var.hub_options] == 1 && contains(var.oke_vcn3_routable_vcns, "EXA-VCN-1")) ? {
+                (local.hub_options[var.hub_deployment_option] == 1 && contains(var.oke_vcn3_routable_vcns, "EXA-VCN-1")) ? {
                   "EXA-VCN-1-STMT" = {
                     action   = "ACCEPT",
                     priority = 4,
@@ -1220,7 +1237,7 @@ locals {
                     }
                   }
                 } : {},
-                (local.hub_options[var.hub_options] == 1 && contains(var.oke_vcn3_routable_vcns, "EXA-VCN-2")) ? {
+                (local.hub_options[var.hub_deployment_option] == 1 && contains(var.oke_vcn3_routable_vcns, "EXA-VCN-2")) ? {
                   "EXA-VCN-2-STMT" = {
                     action   = "ACCEPT",
                     priority = 5,
@@ -1231,7 +1248,7 @@ locals {
                     }
                   }
                 } : {},
-                (local.hub_options[var.hub_options] == 1 && contains(var.oke_vcn3_routable_vcns, "EXA-VCN-3")) ? {
+                (local.hub_options[var.hub_deployment_option] == 1 && contains(var.oke_vcn3_routable_vcns, "EXA-VCN-3")) ? {
                   "EXA-VCN-3-STMT" = {
                     action   = "ACCEPT",
                     priority = 6,
@@ -1242,7 +1259,7 @@ locals {
                     }
                   }
                 } : {},
-                (local.hub_options[var.hub_options] == 1 && contains(var.oke_vcn3_routable_vcns, "TT-VCN-1")) ? {
+                (local.hub_options[var.hub_deployment_option] == 1 && contains(var.oke_vcn3_routable_vcns, "TT-VCN-1")) ? {
                   "TT-VCN-1-STMT" = {
                     action   = "ACCEPT",
                     priority = 7,
@@ -1253,7 +1270,7 @@ locals {
                     }
                   }
                 } : {},
-                (local.hub_options[var.hub_options] == 1 && contains(var.oke_vcn3_routable_vcns, "TT-VCN-2")) ? {
+                (local.hub_options[var.hub_deployment_option] == 1 && contains(var.oke_vcn3_routable_vcns, "TT-VCN-2")) ? {
                   "TT-VCN-2-STMT" = {
                     action   = "ACCEPT",
                     priority = 8,
@@ -1264,7 +1281,7 @@ locals {
                     }
                   }
                 } : {},
-                (local.hub_options[var.hub_options] == 1 && contains(var.oke_vcn3_routable_vcns, "TT-VCN-3")) ? {
+                (local.hub_options[var.hub_deployment_option] == 1 && contains(var.oke_vcn3_routable_vcns, "TT-VCN-3")) ? {
                   "TT-VCN-3-STMT" = {
                     action   = "ACCEPT",
                     priority = 9,
@@ -1283,7 +1300,7 @@ locals {
     }
   } : null
 
-  hub_vcn = (local.hub_options[var.hub_options] == 3 || local.hub_options[var.hub_options] == 4) ? {
+  hub_vcn = (local.hub_options[var.hub_deployment_option] == 3 || local.hub_options[var.hub_deployment_option] == 4) ? {
     "HUB-VCN" = {
       display_name                     = coalesce(var.hub_vcn_name, "${var.service_label}-hub-vcn")
       is_ipv6enabled                   = false
