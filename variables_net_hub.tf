@@ -1,7 +1,7 @@
 # ------------------------------------------------------
 # ----- Networking - Hub
 #-------------------------------------------------------
-variable "hub_options" {
+variable "hub_deployment_option" {
   type    = string
   default = "No"
 }
@@ -27,14 +27,44 @@ variable "hub_vcn_dns" {
   type    = string
   default = null
 }
-variable "hub_vcn_deploy_firewall" {
+# ------------------------------------------------------
+# ----- Networking - Firewall settings
+#-------------------------------------------------------
+variable "hub_vcn_deploy_firewall_option" {
   type = string
   default = "No"
 }
+
+variable "fw_instance_name_prefix" {
+  type = string
+  default = "firewall-instance"
+}
+
+variable "fw_instance_shape" {
+  type = string
+  default = "VM.Optimized3.Flex"
+}
+
+variable "fw_instance_flex_shape_memory" {
+  type = number
+  default = 56
+}
+
+variable "fw_instance_flex_shape_cpu" {
+  type = number
+  default = 2
+}
+
+variable "fw_instance_boot_volume_size" {
+  type = number
+  default = 60
+}
+
 variable "customize_hub_vcn_subnets" {
   type    = bool
   default = false
 }
+
 # -------------------------------------------
 # ----- Networking - Hub Web Subnet
 #--------------------------------------------
