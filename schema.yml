@@ -338,7 +338,6 @@ variableGroups:
       - "hub_vcn_name"
       - "hub_vcn_cidrs"
       - "hub_vcn_dns"
-      - "hub_vcn_attach_to_drg"
       - "hub_vcn_deploy_firewall"
       - "hub_vcn_ingress_route_table_network_entity_ocid"
       - "customize_hub_vcn_subnets"
@@ -3001,21 +3000,6 @@ variables:
     title: "HuB VCN DNS"
     description: "Enter the Hub VCN DNS name."
     required: false
-    visible: 
-      and:
-        - customize_net
-        - or:
-          - eq:
-            - ${hub_options}
-            - "Yes, new VCN as hub with new DRG"
-          - eq:
-            - ${hub_options}
-            - "Yes, new VCN as hub with existing DRG"
-
-  hub_vcn_attach_to_drg:
-    type: boolean
-    title: "Attach this VCN to DRG (Dynamic Routing Gateway)?"
-    description: "Check to route private traffic to/from this VCN via a new or existing DRG."
     visible: 
       and:
         - customize_net

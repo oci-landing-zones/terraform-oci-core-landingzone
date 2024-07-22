@@ -27,10 +27,6 @@ variable "hub_vcn_dns" {
   type    = string
   default = null
 }
-variable "hub_vcn_attach_to_drg" {
-  type    = bool
-  default = true
-}
 variable "hub_vcn_deploy_firewall" {
   type = string
   default = "No"

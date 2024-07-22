@@ -11,7 +11,7 @@ locals {
         display_name = (local.hub_options[var.hub_options] == 1 || local.hub_options[var.hub_options] == 3) ? "${var.service_label}-hub-drg" : null
         drg_id       = (local.hub_options[var.hub_options] == 2 || local.hub_options[var.hub_options] == 4) ? var.existing_drg_ocid : null
         drg_attachments = merge(
-          (local.hub_options[var.hub_options] == 3 && var.hub_vcn_attach_to_drg == true) ? {
+          (local.hub_options[var.hub_options] == 3) ? {
             "HUB-VCN-ATTACHMENT" = {
               display_name = "${coalesce(var.hub_vcn_name, "${var.service_label}-hub-vcn")}-attachment"
               # DRG route table for the Hub VCN attachment. It defines the next hop for traffic that enters the DRG via this attachment.
@@ -188,7 +188,7 @@ locals {
 
         )
         drg_route_distributions = merge(
-          (local.hub_options[var.hub_options] == 3 && var.hub_vcn_attach_to_drg == true) ? {
+          (local.hub_options[var.hub_options] == 3) ? {
             # This import distribution makes its importing DRG route tables to have the referred drg_attachment_key as the next-hop attachment.
             # In this case, since there's no "VCN ingress route table for the DRG", the VCN CIDRs and subnet CIDRs of the underlying VCN are imported by those DRG route tables.
             "HUB-VCN-DRG-IMPORT-ROUTE-DISTRIBUTION" = {
@@ -304,7 +304,7 @@ locals {
               display_name      = "three-tier-vcn-1-drg-import-route-distribution"
               distribution_type = "IMPORT"
               statements = merge(
-                (local.hub_options[var.hub_options] == 3 && var.hub_vcn_attach_to_drg == true) ? {
+                (local.hub_options[var.hub_options] == 3) ? {
                   "TT-VCN-1-HUB-VCN-STMT" = {
                     action   = "ACCEPT",
                     priority = 1,
@@ -413,7 +413,7 @@ locals {
               display_name      = "three-tier-vcn-2-drg-import-route-distribution"
               distribution_type = "IMPORT"
               statements = merge(
-                (local.hub_options[var.hub_options] == 3 && var.hub_vcn_attach_to_drg == true) ? {
+                (local.hub_options[var.hub_options] == 3) ? {
                   "TT-VCN-2-HUB-VCN-STMT" = {
                     action   = "ACCEPT",
                     priority = 1,
@@ -522,7 +522,7 @@ locals {
               display_name      = "three-tier-vcn-3-drg-import-route-distribution"
               distribution_type = "IMPORT"
               statements = merge(
-                (local.hub_options[var.hub_options] == 3 && var.hub_vcn_attach_to_drg == true) ? {
+                (local.hub_options[var.hub_options] == 3) ? {
                   "TT-VCN-3-HUB-VCN-STMT" = {
                     action   = "ACCEPT",
                     priority = 1,
@@ -631,7 +631,7 @@ locals {
               display_name      = "exadata-vcn-1-drg-import-route-distribution"
               distribution_type = "IMPORT"
               statements = merge(
-                (local.hub_options[var.hub_options] == 3 && var.hub_vcn_attach_to_drg == true) ? {
+                (local.hub_options[var.hub_options] == 3) ? {
                   "EXA-VCN-1-HUB-VCN-STMT" = {
                     action   = "ACCEPT",
                     priority = 1,
@@ -740,7 +740,7 @@ locals {
               display_name      = "exadata-vcn-2-drg-import-route-distribution"
               distribution_type = "IMPORT"
               statements = merge(
-                (local.hub_options[var.hub_options] == 3 && var.hub_vcn_attach_to_drg == true) ? {
+                (local.hub_options[var.hub_options] == 3) ? {
                   "EXA-VCN-2-HUB-VCN-STMT" = {
                     action   = "ACCEPT",
                     priority = 1,
@@ -849,7 +849,7 @@ locals {
               display_name      = "exadata-vcn-3-drg-import-route-distribution"
               distribution_type = "IMPORT"
               statements = merge(
-                (local.hub_options[var.hub_options] == 3 && var.hub_vcn_attach_to_drg == true) ? {
+                (local.hub_options[var.hub_options] == 3) ? {
                   "EXA-VCN-3-HUB-VCN-STMT" = {
                     action   = "ACCEPT",
                     priority = 1,
@@ -958,7 +958,7 @@ locals {
               display_name      = "oke-vcn-1-drg-import-route-distribution"
               distribution_type = "IMPORT"
               statements = merge(
-                (local.hub_options[var.hub_options] == 3 && var.hub_vcn_attach_to_drg == true) ? {
+                (local.hub_options[var.hub_options] == 3) ? {
                   "OKE-VCN-1-HUB-VCN-STMT" = {
                     action   = "ACCEPT",
                     priority = 1,
@@ -1067,7 +1067,7 @@ locals {
               display_name      = "oke-vcn-2-drg-import-route-distribution"
               distribution_type = "IMPORT"
               statements = merge(
-                (local.hub_options[var.hub_options] == 3 && var.hub_vcn_attach_to_drg == true) ? {
+                (local.hub_options[var.hub_options] == 3) ? {
                   "OKE-VCN-2-HUB-VCN-STMT" = {
                     action   = "ACCEPT",
                     priority = 1,
@@ -1176,7 +1176,7 @@ locals {
               display_name      = "oke-vcn-3-drg-import-route-distribution"
               distribution_type = "IMPORT"
               statements = merge(
-                (local.hub_options[var.hub_options] == 3 && var.hub_vcn_attach_to_drg == true) ? {
+                (local.hub_options[var.hub_options] == 3) ? {
                   "OKE-VCN-3-HUB-VCN-STMT" = {
                     action   = "ACCEPT",
                     priority = 1,
