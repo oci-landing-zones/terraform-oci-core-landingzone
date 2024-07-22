@@ -339,6 +339,7 @@ variableGroups:
       - "hub_vcn_cidrs"
       - "hub_vcn_dns"
       - "hub_vcn_attach_to_drg"
+      - "hub_vcn_deploy_firewall"
       - "hub_vcn_ingress_route_table_network_entity_ocid"
       - "customize_hub_vcn_subnets"
       - "hub_vcn_web_subnet_name"
@@ -3025,6 +3026,20 @@ variables:
           - eq:
             - ${hub_options}
             - "Yes, new VCN as hub with existing DRG"
+
+  hub_vcn_deploy_firewall:
+    type: enum
+    title: "Deploy Firewall?"
+    description: "Choose one of the available firewall options for deploying in the Hub VCN. Costs are incurred."
+    visible: customize_net  
+    enum:
+      - "No"
+      - "Palo Alto Networks VM-Series Firewall"
+      - "Fortinet FortiGate Firewall"
+      - "Check Point CloudGuard Firewall"
+      - "Cisco Secure Firewall"
+      - "OCI Firewall Service"
+    default: "No"
 
   hub_vcn_ingress_route_table_network_entity_ocid:
     type: string

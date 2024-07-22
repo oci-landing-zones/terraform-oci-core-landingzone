@@ -31,6 +31,10 @@ variable "hub_vcn_attach_to_drg" {
   type    = bool
   default = true
 }
+variable "hub_vcn_deploy_firewall" {
+  type = string
+  default = "No"
+}
 variable "customize_hub_vcn_subnets" {
   type    = bool
   default = false
