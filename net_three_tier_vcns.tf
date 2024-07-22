@@ -145,23 +145,23 @@ locals {
                                     destination_type   = "SERVICE_CIDR_BLOCK"
                                 }
                             },  
-                            ## Routes thru DRG are dependent on some factors. See the if clause.
-                            { for cidr in var.tt_vcn2_cidrs : "TT-VCN-2-${cidr}-RULE" => 
-                                {
+                            ## For App subnet route table, we route to App subnet in the routable VCN. Routes thru DRG are dependent on some factors. See the if clause.
+                            local.hub_options[var.hub_options] != 0 && var.tt_vcn1_attach_to_drg == true && var.add_tt_vcn2 == true && var.tt_vcn2_attach_to_drg == true && (length(var.tt_vcn1_routable_vcns) == 0 || contains(var.tt_vcn1_routable_vcns,"TT-VCN-2")) ? {
+                                "tt-VCN-2-APP-SUBNET-RULE" = {
                                     network_entity_key = "HUB-DRG"
                                     description        = "To DRG."
-                                    destination        = cidr
+                                    destination        = coalesce(var.tt_vcn2_app_subnet_cidr, cidrsubnet(var.tt_vcn2_cidrs[0],4,1))
                                     destination_type   = "CIDR_BLOCK"
-                                } if local.hub_options[var.hub_options] != 0 && var.add_tt_vcn2 == true && var.tt_vcn2_attach_to_drg == true && (length(var.tt_vcn1_routable_vcns) == 0 || contains(var.tt_vcn1_routable_vcns,"TT-VCN-2"))
-                            },
-                            { for cidr in var.tt_vcn3_cidrs : "TT-VCN-3-${cidr}-RULE" => 
-                                {
+                                }
+                            } : {},  
+                            local.hub_options[var.hub_options] != 0 && var.tt_vcn1_attach_to_drg == true && var.add_tt_vcn3 == true && var.tt_vcn3_attach_to_drg == true && (length(var.tt_vcn1_routable_vcns) == 0 || contains(var.tt_vcn1_routable_vcns,"TT-VCN-3")) ? {
+                                "tt-VCN-3-APP-SUBNET-RULE" = {
                                     network_entity_key = "HUB-DRG"
                                     description        = "To DRG."
-                                    destination        = cidr
+                                    destination        = coalesce(var.tt_vcn3_app_subnet_cidr, cidrsubnet(var.tt_vcn3_cidrs[0],4,1))
                                     destination_type   = "CIDR_BLOCK"
-                                } if local.hub_options[var.hub_options] != 0 && var.add_tt_vcn3 == true && var.tt_vcn3_attach_to_drg == true && (length(var.tt_vcn1_routable_vcns) == 0 || contains(var.tt_vcn1_routable_vcns,"TT-VCN-3"))
-                            }  
+                                }
+                            } : {}  
                         )
                     }
                 },
@@ -185,23 +185,23 @@ locals {
                                     destination_type   = "SERVICE_CIDR_BLOCK"
                                 }
                             },  
-                            ## Routes thru DRG are dependent on some factors. See the if clause.
-                            { for cidr in var.tt_vcn2_cidrs : "TT-VCN-2-${cidr}-RULE" => 
-                                {
+                            ## For DB subnet route table, we route to DB subnet in the routable VCN. Routes thru DRG are dependent on some factors. See the if clause.
+                            local.hub_options[var.hub_options] != 0 && var.tt_vcn1_attach_to_drg == true && var.add_tt_vcn2 == true && var.tt_vcn2_attach_to_drg == true && (length(var.tt_vcn1_routable_vcns) == 0 || contains(var.tt_vcn1_routable_vcns,"TT-VCN-2")) ? {
+                                "tt-VCN-2-DB-SUBNET-RULE" = {
                                     network_entity_key = "HUB-DRG"
                                     description        = "To DRG."
-                                    destination        = cidr
+                                    destination        = coalesce(var.tt_vcn2_db_subnet_cidr, cidrsubnet(var.tt_vcn2_cidrs[0],4,2))
                                     destination_type   = "CIDR_BLOCK"
-                                } if local.hub_options[var.hub_options] != 0 && var.add_tt_vcn2 == true && var.tt_vcn2_attach_to_drg == true && (length(var.tt_vcn1_routable_vcns) == 0 || contains(var.tt_vcn1_routable_vcns,"TT-VCN-2"))
-                            },
-                            { for cidr in var.tt_vcn3_cidrs : "TT-VCN-3-${cidr}-RULE" => 
-                                {
+                                }
+                            } : {},  
+                            local.hub_options[var.hub_options] != 0 && var.tt_vcn1_attach_to_drg == true && var.add_tt_vcn3 == true && var.tt_vcn3_attach_to_drg == true && (length(var.tt_vcn1_routable_vcns) == 0 || contains(var.tt_vcn1_routable_vcns,"TT-VCN-3")) ? {
+                                "tt-VCN-3-DB-SUBNET-RULE" = {
                                     network_entity_key = "HUB-DRG"
                                     description        = "To DRG."
-                                    destination        = cidr
+                                    destination        = coalesce(var.tt_vcn3_db_subnet_cidr, cidrsubnet(var.tt_vcn3_cidrs[0],4,2))
                                     destination_type   = "CIDR_BLOCK"
-                                } if local.hub_options[var.hub_options] != 0 && var.add_tt_vcn3 == true && var.tt_vcn3_attach_to_drg == true && (length(var.tt_vcn1_routable_vcns) == 0 || contains(var.tt_vcn1_routable_vcns,"TT-VCN-3"))
-                            }  
+                                }
+                            } : {}  
                         )
                     }
                 },
@@ -305,7 +305,29 @@ locals {
                                     dst_port_min = 22
                                     dst_port_max = 22
                                 }
-                            } : {}    
+                            } : {},
+                            local.hub_options[var.hub_options] != 0 && var.tt_vcn1_attach_to_drg == true && var.add_tt_vcn2 == true && var.tt_vcn2_attach_to_drg == true && (length(var.tt_vcn2_routable_vcns) == 0 || contains(var.tt_vcn2_routable_vcns,"TT-VCN-1")) ? {
+                                "INGRESS-FROM-TT-VCN-2-APP-SUBNET-RULE" = {
+                                    description  = "Ingress from ${coalesce(var.tt_vcn2_app_subnet_name,"${var.service_label}-three-tier-vcn-2-app-subnet")}."
+                                    stateless    = false
+                                    protocol     = "TCP"
+                                    src          = coalesce(var.tt_vcn2_app_subnet_cidr, cidrsubnet(var.tt_vcn2_cidrs[0],4,1))
+                                    src_type     = "CIDR_BLOCK"
+                                    dst_port_min = 80
+                                    dst_port_max = 80
+                                }
+                            } : {},
+                            local.hub_options[var.hub_options] != 0 && var.tt_vcn1_attach_to_drg == true && var.add_tt_vcn3 == true && var.tt_vcn3_attach_to_drg == true && (length(var.tt_vcn3_routable_vcns) == 0 || contains(var.tt_vcn3_routable_vcns,"TT-VCN-1")) ? {
+                                "INGRESS-FROM-TT-VCN-3-APP-SUBNET-RULE" = {
+                                    description  = "Ingress from ${coalesce(var.tt_vcn3_app_subnet_name,"${var.service_label}-three-tier-vcn-3-app-subnet")}."
+                                    stateless    = false
+                                    protocol     = "TCP"
+                                    src          = coalesce(var.tt_vcn3_app_subnet_cidr, cidrsubnet(var.tt_vcn3_cidrs[0],4,1))
+                                    src_type     = "CIDR_BLOCK"
+                                    dst_port_min = 80
+                                    dst_port_max = 80
+                                }
+                            } : {}     
                         )  
                         egress_rules = merge(
                             {
@@ -330,7 +352,7 @@ locals {
                                     dst_port_max = 443
                                 }
                             },    
-                            local.hub_options[var.hub_options] != 0 && var.add_tt_vcn2 == true && var.tt_vcn2_attach_to_drg == true && (length(var.tt_vcn1_routable_vcns) == 0 || contains(var.tt_vcn1_routable_vcns,"TT-VCN-2")) ? 
+                            local.hub_options[var.hub_options] != 0 && var.tt_vcn1_attach_to_drg == true && var.add_tt_vcn2 == true && var.tt_vcn2_attach_to_drg == true && (length(var.tt_vcn1_routable_vcns) == 0 || contains(var.tt_vcn1_routable_vcns,"TT-VCN-2")) ? 
                             {  
                                 "EGRESS-TO-TT-VCN-2-APP-SUBNET-RULE" = {
                                     description = "Egress to ${coalesce(var.tt_vcn2_app_subnet_name,"${var.service_label}-three-tier-vcn-2-app-subnet")}"
@@ -342,7 +364,7 @@ locals {
                                     dst_port_max = 80
                                 }
                             } : {},
-                            local.hub_options[var.hub_options] != 0 && var.add_tt_vcn3 == true && var.tt_vcn3_attach_to_drg == true && (length(var.tt_vcn1_routable_vcns) == 0 || contains(var.tt_vcn1_routable_vcns,"TT-VCN-3")) ?
+                            local.hub_options[var.hub_options] != 0 && var.tt_vcn1_attach_to_drg == true && var.add_tt_vcn3 == true && var.tt_vcn3_attach_to_drg == true && (length(var.tt_vcn1_routable_vcns) == 0 || contains(var.tt_vcn1_routable_vcns,"TT-VCN-3")) ?
                             {   
                                 "EGRESS-TO-TT-VCN-3-APP-SUBNET-RULE" = {
                                     description = "Egress to ${coalesce(var.tt_vcn3_app_subnet_name,"${var.service_label}-three-tier-vcn-3-app-subnet")}"
@@ -382,6 +404,28 @@ locals {
                                     dst_port_min = 22
                                     dst_port_max = 22
                                 }
+                            } : {},
+                            local.hub_options[var.hub_options] != 0 && var.tt_vcn1_attach_to_drg == true && var.add_tt_vcn2 == true && var.tt_vcn2_attach_to_drg == true && (length(var.tt_vcn2_routable_vcns) == 0 || contains(var.tt_vcn2_routable_vcns,"TT-VCN-1")) ? {
+                                "INGRESS-FROM-TT-VCN-2-DB-SUBNET-RULE" = {
+                                    description  = "Ingress from ${coalesce(var.tt_vcn2_db_subnet_name,"${var.service_label}-three-tier-vcn-2-db-subnet")}."
+                                    stateless    = false
+                                    protocol     = "TCP"
+                                    src          = coalesce(var.tt_vcn2_db_subnet_cidr, cidrsubnet(var.tt_vcn2_cidrs[0],4,2))
+                                    src_type     = "CIDR_BLOCK"
+                                    dst_port_min = 1521
+                                    dst_port_max = 1522
+                                }
+                            } : {},
+                            local.hub_options[var.hub_options] != 0 && var.tt_vcn1_attach_to_drg == true && var.add_tt_vcn3 == true && var.tt_vcn3_attach_to_drg == true && (length(var.tt_vcn3_routable_vcns) == 0 || contains(var.tt_vcn3_routable_vcns,"TT-VCN-1")) ? {
+                                "INGRESS-FROM-TT-VCN-3-DB-SUBNET-RULE" = {
+                                    description  = "Ingress from ${coalesce(var.tt_vcn3_db_subnet_name,"${var.service_label}-three-tier-vcn-3-db-subnet")}."
+                                    stateless    = false
+                                    protocol     = "TCP"
+                                    src          = coalesce(var.tt_vcn3_db_subnet_cidr, cidrsubnet(var.tt_vcn3_cidrs[0],4,2))
+                                    src_type     = "CIDR_BLOCK"
+                                    dst_port_min = 1521
+                                    dst_port_max = 1522
+                                }
                             } : {}    
                         ),  
                         egress_rules = merge(
@@ -396,25 +440,25 @@ locals {
                                     dst_port_max = 443
                                 }
                             },
-                            local.hub_options[var.hub_options] != 0 && var.add_tt_vcn2 == true && var.tt_vcn2_attach_to_drg == true && (length(var.tt_vcn1_routable_vcns) == 0 || contains(var.tt_vcn1_routable_vcns,"TT-VCN-2")) ? 
+                            local.hub_options[var.hub_options] != 0 && var.tt_vcn1_attach_to_drg == true && var.add_tt_vcn2 == true && var.tt_vcn2_attach_to_drg == true && (length(var.tt_vcn1_routable_vcns) == 0 || contains(var.tt_vcn1_routable_vcns,"TT-VCN-2")) ? 
                             {  
                                 "EGRESS-TO-TT-VCN-2-DB-SUBNET-RULE" = {
                                     description = "Egress to ${coalesce(var.tt_vcn2_db_subnet_name,"${var.service_label}-three-tier-vcn-2-db-subnet")}"
                                     stateless   = false
                                     protocol    = "TCP"
-                                    dst         = coalesce(var.tt_vcn2_db_subnet_cidr, cidrsubnet(var.tt_vcn2_cidrs[0],4,1))
+                                    dst         = coalesce(var.tt_vcn2_db_subnet_cidr, cidrsubnet(var.tt_vcn2_cidrs[0],4,2))
                                     dst_type    = "CIDR_BLOCK"
                                     dst_port_min = 1521
                                     dst_port_max = 1522
                                 }
                             } : {},
-                            local.hub_options[var.hub_options] != 0 && var.add_tt_vcn3 == true && var.tt_vcn3_attach_to_drg == true && (length(var.tt_vcn1_routable_vcns) == 0 || contains(var.tt_vcn1_routable_vcns,"TT-VCN-3")) ?
+                            local.hub_options[var.hub_options] != 0 && var.tt_vcn1_attach_to_drg == true && var.add_tt_vcn3 == true && var.tt_vcn3_attach_to_drg == true && (length(var.tt_vcn1_routable_vcns) == 0 || contains(var.tt_vcn1_routable_vcns,"TT-VCN-3")) ?
                             {   
                                 "EGRESS-TO-TT-VCN-3-DB-SUBNET-RULE" = {
                                     description = "Egress to ${coalesce(var.tt_vcn3_db_subnet_name,"${var.service_label}-three-tier-vcn-3-db-subnet")}"
                                     stateless   = false
                                     protocol    = "TCP"
-                                    dst         = coalesce(var.tt_vcn3_db_subnet_cidr, cidrsubnet(var.tt_vcn3_cidrs[0],4,1))
+                                    dst         = coalesce(var.tt_vcn3_db_subnet_cidr, cidrsubnet(var.tt_vcn3_cidrs[0],4,2))
                                     dst_type    = "CIDR_BLOCK"
                                     dst_port_min = 1521
                                     dst_port_max = 1522
@@ -605,14 +649,14 @@ locals {
                     "TT-VCN-2-WEB-SUBNET-ROUTE-TABLE" = {
                         display_name = "web-subnet-rtable"
                         route_rules = merge(
-                            (var.tt_vcn2_web_subnet_is_private == false) ? {
+                            {
                                 "INTERNET-RULE" = {
-                                    network_entity_key = "TT-VCN-2-INTERNET-GATEWAY"
-                                    description        = "To Internet Gateway."
+                                    network_entity_key = var.tt_vcn2_web_subnet_is_private == false ? "TT-VCN-2-INTERNET-GATEWAY" : "TT-VCN-2-NAT-GATEWAY"
+                                    description        = "To Internet."
                                     destination        = "0.0.0.0/0"
                                     destination_type   = "CIDR_BLOCK"
                                 }
-                            } : {}, 
+                            }, 
                             {   
                                 "OSN-RULE" = {
                                     network_entity_key = "TT-VCN-2-SERVICE-GATEWAY"
@@ -620,23 +664,6 @@ locals {
                                     destination        = "objectstorage"
                                     destination_type   = "SERVICE_CIDR_BLOCK"
                                 }
-                            },
-                            ## Routes thru DRG are dependent on some factors. See the if clause.
-                            { for cidr in var.tt_vcn1_cidrs : "TT-VCN-1-${cidr}-RULE" => 
-                                {
-                                    network_entity_key = "HUB-DRG"
-                                    description        = "To DRG."
-                                    destination        = cidr
-                                    destination_type   = "CIDR_BLOCK"
-                                } if local.hub_options[var.hub_options] != 0 && var.add_tt_vcn1 == true && var.tt_vcn1_attach_to_drg == true && (length(var.tt_vcn2_routable_vcns) == 0 || contains(var.tt_vcn2_routable_vcns,"TT-VCN-1"))
-                            },
-                            { for cidr in var.tt_vcn3_cidrs : "TT-VCN-3-${cidr}-RULE" => 
-                                {
-                                    network_entity_key = "HUB-DRG"
-                                    description        = "To DRG."
-                                    destination        = cidr
-                                    destination_type   = "CIDR_BLOCK"
-                                } if local.hub_options[var.hub_options] != 0 && var.add_tt_vcn3 == true && var.tt_vcn3_attach_to_drg == true && (length(var.tt_vcn2_routable_vcns) == 0 || contains(var.tt_vcn2_routable_vcns,"TT-VCN-3"))
                             }
                         )
                     }  
@@ -661,23 +688,23 @@ locals {
                                     destination_type   = "SERVICE_CIDR_BLOCK"
                                 }
                             },  
-                            ## Routes thru DRG are dependent on some factors. See the if clause.
-                            { for cidr in var.tt_vcn1_cidrs : "TT-VCN-1-${cidr}-RULE" => 
-                                {
+                            ## For App subnet route table, we route to App subnet in the routable VCN. Routes thru DRG are dependent on some factors. See the if clause.
+                            local.hub_options[var.hub_options] != 0 && var.tt_vcn2_attach_to_drg == true && var.add_tt_vcn1 == true && var.tt_vcn1_attach_to_drg == true && (length(var.tt_vcn2_routable_vcns) == 0 || contains(var.tt_vcn2_routable_vcns,"TT-VCN-1")) ? {
+                                "tt-VCN-2-APP-SUBNET-RULE" = {
                                     network_entity_key = "HUB-DRG"
                                     description        = "To DRG."
-                                    destination        = cidr
+                                    destination        = coalesce(var.tt_vcn1_app_subnet_cidr, cidrsubnet(var.tt_vcn1_cidrs[0],4,1))
                                     destination_type   = "CIDR_BLOCK"
-                                } if local.hub_options[var.hub_options] != 0 && var.add_tt_vcn1 == true && var.tt_vcn1_attach_to_drg == true && (length(var.tt_vcn2_routable_vcns) == 0 || contains(var.tt_vcn2_routable_vcns,"TT-VCN-1"))
-                            },
-                            { for cidr in var.tt_vcn3_cidrs : "TT-VCN-3-${cidr}-RULE" => 
-                                {
+                                }
+                            } : {},  
+                            local.hub_options[var.hub_options] != 0 && var.tt_vcn2_attach_to_drg == true && var.add_tt_vcn3 == true && var.tt_vcn3_attach_to_drg == true && (length(var.tt_vcn2_routable_vcns) == 0 || contains(var.tt_vcn2_routable_vcns,"TT-VCN-3")) ? {
+                                "tt-VCN-3-APP-SUBNET-RULE" = {
                                     network_entity_key = "HUB-DRG"
                                     description        = "To DRG."
-                                    destination        = cidr
+                                    destination        = coalesce(var.tt_vcn3_app_subnet_cidr, cidrsubnet(var.tt_vcn3_cidrs[0],4,1))
                                     destination_type   = "CIDR_BLOCK"
-                                } if local.hub_options[var.hub_options] != 0 && var.add_tt_vcn3 == true && var.tt_vcn3_attach_to_drg == true && (length(var.tt_vcn2_routable_vcns) == 0 || contains(var.tt_vcn2_routable_vcns,"TT-VCN-3"))
-                            }  
+                                }
+                            } : {}   
                         )
                     }
                 },
@@ -701,23 +728,23 @@ locals {
                                     destination_type   = "SERVICE_CIDR_BLOCK"
                                 }
                             },  
-                            ## Routes thru DRG are dependent on some factors. See the if clause.
-                            { for cidr in var.tt_vcn1_cidrs : "TT-VCN-1-${cidr}-RULE" => 
-                                {
+                            ## For DB subnet route table, we route to DB subnet in the routable VCN. Routes thru DRG are dependent on some factors. See the if clause.
+                            local.hub_options[var.hub_options] != 0 && var.tt_vcn2_attach_to_drg == true && var.add_tt_vcn1 == true && var.tt_vcn1_attach_to_drg == true && (length(var.tt_vcn2_routable_vcns) == 0 || contains(var.tt_vcn2_routable_vcns,"TT-VCN-1")) ? {
+                                "tt-VCN-2-DB-SUBNET-RULE" = {
                                     network_entity_key = "HUB-DRG"
                                     description        = "To DRG."
-                                    destination        = cidr
+                                    destination        = coalesce(var.tt_vcn1_db_subnet_cidr, cidrsubnet(var.tt_vcn1_cidrs[0],4,2))
                                     destination_type   = "CIDR_BLOCK"
-                                } if local.hub_options[var.hub_options] != 0 && var.add_tt_vcn1 == true && var.tt_vcn1_attach_to_drg == true && (length(var.tt_vcn2_routable_vcns) == 0 || contains(var.tt_vcn2_routable_vcns,"TT-VCN-1"))
-                            },
-                            { for cidr in var.tt_vcn3_cidrs : "TT-VCN-3-${cidr}-RULE" => 
-                                {
+                                }
+                            } : {},  
+                            local.hub_options[var.hub_options] != 0 && var.tt_vcn2_attach_to_drg == true && var.add_tt_vcn3 == true && var.tt_vcn3_attach_to_drg == true && (length(var.tt_vcn2_routable_vcns) == 0 || contains(var.tt_vcn2_routable_vcns,"TT-VCN-3")) ? {
+                                "tt-VCN-3-DB-SUBNET-RULE" = {
                                     network_entity_key = "HUB-DRG"
                                     description        = "To DRG."
-                                    destination        = cidr
+                                    destination        = coalesce(var.tt_vcn3_db_subnet_cidr, cidrsubnet(var.tt_vcn3_cidrs[0],4,2))
                                     destination_type   = "CIDR_BLOCK"
-                                } if local.hub_options[var.hub_options] != 0 && var.add_tt_vcn3 == true && var.tt_vcn3_attach_to_drg == true && (length(var.tt_vcn2_routable_vcns) == 0 || contains(var.tt_vcn2_routable_vcns,"TT-VCN-3"))
-                            }  
+                                }
+                            } : {}  
                         )
                     }
                 },
@@ -821,28 +848,78 @@ locals {
                                     dst_port_min = 22
                                     dst_port_max = 22
                                 }
-                            } : {}    
+                            } : {},
+                            local.hub_options[var.hub_options] != 0 && var.tt_vcn2_attach_to_drg == true && var.add_tt_vcn3 && var.tt_vcn3_attach_to_drg == true && (length(var.tt_vcn1_routable_vcns) == 0 || contains(var.tt_vcn1_routable_vcns,"TT-VCN-2")) ? {
+                                "INGRESS-FROM-TT-VCN-1-APP-SUBNET-RULE" = {
+                                    description  = "Ingress from ${coalesce(var.tt_vcn1_app_subnet_name,"${var.service_label}-three-tier-vcn-1-app-subnet")}."
+                                    stateless    = false
+                                    protocol     = "TCP"
+                                    src          = coalesce(var.tt_vcn1_app_subnet_cidr, cidrsubnet(var.tt_vcn1_cidrs[0],4,1))
+                                    src_type     = "CIDR_BLOCK"
+                                    dst_port_min = 80
+                                    dst_port_max = 80
+                                }
+                            } : {},
+                            local.hub_options[var.hub_options] != 0 && var.tt_vcn2_attach_to_drg == true && var.add_tt_vcn3 && var.tt_vcn3_attach_to_drg == true && (length(var.tt_vcn3_routable_vcns) == 0 || contains(var.tt_vcn3_routable_vcns,"TT-VCN-2")) ? {
+                                "INGRESS-FROM-TT-VCN-3-APP-SUBNET-RULE" = {
+                                    description  = "Ingress from ${coalesce(var.tt_vcn3_app_subnet_name,"${var.service_label}-three-tier-vcn-3-app-subnet")}."
+                                    stateless    = false
+                                    protocol     = "TCP"
+                                    src          = coalesce(var.tt_vcn3_app_subnet_cidr, cidrsubnet(var.tt_vcn3_cidrs[0],4,1))
+                                    src_type     = "CIDR_BLOCK"
+                                    dst_port_min = 80
+                                    dst_port_max = 80
+                                }
+                            } : {}   
                         ),
-                        egress_rules = {
-                            "EGRESS-TO-DB-RULE" = {
-                                description = "Egress to DB NSG"
-                                stateless   = false
-                                protocol    = "TCP"
-                                dst         = "TT-VCN-2-DB-NSG"
-                                dst_type    = "NETWORK_SECURITY_GROUP"
-                                dst_port_min = 1521
-                                dst_port_max = 1522
+                        egress_rules = merge(
+                            {
+                                "EGRESS-TO-DB-NSG-RULE" = {
+                                    description = "Egress to DB NSG"
+                                    stateless   = false
+                                    protocol    = "TCP"
+                                    dst         = "TT-VCN-2-DB-NSG"
+                                    dst_type    = "NETWORK_SECURITY_GROUP"
+                                    dst_port_min = 1521
+                                    dst_port_max = 1522
+                                }
                             },
-                            "EGRESS-TO-OSN-RULE" = {
-                                description = "Egress to Oracle Services Network."
-                                stateless   = false
-                                protocol    = "TCP"
-                                dst         = "all-services"
-                                dst_type    = "SERVICE_CIDR_BLOCK"
-                                dst_port_min = 443
-                                dst_port_max = 443
-                            }
-                        }
+                            {    
+                                "EGRESS-TO-OSN-RULE" = {
+                                    description = "Egress to Oracle Services Network."
+                                    stateless   = false
+                                    protocol    = "TCP"
+                                    dst         = "all-services"
+                                    dst_type    = "SERVICE_CIDR_BLOCK"
+                                    dst_port_min = 443
+                                    dst_port_max = 443
+                                }
+                            },    
+                            local.hub_options[var.hub_options] != 0 && var.tt_vcn2_attach_to_drg == true && var.add_tt_vcn1 == true && var.tt_vcn1_attach_to_drg == true && (length(var.tt_vcn2_routable_vcns) == 0 || contains(var.tt_vcn2_routable_vcns,"TT-VCN-1")) ? 
+                            {  
+                                "EGRESS-TO-TT-VCN-2-APP-SUBNET-RULE" = {
+                                    description = "Egress to ${coalesce(var.tt_vcn1_app_subnet_name,"${var.service_label}-three-tier-vcn-1-app-subnet")}"
+                                    stateless   = false
+                                    protocol    = "TCP"
+                                    dst         = coalesce(var.tt_vcn1_app_subnet_cidr, cidrsubnet(var.tt_vcn1_cidrs[0],4,1))
+                                    dst_type    = "CIDR_BLOCK"
+                                    dst_port_min = 80
+                                    dst_port_max = 80
+                                }
+                            } : {},
+                            local.hub_options[var.hub_options] != 0 && var.tt_vcn2_attach_to_drg == true && var.add_tt_vcn3 == true && var.tt_vcn3_attach_to_drg == true && (length(var.tt_vcn2_routable_vcns) == 0 || contains(var.tt_vcn2_routable_vcns,"TT-VCN-3")) ?
+                            {   
+                                "EGRESS-TO-TT-VCN-3-APP-SUBNET-RULE" = {
+                                    description = "Egress to ${coalesce(var.tt_vcn3_app_subnet_name,"${var.service_label}-three-tier-vcn-3-app-subnet")}"
+                                    stateless   = false
+                                    protocol    = "TCP"
+                                    dst         = coalesce(var.tt_vcn3_app_subnet_cidr, cidrsubnet(var.tt_vcn3_cidrs[0],4,1))
+                                    dst_type    = "CIDR_BLOCK"
+                                    dst_port_min = 80
+                                    dst_port_max = 80
+                                }
+                            } : {}
+                        )
                     }
                 },
                 {    
@@ -870,19 +947,67 @@ locals {
                                     dst_port_min = 22
                                     dst_port_max = 22
                                 }
+                            } : {},
+                            local.hub_options[var.hub_options] != 0 && var.tt_vcn2_attach_to_drg == true && var.add_tt_vcn1 && var.tt_vcn1_attach_to_drg == true && (length(var.tt_vcn1_routable_vcns) == 0 || contains(var.tt_vcn1_routable_vcns,"TT-VCN-2")) ? {
+                                "INGRESS-FROM-TT-VCN-1-APP-SUBNET-RULE" = {
+                                    description  = "Ingress from ${coalesce(var.tt_vcn1_db_subnet_name,"${var.service_label}-three-tier-vcn-1-db-subnet")}."
+                                    stateless    = false
+                                    protocol     = "TCP"
+                                    src          = coalesce(var.tt_vcn1_db_subnet_cidr, cidrsubnet(var.tt_vcn1_cidrs[0],4,2))
+                                    src_type     = "CIDR_BLOCK"
+                                    dst_port_min = 1521
+                                    dst_port_max = 1522
+                                }
+                            } : {},
+                            local.hub_options[var.hub_options] != 0 && var.tt_vcn2_attach_to_drg == true && var.add_tt_vcn3 && var.tt_vcn3_attach_to_drg == true && (length(var.tt_vcn3_routable_vcns) == 0 || contains(var.tt_vcn3_routable_vcns,"TT-VCN-2")) ? {
+                                "INGRESS-FROM-TT-VCN-3-APP-SUBNET-RULE" = {
+                                    description  = "Ingress from ${coalesce(var.tt_vcn3_db_subnet_name,"${var.service_label}-three-tier-vcn-3-db-subnet")}."
+                                    stateless    = false
+                                    protocol     = "TCP"
+                                    src          = coalesce(var.tt_vcn3_db_subnet_cidr, cidrsubnet(var.tt_vcn3_cidrs[0],4,2))
+                                    src_type     = "CIDR_BLOCK"
+                                    dst_port_min = 1521
+                                    dst_port_max = 1522
+                                }
                             } : {}
                         ),     
-                        egress_rules = {
-                            "EGRESS-TO-OSN-RULE" = {
-                                description = "Egress to Oracle Services Network."
-                                stateless   = false
-                                protocol    = "TCP"
-                                dst         = "all-services"
-                                dst_type    = "SERVICE_CIDR_BLOCK"
-                                dst_port_min = 443
-                                dst_port_max = 443
-                            }
-                        }
+                        egress_rules = merge(
+                            {
+                                "EGRESS-TO-OSN-RULE" = {
+                                    description = "Egress to Oracle Services Network."
+                                    stateless   = false
+                                    protocol    = "TCP"
+                                    dst         = "all-services"
+                                    dst_type    = "SERVICE_CIDR_BLOCK"
+                                    dst_port_min = 443
+                                    dst_port_max = 443
+                                }
+                            },
+                            local.hub_options[var.hub_options] != 0 && var.tt_vcn2_attach_to_drg == true && var.add_tt_vcn1 == true && var.tt_vcn1_attach_to_drg == true && (length(var.tt_vcn2_routable_vcns) == 0 || contains(var.tt_vcn2_routable_vcns,"TT-VCN-1")) ? 
+                            {  
+                                "EGRESS-TO-TT-VCN-1-DB-SUBNET-RULE" = {
+                                    description = "Egress to ${coalesce(var.tt_vcn1_db_subnet_name,"${var.service_label}-three-tier-vcn-1-db-subnet")}"
+                                    stateless   = false
+                                    protocol    = "TCP"
+                                    dst         = coalesce(var.tt_vcn1_db_subnet_cidr, cidrsubnet(var.tt_vcn1_cidrs[0],4,2))
+                                    dst_type    = "CIDR_BLOCK"
+                                    dst_port_min = 1521
+                                    dst_port_max = 1522
+                                }
+                            } : {},
+                            local.hub_options[var.hub_options] != 0 && var.tt_vcn2_attach_to_drg == true && var.add_tt_vcn3 == true && var.tt_vcn3_attach_to_drg == true && (length(var.tt_vcn2_routable_vcns) == 0 || contains(var.tt_vcn2_routable_vcns,"TT-VCN-3")) ?
+                            {   
+                                "EGRESS-TO-TT-VCN-3-DB-SUBNET-RULE" = {
+                                    description = "Egress to ${coalesce(var.tt_vcn3_db_subnet_name,"${var.service_label}-three-tier-vcn-3-db-subnet")}"
+                                    stateless   = false
+                                    protocol    = "TCP"
+                                    dst         = coalesce(var.tt_vcn3_db_subnet_cidr, cidrsubnet(var.tt_vcn3_cidrs[0],4,2))
+                                    dst_type    = "CIDR_BLOCK"
+                                    dst_port_min = 1521
+                                    dst_port_max = 1522
+                                }
+                            } : {}
+                        )
                     }
                 },
                 var.deploy_tt_vcn2_bastion_subnet == true ? {
@@ -1067,14 +1192,14 @@ locals {
                     "TT-VCN-3-WEB-SUBNET-ROUTE-TABLE" = {
                         display_name = "web-subnet-rtable"
                         route_rules = merge(
-                            (var.tt_vcn3_web_subnet_is_private == false) ? {
+                            {
                                 "INTERNET-RULE" = {
-                                    network_entity_key = "TT-VCN-3-INTERNET-GATEWAY"
-                                    description        = "To Internet Gateway."
+                                    network_entity_key = var.tt_vcn1_web_subnet_is_private == false ? "TT-VCN-3-INTERNET-GATEWAY" : "TT-VCN-3-NAT-GATEWAY"
+                                    description        = "To Internet."
                                     destination        = "0.0.0.0/0"
                                     destination_type   = "CIDR_BLOCK"
                                 }
-                            } : {}, 
+                            }, 
                             {   
                                 "OSN-RULE" = {
                                     network_entity_key = "TT-VCN-3-SERVICE-GATEWAY"
@@ -1082,23 +1207,6 @@ locals {
                                     destination        = "objectstorage"
                                     destination_type   = "SERVICE_CIDR_BLOCK"
                                 }
-                            },
-                            ## Routes thru DRG are dependent on some factors. See the if clause.
-                            { for cidr in var.tt_vcn1_cidrs : "TT-VCN-1-${cidr}-RULE" => 
-                                {
-                                    network_entity_key = "HUB-DRG"
-                                    description        = "To DRG."
-                                    destination        = cidr
-                                    destination_type   = "CIDR_BLOCK"
-                                } if local.hub_options[var.hub_options] != 0 && var.add_tt_vcn1 == true && var.tt_vcn1_attach_to_drg == true && (length(var.tt_vcn3_routable_vcns) == 0 || contains(var.tt_vcn3_routable_vcns,"TT-VCN-1"))
-                            },
-                            { for cidr in var.tt_vcn2_cidrs : "TT-VCN-2-${cidr}-RULE" => 
-                                {
-                                    network_entity_key = "HUB-DRG"
-                                    description        = "To DRG."
-                                    destination        = cidr
-                                    destination_type   = "CIDR_BLOCK"
-                                } if local.hub_options[var.hub_options] != 0 && var.add_tt_vcn2 == true && var.tt_vcn2_attach_to_drg == true && (length(var.tt_vcn3_routable_vcns) == 0 || contains(var.tt_vcn3_routable_vcns,"TT-VCN-2"))
                             }
                         )
                     }
@@ -1123,23 +1231,23 @@ locals {
                                     destination_type   = "SERVICE_CIDR_BLOCK"
                                 }
                             },  
-                            ## Routes thru DRG are dependent on some factors. See the if clause.
-                            { for cidr in var.tt_vcn1_cidrs : "TT-VCN-1-${cidr}-RULE" => 
-                                {
+                            ## For App subnet route table, we route to App subnet in the routable VCN. Routes thru DRG are dependent on some factors. See the if clause.
+                            local.hub_options[var.hub_options] != 0 && var.tt_vcn3_attach_to_drg == true && var.add_tt_vcn1 == true && var.tt_vcn1_attach_to_drg == true && (length(var.tt_vcn3_routable_vcns) == 0 || contains(var.tt_vcn3_routable_vcns,"TT-VCN-1")) ? {
+                                "tt-VCN-2-APP-SUBNET-RULE" = {
                                     network_entity_key = "HUB-DRG"
                                     description        = "To DRG."
-                                    destination        = cidr
+                                    destination        = coalesce(var.tt_vcn1_app_subnet_cidr, cidrsubnet(var.tt_vcn1_cidrs[0],4,1))
                                     destination_type   = "CIDR_BLOCK"
-                                } if local.hub_options[var.hub_options] != 0 && var.add_tt_vcn1 == true && var.tt_vcn1_attach_to_drg == true && (length(var.tt_vcn3_routable_vcns) == 0 || contains(var.tt_vcn3_routable_vcns,"TT-VCN-1"))
-                            },
-                            { for cidr in var.tt_vcn2_cidrs : "TT-VCN-2-${cidr}-RULE" => 
-                                {
+                                }
+                            } : {},  
+                            local.hub_options[var.hub_options] != 0 && var.tt_vcn3_attach_to_drg == true && var.add_tt_vcn2 == true && var.tt_vcn2_attach_to_drg == true && (length(var.tt_vcn3_routable_vcns) == 0 || contains(var.tt_vcn3_routable_vcns,"TT-VCN-2")) ? {
+                                "tt-VCN-3-APP-SUBNET-RULE" = {
                                     network_entity_key = "HUB-DRG"
                                     description        = "To DRG."
-                                    destination        = cidr
+                                    destination        = coalesce(var.tt_vcn2_app_subnet_cidr, cidrsubnet(var.tt_vcn2_cidrs[0],4,1))
                                     destination_type   = "CIDR_BLOCK"
-                                } if local.hub_options[var.hub_options] != 0 && var.add_tt_vcn2 == true && var.tt_vcn2_attach_to_drg == true && (length(var.tt_vcn3_routable_vcns) == 0 || contains(var.tt_vcn3_routable_vcns,"TT-VCN-2"))
-                            }  
+                                }
+                            } : {}  
                         )
                     }
                 },
@@ -1163,23 +1271,23 @@ locals {
                                     destination_type   = "SERVICE_CIDR_BLOCK"
                                 }
                             },  
-                            ## Routes thru DRG are dependent on some factors. See the if clause.
-                            { for cidr in var.tt_vcn1_cidrs : "TT-VCN-1-${cidr}-RULE" => 
-                                {
+                            ## For DB subnet route table, we route to DB subnet in the routable VCN. Routes thru DRG are dependent on some factors. See the if clause.
+                            local.hub_options[var.hub_options] != 0 && var.tt_vcn3_attach_to_drg == true && var.add_tt_vcn1 == true && var.tt_vcn1_attach_to_drg == true && (length(var.tt_vcn3_routable_vcns) == 0 || contains(var.tt_vcn3_routable_vcns,"TT-VCN-1")) ? {
+                                "tt-VCN-2-APP-SUBNET-RULE" = {
                                     network_entity_key = "HUB-DRG"
                                     description        = "To DRG."
-                                    destination        = cidr
+                                    destination        = coalesce(var.tt_vcn1_db_subnet_cidr, cidrsubnet(var.tt_vcn1_cidrs[0],4,2))
                                     destination_type   = "CIDR_BLOCK"
-                                } if local.hub_options[var.hub_options] != 0 && var.add_tt_vcn1 == true && var.tt_vcn1_attach_to_drg == true && (length(var.tt_vcn3_routable_vcns) == 0 || contains(var.tt_vcn3_routable_vcns,"TT-VCN-1"))
-                            },
-                            { for cidr in var.tt_vcn2_cidrs : "TT-VCN-2-${cidr}-RULE" => 
-                                {
+                                }
+                            } : {},  
+                            local.hub_options[var.hub_options] != 0 && var.tt_vcn3_attach_to_drg == true && var.add_tt_vcn2 == true && var.tt_vcn2_attach_to_drg == true && (length(var.tt_vcn3_routable_vcns) == 0 || contains(var.tt_vcn3_routable_vcns,"TT-VCN-2")) ? {
+                                "tt-VCN-3-APP-SUBNET-RULE" = {
                                     network_entity_key = "HUB-DRG"
                                     description        = "To DRG."
-                                    destination        = cidr
+                                    destination        = coalesce(var.tt_vcn2_db_subnet_cidr, cidrsubnet(var.tt_vcn2_cidrs[0],4,2))
                                     destination_type   = "CIDR_BLOCK"
-                                } if local.hub_options[var.hub_options] != 0 && var.add_tt_vcn2 == true && var.tt_vcn2_attach_to_drg == true && (length(var.tt_vcn3_routable_vcns) == 0 || contains(var.tt_vcn3_routable_vcns,"TT-VCN-2"))
-                            }  
+                                }
+                            } : {}   
                         )
                     }
                 },
@@ -1223,9 +1331,9 @@ locals {
                                     dst_port_min = 443
                                     dst_port_max = 443
                                 }
-                            },    
-                            var.deploy_tt_vcn3_bastion_subnet == true ? {
-                                "INGRESS-FROM-BASTION-RULE" = {
+                            },
+                            var.deploy_tt_vcn3_bastion_subnet == true ? {    
+                                "INGRESS-FROM-BASTION-NSG-RULE" = {
                                     description  = "Ingress from Bastion NSG."
                                     stateless    = false
                                     protocol     = "TCP"
@@ -1263,7 +1371,7 @@ locals {
                         display_name = "app-nsg"
                         ingress_rules = merge(
                             {
-                                "INGRESS-FROM-LBR-RULE" = {
+                                "INGRESS-FROM-LBR-NSG-RULE" = {
                                     description  = "Ingress from LBR NSG"
                                     stateless    = false
                                     protocol     = "TCP"
@@ -1272,9 +1380,9 @@ locals {
                                     dst_port_min = 80
                                     dst_port_max = 80
                                 }
-                            },    
-                            var.deploy_tt_vcn3_bastion_subnet == true ? {
-                                "INGRESS-FROM-BASTION-RULE" = {
+                            },
+                            var.deploy_tt_vcn3_bastion_subnet == true ? {    
+                                "INGRESS-FROM-BASTION-NSG-RULE" = {
                                     description  = "Ingress from Bastion NSG."
                                     stateless    = false
                                     protocol     = "TCP"
@@ -1283,28 +1391,78 @@ locals {
                                     dst_port_min = 22
                                     dst_port_max = 22
                                 }
+                            } : {},
+                            local.hub_options[var.hub_options] != 0 && var.tt_vcn3_attach_to_drg == true && var.add_tt_vcn1 == true && var.tt_vcn1_attach_to_drg == true && (length(var.tt_vcn1_routable_vcns) == 0 || contains(var.tt_vcn1_routable_vcns,"TT-VCN-3")) ? {
+                                "INGRESS-FROM-TT-VCN-1-APP-SUBNET-RULE" = {
+                                    description  = "Ingress from ${coalesce(var.tt_vcn1_app_subnet_name,"${var.service_label}-three-tier-vcn-1-app-subnet")}."
+                                    stateless    = false
+                                    protocol     = "TCP"
+                                    src          = coalesce(var.tt_vcn1_app_subnet_cidr, cidrsubnet(var.tt_vcn1_cidrs[0],4,1))
+                                    src_type     = "CIDR_BLOCK"
+                                    dst_port_min = 80
+                                    dst_port_max = 80
+                                }
+                            } : {},
+                            local.hub_options[var.hub_options] != 0 && var.tt_vcn3_attach_to_drg == true && var.add_tt_vcn2 == true && var.tt_vcn2_attach_to_drg == true && (length(var.tt_vcn2_routable_vcns) == 0 || contains(var.tt_vcn2_routable_vcns,"TT-VCN-3")) ? {
+                                "INGRESS-FROM-TT-VCN-2-APP-SUBNET-RULE" = {
+                                    description  = "Ingress from ${coalesce(var.tt_vcn2_app_subnet_name,"${var.service_label}-three-tier-vcn-2-app-subnet")}."
+                                    stateless    = false
+                                    protocol     = "TCP"
+                                    src          = coalesce(var.tt_vcn2_app_subnet_cidr, cidrsubnet(var.tt_vcn2_cidrs[0],4,1))
+                                    src_type     = "CIDR_BLOCK"
+                                    dst_port_min = 80
+                                    dst_port_max = 80
+                                }
                             } : {}    
                         ),  
-                        egress_rules = {
-                            "EGRESS-TO-DB-RULE" = {
-                                description = "Egress to DB NSG"
-                                stateless   = false
-                                protocol    = "TCP"
-                                dst         = "TT-VCN-3-DB-NSG"
-                                dst_type    = "NETWORK_SECURITY_GROUP"
-                                dst_port_min = 1521
-                                dst_port_max = 1522
+                        egress_rules = merge(
+                            {
+                                "EGRESS-TO-DB-NSG-RULE" = {
+                                    description = "Egress to DB NSG"
+                                    stateless   = false
+                                    protocol    = "TCP"
+                                    dst         = "TT-VCN-3-DB-NSG"
+                                    dst_type    = "NETWORK_SECURITY_GROUP"
+                                    dst_port_min = 1521
+                                    dst_port_max = 1522
+                                }
                             },
-                            "EGRESS-TO-OSN-RULE" = {
-                                description = "Egress to Oracle Services Network."
-                                stateless   = false
-                                protocol    = "TCP"
-                                dst         = "all-services"
-                                dst_type    = "SERVICE_CIDR_BLOCK"
-                                dst_port_min = 443
-                                dst_port_max = 443
-                            }
-                        }
+                            {    
+                                "EGRESS-TO-OSN-RULE" = {
+                                    description = "Egress to Oracle Services Network."
+                                    stateless   = false
+                                    protocol    = "TCP"
+                                    dst         = "all-services"
+                                    dst_type    = "SERVICE_CIDR_BLOCK"
+                                    dst_port_min = 443
+                                    dst_port_max = 443
+                                }
+                            },    
+                            local.hub_options[var.hub_options] != 0 && var.tt_vcn3_attach_to_drg == true && var.add_tt_vcn1 == true && var.tt_vcn1_attach_to_drg == true && (length(var.tt_vcn3_routable_vcns) == 0 || contains(var.tt_vcn3_routable_vcns,"TT-VCN-1")) ? 
+                            {  
+                                "EGRESS-TO-TT-VCN-1-APP-SUBNET-RULE" = {
+                                    description = "Egress to ${coalesce(var.tt_vcn1_app_subnet_name,"${var.service_label}-three-tier-vcn-1-app-subnet")}"
+                                    stateless   = false
+                                    protocol    = "TCP"
+                                    dst         = coalesce(var.tt_vcn1_app_subnet_cidr, cidrsubnet(var.tt_vcn1_cidrs[0],4,1))
+                                    dst_type    = "CIDR_BLOCK"
+                                    dst_port_min = 80
+                                    dst_port_max = 80
+                                }
+                            } : {},
+                            local.hub_options[var.hub_options] != 0 && var.tt_vcn3_attach_to_drg == true && var.add_tt_vcn2 == true && var.tt_vcn2_attach_to_drg == true && (length(var.tt_vcn3_routable_vcns) == 0 || contains(var.tt_vcn3_routable_vcns,"TT-VCN-2")) ?
+                            {   
+                                "EGRESS-TO-TT-VCN-2-APP-SUBNET-RULE" = {
+                                    description = "Egress to ${coalesce(var.tt_vcn2_app_subnet_name,"${var.service_label}-three-tier-vcn-2-app-subnet")}"
+                                    stateless   = false
+                                    protocol    = "TCP"
+                                    dst         = coalesce(var.tt_vcn2_app_subnet_cidr, cidrsubnet(var.tt_vcn2_cidrs[0],4,1))
+                                    dst_type    = "CIDR_BLOCK"
+                                    dst_port_min = 80
+                                    dst_port_max = 80
+                                }
+                            } : {}
+                        )
                     }
                 },
                 {    
@@ -1332,19 +1490,67 @@ locals {
                                     dst_port_min = 22
                                     dst_port_max = 22
                                 }
+                            } : {},
+                            local.hub_options[var.hub_options] != 0 && var.tt_vcn3_attach_to_drg == true && var.add_tt_vcn1 == true && var.tt_vcn1_attach_to_drg == true && (length(var.tt_vcn1_routable_vcns) == 0 || contains(var.tt_vcn1_routable_vcns,"TT-VCN-3")) ? {
+                                "INGRESS-FROM-TT-VCN-1-DB-SUBNET-RULE" = {
+                                    description  = "Ingress from ${coalesce(var.tt_vcn1_db_subnet_name,"${var.service_label}-three-tier-vcn-1-db-subnet")}."
+                                    stateless    = false
+                                    protocol     = "TCP"
+                                    src          = coalesce(var.tt_vcn1_db_subnet_cidr, cidrsubnet(var.tt_vcn1_cidrs[0],4,2))
+                                    src_type     = "CIDR_BLOCK"
+                                    dst_port_min = 1521
+                                    dst_port_max = 1522
+                                }
+                            } : {},
+                            local.hub_options[var.hub_options] != 0 && var.tt_vcn3_attach_to_drg == true && var.add_tt_vcn2 == true && var.tt_vcn2_attach_to_drg == true && (length(var.tt_vcn2_routable_vcns) == 0 || contains(var.tt_vcn2_routable_vcns,"TT-VCN-3")) ? {
+                                "INGRESS-FROM-TT-VCN-2-DB-SUBNET-RULE" = {
+                                    description  = "Ingress from ${coalesce(var.tt_vcn2_db_subnet_name,"${var.service_label}-three-tier-vcn-2-db-subnet")}."
+                                    stateless    = false
+                                    protocol     = "TCP"
+                                    src          = coalesce(var.tt_vcn2_db_subnet_cidr, cidrsubnet(var.tt_vcn2_cidrs[0],4,2))
+                                    src_type     = "CIDR_BLOCK"
+                                    dst_port_min = 1521
+                                    dst_port_max = 1522
+                                }
                             } : {}    
                         ),  
-                        egress_rules = {
-                            "EGRESS-TO-OSN-RULE" = {
-                                description = "Egress to Oracle Services Network."
-                                stateless   = false
-                                protocol    = "TCP"
-                                dst         = "all-services"
-                                dst_type    = "SERVICE_CIDR_BLOCK"
-                                dst_port_min = 443
-                                dst_port_max = 443
-                            }
-                        }
+                        egress_rules = merge(
+                            {
+                                "EGRESS-TO-OSN-RULE" = {
+                                    description = "Egress to Oracle Services Network."
+                                    stateless   = false
+                                    protocol    = "TCP"
+                                    dst         = "all-services"
+                                    dst_type    = "SERVICE_CIDR_BLOCK"
+                                    dst_port_min = 443
+                                    dst_port_max = 443
+                                }
+                            },
+                            local.hub_options[var.hub_options] != 0 && var.tt_vcn3_attach_to_drg == true && var.add_tt_vcn1 == true && var.tt_vcn1_attach_to_drg == true && (length(var.tt_vcn3_routable_vcns) == 0 || contains(var.tt_vcn3_routable_vcns,"TT-VCN-1")) ? 
+                            {  
+                                "EGRESS-TO-TT-VCN-1-DB-SUBNET-RULE" = {
+                                    description = "Egress to ${coalesce(var.tt_vcn1_db_subnet_name,"${var.service_label}-three-tier-vcn-1-db-subnet")}"
+                                    stateless   = false
+                                    protocol    = "TCP"
+                                    dst         = coalesce(var.tt_vcn1_db_subnet_cidr, cidrsubnet(var.tt_vcn1_cidrs[0],4,2))
+                                    dst_type    = "CIDR_BLOCK"
+                                    dst_port_min = 1521
+                                    dst_port_max = 1522
+                                }
+                            } : {},
+                            local.hub_options[var.hub_options] != 0 && var.tt_vcn3_attach_to_drg == true && var.add_tt_vcn2 == true && var.tt_vcn2_attach_to_drg == true && (length(var.tt_vcn3_routable_vcns) == 0 || contains(var.tt_vcn3_routable_vcns,"TT-VCN-2")) ?
+                            {   
+                                "EGRESS-TO-TT-VCN-2-DB-SUBNET-RULE" = {
+                                    description = "Egress to ${coalesce(var.tt_vcn2_db_subnet_name,"${var.service_label}-three-tier-vcn-2-db-subnet")}"
+                                    stateless   = false
+                                    protocol    = "TCP"
+                                    dst         = coalesce(var.tt_vcn2_db_subnet_cidr, cidrsubnet(var.tt_vcn2_cidrs[0],4,2))
+                                    dst_type    = "CIDR_BLOCK"
+                                    dst_port_min = 1521
+                                    dst_port_max = 1522
+                                }
+                            } : {}
+                        )
                     }
                 },
                 var.deploy_tt_vcn3_bastion_subnet == true ? {
@@ -1425,49 +1631,4 @@ locals {
             }
         }
     } : {}
-
-    /* non_vcn_specific_gateways = {
-        inject_into_existing_drgs = {
-            "HUB-DRG-INJECT" = {
-                drg_id = module.lz_hub.flat_map_of_provisioned_networking_resources["HUB-DRG"].id
-                drg_attachments = (var.add_tt_vcn1 == true && var.tt_vcn1_attach_to_drg == true) ? {
-                    "TT-VCN-1-ATTACHMENT" = {
-                        display_name = "${coalesce(var.tt_vcn1_name,"${var.service_label}-three-tier-vcn-1")}-attachment"
-                        # DRG route table for the VCN attachment. It defines the next hop for traffic that enters the DRG via this attachment.
-                        # drg_route_table_key = "TT-VCN-1-DRG-ROUTE-TABLE"
-                        drg_route_table_key = "TT-VCN-1-DRG-ROUTE-TABLE"
-                        network_details = {
-                            attached_resource_key = "TT-VCN-1"
-                            type = "VCN"
-                        }
-                    }
-                } : {}
-                drg_route_tables = (var.add_tt_vcn1 == true && var.tt_vcn1_attach_to_drg == true) ? {
-                    "TT-VCN-1-DRG-ROUTE-TABLE" = {
-                        display_name = "${coalesce(var.tt_vcn1_name,"${var.service_label}-three-tier-vcn-1")}-drg-route-table"
-                        import_drg_route_distribution_key = "TT-VCN-1-DRG-IMPORT-ROUTE-DISTRIBUTION"
-                    }    
-                } : {}
-                drg_route_distributions = (var.add_tt_vcn1 == true && var.tt_vcn1_attach_to_drg == true) ? {
-                    # This import distribution makes its importing DRG route tables to have the referred drg_attachment_key as the next-hop attachment.
-                    # In this case, the "Hub VCN ingress route table for the DRG" is imported by those DRG route tables.
-                    "TT-VCN-1-DRG-IMPORT-ROUTE-DISTRIBUTION" = {
-                        display_name = "${coalesce(var.tt_vcn1_name,"${var.service_label}-three-tier-vcn-1")}-drg-import-route-distribution"
-                        distribution_type = "IMPORT"
-                        statements = {
-                            "HUB-VCN-STMT" = {
-                                action = "ACCEPT",
-                                priority = 1,
-                                match_criteria = {
-                                    match_type = "DRG_ATTACHMENT_ID",
-                                    attachment_type = "VCN",
-                                    drg_attachment_id = module.lz_hub.flat_map_of_provisioned_networking_resources["HUB-VCN-ATTACHMENT"].id
-                                }
-                            }
-                        }
-                    }
-                } : {}
-            }    
-        }
-    } */
 }
