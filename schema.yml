@@ -1,14 +1,14 @@
 # Copyright (c) 2024 Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 
-title: "CIS (Center for Internet Security) OCI Landing Zone Quick Start"
-stackDescription: "This stack deploys the CIS OCI Landing Zone Quick Start, a fully operational tenancy that combines the recommendations of CIS Foundations Benchmark for OCI with OCI architecture best practices. For details, please see https://github.com/oracle-quickstart/oci-cis-landingzone-quickstart."
-description: "This stack deploys the CIS OCI Landing Zone Quick Start, a fully operational tenancy that combines the recommendations of CIS Foundations Benchmark for OCI with OCI architecture best practices. For details, please see <a href=\"https://github.com/oracle-quickstart/oci-cis-landingzone-quickstart\">CIS OCI Landing Zone Quick Start</a>."
+title: "OCI Core Landing Zone"
+stackDescription: "This stack deploys the OCI Core Landing Zone, a fully operational tenancy that combines the recommendations of CIS Foundations Benchmark for OCI with OCI architecture best practices. For details, please see https://github.com/oracle-quickstart/oci-cis-landingzone-quickstart."
+description: "This stack deploys the OCI Core Landing Zone, a fully operational tenancy that combines the recommendations of CIS Foundations Benchmark for OCI with OCI architecture best practices. For details, please see <a href=\"https://github.com/oracle-quickstart/oci-cis-landingzone-quickstart\">OCI Core Landing Zone</a>."
 schemaVersion: 1.1.0
 version: "3.0.0"
 locale: "en"
 
-# URL of CIS Landing Zone logo icon used on Application Information tab.
+# URL of OCI Core Landing Zone logo icon used on Application Information tab.
 logoUrl: "https://objectstorage.us-ashburn-1.oraclecloud.com/p/taf6kC9fSJyQDNSYbxvqxS_JsdnSu56oFZ3-1h5vI7-WfJUv77mplChopLxZPePW/n/ociateam/b/cis-landing-zone/o/landing_zone_130.png"
 
 variableGroups:
@@ -141,15 +141,13 @@ variableGroups:
       - "tt_vcn1_web_subnet_cidr"
       - "tt_vcn1_web_subnet_dns"
       - "tt_vcn1_web_subnet_is_private"
-      #- "tt_vcn1_web_subnet_bastion_svc_cidrs"
       - "tt_vcn1_app_subnet_name"
       - "tt_vcn1_app_subnet_cidr"
       - "tt_vcn1_app_subnet_dns"
-      #- "tt_vcn1_app_subnet_bastion_svc_cidrs"
       - "tt_vcn1_db_subnet_name"
       - "tt_vcn1_db_subnet_cidr"
       - "tt_vcn1_db_subnet_dns"
-      #- "tt_vcn1_db_subnet_bastion_svc_cidrs"
+      - "deploy_tt_vcn1_bastion_subnet"
       - "tt_vcn1_bastion_subnet_name"
       - "tt_vcn1_bastion_subnet_cidr"
       - "tt_vcn1_bastion_subnet_dns"
@@ -176,15 +174,18 @@ variableGroups:
       - "tt_vcn2_web_subnet_cidr"
       - "tt_vcn2_web_subnet_dns"
       - "tt_vcn2_web_subnet_is_private"
-      - "tt_vcn2_web_subnet_bastion_svc_cidrs"
       - "tt_vcn2_app_subnet_name"
       - "tt_vcn2_app_subnet_cidr"
       - "tt_vcn2_app_subnet_dns"
-      - "tt_vcn2_app_subnet_bastion_svc_cidrs"
       - "tt_vcn2_db_subnet_name"
       - "tt_vcn2_db_subnet_cidr"
       - "tt_vcn2_db_subnet_dns"
-      - "tt_vcn2_db_subnet_bastion_svc_cidrs"
+      - "deploy_tt_vcn2_bastion_subnet"
+      - "tt_vcn2_bastion_subnet_name"
+      - "tt_vcn2_bastion_subnet_cidr"
+      - "tt_vcn2_bastion_subnet_dns"
+      - "tt_vcn2_bastion_is_access_via_public_endpoint"
+      - "tt_vcn2_bastion_subnet_allowed_cidrs"
       - "add_tt_vcn3"
       - "tt_vcn3_name"
       - "tt_vcn3_cidrs"
@@ -196,15 +197,19 @@ variableGroups:
       - "tt_vcn3_web_subnet_cidr"
       - "tt_vcn3_web_subnet_dns"
       - "tt_vcn3_web_subnet_is_private"
-      - "tt_vcn3_web_subnet_bastion_svc_cidrs"
       - "tt_vcn3_app_subnet_name"
       - "tt_vcn3_app_subnet_cidr"
       - "tt_vcn3_app_subnet_dns"
-      - "tt_vcn3_app_subnet_bastion_svc_cidrs"
       - "tt_vcn3_db_subnet_name"
       - "tt_vcn3_db_subnet_cidr"
       - "tt_vcn3_db_subnet_dns"
-      - "tt_vcn3_db_subnet_bastion_svc_cidrs"
+      - "deploy_tt_vcn3_bastion_subnet"
+      - "tt_vcn3_bastion_subnet_name"
+      - "tt_vcn3_bastion_subnet_cidr"
+      - "tt_vcn3_bastion_subnet_dns"
+      - "tt_vcn3_bastion_is_access_via_public_endpoint"
+      - "tt_vcn3_bastion_subnet_allowed_cidrs"
+      
     visible: customize_net
 
   - title: "Networking - Exadata Cloud Service VCNs"
@@ -896,7 +901,7 @@ variables:
   add_tt_vcn1:
     type: boolean
     title: "Add Three-Tier VCN (label: TT-VCN-1)?"
-    description: "Click to add a three-tier VCN, with three subnets: web (public by default), application (private) and database (private)."
+    description: "Click to add a three-tier VCN, with three subnets: web (public by default), application (private) and database (private). An optional subnet (private by default) for bastion deployment is also available."
     visible: customize_net
 
   tt_vcn1_name:
@@ -978,7 +983,7 @@ variables:
 
   tt_vcn1_web_subnet_cidr:
     type: string
-    title: "Web Subnet CIDR block"
+    title: "Web Subnet CIDR Block"
     description: "Enter the Web subnet CIDR block. It must be within the VCN CIDR blocks."
     required: false
     visible: 
@@ -989,7 +994,7 @@ variables:
 
   tt_vcn1_web_subnet_dns:
     type: string
-    title: "Web Subnet DNS name"
+    title: "Web Subnet DNS Name"
     description: "Enter the Web subnet DNS name. Use only letters and numbers, no special characters."
     required: false
     visible: 
@@ -1008,23 +1013,6 @@ variables:
         - customize_tt_vcn1_subnets
         - add_tt_vcn1
 
-  # tt_vcn1_web_subnet_bastion_svc_cidrs:
-  #   type: array
-  #   items:
-  #     type: string
-  #   uniqueItems: true
-  #   maxItems: 3
-  #   minItems: 1
-  #   title: "List of CIDRs allowed to SSH into the Web Subnet"
-  #   description: "Enter the CIDRs allowed to connect to Web subnet over SSH. Leave empty for no access."
-  #   required: false
-  #   visible: 
-  #     and:
-  #       - customize_net
-  #       - customize_tt_vcn1_subnets
-  #       - add_tt_vcn1
-  #       - tt_vcn1_web_subnet_is_private
-  
   tt_vcn1_app_subnet_name:
     type: string
     title: "Application Subnet Name"
@@ -1038,7 +1026,7 @@ variables:
 
   tt_vcn1_app_subnet_cidr:
     type: string
-    title: "Application Subnet CIDR block"
+    title: "Application Subnet CIDR Block"
     description: "Enter the Application subnet CIDR block. It must be within the VCN CIDR blocks."
     required: false
     visible: 
@@ -1049,7 +1037,7 @@ variables:
 
   tt_vcn1_app_subnet_dns:
     type: string
-    title: "Application Subnet DNS name"
+    title: "Application Subnet DNS Name"
     description: "Enter the Application subnet DNS name. Use only letters and numbers, no special characters."
     required: false
     visible: 
@@ -1057,22 +1045,6 @@ variables:
         - customize_net
         - customize_tt_vcn1_subnets
         - add_tt_vcn1      
-
-  # tt_vcn1_app_subnet_bastion_svc_cidrs:
-  #   type: array
-  #   items:
-  #     type: string
-  #   uniqueItems: true
-  #   maxItems: 3
-  #   minItems: 1
-  #   title: "List of CIDRs allowed to SSH into the Application Subnet"
-  #   description: "Enter the CIDRs allowed to connect to the application subnet over SSH. Leave empty for no access."
-  #   required: false
-  #   visible: 
-  #     and:
-  #       - customize_net
-  #       - customize_tt_vcn1_subnets
-  #       - add_tt_vcn1
 
   tt_vcn1_db_subnet_name:
     type: string
@@ -1087,7 +1059,7 @@ variables:
 
   tt_vcn1_db_subnet_cidr:
     type: string
-    title: "Database Subnet CIDR block"
+    title: "Database Subnet CIDR Block"
     description: "Enter the Database subnet CIDR block. It must be within the VCN CIDR blocks."
     required: false
     visible: 
@@ -1098,7 +1070,7 @@ variables:
 
   tt_vcn1_db_subnet_dns:
     type: string
-    title: "Database Subnet DNS name"
+    title: "Database Subnet DNS Name"
     description: "Enter the Database subnet DNS name. Use only letters and numbers, no special characters."
     required: false
     visible: 
@@ -1107,21 +1079,15 @@ variables:
         - customize_tt_vcn1_subnets
         - add_tt_vcn1      
 
-  # tt_vcn1_db_subnet_bastion_svc_cidrs:
-  #   type: array
-  #   items:
-  #     type: string
-  #   uniqueItems: true
-  #   maxItems: 3
-  #   minItems: 1
-  #   title: "List of CIDRs allowed to SSH into the Database Subnet"
-  #   description: "Enter the CIDRs allowed to connect to the Database subnet over SSH. Leave empty for no access."
-  #   required: false
-  #   visible: 
-  #     and:
-  #       - customize_net
-  #       - customize_tt_vcn1_subnets
-  #       - add_tt_vcn1
+  deploy_tt_vcn1_bastion_subnet:
+    type: boolean
+    title: "Deploy Bastion Subnet?"
+    description: "Check to to deploy a subnet where you can further deploy OCI Bastion service or a jump host."
+    visible: 
+      and:
+        - customize_net
+        - customize_tt_vcn1_subnets
+        - add_tt_vcn1
 
   tt_vcn1_bastion_subnet_name:
     type: string
@@ -1133,21 +1099,23 @@ variables:
         - customize_net
         - customize_tt_vcn1_subnets
         - add_tt_vcn1
+        - deploy_tt_vcn1_bastion_subnet
 
   tt_vcn1_bastion_subnet_cidr:
     type: string
-    title: "Bastion Subnet CIDR block"
-    description: "Enter the Bastion subnet CIDR block. A /29 block is usually enough, unless you plan on deploying a large number of Bastion servers. It must be within the VCN CIDR blocks."
+    title: "Bastion Subnet CIDR Block"
+    description: "Enter the Bastion subnet CIDR block. A /29 block is usually enough, unless you plan on deploying a large number of jump hosts. It must be within the VCN CIDR blocks."
     required: false
     visible: 
       and:
         - customize_net
         - customize_tt_vcn1_subnets
         - add_tt_vcn1
+        - deploy_tt_vcn1_bastion_subnet
 
   tt_vcn1_bastion_subnet_dns:
     type: string
-    title: "Bastion Subnet DNS name"
+    title: "Bastion Subnet DNS Name"
     description: "Enter the Bastion subnet DNS name. Use only letters and numbers, no special characters."
     required: false
     visible: 
@@ -1155,36 +1123,39 @@ variables:
         - customize_net
         - customize_tt_vcn1_subnets
         - add_tt_vcn1     
+        - deploy_tt_vcn1_bastion_subnet
   
   tt_vcn1_bastion_is_access_via_public_endpoint:
     type: boolean
-    title: "Will the Bastion server (Jump Host) be accessed via a public endpoint?"
-    description: "If checked, the Landing Zone is configured with a public subnet for Bastion connectivity. By default, a private subnet is deployed. Use this private subnet to deploy OCI Bastion service."
+    title: "Will the jump host be accessed via a public endpoint?"
+    description: "If checked, the Bastion subnet is made public where you'd later deploy and manage your jump hosts. By default, the Bastion subnet is private, where OCI Bastion service is expected to be deployed."
     visible: 
       and:
         - customize_net
         - customize_tt_vcn1_subnets
         - add_tt_vcn1
+        - deploy_tt_vcn1_bastion_subnet
   
   tt_vcn1_bastion_subnet_allowed_cidrs:
     type: array
     items:
       type: string
     uniqueItems: true
-    title: "List of CIDR blocks allowed to SSH into the public Bastion Subnet where the Bastion server (Jump Host) is going to be deployed"
-    description: "These CIDRs are allowed to SSH into the the Bastion server (Jump Host) that is eventually deployed in the public Bastion subnet. Leave it empty for no access."
+    title: "List of CIDR blocks allowed to SSH into the public Bastion subnet where the jump host is going to be deployed"
+    description: "These CIDRs are allowed to SSH into the the jump host that is eventually deployed in the public Bastion subnet. Leave it empty for no access."
     required: false
     visible: 
       and:
         - customize_net
         - customize_tt_vcn1_subnets
         - add_tt_vcn1
+        - deploy_tt_vcn1_bastion_subnet
         - tt_vcn1_bastion_is_access_via_public_endpoint       
       
   add_tt_vcn2:
     type: boolean
     title: "Add Three-Tier VCN (label: TT-VCN-2)?"
-    description: "Click to add a three-tier VCN, with three subnets: web (public by default), application (private) and database (private)."
+    description: "Click to add a three-tier VCN, with three subnets: web (public by default), application (private) and database (private). An optional subnet (private by default) for bastion deployment is also available."
     visible: customize_net
    
       # - "add_tt_vcn1_extra1_subnet"
@@ -1229,7 +1200,7 @@ variables:
   tt_vcn2_dns:
     type: string
     title: "VCN DNS"
-    description: "The VCN DNS name."
+    description: "The VCN DNS Name."
     required: false
     visible: 
       and:
@@ -1269,7 +1240,7 @@ variables:
 
   tt_vcn2_web_subnet_name:
     type: string
-    title: "Load Balancer Subnet Name"
+    title: "Web Subnet Name"
     description: "The load balancer subnet name."
     required: false
     visible: 
@@ -1280,7 +1251,7 @@ variables:
 
   tt_vcn2_web_subnet_cidr:
     type: string
-    title: "Load Balancer Subnet CIDR block"
+    title: "Web Subnet CIDR Block"
     description: "It must be within the VCN CIDR blocks."
     required: false
     visible: 
@@ -1291,7 +1262,7 @@ variables:
 
   tt_vcn2_web_subnet_dns:
     type: string
-    title: "Load Balancer Subnet DNS name"
+    title: "Web Subnet DNS Name"
     description: "Use only letters and numbers, no special characters."
     required: false
     visible: 
@@ -1310,23 +1281,6 @@ variables:
         - customize_tt_vcn2_subnets
         - add_tt_vcn2
 
-  tt_vcn2_web_subnet_bastion_svc_cidrs:
-    type: array
-    items:
-      type: string
-    uniqueItems: true
-    maxItems: 3
-    minItems: 1
-    title: "List of CIDR blocks allowed to SSH into the Load Balancer Subnet"
-    description: "These CIDRs are allowed to SSH into the load balancer subnet via OCI Bastion service. Leave empty for no access."
-    required: false
-    visible: 
-      and:
-        - customize_net
-        - customize_tt_vcn2_subnets
-        - add_tt_vcn2
-        - tt_vcn2_web_subnet_is_private
-  
   tt_vcn2_app_subnet_name:
     type: string
     title: "Application Subnet Name"
@@ -1340,7 +1294,7 @@ variables:
 
   tt_vcn2_app_subnet_cidr:
     type: string
-    title: "Application Subnet CIDR block"
+    title: "Application Subnet CIDR Block"
     description: "It must be within the VCN CIDR blocks."
     required: false
     visible: 
@@ -1351,7 +1305,7 @@ variables:
 
   tt_vcn2_app_subnet_dns:
     type: string
-    title: "Application Subnet DNS name"
+    title: "Application Subnet DNS Name"
     description: "Use only letters and numbers, no special characters."
     required: false
     visible: 
@@ -1359,22 +1313,6 @@ variables:
         - customize_net
         - customize_tt_vcn2_subnets
         - add_tt_vcn2      
-
-  tt_vcn2_app_subnet_bastion_svc_cidrs:
-    type: array
-    items:
-      type: string
-    uniqueItems: true
-    maxItems: 3
-    minItems: 1
-    title: "List of CIDR blocks allowed to SSH into the Application Subnet"
-    description: "These CIDRs are allowed to SSH into the application subnet via OCI Bastion service. Leave empty for no access."
-    required: false
-    visible: 
-      and:
-        - customize_net
-        - customize_tt_vcn2_subnets
-        - add_tt_vcn2
 
   tt_vcn2_db_subnet_name:
     type: string
@@ -1389,7 +1327,7 @@ variables:
 
   tt_vcn2_db_subnet_cidr:
     type: string
-    title: "Database Subnet CIDR block"
+    title: "Database Subnet CIDR Block"
     description: "It must be within the VCN CIDR blocks."
     required: false
     visible: 
@@ -1400,7 +1338,7 @@ variables:
 
   tt_vcn2_db_subnet_dns:
     type: string
-    title: "Database Subnet DNS name"
+    title: "Database Subnet DNS Name"
     description: "Use only letters and numbers, no special characters."
     required: false
     visible: 
@@ -1409,26 +1347,83 @@ variables:
         - customize_tt_vcn2_subnets
         - add_tt_vcn2      
 
-  tt_vcn2_db_subnet_bastion_svc_cidrs:
-    type: array
-    items:
-      type: string
-    uniqueItems: true
-    maxItems: 3
-    minItems: 1
-    title: "List of CIDR blocks allowed to SSH into the Database Subnet"
-    description: "These CIDRs are allowed to SSH into the database subnet via OCI Bastion service. Leave empty for no access."
+  deploy_tt_vcn2_bastion_subnet:
+    type: boolean
+    title: "Deploy Bastion Subnet?"
+    description: "Check to to deploy a subnet where you can further deploy OCI Bastion service or a jump host."
+    visible: 
+      and:
+        - customize_net
+        - customize_tt_vcn2_subnets
+        - add_tt_vcn2
+
+  tt_vcn2_bastion_subnet_name:
+    type: string
+    title: "Bastion Subnet Name"
+    description: "Enter the Bastion subnet name."
     required: false
     visible: 
       and:
         - customize_net
         - customize_tt_vcn2_subnets
         - add_tt_vcn2
-      
+        - deploy_tt_vcn2_bastion_subnet
+
+  tt_vcn2_bastion_subnet_cidr:
+    type: string
+    title: "Bastion Subnet CIDR Block"
+    description: "Enter the Bastion subnet CIDR block. A /29 block is usually enough, unless you plan on deploying a large number of jump hosts. It must be within the VCN CIDR blocks."
+    required: false
+    visible: 
+      and:
+        - customize_net
+        - customize_tt_vcn2_subnets
+        - add_tt_vcn2
+        - deploy_tt_vcn2_bastion_subnet
+
+  tt_vcn2_bastion_subnet_dns:
+    type: string
+    title: "Bastion Subnet DNS Name"
+    description: "Enter the Bastion subnet DNS name. Use only letters and numbers, no special characters."
+    required: false
+    visible: 
+      and:
+        - customize_net
+        - customize_tt_vcn2_subnets
+        - add_tt_vcn2
+        - deploy_tt_vcn2_bastion_subnet     
+  
+  tt_vcn2_bastion_is_access_via_public_endpoint:
+    type: boolean
+    title: "Will the jump host be accessed via a public endpoint?"
+    description: "If checked, the Bastion subnet is made public where you'd later deploy and manage your jump hosts. By default, the Bastion subnet is private, where OCI Bastion service is expected to be deployed."
+    visible: 
+      and:
+        - customize_net
+        - customize_tt_vcn2_subnets
+        - add_tt_vcn2
+        - deploy_tt_vcn2_bastion_subnet
+  
+  tt_vcn2_bastion_subnet_allowed_cidrs:
+    type: array
+    items:
+      type: string
+    uniqueItems: true
+    title: "List of CIDR blocks allowed to SSH into the public Bastion subnet where the jump host is going to be deployed"
+    description: "These CIDRs are allowed to SSH into the the jump host that is eventually deployed in the public Bastion subnet. Leave it empty for no access."
+    required: false
+    visible: 
+      and:
+        - customize_net
+        - customize_tt_vcn2_subnets
+        - add_tt_vcn2
+        - tt_vcn2_bastion_is_access_via_public_endpoint
+        - deploy_tt_vcn2_bastion_subnet       
+  
   add_tt_vcn3:
     type: boolean
     title: "Add Three-Tier VCN (label: TT-VCN-3)?"
-    description: "Click to add a three-tier VCN, with three subnets: web (public by default), application (private) and database (private)."
+    description: "Click to add a three-tier VCN, with three subnets: web (public by default), application (private) and database (private). An optional subnet (private by default) for bastion deployment is also available."
     visible: customize_net
     
 # ------------------------------------------------------
@@ -1462,7 +1457,7 @@ variables:
   tt_vcn3_dns:
     type: string
     title: "VCN DNS"
-    description: "The VCN DNS name."
+    description: "The VCN DNS Name."
     required: false
     visible: 
       and:
@@ -1502,7 +1497,7 @@ variables:
 
   tt_vcn3_web_subnet_name:
     type: string
-    title: "Load Balancer Subnet Name"
+    title: "Web Subnet Name"
     description: "The load balancer subnet name."
     required: false
     visible: 
@@ -1513,7 +1508,7 @@ variables:
 
   tt_vcn3_web_subnet_cidr:
     type: string
-    title: "Load Balancer Subnet CIDR block"
+    title: "Web Subnet CIDR Block"
     description: "It must be within the VCN CIDR blocks."
     required: false
     visible: 
@@ -1524,7 +1519,7 @@ variables:
 
   tt_vcn3_web_subnet_dns:
     type: string
-    title: "Load Balancer Subnet DNS name"
+    title: "Web Subnet DNS Name"
     description: "Use only letters and numbers, no special characters."
     required: false
     visible: 
@@ -1543,23 +1538,6 @@ variables:
         - customize_tt_vcn3_subnets
         - add_tt_vcn3
 
-  tt_vcn3_web_subnet_bastion_svc_cidrs:
-    type: array
-    items:
-      type: string
-    uniqueItems: true
-    maxItems: 3
-    minItems: 1
-    title: "List of CIDR blocks allowed to SSH into the Load Balancer Subnet"
-    description: "These CIDRs are allowed to SSH into the load balancer subnet via OCI Bastion service. Leave empty for no access."
-    required: false
-    visible: 
-      and:
-        - customize_net
-        - customize_tt_vcn3_subnets
-        - add_tt_vcn3
-        - tt_vcn3_web_subnet_is_private
-  
   tt_vcn3_app_subnet_name:
     type: string
     title: "Application Subnet Name"
@@ -1573,7 +1551,7 @@ variables:
 
   tt_vcn3_app_subnet_cidr:
     type: string
-    title: "Application Subnet CIDR block"
+    title: "Application Subnet CIDR Block"
     description: "It must be within the VCN CIDR blocks."
     required: false
     visible: 
@@ -1584,7 +1562,7 @@ variables:
 
   tt_vcn3_app_subnet_dns:
     type: string
-    title: "Application Subnet DNS name"
+    title: "Application Subnet DNS Name"
     description: "Use only letters and numbers, no special characters."
     required: false
     visible: 
@@ -1592,22 +1570,6 @@ variables:
         - customize_net
         - customize_tt_vcn3_subnets
         - add_tt_vcn3      
-
-  tt_vcn3_app_subnet_bastion_svc_cidrs:
-    type: array
-    items:
-      type: string
-    uniqueItems: true
-    maxItems: 3
-    minItems: 1
-    title: "List of CIDR blocks allowed to SSH into the Application Subnet"
-    description: "These CIDRs are allowed to SSH into the application subnet via OCI Bastion service. Leave empty for no access."
-    required: false
-    visible: 
-      and:
-        - customize_net
-        - customize_tt_vcn3_subnets
-        - add_tt_vcn3
 
   tt_vcn3_db_subnet_name:
     type: string
@@ -1622,7 +1584,7 @@ variables:
 
   tt_vcn3_db_subnet_cidr:
     type: string
-    title: "Database Subnet CIDR block"
+    title: "Database Subnet CIDR Block"
     description: "It must be within the VCN CIDR blocks."
     required: false
     visible: 
@@ -1633,7 +1595,7 @@ variables:
 
   tt_vcn3_db_subnet_dns:
     type: string
-    title: "Database Subnet DNS name"
+    title: "Database Subnet DNS Name"
     description: "Use only letters and numbers, no special characters."
     required: false
     visible: 
@@ -1642,21 +1604,78 @@ variables:
         - customize_tt_vcn3_subnets
         - add_tt_vcn3      
 
-  tt_vcn3_db_subnet_bastion_svc_cidrs:
-    type: array
-    items:
-      type: string
-    uniqueItems: true
-    maxItems: 3
-    minItems: 1
-    title: "List of CIDR blocks allowed to SSH into the Database Subnet"
-    description: "These CIDRs are allowed to SSH into the database subnet via OCI Bastion service. Leave empty for no access."
+  deploy_tt_vcn3_bastion_subnet:
+    type: boolean
+    title: "Deploy Bastion Subnet?"
+    description: "Check to to deploy a subnet where you can further deploy OCI Bastion service or a jump host."
+    visible: 
+      and:
+        - customize_net
+        - customize_tt_vcn3_subnets
+        - add_tt_vcn3
+
+  tt_vcn3_bastion_subnet_name:
+    type: string
+    title: "Bastion Subnet Name"
+    description: "Enter the Bastion subnet name."
     required: false
     visible: 
       and:
         - customize_net
         - customize_tt_vcn3_subnets
         - add_tt_vcn3
+        - deploy_tt_vcn3_bastion_subnet
+
+  tt_vcn3_bastion_subnet_cidr:
+    type: string
+    title: "Bastion Subnet CIDR Block"
+    description: "Enter the Bastion subnet CIDR block. A /29 block is usually enough, unless you plan on deploying a large number of jump hosts. It must be within the VCN CIDR blocks."
+    required: false
+    visible: 
+      and:
+        - customize_net
+        - customize_tt_vcn3_subnets
+        - add_tt_vcn3
+        - deploy_tt_vcn3_bastion_subnet
+
+  tt_vcn3_bastion_subnet_dns:
+    type: string
+    title: "Bastion Subnet DNS Name"
+    description: "Enter the Bastion subnet DNS name. Use only letters and numbers, no special characters."
+    required: false
+    visible: 
+      and:
+        - customize_net
+        - customize_tt_vcn3_subnets
+        - add_tt_vcn3     
+        - deploy_tt_vcn3_bastion_subnet
+  
+  tt_vcn3_bastion_is_access_via_public_endpoint:
+    type: boolean
+    title: "Will the jump host be accessed via a public endpoint?"
+    description: "If checked, the Bastion subnet is made public where you'd later deploy and manage your jump hosts. By default, the Bastion subnet is private, where OCI Bastion service is expected to be deployed."
+    visible: 
+      and:
+        - customize_net
+        - customize_tt_vcn3_subnets
+        - add_tt_vcn3
+        - deploy_tt_vcn3_bastion_subnet
+  
+  tt_vcn3_bastion_subnet_allowed_cidrs:
+    type: array
+    items:
+      type: string
+    uniqueItems: true
+    title: "List of CIDR blocks allowed to SSH into the public Bastion subnet where the jump host is going to be deployed"
+    description: "These CIDRs are allowed to SSH into the the jump host that is eventually deployed in the public Bastion subnet. Leave it empty for no access."
+    required: false
+    visible: 
+      and:
+        - customize_net
+        - customize_tt_vcn3_subnets
+        - add_tt_vcn3
+        - tt_vcn3_bastion_is_access_via_public_endpoint
+        - deploy_tt_vcn3_bastion_subnet   
       
   # ------------------------------------------------------
   # ----- Networking - Exadata Cloud Service VCN 1
@@ -2941,7 +2960,7 @@ variables:
 
   hub_vcn_name:
     type: string
-    title: "Hub VCN name"
+    title: "Hub VCN Name"
     description: "Enter the Hub VCN name."
     required: false
     visible: 
@@ -2962,7 +2981,7 @@ variables:
     uniqueItems: true
     maxItems: 3
     minItems: 1
-    title: "Hub VCN list of CIDR blocks"
+    title: "Hub VCN list of CIDR Blocks"
     description: "Enter the CIDR blocks for the Hub VCN."
     required: false
     visible: 
@@ -3078,7 +3097,7 @@ variables:
 
   hub_vcn_web_subnet_dns:
     type: string
-    title: "Web Subnet DNS name"
+    title: "Web Subnet DNS Name"
     description: "Enter the Web subnet DNS name. Use only letters and numbers, no special characters."
     required: false
     visible: 
@@ -3137,7 +3156,7 @@ variables:
   hub_vcn_mgmt_subnet_name:
     type: string
     title: "Mgmt Subnet Name"
-    description: "Enter the Mgmt subnet name."
+    description: "Enter the Mgmt subnet Name."
     required: false
     visible: 
       and:
@@ -3170,7 +3189,7 @@ variables:
 
   hub_vcn_mgmt_subnet_dns:
     type: string
-    title: "Mgmt Subnet DNS name"
+    title: "Mgmt Subnet DNS Name"
     description: "Enter the Mgmt subnet DNS name. Use only letters and numbers, no special characters."
     required: false
     visible: 
@@ -3251,7 +3270,7 @@ variables:
 
   hub_vcn_outdoor_subnet_cidr:
     type: string
-    title: "Outdoor Subnet DNS name"
+    title: "Outdoor Subnet DNS Name"
     description: "Enter the Outdoor subnet DNS name. Use only letters and numbers, no special characters."
     required: false
     visible: 
@@ -3268,7 +3287,7 @@ variables:
 
   hub_vcn_outdoor_subnet_dns:
     type: string
-    title: "Outdoor Subnet DNS name"
+    title: "Outdoor Subnet DNS Name"
     description: "Enter the Outdoor subnet DNS name. Use only letters and numbers, no special characters."
     required: false
     visible: 
@@ -3305,7 +3324,7 @@ variables:
 
   hub_vcn_indoor_subnet_cidr:
     type: string
-    title: "Indoor Subnet DNS name"
+    title: "Indoor Subnet DNS Name"
     description: "Enter the Indoor subnet DNS name. Use only letters and numbers, no special characters."
     required: false
     visible: 
@@ -3322,7 +3341,7 @@ variables:
 
   hub_vcn_indoor_subnet_dns:
     type: string
-    title: "Indoor Subnet DNS name"
+    title: "Indoor Subnet DNS Name"
     description: "Enter the Indoor subnet DNS name. Use only letters and numbers, no special characters."
     required: false
     visible: 
