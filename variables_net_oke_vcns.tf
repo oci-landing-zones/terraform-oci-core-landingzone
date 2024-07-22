@@ -102,11 +102,6 @@ variable "oke_vcn1_mgmt_subnet_dns" {
   default = null
 }
 
-variable "add_oke_vcn1_pods_subnet" {
-  type    = bool
-  default = false
-}
-
 variable "oke_vcn1_pods_subnet_name" {
   type    = string
   default = null
@@ -222,11 +217,6 @@ variable "oke_vcn2_mgmt_subnet_name" {
 variable "oke_vcn2_mgmt_subnet_dns" {
   type    = string
   default = null
-}
-
-variable "add_oke_vcn2_pods_subnet" {
-  type    = bool
-  default = false
 }
 
 variable "oke_vcn2_pods_subnet_name" {
@@ -346,11 +336,6 @@ variable "oke_vcn3_mgmt_subnet_name" {
 variable "oke_vcn3_mgmt_subnet_dns" {
   type    = string
   default = null
-}
-
-variable "add_oke_vcn3_pods_subnet" {
-  type    = bool
-  default = false
 }
 
 variable "oke_vcn3_pods_subnet_name" {
