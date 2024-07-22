@@ -1434,19 +1434,6 @@ locals {
                 destination        = "all-services"
                 destination_type   = "SERVICE_CIDR_BLOCK"
               }
-              # "SECURITY-VCN-RULE" = {
-              #   network_entity_key = "HUB-DRG"
-              #   description        = "To DRG."
-              #   destination        = "192.168.0.64/26"
-              #   destination_type   = "CIDR_BLOCK"
-
-              # },
-              # "SHARED-SERVICES-VCN-RULE" = {
-              #   network_entity_key = "HUB-DRG"
-              #   description        = "To DRG.",
-              #   destination        = "192.168.0.128/26",
-              #   destination_type   = "CIDR_BLOCK",
-              # }
             }
           }
         },
@@ -1469,7 +1456,6 @@ locals {
             }
           }
         },
-        #var.hub_vcn_ingress_route_table_network_entity_ocid != null ? {
         # Route table is attached to HUB VCN DRG attachment.
         (var.hub_vcn_ingress_route_table_network_entity_ocid != null) ? {
           "HUB-VCN-INGRESS-ROUTE-TABLE" = {
