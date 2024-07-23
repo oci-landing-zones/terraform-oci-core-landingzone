@@ -1,7 +1,7 @@
 # Copyright (c) 2024 Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 
-
+/* 
 locals {
   ### These variables can be overriden.
   custom_security_zones_defined_tags       = null
@@ -48,23 +48,24 @@ locals {
         name                    = "lz-security-zone-cis-level-1-recipe"
         description             = "CIS Level 1 recipe"
         compartment_id          = local.security_zone_target_compartments
-        security_policies_ocids = var.security_policies
+        security_policies_ocids = var.sz_security_policies
         cis_level               = "1"
       }
       CIS-L2-RECIPE = {
         name                    = "lz-security-zone-cis-level-2-recipe"
         description             = "CIS Level 2 recipe"
         compartment_id          = local.security_zone_target_compartments
-        security_policies_ocids = var.security_policies
+        security_policies_ocids = var.sz_security_policies
         cis_level               = "2"
       }
     }
   }
 }
 
-module "security_zones" {
+module "lz_security_zones" {
   count                        = var.enable_security_zones && length(local.security_zone_target_compartments) > 0 && var.extend_landing_zone_to_new_region == false ? 1 : 0
-  source                       = "github.com/oracle-quickstart/terraform-oci-cis-landing-zone-security/security_zones"
+  source                       = "github.com/oracle-quickstart/terraform-oci-cis-landing-zone-security//security_zones?ref=v0.1.6"
   tenancy_ocid                 = var.tenancy_ocid
   security_zones_configuration = local.security_zones_configuration
-}
+} 
+*/
