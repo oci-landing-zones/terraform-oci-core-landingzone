@@ -64,7 +64,7 @@ locals {
 
 module "lz_security_zones" {
   count                        = var.enable_security_zones && length(local.security_zone_target_compartments) > 0 && var.extend_landing_zone_to_new_region == false ? 1 : 0
-  source                       = "github.com/oracle-quickstart/terraform-oci-cis-landing-zone-security//security_zones?ref=v0.1.6"
+  source                       = "github.com/oracle-quickstart/terraform-oci-cis-landing-zone-security/security-zones?ref=v0.1.6"
   tenancy_ocid                 = var.tenancy_ocid
   security_zones_configuration = local.security_zones_configuration
 } 

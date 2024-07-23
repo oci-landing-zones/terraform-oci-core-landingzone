@@ -403,6 +403,7 @@ variableGroups:
       - "enable_service_connector"
       - "activate_service_connector"
       - "service_connector_target_kind"
+      - "onboard_logging_analytics"
       - "existing_service_connector_bucket_vault_compartment_id"
       - "existing_service_connector_bucket_vault_id"
       - "existing_service_connector_bucket_key_id"
@@ -3656,7 +3657,10 @@ variables:
       and:
         - ${enable_security_zones}
 
-  # Service Connector Hub For Audit Logs - Variables
+  # -------------------------------------------
+  # ----- Service Connector Hub - Audit Logs
+  #--------------------------------------------
+
   enable_service_connector:
     type: boolean
     required: true
@@ -3682,6 +3686,18 @@ variables:
       - streaming
       - functions
       - logginganalytics
+
+  onboard_logging_analytics:
+    type: boolean
+    required: true
+    title: "Onboard Logging Analytics?"
+    description: "Whether Logging Analytics will be enabled in the tenancy. If true, the Logging Analytics service will be enabled in the tenancy and a new Logging Analytics Namespace will be created. If false, the existing Logging Analytics namespace will be used. Only applicable if 'service_connector_target_kind' is set to 'logginganalytics'."
+    visible:
+      and:
+        - ${enable_service_connector}
+        - eq:
+            - service_connector_target_kind
+            - "logginganalytics"
 
   existing_service_connector_bucket_vault_compartment_id:
     type: oci:identity:compartment:id
