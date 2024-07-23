@@ -10,7 +10,7 @@ locals {
 
   all_lz_subnets = module.lz_network.provisioned_networking_resources.subnets
 
-  flow_logs = { for k, v in local.all_lz_subnets : k =>
+  flow_logs = { for k, v in local.all_lz_subnets : "${k}-FLOW-LOG" =>
     {
       name               = "${k}-flow-log"
       log_group_id       = "FLOW-LOGS-GROUP"
@@ -53,7 +53,7 @@ locals {
 
 module "lz_flow_logs" {
   depends_on              = [module.lz_network, module.lz_compartments]
-  source                  = "github.com/oracle-quickstart/terraform-oci-cis-landing-zone-observability/logging"
+  source                  = "github.com/oracle-quickstart/terraform-oci-cis-landing-zone-observability//logging?ref=v0.1.6"
   logging_configuration   = local.logging_configuration
   compartments_dependency = module.lz_compartments[0].compartments
 }
