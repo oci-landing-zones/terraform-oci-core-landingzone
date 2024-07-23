@@ -7,8 +7,10 @@ locals {
   #------------------------------------------------------------------------------------------------------
   custom_service_connector_name                      = null
   custom_service_connector_target_bucket_name        = null
+  custom_service_connector_target_bucket_key         = null
   custom_service_connector_target_object_name_prefix = null
   custom_service_connector_target_stream_name        = null
+  custom_service_connector_target_stream_key         = null
   custom_service_connector_target_log_group_name     = null
   custom_service_connector_target_policy_name        = null
 
@@ -57,8 +59,14 @@ locals {
   default_service_connector_target_bucket_name = "${var.service_label}-service-connector-bucket"
   service_connector_target_bucket_name         = local.custom_service_connector_target_bucket_name != null ? local.custom_service_connector_target_bucket_name : local.default_service_connector_target_bucket_name
 
+  default_service_connector_target_bucket_key = "SCH-BUCKET"
+  service_connector_target_bucket_key         = local.custom_service_connector_target_bucket_key != null ? local.custom_service_connector_target_bucket_key : local.default_service_connector_target_bucket_key
+
   default_service_connector_target_stream_name = "${var.service_label}-service-connector-stream"
   service_connector_target_stream_name         = local.custom_service_connector_target_stream_name != null ? local.custom_service_connector_target_stream_name : local.default_service_connector_target_stream_name
+
+  default_service_connector_target_stream_key = "SCH-STREAM"
+  service_connector_target_stream_key         = local.custom_service_connector_target_stream_key != null ? local.custom_service_connector_target_stream_key : local.default_service_connector_target_stream_key
 
   default_service_connector_target_object_name_prefix = "sch"
   service_connector_target_object_name_prefix         = local.custom_service_connector_target_object_name_prefix != null ? local.custom_service_connector_target_object_name_prefix : local.default_service_connector_target_object_name_prefix
@@ -88,9 +96,9 @@ locals {
         target = {
           kind               = var.service_connector_target_kind
           compartment_id     = local.security_compartment_id
-          bucket_name        = var.service_connector_target_kind == "objectstorage" ? local.service_connector_target_bucket_name : null
+          bucket_name        = var.service_connector_target_kind == "objectstorage" ? local.service_connector_target_bucket_key : null
           object_name_prefix = var.service_connector_target_kind == "objectstorage" ? local.service_connector_target_object_name_prefix : null
-          stream_id          = var.service_connector_target_kind == "streaming" ? (var.existing_service_connector_target_stream_id != null ? var.existing_service_connector_target_stream_id : local.service_connector_target_stream_name) : null
+          stream_id          = var.service_connector_target_kind == "streaming" ? (var.existing_service_connector_target_stream_id != null ? var.existing_service_connector_target_stream_id : local.service_connector_target_stream_key) : null
           function_id        = var.service_connector_target_kind == "functions" ? var.existing_service_connector_target_function_id : null
           log_group_id       = var.service_connector_target_kind == "logginganalytics" ? local.logging_analytics_log_group_key : null
         }
@@ -100,14 +108,14 @@ locals {
       }
     }
     buckets = var.service_connector_target_kind == "objectstorage" ? {
-      (local.service_connector_target_bucket_name) = {
+      (local.service_connector_target_bucket_key) = {
         name       = local.service_connector_target_bucket_name
         cis_level  = var.cis_level
         kms_key_id = var.existing_service_connector_bucket_key_id
       }
     } : {}
     streams = var.service_connector_target_kind == "streaming" && var.existing_service_connector_target_stream_id == null ? {
-      (local.service_connector_target_stream_name) = {
+      (local.service_connector_target_stream_key) = {
         name = local.service_connector_target_stream_name
       }
     } : {}
@@ -116,7 +124,7 @@ locals {
 
 module "lz_service_connector_hub" {
   count                            = var.enable_service_connector ? 1 : 0
-  source                           = "github.com/oracle-quickstart/terraform-oci-cis-landing-zone-observability/service-connectors"
+  source                           = "github.com/oracle-quickstart/terraform-oci-cis-landing-zone-observability//service-connectors?ref=v0.1.6"
   tenancy_ocid                     = var.tenancy_ocid
   service_connectors_configuration = local.service_connectors_configuration
   logs_dependency                  = var.service_connector_target_kind == "logginganalytics" ? module.lz_logging_analytics[0].logging_analytics_log_groups : null
