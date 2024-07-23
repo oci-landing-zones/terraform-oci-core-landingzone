@@ -187,5 +187,5 @@ locals {
 
   exainfra_compartment_name = var.extend_landing_zone_to_new_region == false && local.enable_exainfra_compartment == true ? module.lz_compartments[0].compartments[local.exainfra_compartment_key].name : local.provided_exainfra_compartment_name
   #exainfra_compartment_id   = var.extend_landing_zone_to_new_region == false && local.enable_exainfra_compartment == true ? module.lz_compartments[0].compartments[local.exainfra_compartment_key].id : data.oci_identity_compartments.exainfra.compartments[0].id
-  exainfra_compartment_id = var.extend_landing_zone_to_new_region == false && local.enable_exainfra_compartment == true ? module.lz_compartments.compartments[local.exainfra_compartment_key].id : length(data.oci_identity_compartments.exainfra.compartments) > 0 ? data.oci_identity_compartments.exainfra.compartments[0].id : null
+  exainfra_compartment_id = var.extend_landing_zone_to_new_region == false && local.enable_exainfra_compartment == true ? module.lz_compartments[0].compartments[local.exainfra_compartment_key].id : length(data.oci_identity_compartments.exainfra.compartments) > 0 ? data.oci_identity_compartments.exainfra.compartments[0].id : null
 }
