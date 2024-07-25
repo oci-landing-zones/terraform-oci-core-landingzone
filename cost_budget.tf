@@ -49,7 +49,7 @@ locals {
         threshold_type : "PERCENTAGE"
         threshold_value : var.budget_alert_threshold
         name : "${var.service_label}-alert-on-forecasted-spent"
-        recipients : var.budget_alert_email_endpoints != null ? (join(", ", [for s in split(",", var.budget_alert_email_endpoints) : trimspace(s)])) : null
+        recipients : join(", ", [for s in var.budget_alert_email_endpoints : s])
         message : "Forecasted spending above ${var.budget_alert_threshold}% of configured budget."
         defined_tags  = local.cost_management_defined_tags
         freeform_tags = local.cost_management_freeform_tags
