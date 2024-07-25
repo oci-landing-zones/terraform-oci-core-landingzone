@@ -141,11 +141,11 @@ variable "create_budget" {
   description = "Create a budget."
 }
 variable "budget_alert_email_endpoints" {
-  type        = list(string)
-  default     = []
+  type        = string
+  default     = null
   description = "List of email addresses for all cost related notifications."
   validation {
-    condition     = length([for e in var.budget_alert_email_endpoints : e if length(regexall("^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$", e)) > 0]) == length(var.budget_alert_email_endpoints)
+    condition     = var.budget_alert_email_endpoints != null ? length([for e in split(",", var.budget_alert_email_endpoints) : e if length(regexall("^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$", trimspace(e))) > 0]) == length(split(",", var.budget_alert_email_endpoints)) : var.budget_alert_email_endpoints == null
     error_message = "Validation failed budget_alert_email_endpoints: invalid email address."
   }
 }
