@@ -13,7 +13,7 @@ locals {
 }
 
 module "lz_budgets" {
-  count                 = var.extend_landing_zone_to_new_region == false ? 1 : 0
+  count                 = var.extend_landing_zone_to_new_region == false && var.create_budget ? 1 : 0
   source                = "github.com/oracle-quickstart/terraform-oci-cis-landing-zone-governance//budgets?ref=v0.1.2"
   tenancy_ocid          = var.tenancy_ocid
   budgets_configuration = local.budgets_configuration
@@ -33,7 +33,7 @@ locals {
   #--------------------------------------------------------------------------
   # Budgets - Compartments
   #--------------------------------------------------------------------------
-  compartment_based_budget = var.create_budget == true ? {
+  compartment_based_budget = {
     COMPARTMENT-BASED-BUDGET = {
       name : local.custom_budget_display_name != null ? local.custom_budget_display_name : "${var.service_label}-main-budget"
       description : local.use_enclosing_compartment == true ? "Tracks spending from the enclosing compartment level and down" : "Tracks spending across the tenancy"
@@ -55,7 +55,7 @@ locals {
         freeform_tags = local.cost_management_freeform_tags
       }
     }
-  } : {}
+  }
 
   #--------------------------------------------------------------------------
   #----- Cost Management - Budget configuration definition. Input to module.
