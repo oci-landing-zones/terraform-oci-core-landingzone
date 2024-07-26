@@ -3900,4 +3900,3 @@ variables:
     required: false
     visible: create_budget
     description: "List of email addresses for budget alerts. (Type an email address and hit enter to enter multiple values)"
-   
