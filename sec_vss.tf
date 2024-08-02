@@ -14,7 +14,7 @@ locals {
 
 #-- VSS is a regional service. As such, we must not skip provisioning when extending Landing Zone to a new region.
 module "lz_scanning" {
-  source = "github.com/oracle-quickstart/terraform-oci-cis-landing-zone-security/vss"
+  source = "github.com/oracle-quickstart/terraform-oci-cis-landing-zone-security//vss?ref=v0.1.6"
   # depends_on = [null_resource.wait_on_services_policy]
   count                  = var.vss_create ? 1 : 0
   scanning_configuration = local.scanning_configuration
