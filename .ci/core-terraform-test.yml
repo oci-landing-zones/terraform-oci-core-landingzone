@@ -24,6 +24,8 @@ core-lz-get-test-cases:
     - unzip $TEST_CASES_ZIP
     - export TEST_CASES_DIR=${TEST_CASES_ZIP::-4}
     - echo $TEST_CASES_DIR
+    - python3 /home/gitlab-runner/pipeline-tools/preprocessor.py $TEST_CASES_DIR -f tfvars.template -d .
+    - ls 
     - echo "  ----- END - Getting Test Cases -----  "
 
 core-lz-prep-test-cases:
