@@ -19,6 +19,7 @@ cis-compliance-script-flake-job:
   script:
     - echo "  ----- BEGIN - Getting Test Cases -----  "
     - pwd
+    - ls
     - echo $BUCKET_NAME
     - echo $PROXY_SERVER
     - echo $NAMESPACE
