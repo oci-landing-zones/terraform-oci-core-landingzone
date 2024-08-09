@@ -26,5 +26,5 @@ core-lz-prep-test-cases:
     - TF_DIR=`pwd`
     - echo $TF_DIR
     - cd /home/gitlab-runner/pipeline-tools/terratest/
-    - go commit_test -count=1 -timeout 30m -p 1 . | tee test_output.log
+    - go test -count=1 -timeout 30m -p 1 . | tee test_output.log
     - echo "  ----- END - Running Test Cases -----  "
