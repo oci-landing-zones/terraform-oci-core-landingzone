@@ -22,7 +22,7 @@ cis-compliance-script-flake-job:
     - pwd
     - ls
     - echo $BUCKET_NAME
-    - echo $PROXY_SERVER
+    - export https_proxy=$PROXY_SERVER
     - echo $NAMESPACE
     - oci os object get -bn $BUCKET_NAME --file $TEST_CASES_ZIP --name $TEST_CASES_ZIP -ns $LZTEAM_NAMESPACE
     - unzip $TEST_CASES_ZIP
