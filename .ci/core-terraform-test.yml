@@ -7,7 +7,6 @@ variables:
   NAMESPACE: $LZTEAM_NAMESPACE
   PROXY_SERVER: $PROXY_SERVER
   TEST_CASES_ZIP: $TEST_CASES_ZIP
-  TEST_CASES_DIR: ${TEST_CASES_ZIP::-4}
   PAR_LOCATION: ""
 
 core-lz-get-test-cases:
@@ -24,6 +23,7 @@ core-lz-get-test-cases:
     - cd /tmp
     - oci os object get -bn $BUCKET_NAME --file $TEST_CASES_ZIP --name $TEST_CASES_ZIP -ns $LZTEAM_NAMESPACE
     - unzip $TEST_CASES_ZIP
+    - export TEST_CASES_DIR=${TEST_CASES_ZIP::-4}
     - echo $TEST_CASES_DIR
     - echo "  ----- END - Getting Test Cases -----  "
 
