@@ -23,6 +23,6 @@ core-lz-prep-test-cases:
     - python3 /home/gitlab-runner/pipeline-tools/preprocessor.py $TEST_CASES_DIR -f tfvars.template -d .
     - terraform fmt
     - echo " Running Terratest "
-    - export TF_DIR=${pwd}
+    - TF_DIR=`pwd`
     - echo $TF_DIR
     - echo "  ----- END - Running Test Cases -----  "
