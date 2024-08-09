@@ -15,7 +15,8 @@ core-lz-prep-test-cases:
   #       - scripts/cis_reports.py
   script:
     - echo "  ----- BEGIN - Running Test Cases -----  "
-    - export https_proxy=$PROXY_SERVER
+    - export https_proxy=$PROXY_SERVER:80
+    - export http_proxy=$PROXY_SERVER:80
     - oci os object get -bn $BUCKET_NAME --file $TEST_CASES_ZIP --name $TEST_CASES_ZIP -ns $LZTEAM_NAMESPACE
     - unzip $TEST_CASES_ZIP
     - export TEST_CASES_DIR=${TEST_CASES_ZIP::-4}
