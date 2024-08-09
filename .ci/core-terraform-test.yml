@@ -1,0 +1,24 @@
+variables:
+  # WORKING_DIR: "/tmp/$CI_PIPELINE_ID"
+  # ISSUE_DIR: "$WORKING_DIR/issue"
+  # MAIN_DIR: "$WORKING_DIR/main"
+  # PIPELINE_TAR: "pipeline-$CI_PIPELINE_ID.tar.gz"
+  BUCKET_NAME: $BUCKET_NAME
+  NAMESPACE: "$LZTEAM_NAMESPACE"
+  PROXY_SERVER: $PROXY_SERVER
+  PAR_LOCATION: ""
+
+cis-compliance-script-flake-job:
+  stage: tf-get-test-case
+  tags:
+    - terraform
+  # rules:
+  #   - if: '$CI_PIPELINE_SOURCE == "push" || $CI_PIPELINE_SOURCE == "merge_request_event"'
+  #     changes:
+  #       - scripts/cis_reports.py
+  script:
+    - echo "  ----- BEGIN - Getting Test Cases -----  "
+    - pwd
+    - echo $BUCKET_NAME
+    - echo $PROXY_SERVER
+    - echo $NAMESPACE
