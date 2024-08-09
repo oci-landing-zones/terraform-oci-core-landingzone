@@ -10,8 +10,8 @@ variables:
 
 cis-compliance-script-flake-job:
   stage: tf-get-test-case
-  tags:
-    - terraform
+  # tags:
+  #   - terraform
   # rules:
   #   - if: '$CI_PIPELINE_SOURCE == "push" || $CI_PIPELINE_SOURCE == "merge_request_event"'
   #     changes:
