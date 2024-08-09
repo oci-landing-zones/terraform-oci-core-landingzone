@@ -20,7 +20,6 @@ core-lz-get-test-cases:
   script:
     - echo "  ----- BEGIN - Getting Test Cases -----  "
     - export https_proxy=$PROXY_SERVER
-    - cd /tmp
     - oci os object get -bn $BUCKET_NAME --file $TEST_CASES_ZIP --name $TEST_CASES_ZIP -ns $LZTEAM_NAMESPACE
     - unzip $TEST_CASES_ZIP
     - export TEST_CASES_DIR=${TEST_CASES_ZIP::-4}
