@@ -9,8 +9,8 @@ variables:
   TEST_CASES_ZIP: $TEST_CASES_ZIP
   PAR_LOCATION: ""
 
-core-lz-get-test-cases:
-  stage: tf-get-test-case
+core-lz-prep-test-cases:
+  stage: tf-prep-test-case
   # tags:
   #   - terraform
   # rules:
@@ -25,11 +25,11 @@ core-lz-get-test-cases:
     - export TEST_CASES_DIR=${TEST_CASES_ZIP::-4}
     - echo $TEST_CASES_DIR
     - python3 /home/gitlab-runner/pipeline-tools/preprocessor.py $TEST_CASES_DIR -f tfvars.template -d .
-    - ls 
+    - terraform fmt
     - echo "  ----- END - Getting Test Cases -----  "
 
-core-lz-prep-test-cases:
-  stage: tf-prep-test-case
+core-lz-run-plan-test-cases:
+  stage: tf-run-test-case
   # tags:
   #   - terraform
   # rules:
