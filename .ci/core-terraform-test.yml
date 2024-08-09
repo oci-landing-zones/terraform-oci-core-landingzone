@@ -7,9 +7,10 @@ variables:
   NAMESPACE: $LZTEAM_NAMESPACE
   PROXY_SERVER: $PROXY_SERVER
   TEST_CASES_ZIP: $TEST_CASES_ZIP
+  TEST_CASES_DIR: ${TEST_CASES_ZIP::-4}
   PAR_LOCATION: ""
 
-cis-compliance-script-flake-job:
+core-lz-get-test-cases:
   stage: tf-get-test-case
   # tags:
   #   - terraform
@@ -19,12 +20,21 @@ cis-compliance-script-flake-job:
   #       - scripts/cis_reports.py
   script:
     - echo "  ----- BEGIN - Getting Test Cases -----  "
-    - pwd
-    - ls
-    - echo $BUCKET_NAME
     - export https_proxy=$PROXY_SERVER
-    - echo $NAMESPACE
+    - cd /tmp
     - oci os object get -bn $BUCKET_NAME --file $TEST_CASES_ZIP --name $TEST_CASES_ZIP -ns $LZTEAM_NAMESPACE
     - unzip $TEST_CASES_ZIP
-    - ls
-    - echo "  ----- END - 5 Getting Test Cases -----  "
+    - echo $TEST_CASES_DIR
+    - echo "  ----- END - Getting Test Cases -----  "
+
+core-lz-prep-test-cases:
+  stage: tf-prep-test-case
+  # tags:
+  #   - terraform
+  # rules:
+  #   - if: '$CI_PIPELINE_SOURCE == "push" || $CI_PIPELINE_SOURCE == "merge_request_event"'
+  #     changes:
+  #       - scripts/cis_reports.py
+  script:
+    - echo "  ----- BEGIN - Prepping Test Cases -----  "
+    - echo "  ----- END - Prepping Test Cases -----  "

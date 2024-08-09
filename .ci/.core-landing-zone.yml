@@ -8,3 +8,4 @@ include:
 
 stages:
   - tf-get-test-case
+  - tf-prep-test-case
