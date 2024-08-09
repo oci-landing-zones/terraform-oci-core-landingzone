@@ -4,8 +4,9 @@ variables:
   # MAIN_DIR: "$WORKING_DIR/main"
   # PIPELINE_TAR: "pipeline-$CI_PIPELINE_ID.tar.gz"
   BUCKET_NAME: $BUCKET_NAME
-  NAMESPACE: "$LZTEAM_NAMESPACE"
+  NAMESPACE: $LZTEAM_NAMESPACE
   PROXY_SERVER: $PROXY_SERVER
+  TEST_CASES_ZIP: $TEST_CASES_ZIP
   PAR_LOCATION: ""
 
 cis-compliance-script-flake-job:
@@ -23,4 +24,7 @@ cis-compliance-script-flake-job:
     - echo $BUCKET_NAME
     - echo $PROXY_SERVER
     - echo $NAMESPACE
+    - oci os object get -bn $BUCKET_NAME --file $TEST_CASES_ZIP --name $TEST_CASES_ZIP -ns $LZTEAM_NAMESPACE
+    - unzip $TEST_CASES_ZIP
+    - ls
     - echo "  ----- END - 5 Getting Test Cases -----  "
