@@ -7,5 +7,5 @@ include:
   - /.ci/core-terraform-test.yml
 
 stages:
-  - tf-get-test-case
   - tf-prep-test-case
+  - tf-run-test-case
