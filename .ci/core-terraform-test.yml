@@ -25,7 +25,6 @@ core-lz-prep-test-cases:
     - terraform fmt
     - echo " Running Terratest "
     - TF_DIR=`pwd`
-    - echo $TF_DIR
     # - terraform init 
     # - terraform plan -var-file=./test-vss.tfvars --out test_vss.out
     - cd /home/gitlab-runner/terratest
