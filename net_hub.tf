@@ -28,19 +28,19 @@ locals {
         display_name = (local.hub_options[var.hub_deployment_option] == 1 || local.hub_options[var.hub_deployment_option] == 3) ? "${var.service_label}-hub-drg" : null
         drg_id       = (local.hub_options[var.hub_deployment_option] == 2 || local.hub_options[var.hub_deployment_option] == 4) ? var.existing_drg_ocid : null
         drg_attachments = merge(
-          (local.hub_options[var.hub_deployment_option] == 3) ? {
+          {
             "HUB-VCN-ATTACHMENT" = {
               display_name = "${coalesce(var.hub_vcn_name, "${var.service_label}-hub-vcn")}-attachment"
               # DRG route table for the Hub VCN attachment. It defines the next hop for traffic that enters the DRG via this attachment.
-              drg_route_table_key = "HUB-VCN-DRG-ROUTE-TABLE"
+              drg_route_table_key = (local.hub_options[var.hub_deployment_option] == 1 || local.hub_options[var.hub_deployment_option] == 2) ? "HUB-VCN-DRG-ROUTE-TABLE" : null
               network_details = {
                 attached_resource_key = "HUB-VCN"
                 type                  = "VCN"
                 # HuB VCN ingress route table for the DRG. It defines how traffic that leaves the DRG is routed within the VCN.
-                route_table_key = (var.hub_vcn_ingress_route_table_network_entity_ocid != null) ? "HUB-VCN-INGRESS-ROUTE-TABLE" : null
+                route_table_key = (var.hub_vcn_east_west_entry_point_ocid != null) ? "HUB-VCN-INGRESS-ROUTE-TABLE" : null
               }
             }
-          } : {},
+          },
           (var.add_tt_vcn1 == true && var.tt_vcn1_attach_to_drg == true) ? {
             "TT-VCN-1-ATTACHMENT" = {
               display_name = "${coalesce(var.tt_vcn1_name, "${var.service_label}-three-tier-vcn-1")}-attachment"
@@ -142,61 +142,70 @@ locals {
           } : {}
         )
         drg_route_tables = merge(
-          (local.hub_options[var.hub_deployment_option] == 3) ? {
+          (local.hub_options[var.hub_deployment_option] == 1 || local.hub_options[var.hub_deployment_option] == 2) ? {
             "HUB-VCN-DRG-ROUTE-TABLE" = {
               display_name                      = "${coalesce(var.hub_vcn_name, "${var.service_label}-hub-vcn")}-drg-route-table"
               import_drg_route_distribution_key = "HUB-VCN-DRG-IMPORT-ROUTE-DISTRIBUTION"
             }
           } : {},
-          (var.add_tt_vcn1 == true && var.tt_vcn1_attach_to_drg == true && length(var.tt_vcn1_routable_vcns) > 0) ? {
+          (var.add_tt_vcn1 == true && var.tt_vcn1_attach_to_drg == true && length(var.tt_vcn1_routable_vcns) > 0 && 
+           (local.hub_options[var.hub_deployment_option] == 1 || local.hub_options[var.hub_deployment_option] == 2)) ? {
             "TT-VCN-1-DRG-ROUTE-TABLE" = {
               display_name                      = "${coalesce(var.tt_vcn1_name, "${var.service_label}-three-tier-vcn-1")}-drg-route-table"
               import_drg_route_distribution_key = "TT-VCN-1-DRG-IMPORT-ROUTE-DISTRIBUTION"
             }
           } : {},
-          (var.add_tt_vcn2 == true && var.tt_vcn2_attach_to_drg == true && length(var.tt_vcn2_routable_vcns) > 0) ? {
+          (var.add_tt_vcn2 == true && var.tt_vcn2_attach_to_drg == true && length(var.tt_vcn2_routable_vcns) > 0 && 
+           (local.hub_options[var.hub_deployment_option] == 1 || local.hub_options[var.hub_deployment_option] == 2)) ? {
             "TT-VCN-2-DRG-ROUTE-TABLE" = {
               display_name                      = "${coalesce(var.tt_vcn2_name, "${var.service_label}-three-tier-vcn-2")}-drg-route-table"
               import_drg_route_distribution_key = "TT-VCN-2-DRG-IMPORT-ROUTE-DISTRIBUTION"
             }
           } : {},
-          (var.add_tt_vcn3 == true && var.tt_vcn3_attach_to_drg == true && length(var.tt_vcn3_routable_vcns) > 0) ? {
+          (var.add_tt_vcn3 == true && var.tt_vcn3_attach_to_drg == true && length(var.tt_vcn3_routable_vcns) > 0 &&
+           (local.hub_options[var.hub_deployment_option] == 1 || local.hub_options[var.hub_deployment_option] == 2)) ? {
             "TT-VCN-3-DRG-ROUTE-TABLE" = {
               display_name                      = "${coalesce(var.tt_vcn3_name, "${var.service_label}-three-tier-vcn-3")}-drg-route-table"
               import_drg_route_distribution_key = "TT-VCN-3-DRG-IMPORT-ROUTE-DISTRIBUTION"
             }
           } : {},
-          (var.add_exa_vcn1 == true && var.exa_vcn1_attach_to_drg == true && length(var.exa_vcn1_routable_vcns) > 0) ? {
+          (var.add_exa_vcn1 == true && var.exa_vcn1_attach_to_drg == true && length(var.exa_vcn1_routable_vcns) > 0 && 
+           (local.hub_options[var.hub_deployment_option] == 1 || local.hub_options[var.hub_deployment_option] == 2)) ? {
             "EXA-VCN-1-DRG-ROUTE-TABLE" = {
               display_name                      = "${coalesce(var.exa_vcn1_name, "${var.service_label}-exadata-vcn-1")}-drg-route-table"
               import_drg_route_distribution_key = "EXA-VCN-1-DRG-IMPORT-ROUTE-DISTRIBUTION"
             }
           } : {},
-          (var.add_exa_vcn2 == true && var.exa_vcn2_attach_to_drg == true && length(var.exa_vcn2_routable_vcns) > 0) ? {
+          (var.add_exa_vcn2 == true && var.exa_vcn2_attach_to_drg == true && length(var.exa_vcn2_routable_vcns) > 0) && 
+           (local.hub_options[var.hub_deployment_option] == 1 || local.hub_options[var.hub_deployment_option] == 2) ? {
             "EXA-VCN-2-DRG-ROUTE-TABLE" = {
               display_name                      = "${coalesce(var.exa_vcn2_name, "${var.service_label}-exadata-vcn-2")}-drg-route-table"
               import_drg_route_distribution_key = "EXA-VCN-2-DRG-IMPORT-ROUTE-DISTRIBUTION"
             }
           } : {},
-          (var.add_exa_vcn3 == true && var.exa_vcn3_attach_to_drg == true && length(var.exa_vcn3_routable_vcns) > 0) ? {
+          (var.add_exa_vcn3 == true && var.exa_vcn3_attach_to_drg == true && length(var.exa_vcn3_routable_vcns) > 0) && 
+           (local.hub_options[var.hub_deployment_option] == 1 || local.hub_options[var.hub_deployment_option] == 2) ? {
             "EXA-VCN-3-DRG-ROUTE-TABLE" = {
               display_name                      = "${coalesce(var.exa_vcn3_name, "${var.service_label}-exadata-vcn-3")}-drg-route-table"
               import_drg_route_distribution_key = "EXA-VCN-3-DRG-IMPORT-ROUTE-DISTRIBUTION"
             }
           } : {},
-          (var.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true && length(var.oke_vcn1_routable_vcns) > 0) ? {
+          (var.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true && length(var.oke_vcn1_routable_vcns) > 0) && 
+           (local.hub_options[var.hub_deployment_option] == 1 || local.hub_options[var.hub_deployment_option] == 2) ? {
             "OKE-VCN-1-DRG-ROUTE-TABLE" = {
               display_name                      = "${coalesce(var.oke_vcn1_name, "${var.service_label}-oke-vcn-1")}-drg-route-table"
               import_drg_route_distribution_key = "OKE-VCN-1-DRG-IMPORT-ROUTE-DISTRIBUTION"
             }
           } : {},
-          (var.add_oke_vcn2 == true && var.oke_vcn2_attach_to_drg == true && length(var.oke_vcn2_routable_vcns) > 0) ? {
+          (var.add_oke_vcn2 == true && var.oke_vcn2_attach_to_drg == true && length(var.oke_vcn2_routable_vcns) > 0) && 
+           (local.hub_options[var.hub_deployment_option] == 1 || local.hub_options[var.hub_deployment_option] == 2) ? {
             "OKE-VCN-2-DRG-ROUTE-TABLE" = {
               display_name                      = "${coalesce(var.oke_vcn2_name, "${var.service_label}-oke-vcn-2")}-drg-route-table"
               import_drg_route_distribution_key = "OKE-VCN-2-DRG-IMPORT-ROUTE-DISTRIBUTION"
             }
           } : {},
-          (var.add_oke_vcn3 == true && var.oke_vcn3_attach_to_drg == true && length(var.oke_vcn3_routable_vcns) > 0) ? {
+          (var.add_oke_vcn3 == true && var.oke_vcn3_attach_to_drg == true && length(var.oke_vcn3_routable_vcns) > 0) && 
+           (local.hub_options[var.hub_deployment_option] == 1 || local.hub_options[var.hub_deployment_option] == 2) ? {
             "OKE-VCN-3-DRG-ROUTE-TABLE" = {
               display_name                      = "${coalesce(var.oke_vcn3_name, "${var.service_label}-oke-vcn-3")}-drg-route-table"
               import_drg_route_distribution_key = "OKE-VCN-3-DRG-IMPORT-ROUTE-DISTRIBUTION"
@@ -205,7 +214,7 @@ locals {
 
         )
         drg_route_distributions = merge(
-          (local.hub_options[var.hub_deployment_option] == 3) ? {
+          (local.hub_options[var.hub_deployment_option] == 1 || local.hub_options[var.hub_deployment_option] == 2) ? {
             # This import distribution makes its importing DRG route tables to have the referred drg_attachment_key as the next-hop attachment.
             # In this case, since there's no "VCN ingress route table for the DRG", the VCN CIDRs and subnet CIDRs of the underlying VCN are imported by those DRG route tables.
             "HUB-VCN-DRG-IMPORT-ROUTE-DISTRIBUTION" = {
@@ -1474,15 +1483,29 @@ locals {
           }
         },
         # Route table is attached to HUB VCN DRG attachment.
-        (var.hub_vcn_ingress_route_table_network_entity_ocid != null) ? {
+        (var.hub_vcn_east_west_entry_point_ocid != null) ? {
           "HUB-VCN-INGRESS-ROUTE-TABLE" = {
             display_name = "hub-vcn-ingress-route-table"
             route_rules = {
               "ANYWHERE-RULE" = {
-                description       = "All traffic goes to ${var.hub_vcn_ingress_route_table_network_entity_ocid}."
+                description       = "All traffic goes to ${var.hub_vcn_east_west_entry_point_ocid}."
                 destination       = "0.0.0.0/0"
                 destination_type  = "CIDR_BLOCK"
-                network_entity_id = var.hub_vcn_ingress_route_table_network_entity_ocid
+                network_entity_id = var.hub_vcn_east_west_entry_point_ocid
+              }
+            }
+          }
+        } : {},
+        # Route table is attached to HUB VCN Internet Gateway.
+        (var.hub_vcn_north_south_entry_point_ocid != null) ? {
+          "HUB-VCN-INTERNET-GATEWAY-ROUTE-TABLE" = {
+            display_name = "hub-vcn-internet-gateway-route-table"
+            route_rules = {
+              "ANYWHERE-RULE" = {
+                description       = "All traffic goes to ${var.hub_vcn_north_south_entry_point_ocid}."
+                destination       = "0.0.0.0/0"
+                destination_type  = "CIDR_BLOCK"
+                network_entity_id = var.hub_vcn_north_south_entry_point_ocid
               }
             }
           }
@@ -1667,6 +1690,7 @@ locals {
           "HUB-VCN-INTERNET-GATEWAY" = {
             enabled      = true
             display_name = "internet-gateway"
+            route_table_key = var.hub_vcn_north_south_entry_point_ocid != null ? "HUB-VCN-INTERNET-GATEWAY-ROUTE-TABLE" : null
           }
         }
         nat_gateways = {
