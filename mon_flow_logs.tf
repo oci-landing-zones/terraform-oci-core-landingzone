@@ -56,4 +56,5 @@ module "lz_flow_logs" {
   source                  = "github.com/oracle-quickstart/terraform-oci-cis-landing-zone-observability//logging?ref=v0.1.6"
   logging_configuration   = local.logging_configuration
   compartments_dependency = module.lz_compartments[0].compartments
+  tenancy_ocid            = var.tenancy_ocid
 }
