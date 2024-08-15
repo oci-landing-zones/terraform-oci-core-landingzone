@@ -21,23 +21,12 @@ variableGroups:
       - "customize_iam"
       - "customize_net"
 
-  - title: "Base Compartments"
+  - title: "Compartments"
     variables:
       - "enclosing_compartment_options"
       - "enclosing_compartment_parent_ocid"
       - "existing_enclosing_compartment_ocid"
-      - "customize_default_compartments"
-      - "enclosing_cmp_name"
-      - "deploy_network_cmp"
-      - "network_cmp_name"
-      - "deploy_security_cmp"
-      - "security_cmp_name"
-      - "deploy_app_cmp"
-      - "app_cmp_name"
-      - "deploy_database_cmp"
-      - "database_cmp_name"
       - "deploy_exainfra_cmp"
-      - "exainfra_cmp_name"
     visible:
       and:
         - eq:
@@ -46,21 +35,6 @@ variableGroups:
         - eq:
           - ${customize_iam}
           - true  
-
-  - title: "Workload Compartments"
-    variables:
-      - "deploy_app_workload_cmps"
-      - "app_workload_cmp_names"
-      - "deploy_database_workload_cmps"
-      - "database_workload_cmp_names"
-    visible:
-      and:
-        - eq:
-          - ${extend_landing_zone_to_new_region}
-          - false
-        - eq:
-          - ${customize_iam}
-          - true
 
   - title: "Identity Domains"
     variables:
@@ -460,7 +434,7 @@ variables:
   cis_level:
     type: enum
     title: CIS Level
-    description: "Determines CIS OCI Benchmark Level of services deployed by the CIS Landing Zone in the tenancy will be configured. Level 1 is be practical and prudent. Level 2 is intended for environments where security is more critical than manageability and usability. Level 2 drives the creation of an OCI Vault, buckets encryption with a customer managed key, write logs for buckets and the usage of specific policies in Security Zones. More info: <a href=\"https://www.cisecurity.org/benchmark/oracle_cloud\">CIS OCI Benchmark</a>."
+    description: "Determines CIS OCI Benchmark Level of services deployed by the CIS Landing Zone in the tenancy will be configured. Level 1 (default) is be practical and prudent. Level 2 is intended for environments where security is more critical than manageability and usability. Level 2 drives the creation of an OCI Vault, buckets encryption with a customer managed key, write logs for buckets and the usage of specific policies in Security Zones. More info: <a href=\"https://www.cisecurity.org/benchmark/oracle_cloud\">CIS OCI Benchmark</a>."
     enum:
       - "1"
       - "2"
@@ -470,9 +444,9 @@ variables:
     type: string
     title: "Service Label"
     minLength: 1
-    maxLength: 8
-    pattern: "^[A-Za-z][A-Za-z0-9]{1,7}$"
-    description: "A unique label that gets prepended to all resources created by the Landing Zone."
+    maxLength: 15
+    pattern: "^[A-Za-z][A-Za-z0-9]{1,14}$"
+    description: "A unique label that gets prepended to all resources deployed by the Landing Zone. Max length: 15 characters."
     required: true
 
   extend_landing_zone_to_new_region:
@@ -492,14 +466,14 @@ variables:
   customize_net:
     type: boolean
     title: "Define Networking?"
-    description: "Check to define networking resources."
+    description: "Check to define networking resources. By default, the Landing Zone does NOT deploy any networks."
     default: false
     visible: true  
 
   enclosing_compartment_options:
     type: enum
-    title: "Deploy Base Compartments in Enclosing Compartment?"
-    description: "Whether the Landing Zone compartments are created within an enclosing compartment. If 'Yes, deploy new' is selected, the enclosing compartment is created in the Root compartment. If 'No' is selected, the Landing Zone compartments are created in the Root compartment. In either case, permission to manage compartments is required at the tenancy level."
+    title: "Deploy Compartments in Enclosing Compartment?"
+    description: "Whether the Landing Zone compartments (Network, Security, App, Database, Exadata) are created within an enclosing top compartment. If 'Yes, deploy new' is selected, the enclosing compartment is created in the compartment selected in 'Enclosing Compartment Parent'. If 'Yes, use existing' is selected, the Landing Zone compartments are created in the compartment selected in 'Enclosing Compartment'. If 'No' is selected, the Landing Zone compartments are created in the Root compartment."
     required: true
     enum:
       - "Yes, deploy new"
@@ -509,8 +483,8 @@ variables:
   
   enclosing_compartment_parent_ocid:
     type: oci:identity:compartment:id
-    title: "Enclosing compartment parent"
-    description: "Select the parent compartment of the enclosing compartment that is created."
+    title: "Enclosing Compartment Parent"
+    description: "Select the existing compartment where Landing Zone enclosing compartment is created."
     required: false 
     visible:
       eq:
@@ -519,163 +493,20 @@ variables:
 
   existing_enclosing_compartment_ocid:
     type: oci:identity:compartment:id
-    title: "Existing enclosing compartment"
-    description: "Select the existing compartment where Landing Zone base compartments are created."
+    title: "Enclosing Compartment"
+    description: "Select the existing compartment where Landing Zone compartments (Network, Security, App, Database) are created."
     required: false 
     visible:
       eq:
         - ${enclosing_compartment_options}
         - "Yes, use existing"
 
-  customize_default_compartments:
-    type: boolean
-    title: "Customize Base Compartments?"
-    description: "Choose which compartments are deployed and assign them custom names."
-    default: false
-
-  enclosing_cmp_name:
-    type: string
-    title: "Enclosing Compartment Name."
-    description: "The enclosing compartment custom name."
-    required: false
-    visible: 
-      and:
-        - ${customize_default_compartments}
-        - eq:
-          - ${enclosing_compartment_options}
-          - "Yes, deploy new"
-
-  deploy_network_cmp:
-    type: boolean
-    title: "Deploy Network Compartment?"
-    description: "Whether Network compartment is deployed"
-    default: true
-    visible: customize_default_compartments
-
-  network_cmp_name:
-    type: string
-    title: "Network Compartment Custom Name."
-    description: "The Network compartment custom name. If not set, a default name is provided."
-    required: false
-    visible: 
-      and:
-        - deploy_network_cmp  
-        - customize_default_compartments
-
-  deploy_security_cmp:
-    type: boolean
-    title: "Deploy Security Compartment?"
-    description: "Whether Security compartment is deployed"
-    default: true
-    visible: customize_default_compartments
-
-  security_cmp_name:
-    type: string
-    title: "Security Compartment Custom Name."
-    description: "The Security compartment custom name. If not set, a default name is provided."
-    required: false
-    visible: 
-      and:
-        - deploy_security_cmp  
-        - customize_default_compartments    
-
-  deploy_app_cmp:
-    type: boolean
-    title: "Deploy Application Compartment?"
-    description: "Whether Application compartment is deployed"
-    default: true
-    visible: customize_default_compartments
-
-  app_cmp_name:
-    type: string
-    title: "Application Compartment Custom Name."
-    description: "The Application compartment custom name. If not set, a default name is provided."
-    required: false
-    visible: 
-      and:
-        - deploy_app_cmp  
-        - customize_default_compartments  
-
-  deploy_database_cmp:
-    type: boolean
-    title: "Deploy Database Compartment?"
-    description: "Whether Database compartment is deployed"
-    default: true
-    visible: customize_default_compartments
-
-  database_cmp_name:
-    type: string
-    title: "Database Compartment Custom Name."
-    description: "The Database compartment custom name. If not set, a default name is provided."
-    required: false
-    visible: 
-      and:
-        - deploy_database_cmp  
-        - customize_default_compartments  
-
   deploy_exainfra_cmp:
     type: boolean
     title: "Deploy ExaCS Infra Compartment?"
-    description: "Whether ExaCS Infra compartment is deployed."
+    description: "Whether a separate compartment for Exadata Cloud Service Infrastructure is deployed."
     default: false
-    visible: customize_default_compartments
-
-  exainfra_cmp_name:
-    type: string
-    title: "ExaCS Infra Compartment Custom Name"
-    description: "The ExaCS Infra compartment custom name. If not set, a default name is provided."
-    required: false
-    visible: 
-      and:
-        - deploy_exainfra_cmp  
-        - customize_default_compartments  
-
-  deploy_app_workload_cmps:
-    type: boolean
-    title: "Deploy Application Workload Compartments?"
-    description: "Application workload compartments are deployed as sub-compartments of base Application compartment."
-    default: false
-    visible: deploy_app_cmp
-
-  app_workload_cmp_names:
-    type: array
-    items:
-      type: string
-    uniqueItems: true
-    maxItems: 3
-    minItems: 1
-    title: "List of Application Workload Compartment Names"
-    description: "The list of Application workload compartment names to create. They are all created in the base Application compartment."
-    required: false
-    visible: 
-      and:
-        - deploy_app_workload_cmps
-        - deploy_app_cmp
-    default: [] 
-
-  deploy_database_workload_cmps:
-    type: boolean
-    title: "Deploy Database Workload Compartments?"
-    description: "Database workload compartments are deployed as sub-compartments of base Database compartment."
-    default: false
-    visible: deploy_database_cmp
-
-  database_workload_cmp_names:
-    type: array
-    items:
-      type: string
-    uniqueItems: true
-    maxItems: 3
-    minItems: 1
-    title: "List of Database Workload Compartment Names"
-    description: "The list of Database workload compartment names to create. They are all created in the base Database compartment."
-    required: false
-    visible: 
-      and:
-        - deploy_database_workload_cmps
-        - deploy_database_cmp
-    default: []  
-
+  
   deploy_id_domain:
     type: boolean
     title: "Deploy a non-default Identity Domain?"
@@ -3471,7 +3302,7 @@ variables:
             - ${hub_deployment_option}
             - "Yes, new VCN as hub with existing DRG"           
 
-  # -------------------------------------------
+# -------------------------------------------
 # ----- Networking - Hub Indoor Subnet
 #--------------------------------------------
   hub_vcn_indoor_subnet_name:
