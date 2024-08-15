@@ -11,7 +11,7 @@ locals {
       cidr_blocks                      = var.oke_vcn1_cidrs,
       dns_label                        = replace(coalesce(var.oke_vcn1_dns, "${var.service_label}-oke-vcn-1"), "-", "")
       block_nat_traffic                = false
-      subnets                          = merge(
+      subnets = merge(
         {
           "OKE-VCN-1-API-SUBNET" = {
             cidr_block                 = coalesce(var.oke_vcn1_api_subnet_cidr, cidrsubnet(var.oke_vcn1_cidrs[0], 14, 0))
@@ -80,8 +80,8 @@ locals {
       )
       security_lists = merge({
         "OKE-VCN-1-API-SUBNET-SL" = {
-          display_name  = "${coalesce(var.oke_vcn1_api_subnet_name, "${var.service_label}-oke-vcn-1-api-subnet")}-security-list"
-          egress_rules  = []
+          display_name = "${coalesce(var.oke_vcn1_api_subnet_name, "${var.service_label}-oke-vcn-1-api-subnet")}-security-list"
+          egress_rules = []
           ingress_rules = [
             {
               description = "Allows inbound ICMP traffic for path discovery"
@@ -94,11 +94,11 @@ locals {
             }
           ]
         }
-      },
+        },
         {
           "OKE-VCN-1-WORKERS-SUBNET-SL" = {
-            display_name  = "${coalesce(var.oke_vcn1_workers_subnet_name, "${var.service_label}-oke-vcn-1-workers-subnet")}-security-list"
-            egress_rules  = []
+            display_name = "${coalesce(var.oke_vcn1_workers_subnet_name, "${var.service_label}-oke-vcn-1-workers-subnet")}-security-list"
+            egress_rules = []
             ingress_rules = [
               {
                 description = "Allows inbound ICMP traffic for path discovery"
@@ -114,8 +114,8 @@ locals {
         },
         {
           "OKE-VCN-1-SERVICES-SUBNET-SL" = {
-            display_name  = "${coalesce(var.oke_vcn1_services_subnet_name, "${var.service_label}-oke-vcn-1-services-subnet")}-security-list"
-            egress_rules  = []
+            display_name = "${coalesce(var.oke_vcn1_services_subnet_name, "${var.service_label}-oke-vcn-1-services-subnet")}-security-list"
+            egress_rules = []
             ingress_rules = [
               {
                 description = "Ingress ICMP for path discovery"
@@ -131,7 +131,7 @@ locals {
         },
         var.add_oke_vcn1_mgmt_subnet ? {
           "OKE-VCN-1-MGMT-SUBNET-SL" = {
-            display_name  = "${coalesce(var.oke_vcn1_mgmt_subnet_name, "${var.service_label}-oke-vcn-1-mgmt-subnet")}-security-list"
+            display_name = "${coalesce(var.oke_vcn1_mgmt_subnet_name, "${var.service_label}-oke-vcn-1-mgmt-subnet")}-security-list"
             ingress_rules = [
               {
                 description = "Allows inbound ICMP traffic for path discovery."
@@ -185,8 +185,8 @@ locals {
         } : {},
         upper(var.oke_vcn1_cni_type) == "NATIVE" ? {
           "OKE-VCN-1-PODS-SUBNET-SL" = {
-            display_name  = "${coalesce(var.oke_vcn1_pods_subnet_name, "${var.service_label}-oke-vcn-1-pods-subnet")}-security-list"
-            egress_rules  = []
+            display_name = "${coalesce(var.oke_vcn1_pods_subnet_name, "${var.service_label}-oke-vcn-1-pods-subnet")}-security-list"
+            egress_rules = []
             ingress_rules = [
               {
                 description = "Ingress ICMP for path discovery"
@@ -205,14 +205,14 @@ locals {
       route_tables = merge({
         "OKE-VCN-1-API-SUBNET-ROUTE-TABLE" = {
           display_name = "api-subnet-route-table"
-          route_rules  = merge({
+          route_rules = merge({
             "SGW-RULE" = {
               network_entity_key = "OKE-VCN-1-SERVICE-GATEWAY"
               description        = "Route for sgw"
               destination        = "all-services"
               destination_type   = "SERVICE_CIDR_BLOCK"
             }
-          },
+            },
             upper(var.oke_vcn1_cni_type) == "NATIVE" ? {
               "NATGW-RULE" = {
                 network_entity_key = "OKE-VCN-1-NAT-GATEWAY"
@@ -223,11 +223,11 @@ locals {
             } : {}
           )
         }
-      },
+        },
         {
           "OKE-VCN-1-WORKERS-SUBNET-ROUTE-TABLE" = {
             display_name = "workers-subnet-route-table"
-            route_rules  = merge({
+            route_rules = merge({
               "SGW-RULE" = {
                 network_entity_key = "OKE-VCN-1-SERVICE-GATEWAY"
                 description        = "Route for sgw"
@@ -240,7 +240,7 @@ locals {
                 destination        = "0.0.0.0/0"
                 destination_type   = "CIDR_BLOCK"
               }
-            },
+              },
               local.oke_vcn_1_drg_routing
             )
           }
@@ -248,7 +248,7 @@ locals {
         {
           "OKE-VCN-1-SERVICES-SUBNET-ROUTE-TABLE" = {
             display_name = "services-subnet-route-table"
-            route_rules  = {
+            route_rules = {
               "IGW-RULE" = {
                 network_entity_key = "OKE-VCN-1-INTERNET-GATEWAY"
                 description        = "Route for igw"
@@ -261,7 +261,7 @@ locals {
         var.add_oke_vcn1_mgmt_subnet ? {
           "OKE-VCN-1-MGMT-SUBNET-ROUTE-TABLE" = {
             display_name = "mgmt-subnet-route-table"
-            route_rules  = {
+            route_rules = {
               "SGW-RULE" = {
                 network_entity_key = "OKE-VCN-1-SERVICE-GATEWAY"
                 description        = "Route for sgw"
@@ -280,7 +280,7 @@ locals {
         upper(var.oke_vcn1_cni_type) == "NATIVE" ? {
           "OKE-VCN-1-PODS-SUBNET-ROUTE-TABLE" = {
             display_name = "pods-subnet-route-table"
-            route_rules  = merge({
+            route_rules = merge({
               "SGW-RULE" = {
                 network_entity_key = "OKE-VCN-1-SERVICE-GATEWAY"
                 description        = "Route for sgw"
@@ -293,7 +293,7 @@ locals {
                 destination        = "0.0.0.0/0"
                 destination_type   = "CIDR_BLOCK"
               }
-            },
+              },
               local.oke_vcn_1_drg_routing
             )
           }
@@ -409,7 +409,7 @@ locals {
                 dst_port_min = 6443
                 dst_port_max = 6443
               }
-            } : upper(var.oke_vcn1_cni_type) == "NATIVE" ? {
+              } : upper(var.oke_vcn1_cni_type) == "NATIVE" ? {
               "INGRESS-FROM-API-API-RULE" = {
                 description  = "Allow TCP ingress for Kubernetes control plane inter-communication."
                 stateless    = false
@@ -577,7 +577,7 @@ locals {
               dst_port_min = 30000
               dst_port_max = 32767
             }
-          },
+            },
             upper(var.oke_vcn1_cni_type) == "FLANNEL" ? {
               "INGRESS-FROM-MGMT-WORKERS-RULE" = {
                 description  = "Allows inbound SSH access from mgmt subnet."
@@ -588,7 +588,7 @@ locals {
                 dst_port_min = 22
                 dst_port_max = 22
               }
-            } : upper(var.oke_vcn1_cni_type) == "NATIVE" ? {
+              } : upper(var.oke_vcn1_cni_type) == "NATIVE" ? {
               "INGRESS-FROM-ANYWHERE-ICMP-WORKERS-RULE" = {
                 description = "Allow ICMP ingress to workers for path discovery."
                 stateless   = false
@@ -652,7 +652,7 @@ locals {
               icmp_type   = 3
               icmp_code   = 4
             }
-          },
+            },
             local.vcn_1_to_workers_subnet_cross_vcn_egress,
             local.vcn_1_to_pods_subnet_cross_vcn_egress
           )
@@ -666,11 +666,11 @@ locals {
               dst_port_min = 443
               dst_port_max = 443
             }
-          },
+            },
             local.vcn_1_to_services_subnet_cross_vcn_ingress
           )
         }
-      },
+        },
         var.add_oke_vcn1_mgmt_subnet ? {
           "OKE-VCN-1-MGMT-NSG" = {
             display_name = "mgmt-nsg"
@@ -689,7 +689,7 @@ locals {
                 dst         = "0.0.0.0/0"
                 dst_type    = "CIDR_BLOCK"
               }
-            },
+              },
               upper(var.oke_vcn1_cni_type) == "NATIVE" ? {
                 "EGRESS-TO-API-RULE" = {
                   description  = "Allows TCP outbound traffic from mgmt subnet to Kubernetes API server, for OKE management."
@@ -776,7 +776,7 @@ locals {
                 dst_port_min = 12250
                 dst_port_max = 12250
               }
-            },
+              },
               local.vcn_1_to_workers_subnet_cross_vcn_egress,
               local.vcn_1_to_services_subnet_cross_vcn_egress,
               local.vcn_1_to_pods_subnet_cross_vcn_egress
@@ -803,7 +803,7 @@ locals {
                 src         = "OKE-VCN-1-PODS-NSG"
                 src_type    = "NETWORK_SECURITY_GROUP"
               }
-            },
+              },
               local.vcn_1_to_pods_subnet_cross_vcn_ingress
             )
           }
@@ -840,7 +840,7 @@ locals {
       cidr_blocks                      = var.oke_vcn2_cidrs,
       dns_label                        = replace(coalesce(var.oke_vcn2_dns, "${var.service_label}-oke-vcn-2"), "-", "")
       block_nat_traffic                = false
-      subnets                          = merge(
+      subnets = merge(
         {
           "OKE-VCN-2-API-SUBNET" = {
             cidr_block                 = coalesce(var.oke_vcn2_api_subnet_cidr, cidrsubnet(var.oke_vcn2_cidrs[0], 14, 0))
@@ -910,7 +910,7 @@ locals {
       route_tables = merge({
         "OKE-VCN-2-API-SUBNET-ROUTE-TABLE" = {
           display_name = "api-subnet-route-table"
-          route_rules  = merge(
+          route_rules = merge(
             {
               "SGW-RULE" = {
                 network_entity_key = "OKE-VCN-2-SERVICE-GATEWAY"
@@ -929,11 +929,11 @@ locals {
             } : {}
           )
         }
-      },
+        },
         {
           "OKE-VCN-2-WORKERS-SUBNET-ROUTE-TABLE" = {
             display_name = "workers-subnet-route-table"
-            route_rules  = merge({
+            route_rules = merge({
               "SGW-RULE" = {
                 network_entity_key = "OKE-VCN-2-SERVICE-GATEWAY"
                 description        = "Route for sgw"
@@ -946,7 +946,7 @@ locals {
                 destination        = "0.0.0.0/0"
                 destination_type   = "CIDR_BLOCK"
               }
-            },
+              },
               local.oke_vcn_2_drg_routing
             )
           }
@@ -954,7 +954,7 @@ locals {
         {
           "OKE-VCN-2-SERVICES-SUBNET-ROUTE-TABLE" = {
             display_name = "services-subnet-route-table"
-            route_rules  = {
+            route_rules = {
               "IGW-RULE" = {
                 network_entity_key = "OKE-VCN-2-INTERNET-GATEWAY"
                 description        = "Route for igw"
@@ -967,7 +967,7 @@ locals {
         var.add_oke_vcn2_mgmt_subnet ? {
           "OKE-VCN-2-MGMT-SUBNET-ROUTE-TABLE" = {
             display_name = "mgmt-subnet-route-table"
-            route_rules  = {
+            route_rules = {
               "SGW-RULE" = {
                 network_entity_key = "OKE-VCN-2-SERVICE-GATEWAY"
                 description        = "Route for sgw"
@@ -986,7 +986,7 @@ locals {
         upper(var.oke_vcn2_cni_type) == "NATIVE" ? {
           "OKE-VCN-2-PODS-SUBNET-ROUTE-TABLE" = {
             display_name = "pods-subnet-route-table"
-            route_rules  = merge({
+            route_rules = merge({
               "SGW-RULE" = {
                 network_entity_key = "OKE-VCN-2-SERVICE-GATEWAY"
                 description        = "Route for sgw"
@@ -999,7 +999,7 @@ locals {
                 destination        = "0.0.0.0/0"
                 destination_type   = "CIDR_BLOCK"
               }
-            },
+              },
               local.oke_vcn_2_drg_routing
             )
           }
@@ -1008,8 +1008,8 @@ locals {
 
       security_lists = merge({
         "OKE-VCN-2-API-SUBNET-SL" = {
-          display_name  = "${coalesce(var.oke_vcn2_api_subnet_name, "${var.service_label}-oke-vcn-2-api-subnet")}-security-list"
-          egress_rules  = []
+          display_name = "${coalesce(var.oke_vcn2_api_subnet_name, "${var.service_label}-oke-vcn-2-api-subnet")}-security-list"
+          egress_rules = []
           ingress_rules = [
             {
               description = "Allows inbound ICMP traffic for path discovery"
@@ -1022,11 +1022,11 @@ locals {
             }
           ]
         }
-      },
+        },
         {
           "OKE-VCN-2-WORKERS-SUBNET-SL" = {
-            display_name  = "${coalesce(var.oke_vcn2_workers_subnet_name, "${var.service_label}-oke-vcn-2-workers-subnet")}-security-list"
-            egress_rules  = []
+            display_name = "${coalesce(var.oke_vcn2_workers_subnet_name, "${var.service_label}-oke-vcn-2-workers-subnet")}-security-list"
+            egress_rules = []
             ingress_rules = [
               {
                 description = "Allows inbound ICMP traffic for path discovery"
@@ -1042,8 +1042,8 @@ locals {
         },
         {
           "OKE-VCN-2-SERVICES-SUBNET-SL" = {
-            display_name  = "${coalesce(var.oke_vcn2_services_subnet_name, "${var.service_label}-oke-vcn-2-services-subnet")}-security-list"
-            egress_rules  = []
+            display_name = "${coalesce(var.oke_vcn2_services_subnet_name, "${var.service_label}-oke-vcn-2-services-subnet")}-security-list"
+            egress_rules = []
             ingress_rules = [
               {
                 description = "Ingress ICMP for path discovery"
@@ -1059,7 +1059,7 @@ locals {
         },
         var.add_oke_vcn2_mgmt_subnet ? {
           "OKE-VCN-2-MGMT-SUBNET-SL" = {
-            display_name  = "${coalesce(var.oke_vcn2_mgmt_subnet_name, "${var.service_label}-oke-vcn-2-mgmt-subnet")}-security-list"
+            display_name = "${coalesce(var.oke_vcn2_mgmt_subnet_name, "${var.service_label}-oke-vcn-2-mgmt-subnet")}-security-list"
             ingress_rules = [
               {
                 description = "Allows inbound ICMP traffic for path discovery."
@@ -1113,8 +1113,8 @@ locals {
         } : {},
         upper(var.oke_vcn2_cni_type) == "NATIVE" ? {
           "OKE-VCN-2-PODS-SUBNET-SL" = {
-            display_name  = "${coalesce(var.oke_vcn2_pods_subnet_name, "${var.service_label}-oke-vcn-2-pods-subnet")}-security-list"
-            egress_rules  = []
+            display_name = "${coalesce(var.oke_vcn2_pods_subnet_name, "${var.service_label}-oke-vcn-2-pods-subnet")}-security-list"
+            egress_rules = []
             ingress_rules = [
               {
                 description = "Ingress ICMP for path discovery"
@@ -1238,7 +1238,7 @@ locals {
                 dst_port_min = 6443
                 dst_port_max = 6443
               }
-            } : upper(var.oke_vcn2_cni_type) == "NATIVE" ? {
+              } : upper(var.oke_vcn2_cni_type) == "NATIVE" ? {
               "INGRESS-FROM-API-API-RULE" = {
                 description  = "Allow TCP ingress for Kubernetes control plane inter-communication."
                 stateless    = false
@@ -1406,7 +1406,7 @@ locals {
               dst_port_min = 30000
               dst_port_max = 32767
             }
-          },
+            },
             upper(var.oke_vcn2_cni_type) == "FLANNEL" ? {
               "INGRESS-FROM-MGMT-WORKERS-RULE" = {
                 description  = "Allows inbound SSH access from mgmt subnet."
@@ -1417,7 +1417,7 @@ locals {
                 dst_port_min = 22
                 dst_port_max = 22
               }
-            } : upper(var.oke_vcn2_cni_type) == "NATIVE" ? {
+              } : upper(var.oke_vcn2_cni_type) == "NATIVE" ? {
               "INGRESS-FROM-ANYWHERE-ICMP-WORKERS-RULE" = {
                 description = "Allow ICMP ingress to workers for path discovery."
                 stateless   = false
@@ -1481,7 +1481,7 @@ locals {
               icmp_type   = 3
               icmp_code   = 4
             }
-          },
+            },
             local.vcn_2_to_workers_subnet_cross_vcn_egress,
             local.vcn_2_to_pods_subnet_cross_vcn_egress
           )
@@ -1495,11 +1495,11 @@ locals {
               dst_port_min = 443
               dst_port_max = 443
             }
-          },
+            },
             local.vcn_2_to_services_subnet_cross_vcn_ingress
           )
         }
-      },
+        },
         var.add_oke_vcn2_mgmt_subnet ? {
           "OKE-VCN-2-MGMT-NSG" = {
             display_name = "mgmt-nsg"
@@ -1518,7 +1518,7 @@ locals {
                 dst         = "0.0.0.0/0"
                 dst_type    = "CIDR_BLOCK"
               }
-            },
+              },
               upper(var.oke_vcn2_cni_type) == "NATIVE" ? {
                 "EGRESS-TO-API-RULE" = {
                   description  = "Allows TCP outbound traffic from mgmt subnet to Kubernetes API server, for OKE management."
@@ -1605,7 +1605,7 @@ locals {
                 dst_port_min = 12250
                 dst_port_max = 12250
               }
-            },
+              },
               local.vcn_2_to_workers_subnet_cross_vcn_egress,
               local.vcn_2_to_services_subnet_cross_vcn_egress,
               local.vcn_2_to_pods_subnet_cross_vcn_egress
@@ -1632,7 +1632,7 @@ locals {
                 src         = "OKE-VCN-2-PODS-NSG"
                 src_type    = "NETWORK_SECURITY_GROUP"
               }
-            },
+              },
               local.vcn_2_to_pods_subnet_cross_vcn_ingress
             )
           }
@@ -1669,7 +1669,7 @@ locals {
       cidr_blocks                      = var.oke_vcn3_cidrs,
       dns_label                        = replace(coalesce(var.oke_vcn3_dns, "${var.service_label}-oke-vcn-3"), "-", "")
       block_nat_traffic                = false
-      subnets                          = merge(
+      subnets = merge(
         {
           "OKE-VCN-3-API-SUBNET" = {
             cidr_block                 = coalesce(var.oke_vcn3_api_subnet_cidr, cidrsubnet(var.oke_vcn3_cidrs[0], 14, 0))
@@ -1739,7 +1739,7 @@ locals {
       route_tables = merge({
         "OKE-VCN-3-API-SUBNET-ROUTE-TABLE" = {
           display_name = "api-subnet-route-table"
-          route_rules  = merge(
+          route_rules = merge(
             {
               "SGW-RULE" = {
                 network_entity_key = "OKE-VCN-3-SERVICE-GATEWAY"
@@ -1758,11 +1758,11 @@ locals {
             } : {}
           )
         }
-      },
+        },
         {
           "OKE-VCN-3-WORKERS-SUBNET-ROUTE-TABLE" = {
             display_name = "workers-subnet-route-table"
-            route_rules  = merge({
+            route_rules = merge({
               "SGW-RULE" = {
                 network_entity_key = "OKE-VCN-3-SERVICE-GATEWAY"
                 description        = "Route for sgw"
@@ -1775,7 +1775,7 @@ locals {
                 destination        = "0.0.0.0/0"
                 destination_type   = "CIDR_BLOCK"
               }
-            },
+              },
               local.oke_vcn_3_drg_routing
             )
           }
@@ -1783,7 +1783,7 @@ locals {
         {
           "OKE-VCN-3-SERVICES-SUBNET-ROUTE-TABLE" = {
             display_name = "services-subnet-route-table"
-            route_rules  = {
+            route_rules = {
               "IGW-RULE" = {
                 network_entity_key = "OKE-VCN-3-INTERNET-GATEWAY"
                 description        = "Route for igw"
@@ -1796,7 +1796,7 @@ locals {
         var.add_oke_vcn3_mgmt_subnet ? {
           "OKE-VCN-3-MGMT-SUBNET-ROUTE-TABLE" = {
             display_name = "mgmt-subnet-route-table"
-            route_rules  = {
+            route_rules = {
               "SGW-RULE" = {
                 network_entity_key = "OKE-VCN-3-SERVICE-GATEWAY"
                 description        = "Route for sgw"
@@ -1815,7 +1815,7 @@ locals {
         upper(var.oke_vcn3_cni_type) == "NATIVE" ? {
           "OKE-VCN-3-PODS-SUBNET-ROUTE-TABLE" = {
             display_name = "pods-subnet-route-table"
-            route_rules  = merge({
+            route_rules = merge({
               "SGW-RULE" = {
                 network_entity_key = "OKE-VCN-3-SERVICE-GATEWAY"
                 description        = "Route for sgw"
@@ -1828,7 +1828,7 @@ locals {
                 destination        = "0.0.0.0/0"
                 destination_type   = "CIDR_BLOCK"
               }
-            },
+              },
               local.oke_vcn_3_drg_routing
             )
           }
@@ -1836,8 +1836,8 @@ locals {
       )
       security_lists = merge({
         "OKE-VCN-3-API-SUBNET-SL" = {
-          display_name  = "${coalesce(var.oke_vcn3_api_subnet_name, "${var.service_label}-oke-vcn-3-api-subnet")}-security-list"
-          egress_rules  = []
+          display_name = "${coalesce(var.oke_vcn3_api_subnet_name, "${var.service_label}-oke-vcn-3-api-subnet")}-security-list"
+          egress_rules = []
           ingress_rules = [
             {
               description = "Allows inbound ICMP traffic for path discovery"
@@ -1850,11 +1850,11 @@ locals {
             }
           ]
         }
-      },
+        },
         {
           "OKE-VCN-3-WORKERS-SUBNET-SL" = {
-            display_name  = "${coalesce(var.oke_vcn3_workers_subnet_name, "${var.service_label}-oke-vcn-3-workers-subnet")}-security-list"
-            egress_rules  = []
+            display_name = "${coalesce(var.oke_vcn3_workers_subnet_name, "${var.service_label}-oke-vcn-3-workers-subnet")}-security-list"
+            egress_rules = []
             ingress_rules = [
               {
                 description = "Allows inbound ICMP traffic for path discovery"
@@ -1870,8 +1870,8 @@ locals {
         },
         {
           "OKE-VCN-3-SERVICES-SUBNET-SL" = {
-            display_name  = "${coalesce(var.oke_vcn3_services_subnet_name, "${var.service_label}-oke-vcn-3-services-subnet")}-security-list"
-            egress_rules  = []
+            display_name = "${coalesce(var.oke_vcn3_services_subnet_name, "${var.service_label}-oke-vcn-3-services-subnet")}-security-list"
+            egress_rules = []
             ingress_rules = [
               {
                 description = "Ingress ICMP for path discovery"
@@ -1887,7 +1887,7 @@ locals {
         },
         var.add_oke_vcn3_mgmt_subnet ? {
           "OKE-VCN-3-MGMT-SUBNET-SL" = {
-            display_name  = "${coalesce(var.oke_vcn3_mgmt_subnet_name, "${var.service_label}-oke-vcn-3-mgmt-subnet")}-security-list"
+            display_name = "${coalesce(var.oke_vcn3_mgmt_subnet_name, "${var.service_label}-oke-vcn-3-mgmt-subnet")}-security-list"
             ingress_rules = [
               {
                 description = "Allows inbound ICMP traffic for path discovery."
@@ -1941,8 +1941,8 @@ locals {
         } : {},
         upper(var.oke_vcn3_cni_type) == "NATIVE" ? {
           "OKE-VCN-3-PODS-SUBNET-SL" = {
-            display_name  = "${coalesce(var.oke_vcn3_pods_subnet_name, "${var.service_label}-oke-vcn-3-pods-subnet")}-security-list"
-            egress_rules  = []
+            display_name = "${coalesce(var.oke_vcn3_pods_subnet_name, "${var.service_label}-oke-vcn-3-pods-subnet")}-security-list"
+            egress_rules = []
             ingress_rules = [
               {
                 description = "Ingress ICMP for path discovery"
@@ -2068,7 +2068,7 @@ locals {
                 dst_port_min = 6443
                 dst_port_max = 6443
               }
-            } : upper(var.oke_vcn3_cni_type) == "NATIVE" && var.add_oke_vcn3_mgmt_subnet ? {
+              } : upper(var.oke_vcn3_cni_type) == "NATIVE" && var.add_oke_vcn3_mgmt_subnet ? {
               "INGRESS-FROM-OPERATOR-API-RULE" = {
                 description  = "Operator access to Kubernetes API endpoint"
                 stateless    = false
@@ -2236,7 +2236,7 @@ locals {
               dst_port_min = 30000
               dst_port_max = 32767
             }
-          },
+            },
             upper(var.oke_vcn3_cni_type) == "FLANNEL" && var.add_oke_vcn3_mgmt_subnet ? {
               "INGRESS-FROM-MGMT-WORKERS-RULE" = {
                 description  = "Allows inbound SSH access from mgmt subnet."
@@ -2247,7 +2247,7 @@ locals {
                 dst_port_min = 22
                 dst_port_max = 22
               }
-            } : upper(var.oke_vcn3_cni_type) == "NATIVE" ? {
+              } : upper(var.oke_vcn3_cni_type) == "NATIVE" ? {
               "INGRESS-FROM-ANYWHERE-ICMP-WORKERS-RULE" = {
                 description = "Allow ICMP ingress to workers for path discovery."
                 stateless   = false
@@ -2311,7 +2311,7 @@ locals {
               icmp_type   = 3
               icmp_code   = 4
             }
-          },
+            },
             local.vcn_3_to_workers_subnet_cross_vcn_egress,
             local.vcn_3_to_pods_subnet_cross_vcn_egress
           )
@@ -2325,11 +2325,11 @@ locals {
               dst_port_min = 443
               dst_port_max = 443
             }
-          },
+            },
             local.vcn_3_to_services_subnet_cross_vcn_ingress
           )
         }
-      },
+        },
         var.add_oke_vcn3_mgmt_subnet ? {
           "OKE-VCN-3-MGMT-NSG" = {
             display_name = "mgmt-nsg"
@@ -2348,7 +2348,7 @@ locals {
                 dst         = "0.0.0.0/0"
                 dst_type    = "CIDR_BLOCK"
               }
-            },
+              },
               upper(var.oke_vcn3_cni_type) == "NATIVE" ? {
                 "EGRESS-TO-API-RULE" = {
                   description  = "Allows TCP outbound traffic from mgmt subnet to Kubernetes API server, for OKE management."
@@ -2435,7 +2435,7 @@ locals {
                 dst_port_min = 12250
                 dst_port_max = 12250
               }
-            },
+              },
               local.vcn_3_to_workers_subnet_cross_vcn_egress,
               local.vcn_3_to_services_subnet_cross_vcn_egress,
               local.vcn_3_to_pods_subnet_cross_vcn_egress
@@ -2462,7 +2462,7 @@ locals {
                 src         = "OKE-VCN-3-PODS-NSG"
                 src_type    = "NETWORK_SECURITY_GROUP"
               }
-            },
+              },
               local.vcn_3_to_pods_subnet_cross_vcn_ingress
             )
           }
@@ -2680,7 +2680,7 @@ locals {
         dst_port_min = 1521
         dst_port_max = 1522
       }
-    } : {}
+    } : {},
     (var.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true && var.add_oke_vcn3 == true && var.oke_vcn3_attach_to_drg == true) &&
     (local.hub_options[var.hub_deployment_option] == 3 || local.hub_options[var.hub_deployment_option] == 4) ||
     ((local.hub_options[var.hub_deployment_option] == 1 || local.hub_options[var.hub_deployment_option] == 2) && (length(var.oke_vcn1_routable_vcns) == 0 || contains(var.oke_vcn1_routable_vcns, "OKE-VCN-3"))) ? {
@@ -2889,7 +2889,7 @@ locals {
         dst_port_min = 443
         dst_port_max = 443
       }
-    } : {}
+    } : {},
   )
   vcn_2_to_services_subnet_cross_vcn_egress = merge(
     (var.add_oke_vcn2 == true && var.oke_vcn2_attach_to_drg == true && var.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true) &&
@@ -2978,7 +2978,7 @@ locals {
         dst_port_min = 1521
         dst_port_max = 1522
       }
-    } : {}
+    } : {},
     (var.add_oke_vcn2 == true && var.oke_vcn2_attach_to_drg == true && var.add_oke_vcn3 == true && var.oke_vcn3_attach_to_drg == true) &&
     (local.hub_options[var.hub_deployment_option] == 3 || local.hub_options[var.hub_deployment_option] == 4) ||
     ((local.hub_options[var.hub_deployment_option] == 1 || local.hub_options[var.hub_deployment_option] == 2) && (length(var.oke_vcn2_routable_vcns) == 0 || contains(var.oke_vcn2_routable_vcns, "OKE-VCN-3"))) ? {
@@ -3275,7 +3275,7 @@ locals {
         dst_port_min = 1521
         dst_port_max = 1522
       }
-    } : {}
+    } : {},
     (var.add_oke_vcn3 == true && var.oke_vcn3_attach_to_drg == true && var.add_oke_vcn2 == true && var.oke_vcn2_attach_to_drg == true) &&
     (local.hub_options[var.hub_deployment_option] == 3 || local.hub_options[var.hub_deployment_option] == 4) ||
     ((local.hub_options[var.hub_deployment_option] == 1 || local.hub_options[var.hub_deployment_option] == 2) && (length(var.oke_vcn3_routable_vcns) == 0 || contains(var.oke_vcn3_routable_vcns, "OKE-VCN-2"))) ? {
