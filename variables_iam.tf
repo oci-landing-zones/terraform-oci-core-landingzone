@@ -15,73 +15,9 @@ variable "existing_enclosing_compartment_ocid" {
   default     = null
   description = "The enclosing compartment OCID where Landing Zone compartments will be created. If not provided and use_enclosing_compartment is true, an enclosing compartment is created under the root compartment."
 }
-variable "customize_default_compartments" {
-  type    = bool
-  default = false
-}
-variable "enclosing_cmp_name" {
-  type    = string
-  default = null
-}
-variable "deploy_network_cmp" {
-  type    = bool
-  default = true
-}
-variable "network_cmp_name" {
-  type    = string
-  default = null
-}
-variable "deploy_security_cmp" {
-  type    = bool
-  default = true
-}
-variable "security_cmp_name" {
-  type    = string
-  default = null
-}
-variable "deploy_app_cmp" {
-  type    = bool
-  default = true
-}
-variable "app_cmp_name" {
-  type    = string
-  default = null
-}
-variable "deploy_database_cmp" {
-  type    = bool
-  default = true
-}
-variable "database_cmp_name" {
-  type    = string
-  default = null
-}
 variable "deploy_exainfra_cmp" {
   type    = bool
   default = false
-}
-variable "exainfra_cmp_name" {
-  type    = string
-  default = ""
-}
-
-# ------------------------------------------------------
-# ----- IAM - Workload Compartments
-#-------------------------------------------------------
-variable "deploy_app_workload_cmps" {
-  type    = bool
-  default = false
-}
-variable "app_workload_cmp_names" {
-  type    = list(string)
-  default = []
-}
-variable "deploy_database_workload_cmps" {
-  type    = bool
-  default = false
-}
-variable "database_workload_cmp_names" {
-  type    = list(string)
-  default = []
 }
 
 # ------------------------------------------------------
