@@ -9,9 +9,15 @@ variable "existing_drg_ocid" {
   type    = string
   default = null
 }
-# This determines where the Hub VCN routes traffic to internally. 
-# The value should be the OCID of a firewall or a load balancer front ending a firewall.
-variable "hub_vcn_ingress_route_table_network_entity_ocid" {
+# This determines where the Hub VCN routes traffic to for inbound internal traffic (East/West).
+# The value is the private OCID of the intdoor Network Load Balancer.
+variable "hub_vcn_east_west_entry_point_ocid" {
+  type    = string
+  default = null
+}
+# This determines where the Hub VCN routes traffic to for inbound Internet traffic (North South).
+# The value is the private OCID of the outdoor Network Load Balancer.
+variable "hub_vcn_north_south_entry_point_ocid" {
   type    = string
   default = null
 }

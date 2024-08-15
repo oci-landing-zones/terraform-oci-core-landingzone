@@ -344,7 +344,8 @@ variableGroups:
       - "fw_instance_flex_shape_memory"
       - "fw_instance_flex_shape_cpu"
       - "fw_instance_boot_volume_size"
-      - "hub_vcn_ingress_route_table_network_entity_ocid"
+      - "hub_vcn_north_south_entry_point_ocid"
+      - "hub_vcn_east_west_entry_point_ocid"
       - "customize_hub_vcn_subnets"
       - "hub_vcn_web_subnet_name"
       - "hub_vcn_web_subnet_cidr"
@@ -2951,7 +2952,15 @@ variables:
     type: string
     title: "Existing DRG OCID"
     description: "Enter the OCID of an existing DRG that you want to reuse for deploying the topology."
-    required: false
+    required: 
+      or:
+        - eq:
+          - ${hub_deployment_option}
+          - "Yes, existing DRG as hub"
+        - eq:
+          - ${hub_deployment_option}
+          - "Yes, new VCN as hub with existing DRG"
+
     visible: 
       and:
         - customize_net
@@ -3161,10 +3170,31 @@ variables:
               - ${hub_vcn_deploy_firewall_option}
               - "OCI Firewall Service"
 
-  hub_vcn_ingress_route_table_network_entity_ocid:
+  hub_vcn_north_south_entry_point_ocid:
     type: string
-    title: "Hub VCN Traffic Destination OCID"
-    description: "Enter the OCID of the network resource where traffic is sent to in the Hub VCN. This is typically the OCID of a resource that processes requests made by the spoke VCNs attached to this VCN, like a load balancer or firewall."
+    title: "Hub VCN North/South Traffic Destination OCID"
+    description: "Enter the private OCID of the Outdoor Network Load Balancer, where all inbound Internet (North/South) traffic is sent to in the Hub VCN."
+    required: false
+    visible: 
+      and:
+        - customize_net
+        - or:
+          - eq:
+            - ${hub_deployment_option}
+            - "Yes, new VCN as hub with new DRG"
+          - eq:
+            - ${hub_deployment_option}
+            - "Yes, new VCN as hub with existing DRG"
+        - and: 
+          - not:   
+            - eq: 
+              - ${hub_vcn_deploy_firewall_option}  
+              - "No"
+
+  hub_vcn_east_west_entry_point_ocid:
+    type: string
+    title: "Hub VCN East/West Traffic Destination OCID"
+    description: "Enter the private OCID of the Indoor Network Load Balancer, where all inter-VCN (East/West) traffic is sent to in the Hub VCN."
     required: false
     visible: 
       and:
