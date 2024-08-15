@@ -20,6 +20,16 @@ locals {
     "OCI Firewall Service"                  = "OCI"
   }
 
+  enable_hub_vcn_route_table = ((var.add_tt_vcn1 == true && var.tt_vcn1_attach_to_drg == true && length(var.tt_vcn1_routable_vcns) > 0) ||
+                                (var.add_tt_vcn2 == true && var.tt_vcn2_attach_to_drg == true && length(var.tt_vcn2_routable_vcns) > 0) ||
+                                (var.add_tt_vcn3 == true && var.tt_vcn3_attach_to_drg == true && length(var.tt_vcn3_routable_vcns) > 0) ||
+                                (var.add_exa_vcn1 == true && var.exa_vcn1_attach_to_drg == true && length(var.exa_vcn1_routable_vcns) > 0) ||
+                                (var.add_exa_vcn2 == true && var.exa_vcn2_attach_to_drg == true && length(var.exa_vcn2_routable_vcns) > 0) ||
+                                (var.add_exa_vcn3 == true && var.exa_vcn3_attach_to_drg == true && length(var.exa_vcn3_routable_vcns) > 0) ||
+                                (var.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true && length(var.oke_vcn1_routable_vcns) > 0) ||
+                                (var.add_oke_vcn2 == true && var.oke_vcn2_attach_to_drg == true && length(var.oke_vcn2_routable_vcns) > 0) ||
+                                (var.add_oke_vcn3 == true && var.oke_vcn3_attach_to_drg == true && length(var.oke_vcn3_routable_vcns) > 0))
+
   drg = (local.hub_options[var.hub_deployment_option] != 0) ? {
     # "dynamic_routing_gateways" is for creating a new DRG.
     # "inject_into_existing_drgs" is for reusing an existing DRG.
@@ -27,6 +37,7 @@ locals {
       "HUB-DRG" = {
         display_name = (local.hub_options[var.hub_deployment_option] == 1 || local.hub_options[var.hub_deployment_option] == 3) ? "${var.service_label}-hub-drg" : null
         drg_id       = (local.hub_options[var.hub_deployment_option] == 2 || local.hub_options[var.hub_deployment_option] == 4) ? var.existing_drg_ocid : null
+        
         drg_attachments = merge(
           {
             "HUB-VCN-ATTACHMENT" = {
@@ -141,8 +152,10 @@ locals {
             }
           } : {}
         )
-        drg_route_tables = merge(
-          (local.hub_options[var.hub_deployment_option] == 1 || local.hub_options[var.hub_deployment_option] == 2) ? {
+
+        ## IMPORTANT: We only create DRG route tables when the hub is DRG (var.hub_deployment_option 1 and 2). Otherwise, i.e., when the Hub is a VCN, we implement a full mesh with Auto Generated Route Tables and expect the Firewall in the Hub VCN to control routing.
+        drg_route_tables = (local.hub_options[var.hub_deployment_option] == 1 || local.hub_options[var.hub_deployment_option] == 2) ? merge(
+          (local.enable_hub_vcn_route_table == true) ? {
             "HUB-VCN-DRG-ROUTE-TABLE" = {
               display_name                      = "${coalesce(var.hub_vcn_name, "${var.service_label}-hub-vcn")}-drg-route-table"
               import_drg_route_distribution_key = "HUB-VCN-DRG-IMPORT-ROUTE-DISTRIBUTION"
@@ -212,9 +225,11 @@ locals {
             }
           } : {}
 
-        )
-        drg_route_distributions = merge(
-          (local.hub_options[var.hub_deployment_option] == 1 || local.hub_options[var.hub_deployment_option] == 2) ? {
+        ) : {}
+
+        ## IMPORTANT: We only create DRG route distributions when the hub is DRG (var.hub_deployment_option 1 and 2). Otherwise, i.e., when the Hub is a VCN, we implement a full mesh with Auto Generated Route Tables and expect the Firewall in the Hub VCN to control routing.
+        drg_route_distributions = (local.hub_options[var.hub_deployment_option] == 1 || local.hub_options[var.hub_deployment_option] == 2) ? merge(
+          (local.enable_hub_vcn_route_table == true) ? {
             # This import distribution makes its importing DRG route tables to have the referred drg_attachment_key as the next-hop attachment.
             # In this case, since there's no "VCN ingress route table for the DRG", the VCN CIDRs and subnet CIDRs of the underlying VCN are imported by those DRG route tables.
             "HUB-VCN-DRG-IMPORT-ROUTE-DISTRIBUTION" = {
@@ -327,7 +342,7 @@ locals {
             # This import distribution makes its importing DRG route tables to have the referred drg_attachment_key as the next-hop attachment.
             # In this case, the "Hub VCN ingress route table for the DRG" is imported by those DRG route tables.
             "TT-VCN-1-DRG-IMPORT-ROUTE-DISTRIBUTION" = {
-              display_name      = "three-tier-vcn-1-drg-import-route-distribution"
+              display_name      = "${coalesce(var.tt_vcn1_name,"${var.service_label}-three-tier-vcn-1")}-drg-import-route-distribution"
               distribution_type = "IMPORT"
               statements = merge(
                 (local.hub_options[var.hub_deployment_option] == 3) ? {
@@ -436,7 +451,7 @@ locals {
             # This import distribution makes its importing DRG route tables to have the referred drg_attachment_key as the next-hop attachment.
             # In this case, the "Hub VCN ingress route table for the DRG" is imported by those DRG route tables.
             "TT-VCN-2-DRG-IMPORT-ROUTE-DISTRIBUTION" = {
-              display_name      = "three-tier-vcn-2-drg-import-route-distribution"
+              display_name      = "${coalesce(var.tt_vcn2_name,"${var.service_label}-three-tier-vcn-2")}-drg-import-route-distribution"
               distribution_type = "IMPORT"
               statements = merge(
                 (local.hub_options[var.hub_deployment_option] == 3) ? {
@@ -545,7 +560,7 @@ locals {
             # This import distribution makes its importing DRG route tables to have the referred drg_attachment_key as the next-hop attachment.
             # In this case, the "Hub VCN ingress route table for the DRG" is imported by those DRG route tables.
             "TT-VCN-3-DRG-IMPORT-ROUTE-DISTRIBUTION" = {
-              display_name      = "three-tier-vcn-3-drg-import-route-distribution"
+              display_name      = "${coalesce(var.tt_vcn3_name,"${var.service_label}-three-tier-vcn-3")}-drg-import-route-distribution"
               distribution_type = "IMPORT"
               statements = merge(
                 (local.hub_options[var.hub_deployment_option] == 3) ? {
@@ -654,7 +669,7 @@ locals {
             # This import distribution makes its importing DRG route tables to have the referred drg_attachment_key as the next-hop attachment.
             # In this case, the "Hub VCN ingress route table for the DRG" is imported by those DRG route tables.
             "EXA-VCN-1-DRG-IMPORT-ROUTE-DISTRIBUTION" = {
-              display_name      = "exadata-vcn-1-drg-import-route-distribution"
+              display_name      = "${coalesce(var.exa_vcn1_name, "${var.service_label}-exadata-vcn-1")}-drg-import-route-distribution"
               distribution_type = "IMPORT"
               statements = merge(
                 (local.hub_options[var.hub_deployment_option] == 3) ? {
@@ -763,7 +778,7 @@ locals {
             # This import distribution makes its importing DRG route tables to have the referred drg_attachment_key as the next-hop attachment.
             # In this case, the "Hub VCN ingress route table for the DRG" is imported by those DRG route tables.
             "EXA-VCN-2-DRG-IMPORT-ROUTE-DISTRIBUTION" = {
-              display_name      = "exadata-vcn-2-drg-import-route-distribution"
+              display_name      = "${coalesce(var.exa_vcn2_name, "${var.service_label}-exadata-vcn-2")}-drg-import-route-distribution"
               distribution_type = "IMPORT"
               statements = merge(
                 (local.hub_options[var.hub_deployment_option] == 3) ? {
@@ -872,7 +887,7 @@ locals {
             # This import distribution makes its importing DRG route tables to have the referred drg_attachment_key as the next-hop attachment.
             # In this case, the "Hub VCN ingress route table for the DRG" is imported by those DRG route tables.
             "EXA-VCN-3-DRG-IMPORT-ROUTE-DISTRIBUTION" = {
-              display_name      = "exadata-vcn-3-drg-import-route-distribution"
+              display_name      = "${coalesce(var.exa_vcn3_name, "${var.service_label}-exadata-vcn-3")}-drg-import-route-distribution"
               distribution_type = "IMPORT"
               statements = merge(
                 (local.hub_options[var.hub_deployment_option] == 3) ? {
@@ -981,7 +996,7 @@ locals {
             # This import distribution makes its importing DRG route tables to have the referred drg_attachment_key as the next-hop attachment.
             # In this case, the "Hub VCN ingress route table for the DRG" is imported by those DRG route tables.
             "OKE-VCN-1-DRG-IMPORT-ROUTE-DISTRIBUTION" = {
-              display_name      = "oke-vcn-1-drg-import-route-distribution"
+              display_name      = "${coalesce(var.oke_vcn1_name, "${var.service_label}-oke-vcn-1")}-drg-import-route-distribution"
               distribution_type = "IMPORT"
               statements = merge(
                 (local.hub_options[var.hub_deployment_option] == 3) ? {
@@ -1090,7 +1105,7 @@ locals {
             # This import distribution makes its importing DRG route tables to have the referred drg_attachment_key as the next-hop attachment.
             # In this case, the "Hub VCN ingress route table for the DRG" is imported by those DRG route tables.
             "OKE-VCN-2-DRG-IMPORT-ROUTE-DISTRIBUTION" = {
-              display_name      = "oke-vcn-2-drg-import-route-distribution"
+              display_name      = "${coalesce(var.oke_vcn2_name, "${var.service_label}-oke-vcn-2")}-drg-import-route-distribution"
               distribution_type = "IMPORT"
               statements = merge(
                 (local.hub_options[var.hub_deployment_option] == 3) ? {
@@ -1199,7 +1214,7 @@ locals {
             # This import distribution makes its importing DRG route tables to have the referred drg_attachment_key as the next-hop attachment.
             # In this case, the "Hub VCN ingress route table for the DRG" is imported by those DRG route tables.
             "OKE-VCN-3-DRG-IMPORT-ROUTE-DISTRIBUTION" = {
-              display_name      = "oke-vcn-3-drg-import-route-distribution"
+              display_name      = "${coalesce(var.oke_vcn3_name, "${var.service_label}-oke-vcn-3")}-drg-import-route-distribution"
               distribution_type = "IMPORT"
               statements = merge(
                 (local.hub_options[var.hub_deployment_option] == 3) ? {
@@ -1304,7 +1319,7 @@ locals {
               )
             }
           } : {},
-        )
+        ) : {}
       }
     }
   } : null
@@ -1482,7 +1497,7 @@ locals {
             }
           }
         },
-        # Route table is attached to HUB VCN DRG attachment.
+        # Route table for East/West traffic is attached to HUB VCN DRG attachment.
         (var.hub_vcn_east_west_entry_point_ocid != null) ? {
           "HUB-VCN-INGRESS-ROUTE-TABLE" = {
             display_name = "hub-vcn-ingress-route-table"
@@ -1496,7 +1511,7 @@ locals {
             }
           }
         } : {},
-        # Route table is attached to HUB VCN Internet Gateway.
+        # Route table for North/South traffic is attached to HUB VCN Internet Gateway.
         (var.hub_vcn_north_south_entry_point_ocid != null) ? {
           "HUB-VCN-INTERNET-GATEWAY-ROUTE-TABLE" = {
             display_name = "hub-vcn-internet-gateway-route-table"
