@@ -81,7 +81,7 @@ locals {
     }
   }
 
-  app_host_target = var.deploy_app_cmp ? {
+  app_host_target = local.enable_app_compartment ? {
     APP-HOST-TARGET = {
       name                  = "${var.service_label}-app-cmp-scan-target"
       description           = "CIS Landing Zone ${local.app_compartment_name} compartment scanning target."
@@ -92,7 +92,7 @@ locals {
     }
   } : {}
 
-  database_host_target = var.deploy_database_cmp ? {
+  database_host_target = local.enable_database_compartment ? {
     DATABASE-HOST-TARGET = {
       name                  = "${var.service_label}-database-cmp-scan-target"
       description           = "CIS Landing Zone ${local.database_compartment_name} compartment scanning target."

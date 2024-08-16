@@ -23,18 +23,91 @@ variable "deploy_exainfra_cmp" {
 # ------------------------------------------------------
 # ----- IAM - Identity Domains
 #-------------------------------------------------------
-variable "deploy_id_domain" {
-  type    = bool
+variable "use_custom_id_domain" {
+  type  = bool
   default = false
 }
-variable "id_domain_name" {
-  type    = string
+variable "custom_id_domain_name" {
+  type = string
   default = null
 }
-variable "id_domain_type" {
+variable "rm_existing_id_domain_iam_admin_group_name" {
   type    = string
-  default = "free"
+  default = ""
 }
+variable "rm_existing_id_domain_cred_admin_group_name" {
+  type    = string
+  default = ""
+}
+variable "rm_existing_id_domain_security_admin_group_name" {
+  type    = string
+  default = ""
+}
+variable "rm_existing_id_domain_network_admin_group_name" {
+  type    = string
+  default = ""
+}
+variable "rm_existing_id_domain_appdev_admin_group_name" {
+  type    = string
+  default = ""
+}
+variable "rm_existing_id_domain_database_admin_group_name" {
+  type    = string
+  default = ""
+}
+variable "rm_existing_id_domain_auditor_group_name" {
+  type    = string
+  default = ""
+}
+variable "rm_existing_id_domain_announcement_reader_group_name" {
+  type    = string
+  default = ""
+}
+variable "rm_existing_id_domain_exainfra_admin_group_name" {
+  type    = string
+  default = ""
+}
+variable "rm_existing_id_domain_cost_admin_group_name" {
+  type    = string
+  default = ""
+}
+variable "rm_existing_id_domain_storage_admin_group_name" {
+  type    = string
+  default = ""
+}
+variable "existing_id_domain_security_fun_dyn_group_name" {
+  type        = string
+  default     = ""
+}
+variable "existing_id_domain_appdev_fun_dyn_group_name" {
+  type        = string
+  default     = ""
+}
+variable "existing_id_domain_compute_agent_dyn_group_name" {
+  type        = string
+  default     = ""
+}
+variable "existing_id_domain_database_kms_dyn_group_name" {
+  type        = string
+  default     = ""
+}
+
+# variable "deploy_id_domain" {
+#   type    = bool
+#   default = false
+# }
+# variable "id_domain_name" {
+#   type    = string
+#   default = null
+# }
+# variable "id_domain_type" {
+#   type    = string
+#   default = "free"
+# }
+# variable "use_id_domain_groups_to_manage_tenancy" {
+#   type    = bool
+#   default = false
+# }
 
 # ------------------------------------------------------
 # ----- IAM - Groups
