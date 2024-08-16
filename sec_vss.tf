@@ -14,7 +14,7 @@ locals {
 
 #-- VSS is a regional service. As such, we must not skip provisioning when extending Landing Zone to a new region.
 module "lz_scanning" {
-  source = "github.com/oracle-quickstart/terraform-oci-cis-landing-zone-security//vss?ref=v0.1.6"
+  source = "github.com/oci-landing-zones/terraform-oci-modules-security//vss?ref=release-0.1.7"
   # depends_on = [null_resource.wait_on_services_policy]
   count                  = var.vss_create ? 1 : 0
   scanning_configuration = local.scanning_configuration
@@ -103,7 +103,7 @@ locals {
     }
   } : {}
 
-  exainfra_host_target = var.deploy_exainfra_cmp ? {
+  exainfra_host_target = local.enable_exainfra_compartment ? {
     EXAINFRA-HOST-TARGET = {
       name                  = "${var.service_label}-exainfra-cmp-scan-target"
       description           = "CIS Landing Zone ${local.exainfra_compartment_name} compartment scanning target."
