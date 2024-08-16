@@ -8,4 +8,3 @@ include:
 
 stages:
   - tf-prep-test-case
-  - tf-run-test-case
