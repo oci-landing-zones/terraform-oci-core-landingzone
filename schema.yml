@@ -404,13 +404,6 @@ variableGroups:
       - "create_events_as_enabled"
       - "alarm_message_format"
 
-  - title: "Object Storage"
-    variables:
-      - "enable_oss_bucket"
-      - "existing_bucket_vault_compartment_id"
-      - "existing_bucket_vault_id"
-      - "existing_bucket_key_id"
-
   - title: "Cloud Guard"
     variables:
       - "enable_cloud_guard"
