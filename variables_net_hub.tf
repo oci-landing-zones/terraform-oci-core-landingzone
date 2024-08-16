@@ -37,32 +37,32 @@ variable "hub_vcn_dns" {
 # ----- Networking - Firewall settings
 #-------------------------------------------------------
 variable "hub_vcn_deploy_firewall_option" {
-  type = string
+  type    = string
   default = "No"
 }
 
 variable "fw_instance_name_prefix" {
-  type = string
+  type    = string
   default = "firewall-instance"
 }
 
 variable "fw_instance_shape" {
-  type = string
+  type    = string
   default = "VM.Optimized3.Flex"
 }
 
 variable "fw_instance_flex_shape_memory" {
-  type = number
+  type    = number
   default = 56
 }
 
 variable "fw_instance_flex_shape_cpu" {
-  type = number
+  type    = number
   default = 2
 }
 
 variable "fw_instance_boot_volume_size" {
-  type = number
+  type    = number
   default = 60
 }
 

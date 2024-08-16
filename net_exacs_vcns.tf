@@ -2,7 +2,7 @@
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 
 locals {
-  
+
   exa_vcn_1 = var.add_exa_vcn1 == true ? {
     "EXA-VCN-1" = {
       display_name                     = coalesce(var.exa_vcn1_name, "${var.service_label}-exadata-vcn-1")
@@ -174,7 +174,7 @@ locals {
                 src_type     = "CIDR_BLOCK"
                 dst_port_min = 22
                 dst_port_max = 22
-              } if (local.hub_options[var.hub_deployment_option] == 3 || local.hub_options[var.hub_deployment_option] == 4) && var.exa_vcn1_attach_to_drg == true && var.add_exa_vcn1 == true
+              } if(local.hub_options[var.hub_deployment_option] == 3 || local.hub_options[var.hub_deployment_option] == 4) && var.exa_vcn1_attach_to_drg == true && var.add_exa_vcn1 == true
             },
             { for cidr in var.hub_vcn_cidrs : "INGRESS-FROM-SQLNET-${cidr}-RULE" =>
               {
@@ -185,7 +185,7 @@ locals {
                 src_type    = "CIDR_BLOCK"
                 dst_port_min : 1521
                 dst_port_max : 1522
-              } if (local.hub_options[var.hub_deployment_option] == 3 || local.hub_options[var.hub_deployment_option] == 4) && var.exa_vcn1_attach_to_drg == true && var.add_exa_vcn1 == true
+              } if(local.hub_options[var.hub_deployment_option] == 3 || local.hub_options[var.hub_deployment_option] == 4) && var.exa_vcn1_attach_to_drg == true && var.add_exa_vcn1 == true
             },
             { for cidr in var.hub_vcn_cidrs : "INGRESS-FROM-ONS-${cidr}-RULE" =>
               {
@@ -196,7 +196,7 @@ locals {
                 src_type    = "CIDR_BLOCK"
                 dst_port_min : 6200,
                 dst_port_max : 6200
-              } if (local.hub_options[var.hub_deployment_option] == 3 || local.hub_options[var.hub_deployment_option] == 4) && var.exa_vcn1_attach_to_drg == true && var.add_exa_vcn1 == true
+              } if(local.hub_options[var.hub_deployment_option] == 3 || local.hub_options[var.hub_deployment_option] == 4) && var.exa_vcn1_attach_to_drg == true && var.add_exa_vcn1 == true
             },
             {
               "INGRESS-FROM-SSH-CLIENT-RULE" = {
@@ -468,7 +468,7 @@ locals {
                 src_type     = "CIDR_BLOCK"
                 dst_port_min = 22
                 dst_port_max = 22
-              } if (local.hub_options[var.hub_deployment_option] == 3 || local.hub_options[var.hub_deployment_option] == 4) && var.exa_vcn2_attach_to_drg == true && var.add_exa_vcn2 == true
+              } if(local.hub_options[var.hub_deployment_option] == 3 || local.hub_options[var.hub_deployment_option] == 4) && var.exa_vcn2_attach_to_drg == true && var.add_exa_vcn2 == true
             },
             { for cidr in var.hub_vcn_cidrs : "INGRESS-FROM-SQLNET-${cidr}-RULE" =>
               {
@@ -479,7 +479,7 @@ locals {
                 src_type    = "CIDR_BLOCK"
                 dst_port_min : 1521
                 dst_port_max : 1522
-              } if (local.hub_options[var.hub_deployment_option] == 3 || local.hub_options[var.hub_deployment_option] == 4) && var.exa_vcn2_attach_to_drg == true && var.add_exa_vcn2 == true
+              } if(local.hub_options[var.hub_deployment_option] == 3 || local.hub_options[var.hub_deployment_option] == 4) && var.exa_vcn2_attach_to_drg == true && var.add_exa_vcn2 == true
             },
             { for cidr in var.hub_vcn_cidrs : "INGRESS-FROM-ONS-${cidr}-RULE" =>
               {
@@ -490,7 +490,7 @@ locals {
                 src_type    = "CIDR_BLOCK"
                 dst_port_min : 6200,
                 dst_port_max : 6200
-              } if (local.hub_options[var.hub_deployment_option] == 3 || local.hub_options[var.hub_deployment_option] == 4) && var.exa_vcn2_attach_to_drg == true && var.add_exa_vcn2 == true
+              } if(local.hub_options[var.hub_deployment_option] == 3 || local.hub_options[var.hub_deployment_option] == 4) && var.exa_vcn2_attach_to_drg == true && var.add_exa_vcn2 == true
             },
             {
               "INGRESS-FROM-SSH-CLIENT-RULE" = {
@@ -762,7 +762,7 @@ locals {
                 src_type     = "CIDR_BLOCK"
                 dst_port_min = 22
                 dst_port_max = 22
-              } if (local.hub_options[var.hub_deployment_option] == 3 || local.hub_options[var.hub_deployment_option] == 4) && var.exa_vcn3_attach_to_drg == true && var.add_exa_vcn3 == true
+              } if(local.hub_options[var.hub_deployment_option] == 3 || local.hub_options[var.hub_deployment_option] == 4) && var.exa_vcn3_attach_to_drg == true && var.add_exa_vcn3 == true
             },
             { for cidr in var.hub_vcn_cidrs : "INGRESS-FROM-SQLNET-${cidr}-RULE" =>
               {
@@ -773,7 +773,7 @@ locals {
                 src_type    = "CIDR_BLOCK"
                 dst_port_min : 1521
                 dst_port_max : 1522
-              } if (local.hub_options[var.hub_deployment_option] == 3 || local.hub_options[var.hub_deployment_option] == 4) && var.exa_vcn3_attach_to_drg == true && var.add_exa_vcn3 == true
+              } if(local.hub_options[var.hub_deployment_option] == 3 || local.hub_options[var.hub_deployment_option] == 4) && var.exa_vcn3_attach_to_drg == true && var.add_exa_vcn3 == true
             },
             { for cidr in var.hub_vcn_cidrs : "INGRESS-FROM-ONS-${cidr}-RULE" =>
               {
@@ -784,7 +784,7 @@ locals {
                 src_type    = "CIDR_BLOCK"
                 dst_port_min : 6200,
                 dst_port_max : 6200
-              } if (local.hub_options[var.hub_deployment_option] == 3 || local.hub_options[var.hub_deployment_option] == 4) && var.exa_vcn3_attach_to_drg == true && var.add_exa_vcn3 == true
+              } if(local.hub_options[var.hub_deployment_option] == 3 || local.hub_options[var.hub_deployment_option] == 4) && var.exa_vcn3_attach_to_drg == true && var.add_exa_vcn3 == true
             },
             {
               "INGRESS-FROM-SSH-CLIENT-RULE" = {
