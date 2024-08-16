@@ -237,7 +237,7 @@ locals {
               distribution_type = "IMPORT"
               statements = merge(
                 var.add_tt_vcn1 == true && var.tt_vcn1_attach_to_drg == true ? {
-                  "TT-VCN-1-STMT" = {
+                  "HUB-TO-TT-VCN-1-STMT" = {
                     action   = "ACCEPT",
                     priority = 1,
                     match_criteria = {
@@ -248,7 +248,7 @@ locals {
                   }
                 } : {},
                 var.add_tt_vcn2 == true && var.tt_vcn2_attach_to_drg == true ? {
-                  "TT-VCN-2-STMT" = {
+                  "HUB-TO-TT-VCN-2-STMT" = {
                     action   = "ACCEPT",
                     priority = 2,
                     match_criteria = {
@@ -259,7 +259,7 @@ locals {
                   }
                 } : {},
                 var.add_tt_vcn3 == true && var.tt_vcn3_attach_to_drg == true ? {
-                  "TT-VCN-3-STMT" = {
+                  "HUB-TO-TT-VCN-3-STMT" = {
                     action   = "ACCEPT",
                     priority = 3,
                     match_criteria = {
@@ -270,7 +270,7 @@ locals {
                   }
                 } : {},
                 var.add_exa_vcn1 == true && var.exa_vcn1_attach_to_drg == true ? {
-                  "EXA-VCN-1-STMT" = {
+                  "HUB-TO-EXA-VCN-1-STMT" = {
                     action   = "ACCEPT",
                     priority = 4,
                     match_criteria = {
@@ -281,7 +281,7 @@ locals {
                   }
                 } : {},
                 var.add_exa_vcn2 == true && var.exa_vcn2_attach_to_drg == true ? {
-                  "EXA-VCN-2-STMT" = {
+                  "HUB-TO-EXA-VCN-2-STMT" = {
                     action   = "ACCEPT",
                     priority = 5,
                     match_criteria = {
@@ -292,7 +292,7 @@ locals {
                   }
                 } : {},
                 var.add_exa_vcn3 == true && var.exa_vcn3_attach_to_drg == true ? {
-                  "EXA-VCN-3-STMT" = {
+                  "HUB-TO-EXA-VCN-3-STMT" = {
                     action   = "ACCEPT",
                     priority = 6,
                     match_criteria = {
@@ -303,7 +303,7 @@ locals {
                   }
                 } : {},
                 var.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true ? {
-                  "OKE-VCN-1-STMT" = {
+                  "HUB-TO-OKE-VCN-1-STMT" = {
                     action   = "ACCEPT",
                     priority = 7,
                     match_criteria = {
@@ -314,7 +314,7 @@ locals {
                   }
                 } : {},
                 var.add_oke_vcn2 == true && var.oke_vcn2_attach_to_drg == true ? {
-                  "OKE-VCN-2-STMT" = {
+                  "HUB-TO-OKE-VCN-2-STMT" = {
                     action   = "ACCEPT",
                     priority = 8,
                     match_criteria = {
@@ -325,7 +325,7 @@ locals {
                   }
                 } : {},
                 var.add_oke_vcn3 == true && var.oke_vcn3_attach_to_drg == true ? {
-                  "OKE-VCN-3-STMT" = {
+                  "HUB-TO-OKE-VCN-3-STMT" = {
                     action   = "ACCEPT",
                     priority = 9,
                     match_criteria = {
@@ -346,7 +346,7 @@ locals {
               distribution_type = "IMPORT"
               statements = merge(
                 (local.hub_options[var.hub_deployment_option] == 3) ? {
-                  "TT-VCN-1-HUB-VCN-STMT" = {
+                  "TT-VCN-1-TO-HUB-VCN-STMT" = {
                     action   = "ACCEPT",
                     priority = 1,
                     match_criteria = {
@@ -357,7 +357,7 @@ locals {
                   }
                 } : {},
                 (local.hub_options[var.hub_deployment_option] == 1 && contains(var.tt_vcn1_routable_vcns, "TT-VCN-2")) ? {
-                  "TT-VCN-2-STMT" = {
+                  "TT-VCN-1-TO-TT-VCN-2-STMT" = {
                     action   = "ACCEPT",
                     priority = 2,
                     match_criteria = {
@@ -368,7 +368,7 @@ locals {
                   }
                 } : {},
                 (local.hub_options[var.hub_deployment_option] == 1 && contains(var.tt_vcn1_routable_vcns, "TT-VCN-3")) ? {
-                  "TT-VCN-3-STMT" = {
+                  "TT-VCN-1-TO-TT-VCN-3-STMT" = {
                     action   = "ACCEPT",
                     priority = 3,
                     match_criteria = {
@@ -379,7 +379,7 @@ locals {
                   }
                 } : {},
                 (local.hub_options[var.hub_deployment_option] == 1 && contains(var.tt_vcn1_routable_vcns, "EXA-VCN-1")) ? {
-                  "EXA-VCN-1-STMT" = {
+                  "TT-VCN-1-TO-EXA-VCN-1-STMT" = {
                     action   = "ACCEPT",
                     priority = 4,
                     match_criteria = {
@@ -390,7 +390,7 @@ locals {
                   }
                 } : {},
                 (local.hub_options[var.hub_deployment_option] == 1 && contains(var.tt_vcn1_routable_vcns, "EXA-VCN-2")) ? {
-                  "EXA-VCN-2-STMT" = {
+                  "TT-VCN-1-TO-EXA-VCN-2-STMT" = {
                     action   = "ACCEPT",
                     priority = 5,
                     match_criteria = {
@@ -401,7 +401,7 @@ locals {
                   }
                 } : {},
                 (local.hub_options[var.hub_deployment_option] == 1 && contains(var.tt_vcn1_routable_vcns, "EXA-VCN-3")) ? {
-                  "EXA-VCN-3-STMT" = {
+                  "TT-VCN-1-TO-EXA-VCN-3-STMT" = {
                     action   = "ACCEPT",
                     priority = 6,
                     match_criteria = {
@@ -412,7 +412,7 @@ locals {
                   }
                 } : {},
                 (local.hub_options[var.hub_deployment_option] == 1 && contains(var.tt_vcn1_routable_vcns, "OKE-VCN-1")) ? {
-                  "OKE-VCN-1-STMT" = {
+                  "TT-VCN-1-TO-OKE-VCN-1-STMT" = {
                     action   = "ACCEPT",
                     priority = 7,
                     match_criteria = {
@@ -423,7 +423,7 @@ locals {
                   }
                 } : {},
                 (local.hub_options[var.hub_deployment_option] == 1 && contains(var.tt_vcn1_routable_vcns, "OKE-VCN-2")) ? {
-                  "OKE-VCN-2-STMT" = {
+                  "TT-VCN-1-TO-OKE-VCN-2-STMT" = {
                     action   = "ACCEPT",
                     priority = 8,
                     match_criteria = {
@@ -434,7 +434,7 @@ locals {
                   }
                 } : {},
                 (local.hub_options[var.hub_deployment_option] == 1 && contains(var.tt_vcn1_routable_vcns, "OKE-VCN-3")) ? {
-                  "OKE-VCN-3-STMT" = {
+                  "TT-VCN-1-TO-OKE-VCN-3-STMT" = {
                     action   = "ACCEPT",
                     priority = 9,
                     match_criteria = {
@@ -455,7 +455,7 @@ locals {
               distribution_type = "IMPORT"
               statements = merge(
                 (local.hub_options[var.hub_deployment_option] == 3) ? {
-                  "TT-VCN-2-HUB-VCN-STMT" = {
+                  "TT-VCN-2-TO-HUB-VCN-STMT" = {
                     action   = "ACCEPT",
                     priority = 1,
                     match_criteria = {
@@ -466,7 +466,7 @@ locals {
                   }
                 } : {},
                 (local.hub_options[var.hub_deployment_option] == 1 && contains(var.tt_vcn2_routable_vcns, "TT-VCN-1")) ? {
-                  "TT-VCN-1-STMT" = {
+                  "TT-VCN-2-TO-TT-VCN-1-STMT" = {
                     action   = "ACCEPT",
                     priority = 2,
                     match_criteria = {
@@ -477,7 +477,7 @@ locals {
                   }
                 } : {},
                 (local.hub_options[var.hub_deployment_option] == 1 && contains(var.tt_vcn2_routable_vcns, "TT-VCN-3")) ? {
-                  "TT-VCN-3-STMT" = {
+                  "TT-VCN-2-TO-TT-VCN-3-STMT" = {
                     action   = "ACCEPT",
                     priority = 3,
                     match_criteria = {
@@ -488,7 +488,7 @@ locals {
                   }
                 } : {},
                 (local.hub_options[var.hub_deployment_option] == 1 && contains(var.tt_vcn2_routable_vcns, "EXA-VCN-1")) ? {
-                  "EXA-VCN-1-STMT" = {
+                  "TT-VCN-2-TO-EXA-VCN-1-STMT" = {
                     action   = "ACCEPT",
                     priority = 4,
                     match_criteria = {
@@ -499,7 +499,7 @@ locals {
                   }
                 } : {},
                 (local.hub_options[var.hub_deployment_option] == 1 && contains(var.tt_vcn2_routable_vcns, "EXA-VCN-2")) ? {
-                  "EXA-VCN-2-STMT" = {
+                  "TT-VCN-2-TO-EXA-VCN-2-STMT" = {
                     action   = "ACCEPT",
                     priority = 5,
                     match_criteria = {
@@ -510,7 +510,7 @@ locals {
                   }
                 } : {},
                 (local.hub_options[var.hub_deployment_option] == 1 && contains(var.tt_vcn2_routable_vcns, "EXA-VCN-3")) ? {
-                  "EXA-VCN-3-STMT" = {
+                  "TT-VCN-2-TO-EXA-VCN-3-STMT" = {
                     action   = "ACCEPT",
                     priority = 6,
                     match_criteria = {
@@ -521,7 +521,7 @@ locals {
                   }
                 } : {},
                 (local.hub_options[var.hub_deployment_option] == 1 && contains(var.tt_vcn2_routable_vcns, "OKE-VCN-1")) ? {
-                  "OKE-VCN-1-STMT" = {
+                  "TT-VCN-2-TO-OKE-VCN-1-STMT" = {
                     action   = "ACCEPT",
                     priority = 7,
                     match_criteria = {
@@ -532,7 +532,7 @@ locals {
                   }
                 } : {},
                 (local.hub_options[var.hub_deployment_option] == 1 && contains(var.tt_vcn2_routable_vcns, "OKE-VCN-2")) ? {
-                  "OKE-VCN-2-STMT" = {
+                  "TT-VCN-2-TO-OKE-VCN-2-STMT" = {
                     action   = "ACCEPT",
                     priority = 8,
                     match_criteria = {
@@ -543,7 +543,7 @@ locals {
                   }
                 } : {},
                 (local.hub_options[var.hub_deployment_option] == 1 && contains(var.tt_vcn2_routable_vcns, "OKE-VCN-3")) ? {
-                  "OKE-VCN-3-STMT" = {
+                  "TT-VCN-2-TO-OKE-VCN-3-STMT" = {
                     action   = "ACCEPT",
                     priority = 9,
                     match_criteria = {
@@ -564,7 +564,7 @@ locals {
               distribution_type = "IMPORT"
               statements = merge(
                 (local.hub_options[var.hub_deployment_option] == 3) ? {
-                  "TT-VCN-3-HUB-VCN-STMT" = {
+                  "TT-VCN-3-TO-HUB-VCN-STMT" = {
                     action   = "ACCEPT",
                     priority = 1,
                     match_criteria = {
@@ -575,7 +575,7 @@ locals {
                   }
                 } : {},
                 (local.hub_options[var.hub_deployment_option] == 1 && contains(var.tt_vcn3_routable_vcns, "TT-VCN-1")) ? {
-                  "TT-VCN-1-STMT" = {
+                  "TT-VCN-3-TO-TT-VCN-1-STMT" = {
                     action   = "ACCEPT",
                     priority = 2,
                     match_criteria = {
@@ -586,7 +586,7 @@ locals {
                   }
                 } : {},
                 (local.hub_options[var.hub_deployment_option] == 1 && contains(var.tt_vcn3_routable_vcns, "TT-VCN-2")) ? {
-                  "TT-VCN-2-STMT" = {
+                  "TT-VCN-3-TO-TT-VCN-2-STMT" = {
                     action   = "ACCEPT",
                     priority = 3,
                     match_criteria = {
@@ -597,7 +597,7 @@ locals {
                   }
                 } : {},
                 (local.hub_options[var.hub_deployment_option] == 1 && contains(var.tt_vcn3_routable_vcns, "EXA-VCN-1")) ? {
-                  "EXA-VCN-1-STMT" = {
+                  "TT-VCN-3-TO-EXA-VCN-1-STMT" = {
                     action   = "ACCEPT",
                     priority = 4,
                     match_criteria = {
@@ -608,7 +608,7 @@ locals {
                   }
                 } : {},
                 (local.hub_options[var.hub_deployment_option] == 1 && contains(var.tt_vcn3_routable_vcns, "EXA-VCN-2")) ? {
-                  "EXA-VCN-2-STMT" = {
+                  "TT-VCN-3-TO-EXA-VCN-2-STMT" = {
                     action   = "ACCEPT",
                     priority = 5,
                     match_criteria = {
@@ -619,7 +619,7 @@ locals {
                   }
                 } : {},
                 (local.hub_options[var.hub_deployment_option] == 1 && contains(var.tt_vcn3_routable_vcns, "EXA-VCN-3")) ? {
-                  "EXA-VCN-3-STMT" = {
+                  "TT-VCN-3-TO-EXA-VCN-3-STMT" = {
                     action   = "ACCEPT",
                     priority = 6,
                     match_criteria = {
@@ -630,7 +630,7 @@ locals {
                   }
                 } : {},
                 (local.hub_options[var.hub_deployment_option] == 1 && contains(var.tt_vcn3_routable_vcns, "OKE-VCN-1")) ? {
-                  "OKE-VCN-1-STMT" = {
+                  "TT-VCN-3-TO-OKE-VCN-1-STMT" = {
                     action   = "ACCEPT",
                     priority = 7,
                     match_criteria = {
@@ -641,7 +641,7 @@ locals {
                   }
                 } : {},
                 (local.hub_options[var.hub_deployment_option] == 1 && contains(var.tt_vcn3_routable_vcns, "OKE-VCN-2")) ? {
-                  "OKE-VCN-2-STMT" = {
+                  "TT-VCN-3-TO-OKE-VCN-2-STMT" = {
                     action   = "ACCEPT",
                     priority = 8,
                     match_criteria = {
@@ -652,7 +652,7 @@ locals {
                   }
                 } : {},
                 (local.hub_options[var.hub_deployment_option] == 1 && contains(var.tt_vcn3_routable_vcns, "OKE-VCN-3")) ? {
-                  "OKE-VCN-3-STMT" = {
+                  "TT-VCN-3-TO-OKE-VCN-3-STMT" = {
                     action   = "ACCEPT",
                     priority = 9,
                     match_criteria = {
@@ -673,7 +673,7 @@ locals {
               distribution_type = "IMPORT"
               statements = merge(
                 (local.hub_options[var.hub_deployment_option] == 3) ? {
-                  "EXA-VCN-1-HUB-VCN-STMT" = {
+                  "EXA-VCN-1-TO-HUB-VCN-STMT" = {
                     action   = "ACCEPT",
                     priority = 1,
                     match_criteria = {
@@ -684,7 +684,7 @@ locals {
                   }
                 } : {},
                 (local.hub_options[var.hub_deployment_option] == 1 && contains(var.exa_vcn1_routable_vcns, "EXA-VCN-2")) ? {
-                  "EXA-VCN-2-STMT" = {
+                  "EXA-VCN-1-TO-EXA-VCN-2-STMT" = {
                     action   = "ACCEPT",
                     priority = 2,
                     match_criteria = {
@@ -695,7 +695,7 @@ locals {
                   }
                 } : {},
                 (local.hub_options[var.hub_deployment_option] == 1 && contains(var.exa_vcn1_routable_vcns, "EXA-VCN-3")) ? {
-                  "EXA-VCN-3-STMT" = {
+                  "EXA-VCN-1-TO-EXA-VCN-3-STMT" = {
                     action   = "ACCEPT",
                     priority = 3,
                     match_criteria = {
@@ -706,7 +706,7 @@ locals {
                   }
                 } : {},
                 (local.hub_options[var.hub_deployment_option] == 1 && contains(var.exa_vcn1_routable_vcns, "TT-VCN-1")) ? {
-                  "TT-VCN-1-STMT" = {
+                  "EXA-VCN-1-TO-TT-VCN-1-STMT" = {
                     action   = "ACCEPT",
                     priority = 4,
                     match_criteria = {
@@ -717,7 +717,7 @@ locals {
                   }
                 } : {},
                 (local.hub_options[var.hub_deployment_option] == 1 && contains(var.exa_vcn1_routable_vcns, "TT-VCN-2")) ? {
-                  "TT-VCN-2-STMT" = {
+                  "EXA-VCN-1-TO-TT-VCN-2-STMT" = {
                     action   = "ACCEPT",
                     priority = 5,
                     match_criteria = {
@@ -728,7 +728,7 @@ locals {
                   }
                 } : {},
                 (local.hub_options[var.hub_deployment_option] == 1 && contains(var.exa_vcn1_routable_vcns, "TT-VCN-3")) ? {
-                  "TT-VCN-3-STMT" = {
+                  "EXA-VCN-1-TO-TT-VCN-3-STMT" = {
                     action   = "ACCEPT",
                     priority = 6,
                     match_criteria = {
@@ -739,7 +739,7 @@ locals {
                   }
                 } : {},
                 (local.hub_options[var.hub_deployment_option] == 1 && contains(var.exa_vcn1_routable_vcns, "OKE-VCN-1")) ? {
-                  "OKE-VCN-1-STMT" = {
+                  "EXA-VCN-1-TO-OKE-VCN-1-STMT" = {
                     action   = "ACCEPT",
                     priority = 7,
                     match_criteria = {
@@ -750,7 +750,7 @@ locals {
                   }
                 } : {},
                 (local.hub_options[var.hub_deployment_option] == 1 && contains(var.exa_vcn1_routable_vcns, "OKE-VCN-2")) ? {
-                  "OKE-VCN-2-STMT" = {
+                  "EXA-VCN-1-TO-OKE-VCN-2-STMT" = {
                     action   = "ACCEPT",
                     priority = 8,
                     match_criteria = {
@@ -761,7 +761,7 @@ locals {
                   }
                 } : {},
                 (local.hub_options[var.hub_deployment_option] == 1 && contains(var.exa_vcn1_routable_vcns, "OKE-VCN-3")) ? {
-                  "OKE-VCN-3-STMT" = {
+                  "EXA-VCN-1-TO-OKE-VCN-3-STMT" = {
                     action   = "ACCEPT",
                     priority = 9,
                     match_criteria = {
@@ -782,7 +782,7 @@ locals {
               distribution_type = "IMPORT"
               statements = merge(
                 (local.hub_options[var.hub_deployment_option] == 3) ? {
-                  "EXA-VCN-2-HUB-VCN-STMT" = {
+                  "EXA-VCN-2-TO-HUB-VCN-STMT" = {
                     action   = "ACCEPT",
                     priority = 1,
                     match_criteria = {
@@ -793,7 +793,7 @@ locals {
                   }
                 } : {},
                 (local.hub_options[var.hub_deployment_option] == 1 && contains(var.exa_vcn2_routable_vcns, "EXA-VCN-1")) ? {
-                  "EXA-VCN-1-STMT" = {
+                  "EXA-VCN-2-TO-EXA-VCN-1-STMT" = {
                     action   = "ACCEPT",
                     priority = 2,
                     match_criteria = {
@@ -804,7 +804,7 @@ locals {
                   }
                 } : {},
                 (local.hub_options[var.hub_deployment_option] == 1 && contains(var.exa_vcn2_routable_vcns, "EXA-VCN-3")) ? {
-                  "EXA-VCN-3-STMT" = {
+                  "EXA-VCN-2-TO-EXA-VCN-3-STMT" = {
                     action   = "ACCEPT",
                     priority = 3,
                     match_criteria = {
@@ -815,7 +815,7 @@ locals {
                   }
                 } : {},
                 (local.hub_options[var.hub_deployment_option] == 1 && contains(var.exa_vcn2_routable_vcns, "TT-VCN-1")) ? {
-                  "TT-VCN-1-STMT" = {
+                  "EXA-VCN-2-TO-TT-VCN-1-STMT" = {
                     action   = "ACCEPT",
                     priority = 4,
                     match_criteria = {
@@ -826,7 +826,7 @@ locals {
                   }
                 } : {},
                 (local.hub_options[var.hub_deployment_option] == 1 && contains(var.exa_vcn2_routable_vcns, "TT-VCN-2")) ? {
-                  "TT-VCN-2-STMT" = {
+                  "EXA-VCN-2-TO-TT-VCN-2-STMT" = {
                     action   = "ACCEPT",
                     priority = 5,
                     match_criteria = {
@@ -837,7 +837,7 @@ locals {
                   }
                 } : {},
                 (local.hub_options[var.hub_deployment_option] == 1 && contains(var.exa_vcn2_routable_vcns, "TT-VCN-3")) ? {
-                  "TT-VCN-3-STMT" = {
+                  "EXA-VCN-2-TO-TT-VCN-3-STMT" = {
                     action   = "ACCEPT",
                     priority = 6,
                     match_criteria = {
@@ -848,7 +848,7 @@ locals {
                   }
                 } : {},
                 (local.hub_options[var.hub_deployment_option] == 1 && contains(var.exa_vcn2_routable_vcns, "OKE-VCN-1")) ? {
-                  "OKE-VCN-1-STMT" = {
+                  "EXA-VCN-2-TO-OKE-VCN-1-STMT" = {
                     action   = "ACCEPT",
                     priority = 7,
                     match_criteria = {
@@ -859,7 +859,7 @@ locals {
                   }
                 } : {},
                 (local.hub_options[var.hub_deployment_option] == 1 && contains(var.exa_vcn2_routable_vcns, "OKE-VCN-2")) ? {
-                  "OKE-VCN-2-STMT" = {
+                  "EXA-VCN-2-TO-OKE-VCN-2-STMT" = {
                     action   = "ACCEPT",
                     priority = 8,
                     match_criteria = {
@@ -870,7 +870,7 @@ locals {
                   }
                 } : {},
                 (local.hub_options[var.hub_deployment_option] == 1 && contains(var.exa_vcn2_routable_vcns, "OKE-VCN-3")) ? {
-                  "OKE-VCN-3-STMT" = {
+                  "EXA-VCN-2-TO-OKE-VCN-3-STMT" = {
                     action   = "ACCEPT",
                     priority = 9,
                     match_criteria = {
@@ -891,7 +891,7 @@ locals {
               distribution_type = "IMPORT"
               statements = merge(
                 (local.hub_options[var.hub_deployment_option] == 3) ? {
-                  "EXA-VCN-3-HUB-VCN-STMT" = {
+                  "EXA-VCN-3-TO-HUB-VCN-STMT" = {
                     action   = "ACCEPT",
                     priority = 1,
                     match_criteria = {
@@ -902,7 +902,7 @@ locals {
                   }
                 } : {},
                 (local.hub_options[var.hub_deployment_option] == 1 && contains(var.exa_vcn3_routable_vcns, "EXA-VCN-1")) ? {
-                  "EXA-VCN-1-STMT" = {
+                  "EXA-VCN-3-TO-EXA-VCN-1-STMT" = {
                     action   = "ACCEPT",
                     priority = 2,
                     match_criteria = {
@@ -913,7 +913,7 @@ locals {
                   }
                 } : {},
                 (local.hub_options[var.hub_deployment_option] == 1 && contains(var.exa_vcn3_routable_vcns, "EXA-VCN-2")) ? {
-                  "EXA-VCN-2-STMT" = {
+                  "EXA-VCN-3-TO-EXA-VCN-2-STMT" = {
                     action   = "ACCEPT",
                     priority = 3,
                     match_criteria = {
@@ -924,7 +924,7 @@ locals {
                   }
                 } : {},
                 (local.hub_options[var.hub_deployment_option] == 1 && contains(var.exa_vcn3_routable_vcns, "TT-VCN-1")) ? {
-                  "TT-VCN-1-STMT" = {
+                  "EXA-VCN-3-TO-TT-VCN-1-STMT" = {
                     action   = "ACCEPT",
                     priority = 4,
                     match_criteria = {
@@ -935,7 +935,7 @@ locals {
                   }
                 } : {},
                 (local.hub_options[var.hub_deployment_option] == 1 && contains(var.exa_vcn3_routable_vcns, "TT-VCN-2")) ? {
-                  "TT-VCN-2-STMT" = {
+                  "EXA-VCN-3-TO-TT-VCN-2-STMT" = {
                     action   = "ACCEPT",
                     priority = 5,
                     match_criteria = {
@@ -946,7 +946,7 @@ locals {
                   }
                 } : {},
                 (local.hub_options[var.hub_deployment_option] == 1 && contains(var.exa_vcn3_routable_vcns, "TT-VCN-3")) ? {
-                  "TT-VCN-3-STMT" = {
+                  "EXA-VCN-3-TO-TT-VCN-3-STMT" = {
                     action   = "ACCEPT",
                     priority = 6,
                     match_criteria = {
@@ -957,7 +957,7 @@ locals {
                   }
                 } : {},
                 (local.hub_options[var.hub_deployment_option] == 1 && contains(var.exa_vcn3_routable_vcns, "OKE-VCN-1")) ? {
-                  "OKE-VCN-1-STMT" = {
+                  "EXA-VCN-3-TO-OKE-VCN-1-STMT" = {
                     action   = "ACCEPT",
                     priority = 7,
                     match_criteria = {
@@ -968,7 +968,7 @@ locals {
                   }
                 } : {},
                 (local.hub_options[var.hub_deployment_option] == 1 && contains(var.exa_vcn3_routable_vcns, "OKE-VCN-2")) ? {
-                  "OKE-VCN-2-STMT" = {
+                  "EXA-VCN-3-TO-OKE-VCN-2-STMT" = {
                     action   = "ACCEPT",
                     priority = 8,
                     match_criteria = {
@@ -979,7 +979,7 @@ locals {
                   }
                 } : {},
                 (local.hub_options[var.hub_deployment_option] == 1 && contains(var.exa_vcn3_routable_vcns, "OKE-VCN-3")) ? {
-                  "OKE-VCN-3-STMT" = {
+                  "EXA-VCN-3-TO-OKE-VCN-3-STMT" = {
                     action   = "ACCEPT",
                     priority = 9,
                     match_criteria = {
@@ -1011,7 +1011,7 @@ locals {
                   }
                 } : {},
                 (local.hub_options[var.hub_deployment_option] == 1 && contains(var.oke_vcn1_routable_vcns, "OKE-VCN-2")) ? {
-                  "OKE-VCN-2-STMT" = {
+                  "OKE-VCN-1-TO-OKE-VCN-2-STMT" = {
                     action   = "ACCEPT",
                     priority = 2,
                     match_criteria = {
@@ -1022,7 +1022,7 @@ locals {
                   }
                 } : {},
                 (local.hub_options[var.hub_deployment_option] == 1 && contains(var.oke_vcn1_routable_vcns, "OKE-VCN-3")) ? {
-                  "OKE-VCN-3-STMT" = {
+                  "OKE-VCN-1-TO-OKE-VCN-3-STMT" = {
                     action   = "ACCEPT",
                     priority = 3,
                     match_criteria = {
@@ -1033,7 +1033,7 @@ locals {
                   }
                 } : {},
                 (local.hub_options[var.hub_deployment_option] == 1 && contains(var.oke_vcn1_routable_vcns, "EXA-VCN-1")) ? {
-                  "EXA-VCN-1-STMT" = {
+                  "OKE-VCN-1-TO-EXA-VCN-1-STMT" = {
                     action   = "ACCEPT",
                     priority = 4,
                     match_criteria = {
@@ -1044,7 +1044,7 @@ locals {
                   }
                 } : {},
                 (local.hub_options[var.hub_deployment_option] == 1 && contains(var.oke_vcn1_routable_vcns, "EXA-VCN-2")) ? {
-                  "EXA-VCN-2-STMT" = {
+                  "OKE-VCN-1-TO-EXA-VCN-2-STMT" = {
                     action   = "ACCEPT",
                     priority = 5,
                     match_criteria = {
@@ -1055,7 +1055,7 @@ locals {
                   }
                 } : {},
                 (local.hub_options[var.hub_deployment_option] == 1 && contains(var.oke_vcn1_routable_vcns, "EXA-VCN-3")) ? {
-                  "EXA-VCN-3-STMT" = {
+                  "OKE-VCN-1-TO-EXA-VCN-3-STMT" = {
                     action   = "ACCEPT",
                     priority = 6,
                     match_criteria = {
@@ -1066,7 +1066,7 @@ locals {
                   }
                 } : {},
                 (local.hub_options[var.hub_deployment_option] == 1 && contains(var.oke_vcn1_routable_vcns, "TT-VCN-1")) ? {
-                  "TT-VCN-1-STMT" = {
+                  "OKE-VCN-1-TO-TT-VCN-1-STMT" = {
                     action   = "ACCEPT",
                     priority = 7,
                     match_criteria = {
@@ -1077,7 +1077,7 @@ locals {
                   }
                 } : {},
                 (local.hub_options[var.hub_deployment_option] == 1 && contains(var.oke_vcn1_routable_vcns, "TT-VCN-2")) ? {
-                  "TT-VCN-2-STMT" = {
+                  "OKE-VCN-1-TO-TT-VCN-2-STMT" = {
                     action   = "ACCEPT",
                     priority = 8,
                     match_criteria = {
@@ -1088,7 +1088,7 @@ locals {
                   }
                 } : {},
                 (local.hub_options[var.hub_deployment_option] == 1 && contains(var.oke_vcn1_routable_vcns, "TT-VCN-3")) ? {
-                  "TT-VCN-3-STMT" = {
+                  "OKE-VCN-1-TO-TT-VCN-3-STMT" = {
                     action   = "ACCEPT",
                     priority = 9,
                     match_criteria = {
@@ -1109,7 +1109,7 @@ locals {
               distribution_type = "IMPORT"
               statements = merge(
                 (local.hub_options[var.hub_deployment_option] == 3) ? {
-                  "OKE-VCN-2-HUB-VCN-STMT" = {
+                  "OKE-VCN-2-TO-HUB-VCN-STMT" = {
                     action   = "ACCEPT",
                     priority = 1,
                     match_criteria = {
@@ -1120,7 +1120,7 @@ locals {
                   }
                 } : {},
                 (local.hub_options[var.hub_deployment_option] == 1 && contains(var.oke_vcn2_routable_vcns, "OKE-VCN-1")) ? {
-                  "OKE-VCN-1-STMT" = {
+                  "OKE-VCN-2-TO-OKE-VCN-1-STMT" = {
                     action   = "ACCEPT",
                     priority = 2,
                     match_criteria = {
@@ -1131,7 +1131,7 @@ locals {
                   }
                 } : {},
                 (local.hub_options[var.hub_deployment_option] == 1 && contains(var.oke_vcn2_routable_vcns, "OKE-VCN-3")) ? {
-                  "OKE-VCN-3-STMT" = {
+                  "OKE-VCN-2-TO-OKE-VCN-3-STMT" = {
                     action   = "ACCEPT",
                     priority = 3,
                     match_criteria = {
@@ -1142,7 +1142,7 @@ locals {
                   }
                 } : {},
                 (local.hub_options[var.hub_deployment_option] == 1 && contains(var.oke_vcn2_routable_vcns, "EXA-VCN-1")) ? {
-                  "EXA-VCN-1-STMT" = {
+                  "OKE-VCN-2-TO-EXA-VCN-1-STMT" = {
                     action   = "ACCEPT",
                     priority = 4,
                     match_criteria = {
@@ -1153,7 +1153,7 @@ locals {
                   }
                 } : {},
                 (local.hub_options[var.hub_deployment_option] == 1 && contains(var.oke_vcn2_routable_vcns, "EXA-VCN-2")) ? {
-                  "EXA-VCN-2-STMT" = {
+                  "OKE-VCN-2-TO-EXA-VCN-2-STMT" = {
                     action   = "ACCEPT",
                     priority = 5,
                     match_criteria = {
@@ -1164,7 +1164,7 @@ locals {
                   }
                 } : {},
                 (local.hub_options[var.hub_deployment_option] == 1 && contains(var.oke_vcn2_routable_vcns, "EXA-VCN-3")) ? {
-                  "EXA-VCN-3-STMT" = {
+                  "OKE-VCN-2-TO-EXA-VCN-3-STMT" = {
                     action   = "ACCEPT",
                     priority = 6,
                     match_criteria = {
@@ -1175,7 +1175,7 @@ locals {
                   }
                 } : {},
                 (local.hub_options[var.hub_deployment_option] == 1 && contains(var.oke_vcn2_routable_vcns, "TT-VCN-1")) ? {
-                  "TT-VCN-1-STMT" = {
+                  "OKE-VCN-2-TO-TT-VCN-1-STMT" = {
                     action   = "ACCEPT",
                     priority = 7,
                     match_criteria = {
@@ -1186,7 +1186,7 @@ locals {
                   }
                 } : {},
                 (local.hub_options[var.hub_deployment_option] == 1 && contains(var.oke_vcn2_routable_vcns, "TT-VCN-2")) ? {
-                  "TT-VCN-2-STMT" = {
+                  "OKE-VCN-2-TO-TT-VCN-2-STMT" = {
                     action   = "ACCEPT",
                     priority = 8,
                     match_criteria = {
@@ -1197,7 +1197,7 @@ locals {
                   }
                 } : {},
                 (local.hub_options[var.hub_deployment_option] == 1 && contains(var.oke_vcn2_routable_vcns, "TT-VCN-3")) ? {
-                  "TT-VCN-3-STMT" = {
+                  "OKE-VCN-2-TO-TT-VCN-3-STMT" = {
                     action   = "ACCEPT",
                     priority = 9,
                     match_criteria = {
@@ -1218,7 +1218,7 @@ locals {
               distribution_type = "IMPORT"
               statements = merge(
                 (local.hub_options[var.hub_deployment_option] == 3) ? {
-                  "OKE-VCN-3-HUB-VCN-STMT" = {
+                  "OKE-VCN-3-TO-HUB-VCN-STMT" = {
                     action   = "ACCEPT",
                     priority = 1,
                     match_criteria = {
@@ -1229,7 +1229,7 @@ locals {
                   }
                 } : {},
                 (local.hub_options[var.hub_deployment_option] == 1 && contains(var.oke_vcn3_routable_vcns, "OKE-VCN-1")) ? {
-                  "OKE-VCN-1-STMT" = {
+                  "OKE-VCN-3-TO-OKE-VCN-1-STMT" = {
                     action   = "ACCEPT",
                     priority = 2,
                     match_criteria = {
@@ -1240,7 +1240,7 @@ locals {
                   }
                 } : {},
                 (local.hub_options[var.hub_deployment_option] == 1 && contains(var.oke_vcn3_routable_vcns, "OKE-VCN-2")) ? {
-                  "OKE-VCN-2-STMT" = {
+                  "OKE-VCN-3-TO-OKE-VCN-2-STMT" = {
                     action   = "ACCEPT",
                     priority = 3,
                     match_criteria = {
@@ -1251,7 +1251,7 @@ locals {
                   }
                 } : {},
                 (local.hub_options[var.hub_deployment_option] == 1 && contains(var.oke_vcn3_routable_vcns, "EXA-VCN-1")) ? {
-                  "EXA-VCN-1-STMT" = {
+                  "OKE-VCN-3-TO-EXA-VCN-1-STMT" = {
                     action   = "ACCEPT",
                     priority = 4,
                     match_criteria = {
@@ -1262,7 +1262,7 @@ locals {
                   }
                 } : {},
                 (local.hub_options[var.hub_deployment_option] == 1 && contains(var.oke_vcn3_routable_vcns, "EXA-VCN-2")) ? {
-                  "EXA-VCN-2-STMT" = {
+                  "OKE-VCN-3-TO-EXA-VCN-2-STMT" = {
                     action   = "ACCEPT",
                     priority = 5,
                     match_criteria = {
@@ -1273,7 +1273,7 @@ locals {
                   }
                 } : {},
                 (local.hub_options[var.hub_deployment_option] == 1 && contains(var.oke_vcn3_routable_vcns, "EXA-VCN-3")) ? {
-                  "EXA-VCN-3-STMT" = {
+                  "OKE-VCN-3-TO-EXA-VCN-3-STMT" = {
                     action   = "ACCEPT",
                     priority = 6,
                     match_criteria = {
@@ -1284,7 +1284,7 @@ locals {
                   }
                 } : {},
                 (local.hub_options[var.hub_deployment_option] == 1 && contains(var.oke_vcn3_routable_vcns, "TT-VCN-1")) ? {
-                  "TT-VCN-1-STMT" = {
+                  "OKE-VCN-3-TO-TT-VCN-1-STMT" = {
                     action   = "ACCEPT",
                     priority = 7,
                     match_criteria = {
@@ -1295,7 +1295,7 @@ locals {
                   }
                 } : {},
                 (local.hub_options[var.hub_deployment_option] == 1 && contains(var.oke_vcn3_routable_vcns, "TT-VCN-2")) ? {
-                  "TT-VCN-2-STMT" = {
+                  "OKE-VCN-3-TO-TT-VCN-2-STMT" = {
                     action   = "ACCEPT",
                     priority = 8,
                     match_criteria = {
@@ -1306,7 +1306,7 @@ locals {
                   }
                 } : {},
                 (local.hub_options[var.hub_deployment_option] == 1 && contains(var.oke_vcn3_routable_vcns, "TT-VCN-3")) ? {
-                  "TT-VCN-3-STMT" = {
+                  "OKE-VCN-3-TO-TT-VCN-3-STMT" = {
                     action   = "ACCEPT",
                     priority = 9,
                     match_criteria = {
