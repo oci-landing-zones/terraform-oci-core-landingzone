@@ -39,7 +39,7 @@ locals {
         drg_id       = (local.hub_options[var.hub_deployment_option] == 2 || local.hub_options[var.hub_deployment_option] == 4) ? var.existing_drg_ocid : null
 
         drg_attachments = merge(
-          {
+          (local.hub_options[var.hub_deployment_option] == 3 || local.hub_options[var.hub_deployment_option] == 4) ? {
             "HUB-VCN-ATTACHMENT" = {
               display_name = "${coalesce(var.hub_vcn_name, "${var.service_label}-hub-vcn")}-attachment"
               # DRG route table for the Hub VCN attachment. It defines the next hop for traffic that enters the DRG via this attachment.
@@ -51,7 +51,7 @@ locals {
                 route_table_key = (var.hub_vcn_east_west_entry_point_ocid != null) ? "HUB-VCN-INGRESS-ROUTE-TABLE" : null
               }
             }
-          },
+          } : {},
           (var.add_tt_vcn1 == true && var.tt_vcn1_attach_to_drg == true) ? {
             "TT-VCN-1-ATTACHMENT" = {
               display_name = "${coalesce(var.tt_vcn1_name, "${var.service_label}-three-tier-vcn-1")}-attachment"
@@ -520,7 +520,7 @@ locals {
                     }
                   }
                 } : {},
-                (local.hub_options[var.hub_deployment_option] == 1 && contains(var.tt_vcn1_routable_vcns, "OKE-VCN-1")) ? {
+                (local.hub_options[var.hub_deployment_option] == 1 && contains(var.tt_vcn2_routable_vcns, "OKE-VCN-1")) ? {
                   "OKE-VCN-1-STMT" = {
                     action   = "ACCEPT",
                     priority = 7,
@@ -531,7 +531,7 @@ locals {
                     }
                   }
                 } : {},
-                (local.hub_options[var.hub_deployment_option] == 1 && contains(var.tt_vcn1_routable_vcns, "OKE-VCN-2")) ? {
+                (local.hub_options[var.hub_deployment_option] == 1 && contains(var.tt_vcn2_routable_vcns, "OKE-VCN-2")) ? {
                   "OKE-VCN-2-STMT" = {
                     action   = "ACCEPT",
                     priority = 8,
@@ -542,7 +542,7 @@ locals {
                     }
                   }
                 } : {},
-                (local.hub_options[var.hub_deployment_option] == 1 && contains(var.tt_vcn1_routable_vcns, "OKE-VCN-3")) ? {
+                (local.hub_options[var.hub_deployment_option] == 1 && contains(var.tt_vcn2_routable_vcns, "OKE-VCN-3")) ? {
                   "OKE-VCN-3-STMT" = {
                     action   = "ACCEPT",
                     priority = 9,
@@ -629,7 +629,7 @@ locals {
                     }
                   }
                 } : {},
-                (local.hub_options[var.hub_deployment_option] == 1 && contains(var.tt_vcn1_routable_vcns, "OKE-VCN-1")) ? {
+                (local.hub_options[var.hub_deployment_option] == 1 && contains(var.tt_vcn3_routable_vcns, "OKE-VCN-1")) ? {
                   "OKE-VCN-1-STMT" = {
                     action   = "ACCEPT",
                     priority = 7,
@@ -640,7 +640,7 @@ locals {
                     }
                   }
                 } : {},
-                (local.hub_options[var.hub_deployment_option] == 1 && contains(var.tt_vcn1_routable_vcns, "OKE-VCN-2")) ? {
+                (local.hub_options[var.hub_deployment_option] == 1 && contains(var.tt_vcn3_routable_vcns, "OKE-VCN-2")) ? {
                   "OKE-VCN-2-STMT" = {
                     action   = "ACCEPT",
                     priority = 8,
@@ -651,7 +651,7 @@ locals {
                     }
                   }
                 } : {},
-                (local.hub_options[var.hub_deployment_option] == 1 && contains(var.tt_vcn1_routable_vcns, "OKE-VCN-3")) ? {
+                (local.hub_options[var.hub_deployment_option] == 1 && contains(var.tt_vcn3_routable_vcns, "OKE-VCN-3")) ? {
                   "OKE-VCN-3-STMT" = {
                     action   = "ACCEPT",
                     priority = 9,
@@ -738,7 +738,7 @@ locals {
                     }
                   }
                 } : {},
-                (local.hub_options[var.hub_deployment_option] == 1 && contains(var.tt_vcn1_routable_vcns, "OKE-VCN-1")) ? {
+                (local.hub_options[var.hub_deployment_option] == 1 && contains(var.exa_vcn1_routable_vcns, "OKE-VCN-1")) ? {
                   "OKE-VCN-1-STMT" = {
                     action   = "ACCEPT",
                     priority = 7,
@@ -749,7 +749,7 @@ locals {
                     }
                   }
                 } : {},
-                (local.hub_options[var.hub_deployment_option] == 1 && contains(var.tt_vcn1_routable_vcns, "OKE-VCN-2")) ? {
+                (local.hub_options[var.hub_deployment_option] == 1 && contains(var.exa_vcn1_routable_vcns, "OKE-VCN-2")) ? {
                   "OKE-VCN-2-STMT" = {
                     action   = "ACCEPT",
                     priority = 8,
@@ -760,7 +760,7 @@ locals {
                     }
                   }
                 } : {},
-                (local.hub_options[var.hub_deployment_option] == 1 && contains(var.tt_vcn1_routable_vcns, "OKE-VCN-3")) ? {
+                (local.hub_options[var.hub_deployment_option] == 1 && contains(var.exa_vcn1_routable_vcns, "OKE-VCN-3")) ? {
                   "OKE-VCN-3-STMT" = {
                     action   = "ACCEPT",
                     priority = 9,
@@ -847,7 +847,7 @@ locals {
                     }
                   }
                 } : {},
-                (local.hub_options[var.hub_deployment_option] == 1 && contains(var.tt_vcn1_routable_vcns, "OKE-VCN-1")) ? {
+                (local.hub_options[var.hub_deployment_option] == 1 && contains(var.exa_vcn2_routable_vcns, "OKE-VCN-1")) ? {
                   "OKE-VCN-1-STMT" = {
                     action   = "ACCEPT",
                     priority = 7,
@@ -858,7 +858,7 @@ locals {
                     }
                   }
                 } : {},
-                (local.hub_options[var.hub_deployment_option] == 1 && contains(var.tt_vcn1_routable_vcns, "OKE-VCN-2")) ? {
+                (local.hub_options[var.hub_deployment_option] == 1 && contains(var.exa_vcn2_routable_vcns, "OKE-VCN-2")) ? {
                   "OKE-VCN-2-STMT" = {
                     action   = "ACCEPT",
                     priority = 8,
@@ -869,7 +869,7 @@ locals {
                     }
                   }
                 } : {},
-                (local.hub_options[var.hub_deployment_option] == 1 && contains(var.tt_vcn1_routable_vcns, "OKE-VCN-3")) ? {
+                (local.hub_options[var.hub_deployment_option] == 1 && contains(var.exa_vcn2_routable_vcns, "OKE-VCN-3")) ? {
                   "OKE-VCN-3-STMT" = {
                     action   = "ACCEPT",
                     priority = 9,
@@ -956,7 +956,7 @@ locals {
                     }
                   }
                 } : {},
-                (local.hub_options[var.hub_deployment_option] == 1 && contains(var.tt_vcn1_routable_vcns, "OKE-VCN-1")) ? {
+                (local.hub_options[var.hub_deployment_option] == 1 && contains(var.exa_vcn3_routable_vcns, "OKE-VCN-1")) ? {
                   "OKE-VCN-1-STMT" = {
                     action   = "ACCEPT",
                     priority = 7,
@@ -967,7 +967,7 @@ locals {
                     }
                   }
                 } : {},
-                (local.hub_options[var.hub_deployment_option] == 1 && contains(var.tt_vcn1_routable_vcns, "OKE-VCN-2")) ? {
+                (local.hub_options[var.hub_deployment_option] == 1 && contains(var.exa_vcn3_routable_vcns, "OKE-VCN-2")) ? {
                   "OKE-VCN-2-STMT" = {
                     action   = "ACCEPT",
                     priority = 8,
@@ -978,7 +978,7 @@ locals {
                     }
                   }
                 } : {},
-                (local.hub_options[var.hub_deployment_option] == 1 && contains(var.tt_vcn1_routable_vcns, "OKE-VCN-3")) ? {
+                (local.hub_options[var.hub_deployment_option] == 1 && contains(var.exa_vcn3_routable_vcns, "OKE-VCN-3")) ? {
                   "OKE-VCN-3-STMT" = {
                     action   = "ACCEPT",
                     priority = 9,
@@ -1235,18 +1235,18 @@ locals {
                     match_criteria = {
                       match_type         = "DRG_ATTACHMENT_ID",
                       attachment_type    = "VCN",
-                      drg_attachment_key = "OKE-VCN-2-ATTACHMENT"
+                      drg_attachment_key = "OKE-VCN-1-ATTACHMENT"
                     }
                   }
                 } : {},
-                (local.hub_options[var.hub_deployment_option] == 1 && contains(var.oke_vcn3_routable_vcns, "OKE-VCN-3")) ? {
-                  "OKE-VCN-3-STMT" = {
+                (local.hub_options[var.hub_deployment_option] == 1 && contains(var.oke_vcn3_routable_vcns, "OKE-VCN-2")) ? {
+                  "OKE-VCN-2-STMT" = {
                     action   = "ACCEPT",
                     priority = 3,
                     match_criteria = {
                       match_type         = "DRG_ATTACHMENT_ID",
                       attachment_type    = "VCN",
-                      drg_attachment_key = "OKE-VCN-3-ATTACHMENT"
+                      drg_attachment_key = "OKE-VCN-2-ATTACHMENT"
                     }
                   }
                 } : {},
