@@ -1,7 +1,7 @@
 # Copyright (c) 2024 Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 
-/* 
+
 locals {
   ### These variables can be overriden.
   custom_security_zones_defined_tags       = null
@@ -68,4 +68,3 @@ module "lz_security_zones" {
   tenancy_ocid                 = var.tenancy_ocid
   security_zones_configuration = local.security_zones_configuration
 } 
-*/
