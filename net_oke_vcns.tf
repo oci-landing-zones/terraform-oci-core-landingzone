@@ -9,7 +9,7 @@ locals {
       is_ipv6enabled                   = false
       is_oracle_gua_allocation_enabled = false
       cidr_blocks                      = var.oke_vcn1_cidrs,
-      dns_label                        = replace(coalesce(var.oke_vcn1_dns, "${var.service_label}-oke-vcn-1"), "-", "")
+      dns_label                        = replace(coalesce(var.oke_vcn1_dns, "oke-vcn-1"), "-", "")
       block_nat_traffic                = false
       subnets = merge(
         {
@@ -948,7 +948,7 @@ locals {
       is_ipv6enabled                   = false
       is_oracle_gua_allocation_enabled = false
       cidr_blocks                      = var.oke_vcn2_cidrs,
-      dns_label                        = replace(coalesce(var.oke_vcn2_dns, "${var.service_label}-oke-vcn-2"), "-", "")
+      dns_label                        = replace(coalesce(var.oke_vcn2_dns, "oke-vcn-2"), "-", "")
       block_nat_traffic                = false
       subnets = merge(
         {
@@ -1757,7 +1757,7 @@ locals {
       is_ipv6enabled                   = false
       is_oracle_gua_allocation_enabled = false
       cidr_blocks                      = var.oke_vcn3_cidrs,
-      dns_label                        = replace(coalesce(var.oke_vcn3_dns, "${var.service_label}-oke-vcn-3"), "-", "")
+      dns_label                        = replace(coalesce(var.oke_vcn3_dns, "oke-vcn-3"), "-", "")
       block_nat_traffic                = false
       subnets = merge(
         {

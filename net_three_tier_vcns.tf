@@ -9,7 +9,7 @@ locals {
             is_ipv6enabled                   = false
             is_oracle_gua_allocation_enabled = false
             cidr_blocks                      = var.tt_vcn1_cidrs,
-            dns_label                        = replace(coalesce(var.tt_vcn1_dns,"${var.service_label}-three-tier-vcn-1"),"-","")
+            dns_label                        = replace(coalesce(var.tt_vcn1_dns,"three-tier-vcn-1"),"-","")
             block_nat_traffic                = false
 
             subnets = merge(
@@ -444,7 +444,7 @@ locals {
             is_ipv6enabled                   = false
             is_oracle_gua_allocation_enabled = false
             cidr_blocks                      = var.tt_vcn2_cidrs,
-            dns_label                        = replace(coalesce(var.tt_vcn2_dns,"${var.service_label}-three-tier-vcn-2"),"-","")
+            dns_label                        = replace(coalesce(var.tt_vcn2_dns,"three-tier-vcn-2"),"-","")
             block_nat_traffic                = false
 
             subnets = merge(
@@ -878,7 +878,7 @@ locals {
             is_ipv6enabled                   = false
             is_oracle_gua_allocation_enabled = false
             cidr_blocks                      = var.tt_vcn3_cidrs,
-            dns_label                        = replace(coalesce(var.tt_vcn3_dns,"${var.service_label}-three-tier-vcn-3"),"-","")
+            dns_label                        = replace(coalesce(var.tt_vcn3_dns,"three-tier-vcn-3"),"-","")
             block_nat_traffic                = false
 
             subnets = merge(
