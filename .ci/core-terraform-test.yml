@@ -24,6 +24,7 @@ core-lz-prep-test-cases:
     - echo $TEST_CASES_DIR
     - terraform fmt
     - python3 /home/gitlab-runner/pipeline-tools/preprocessor.py $TEST_CASES_DIR -f tfvars.template -d . --plan
+    - echo "Hello"
     # - TF_DIR=`pwd`
     # - terraform init 
     # - terraform plan -var-file=./test-vss.tfvars --out test_vss.out
