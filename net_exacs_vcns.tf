@@ -9,7 +9,7 @@ locals {
       is_ipv6enabled                   = false
       is_oracle_gua_allocation_enabled = false
       cidr_blocks                      = var.exa_vcn1_cidrs,
-      dns_label                        = replace(coalesce(var.exa_vcn1_dns, "${var.service_label}-exa-vcn-1"), "-", "")
+      dns_label                        = replace(coalesce(var.exa_vcn1_dns, "exa-vcn-1"), "-", "")
       block_nat_traffic                = false
       subnets = {
         "EXA-VCN-1-CLIENT-SUBNET" = {
@@ -303,7 +303,7 @@ locals {
       is_ipv6enabled                   = false
       is_oracle_gua_allocation_enabled = false
       cidr_blocks                      = var.exa_vcn2_cidrs,
-      dns_label                        = replace(coalesce(var.exa_vcn2_dns, "${var.service_label}-exa-vcn-2"), "-", "")
+      dns_label                        = replace(coalesce(var.exa_vcn2_dns, "exa-vcn-2"), "-", "")
       block_nat_traffic                = false
       subnets = {
         "EXA-VCN-2-CLIENT-SUBNET" = {
@@ -597,7 +597,7 @@ locals {
       is_ipv6enabled                   = false
       is_oracle_gua_allocation_enabled = false
       cidr_blocks                      = var.exa_vcn3_cidrs,
-      dns_label                        = replace(coalesce(var.exa_vcn3_dns, "${var.service_label}-exa-vcn-3"), "-", "")
+      dns_label                        = replace(coalesce(var.exa_vcn3_dns, "exa-vcn-3"), "-", "")
       block_nat_traffic                = false
       subnets = {
         "EXA-VCN-3-CLIENT-SUBNET" = {
