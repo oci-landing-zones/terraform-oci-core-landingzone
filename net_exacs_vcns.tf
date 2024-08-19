@@ -11,6 +11,7 @@ locals {
       cidr_blocks                      = var.exa_vcn1_cidrs,
       dns_label                        = replace(coalesce(var.exa_vcn1_dns, "exa-vcn-1"), "-", "")
       block_nat_traffic                = false
+
       subnets = {
         "EXA-VCN-1-CLIENT-SUBNET" = {
           cidr_block                 = coalesce(var.exa_vcn1_client_subnet_cidr, cidrsubnet(var.exa_vcn1_cidrs[0], 4, 0))
@@ -33,6 +34,7 @@ locals {
           route_table_key            = "EXA-VCN-1-BACKUP-SUBNET-ROUTE-TABLE"
         }
       }
+
       route_tables = {
         "EXA-VCN-1-CLIENT-SUBNET-ROUTE-TABLE" = {
           display_name = "client-subnet-route-table"
@@ -45,70 +47,7 @@ locals {
                 destination_type   = "SERVICE_CIDR_BLOCK"
               }
             },
-            { for cidr in var.exa_vcn2_cidrs : "EXA-VCN-2-${cidr}-RULE" =>
-              {
-                network_entity_key = "HUB-DRG"
-                description        = "To DRG."
-                destination        = cidr
-                destination_type   = "CIDR_BLOCK"
-              } if local.hub_options[var.hub_deployment_option] != 0 && var.add_exa_vcn2 == true && var.exa_vcn2_attach_to_drg == true && (length(var.exa_vcn1_routable_vcns) == 0 || contains(var.exa_vcn1_routable_vcns, "EXA-VCN-2"))
-            },
-            { for cidr in var.exa_vcn3_cidrs : "EXA-VCN-3-${cidr}-RULE" =>
-              {
-                network_entity_key = "HUB-DRG"
-                description        = "To DRG."
-                destination        = cidr
-                destination_type   = "CIDR_BLOCK"
-              } if local.hub_options[var.hub_deployment_option] != 0 && var.add_exa_vcn3 == true && var.exa_vcn3_attach_to_drg == true && (length(var.exa_vcn1_routable_vcns) == 0 || contains(var.exa_vcn1_routable_vcns, "EXA-VCN-3"))
-            },
-            { for cidr in var.tt_vcn1_cidrs : "TT-VCN-1-${cidr}-RULE" =>
-              {
-                network_entity_key = "HUB-DRG"
-                description        = "To DRG."
-                destination        = cidr
-                destination_type   = "CIDR_BLOCK"
-              } if local.hub_options[var.hub_deployment_option] != 0 && var.add_tt_vcn1 == true && var.tt_vcn1_attach_to_drg == true && (length(var.exa_vcn1_routable_vcns) == 0 || contains(var.exa_vcn1_routable_vcns, "TT-VCN-1"))
-            },
-            { for cidr in var.tt_vcn2_cidrs : "TT-VCN-2-${cidr}-RULE" =>
-              {
-                network_entity_key = "HUB-DRG"
-                description        = "To DRG."
-                destination        = cidr
-                destination_type   = "CIDR_BLOCK"
-              } if local.hub_options[var.hub_deployment_option] != 0 && var.add_tt_vcn2 == true && var.tt_vcn2_attach_to_drg == true && (length(var.exa_vcn1_routable_vcns) == 0 || contains(var.exa_vcn1_routable_vcns, "TT-VCN-2"))
-            },
-            { for cidr in var.tt_vcn3_cidrs : "TT-VCN-3-${cidr}-RULE" =>
-              {
-                network_entity_key = "HUB-DRG"
-                description        = "To DRG."
-                destination        = cidr
-                destination_type   = "CIDR_BLOCK"
-              } if local.hub_options[var.hub_deployment_option] != 0 && var.add_tt_vcn3 == true && var.tt_vcn3_attach_to_drg == true && (length(var.exa_vcn1_routable_vcns) == 0 || contains(var.exa_vcn1_routable_vcns, "TT-VCN-3"))
-            },
-            { for cidr in var.oke_vcn1_cidrs : "OKE-VCN-1-${cidr}-RULE" =>
-              {
-                network_entity_key = "HUB-DRG"
-                description        = "To DRG."
-                destination        = cidr
-                destination_type   = "CIDR_BLOCK"
-              } if local.hub_options[var.hub_deployment_option] != 0 && var.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true && (length(var.exa_vcn2_routable_vcns) == 0 || contains(var.exa_vcn2_routable_vcns, "OKE-VCN-1"))
-            },
-            { for cidr in var.oke_vcn2_cidrs : "OKE-VCN-2-${cidr}-RULE" =>
-              {
-                network_entity_key = "HUB-DRG"
-                description        = "To DRG."
-                destination        = cidr
-                destination_type   = "CIDR_BLOCK"
-              } if local.hub_options[var.hub_deployment_option] != 0 && var.add_oke_vcn2 == true && var.oke_vcn2_attach_to_drg == true && (length(var.exa_vcn2_routable_vcns) == 0 || contains(var.exa_vcn2_routable_vcns, "OKE-VCN-2"))
-            },
-            { for cidr in var.oke_vcn3_cidrs : "OKE-VCN-3-${cidr}-RULE" =>
-              {
-                network_entity_key = "HUB-DRG"
-                description        = "To DRG."
-                destination        = cidr
-                destination_type   = "CIDR_BLOCK"
-              } if local.hub_options[var.hub_deployment_option] != 0 && var.add_oke_vcn3 == true && var.oke_vcn3_attach_to_drg == true && (length(var.exa_vcn2_routable_vcns) == 0 || contains(var.exa_vcn2_routable_vcns, "OKE-VCN-3"))
-            }
+            local.exa_vcn_1_drg_routing
           )
         }
         "EXA-VCN-1-BACKUP-SUBNET-ROUTE-TABLE" = {
@@ -125,6 +64,7 @@ locals {
           )
         }
       }
+
       security_lists = {
         "EXA-VCN-1-CLIENT-SUBNET-SL" = {
           display_name = "${coalesce(var.exa_vcn1_client_subnet_name, "${var.service_label}-exadata-vcn-1-client-subnet")}-security-list"
@@ -161,6 +101,7 @@ locals {
           ]
         }
       }
+
       network_security_groups = {
         "EXA-VCN-1-CLIENT-NSG" = {
           display_name = "client-nsg"
@@ -174,28 +115,6 @@ locals {
                 src_type     = "CIDR_BLOCK"
                 dst_port_min = 22
                 dst_port_max = 22
-              } if(local.hub_options[var.hub_deployment_option] == 3 || local.hub_options[var.hub_deployment_option] == 4) && var.exa_vcn1_attach_to_drg == true && var.add_exa_vcn1 == true
-            },
-            { for cidr in var.hub_vcn_cidrs : "INGRESS-FROM-SQLNET-${cidr}-RULE" =>
-              {
-                description = "Allows SQLNet connections from hosts in ${cidr} VCN."
-                stateless   = false
-                protocol    = "TCP"
-                src         = cidr
-                src_type    = "CIDR_BLOCK"
-                dst_port_min : 1521
-                dst_port_max : 1522
-              } if(local.hub_options[var.hub_deployment_option] == 3 || local.hub_options[var.hub_deployment_option] == 4) && var.exa_vcn1_attach_to_drg == true && var.add_exa_vcn1 == true
-            },
-            { for cidr in var.hub_vcn_cidrs : "INGRESS-FROM-ONS-${cidr}-RULE" =>
-              {
-                description = "Allows Oracle Notification Services (ONS) communication from hosts in Hub VCN for Fast Application Notifications (FAN)."
-                stateless   = false
-                protocol    = "TCP"
-                src         = cidr
-                src_type    = "CIDR_BLOCK"
-                dst_port_min : 6200,
-                dst_port_max : 6200
               } if(local.hub_options[var.hub_deployment_option] == 3 || local.hub_options[var.hub_deployment_option] == 4) && var.exa_vcn1_attach_to_drg == true && var.add_exa_vcn1 == true
             },
             {
@@ -216,7 +135,7 @@ locals {
                 protocol    = "TCP"
                 src         = "EXA-VCN-1-CLIENT-NSG"
                 src_type    = "NETWORK_SECURITY_GROUP"
-                dst_port_min : 1521,
+                dst_port_min : 1521
                 dst_port_max : 1522
               }
             },
@@ -227,49 +146,59 @@ locals {
                 protocol    = "TCP"
                 src         = "EXA-VCN-1-CLIENT-NSG"
                 src_type    = "NETWORK_SECURITY_GROUP"
-                dst_port_min : 6200,
+                dst_port_min : 6200
                 dst_port_max : 6200
               }
-            }
-          )
-          egress_rules = {
-            "EGRESS-TO-SSH-RULE" = {
-              description  = "Allows SSH connections to hosts in Client NSG."
-              stateless    = false
-              protocol     = "TCP"
-              dst          = "EXA-VCN-1-CLIENT-NSG"
-              dst_type     = "NETWORK_SECURITY_GROUP"
-              dst_port_min = 22
-              dst_port_max = 22
-            }
-            "EGRESS-TO-SQLNET-RULE" = {
-              description = "Allows SQLNet connections to hosts in Client NSG."
-              stateless   = false
-              protocol    = "TCP"
-              dst         = "EXA-VCN-1-CLIENT-NSG"
-              dst_type    = "NETWORK_SECURITY_GROUP"
-              dst_port_min : 1521
-              dst_port_max : 1522
             },
-            "EGRESS-TO-ONS-RULE" = {
-              description = "Allows Oracle Notification Services (ONS) communication to hosts in Client NSG for Fast Application Notifications (FAN)."
-              stateless   = false
-              protocol    = "TCP"
-              dst         = "EXA-VCN-1-CLIENT-NSG"
-              dst_type    = "NETWORK_SECURITY_GROUP"
-              dst_port_min : 6200
-              dst_port_max : 6200
-            }
-            "EGRESS-TO-OSN-RULE" = {
-              description = "Allows HTTPS connections to Oracle Services Network (OSN)."
-              stateless   = false
-              protocol    = "TCP"
-              dst         = "all-services"
-              dst_type    = "SERVICE_CIDR_BLOCK"
-              dst_port_min : 443
-              dst_port_max : 443
-            }
-          }
+            local.vcn_1_to_client_subnet_cross_vcn_ingress
+          )
+          egress_rules = merge(
+            {
+              "EGRESS-TO-SSH-RULE" = {
+                description  = "Allows SSH connections to hosts in Client NSG."
+                stateless    = false
+                protocol     = "TCP"
+                dst          = "EXA-VCN-1-CLIENT-NSG"
+                dst_type     = "NETWORK_SECURITY_GROUP"
+                dst_port_min = 22
+                dst_port_max = 22
+              }
+            },
+            {
+              "EGRESS-TO-SQLNET-RULE" = {
+                description = "Allows SQLNet connections to hosts in Client NSG."
+                stateless   = false
+                protocol    = "TCP"
+                dst         = "EXA-VCN-1-CLIENT-NSG"
+                dst_type    = "NETWORK_SECURITY_GROUP"
+                dst_port_min : 1521
+                dst_port_max : 1522
+              }
+            },
+            {
+              "EGRESS-TO-ONS-RULE" = {
+                description = "Allows Oracle Notification Services (ONS) communication to hosts in Client NSG for Fast Application Notifications (FAN)."
+                stateless   = false
+                protocol    = "TCP"
+                dst         = "EXA-VCN-1-CLIENT-NSG"
+                dst_type    = "NETWORK_SECURITY_GROUP"
+                dst_port_min : 6200
+                dst_port_max : 6200
+              }
+            },
+            {
+              "EGRESS-TO-OSN-RULE" = {
+                description = "Allows HTTPS connections to Oracle Services Network (OSN)."
+                stateless   = false
+                protocol    = "TCP"
+                dst         = "all-services"
+                dst_type    = "SERVICE_CIDR_BLOCK"
+                dst_port_min : 443
+                dst_port_max : 443
+              }
+            },
+            local.vcn_1_to_client_subnet_cross_vcn_egress
+          )
         }
         "EXA-VCN-1-BACKUP-NSG" = {
           display_name = "backup-nsg"
@@ -286,6 +215,7 @@ locals {
           }
         }
       }
+
       vcn_specific_gateways = {
         service_gateways = {
           "EXA-VCN-1-SERVICE-GATEWAY" = {
@@ -327,6 +257,7 @@ locals {
           route_table_key            = "EXA-VCN-2-BACKUP-SUBNET-ROUTE-TABLE"
         }
       }
+
       route_tables = {
         "EXA-VCN-2-CLIENT-SUBNET-ROUTE-TABLE" = {
           display_name = "client-subnet-route-table"
@@ -339,70 +270,7 @@ locals {
                 destination_type   = "SERVICE_CIDR_BLOCK"
               }
             },
-            { for cidr in var.exa_vcn1_cidrs : "EXA-VCN-1-${cidr}-RULE" =>
-              {
-                network_entity_key = "HUB-DRG"
-                description        = "To DRG."
-                destination        = cidr
-                destination_type   = "CIDR_BLOCK"
-              } if local.hub_options[var.hub_deployment_option] != 0 && var.add_exa_vcn1 == true && var.exa_vcn1_attach_to_drg == true && (length(var.exa_vcn2_routable_vcns) == 0 || contains(var.exa_vcn2_routable_vcns, "EXA-VCN-1"))
-            },
-            { for cidr in var.exa_vcn3_cidrs : "EXA-VCN-3-${cidr}-RULE" =>
-              {
-                network_entity_key = "HUB-DRG"
-                description        = "To DRG."
-                destination        = cidr
-                destination_type   = "CIDR_BLOCK"
-              } if local.hub_options[var.hub_deployment_option] != 0 && var.add_exa_vcn3 == true && var.exa_vcn3_attach_to_drg == true && (length(var.exa_vcn2_routable_vcns) == 0 || contains(var.exa_vcn2_routable_vcns, "EXA-VCN-3"))
-            },
-            { for cidr in var.tt_vcn1_cidrs : "TT-VCN-1-${cidr}-RULE" =>
-              {
-                network_entity_key = "HUB-DRG"
-                description        = "To DRG."
-                destination        = cidr
-                destination_type   = "CIDR_BLOCK"
-              } if local.hub_options[var.hub_deployment_option] != 0 && var.add_tt_vcn1 == true && var.tt_vcn1_attach_to_drg == true && (length(var.exa_vcn2_routable_vcns) == 0 || contains(var.exa_vcn2_routable_vcns, "TT-VCN-1"))
-            },
-            { for cidr in var.tt_vcn2_cidrs : "TT-VCN-2-${cidr}-RULE" =>
-              {
-                network_entity_key = "HUB-DRG"
-                description        = "To DRG."
-                destination        = cidr
-                destination_type   = "CIDR_BLOCK"
-              } if local.hub_options[var.hub_deployment_option] != 0 && var.add_tt_vcn2 == true && var.tt_vcn2_attach_to_drg == true && (length(var.exa_vcn2_routable_vcns) == 0 || contains(var.exa_vcn2_routable_vcns, "TT-VCN-2"))
-            },
-            { for cidr in var.tt_vcn3_cidrs : "TT-VCN-3-${cidr}-RULE" =>
-              {
-                network_entity_key = "HUB-DRG"
-                description        = "To DRG."
-                destination        = cidr
-                destination_type   = "CIDR_BLOCK"
-              } if local.hub_options[var.hub_deployment_option] != 0 && var.add_tt_vcn3 == true && var.tt_vcn3_attach_to_drg == true && (length(var.exa_vcn2_routable_vcns) == 0 || contains(var.exa_vcn2_routable_vcns, "TT-VCN-3"))
-            },
-            { for cidr in var.oke_vcn1_cidrs : "OKE-VCN-1-${cidr}-RULE" =>
-              {
-                network_entity_key = "HUB-DRG"
-                description        = "To DRG."
-                destination        = cidr
-                destination_type   = "CIDR_BLOCK"
-              } if local.hub_options[var.hub_deployment_option] != 0 && var.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true && (length(var.exa_vcn2_routable_vcns) == 0 || contains(var.exa_vcn2_routable_vcns, "OKE-VCN-1"))
-            },
-            { for cidr in var.oke_vcn2_cidrs : "OKE-VCN-2-${cidr}-RULE" =>
-              {
-                network_entity_key = "HUB-DRG"
-                description        = "To DRG."
-                destination        = cidr
-                destination_type   = "CIDR_BLOCK"
-              } if local.hub_options[var.hub_deployment_option] != 0 && var.add_oke_vcn2 == true && var.oke_vcn2_attach_to_drg == true && (length(var.exa_vcn2_routable_vcns) == 0 || contains(var.exa_vcn2_routable_vcns, "OKE-VCN-2"))
-            },
-            { for cidr in var.oke_vcn3_cidrs : "OKE-VCN-3-${cidr}-RULE" =>
-              {
-                network_entity_key = "HUB-DRG"
-                description        = "To DRG."
-                destination        = cidr
-                destination_type   = "CIDR_BLOCK"
-              } if local.hub_options[var.hub_deployment_option] != 0 && var.add_oke_vcn3 == true && var.oke_vcn3_attach_to_drg == true && (length(var.exa_vcn2_routable_vcns) == 0 || contains(var.exa_vcn2_routable_vcns, "OKE-VCN-3"))
-            }
+            local.exa_vcn_2_drg_routing
           )
         }
         "EXA-VCN-2-BACKUP-SUBNET-ROUTE-TABLE" = {
@@ -419,6 +287,7 @@ locals {
           )
         }
       }
+
       security_lists = {
         "EXA-VCN-2-CLIENT-SUBNET-SL" = {
           display_name = "${coalesce(var.exa_vcn2_client_subnet_name, "${var.service_label}-exadata-vcn-2-client-subnet")}-security-list"
@@ -455,6 +324,7 @@ locals {
           ]
         }
       }
+
       network_security_groups = {
         "EXA-VCN-2-CLIENT-NSG" = {
           display_name = "client-nsg"
@@ -468,28 +338,6 @@ locals {
                 src_type     = "CIDR_BLOCK"
                 dst_port_min = 22
                 dst_port_max = 22
-              } if(local.hub_options[var.hub_deployment_option] == 3 || local.hub_options[var.hub_deployment_option] == 4) && var.exa_vcn2_attach_to_drg == true && var.add_exa_vcn2 == true
-            },
-            { for cidr in var.hub_vcn_cidrs : "INGRESS-FROM-SQLNET-${cidr}-RULE" =>
-              {
-                description = "Allows SQLNet connections from hosts in ${cidr} VCN."
-                stateless   = false
-                protocol    = "TCP"
-                src         = cidr
-                src_type    = "CIDR_BLOCK"
-                dst_port_min : 1521
-                dst_port_max : 1522
-              } if(local.hub_options[var.hub_deployment_option] == 3 || local.hub_options[var.hub_deployment_option] == 4) && var.exa_vcn2_attach_to_drg == true && var.add_exa_vcn2 == true
-            },
-            { for cidr in var.hub_vcn_cidrs : "INGRESS-FROM-ONS-${cidr}-RULE" =>
-              {
-                description = "Allows Oracle Notification Services (ONS) communication from hosts in Hub VCN for Fast Application Notifications (FAN)."
-                stateless   = false
-                protocol    = "TCP"
-                src         = cidr
-                src_type    = "CIDR_BLOCK"
-                dst_port_min : 6200,
-                dst_port_max : 6200
               } if(local.hub_options[var.hub_deployment_option] == 3 || local.hub_options[var.hub_deployment_option] == 4) && var.exa_vcn2_attach_to_drg == true && var.add_exa_vcn2 == true
             },
             {
@@ -524,46 +372,56 @@ locals {
                 dst_port_min : 6200,
                 dst_port_max : 6200
               }
-            }
-          )
-          egress_rules = {
-            "EGRESS-TO-SSH-RULE" = {
-              description  = "Allows SSH connections to hosts in Client NSG."
-              stateless    = false
-              protocol     = "TCP"
-              dst          = "EXA-VCN-2-CLIENT-NSG"
-              dst_type     = "NETWORK_SECURITY_GROUP"
-              dst_port_min = 22
-              dst_port_max = 22
-            }
-            "EGRESS-TO-SQLNET-RULE" = {
-              description = "Allows SQLNet connections to hosts in Client NSG."
-              stateless   = false
-              protocol    = "TCP"
-              dst         = "EXA-VCN-2-CLIENT-NSG"
-              dst_type    = "NETWORK_SECURITY_GROUP"
-              dst_port_min : 1521
-              dst_port_max : 1522
             },
-            "EGRESS-TO-ONS-RULE" = {
-              description = "Allows Oracle Notification Services (ONS) communication to hosts in Client NSG for Fast Application Notifications (FAN)."
-              stateless   = false
-              protocol    = "TCP"
-              dst         = "EXA-VCN-2-CLIENT-NSG"
-              dst_type    = "NETWORK_SECURITY_GROUP"
-              dst_port_min : 6200
-              dst_port_max : 6200
-            }
-            "EGRESS-TO-OSN-RULE" = {
-              description = "Allows HTTPS connections to Oracle Services Network (OSN)."
-              stateless   = false
-              protocol    = "TCP"
-              dst         = "all-services"
-              dst_type    = "SERVICE_CIDR_BLOCK"
-              dst_port_min : 443
-              dst_port_max : 443
-            }
-          }
+            local.vcn_2_to_client_subnet_cross_vcn_ingress
+          ),
+          egress_rules = merge(
+            {
+              "EGRESS-TO-SSH-RULE" = {
+                description  = "Allows SSH connections to hosts in Client NSG."
+                stateless    = false
+                protocol     = "TCP"
+                dst          = "EXA-VCN-2-CLIENT-NSG"
+                dst_type     = "NETWORK_SECURITY_GROUP"
+                dst_port_min = 22
+                dst_port_max = 22
+              }
+            },
+            {
+              "EGRESS-TO-SQLNET-RULE" = {
+                description = "Allows SQLNet connections to hosts in Client NSG."
+                stateless   = false
+                protocol    = "TCP"
+                dst         = "EXA-VCN-2-CLIENT-NSG"
+                dst_type    = "NETWORK_SECURITY_GROUP"
+                dst_port_min : 1521
+                dst_port_max : 1522
+              }
+            },
+            {
+              "EGRESS-TO-ONS-RULE" = {
+                description = "Allows Oracle Notification Services (ONS) communication to hosts in Client NSG for Fast Application Notifications (FAN)."
+                stateless   = false
+                protocol    = "TCP"
+                dst         = "EXA-VCN-2-CLIENT-NSG"
+                dst_type    = "NETWORK_SECURITY_GROUP"
+                dst_port_min : 6200
+                dst_port_max : 6200
+              }
+            },
+            {
+              "EGRESS-TO-OSN-RULE" = {
+                description = "Allows HTTPS connections to Oracle Services Network (OSN)."
+                stateless   = false
+                protocol    = "TCP"
+                dst         = "all-services"
+                dst_type    = "SERVICE_CIDR_BLOCK"
+                dst_port_min : 443
+                dst_port_max : 443
+              }
+            },
+            local.vcn_2_to_client_subnet_cross_vcn_egress
+          )
         }
         "EXA-VCN-2-BACKUP-NSG" = {
           display_name = "backup-nsg"
@@ -580,6 +438,7 @@ locals {
           }
         }
       }
+
       vcn_specific_gateways = {
         service_gateways = {
           "EXA-VCN-2-SERVICE-GATEWAY" = {
@@ -599,6 +458,7 @@ locals {
       cidr_blocks                      = var.exa_vcn3_cidrs,
       dns_label                        = replace(coalesce(var.exa_vcn3_dns, "exa-vcn-3"), "-", "")
       block_nat_traffic                = false
+
       subnets = {
         "EXA-VCN-3-CLIENT-SUBNET" = {
           cidr_block                 = coalesce(var.exa_vcn3_client_subnet_cidr, cidrsubnet(var.exa_vcn3_cidrs[0], 4, 0))
@@ -621,6 +481,7 @@ locals {
           route_table_key            = "EXA-VCN-3-BACKUP-SUBNET-ROUTE-TABLE"
         }
       }
+
       route_tables = {
         "EXA-VCN-3-CLIENT-SUBNET-ROUTE-TABLE" = {
           display_name = "client-subnet-route-table"
@@ -633,70 +494,7 @@ locals {
                 destination_type   = "SERVICE_CIDR_BLOCK"
               }
             },
-            { for cidr in var.exa_vcn1_cidrs : "EXA-VCN-1-${cidr}-RULE" =>
-              {
-                network_entity_key = "HUB-DRG"
-                description        = "To DRG."
-                destination        = cidr
-                destination_type   = "CIDR_BLOCK"
-              } if local.hub_options[var.hub_deployment_option] != 0 && var.add_exa_vcn1 == true && var.exa_vcn1_attach_to_drg == true && (length(var.exa_vcn3_routable_vcns) == 0 || contains(var.exa_vcn3_routable_vcns, "EXA-VCN-1"))
-            },
-            { for cidr in var.exa_vcn2_cidrs : "EXA-VCN-2-${cidr}-RULE" =>
-              {
-                network_entity_key = "HUB-DRG"
-                description        = "To DRG."
-                destination        = cidr
-                destination_type   = "CIDR_BLOCK"
-              } if local.hub_options[var.hub_deployment_option] != 0 && var.add_exa_vcn2 == true && var.exa_vcn2_attach_to_drg == true && (length(var.exa_vcn3_routable_vcns) == 0 || contains(var.exa_vcn3_routable_vcns, "EXA-VCN-2"))
-            },
-            { for cidr in var.tt_vcn1_cidrs : "TT-VCN-1-${cidr}-RULE" =>
-              {
-                network_entity_key = "HUB-DRG"
-                description        = "To DRG."
-                destination        = cidr
-                destination_type   = "CIDR_BLOCK"
-              } if local.hub_options[var.hub_deployment_option] != 0 && var.add_tt_vcn1 == true && var.tt_vcn1_attach_to_drg == true && (length(var.exa_vcn3_routable_vcns) == 0 || contains(var.exa_vcn3_routable_vcns, "TT-VCN-1"))
-            },
-            { for cidr in var.tt_vcn2_cidrs : "TT-VCN-2-${cidr}-RULE" =>
-              {
-                network_entity_key = "HUB-DRG"
-                description        = "To DRG."
-                destination        = cidr
-                destination_type   = "CIDR_BLOCK"
-              } if local.hub_options[var.hub_deployment_option] != 0 && var.add_tt_vcn2 == true && var.tt_vcn2_attach_to_drg == true && (length(var.exa_vcn3_routable_vcns) == 0 || contains(var.exa_vcn3_routable_vcns, "TT-VCN-2"))
-            },
-            { for cidr in var.tt_vcn3_cidrs : "TT-VCN-3-${cidr}-RULE" =>
-              {
-                network_entity_key = "HUB-DRG"
-                description        = "To DRG."
-                destination        = cidr
-                destination_type   = "CIDR_BLOCK"
-              } if local.hub_options[var.hub_deployment_option] != 0 && var.add_tt_vcn3 == true && var.tt_vcn3_attach_to_drg == true && (length(var.exa_vcn3_routable_vcns) == 0 || contains(var.exa_vcn3_routable_vcns, "TT-VCN-3"))
-            },
-            { for cidr in var.oke_vcn1_cidrs : "OKE-VCN-1-${cidr}-RULE" =>
-              {
-                network_entity_key = "HUB-DRG"
-                description        = "To DRG."
-                destination        = cidr
-                destination_type   = "CIDR_BLOCK"
-              } if local.hub_options[var.hub_deployment_option] != 0 && var.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true && (length(var.exa_vcn2_routable_vcns) == 0 || contains(var.exa_vcn2_routable_vcns, "OKE-VCN-1"))
-            },
-            { for cidr in var.oke_vcn2_cidrs : "OKE-VCN-2-${cidr}-RULE" =>
-              {
-                network_entity_key = "HUB-DRG"
-                description        = "To DRG."
-                destination        = cidr
-                destination_type   = "CIDR_BLOCK"
-              } if local.hub_options[var.hub_deployment_option] != 0 && var.add_oke_vcn2 == true && var.oke_vcn2_attach_to_drg == true && (length(var.exa_vcn2_routable_vcns) == 0 || contains(var.exa_vcn2_routable_vcns, "OKE-VCN-2"))
-            },
-            { for cidr in var.oke_vcn3_cidrs : "OKE-VCN-3-${cidr}-RULE" =>
-              {
-                network_entity_key = "HUB-DRG"
-                description        = "To DRG."
-                destination        = cidr
-                destination_type   = "CIDR_BLOCK"
-              } if local.hub_options[var.hub_deployment_option] != 0 && var.add_oke_vcn3 == true && var.oke_vcn3_attach_to_drg == true && (length(var.exa_vcn2_routable_vcns) == 0 || contains(var.exa_vcn2_routable_vcns, "OKE-VCN-3"))
-            }
+            local.exa_vcn_3_drg_routing
           )
         }
         "EXA-VCN-3-BACKUP-SUBNET-ROUTE-TABLE" = {
@@ -713,6 +511,7 @@ locals {
           )
         }
       }
+
       security_lists = {
         "EXA-VCN-3-CLIENT-SUBNET-SL" = {
           display_name = "${coalesce(var.exa_vcn3_client_subnet_name, "${var.service_label}-exadata-vcn-3-client-subnet")}-security-list"
@@ -749,6 +548,7 @@ locals {
           ]
         }
       }
+
       network_security_groups = {
         "EXA-VCN-3-CLIENT-NSG" = {
           display_name = "client-nsg"
@@ -762,28 +562,6 @@ locals {
                 src_type     = "CIDR_BLOCK"
                 dst_port_min = 22
                 dst_port_max = 22
-              } if(local.hub_options[var.hub_deployment_option] == 3 || local.hub_options[var.hub_deployment_option] == 4) && var.exa_vcn3_attach_to_drg == true && var.add_exa_vcn3 == true
-            },
-            { for cidr in var.hub_vcn_cidrs : "INGRESS-FROM-SQLNET-${cidr}-RULE" =>
-              {
-                description = "Allows SQLNet connections from hosts in ${cidr} VCN."
-                stateless   = false
-                protocol    = "TCP"
-                src         = cidr
-                src_type    = "CIDR_BLOCK"
-                dst_port_min : 1521
-                dst_port_max : 1522
-              } if(local.hub_options[var.hub_deployment_option] == 3 || local.hub_options[var.hub_deployment_option] == 4) && var.exa_vcn3_attach_to_drg == true && var.add_exa_vcn3 == true
-            },
-            { for cidr in var.hub_vcn_cidrs : "INGRESS-FROM-ONS-${cidr}-RULE" =>
-              {
-                description = "Allows Oracle Notification Services (ONS) communication from hosts in Hub VCN for Fast Application Notifications (FAN)."
-                stateless   = false
-                protocol    = "TCP"
-                src         = cidr
-                src_type    = "CIDR_BLOCK"
-                dst_port_min : 6200,
-                dst_port_max : 6200
               } if(local.hub_options[var.hub_deployment_option] == 3 || local.hub_options[var.hub_deployment_option] == 4) && var.exa_vcn3_attach_to_drg == true && var.add_exa_vcn3 == true
             },
             {
@@ -818,46 +596,56 @@ locals {
                 dst_port_min : 6200,
                 dst_port_max : 6200
               }
-            }
-          )
-          egress_rules = {
-            "EGRESS-TO-SSH-RULE" = {
-              description  = "Allows SSH connections to hosts in Client NSG."
-              stateless    = false
-              protocol     = "TCP"
-              dst          = "EXA-VCN-3-CLIENT-NSG"
-              dst_type     = "NETWORK_SECURITY_GROUP"
-              dst_port_min = 22
-              dst_port_max = 22
-            }
-            "EGRESS-TO-SQLNET-RULE" = {
-              description = "Allows SQLNet connections to hosts in Client NSG."
-              stateless   = false
-              protocol    = "TCP"
-              dst         = "EXA-VCN-3-CLIENT-NSG"
-              dst_type    = "NETWORK_SECURITY_GROUP"
-              dst_port_min : 1521
-              dst_port_max : 1522
             },
-            "EGRESS-TO-ONS-RULE" = {
-              description = "Allows Oracle Notification Services (ONS) communication to hosts in Client NSG for Fast Application Notifications (FAN)."
-              stateless   = false
-              protocol    = "TCP"
-              dst         = "EXA-VCN-3-CLIENT-NSG"
-              dst_type    = "NETWORK_SECURITY_GROUP"
-              dst_port_min : 6200
-              dst_port_max : 6200
-            }
-            "EGRESS-TO-OSN-RULE" = {
-              description = "Allows HTTPS connections to Oracle Services Network (OSN)."
-              stateless   = false
-              protocol    = "TCP"
-              dst         = "all-services"
-              dst_type    = "SERVICE_CIDR_BLOCK"
-              dst_port_min : 443
-              dst_port_max : 443
-            }
-          }
+            local.vcn_3_to_client_subnet_cross_vcn_ingress
+          ),
+          egress_rules = merge(
+            {
+              "EGRESS-TO-SSH-RULE" = {
+                description  = "Allows SSH connections to hosts in Client NSG."
+                stateless    = false
+                protocol     = "TCP"
+                dst          = "EXA-VCN-3-CLIENT-NSG"
+                dst_type     = "NETWORK_SECURITY_GROUP"
+                dst_port_min = 22
+                dst_port_max = 22
+              }
+            },
+            {
+              "EGRESS-TO-SQLNET-RULE" = {
+                description = "Allows SQLNet connections to hosts in Client NSG."
+                stateless   = false
+                protocol    = "TCP"
+                dst         = "EXA-VCN-3-CLIENT-NSG"
+                dst_type    = "NETWORK_SECURITY_GROUP"
+                dst_port_min : 1521
+                dst_port_max : 1522
+              }
+            },
+            {
+              "EGRESS-TO-ONS-RULE" = {
+                description = "Allows Oracle Notification Services (ONS) communication to hosts in Client NSG for Fast Application Notifications (FAN)."
+                stateless   = false
+                protocol    = "TCP"
+                dst         = "EXA-VCN-3-CLIENT-NSG"
+                dst_type    = "NETWORK_SECURITY_GROUP"
+                dst_port_min : 6200
+                dst_port_max : 6200
+              }
+            },
+            {
+              "EGRESS-TO-OSN-RULE" = {
+                description = "Allows HTTPS connections to Oracle Services Network (OSN)."
+                stateless   = false
+                protocol    = "TCP"
+                dst         = "all-services"
+                dst_type    = "SERVICE_CIDR_BLOCK"
+                dst_port_min : 443
+                dst_port_max : 443
+              }
+            },
+            local.vcn_3_to_client_subnet_cross_vcn_egress
+          )
         }
         "EXA-VCN-3-BACKUP-NSG" = {
           display_name = "backup-nsg"
@@ -874,6 +662,7 @@ locals {
           }
         }
       }
+
       vcn_specific_gateways = {
         service_gateways = {
           "EXA-VCN-3-SERVICE-GATEWAY" = {
@@ -884,4 +673,375 @@ locals {
       }
     }
   } : {}
+
+  ## VCN routing thru DRG is dependent on some factors:
+  ## 1) If there's a Hub VCN (3 or 4), the route to DRG is always enabled, because the Firewall in the Hub VCN will constrain traffic appropriately.
+  ## 2) If there's no Hub VCN (1 or 2), the route to DRG is enabled by default or if explicitly configured via the 'exa_vcn1_routable_vcns' attribute.
+  ## Explicitly setting 'exa_vcn1_routable_vcns' constrains routing to provided VCNs only.
+  exa_vcn_1_drg_routing = merge(
+    (var.add_exa_vcn1 == true && var.exa_vcn1_attach_to_drg == true && var.add_exa_vcn2 == true && var.exa_vcn2_attach_to_drg == true) &&
+    (local.hub_options[var.hub_deployment_option] == 3 || local.hub_options[var.hub_deployment_option] == 4) ||
+    ((local.hub_options[var.hub_deployment_option] == 1 || local.hub_options[var.hub_deployment_option] == 2) && (length(var.exa_vcn1_routable_vcns) == 0 || contains(var.exa_vcn1_routable_vcns, "EXA-VCN-2"))) ? {
+      for cidr in var.exa_vcn2_cidrs : "EXA-VCN-2-${replace(replace(cidr, ".", ""), "/", "")}-RULE" => {
+        network_entity_key = "HUB-DRG"
+        description        = "To DRG."
+        destination        = cidr
+        destination_type   = "CIDR_BLOCK"
+      }
+    } : {},
+
+    (var.add_exa_vcn1 == true && var.exa_vcn1_attach_to_drg == true && var.add_exa_vcn3 == true && var.exa_vcn3_attach_to_drg == true) &&
+    (local.hub_options[var.hub_deployment_option] == 3 || local.hub_options[var.hub_deployment_option] == 4) ||
+    ((local.hub_options[var.hub_deployment_option] == 1 || local.hub_options[var.hub_deployment_option] == 2) && (length(var.exa_vcn1_routable_vcns) == 0 || contains(var.exa_vcn1_routable_vcns, "EXA-VCN-3"))) ? {
+      for cidr in var.exa_vcn3_cidrs : "EXA-VCN-3-${replace(replace(cidr, ".", ""), "/", "")}-RULE" => {
+        network_entity_key = "HUB-DRG"
+        description        = "To DRG."
+        destination        = cidr
+        destination_type   = "CIDR_BLOCK"
+      }
+    } : {},
+  )
+  exa_vcn_2_drg_routing = merge(
+    (var.add_exa_vcn2 == true && var.exa_vcn2_attach_to_drg == true && var.add_exa_vcn1 == true && var.exa_vcn1_attach_to_drg == true) &&
+    (local.hub_options[var.hub_deployment_option] == 3 || local.hub_options[var.hub_deployment_option] == 4) ||
+    ((local.hub_options[var.hub_deployment_option] == 1 || local.hub_options[var.hub_deployment_option] == 2) && (length(var.exa_vcn2_routable_vcns) == 0 || contains(var.exa_vcn2_routable_vcns, "EXA-VCN-1"))) ? {
+      for cidr in var.exa_vcn1_cidrs : "EXA-VCN-1-${replace(replace(cidr, ".", ""), "/", "")}-RULE" => {
+        network_entity_key = "HUB-DRG"
+        description        = "To DRG."
+        destination        = cidr
+        destination_type   = "CIDR_BLOCK"
+      }
+    } : {},
+
+    (var.add_exa_vcn2 == true && var.exa_vcn2_attach_to_drg == true && var.add_exa_vcn3 == true && var.exa_vcn3_attach_to_drg == true) &&
+    (local.hub_options[var.hub_deployment_option] == 3 || local.hub_options[var.hub_deployment_option] == 4) ||
+    ((local.hub_options[var.hub_deployment_option] == 1 || local.hub_options[var.hub_deployment_option] == 2) && (length(var.exa_vcn2_routable_vcns) == 0 || contains(var.exa_vcn2_routable_vcns, "EXA-VCN-3"))) ? {
+      for cidr in var.exa_vcn3_cidrs : "EXA-VCN-3-${replace(replace(cidr, ".", ""), "/", "")}-RULE" => {
+        network_entity_key = "HUB-DRG"
+        description        = "To DRG."
+        destination        = cidr
+        destination_type   = "CIDR_BLOCK"
+      }
+    } : {},
+  )
+  exa_vcn_3_drg_routing = merge(
+    (var.add_exa_vcn3 == true && var.exa_vcn3_attach_to_drg == true && var.add_exa_vcn1 == true && var.exa_vcn1_attach_to_drg == true) &&
+    (local.hub_options[var.hub_deployment_option] == 3 || local.hub_options[var.hub_deployment_option] == 4) ||
+    ((local.hub_options[var.hub_deployment_option] == 1 || local.hub_options[var.hub_deployment_option] == 2) && (length(var.exa_vcn3_routable_vcns) == 0 || contains(var.exa_vcn3_routable_vcns, "EXA-VCN-1"))) ? {
+      for cidr in var.exa_vcn1_cidrs : "EXA-VCN-1-${replace(replace(cidr, ".", ""), "/", "")}-RULE" => {
+        network_entity_key = "HUB-DRG"
+        description        = "To DRG."
+        destination        = cidr
+        destination_type   = "CIDR_BLOCK"
+      }
+    } : {},
+
+    (var.add_exa_vcn3 == true && var.exa_vcn3_attach_to_drg == true && var.add_exa_vcn2 == true && var.exa_vcn2_attach_to_drg == true) &&
+    (local.hub_options[var.hub_deployment_option] == 3 || local.hub_options[var.hub_deployment_option] == 4) ||
+    ((local.hub_options[var.hub_deployment_option] == 1 || local.hub_options[var.hub_deployment_option] == 2) && (length(var.exa_vcn3_routable_vcns) == 0 || contains(var.exa_vcn3_routable_vcns, "EXA-VCN-2"))) ? {
+      for cidr in var.exa_vcn2_cidrs : "EXA-VCN-2-${replace(replace(cidr, ".", ""), "/", "")}-RULE" => {
+        network_entity_key = "HUB-DRG"
+        description        = "To DRG."
+        destination        = cidr
+        destination_type   = "CIDR_BLOCK"
+      }
+    } : {},
+  )
+
+  #### Cross VCN NSG Rules
+  ### EXA-VCN-1:
+  ## Egress Rules
+  # These rules are subject to the same conditions as the routing for EXA-VCN-1, also expressed in exa_vcn_1_drg_routing variable.
+  vcn_1_to_client_subnet_cross_vcn_egress = merge(
+    (var.add_exa_vcn1 == true && var.exa_vcn1_attach_to_drg == true && var.add_exa_vcn2 == true && var.exa_vcn2_attach_to_drg == true) &&
+    (local.hub_options[var.hub_deployment_option] == 3 || local.hub_options[var.hub_deployment_option] == 4) ||
+    ((local.hub_options[var.hub_deployment_option] == 1 || local.hub_options[var.hub_deployment_option] == 2) && (length(var.exa_vcn1_routable_vcns) == 0 || contains(var.exa_vcn1_routable_vcns, "EXA-VCN-2"))) ? {
+      "EGRESS-TO-VCN-2-CLIENT-SUBNET-RULE" = {
+        description  = "Egress to ${coalesce(var.exa_vcn2_client_subnet_name, "${var.service_label}-exa-vcn-2-client-subnet")}."
+        stateless    = false
+        protocol     = "TCP"
+        dst          = coalesce(var.exa_vcn2_client_subnet_cidr, cidrsubnet(var.exa_vcn2_cidrs[0], 4, 0))
+        dst_type     = "CIDR_BLOCK"
+        dst_port_min = 1521
+        dst_port_max = 1522
+      },
+      "EGRESS-TO-VCN-2-CLIENT-SUBNET-ONS-RULE" = {
+        description  = "Egress to ${coalesce(var.exa_vcn2_client_subnet_name, "${var.service_label}-exa-vcn-2-client-subnet")}."
+        stateless    = false
+        protocol     = "TCP"
+        dst          = coalesce(var.exa_vcn2_client_subnet_cidr, cidrsubnet(var.exa_vcn2_cidrs[0], 4, 0))
+        dst_type     = "CIDR_BLOCK"
+        dst_port_min = 6200
+        dst_port_max = 6200
+      }
+    } : {},
+    (var.add_exa_vcn1 == true && var.exa_vcn1_attach_to_drg == true && var.add_exa_vcn3 == true && var.exa_vcn3_attach_to_drg == true) &&
+    (local.hub_options[var.hub_deployment_option] == 3 || local.hub_options[var.hub_deployment_option] == 4) ||
+    ((local.hub_options[var.hub_deployment_option] == 1 || local.hub_options[var.hub_deployment_option] == 2) && (length(var.exa_vcn1_routable_vcns) == 0 || contains(var.exa_vcn1_routable_vcns, "EXA-VCN-3"))) ? {
+      "EGRESS-TO-VCN-3-CLIENT-SUBNET-RULE" = {
+        description  = "Egress to ${coalesce(var.exa_vcn3_client_subnet_name, "${var.service_label}-exa-vcn-3-client-subnet")}."
+        stateless    = false
+        protocol     = "TCP"
+        dst          = coalesce(var.exa_vcn3_client_subnet_cidr, cidrsubnet(var.exa_vcn3_cidrs[0], 4, 0))
+        dst_type     = "CIDR_BLOCK"
+        dst_port_min = 1521
+        dst_port_max = 1522
+      },
+      "EGRESS-TO-VCN-3-CLIENT-SUBNET-ONS-RULE" = {
+        description  = "Egress to ${coalesce(var.exa_vcn3_client_subnet_name, "${var.service_label}-exa-vcn-3-client-subnet")}."
+        stateless    = false
+        protocol     = "TCP"
+        dst          = coalesce(var.exa_vcn3_client_subnet_cidr, cidrsubnet(var.exa_vcn3_cidrs[0], 4, 0))
+        dst_type     = "CIDR_BLOCK"
+        dst_port_min = 6200
+        dst_port_max = 6200
+      }
+    } : {}
+  )
+
+  ## Ingress rules
+  vcn_1_to_client_subnet_cross_vcn_ingress = merge(
+    (var.add_exa_vcn1 == true && var.exa_vcn1_attach_to_drg == true && var.add_exa_vcn2 == true && var.exa_vcn2_attach_to_drg == true) &&
+    (local.hub_options[var.hub_deployment_option] == 3 || local.hub_options[var.hub_deployment_option] == 4) ||
+    ((local.hub_options[var.hub_deployment_option] == 1 || local.hub_options[var.hub_deployment_option] == 2) && (length(var.exa_vcn2_routable_vcns) == 0 || contains(var.exa_vcn2_routable_vcns, "EXA-VCN-1"))) ? {
+      "INGRESS-FROM-EXA-VCN-2-CLIENT-SUBNET-RULE" = {
+        description  = "Ingress from ${coalesce(var.exa_vcn2_client_subnet_name, "${var.service_label}-exa-vcn-2-client-subnet")}."
+        stateless    = false
+        protocol     = "TCP"
+        src          = coalesce(var.exa_vcn2_client_subnet_cidr, cidrsubnet(var.exa_vcn2_cidrs[0], 4, 0))
+        src_type     = "CIDR_BLOCK"
+        dst_port_min = 1521
+        dst_port_max = 1522
+      },
+      "INGRESS-FROM-EXA-VCN-2-CLIENT-SUBNET-ONS-RULE" = {
+        description  = "Ingress from ${coalesce(var.exa_vcn2_client_subnet_name, "${var.service_label}-exa-vcn-2-client-subnet")}."
+        stateless    = false
+        protocol     = "TCP"
+        src          = coalesce(var.exa_vcn2_client_subnet_cidr, cidrsubnet(var.exa_vcn2_cidrs[0], 4, 0))
+        src_type     = "CIDR_BLOCK"
+        dst_port_min = 6200
+        dst_port_max = 6200
+      },
+    } : {},
+    (var.add_exa_vcn1 == true && var.exa_vcn1_attach_to_drg == true && var.add_exa_vcn3 == true && var.exa_vcn3_attach_to_drg == true) &&
+    (local.hub_options[var.hub_deployment_option] == 3 || local.hub_options[var.hub_deployment_option] == 4) ||
+    ((local.hub_options[var.hub_deployment_option] == 1 || local.hub_options[var.hub_deployment_option] == 2) && (length(var.exa_vcn3_routable_vcns) == 0 || contains(var.exa_vcn3_routable_vcns, "EXA-VCN-1"))) ? {
+      "INGRESS-FROM-EXA-VCN-3-CLIENT-SUBNET-RULE" = {
+        description  = "Ingress from ${coalesce(var.exa_vcn3_client_subnet_name, "${var.service_label}-exa-vcn-3-client-subnet")}."
+        stateless    = false
+        protocol     = "TCP"
+        src          = coalesce(var.exa_vcn3_client_subnet_cidr, cidrsubnet(var.exa_vcn3_cidrs[0], 4, 0))
+        src_type     = "CIDR_BLOCK"
+        dst_port_min = 1521
+        dst_port_max = 1522
+      },
+      "INGRESS-FROM-EXA-VCN-3-CLIENT-SUBNET-ONS-RULE" = {
+        description  = "Ingress from ${coalesce(var.exa_vcn3_client_subnet_name, "${var.service_label}-exa-vcn-3-client-subnet")}."
+        stateless    = false
+        protocol     = "TCP"
+        src          = coalesce(var.exa_vcn3_client_subnet_cidr, cidrsubnet(var.exa_vcn3_cidrs[0], 4, 0))
+        src_type     = "CIDR_BLOCK"
+        dst_port_min = 6200
+        dst_port_max = 6200
+      },
+    } : {}
+  )
+
+  ### EXA-VCN-2:
+  ## Egress Rules
+  ## These rules are subject to the same conditions as the routing for EXA-VCN-2, also expressed in exa_vcn_2_drg_routing variable.
+  vcn_2_to_client_subnet_cross_vcn_egress = merge(
+    (var.add_exa_vcn2 == true && var.exa_vcn2_attach_to_drg == true && var.add_exa_vcn1 == true && var.exa_vcn1_attach_to_drg == true) &&
+    (local.hub_options[var.hub_deployment_option] == 3 || local.hub_options[var.hub_deployment_option] == 4) ||
+    ((local.hub_options[var.hub_deployment_option] == 1 || local.hub_options[var.hub_deployment_option] == 2) && (length(var.exa_vcn2_routable_vcns) == 0 || contains(var.exa_vcn2_routable_vcns, "EXA-VCN-1"))) ? {
+      "EGRESS-TO-VCN-1-CLIENT-SUBNET-RULE" = {
+        description  = "Egress to ${coalesce(var.exa_vcn1_client_subnet_name, "${var.service_label}-exa-vcn-1-client-subnet")}."
+        stateless    = false
+        protocol     = "TCP"
+        dst          = coalesce(var.exa_vcn1_client_subnet_cidr, cidrsubnet(var.exa_vcn1_cidrs[0], 4, 0))
+        dst_type     = "CIDR_BLOCK"
+        dst_port_min = 1521
+        dst_port_max = 1522
+      },
+      "EGRESS-TO-VCN-1-CLIENT-SUBNET-ONS-RULE" = {
+        description  = "Egress to ${coalesce(var.exa_vcn1_client_subnet_name, "${var.service_label}-exa-vcn-1-client-subnet")}."
+        stateless    = false
+        protocol     = "TCP"
+        dst          = coalesce(var.exa_vcn1_client_subnet_cidr, cidrsubnet(var.exa_vcn1_cidrs[0], 4, 0))
+        dst_type     = "CIDR_BLOCK"
+        dst_port_min = 6200
+        dst_port_max = 6200
+      }
+    } : {},
+    (var.add_exa_vcn2 == true && var.exa_vcn2_attach_to_drg == true && var.add_exa_vcn3 == true && var.exa_vcn3_attach_to_drg == true) &&
+    (local.hub_options[var.hub_deployment_option] == 3 || local.hub_options[var.hub_deployment_option] == 4) ||
+    ((local.hub_options[var.hub_deployment_option] == 1 || local.hub_options[var.hub_deployment_option] == 2) && (length(var.exa_vcn2_routable_vcns) == 0 || contains(var.exa_vcn2_routable_vcns, "EXA-VCN-3"))) ? {
+      "EGRESS-TO-VCN-3-CLIENT-SUBNET-RULE" = {
+        description  = "Egress to ${coalesce(var.exa_vcn3_client_subnet_name, "${var.service_label}-exa-vcn-3-client-subnet")}."
+        stateless    = false
+        protocol     = "TCP"
+        dst          = coalesce(var.exa_vcn3_client_subnet_cidr, cidrsubnet(var.exa_vcn3_cidrs[0], 4, 0))
+        dst_type     = "CIDR_BLOCK"
+        dst_port_min = 1521
+        dst_port_max = 1522
+      },
+      "EGRESS-TO-VCN-3-CLIENT-SUBNET-ONS-RULE" = {
+        description  = "Egress to ${coalesce(var.exa_vcn3_client_subnet_name, "${var.service_label}-exa-vcn-3-client-subnet")}."
+        stateless    = false
+        protocol     = "TCP"
+        dst          = coalesce(var.exa_vcn3_client_subnet_cidr, cidrsubnet(var.exa_vcn3_cidrs[0], 4, 0))
+        dst_type     = "CIDR_BLOCK"
+        dst_port_min = 6200
+        dst_port_max = 6200
+      }
+    } : {}
+  )
+
+  ## Ingress rules
+  vcn_2_to_client_subnet_cross_vcn_ingress = merge(
+    (var.add_exa_vcn2 == true && var.exa_vcn2_attach_to_drg == true && var.add_exa_vcn1 == true && var.exa_vcn1_attach_to_drg == true) &&
+    (local.hub_options[var.hub_deployment_option] == 3 || local.hub_options[var.hub_deployment_option] == 4) ||
+    ((local.hub_options[var.hub_deployment_option] == 1 || local.hub_options[var.hub_deployment_option] == 2) && (length(var.exa_vcn1_routable_vcns) == 0 || contains(var.exa_vcn1_routable_vcns, "EXA-VCN-2"))) ? {
+      "INGRESS-FROM-EXA-VCN-1-CLIENT-SUBNET-RULE" = {
+        description  = "Ingress from ${coalesce(var.exa_vcn1_client_subnet_name, "${var.service_label}-exa-vcn-1-client-subnet")}."
+        stateless    = false
+        protocol     = "TCP"
+        src          = coalesce(var.exa_vcn1_client_subnet_cidr, cidrsubnet(var.exa_vcn1_cidrs[0], 4, 0))
+        src_type     = "CIDR_BLOCK"
+        dst_port_min = 1521
+        dst_port_max = 1522
+      },
+      "INGRESS-FROM-EXA-VCN-1-CLIENT-SUBNET-ONS-RULE" = {
+        description  = "Ingress from ${coalesce(var.exa_vcn1_client_subnet_name, "${var.service_label}-exa-vcn-1-client-subnet")}."
+        stateless    = false
+        protocol     = "TCP"
+        src          = coalesce(var.exa_vcn1_client_subnet_cidr, cidrsubnet(var.exa_vcn1_cidrs[0], 4, 0))
+        src_type     = "CIDR_BLOCK"
+        dst_port_min = 6200
+        dst_port_max = 6200
+      },
+    } : {},
+    (var.add_exa_vcn2 == true && var.exa_vcn2_attach_to_drg == true && var.add_exa_vcn3 == true && var.exa_vcn3_attach_to_drg == true) &&
+    (local.hub_options[var.hub_deployment_option] == 3 || local.hub_options[var.hub_deployment_option] == 4) ||
+    ((local.hub_options[var.hub_deployment_option] == 1 || local.hub_options[var.hub_deployment_option] == 2) && (length(var.exa_vcn3_routable_vcns) == 0 || contains(var.exa_vcn3_routable_vcns, "EXA-VCN-2"))) ? {
+      "INGRESS-FROM-EXA-VCN-3-CLIENT-SUBNET-RULE" = {
+        description  = "Ingress from ${coalesce(var.exa_vcn3_client_subnet_name, "${var.service_label}-exa-vcn-3-client-subnet")}."
+        stateless    = false
+        protocol     = "TCP"
+        src          = coalesce(var.exa_vcn3_client_subnet_cidr, cidrsubnet(var.exa_vcn3_cidrs[0], 4, 0))
+        src_type     = "CIDR_BLOCK"
+        dst_port_min = 1521
+        dst_port_max = 1522
+      },
+      "INGRESS-FROM-EXA-VCN-3-CLIENT-SUBNET-ONS-RULE" = {
+        description  = "Ingress from ${coalesce(var.exa_vcn3_client_subnet_name, "${var.service_label}-exa-vcn-3-client-subnet")}."
+        stateless    = false
+        protocol     = "TCP"
+        src          = coalesce(var.exa_vcn3_client_subnet_cidr, cidrsubnet(var.exa_vcn3_cidrs[0], 4, 0))
+        src_type     = "CIDR_BLOCK"
+        dst_port_min = 6200
+        dst_port_max = 6200
+      },
+    } : {}
+  )
+
+  ### EXA-VCN-3:
+  ## Egress Rules
+  ## These rules are subject to the same conditions as the routing for EXA-VCN-3, also expressed in exa_vcn__drg_routing variable.
+  vcn_3_to_client_subnet_cross_vcn_egress = merge(
+    (var.add_exa_vcn3 == true && var.exa_vcn3_attach_to_drg == true && var.add_exa_vcn1 == true && var.exa_vcn1_attach_to_drg == true) &&
+    (local.hub_options[var.hub_deployment_option] == 3 || local.hub_options[var.hub_deployment_option] == 4) ||
+    ((local.hub_options[var.hub_deployment_option] == 1 || local.hub_options[var.hub_deployment_option] == 2) && (length(var.exa_vcn3_routable_vcns) == 0 || contains(var.exa_vcn3_routable_vcns, "EXA-VCN-1"))) ? {
+      "EGRESS-TO-VCN-1-CLIENT-SUBNET-RULE" = {
+        description  = "Egress to ${coalesce(var.exa_vcn1_client_subnet_name, "${var.service_label}-exa-vcn-1-client-subnet")}."
+        stateless    = false
+        protocol     = "TCP"
+        dst          = coalesce(var.exa_vcn1_client_subnet_cidr, cidrsubnet(var.exa_vcn1_cidrs[0], 4, 0))
+        dst_type     = "CIDR_BLOCK"
+        dst_port_min = 1521
+        dst_port_max = 1522
+      },
+      "EGRESS-TO-VCN-1-CLIENT-SUBNET-ONS-RULE" = {
+        description  = "Egress to ${coalesce(var.exa_vcn1_client_subnet_name, "${var.service_label}-exa-vcn-1-client-subnet")}."
+        stateless    = false
+        protocol     = "TCP"
+        dst          = coalesce(var.exa_vcn1_client_subnet_cidr, cidrsubnet(var.exa_vcn1_cidrs[0], 4, 0))
+        dst_type     = "CIDR_BLOCK"
+        dst_port_min = 6200
+        dst_port_max = 6200
+      }
+    } : {},
+    (var.add_exa_vcn3 == true && var.exa_vcn3_attach_to_drg == true && var.add_exa_vcn2 == true && var.exa_vcn2_attach_to_drg == true) &&
+    (local.hub_options[var.hub_deployment_option] == 3 || local.hub_options[var.hub_deployment_option] == 4) ||
+    ((local.hub_options[var.hub_deployment_option] == 1 || local.hub_options[var.hub_deployment_option] == 2) && (length(var.exa_vcn3_routable_vcns) == 0 || contains(var.exa_vcn3_routable_vcns, "EXA-VCN-2"))) ? {
+      "EGRESS-TO-VCN-2-CLIENT-SUBNET-RULE" = {
+        description  = "Egress to ${coalesce(var.exa_vcn2_client_subnet_name, "${var.service_label}-exa-vcn-2-client-subnet")}."
+        stateless    = false
+        protocol     = "TCP"
+        dst          = coalesce(var.exa_vcn2_client_subnet_cidr, cidrsubnet(var.exa_vcn2_cidrs[0], 4, 0))
+        dst_type     = "CIDR_BLOCK"
+        dst_port_min = 1521
+        dst_port_max = 1522
+      },
+      "EGRESS-TO-VCN-2-CLIENT-SUBNET-ONS-RULE" = {
+        description  = "Egress to ${coalesce(var.exa_vcn2_client_subnet_name, "${var.service_label}-exa-vcn-2-client-subnet")}."
+        stateless    = false
+        protocol     = "TCP"
+        dst          = coalesce(var.exa_vcn2_client_subnet_cidr, cidrsubnet(var.exa_vcn2_cidrs[0], 4, 0))
+        dst_type     = "CIDR_BLOCK"
+        dst_port_min = 6200
+        dst_port_max = 6200
+      },
+    } : {}
+  )
+
+  ## Ingress rules
+  vcn_3_to_client_subnet_cross_vcn_ingress = merge(
+    (var.add_exa_vcn3 == true && var.exa_vcn3_attach_to_drg == true && var.add_exa_vcn1 == true && var.exa_vcn1_attach_to_drg == true) &&
+    (local.hub_options[var.hub_deployment_option] == 3 || local.hub_options[var.hub_deployment_option] == 4) ||
+    ((local.hub_options[var.hub_deployment_option] == 1 || local.hub_options[var.hub_deployment_option] == 2) && (length(var.exa_vcn1_routable_vcns) == 0 || contains(var.exa_vcn1_routable_vcns, "EXA-VCN-3"))) ? {
+
+      "INGRESS-FROM-EXA-VCN-1-CLIENT-SUBNET-RULE" = {
+        description  = "Ingress from ${coalesce(var.exa_vcn1_client_subnet_name, "${var.service_label}-exa-vcn-1-client-subnet")}."
+        stateless    = false
+        protocol     = "TCP"
+        src          = coalesce(var.exa_vcn1_client_subnet_cidr, cidrsubnet(var.exa_vcn1_cidrs[0], 4, 0))
+        src_type     = "CIDR_BLOCK"
+        dst_port_min = 1521
+        dst_port_max = 1522
+      },
+      "INGRESS-FROM-EXA-VCN-1-CLIENT-SUBNET-ONS-RULE" = {
+        description = "Ingress from ${coalesce(var.exa_vcn1_client_subnet_name, "${var.service_label}-exa-vcn-1-client-subnet")}."
+        stateless   = false
+        protocol    = "TCP"
+        src         = coalesce(var.exa_vcn1_client_subnet_cidr, cidrsubnet(var.exa_vcn1_cidrs[0], 4, 0))
+        src_type    = "CIDR_BLOCK"
+        dst_port_min : 6200
+        dst_port_max : 6200
+      }
+    } : {},
+    (var.add_exa_vcn3 == true && var.exa_vcn3_attach_to_drg == true && var.add_exa_vcn2 == true && var.exa_vcn2_attach_to_drg == true) &&
+    (local.hub_options[var.hub_deployment_option] == 3 || local.hub_options[var.hub_deployment_option] == 4) ||
+    ((local.hub_options[var.hub_deployment_option] == 1 || local.hub_options[var.hub_deployment_option] == 2) && (length(var.exa_vcn2_routable_vcns) == 0 || contains(var.exa_vcn2_routable_vcns, "EXA-VCN-3"))) ? {
+
+      "INGRESS-FROM-EXA-VCN-2-CLIENT-SUBNET-RULE" = {
+        description  = "Ingress from ${coalesce(var.exa_vcn2_client_subnet_name, "${var.service_label}-exa-vcn-2-client-subnet")}."
+        stateless    = false
+        protocol     = "TCP"
+        src          = coalesce(var.exa_vcn2_client_subnet_cidr, cidrsubnet(var.exa_vcn2_cidrs[0], 4, 0))
+        src_type     = "CIDR_BLOCK"
+        dst_port_min = 1521
+        dst_port_max = 1522
+      },
+      "INGRESS-FROM-EXA-VCN-2-CLIENT-SUBNET-ONS-RULE" = {
+        description  = "Ingress from ${coalesce(var.exa_vcn2_client_subnet_name, "${var.service_label}-exa-vcn-2-client-subnet")}."
+        stateless    = false
+        protocol     = "TCP"
+        src          = coalesce(var.exa_vcn2_client_subnet_cidr, cidrsubnet(var.exa_vcn2_cidrs[0], 4, 0))
+        src_type     = "CIDR_BLOCK"
+        dst_port_min = 6200
+        dst_port_max = 6200
+      },
+    } : {}
+  )
 }
