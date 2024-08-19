@@ -32,48 +32,48 @@ variable "custom_id_domain_name" {
   default = null
 }
 variable "rm_existing_id_domain_iam_admin_group_name" {
-  type    = string
-  default = ""
+  type    = list(string)
+  default = []
 }
 variable "rm_existing_id_domain_cred_admin_group_name" {
-  type    = string
-  default = ""
+  type    = list(string)
+  default = []
 }
 variable "rm_existing_id_domain_security_admin_group_name" {
-  type    = string
-  default = ""
+  type    = list(string)
+  default = []
 }
 variable "rm_existing_id_domain_network_admin_group_name" {
-  type    = string
-  default = ""
+  type    = list(string)
+  default = []
 }
 variable "rm_existing_id_domain_appdev_admin_group_name" {
-  type    = string
-  default = ""
+  type    = list(string)
+  default = []
 }
 variable "rm_existing_id_domain_database_admin_group_name" {
-  type    = string
-  default = ""
+  type    = list(string)
+  default = []
 }
 variable "rm_existing_id_domain_auditor_group_name" {
-  type    = string
-  default = ""
+  type    = list(string)
+  default = []
 }
 variable "rm_existing_id_domain_announcement_reader_group_name" {
-  type    = string
-  default = ""
+  type    = list(string)
+  default = []
 }
 variable "rm_existing_id_domain_exainfra_admin_group_name" {
-  type    = string
-  default = ""
+  type    = list(string)
+  default = []
 }
 variable "rm_existing_id_domain_cost_admin_group_name" {
-  type    = string
-  default = ""
+  type    = list(string)
+  default = []
 }
 variable "rm_existing_id_domain_storage_admin_group_name" {
-  type    = string
-  default = ""
+  type    = list(string)
+  default = []
 }
 variable "existing_id_domain_security_fun_dyn_group_name" {
   type        = string
@@ -268,8 +268,8 @@ variable "policies_in_root_compartment" {
   }
 }
 
-variable "enable_template_policies" {
-  type        = bool
-  default     = false
-  description = "Whether policies should be created based on metadata associated to compartments. This is an alternative way of managing policies, enabled by the CIS Landing Zone standalone IAM policy module: https://github.com/oracle-quickstart/terraform-oci-cis-landing-zone-iam/tree/main/policies. When set to true, the grants to resources belonging to a specific compartment are combined into a single policy that is attached to the compartment itself. This differs from the default approach, where grants are combined per grantee and attached to the enclosing compartment."
-}
+# variable "enable_template_policies" {
+#   type        = bool
+#   default     = false
+#   description = "Whether policies should be created based on metadata associated to compartments. This is an alternative way of managing policies, enabled by the CIS Landing Zone standalone IAM policy module: https://github.com/oracle-quickstart/terraform-oci-cis-landing-zone-iam/tree/main/policies. When set to true, the grants to resources belonging to a specific compartment are combined into a single policy that is attached to the compartment itself. This differs from the default approach, where grants are combined per grantee and attached to the enclosing compartment."
+# }

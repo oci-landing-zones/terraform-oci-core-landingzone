@@ -52,7 +52,7 @@ variableGroups:
           - ${customize_iam}
           - true  
 
-  - title: "Groups (Custom Identity Domain)"
+  - title: "Groups (Existing Identity Domain)"
     variables:
       - "rm_existing_id_domain_iam_admin_group_name"
       - "rm_existing_id_domain_cred_admin_group_name"
@@ -77,7 +77,7 @@ variableGroups:
           - ${use_custom_id_domain}
           - true
 
-  - title: "Dynamic Groups (Custom Identity Domain)"
+  - title: "Dynamic Groups (Existing Identity Domain)"
     variables:
       - "existing_id_domain_security_fun_dyn_group_name"
       - "existing_id_domain_appdev_fun_dyn_group_name"
@@ -143,7 +143,7 @@ variableGroups:
   - title: "Policies"   
     variables:
       - "policies_in_root_compartment"
-      - "enable_template_policies"  
+    #  - "enable_template_policies"  
     visible:
       and:
         - eq:
@@ -553,79 +553,112 @@ variables:
   
   use_custom_id_domain:
     type: boolean
-    title: "Enable an Existing Custom Identity Domain to Manage Landing Zone?"
-    description: "Your tenancy already has a default Identity Domain, whose groups are used to manage the Landing Zone. Check this box for enabling groups in an *existing* custom Identity Domain to manage the resources deployed by the Landing Zone. See <a href='https://docs.oracle.com/en-us/iaas/Content/Identity/usingidentitydomains/oci-iam-concepts.htm'>IAM Technologies</a> for identity domains concepts."
+    title: "Enable an Existing Identity Domain to Manage Landing Zone?"
+    description: "Your tenancy already has a default Identity Domain, whose groups are used to manage the Landing Zone. Check this box for enabling groups in an *existing* non-default Identity Domain to manage the resources deployed by the Landing Zone. See <a href='https://docs.oracle.com/en-us/iaas/Content/Identity/usingidentitydomains/oci-iam-concepts.htm'>IAM Technologies</a> for identity domains concepts."
     default: false
 
   custom_id_domain_name:
     type: string
-    title: "Existing Custom Identity Domain Name"
-    description: "Enter the existing custom Identity Domain name."
+    title: "Existing Identity Domain Name"
+    description: "Enter the existing Identity Domain name."
     required: false
     visible: use_custom_id_domain
 
   rm_existing_id_domain_iam_admin_group_name:
-    type: string
-    title: "Existing IAM Admin Group Name"
-    description: "Enter the existing group to which IAM management policies will be granted to."
+    type: array
+    items:
+      type: string
+    uniqueItems: true
+    title: "Existing IAM Admin Group Names"
+    description: "Enter the existing group(s) to which IAM management policies will be granted to."
     visible: use_custom_id_domain 
         
   rm_existing_id_domain_cred_admin_group_name:
-    type: string
-    title: "Existing Credentials Admin Group Name"
-    description: "Enter the existing group to which credentials management policies will be granted to."
+    type: array
+    items:
+      type: string
+    uniqueItems: true
+    title: "Existing Credentials Admin Group Names"
+    description: "Enter the existing group(s) to which credentials management policies will be granted to."
     visible: use_custom_id_domain
       
   rm_existing_id_domain_security_admin_group_name:
-    type: string
+    type: array
+    items:
+      type: string
+    uniqueItems: true
     title: "Existing Security Admin Group Name"
     description: "Enter the existing group to which security management policies will be granted to."
     visible: use_custom_id_domain
       
   rm_existing_id_domain_network_admin_group_name:
-    type: string
+    type: array
+    items:
+      type: string
+    uniqueItems: true
     title: "Existing Network Admin Group Name"
     description: "Enter the existing group to which network management policies will be granted to."
     visible: use_custom_id_domain
       
   rm_existing_id_domain_appdev_admin_group_name:
-    type: string
+    type: array
+    items:
+      type: string
+    uniqueItems: true
     title: "Existing Application Admin Group Name"
     description: "Enter the existing group to which application development management policies will be granted to."
     visible: use_custom_id_domain
       
   rm_existing_id_domain_database_admin_group_name:
-    type: string
+    type: array
+    items:
+      type: string
+    uniqueItems: true
     title: "Existing Database Admin Group Name"
     description: "Enter the existing group to which database management policies will be granted to."
     visible: use_custom_id_domain
   
   rm_existing_id_domain_exainfra_admin_group_name:
-    type: string
+    type: array
+    items:
+      type: string
+    uniqueItems: true
     title: "Existing Admin Group Name for Exadata Infrastructure"
     description: "Enter the existing group to which Exadata infrastructure management policies will be granted to."
     visible: use_custom_id_domain      
   
   rm_existing_id_domain_auditor_group_name:
-    type: string
+    type: array
+    items:
+      type: string
+    uniqueItems: true
     title: "Enter the existing Auditors Group Name"
     description: "Existing group to which auditing policies will be granted to."
     visible: use_custom_id_domain
       
   rm_existing_id_domain_announcement_reader_group_name:
-    type: string
+    type: array
+    items:
+      type: string
+    uniqueItems: true
     title: "Existing Announcement Readers Group Name"
     description: "Enter the existing group to which announcement reading policies will be granted to."
     visible: use_custom_id_domain 
   
   rm_existing_id_domain_cost_admin_group_name:
-    type: string
+    type: array
+    items:
+      type: string
+    uniqueItems: true
     title: "Existing Cost Admin Group Name"
     description: "Enter the existing group to which Cost management policies will be granted to."
     visible: use_custom_id_domain
 
   rm_existing_id_domain_storage_admin_group_name:
-    type: string
+    type: array
+    items:
+      type: string
+    uniqueItems: true
     title: "Existing Storage Admin Group Name"
     description: "Enter the existing group to which Storage management policies will be granted to."
     visible: use_custom_id_domain    
@@ -873,11 +906,11 @@ variables:
     required: true
     default: "CREATE"
   
-  enable_template_policies:
-    type: boolean
-    title: "Enable template policies?"
-    description: "Whether policies should be created based on metadata associated to compartments. This is an alternative way of managing policies, enabled by the <a href=\"https://github.com/oracle-quickstart/terraform-oci-cis-landing-zone-iam/tree/main/policies\">CIS Landing Zone standalone IAM policy module</a>. When set to true, the grants to resources belonging to a specific compartment are combined into a single policy that is attached to the compartment itself. This differs from the default approach, where grants are combined per grantee and attached to the enclosing compartment."
-    default: false
+  # enable_template_policies:
+  #   type: boolean
+  #   title: "Enable template policies?"
+  #   description: "Whether policies should be created based on metadata associated to compartments. This is an alternative way of managing policies, enabled by the <a href=\"https://github.com/oracle-quickstart/terraform-oci-cis-landing-zone-iam/tree/main/policies\">CIS Landing Zone standalone IAM policy module</a>. When set to true, the grants to resources belonging to a specific compartment are combined into a single policy that is attached to the compartment itself. This differs from the default approach, where grants are combined per grantee and attached to the enclosing compartment."
+  #   default: false
   
 # ------------------------------------------------------
 # ----- Networking - Three-tier VCN 1
