@@ -27,8 +27,9 @@ locals {
   storage_admin_policy_name          = "${var.service_label}-storage-admin-policy"
 
   #iam_grants_condition = [for g in local.cred_admin_group_name : "target.group.name != ${g}"]
-  iam_grants_condition = [for g in local.cred_admin_group_name : substr(g, 0, 1) == "'" && substr(g, length(g) - 1, 1) == "'" ? "target.group.name != ${g}" : "target.group.name != '${g}'"]
-
+  cred_admin_groups = var.use_custom_id_domain == false ? [for g in local.cred_admin_group_name : substr(g, 0, 1) == "'" && substr(g, length(g) - 1, 1) == "'" ? "target.group.name != ${g}" : "target.group.name != '${g}'"] : []
+  custom_id_domain_cred_admin_groups = var.use_custom_id_domain == true ? [for g in local.cred_admin_group_name : "target.group.name != ${substr(g,length(var.custom_id_domain_name)+3,-1)}"] : []
+  
   ### User Group Policies ###
   ## IAM admin grants at the root compartment
   iam_admin_grants_on_root_cmp = [
@@ -38,7 +39,8 @@ locals {
     "allow group ${join(",", local.iam_admin_group_name)} to inspect groups in tenancy",
     "allow group ${join(",", local.iam_admin_group_name)} to read policies in tenancy",
     #"allow group ${join(",",local.iam_admin_group_name)} to manage groups in tenancy where all {target.group.name != 'Administrators', target.group.name != ${local.cred_admin_group_name}}",
-    "allow group ${join(",", local.iam_admin_group_name)} to manage groups in tenancy where all {target.group.name != 'Administrators',${join(",", local.iam_grants_condition)}}",
+    "allow group ${join(",", local.iam_admin_group_name)} to manage groups in tenancy where all {target.group.name != 'Administrators' ${length(local.cred_admin_groups) > 0 ? ",${join(",", local.cred_admin_groups)}}" : "}"}",
+    var.use_custom_id_domain == true ? "allow group ${join(",", local.iam_admin_group_name)} to manage groups in tenancy where all {target.domain.name = '${var.custom_id_domain_name}',${join(",", local.custom_id_domain_cred_admin_groups)}}" : "",
     "allow group ${join(",", local.iam_admin_group_name)} to inspect identity-providers in tenancy",
     "allow group ${join(",", local.iam_admin_group_name)} to manage identity-providers in tenancy where any {request.operation = 'AddIdpGroupMapping', request.operation = 'DeleteIdpGroupMapping'}",
     "allow group ${join(",", local.iam_admin_group_name)} to manage dynamic-groups in tenancy",
@@ -506,7 +508,7 @@ locals {
     (local.basic_root_policy_name) = {
       compartment_id = var.tenancy_ocid
       name             = local.basic_root_policy_name
-      description      = "CIS Landing Zone basic root compartment policy."
+      description      = "Landing Zone basic root compartment policy."
       defined_tags     = local.policies_defined_tags
       freeform_tags    = local.policies_freeform_tags
       statements       = local.basic_grants_on_root_cmp
@@ -514,7 +516,7 @@ locals {
     (local.security_admin_root_policy_name) = {
       compartment_id = var.tenancy_ocid
       name             = local.security_admin_root_policy_name
-      description      = "CIS Landing Zone root compartment policy for ${join(",", local.security_admin_group_name)} group."
+      description      = "Landing Zone root compartment policy for ${join(",", local.security_admin_group_name)} group."
       defined_tags     = local.policies_defined_tags
       freeform_tags    = local.policies_freeform_tags
       statements       = local.security_admin_grants_on_root_cmp
@@ -522,7 +524,7 @@ locals {
     (local.iam_admin_root_policy_name) = {
       compartment_id = var.tenancy_ocid
       name             = local.iam_admin_root_policy_name
-      description      = "CIS Landing Zone root compartment policy for ${join(",", local.iam_admin_group_name)} group."
+      description      = "Landing Zone root compartment policy for ${join(",", local.iam_admin_group_name)} group."
       defined_tags     = local.policies_defined_tags
       freeform_tags    = local.policies_freeform_tags
       statements       = local.iam_admin_grants_on_root_cmp
@@ -530,7 +532,7 @@ locals {
     (local.auditor_policy_name) = {
       compartment_id = var.tenancy_ocid
       name             = local.auditor_policy_name
-      description      = "CIS Landing Zone root compartment policy for ${join(",", local.auditor_group_name)} group."
+      description      = "Landing Zone root compartment policy for ${join(",", local.auditor_group_name)} group."
       defined_tags     = local.policies_defined_tags
       freeform_tags    = local.policies_freeform_tags
       statements = [
@@ -556,7 +558,7 @@ locals {
     (local.announcement_reader_policy_name) = {
       compartment_id = var.tenancy_ocid
       name             = local.announcement_reader_policy_name
-      description      = "CIS Landing Zone root compartment policy for ${join(",", local.announcement_reader_group_name)} group."
+      description      = "Landing Zone root compartment policy for ${join(",", local.announcement_reader_group_name)} group."
       defined_tags     = local.policies_defined_tags
       freeform_tags    = local.policies_freeform_tags
       statements = [
@@ -567,7 +569,7 @@ locals {
     (local.cred_admin_policy_name) = {
       compartment_id = var.tenancy_ocid
       name             = local.cred_admin_policy_name
-      description      = "CIS Landing Zone root compartment policy for ${join(",", local.cred_admin_group_name)} group."
+      description      = "Landing Zone root compartment policy for ${join(",", local.cred_admin_group_name)} group."
       defined_tags     = local.policies_defined_tags
       freeform_tags    = local.policies_freeform_tags
       statements = [
@@ -580,7 +582,7 @@ locals {
     (local.cost_admin_root_policy_name) = {
       compartment_id = var.tenancy_ocid
       name             = local.cost_admin_root_policy_name
-      description      = "CIS Landing Zone root compartment policy for ${join(",", local.cost_admin_group_name)} group."
+      description      = "Landing Zone root compartment policy for ${join(",", local.cost_admin_group_name)} group."
       defined_tags     = local.policies_defined_tags
       freeform_tags    = local.policies_freeform_tags
       statements       = local.cost_root_permissions
@@ -593,7 +595,7 @@ module "lz_root_policies" {
   source                 = "github.com/oracle-quickstart/terraform-oci-cis-landing-zone-iam//policies?ref=release-0.2.3"
   providers              = { oci = oci.home }
   tenancy_ocid           = var.tenancy_ocid
-  policies_configuration = var.extend_landing_zone_to_new_region == false && var.enable_template_policies == false ? (local.use_existing_root_cmp_grants == true ? local.empty_policies_configuration : local.root_policies_configuration) : local.empty_policies_configuration
+  policies_configuration = var.extend_landing_zone_to_new_region == false /*&& var.enable_template_policies == false*/ ? (local.use_existing_root_cmp_grants == true ? local.empty_policies_configuration : local.root_policies_configuration) : local.empty_policies_configuration
 }
 
 module "lz_policies" {
@@ -601,7 +603,7 @@ module "lz_policies" {
   source                 = "github.com/oracle-quickstart/terraform-oci-cis-landing-zone-iam//policies?ref=release-0.2.3"
   providers              = { oci = oci.home }
   tenancy_ocid           = var.tenancy_ocid
-  policies_configuration = var.extend_landing_zone_to_new_region == false && var.enable_template_policies == false ? local.policies_configuration : local.empty_policies_configuration
+  policies_configuration = var.extend_landing_zone_to_new_region == false /*&& var.enable_template_policies == false*/ ? local.policies_configuration : local.empty_policies_configuration
 }
 
 locals {
