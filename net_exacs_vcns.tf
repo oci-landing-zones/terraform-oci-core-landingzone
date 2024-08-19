@@ -765,6 +765,7 @@ locals {
         dst_port_min = 1521
         dst_port_max = 1522
       },
+      /* port 6200 likely not needed in cross-vcn use case; commenting out
       "EGRESS-TO-VCN-2-CLIENT-SUBNET-ONS-RULE" = {
         description  = "Egress to ${coalesce(var.exa_vcn2_client_subnet_name, "${var.service_label}-exa-vcn-2-client-subnet")}."
         stateless    = false
@@ -773,7 +774,7 @@ locals {
         dst_type     = "CIDR_BLOCK"
         dst_port_min = 6200
         dst_port_max = 6200
-      }
+      } */
     } : {},
     (var.add_exa_vcn1 == true && var.exa_vcn1_attach_to_drg == true && var.add_exa_vcn3 == true && var.exa_vcn3_attach_to_drg == true) &&
     (local.hub_options[var.hub_deployment_option] == 3 || local.hub_options[var.hub_deployment_option] == 4) ||
@@ -787,6 +788,7 @@ locals {
         dst_port_min = 1521
         dst_port_max = 1522
       },
+      /* port 6200 likely not needed in cross-vcn use case; commenting out
       "EGRESS-TO-VCN-3-CLIENT-SUBNET-ONS-RULE" = {
         description  = "Egress to ${coalesce(var.exa_vcn3_client_subnet_name, "${var.service_label}-exa-vcn-3-client-subnet")}."
         stateless    = false
@@ -795,7 +797,7 @@ locals {
         dst_type     = "CIDR_BLOCK"
         dst_port_min = 6200
         dst_port_max = 6200
-      }
+      } */
     } : {}
   )
 
@@ -813,6 +815,7 @@ locals {
         dst_port_min = 1521
         dst_port_max = 1522
       },
+      /* port 6200 likely not needed in cross-vcn use case; commenting out
       "INGRESS-FROM-EXA-VCN-2-CLIENT-SUBNET-ONS-RULE" = {
         description  = "Ingress from ${coalesce(var.exa_vcn2_client_subnet_name, "${var.service_label}-exa-vcn-2-client-subnet")}."
         stateless    = false
@@ -821,7 +824,7 @@ locals {
         src_type     = "CIDR_BLOCK"
         dst_port_min = 6200
         dst_port_max = 6200
-      },
+      }, */
     } : {},
     (var.add_exa_vcn1 == true && var.exa_vcn1_attach_to_drg == true && var.add_exa_vcn3 == true && var.exa_vcn3_attach_to_drg == true) &&
     (local.hub_options[var.hub_deployment_option] == 3 || local.hub_options[var.hub_deployment_option] == 4) ||
@@ -835,6 +838,7 @@ locals {
         dst_port_min = 1521
         dst_port_max = 1522
       },
+      /* port 6200 likely not needed in cross-vcn use case; commenting out
       "INGRESS-FROM-EXA-VCN-3-CLIENT-SUBNET-ONS-RULE" = {
         description  = "Ingress from ${coalesce(var.exa_vcn3_client_subnet_name, "${var.service_label}-exa-vcn-3-client-subnet")}."
         stateless    = false
@@ -843,7 +847,7 @@ locals {
         src_type     = "CIDR_BLOCK"
         dst_port_min = 6200
         dst_port_max = 6200
-      },
+      }, */
     } : {}
   )
 
@@ -863,6 +867,7 @@ locals {
         dst_port_min = 1521
         dst_port_max = 1522
       },
+      /* port 6200 likely not needed in cross-vcn use case; commenting out
       "EGRESS-TO-VCN-1-CLIENT-SUBNET-ONS-RULE" = {
         description  = "Egress to ${coalesce(var.exa_vcn1_client_subnet_name, "${var.service_label}-exa-vcn-1-client-subnet")}."
         stateless    = false
@@ -871,7 +876,7 @@ locals {
         dst_type     = "CIDR_BLOCK"
         dst_port_min = 6200
         dst_port_max = 6200
-      }
+      } */
     } : {},
     (var.add_exa_vcn2 == true && var.exa_vcn2_attach_to_drg == true && var.add_exa_vcn3 == true && var.exa_vcn3_attach_to_drg == true) &&
     (local.hub_options[var.hub_deployment_option] == 3 || local.hub_options[var.hub_deployment_option] == 4) ||
@@ -885,6 +890,7 @@ locals {
         dst_port_min = 1521
         dst_port_max = 1522
       },
+      /* port 6200 likely not needed in cross-vcn use case; commenting out
       "EGRESS-TO-VCN-3-CLIENT-SUBNET-ONS-RULE" = {
         description  = "Egress to ${coalesce(var.exa_vcn3_client_subnet_name, "${var.service_label}-exa-vcn-3-client-subnet")}."
         stateless    = false
@@ -893,7 +899,7 @@ locals {
         dst_type     = "CIDR_BLOCK"
         dst_port_min = 6200
         dst_port_max = 6200
-      }
+      } */
     } : {}
   )
 
@@ -911,6 +917,7 @@ locals {
         dst_port_min = 1521
         dst_port_max = 1522
       },
+      /* port 6200 likely not needed in cross-vcn use case; commenting out
       "INGRESS-FROM-EXA-VCN-1-CLIENT-SUBNET-ONS-RULE" = {
         description  = "Ingress from ${coalesce(var.exa_vcn1_client_subnet_name, "${var.service_label}-exa-vcn-1-client-subnet")}."
         stateless    = false
@@ -919,7 +926,7 @@ locals {
         src_type     = "CIDR_BLOCK"
         dst_port_min = 6200
         dst_port_max = 6200
-      },
+      }, */
     } : {},
     (var.add_exa_vcn2 == true && var.exa_vcn2_attach_to_drg == true && var.add_exa_vcn3 == true && var.exa_vcn3_attach_to_drg == true) &&
     (local.hub_options[var.hub_deployment_option] == 3 || local.hub_options[var.hub_deployment_option] == 4) ||
@@ -933,6 +940,7 @@ locals {
         dst_port_min = 1521
         dst_port_max = 1522
       },
+      /* port 6200 likely not needed in cross-vcn use case; commenting out
       "INGRESS-FROM-EXA-VCN-3-CLIENT-SUBNET-ONS-RULE" = {
         description  = "Ingress from ${coalesce(var.exa_vcn3_client_subnet_name, "${var.service_label}-exa-vcn-3-client-subnet")}."
         stateless    = false
@@ -941,7 +949,7 @@ locals {
         src_type     = "CIDR_BLOCK"
         dst_port_min = 6200
         dst_port_max = 6200
-      },
+      }, */
     } : {}
   )
 
@@ -961,6 +969,7 @@ locals {
         dst_port_min = 1521
         dst_port_max = 1522
       },
+      /* port 6200 likely not needed in cross-vcn use case; commenting out
       "EGRESS-TO-VCN-1-CLIENT-SUBNET-ONS-RULE" = {
         description  = "Egress to ${coalesce(var.exa_vcn1_client_subnet_name, "${var.service_label}-exa-vcn-1-client-subnet")}."
         stateless    = false
@@ -969,7 +978,7 @@ locals {
         dst_type     = "CIDR_BLOCK"
         dst_port_min = 6200
         dst_port_max = 6200
-      }
+      } */
     } : {},
     (var.add_exa_vcn3 == true && var.exa_vcn3_attach_to_drg == true && var.add_exa_vcn2 == true && var.exa_vcn2_attach_to_drg == true) &&
     (local.hub_options[var.hub_deployment_option] == 3 || local.hub_options[var.hub_deployment_option] == 4) ||
@@ -983,6 +992,7 @@ locals {
         dst_port_min = 1521
         dst_port_max = 1522
       },
+      /* port 6200 likely not needed in cross-vcn use case; commenting out
       "EGRESS-TO-VCN-2-CLIENT-SUBNET-ONS-RULE" = {
         description  = "Egress to ${coalesce(var.exa_vcn2_client_subnet_name, "${var.service_label}-exa-vcn-2-client-subnet")}."
         stateless    = false
@@ -991,7 +1001,7 @@ locals {
         dst_type     = "CIDR_BLOCK"
         dst_port_min = 6200
         dst_port_max = 6200
-      },
+      }, */
     } : {}
   )
 
@@ -1010,6 +1020,7 @@ locals {
         dst_port_min = 1521
         dst_port_max = 1522
       },
+      /* port 6200 likely not needed in cross-vcn use case; commenting out
       "INGRESS-FROM-EXA-VCN-1-CLIENT-SUBNET-ONS-RULE" = {
         description = "Ingress from ${coalesce(var.exa_vcn1_client_subnet_name, "${var.service_label}-exa-vcn-1-client-subnet")}."
         stateless   = false
@@ -1018,7 +1029,7 @@ locals {
         src_type    = "CIDR_BLOCK"
         dst_port_min : 6200
         dst_port_max : 6200
-      }
+      } */
     } : {},
     (var.add_exa_vcn3 == true && var.exa_vcn3_attach_to_drg == true && var.add_exa_vcn2 == true && var.exa_vcn2_attach_to_drg == true) &&
     (local.hub_options[var.hub_deployment_option] == 3 || local.hub_options[var.hub_deployment_option] == 4) ||
@@ -1033,6 +1044,7 @@ locals {
         dst_port_min = 1521
         dst_port_max = 1522
       },
+      /* port 6200 likely not needed in cross-vcn use case; commenting out
       "INGRESS-FROM-EXA-VCN-2-CLIENT-SUBNET-ONS-RULE" = {
         description  = "Ingress from ${coalesce(var.exa_vcn2_client_subnet_name, "${var.service_label}-exa-vcn-2-client-subnet")}."
         stateless    = false
@@ -1041,7 +1053,7 @@ locals {
         src_type     = "CIDR_BLOCK"
         dst_port_min = 6200
         dst_port_max = 6200
-      },
+      }, */
     } : {}
   )
 }
