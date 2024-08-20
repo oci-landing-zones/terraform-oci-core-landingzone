@@ -129,8 +129,8 @@ module "lz_service_connector_hub" {
   service_connectors_configuration = local.service_connectors_configuration
   logs_dependency                  = var.service_connector_target_kind == "logginganalytics" ? module.lz_logging_analytics[0].logging_analytics_log_groups : null
   providers = {
-    oci      = oci
-    oci.home = oci.home
+    oci                  = oci
+    oci.home             = oci.home
     oci.secondary_region = oci.secondary_region
   }
 }
