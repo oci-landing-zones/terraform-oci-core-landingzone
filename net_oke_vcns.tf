@@ -540,13 +540,13 @@ locals {
                 dst_type    = "NETWORK_SECURITY_GROUP"
               }
             } : {},
-            local.vcn_1_to_workers_subnet_cross_vcn_egress,
-            local.vcn_1_to_services_subnet_cross_vcn_egress,
-            local.vcn_1_to_pods_subnet_cross_vcn_egress,
-            local.vcn_1_to_client_subnet_cross_vcn_egress,
-            local.vcn_1_to_web_subnet_cross_vcn_egress,
-            local.vcn_1_to_app_subnet_cross_vcn_egress,
-            local.vcn_1_to_db_subnet_cross_vcn_egress
+            local.oke_vcn_1_to_workers_subnet_cross_vcn_egress,
+            local.oke_vcn_1_to_services_subnet_cross_vcn_egress,
+            local.oke_vcn_1_to_pods_subnet_cross_vcn_egress,
+            local.oke_vcn_1_to_client_subnet_cross_vcn_egress,
+            local.oke_vcn_1_to_web_subnet_cross_vcn_egress,
+            local.oke_vcn_1_to_app_subnet_cross_vcn_egress,
+            local.oke_vcn_1_to_db_subnet_cross_vcn_egress
           )
           ingress_rules = merge({
             "INGRESS-FROM-WORKERS-ALL-WORKERS-RULE" = {
@@ -623,7 +623,7 @@ locals {
                 dst_port_max = 22
               }
             } : {},
-            local.vcn_1_to_workers_subnet_cross_vcn_ingress
+            local.oke_vcn_1_to_workers_subnet_cross_vcn_ingress
           )
         }
         "OKE-VCN-1-SERVICES-NSG" = {
@@ -657,8 +657,8 @@ locals {
               icmp_code   = 4
             }
             },
-            local.vcn_1_to_workers_subnet_cross_vcn_egress,
-            local.vcn_1_to_pods_subnet_cross_vcn_egress
+            local.oke_vcn_1_to_workers_subnet_cross_vcn_egress,
+            local.oke_vcn_1_to_pods_subnet_cross_vcn_egress
           )
           ingress_rules = merge({
             "INGRESS-FROM-ANYWHERE-TCP-RULE" = {
@@ -671,7 +671,7 @@ locals {
               dst_port_max = 443
             }
             },
-            local.vcn_1_to_services_subnet_cross_vcn_ingress
+            local.oke_vcn_1_to_services_subnet_cross_vcn_ingress
           )
         }
         },
@@ -781,13 +781,13 @@ locals {
                 dst_port_max = 12250
               }
               },
-              local.vcn_1_to_workers_subnet_cross_vcn_egress,
-              local.vcn_1_to_services_subnet_cross_vcn_egress,
-              local.vcn_1_to_pods_subnet_cross_vcn_egress,
-              local.vcn_1_to_client_subnet_cross_vcn_egress,
-              local.vcn_1_to_web_subnet_cross_vcn_egress,
-              local.vcn_1_to_app_subnet_cross_vcn_egress,
-              local.vcn_1_to_db_subnet_cross_vcn_egress
+              local.oke_vcn_1_to_workers_subnet_cross_vcn_egress,
+              local.oke_vcn_1_to_services_subnet_cross_vcn_egress,
+              local.oke_vcn_1_to_pods_subnet_cross_vcn_egress,
+              local.oke_vcn_1_to_client_subnet_cross_vcn_egress,
+              local.oke_vcn_1_to_web_subnet_cross_vcn_egress,
+              local.oke_vcn_1_to_app_subnet_cross_vcn_egress,
+              local.oke_vcn_1_to_db_subnet_cross_vcn_egress
             )
             ingress_rules = merge({
               "INGRESS-FROM-WORKERS-RULE" = {
@@ -812,7 +812,7 @@ locals {
                 src_type    = "NETWORK_SECURITY_GROUP"
               }
               },
-              local.vcn_1_to_pods_subnet_cross_vcn_ingress
+              local.oke_vcn_1_to_pods_subnet_cross_vcn_ingress
             )
           }
         } : {}
@@ -1380,13 +1380,13 @@ locals {
                 dst_type    = "NETWORK_SECURITY_GROUP"
               }
             } : {},
-            local.vcn_2_to_workers_subnet_cross_vcn_egress,
-            local.vcn_2_to_services_subnet_cross_vcn_egress,
-            local.vcn_2_to_pods_subnet_cross_vcn_egress,
-            local.vcn_2_to_client_subnet_cross_vcn_egress,
-            local.vcn_2_to_web_subnet_cross_vcn_egress,
-            local.vcn_2_to_app_subnet_cross_vcn_egress,
-            local.vcn_2_to_db_subnet_cross_vcn_egress
+            local.oke_vcn_2_to_workers_subnet_cross_vcn_egress,
+            local.oke_vcn_2_to_services_subnet_cross_vcn_egress,
+            local.oke_vcn_2_to_pods_subnet_cross_vcn_egress,
+            local.oke_vcn_2_to_client_subnet_cross_vcn_egress,
+            local.oke_vcn_2_to_web_subnet_cross_vcn_egress,
+            local.oke_vcn_2_to_app_subnet_cross_vcn_egress,
+            local.oke_vcn_2_to_db_subnet_cross_vcn_egress
           )
           ingress_rules = merge({
             "INGRESS-FROM-WORKERS-ALL-WORKERS-RULE" = {
@@ -1463,7 +1463,7 @@ locals {
                 dst_port_max = 22
               }
             } : {},
-            local.vcn_2_to_workers_subnet_cross_vcn_ingress
+            local.oke_vcn_2_to_workers_subnet_cross_vcn_ingress
           )
         }
         "OKE-VCN-2-SERVICES-NSG" = {
@@ -1497,8 +1497,8 @@ locals {
               icmp_code   = 4
             }
             },
-            local.vcn_2_to_workers_subnet_cross_vcn_egress,
-            local.vcn_2_to_pods_subnet_cross_vcn_egress
+            local.oke_vcn_2_to_workers_subnet_cross_vcn_egress,
+            local.oke_vcn_2_to_pods_subnet_cross_vcn_egress
           )
           ingress_rules = merge({
             "INGRESS-FROM-ANYWHERE-TCP-RULE" = {
@@ -1511,7 +1511,7 @@ locals {
               dst_port_max = 443
             }
             },
-            local.vcn_2_to_services_subnet_cross_vcn_ingress
+            local.oke_vcn_2_to_services_subnet_cross_vcn_ingress
           )
         }
         },
@@ -1621,13 +1621,13 @@ locals {
                 dst_port_max = 12250
               }
               },
-              local.vcn_2_to_workers_subnet_cross_vcn_egress,
-              local.vcn_2_to_services_subnet_cross_vcn_egress,
-              local.vcn_2_to_pods_subnet_cross_vcn_egress,
-              local.vcn_2_to_client_subnet_cross_vcn_egress,
-              local.vcn_2_to_web_subnet_cross_vcn_egress,
-              local.vcn_2_to_app_subnet_cross_vcn_egress,
-              local.vcn_2_to_db_subnet_cross_vcn_egress
+              local.oke_vcn_2_to_workers_subnet_cross_vcn_egress,
+              local.oke_vcn_2_to_services_subnet_cross_vcn_egress,
+              local.oke_vcn_2_to_pods_subnet_cross_vcn_egress,
+              local.oke_vcn_2_to_client_subnet_cross_vcn_egress,
+              local.oke_vcn_2_to_web_subnet_cross_vcn_egress,
+              local.oke_vcn_2_to_app_subnet_cross_vcn_egress,
+              local.oke_vcn_2_to_db_subnet_cross_vcn_egress
             )
             ingress_rules = merge({
               "INGRESS-FROM-WORKERS-RULE" = {
@@ -1652,7 +1652,7 @@ locals {
                 src_type    = "NETWORK_SECURITY_GROUP"
               }
               },
-              local.vcn_2_to_pods_subnet_cross_vcn_ingress
+              local.oke_vcn_2_to_pods_subnet_cross_vcn_ingress
             )
           }
         } : {}
@@ -2218,13 +2218,13 @@ locals {
                 dst_type    = "NETWORK_SECURITY_GROUP"
               }
             } : {},
-            local.vcn_3_to_workers_subnet_cross_vcn_egress,
-            local.vcn_3_to_services_subnet_cross_vcn_egress,
-            local.vcn_3_to_pods_subnet_cross_vcn_egress,
-            local.vcn_3_to_client_subnet_cross_vcn_egress,
-            local.vcn_3_to_web_subnet_cross_vcn_egress,
-            local.vcn_3_to_app_subnet_cross_vcn_egress,
-            local.vcn_3_to_db_subnet_cross_vcn_egress
+            local.oke_vcn_3_to_workers_subnet_cross_vcn_egress,
+            local.oke_vcn_3_to_services_subnet_cross_vcn_egress,
+            local.oke_vcn_3_to_pods_subnet_cross_vcn_egress,
+            local.oke_vcn_3_to_client_subnet_cross_vcn_egress,
+            local.oke_vcn_3_to_web_subnet_cross_vcn_egress,
+            local.oke_vcn_3_to_app_subnet_cross_vcn_egress,
+            local.oke_vcn_3_to_db_subnet_cross_vcn_egress
           )
           ingress_rules = merge({
             "INGRESS-FROM-WORKERS-ALL-WORKERS-RULE" = {
@@ -2301,7 +2301,7 @@ locals {
                 dst_port_max = 22
               }
             } : {},
-            local.vcn_3_to_workers_subnet_cross_vcn_ingress
+            local.oke_vcn_3_to_workers_subnet_cross_vcn_ingress
           )
         }
         "OKE-VCN-3-SERVICES-NSG" = {
@@ -2335,8 +2335,8 @@ locals {
               icmp_code   = 4
             }
             },
-            local.vcn_3_to_workers_subnet_cross_vcn_egress,
-            local.vcn_3_to_pods_subnet_cross_vcn_egress
+            local.oke_vcn_3_to_workers_subnet_cross_vcn_egress,
+            local.oke_vcn_3_to_pods_subnet_cross_vcn_egress
           )
           ingress_rules = merge({
             "INGRESS-FROM-ANYWHERE-TCP-RULE" = {
@@ -2349,7 +2349,7 @@ locals {
               dst_port_max = 443
             }
             },
-            local.vcn_3_to_services_subnet_cross_vcn_ingress
+            local.oke_vcn_3_to_services_subnet_cross_vcn_ingress
           )
         }
         },
@@ -2459,13 +2459,13 @@ locals {
                 dst_port_max = 12250
               }
               },
-              local.vcn_3_to_workers_subnet_cross_vcn_egress,
-              local.vcn_3_to_services_subnet_cross_vcn_egress,
-              local.vcn_3_to_pods_subnet_cross_vcn_egress,
-              local.vcn_3_to_client_subnet_cross_vcn_egress,
-              local.vcn_3_to_web_subnet_cross_vcn_egress,
-              local.vcn_3_to_app_subnet_cross_vcn_egress,
-              local.vcn_3_to_db_subnet_cross_vcn_egress
+              local.oke_vcn_3_to_workers_subnet_cross_vcn_egress,
+              local.oke_vcn_3_to_services_subnet_cross_vcn_egress,
+              local.oke_vcn_3_to_pods_subnet_cross_vcn_egress,
+              local.oke_vcn_3_to_client_subnet_cross_vcn_egress,
+              local.oke_vcn_3_to_web_subnet_cross_vcn_egress,
+              local.oke_vcn_3_to_app_subnet_cross_vcn_egress,
+              local.oke_vcn_3_to_db_subnet_cross_vcn_egress
             )
             ingress_rules = merge({
               "INGRESS-FROM-WORKERS-RULE" = {
@@ -2490,7 +2490,7 @@ locals {
                 src_type    = "NETWORK_SECURITY_GROUP"
               }
               },
-              local.vcn_3_to_pods_subnet_cross_vcn_ingress
+              local.oke_vcn_3_to_pods_subnet_cross_vcn_ingress
             )
           }
         } : {}
@@ -2771,7 +2771,7 @@ locals {
 
   ## OKE-VCN-1
   ## Egress rules
-  vcn_1_to_workers_subnet_cross_vcn_egress = merge(
+  oke_vcn_1_to_workers_subnet_cross_vcn_egress = merge(
     (var.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true && var.add_oke_vcn2 == true && var.oke_vcn2_attach_to_drg == true) &&
     (local.hub_options[var.hub_deployment_option] == 3 || local.hub_options[var.hub_deployment_option] == 4) ||
     ((local.hub_options[var.hub_deployment_option] == 1 || local.hub_options[var.hub_deployment_option] == 2) && (length(var.oke_vcn1_routable_vcns) == 0 || contains(var.oke_vcn1_routable_vcns, "OKE-VCN-2"))) ? {
@@ -2799,7 +2799,7 @@ locals {
       }
     } : {}
   )
-  vcn_1_to_services_subnet_cross_vcn_egress = merge(
+  oke_vcn_1_to_services_subnet_cross_vcn_egress = merge(
     (var.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true && var.add_oke_vcn2 == true && var.oke_vcn2_attach_to_drg == true) &&
     (local.hub_options[var.hub_deployment_option] == 3 || local.hub_options[var.hub_deployment_option] == 4) ||
     ((local.hub_options[var.hub_deployment_option] == 1 || local.hub_options[var.hub_deployment_option] == 2) && (length(var.oke_vcn1_routable_vcns) == 0 || contains(var.oke_vcn1_routable_vcns, "OKE-VCN-2"))) ? {
@@ -2827,7 +2827,7 @@ locals {
       }
     } : {}
   )
-  vcn_1_to_pods_subnet_cross_vcn_egress = merge(
+  oke_vcn_1_to_pods_subnet_cross_vcn_egress = merge(
     (var.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true && var.add_oke_vcn2 == true && var.oke_vcn2_attach_to_drg == true) &&
     (upper(var.oke_vcn2_cni_type) == "NATIVE") &&
     (local.hub_options[var.hub_deployment_option] == 3 || local.hub_options[var.hub_deployment_option] == 4) ||
@@ -2858,7 +2858,7 @@ locals {
     } : {}
   )
 
-  vcn_1_to_client_subnet_cross_vcn_egress = merge(
+  oke_vcn_1_to_client_subnet_cross_vcn_egress = merge(
     (var.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true && var.add_exa_vcn1 == true && var.exa_vcn1_attach_to_drg == true) &&
     (local.hub_options[var.hub_deployment_option] == 3 || local.hub_options[var.hub_deployment_option] == 4) ||
     ((local.hub_options[var.hub_deployment_option] == 1 || local.hub_options[var.hub_deployment_option] == 2) && (length(var.oke_vcn1_routable_vcns) == 0 || contains(var.oke_vcn1_routable_vcns, "EXA-VCN-1"))) ? {
@@ -2900,7 +2900,7 @@ locals {
     } : {}
   )
 
-  vcn_1_to_web_subnet_cross_vcn_egress = merge(
+  oke_vcn_1_to_web_subnet_cross_vcn_egress = merge(
     (var.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true && var.add_tt_vcn1 == true && var.tt_vcn1_attach_to_drg == true) &&
     (local.hub_options[var.hub_deployment_option] == 3 || local.hub_options[var.hub_deployment_option] == 4) ||
     ((local.hub_options[var.hub_deployment_option] == 1 || local.hub_options[var.hub_deployment_option] == 2) && (length(var.oke_vcn1_routable_vcns) == 0 || contains(var.oke_vcn1_routable_vcns, "TT-VCN-1"))) ? {
@@ -2942,7 +2942,7 @@ locals {
     } : {}
   )
 
-  vcn_1_to_app_subnet_cross_vcn_egress = merge(
+  oke_vcn_1_to_app_subnet_cross_vcn_egress = merge(
     (var.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true && var.add_tt_vcn1 == true && var.tt_vcn1_attach_to_drg == true) &&
     (local.hub_options[var.hub_deployment_option] == 3 || local.hub_options[var.hub_deployment_option] == 4) ||
     ((local.hub_options[var.hub_deployment_option] == 1 || local.hub_options[var.hub_deployment_option] == 2) && (length(var.oke_vcn1_routable_vcns) == 0 || contains(var.oke_vcn1_routable_vcns, "TT-VCN-1"))) ? {
@@ -2984,7 +2984,7 @@ locals {
     } : {}
   )
 
-  vcn_1_to_db_subnet_cross_vcn_egress = merge(
+  oke_vcn_1_to_db_subnet_cross_vcn_egress = merge(
     (var.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true && var.add_tt_vcn1 == true && var.tt_vcn1_attach_to_drg == true) &&
     (local.hub_options[var.hub_deployment_option] == 3 || local.hub_options[var.hub_deployment_option] == 4) ||
     ((local.hub_options[var.hub_deployment_option] == 1 || local.hub_options[var.hub_deployment_option] == 2) && (length(var.oke_vcn1_routable_vcns) == 0 || contains(var.oke_vcn1_routable_vcns, "TT-VCN-1"))) ? {
@@ -3027,7 +3027,7 @@ locals {
   )
 
   ## Ingress rules
-  vcn_1_to_services_subnet_cross_vcn_ingress = merge(
+  oke_vcn_1_to_services_subnet_cross_vcn_ingress = merge(
     (var.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true && var.add_oke_vcn2 == true && var.oke_vcn2_attach_to_drg == true) &&
     (local.hub_options[var.hub_deployment_option] == 3 || local.hub_options[var.hub_deployment_option] == 4) ||
     ((local.hub_options[var.hub_deployment_option] == 1 || local.hub_options[var.hub_deployment_option] == 2) && (length(var.oke_vcn1_routable_vcns) == 0 || contains(var.oke_vcn1_routable_vcns, "OKE-VCN-2"))) ? {
@@ -3201,7 +3201,7 @@ locals {
     } : {}
   )
 
-  vcn_1_to_workers_subnet_cross_vcn_ingress = merge(
+  oke_vcn_1_to_workers_subnet_cross_vcn_ingress = merge(
     (var.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true && var.add_oke_vcn2 == true && var.oke_vcn2_attach_to_drg == true) &&
     (local.hub_options[var.hub_deployment_option] == 3 || local.hub_options[var.hub_deployment_option] == 4) ||
     ((local.hub_options[var.hub_deployment_option] == 1 || local.hub_options[var.hub_deployment_option] == 2) && (length(var.oke_vcn1_routable_vcns) == 0 || contains(var.oke_vcn1_routable_vcns, "OKE-VCN-2"))) ? {
@@ -3393,7 +3393,7 @@ locals {
     } : {},
   )
 
-  vcn_1_to_pods_subnet_cross_vcn_ingress = merge(
+  oke_vcn_1_to_pods_subnet_cross_vcn_ingress = merge(
     (var.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true && var.add_oke_vcn2 == true && var.oke_vcn2_attach_to_drg == true) &&
     (local.hub_options[var.hub_deployment_option] == 3 || local.hub_options[var.hub_deployment_option] == 4) ||
     ((local.hub_options[var.hub_deployment_option] == 1 || local.hub_options[var.hub_deployment_option] == 2) && (length(var.oke_vcn1_routable_vcns) == 0 || contains(var.oke_vcn1_routable_vcns, "OKE-VCN-2"))) ? {
@@ -3588,7 +3588,7 @@ locals {
 
   ## OKE-VCN-2
   ## Egress rules
-  vcn_2_to_workers_subnet_cross_vcn_egress = merge(
+  oke_vcn_2_to_workers_subnet_cross_vcn_egress = merge(
     (var.add_oke_vcn2 == true && var.oke_vcn2_attach_to_drg == true && var.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true) &&
     (local.hub_options[var.hub_deployment_option] == 3 || local.hub_options[var.hub_deployment_option] == 4) ||
     ((local.hub_options[var.hub_deployment_option] == 1 || local.hub_options[var.hub_deployment_option] == 2) && (length(var.oke_vcn2_routable_vcns) == 0 || contains(var.oke_vcn2_routable_vcns, "OKE-VCN-1"))) ? {
@@ -3616,7 +3616,7 @@ locals {
       }
     } : {},
   )
-  vcn_2_to_services_subnet_cross_vcn_egress = merge(
+  oke_vcn_2_to_services_subnet_cross_vcn_egress = merge(
     (var.add_oke_vcn2 == true && var.oke_vcn2_attach_to_drg == true && var.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true) &&
     (local.hub_options[var.hub_deployment_option] == 3 || local.hub_options[var.hub_deployment_option] == 4) ||
     ((local.hub_options[var.hub_deployment_option] == 1 || local.hub_options[var.hub_deployment_option] == 2) && (length(var.oke_vcn2_routable_vcns) == 0 || contains(var.oke_vcn2_routable_vcns, "OKE-VCN-1"))) ? {
@@ -3644,7 +3644,7 @@ locals {
       }
     } : {}
   )
-  vcn_2_to_pods_subnet_cross_vcn_egress = merge(
+  oke_vcn_2_to_pods_subnet_cross_vcn_egress = merge(
     (var.add_oke_vcn2 == true && var.oke_vcn2_attach_to_drg == true && var.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true) &&
     (upper(var.oke_vcn1_cni_type) == "NATIVE") &&
     (local.hub_options[var.hub_deployment_option] == 3 || local.hub_options[var.hub_deployment_option] == 4) ||
@@ -3675,7 +3675,7 @@ locals {
     } : {}
   )
 
-  vcn_2_to_client_subnet_cross_vcn_egress = merge(
+  oke_vcn_2_to_client_subnet_cross_vcn_egress = merge(
     (var.add_oke_vcn2 == true && var.oke_vcn2_attach_to_drg == true && var.add_exa_vcn1 == true && var.exa_vcn1_attach_to_drg == true) &&
     (local.hub_options[var.hub_deployment_option] == 3 || local.hub_options[var.hub_deployment_option] == 4) ||
     ((local.hub_options[var.hub_deployment_option] == 1 || local.hub_options[var.hub_deployment_option] == 2) && (length(var.oke_vcn2_routable_vcns) == 0 || contains(var.oke_vcn2_routable_vcns, "EXA-VCN-1"))) ? {
@@ -3717,7 +3717,7 @@ locals {
     } : {}
   )
 
-  vcn_2_to_web_subnet_cross_vcn_egress = merge(
+  oke_vcn_2_to_web_subnet_cross_vcn_egress = merge(
     (var.add_oke_vcn2 == true && var.oke_vcn2_attach_to_drg == true && var.add_tt_vcn1 == true && var.tt_vcn1_attach_to_drg == true) &&
     (local.hub_options[var.hub_deployment_option] == 3 || local.hub_options[var.hub_deployment_option] == 4) ||
     ((local.hub_options[var.hub_deployment_option] == 1 || local.hub_options[var.hub_deployment_option] == 2) && (length(var.oke_vcn2_routable_vcns) == 0 || contains(var.oke_vcn2_routable_vcns, "TT-VCN-1"))) ? {
@@ -3759,7 +3759,7 @@ locals {
     } : {}
   )
 
-  vcn_2_to_app_subnet_cross_vcn_egress = merge(
+  oke_vcn_2_to_app_subnet_cross_vcn_egress = merge(
     (var.add_oke_vcn2 == true && var.oke_vcn2_attach_to_drg == true && var.add_tt_vcn1 == true && var.tt_vcn1_attach_to_drg == true) &&
     (local.hub_options[var.hub_deployment_option] == 3 || local.hub_options[var.hub_deployment_option] == 4) ||
     ((local.hub_options[var.hub_deployment_option] == 1 || local.hub_options[var.hub_deployment_option] == 2) && (length(var.oke_vcn2_routable_vcns) == 0 || contains(var.oke_vcn2_routable_vcns, "TT-VCN-1"))) ? {
@@ -3801,7 +3801,7 @@ locals {
     } : {}
   )
 
-  vcn_2_to_db_subnet_cross_vcn_egress = merge(
+  oke_vcn_2_to_db_subnet_cross_vcn_egress = merge(
     (var.add_oke_vcn2 == true && var.oke_vcn2_attach_to_drg == true && var.add_tt_vcn1 == true && var.tt_vcn1_attach_to_drg == true) &&
     (local.hub_options[var.hub_deployment_option] == 3 || local.hub_options[var.hub_deployment_option] == 4) ||
     ((local.hub_options[var.hub_deployment_option] == 1 || local.hub_options[var.hub_deployment_option] == 2) && (length(var.oke_vcn2_routable_vcns) == 0 || contains(var.oke_vcn2_routable_vcns, "TT-VCN-1"))) ? {
@@ -3844,7 +3844,7 @@ locals {
   )
 
   ## Ingress rules
-  vcn_2_to_services_subnet_cross_vcn_ingress = merge(
+  oke_vcn_2_to_services_subnet_cross_vcn_ingress = merge(
     (var.add_oke_vcn2 == true && var.oke_vcn2_attach_to_drg == true && var.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true) &&
     (local.hub_options[var.hub_deployment_option] == 3 || local.hub_options[var.hub_deployment_option] == 4) ||
     ((local.hub_options[var.hub_deployment_option] == 1 || local.hub_options[var.hub_deployment_option] == 2) && (length(var.oke_vcn2_routable_vcns) == 0 || contains(var.oke_vcn2_routable_vcns, "OKE-VCN-1"))) ? {
@@ -4018,7 +4018,7 @@ locals {
     } : {}
   )
 
-  vcn_2_to_workers_subnet_cross_vcn_ingress = merge(
+  oke_vcn_2_to_workers_subnet_cross_vcn_ingress = merge(
     (var.add_oke_vcn2 == true && var.oke_vcn2_attach_to_drg == true && var.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true) &&
     (local.hub_options[var.hub_deployment_option] == 3 || local.hub_options[var.hub_deployment_option] == 4) ||
     ((local.hub_options[var.hub_deployment_option] == 1 || local.hub_options[var.hub_deployment_option] == 2) && (length(var.oke_vcn2_routable_vcns) == 0 || contains(var.oke_vcn2_routable_vcns, "OKE-VCN-1"))) ? {
@@ -4210,7 +4210,7 @@ locals {
     } : {}
   )
 
-  vcn_2_to_pods_subnet_cross_vcn_ingress = merge(
+  oke_vcn_2_to_pods_subnet_cross_vcn_ingress = merge(
     (var.add_oke_vcn2 == true && var.oke_vcn2_attach_to_drg == true && var.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true) &&
     (local.hub_options[var.hub_deployment_option] == 3 || local.hub_options[var.hub_deployment_option] == 4) ||
     ((local.hub_options[var.hub_deployment_option] == 1 || local.hub_options[var.hub_deployment_option] == 2) && (length(var.oke_vcn2_routable_vcns) == 0 || contains(var.oke_vcn2_routable_vcns, "OKE-VCN-1"))) ? {
@@ -4404,7 +4404,7 @@ locals {
 
   ## OKE-VCN-3
   ## Egress rules
-  vcn_3_to_workers_subnet_cross_vcn_egress = merge(
+  oke_vcn_3_to_workers_subnet_cross_vcn_egress = merge(
     (var.add_oke_vcn3 == true && var.oke_vcn3_attach_to_drg == true && var.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true) &&
     (local.hub_options[var.hub_deployment_option] == 3 || local.hub_options[var.hub_deployment_option] == 4) ||
     ((local.hub_options[var.hub_deployment_option] == 1 || local.hub_options[var.hub_deployment_option] == 2) && (length(var.oke_vcn3_routable_vcns) == 0 || contains(var.oke_vcn3_routable_vcns, "OKE-VCN-1"))) ? {
@@ -4432,7 +4432,7 @@ locals {
       }
     } : {}
   )
-  vcn_3_to_services_subnet_cross_vcn_egress = merge(
+  oke_vcn_3_to_services_subnet_cross_vcn_egress = merge(
     (var.add_oke_vcn3 == true && var.oke_vcn3_attach_to_drg == true && var.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true) &&
     (local.hub_options[var.hub_deployment_option] == 3 || local.hub_options[var.hub_deployment_option] == 4) ||
     ((local.hub_options[var.hub_deployment_option] == 1 || local.hub_options[var.hub_deployment_option] == 2) && (length(var.oke_vcn3_routable_vcns) == 0 || contains(var.oke_vcn3_routable_vcns, "OKE-VCN-1"))) ? {
@@ -4460,7 +4460,7 @@ locals {
       }
     } : {}
   )
-  vcn_3_to_pods_subnet_cross_vcn_egress = merge(
+  oke_vcn_3_to_pods_subnet_cross_vcn_egress = merge(
     (var.add_oke_vcn3 == true && var.oke_vcn3_attach_to_drg == true && var.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true) &&
     (upper(var.oke_vcn1_cni_type) == "NATIVE") &&
     (local.hub_options[var.hub_deployment_option] == 3 || local.hub_options[var.hub_deployment_option] == 4) ||
@@ -4491,7 +4491,7 @@ locals {
     } : {}
   )
 
-  vcn_3_to_client_subnet_cross_vcn_egress = merge(
+  oke_vcn_3_to_client_subnet_cross_vcn_egress = merge(
     (var.add_oke_vcn3 == true && var.oke_vcn3_attach_to_drg == true && var.add_exa_vcn1 == true && var.exa_vcn1_attach_to_drg == true) &&
     (local.hub_options[var.hub_deployment_option] == 3 || local.hub_options[var.hub_deployment_option] == 4) ||
     ((local.hub_options[var.hub_deployment_option] == 1 || local.hub_options[var.hub_deployment_option] == 2) && (length(var.oke_vcn3_routable_vcns) == 0 || contains(var.oke_vcn3_routable_vcns, "EXA-VCN-1"))) ? {
@@ -4533,7 +4533,7 @@ locals {
     } : {}
   )
 
-  vcn_3_to_web_subnet_cross_vcn_egress = merge(
+  oke_vcn_3_to_web_subnet_cross_vcn_egress = merge(
     (var.add_oke_vcn3 == true && var.oke_vcn3_attach_to_drg == true && var.add_tt_vcn1 == true && var.tt_vcn1_attach_to_drg == true) &&
     (local.hub_options[var.hub_deployment_option] == 3 || local.hub_options[var.hub_deployment_option] == 4) ||
     ((local.hub_options[var.hub_deployment_option] == 1 || local.hub_options[var.hub_deployment_option] == 2) && (length(var.oke_vcn3_routable_vcns) == 0 || contains(var.oke_vcn3_routable_vcns, "TT-VCN-1"))) ? {
@@ -4575,7 +4575,7 @@ locals {
     } : {}
   )
 
-  vcn_3_to_app_subnet_cross_vcn_egress = merge(
+  oke_vcn_3_to_app_subnet_cross_vcn_egress = merge(
     (var.add_oke_vcn3 == true && var.oke_vcn3_attach_to_drg == true && var.add_tt_vcn1 == true && var.tt_vcn1_attach_to_drg == true) &&
     (local.hub_options[var.hub_deployment_option] == 3 || local.hub_options[var.hub_deployment_option] == 4) ||
     ((local.hub_options[var.hub_deployment_option] == 1 || local.hub_options[var.hub_deployment_option] == 2) && (length(var.oke_vcn3_routable_vcns) == 0 || contains(var.oke_vcn3_routable_vcns, "TT-VCN-1"))) ? {
@@ -4617,7 +4617,7 @@ locals {
     } : {}
   )
 
-  vcn_3_to_db_subnet_cross_vcn_egress = merge(
+  oke_vcn_3_to_db_subnet_cross_vcn_egress = merge(
     (var.add_oke_vcn3 == true && var.oke_vcn3_attach_to_drg == true && var.add_tt_vcn1 == true && var.tt_vcn1_attach_to_drg == true) &&
     (local.hub_options[var.hub_deployment_option] == 3 || local.hub_options[var.hub_deployment_option] == 4) ||
     ((local.hub_options[var.hub_deployment_option] == 1 || local.hub_options[var.hub_deployment_option] == 2) && (length(var.oke_vcn3_routable_vcns) == 0 || contains(var.oke_vcn3_routable_vcns, "TT-VCN-1"))) ? {
@@ -4660,7 +4660,7 @@ locals {
   )
 
   ## Ingress rules
-  vcn_3_to_services_subnet_cross_vcn_ingress = merge(
+  oke_vcn_3_to_services_subnet_cross_vcn_ingress = merge(
     (var.add_oke_vcn3 == true && var.oke_vcn3_attach_to_drg == true && var.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true) &&
     (local.hub_options[var.hub_deployment_option] == 3 || local.hub_options[var.hub_deployment_option] == 4) ||
     ((local.hub_options[var.hub_deployment_option] == 1 || local.hub_options[var.hub_deployment_option] == 2) && (length(var.oke_vcn3_routable_vcns) == 0 || contains(var.oke_vcn3_routable_vcns, "OKE-VCN-1"))) ? {
@@ -4834,7 +4834,7 @@ locals {
     } : {}
   )
 
-  vcn_3_to_workers_subnet_cross_vcn_ingress = merge(
+  oke_vcn_3_to_workers_subnet_cross_vcn_ingress = merge(
     (var.add_oke_vcn3 == true && var.oke_vcn3_attach_to_drg == true && var.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true) &&
     (local.hub_options[var.hub_deployment_option] == 3 || local.hub_options[var.hub_deployment_option] == 4) ||
     ((local.hub_options[var.hub_deployment_option] == 1 || local.hub_options[var.hub_deployment_option] == 2) && (length(var.oke_vcn3_routable_vcns) == 0 || contains(var.oke_vcn3_routable_vcns, "OKE-VCN-1"))) ? {
@@ -5026,7 +5026,7 @@ locals {
     } : {}
   )
 
-  vcn_3_to_pods_subnet_cross_vcn_ingress = merge(
+  oke_vcn_3_to_pods_subnet_cross_vcn_ingress = merge(
     (var.add_oke_vcn3 == true && var.oke_vcn3_attach_to_drg == true && var.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true) &&
     (local.hub_options[var.hub_deployment_option] == 3 || local.hub_options[var.hub_deployment_option] == 4) ||
     ((local.hub_options[var.hub_deployment_option] == 1 || local.hub_options[var.hub_deployment_option] == 2) && (length(var.oke_vcn3_routable_vcns) == 0 || contains(var.oke_vcn3_routable_vcns, "OKE-VCN-1"))) ? {
