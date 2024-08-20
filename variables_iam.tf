@@ -24,11 +24,11 @@ variable "deploy_exainfra_cmp" {
 # ----- IAM - Identity Domains
 #-------------------------------------------------------
 variable "use_custom_id_domain" {
-  type  = bool
+  type    = bool
   default = false
 }
 variable "custom_id_domain_name" {
-  type = string
+  type    = string
   default = null
 }
 variable "rm_existing_id_domain_iam_admin_group_name" {
@@ -76,20 +76,20 @@ variable "rm_existing_id_domain_storage_admin_group_name" {
   default = []
 }
 variable "existing_id_domain_security_fun_dyn_group_name" {
-  type        = string
-  default     = ""
+  type    = string
+  default = ""
 }
 variable "existing_id_domain_appdev_fun_dyn_group_name" {
-  type        = string
-  default     = ""
+  type    = string
+  default = ""
 }
 variable "existing_id_domain_compute_agent_dyn_group_name" {
-  type        = string
-  default     = ""
+  type    = string
+  default = ""
 }
 variable "existing_id_domain_database_kms_dyn_group_name" {
-  type        = string
-  default     = ""
+  type    = string
+  default = ""
 }
 
 # variable "deploy_id_domain" {
