@@ -32,7 +32,7 @@ locals {
   
   ### User Group Policies ###
   ## IAM admin grants at the root compartment
-  iam_admin_grants_on_root_cmp = [
+  iam_admin_grants_on_root_cmp = concat([
     "allow group ${join(",", local.iam_admin_group_name)} to inspect users in tenancy",
     "allow group ${join(",", local.iam_admin_group_name)} to manage users in tenancy where all {request.operation != 'ListApiKeys',request.operation != 'ListAuthTokens',request.operation != 'ListCustomerSecretKeys',request.operation != 'UploadApiKey',request.operation != 'DeleteApiKey',request.operation != 'UpdateAuthToken',request.operation != 'CreateAuthToken',request.operation != 'DeleteAuthToken',request.operation != 'CreateSecretKey',request.operation != 'UpdateCustomerSecretKey',request.operation != 'DeleteCustomerSecretKey'}",
     # Users should be manage users and groups permissions via IDP
@@ -40,7 +40,6 @@ locals {
     "allow group ${join(",", local.iam_admin_group_name)} to read policies in tenancy",
     #"allow group ${join(",",local.iam_admin_group_name)} to manage groups in tenancy where all {target.group.name != 'Administrators', target.group.name != ${local.cred_admin_group_name}}",
     "allow group ${join(",", local.iam_admin_group_name)} to manage groups in tenancy where all {target.group.name != 'Administrators' ${length(local.cred_admin_groups) > 0 ? ",${join(",", local.cred_admin_groups)}}" : "}"}",
-    var.use_custom_id_domain == true ? "allow group ${join(",", local.iam_admin_group_name)} to manage groups in tenancy where all {target.domain.name = '${var.custom_id_domain_name}',${join(",", local.custom_id_domain_cred_admin_groups)}}" : "",
     "allow group ${join(",", local.iam_admin_group_name)} to inspect identity-providers in tenancy",
     "allow group ${join(",", local.iam_admin_group_name)} to manage identity-providers in tenancy where any {request.operation = 'AddIdpGroupMapping', request.operation = 'DeleteIdpGroupMapping'}",
     "allow group ${join(",", local.iam_admin_group_name)} to manage dynamic-groups in tenancy",
@@ -54,7 +53,8 @@ locals {
     # Statements scoped to allow an IAM admin to deploy IAM resources via ORM
     "allow group ${join(",", local.iam_admin_group_name)} to manage orm-stacks in tenancy",
     "allow group ${join(",", local.iam_admin_group_name)} to manage orm-jobs in tenancy",
-  "allow group ${join(",", local.iam_admin_group_name)} to manage orm-config-source-providers in tenancy"]
+    "allow group ${join(",", local.iam_admin_group_name)} to manage orm-config-source-providers in tenancy"],
+    var.use_custom_id_domain == true ? ["allow group ${join(",", local.iam_admin_group_name)} to manage groups in tenancy where all {target.domain.name = '${var.custom_id_domain_name}',${join(",", local.custom_id_domain_cred_admin_groups)}}"] : [])
 
   ## IAM admin grants at the enclosing compartment level, which *can* be the root compartment
   iam_admin_grants_on_enclosing_cmp = [
