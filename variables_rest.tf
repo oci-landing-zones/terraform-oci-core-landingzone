@@ -96,29 +96,6 @@ variable "notifications_advanced_options" {
   default = false
 }
 # ------------------------------------------------------
-# ----- Object Storage
-# ------------------------------------------------------
-variable "enable_oss_bucket" {
-  description = "Whether an Object Storage bucket should be enabled. If true, the bucket is managed in the application (AppDev) compartment."
-  type        = bool
-  default     = true
-}
-variable "existing_bucket_vault_compartment_id" {
-  description = "The OCID of an existing compartment for the vault with the key used in Object Storage bucket encryption."
-  type        = string
-  default     = null
-}
-variable "existing_bucket_vault_id" {
-  description = "The OCID of an existing vault for the key used in Object Storage bucket encryption."
-  type        = string
-  default     = null
-}
-variable "existing_bucket_key_id" {
-  description = "The OCID of an existing key used in Object Storage bucket encryption."
-  type        = string
-  default     = null
-}
-# ------------------------------------------------------
 # ----- Cost Management - Budget
 # ------------------------------------------------------
 variable "budget_alert_threshold" {
