@@ -19,7 +19,7 @@ variable "oke_vcn1_name" {
 
 variable "oke_vcn1_cidrs" {
   type    = list(string)
-  default = ["10.0.0.0/16"]
+  default = ["10.3.0.0/16"]
 }
 
 variable "oke_vcn1_dns" {
@@ -136,7 +136,7 @@ variable "oke_vcn2_name" {
 
 variable "oke_vcn2_cidrs" {
   type    = list(string)
-  default = ["10.1.0.0/16"]
+  default = ["10.4.0.0/16"]
 }
 
 variable "oke_vcn2_dns" {
@@ -255,7 +255,7 @@ variable "oke_vcn3_name" {
 
 variable "oke_vcn3_cidrs" {
   type    = list(string)
-  default = ["10.2.0.0/16"]
+  default = ["10.5.0.0/16"]
 }
 
 variable "oke_vcn3_dns" {

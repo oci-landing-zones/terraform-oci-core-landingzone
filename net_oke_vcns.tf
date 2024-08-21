@@ -206,7 +206,7 @@ locals {
         "OKE-VCN-1-API-SUBNET-ROUTE-TABLE" = {
           display_name = "api-subnet-route-table"
           route_rules = merge(
-            (local.hub_options[var.hub_deployment_option] != 3 || local.hub_options[var.hub_deployment_option] != 4) ? {
+            (local.hub_options[var.hub_deployment_option] != 3 && local.hub_options[var.hub_deployment_option] != 4) ? {
               "SGW-RULE" = {
                 network_entity_key = "OKE-VCN-1-SERVICE-GATEWAY"
                 description        = "Route for sgw"
@@ -221,7 +221,7 @@ locals {
                 destination_type   = "CIDR_BLOCK"
               }
             },
-            (local.hub_options[var.hub_deployment_option] != 3 || local.hub_options[var.hub_deployment_option] != 4) && upper(var.oke_vcn1_cni_type) == "NATIVE" ? {
+            (local.hub_options[var.hub_deployment_option] != 3 && local.hub_options[var.hub_deployment_option] != 4) && upper(var.oke_vcn1_cni_type) == "NATIVE" ? {
               "NATGW-RULE" = {
                 network_entity_key = "OKE-VCN-1-NAT-GATEWAY"
                 description        = "Route for internet access via NAT GW"
@@ -236,7 +236,7 @@ locals {
           "OKE-VCN-1-WORKERS-SUBNET-ROUTE-TABLE" = {
             display_name = "workers-subnet-route-table"
             route_rules = merge(
-              (local.hub_options[var.hub_deployment_option] != 3 || local.hub_options[var.hub_deployment_option] != 4) ? {
+              (local.hub_options[var.hub_deployment_option] != 3 && local.hub_options[var.hub_deployment_option] != 4) ? {
                 "SGW-RULE" = {
                   network_entity_key = "OKE-VCN-1-SERVICE-GATEWAY"
                   description        = "Route for sgw"
@@ -264,7 +264,7 @@ locals {
         {
           "OKE-VCN-1-SERVICES-SUBNET-ROUTE-TABLE" = {
             display_name = "services-subnet-route-table"
-            route_rules = (local.hub_options[var.hub_deployment_option] != 3 || local.hub_options[var.hub_deployment_option] != 4) ? {
+            route_rules = (local.hub_options[var.hub_deployment_option] != 3 && local.hub_options[var.hub_deployment_option] != 4) ? {
               "IGW-RULE" = {
                 network_entity_key = "OKE-VCN-1-INTERNET-GATEWAY"
                 description        = "Route for igw"
@@ -284,7 +284,7 @@ locals {
         var.add_oke_vcn1_mgmt_subnet ? {
           "OKE-VCN-1-MGMT-SUBNET-ROUTE-TABLE" = {
             display_name = "mgmt-subnet-route-table"
-            route_rules = (local.hub_options[var.hub_deployment_option] != 3 || local.hub_options[var.hub_deployment_option] != 4) ? {
+            route_rules = (local.hub_options[var.hub_deployment_option] != 3 && local.hub_options[var.hub_deployment_option] != 4) ? {
               "SGW-RULE" = {
                 network_entity_key = "OKE-VCN-1-SERVICE-GATEWAY"
                 description        = "Route for sgw"
@@ -310,7 +310,7 @@ locals {
         upper(var.oke_vcn1_cni_type) == "NATIVE" ? {
           "OKE-VCN-1-PODS-SUBNET-ROUTE-TABLE" = {
             display_name = "pods-subnet-route-table"
-            route_rules = merge((local.hub_options[var.hub_deployment_option] != 3 || local.hub_options[var.hub_deployment_option] != 4) ? {
+            route_rules = merge((local.hub_options[var.hub_deployment_option] != 3 && local.hub_options[var.hub_deployment_option] != 4) ? {
               "SGW-RULE" = {
                 network_entity_key = "OKE-VCN-1-SERVICE-GATEWAY"
                 description        = "Route for sgw"
@@ -767,7 +767,7 @@ locals {
         } : {},
         upper(var.oke_vcn1_cni_type) == "NATIVE" ? {
           "OKE-VCN-1-PODS-NSG" = {
-            display_name = "pods-subnet-nsg"
+            display_name = "pods-nsg"
             egress_rules = merge({
               "EGRESS-TO-PODS-RULE" = {
                 description = "Allow pods to communicate with other pods."
@@ -854,7 +854,7 @@ locals {
           }
         } : {}
       )
-      vcn_specific_gateways = (local.hub_options[var.hub_deployment_option] != 3 || local.hub_options[var.hub_deployment_option] != 4) ? {
+      vcn_specific_gateways = (local.hub_options[var.hub_deployment_option] != 3 && local.hub_options[var.hub_deployment_option] != 4) ? {
         internet_gateways = {
           // don't deploy when deploying Hub VCN
           "OKE-VCN-1-INTERNET-GATEWAY" = {
@@ -959,7 +959,7 @@ locals {
         "OKE-VCN-2-API-SUBNET-ROUTE-TABLE" = {
           display_name = "api-subnet-route-table"
           route_rules = merge(
-            (local.hub_options[var.hub_deployment_option] != 3 || local.hub_options[var.hub_deployment_option] != 4) ? {
+            (local.hub_options[var.hub_deployment_option] != 3 && local.hub_options[var.hub_deployment_option] != 4) ? {
               "SGW-RULE" = {
                 network_entity_key = "OKE-VCN-2-SERVICE-GATEWAY"
                 description        = "Route for sgw"
@@ -974,7 +974,7 @@ locals {
                 destination_type   = "CIDR_BLOCK"
               }
             },
-            (local.hub_options[var.hub_deployment_option] != 3 || local.hub_options[var.hub_deployment_option] != 4) && upper(var.oke_vcn2_cni_type) == "NATIVE" ? {
+            (local.hub_options[var.hub_deployment_option] != 3 && local.hub_options[var.hub_deployment_option] != 4) && upper(var.oke_vcn2_cni_type) == "NATIVE" ? {
               "NATGW-RULE" = {
                 network_entity_key = "OKE-VCN-2-NAT-GATEWAY"
                 description        = "Route for internet access via NAT GW"
@@ -989,7 +989,7 @@ locals {
           "OKE-VCN-2-WORKERS-SUBNET-ROUTE-TABLE" = {
             display_name = "workers-subnet-route-table"
             route_rules = merge(
-              (local.hub_options[var.hub_deployment_option] != 3 || local.hub_options[var.hub_deployment_option] != 4) ? {
+              (local.hub_options[var.hub_deployment_option] != 3 && local.hub_options[var.hub_deployment_option] != 4) ? {
                 "SGW-RULE" = {
                   network_entity_key = "OKE-VCN-2-SERVICE-GATEWAY"
                   description        = "Route for sgw"
@@ -1017,7 +1017,7 @@ locals {
         {
           "OKE-VCN-2-SERVICES-SUBNET-ROUTE-TABLE" = {
             display_name = "services-subnet-route-table"
-            route_rules = (local.hub_options[var.hub_deployment_option] != 3 || local.hub_options[var.hub_deployment_option] != 4) ? {
+            route_rules = (local.hub_options[var.hub_deployment_option] != 3 && local.hub_options[var.hub_deployment_option] != 4) ? {
               "IGW-RULE" = {
                 network_entity_key = "OKE-VCN-2-INTERNET-GATEWAY"
                 description        = "Route for igw"
@@ -1037,7 +1037,7 @@ locals {
         var.add_oke_vcn2_mgmt_subnet ? {
           "OKE-VCN-2-MGMT-SUBNET-ROUTE-TABLE" = {
             display_name = "mgmt-subnet-route-table"
-            route_rules = (local.hub_options[var.hub_deployment_option] != 3 || local.hub_options[var.hub_deployment_option] != 4) ? {
+            route_rules = (local.hub_options[var.hub_deployment_option] != 3 && local.hub_options[var.hub_deployment_option] != 4) ? {
               "SGW-RULE" = {
                 network_entity_key = "OKE-VCN-2-SERVICE-GATEWAY"
                 description        = "Route for sgw"
@@ -1064,7 +1064,7 @@ locals {
           "OKE-VCN-2-PODS-SUBNET-ROUTE-TABLE" = {
             display_name = "pods-subnet-route-table"
             route_rules = merge(
-              (local.hub_options[var.hub_deployment_option] != 3 || local.hub_options[var.hub_deployment_option] != 4) ? {
+              (local.hub_options[var.hub_deployment_option] != 3 && local.hub_options[var.hub_deployment_option] != 4) ? {
                 "SGW-RULE" = {
                   network_entity_key = "OKE-VCN-2-SERVICE-GATEWAY"
                   description        = "Route for sgw"
@@ -1644,7 +1644,7 @@ locals {
         } : {},
         upper(var.oke_vcn2_cni_type) == "NATIVE" ? {
           "OKE-VCN-2-PODS-NSG" = {
-            display_name = "pods-subnet-nsg"
+            display_name = "pods-nsg"
             egress_rules = merge({
               "EGRESS-TO-PODS-RULE" = {
                 description = "Allow pods to communicate with other pods."
@@ -1731,7 +1731,7 @@ locals {
           }
         } : {}
       )
-      vcn_specific_gateways = (local.hub_options[var.hub_deployment_option] != 3 || local.hub_options[var.hub_deployment_option] != 4) ? {
+      vcn_specific_gateways = (local.hub_options[var.hub_deployment_option] != 3 && local.hub_options[var.hub_deployment_option] != 4) ? {
         internet_gateways = {
           "OKE-VCN-2-INTERNET-GATEWAY" = {
             enabled      = true
@@ -1833,7 +1833,7 @@ locals {
         "OKE-VCN-3-API-SUBNET-ROUTE-TABLE" = {
           display_name = "api-subnet-route-table"
           route_rules = merge(
-            (local.hub_options[var.hub_deployment_option] != 3 || local.hub_options[var.hub_deployment_option] != 4) ? {
+            (local.hub_options[var.hub_deployment_option] != 3 && local.hub_options[var.hub_deployment_option] != 4) ? {
               "SGW-RULE" = {
                 network_entity_key = "OKE-VCN-3-SERVICE-GATEWAY"
                 description        = "Route for sgw"
@@ -1848,7 +1848,7 @@ locals {
                 destination_type   = "CIDR_BLOCK"
               }
             },
-            (local.hub_options[var.hub_deployment_option] != 3 || local.hub_options[var.hub_deployment_option] != 4) && upper(var.oke_vcn3_cni_type) == "NATIVE" ? {
+            (local.hub_options[var.hub_deployment_option] != 3 && local.hub_options[var.hub_deployment_option] != 4) && upper(var.oke_vcn3_cni_type) == "NATIVE" ? {
               "NATGW-RULE" = {
                 network_entity_key = "OKE-VCN-3-NAT-GATEWAY"
                 description        = "Route for internet access via NAT GW"
@@ -1863,7 +1863,7 @@ locals {
           "OKE-VCN-3-WORKERS-SUBNET-ROUTE-TABLE" = {
             display_name = "workers-subnet-route-table"
             route_rules = merge(
-              (local.hub_options[var.hub_deployment_option] != 3 || local.hub_options[var.hub_deployment_option] != 4) ? {
+              (local.hub_options[var.hub_deployment_option] != 3 && local.hub_options[var.hub_deployment_option] != 4) ? {
                 "SGW-RULE" = {
                   network_entity_key = "OKE-VCN-3-SERVICE-GATEWAY"
                   description        = "Route for sgw"
@@ -1891,7 +1891,7 @@ locals {
         {
           "OKE-VCN-3-SERVICES-SUBNET-ROUTE-TABLE" = {
             display_name = "services-subnet-route-table"
-            route_rules = (local.hub_options[var.hub_deployment_option] != 3 || local.hub_options[var.hub_deployment_option] != 4) ? {
+            route_rules = (local.hub_options[var.hub_deployment_option] != 3 && local.hub_options[var.hub_deployment_option] != 4) ? {
               "IGW-RULE" = {
                 network_entity_key = "OKE-VCN-3-INTERNET-GATEWAY"
                 description        = "Route for igw"
@@ -1911,7 +1911,7 @@ locals {
         var.add_oke_vcn3_mgmt_subnet ? {
           "OKE-VCN-3-MGMT-SUBNET-ROUTE-TABLE" = {
             display_name = "mgmt-subnet-route-table"
-            route_rules = (local.hub_options[var.hub_deployment_option] != 3 || local.hub_options[var.hub_deployment_option] != 4) ? {
+            route_rules = (local.hub_options[var.hub_deployment_option] != 3 && local.hub_options[var.hub_deployment_option] != 4) ? {
               "SGW-RULE" = {
                 network_entity_key = "OKE-VCN-3-SERVICE-GATEWAY"
                 description        = "Route for sgw"
@@ -1938,7 +1938,7 @@ locals {
           "OKE-VCN-3-PODS-SUBNET-ROUTE-TABLE" = {
             display_name = "pods-subnet-route-table"
             route_rules = merge(
-              (local.hub_options[var.hub_deployment_option] != 3 || local.hub_options[var.hub_deployment_option] != 4) ? {
+              (local.hub_options[var.hub_deployment_option] != 3 && local.hub_options[var.hub_deployment_option] != 4) ? {
                 "SGW-RULE" = {
                   network_entity_key = "OKE-VCN-3-SERVICE-GATEWAY"
                   description        = "Route for sgw"
@@ -2519,7 +2519,7 @@ locals {
         } : {},
         upper(var.oke_vcn3_cni_type) == "NATIVE" ? {
           "OKE-VCN-3-PODS-NSG" = {
-            display_name = "pods-subnet-nsg"
+            display_name = "pods-nsg"
             egress_rules = merge({
               "EGRESS-TO-PODS-RULE" = {
                 description = "Allow pods to communicate with other pods."
@@ -2606,7 +2606,7 @@ locals {
           }
         } : {}
       )
-      vcn_specific_gateways = (local.hub_options[var.hub_deployment_option] != 3 || local.hub_options[var.hub_deployment_option] != 4) ? {
+      vcn_specific_gateways = (local.hub_options[var.hub_deployment_option] != 3 && local.hub_options[var.hub_deployment_option] != 4) ? {
         internet_gateways = {
           "OKE-VCN-3-INTERNET-GATEWAY" = {
             enabled      = true
