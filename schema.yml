@@ -1826,7 +1826,7 @@ variables:
 
   exa_vcn1_backup_subnet_dns:
     type: string
-    title: "Client Subnet DNS name"
+    title: "Backup Subnet DNS name"
     description: "Enter the Backup subnet DNS name. Use only letters and numbers, no special characters."
     required: false
     visible:
@@ -1967,7 +1967,7 @@ variables:
 
   exa_vcn2_backup_subnet_dns:
     type: string
-    title: "Client Subnet DNS name"
+    title: "Backup Subnet DNS name"
     description: "Enter the Backup subnet DNS name. Use only letters and numbers, no special characters."
     required: false
     visible:
@@ -2109,7 +2109,7 @@ variables:
 
   exa_vcn3_backup_subnet_dns:
     type: string
-    title: "Client Subnet DNS name"
+    title: "Backup Subnet DNS name"
     description: "Enter the Backup subnet DNS name. Use only letters and numbers, no special characters."
     required: false
     visible:
