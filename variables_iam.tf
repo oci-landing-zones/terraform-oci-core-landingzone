@@ -75,6 +75,10 @@ variable "rm_existing_id_domain_storage_admin_group_name" {
   type    = list(string)
   default = []
 }
+variable "rm_existing_id_domain_ag_admin_group_name" {
+  type    = list(string)
+  default = []
+}
 variable "existing_id_domain_security_fun_dyn_group_name" {
   type    = string
   default = ""
@@ -88,6 +92,10 @@ variable "existing_id_domain_compute_agent_dyn_group_name" {
   default = ""
 }
 variable "existing_id_domain_database_kms_dyn_group_name" {
+  type    = string
+  default = ""
+}
+variable "existing_id_domain_net_fw_app_dyn_group_name" {
   type    = string
   default = ""
 }
@@ -227,6 +235,16 @@ variable "existing_storage_admin_group_name" {
   description = "List of groups for storage administrators."
 }
 
+variable "rm_existing_ag_admin_group_name" {
+  type    = string
+  default = ""
+}
+variable "existing_ag_admin_group_name" {
+  type        = list(string)
+  default     = []
+  description = "List of groups for iam administrators."
+}
+
 # ------------------------------------------------------
 # ----- IAM - Dynamic Groups
 #-------------------------------------------------------
@@ -253,6 +271,11 @@ variable "existing_database_kms_dyn_group_name" {
   type        = string
   default     = ""
   description = "Existing database dynamic group for database to access keys."
+}
+variable "existing_net_fw_app_dyn_group_name" {
+  type        = string
+  default     = ""
+  description = "Existing network firewall appliance group for reading firewall instances."
 }
 
 # ------------------------------------------------------

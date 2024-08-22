@@ -2,8 +2,8 @@
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 
 title: "OCI Core Landing Zone"
-stackDescription: "This stack deploys the OCI Core Landing Zone, a fully operational tenancy that combines the recommendations of CIS Foundations Benchmark for OCI with OCI architecture best practices. For details, please see https://github.com/oracle-quickstart/oci-cis-landingzone-quickstart."
-description: "This stack deploys the OCI Core Landing Zone, a fully operational tenancy that combines the recommendations of CIS Foundations Benchmark for OCI with OCI architecture best practices. For details, please see <a href=\"https://github.com/oracle-quickstart/oci-cis-landingzone-quickstart\">OCI Core Landing Zone</a>."
+stackDescription: "This stack deploys the OCI Core Landing Zone, a fully operational tenancy that combines the recommendations of CIS Foundations Benchmark for OCI with OCI architecture best practices. For details, please see https://github.com/oci-landing-zones/oci-core-landingzone."
+description: "This stack deploys the OCI Core Landing Zone, a fully operational tenancy that combines the recommendations of CIS Foundations Benchmark for OCI with OCI architecture best practices. For details, please see <a href=\"https://github.com/oci-landing-zones/oci-core-landingzone\">OCI Core Landing Zone</a>."
 schemaVersion: 1.1.0
 version: "3.0.0"
 locale: "en"
@@ -57,6 +57,7 @@ variableGroups:
       - "rm_existing_id_domain_iam_admin_group_name"
       - "rm_existing_id_domain_cred_admin_group_name"
       - "rm_existing_id_domain_security_admin_group_name"
+      - "rm_existing_id_domain_ag_admin_group_name"
       - "rm_existing_id_domain_network_admin_group_name"
       - "rm_existing_id_domain_appdev_admin_group_name"
       - "rm_existing_id_domain_database_admin_group_name"
@@ -83,6 +84,7 @@ variableGroups:
       - "existing_id_domain_appdev_fun_dyn_group_name"
       - "existing_id_domain_compute_agent_dyn_group_name"
       - "existing_id_domain_database_kms_dyn_group_name" 
+      - "existing_id_domain_net_fw_app_dyn_group_name"
     visible:
       and:
         - eq:
@@ -101,6 +103,7 @@ variableGroups:
       - "rm_existing_iam_admin_group_name"
       - "rm_existing_cred_admin_group_name"
       - "rm_existing_security_admin_group_name"
+      - "rm_existing_ag_admin_group_name"
       - "rm_existing_network_admin_group_name"
       - "rm_existing_appdev_admin_group_name"
       - "rm_existing_database_admin_group_name"
@@ -128,6 +131,7 @@ variableGroups:
       - "existing_appdev_fun_dyn_group_name"
       - "existing_compute_agent_dyn_group_name"
       - "existing_database_kms_dyn_group_name" 
+      - "existing_net_fw_app_dyn_group_name"
     visible:
       and:
         - eq:
@@ -466,7 +470,10 @@ variableGroups:
       - "existing_auditor_group_name"
       - "existing_announcement_reader_group_name"
       - "existing_cost_admin_group_name"
-      - "existing_storage_admin_group_name"     
+      - "existing_storage_admin_group_name"  
+      - "existing_ag_admin_group_name"
+      - "lz_provenant_prefix"
+      - "lz_provenant_version"
 
 variables:
   region:
@@ -591,6 +598,15 @@ variables:
     description: "Enter the existing group to which security management policies will be granted to."
     visible: use_custom_id_domain
       
+  rm_existing_id_domain_ag_admin_group_name:
+    type: array
+    items:
+      type: string
+    uniqueItems: true
+    title: "Existing Access Governance Admin Group Names"
+    description: "Enter the existing group(s) to which Access Governance management policies will be granted to."
+    visible: use_custom_id_domain
+
   rm_existing_id_domain_network_admin_group_name:
     type: array
     items:
@@ -687,6 +703,12 @@ variables:
     description: "Existing database dynamic group for database to access keys."
     visible: use_custom_id_domain
 
+  existing_id_domain_net_fw_app_dyn_group_name:
+    type: string
+    title: "Existing Network Firewall Appliance Dynamic Group Name"
+    description: "Existing network firewall appliance dynamic group for reading firewall instances."
+    visible: use_custom_id_domain  
+
   # deploy_id_domain:
   #   type: boolean
   #   title: "Deploy a non-default Identity Domain?"
@@ -765,6 +787,17 @@ variables:
         - ${groups_options}
         - "No, use existing"
       
+  rm_existing_ag_admin_group_name:
+    type: oci:identity:groups:id
+    dependsOn:
+      compartmentId: ${tenancy_ocid}
+    title: "Existing Access Governance admin group name"
+    description: "Existing group to which Access Governance management policies will be granted to."
+    visible:
+      eq:
+        - ${groups_options}
+        - "No, use existing"
+
   rm_existing_appdev_admin_group_name:
     type: oci:identity:groups:id
     dependsOn:
@@ -895,6 +928,17 @@ variables:
       eq:
         - ${dyn_groups_options}
         - "No, use existing"
+
+  existing_net_fw_app_dyn_group_name:
+    type: oci:identity:dynamicgroups:id
+    dependsOn:
+      compartmentId: ${tenancy_ocid}
+    title: "Existing network firewall appliance dynamic group name"
+    description: "Existing network firewall appliance dynamic group for reading firewall instances."
+    visible:
+      eq:
+        - ${dyn_groups_options}
+        - "No, use existing"      
 
   policies_in_root_compartment:
     type: enum
@@ -3043,9 +3087,9 @@ variables:
       - "No"
       - "Palo Alto Networks VM-Series Firewall"
       - "Fortinet FortiGate Firewall"
-      - "Check Point CloudGuard Firewall"
-      - "Cisco Secure Firewall"
-      - "OCI Firewall Service"
+      #- "Check Point CloudGuard Firewall"
+      #- "Cisco Secure Firewall"
+      #- "OCI Firewall Service"
     visible: 
       and:
         - customize_net
