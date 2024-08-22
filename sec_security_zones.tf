@@ -21,7 +21,7 @@ locals {
 
     security_zones = {
       SECURITY-ZONE = {
-        name           = "lz-security-zone"
+        name           = "${var.service_label}-lz-security-zone"
         compartment_id = local.enclosing_compartment_id
         recipe_key     = var.cis_level == "1" ? "CIS-L1-RECIPE" : "CIS-L2-RECIPE"
       }
@@ -34,7 +34,7 @@ locals {
         cis_level               = "1"
       }
       CIS-L2-RECIPE = {
-        name                    = "lz-security-zone-cis-level-2-recipe"
+        name                    = lz-security-zone-cis-level-2-recipe"
         description             = "CIS Level 2 recipe"
         compartment_id          = local.enclosing_compartment_id
         cis_level               = "2"
