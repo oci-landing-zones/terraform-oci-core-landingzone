@@ -415,6 +415,7 @@ variableGroups:
   - title: "Security Zones"
     variables:
     - "enable_security_zones"
+    - "security_zones_reporting_region"
     - "sz_security_policies"
 
   - title: "Logging Consolidation: Service Connector Hub"
@@ -3685,14 +3686,25 @@ variables:
     description: "Determines if Security Zones are enabled in Landing Zone compartments. When set to true, the Security Zone is enabled for the enclosing compartment. If no enclosing compartment is used, then the Security Zone is not enabled."
     default: false
 
+  security_zones_reporting_region:
+    type: string
+    title: Security Zones Reporting Region
+    description: "The reporting region of security zones. It defaults to tenancy home region if undefined."
+    default: ""
+    required: false
+    visible:
+      and:
+        - ${enable_security_zones}
+
   sz_security_policies:
     type: array
     items:
       type: string
     uniqueItems: true
-    title: Security Zone policies
-    description: "List of Security Zones Policy OCIDs to add to security zone recipe. (Type a Security Zone policy OCID and hit enter to enter multiple values). To get a Security Zone policy OCID use the oci cli:  oci cloud-guard security-policy-collection list-security-policies --compartment-id your-tenancy-ocid"
-    visible: 
+    title: Security Zones Policies
+    description: "Additional Security Zones Policy OCIDs to add to security zone recipe (The default policies are added based on CIS level).Type a Security Zone policy OCID and hit enter to enter multiple values.To get a Security Zone policy OCID use the oci cli:  osecurity-policy-collection list-security-policies --compartment-id <tenancy-ocid>."
+    required: false
+    visible:
       and:
         - ${enable_security_zones}
 
