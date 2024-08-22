@@ -30,9 +30,11 @@ locals {
           memory = var.fw_instance_flex_shape_memory
           ocpus  = var.fw_instance_flex_shape_cpu
         }
-        image = {
+        image = local.firewall_options[var.hub_vcn_deploy_firewall_option] == "PALOALTO" ? {
           name           = local.current_image_name
           publisher_name = local.current_publisher_name
+        } : {
+          id = "ocid1.image.oc1..aaaaaaaaq57pywudjr5yogjtl6qf3zs3yrwv66b5ooeiqykjgnneuerhfnia"
         }
         placement = {
           availability_domain = 1
@@ -76,9 +78,11 @@ locals {
           memory = var.fw_instance_flex_shape_memory
           ocpus  = var.fw_instance_flex_shape_cpu
         }
-        image = {
+        image = local.firewall_options[var.hub_vcn_deploy_firewall_option] == "PALOALTO" ? {
           name           = local.current_image_name
           publisher_name = local.current_publisher_name
+        } : {
+          id = "ocid1.image.oc1..aaaaaaaaq57pywudjr5yogjtl6qf3zs3yrwv66b5ooeiqykjgnneuerhfnia"
         }
         placement = {
           availability_domain = 2
