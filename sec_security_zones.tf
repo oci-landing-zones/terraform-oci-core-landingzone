@@ -32,12 +32,14 @@ locals {
         description             = "CIS Level 1 recipe"
         compartment_id          = local.enclosing_compartment_id
         cis_level               = "1"
+        security_policies_ocids = var.sz_security_policies
       }
       CIS-L2-RECIPE = {
-        name                    = lz-security-zone-cis-level-2-recipe"
+        name                    = "lz-security-zone-cis-level-2-recipe"
         description             = "CIS Level 2 recipe"
         compartment_id          = local.enclosing_compartment_id
         cis_level               = "2"
+        security_policies_ocids = var.sz_security_policies
       }
     }
   }

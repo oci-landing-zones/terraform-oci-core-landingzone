@@ -416,6 +416,7 @@ variableGroups:
     variables:
     - "enable_security_zones"
     - "security_zones_reporting_region"
+    - "sz_security_policies"
 
   - title: "Logging Consolidation: Service Connector Hub"
     variables:
@@ -3690,6 +3691,18 @@ variables:
     title: Security Zones Reporting Region
     description: "The reporting region of security zones. It defaults to tenancy home region if undefined."
     default: ""
+    required: false
+    visible:
+      and:
+        - ${enable_security_zones}
+
+  sz_security_policies:
+    type: array
+    items:
+      type: string
+    uniqueItems: true
+    title: Security Zones Policies
+    description: "Additional Security Zones Policy OCIDs to add to security zone recipe (The default policies are added based on CIS level).Type a Security Zone policy OCID and hit enter to enter multiple values.To get a Security Zone policy OCID use the oci cli:  osecurity-policy-collection list-security-policies --compartment-id <tenancy-ocid>."
     required: false
     visible:
       and:
