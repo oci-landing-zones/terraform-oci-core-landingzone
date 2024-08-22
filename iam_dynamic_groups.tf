@@ -11,6 +11,7 @@ locals {
   custom_appdev_fun_dyn_group_name          = null
   custom_appdev_computeagent_dyn_group_name = null
   custom_database_kms_dyn_group_name        = null
+  custom_net_fw_app_dyn_group_name          = null
 
   custom_dynamic_groups_defined_tags  = null
   custom_dynamic_groups_freeform_tags = null
@@ -47,7 +48,7 @@ locals {
   security_functions_dynamic_group = length(trimspace(var.existing_security_fun_dyn_group_name)) == 0 ? {
     (local.security_functions_dynamic_group_key) = {
       name          = local.provided_security_functions_dynamic_group_name
-      description   = "CIS Landing Zone dynamic group for security functions execution."
+      description   = "Landing Zone dynamic group for security functions execution."
       matching_rule = "ALL {resource.type = 'fnfunc',resource.compartment.id = '${local.security_compartment_id}'}"
       defined_tags  = local.dynamic_groups_defined_tags
       freeform_tags = local.dynamic_groups_freeform_tags
@@ -64,7 +65,7 @@ locals {
   appdev_functions_dynamic_group = length(trimspace(var.existing_appdev_fun_dyn_group_name)) == 0 ? {
     (local.appdev_functions_dynamic_group_key) = {
       name          = local.provided_appdev_functions_dynamic_group_name
-      description   = "CIS Landing Zone dynamic group for application functions execution."
+      description   = "Landing Zone dynamic group for application functions execution."
       matching_rule = "ALL {resource.type = 'fnfunc',resource.compartment.id = '${local.app_compartment_id}'}"
       defined_tags  = local.dynamic_groups_defined_tags
       freeform_tags = local.dynamic_groups_freeform_tags
@@ -81,7 +82,7 @@ locals {
   appdev_computeagent_dynamic_group = length(trimspace(var.existing_compute_agent_dyn_group_name)) == 0 ? {
     (local.appdev_computeagent_dynamic_group_key) = {
       name          = local.provided_appdev_computeagent_dynamic_group_name
-      description   = "CIS Landing Zone dynamic group for Compute Agent plugin execution."
+      description   = "Landing Zone dynamic group for Compute Agent plugin execution."
       matching_rule = "ALL {resource.type = 'managementagent',resource.compartment.id = '${local.app_compartment_id}'}"
       defined_tags  = local.dynamic_groups_defined_tags
       freeform_tags = local.dynamic_groups_freeform_tags
@@ -98,8 +99,25 @@ locals {
   database_kms_dynamic_group = length(trimspace(var.existing_database_kms_dyn_group_name)) == 0 ? {
     (local.database_kms_dynamic_group_key) = {
       name          = local.provided_database_kms_dynamic_group_name
-      description   = "CIS Landing Zone dynamic group for databases accessing Key Management service (aka Vault service)."
+      description   = "Landing Zone dynamic group for databases accessing Key Management service (aka Vault service)."
       matching_rule = "ALL {resource.compartment.id = '${local.database_compartment_id}'}"
+      defined_tags  = local.dynamic_groups_defined_tags
+      freeform_tags = local.dynamic_groups_freeform_tags
+    }
+  } : {}
+
+  #--------------------------------------------------------------------
+  #-- Network Firewall Appliance Dynamic Group
+  #--------------------------------------------------------------------
+  net_fw_app_dynamic_group_key           = "NET-FW-APP-DYNAMIC-GROUP"
+  default_net_fw_app_dynamic_group_name  = "net-fw-app-dynamic-group"
+  provided_net_fw_app_dynamic_group_name = coalesce(local.custom_net_fw_app_dyn_group_name, "${var.service_label}-${local.default_net_fw_app_dynamic_group_name}")
+
+  net_fw_app_dynamic_group = length(trimspace(var.existing_net_fw_app_dyn_group_name)) == 0 && local.firewall_options[var.hub_vcn_deploy_firewall_option] == "FORTINET" ? {
+    (local.net_fw_app_dynamic_group_key) = {
+      name          = local.provided_net_fw_app_dynamic_group_name
+      description   = "Landing Zone dynamic group for network firewall appliances."
+      matching_rule = "ALL {resource.compartment.id = '${local.network_compartment_id}'}"
       defined_tags  = local.dynamic_groups_defined_tags
       freeform_tags = local.dynamic_groups_freeform_tags
     }
@@ -110,7 +128,7 @@ locals {
   #------------------------------------------------------------------------
   dynamic_groups_configuration = {
     dynamic_groups : merge(local.security_functions_dynamic_group, local.appdev_functions_dynamic_group,
-    local.appdev_computeagent_dynamic_group, local.database_kms_dynamic_group)
+    local.appdev_computeagent_dynamic_group, local.database_kms_dynamic_group, local.net_fw_app_dynamic_group)
   }
 
   empty_dynamic_groups_configuration = {
@@ -131,5 +149,5 @@ locals {
   appdev_functions_dynamic_group_name    = var.use_custom_id_domain == false ? (length(trimspace(var.existing_appdev_fun_dyn_group_name)) == 0 ? local.provided_appdev_functions_dynamic_group_name : (length(regexall("^ocid1.dynamicgroup.oc.*$", var.existing_appdev_fun_dyn_group_name)) > 0 ? local.all_existing_dynamic_groups[var.existing_appdev_fun_dyn_group_name].name : var.existing_appdev_fun_dyn_group_name)) : ("'${var.custom_id_domain_name}'/'${trimspace(var.existing_id_domain_appdev_fun_dyn_group_name)}'")
   appdev_computeagent_dynamic_group_name = var.use_custom_id_domain == false ? (length(trimspace(var.existing_compute_agent_dyn_group_name)) == 0 ? local.provided_appdev_computeagent_dynamic_group_name : (length(regexall("^ocid1.dynamicgroup.oc.*$", var.existing_compute_agent_dyn_group_name)) > 0 ? local.all_existing_dynamic_groups[var.existing_compute_agent_dyn_group_name].name : var.existing_compute_agent_dyn_group_name)) : ("'${var.custom_id_domain_name}'/'${trimspace(var.existing_id_domain_compute_agent_dyn_group_name)}'")
   database_kms_dynamic_group_name        = var.use_custom_id_domain == false ? (length(trimspace(var.existing_database_kms_dyn_group_name)) == 0 ? local.provided_database_kms_dynamic_group_name : (length(regexall("^ocid1.dynamicgroup.oc.*$", var.existing_database_kms_dyn_group_name)) > 0 ? local.all_existing_dynamic_groups[var.existing_database_kms_dyn_group_name].name : var.existing_database_kms_dyn_group_name)) : ("'${var.custom_id_domain_name}'/'${trimspace(var.existing_id_domain_database_kms_dyn_group_name)}'")
+  net_fw_app_dynamic_group_name          = var.use_custom_id_domain == false ? (length(trimspace(var.existing_net_fw_app_dyn_group_name)) == 0 ? local.provided_net_fw_app_dynamic_group_name : (length(regexall("^ocid1.dynamicgroup.oc.*$", var.existing_net_fw_app_dyn_group_name)) > 0 ? local.all_existing_dynamic_groups[var.existing_net_fw_app_dyn_group_name].name : var.existing_net_fw_app_dyn_group_name)) : ("'${var.custom_id_domain_name}'/'${trimspace(var.existing_id_domain_net_fw_app_dyn_group_name)}'")
 }
-

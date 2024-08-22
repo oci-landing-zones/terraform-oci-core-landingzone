@@ -21,6 +21,7 @@ locals {
   custom_storage_admin_group_name       = null
   custom_auditor_group_name             = null
   custom_announcement_reader_group_name = null
+  custom_ag_admin_group_name            = null
 }
 
 module "lz_groups" {
@@ -55,7 +56,7 @@ locals {
   iam_admin_group = length(var.existing_iam_admin_group_name) == 0 && length(trimspace(var.rm_existing_iam_admin_group_name)) == 0 ? {
     (local.iam_admin_group_key) = {
       name          = local.provided_iam_admin_group_name
-      description   = "CIS Landing Zone group for managing IAM resources in the tenancy."
+      description   = "Landing Zone group for managing IAM resources in the tenancy."
       members       = []
       defined_tags  = local.groups_defined_tags
       freeform_tags = local.groups_freeform_tags
@@ -72,7 +73,7 @@ locals {
   cred_admin_group = length(var.existing_cred_admin_group_name) == 0 && length(trimspace(var.rm_existing_cred_admin_group_name)) == 0 ? {
     (local.cred_admin_group_key) = {
       name          = local.provided_cred_admin_group_name
-      description   = "CIS Landing Zone group for managing users credentials in the tenancy."
+      description   = "Landing Zone group for managing users credentials in the tenancy."
       members       = []
       defined_tags  = local.groups_defined_tags
       freeform_tags = local.groups_freeform_tags
@@ -89,7 +90,7 @@ locals {
   cost_admin_group = length(var.existing_cost_admin_group_name) == 0 && length(trimspace(var.rm_existing_cost_admin_group_name)) == 0 ? {
     (local.cost_admin_group_key) = {
       name          = local.provided_cost_admin_group_name
-      description   = "CIS Landing Zone group for Cost management."
+      description   = "Landing Zone group for Cost management."
       members       = []
       defined_tags  = local.groups_defined_tags
       freeform_tags = local.groups_freeform_tags
@@ -106,7 +107,7 @@ locals {
   network_admin_group = length(var.existing_network_admin_group_name) == 0 && length(trimspace(var.rm_existing_network_admin_group_name)) == 0 ? {
     (local.network_admin_group_key) = {
       name          = local.provided_network_admin_group_name
-      description   = "CIS Landing Zone group for network management."
+      description   = "Landing Zone group for network management."
       members       = []
       defined_tags  = local.groups_defined_tags
       freeform_tags = local.groups_freeform_tags
@@ -123,7 +124,7 @@ locals {
   security_admin_group = length(var.existing_security_admin_group_name) == 0 && length(trimspace(var.rm_existing_security_admin_group_name)) == 0 ? {
     (local.security_admin_group_key) = {
       name          = local.provided_security_admin_group_name
-      description   = "CIS Landing Zone group for security services management."
+      description   = "Landing Zone group for security services management."
       members       = []
       defined_tags  = local.groups_defined_tags
       freeform_tags = local.groups_freeform_tags
@@ -140,7 +141,7 @@ locals {
   appdev_admin_group = length(var.existing_appdev_admin_group_name) == 0 && length(trimspace(var.rm_existing_appdev_admin_group_name)) == 0 ? {
     (local.appdev_admin_group_key) = {
       name          = local.provided_appdev_admin_group_name
-      description   = "CIS Landing Zone group for managing app development related services."
+      description   = "Landing Zone group for managing app development related services."
       members       = []
       defined_tags  = local.groups_defined_tags
       freeform_tags = local.groups_freeform_tags
@@ -157,7 +158,7 @@ locals {
   database_admin_group = length(var.existing_database_admin_group_name) == 0 && length(trimspace(var.rm_existing_database_admin_group_name)) == 0 ? {
     (local.database_admin_group_key) = {
       name          = local.provided_database_admin_group_name
-      description   = "CIS Landing Zone group for managing databases."
+      description   = "Landing Zone group for managing databases."
       members       = []
       defined_tags  = local.groups_defined_tags
       freeform_tags = local.groups_freeform_tags
@@ -174,7 +175,7 @@ locals {
   exainfra_admin_group = var.deploy_exainfra_cmp == true && length(var.existing_exainfra_admin_group_name) == 0 && length(trimspace(var.rm_existing_exainfra_admin_group_name)) == 0 ? {
     (local.exainfra_admin_group_key) = {
       name          = local.provided_exainfra_admin_group_name
-      description   = "CIS Landing Zone group for managing Exadata Cloud Service infrastructure."
+      description   = "Landing Zone group for managing Exadata Cloud Service infrastructure."
       members       = []
       defined_tags  = local.groups_defined_tags
       freeform_tags = local.groups_freeform_tags
@@ -191,7 +192,7 @@ locals {
   storage_admin_group = length(var.existing_storage_admin_group_name) == 0 && length(trimspace(var.rm_existing_storage_admin_group_name)) == 0 ? {
     (local.storage_admin_group_key) = {
       name          = local.provided_storage_admin_group_name
-      description   = "CIS Landing Zone group for storage services management."
+      description   = "Landing Zone group for storage services management."
       members       = []
       defined_tags  = local.groups_defined_tags
       freeform_tags = local.groups_freeform_tags
@@ -208,7 +209,7 @@ locals {
   auditor_group = length(var.existing_auditor_group_name) == 0 && length(trimspace(var.rm_existing_auditor_group_name)) == 0 ? {
     (local.auditor_group_key) = {
       name          = local.provided_auditor_group_name
-      description   = "CIS Landing Zone group for auditing the tenancy."
+      description   = "Landing Zone group for auditing the tenancy."
       members       = []
       defined_tags  = local.groups_defined_tags
       freeform_tags = local.groups_freeform_tags
@@ -225,13 +226,29 @@ locals {
   announcement_reader_group = length(var.existing_announcement_reader_group_name) == 0 && length(trimspace(var.rm_existing_announcement_reader_group_name)) == 0 ? {
     (local.announcement_reader_group_key) = {
       name          = local.provided_announcement_reader_group_name
-      description   = "CIS Landing Zone group for reading Console announcements."
+      description   = "Landing Zone group for reading Console announcements."
       members       = []
       defined_tags  = local.groups_defined_tags
       freeform_tags = local.groups_freeform_tags
     }
   } : {}
 
+  #--------------------------------------------------------------------
+  #-- Access Governance (AG) Admin
+  #--------------------------------------------------------------------
+  ag_admin_group_key           = "AG-ADMIN-GROUP"
+  default_ag_admin_group_name  = "access-governance-admin-group"
+  provided_ag_admin_group_name = coalesce(local.custom_ag_admin_group_name, "${var.service_label}-${local.default_ag_admin_group_name}")
+
+  ag_admin_group = length(var.existing_ag_admin_group_name) == 0 && length(trimspace(var.rm_existing_ag_admin_group_name)) == 0 ? {
+    (local.ag_admin_group_key) = {
+      name          = local.provided_ag_admin_group_name
+      description   = "Landing Zone group for managing Access Governance resources in the tenancy."
+      members       = []
+      defined_tags  = local.groups_defined_tags
+      freeform_tags = local.groups_freeform_tags
+    }
+  } : {}
   #------------------------------------------------------------------------
   #----- Groups configuration definition. Input to module.
   #------------------------------------------------------------------------  
@@ -239,7 +256,8 @@ locals {
     groups : merge(local.iam_admin_group, local.cred_admin_group, local.cost_admin_group,
       local.network_admin_group, local.security_admin_group,
       local.appdev_admin_group, local.database_admin_group, local.exainfra_admin_group,
-    local.storage_admin_group, local.auditor_group, local.announcement_reader_group)
+      local.storage_admin_group, local.auditor_group, local.announcement_reader_group,
+      local.ag_admin_group)
   }
 
   empty_groups_configuration = {
@@ -260,4 +278,5 @@ locals {
   cost_admin_group_name          = !var.extend_landing_zone_to_new_region ? (var.use_custom_id_domain == false ? ((length(var.existing_cost_admin_group_name) == 0 && length(trimspace(var.rm_existing_cost_admin_group_name)) == 0 ? [module.lz_groups.groups[local.cost_admin_group_key].name] : (length(regexall("^ocid1.group.oc.*$", var.rm_existing_cost_admin_group_name)) > 0 ? ["'${data.oci_identity_group.existing_cost_admin_group[var.rm_existing_cost_admin_group_name].name}'"] : [for i, v in var.existing_cost_admin_group_name : (length(regexall("^ocid1.group.oc.*$", var.existing_cost_admin_group_name[i])) > 0 ? "'${data.oci_identity_group.existing_cost_admin_group[v].name}'" : "'${v}'")]))) : [for v in var.rm_existing_id_domain_cost_admin_group_name : "'${var.custom_id_domain_name}'/'${trimspace(v)}'"]) : []
   storage_admin_group_name       = !var.extend_landing_zone_to_new_region ? (var.use_custom_id_domain == false ? ((length(var.existing_storage_admin_group_name) == 0 && length(trimspace(var.rm_existing_storage_admin_group_name)) == 0 ? [module.lz_groups.groups[local.storage_admin_group_key].name] : (length(regexall("^ocid1.group.oc.*$", var.rm_existing_storage_admin_group_name)) > 0 ? ["'${data.oci_identity_group.existing_storage_admin_group[var.rm_existing_storage_admin_group_name].name}'"] : [for i, v in var.existing_storage_admin_group_name : (length(regexall("^ocid1.group.oc.*$", var.existing_storage_admin_group_name[i])) > 0 ? "'${data.oci_identity_group.existing_storage_admin_group[v].name}'" : "'${v}'")]))) : [for v in var.rm_existing_id_domain_storage_admin_group_name : "'${var.custom_id_domain_name}'/'${trimspace(v)}'"]) : []
   exainfra_admin_group_name      = !var.extend_landing_zone_to_new_region ? (var.use_custom_id_domain == false ? ((var.deploy_exainfra_cmp ? (length(var.existing_exainfra_admin_group_name) == 0 && length(trimspace(var.rm_existing_exainfra_admin_group_name)) == 0 ? [module.lz_groups.groups[local.exainfra_admin_group_key].name] : (length(regexall("^ocid1.group.oc.*$", var.rm_existing_exainfra_admin_group_name)) > 0 ? ["'${data.oci_identity_group.existing_exainfra_admin_group[var.rm_existing_exainfra_admin_group_name].name}'"] : [for i, v in var.existing_exainfra_admin_group_name : (length(regexall("^ocid1.group.oc.*$", var.existing_exainfra_admin_group_name[i])) > 0 ? "'${data.oci_identity_group.existing_exainfra_admin_group[v].name}'" : "'${v}'")])) : [for grp in var.existing_exainfra_admin_group_name : "'${grp}'"])) : [for v in var.rm_existing_id_domain_exainfra_admin_group_name : "'${var.custom_id_domain_name}'/'${trimspace(v)}'"]) : []
+  ag_admin_group_name            = !var.extend_landing_zone_to_new_region ? (var.use_custom_id_domain == false ? ((length(var.existing_ag_admin_group_name) == 0 && length(trimspace(var.rm_existing_ag_admin_group_name)) == 0 ? [module.lz_groups.groups[local.ag_admin_group_key].name] : (length(regexall("^ocid1.group.oc.*$", var.rm_existing_ag_admin_group_name)) > 0 ? ["'${data.oci_identity_group.existing_ag_admin_group[var.rm_existing_ag_admin_group_name].name}'"] : [for i, v in var.existing_ag_admin_group_name : (length(regexall("^ocid1.group.oc.*$", var.existing_ag_admin_group_name[i])) > 0 ? "'${data.oci_identity_group.existing_ag_admin_group[v].name}'" : "'${v}'")]))) : [for v in var.rm_existing_id_domain_ag_admin_group_name : "'${var.custom_id_domain_name}'/'${trimspace(v)}'"]) : []
 }
