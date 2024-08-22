@@ -41,3 +41,17 @@ variable "customize_net" {
   type    = bool
   default = false
 }
+variable "lz_provenant_prefix" {
+  description   = "The provenant landing zone prefix or code that identifies the client of this landing zone."
+  type          = string
+  default       = "core"
+  validation {
+    condition     = length(regexall("^[A-Za-z][A-Za-z0-9]{1,4}$", var.lz_provenant_prefix)) > 0
+    error_message = "Validation failed for lz_provenant_prefix: value must contain alphanumeric characters only, starting with a letter up to a maximum of 5 characters."
+  }  
+}
+variable "lz_provenant_version" {
+  description = "The provenant landing zone version."
+  type        = string
+  default     = null
+}

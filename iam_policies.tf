@@ -61,6 +61,13 @@ locals {
     "allow group ${join(",", local.iam_admin_group_name)} to manage policies in ${local.policy_scope}",
   "allow group ${join(",", local.iam_admin_group_name)} to manage compartments in ${local.policy_scope}"]
 
+  ## Access Governance admin policy statements
+  access_governance_group_grants_on_root_cmp = [
+    "allow group ${join(",", local.ag_admin_group_name)} to inspect all-resources in tenancy",
+    "allow group ${join(",", local.ag_admin_group_name)} to read policies in tenancy",
+    "allow group ${join(",", local.ag_admin_group_name)} to read domains in tenancy"
+  ]
+
   // Security admin permissions to be created always at the root compartment
   security_admin_grants_on_root_cmp = [
     #  "allow group ${join(",",local.security_admin_group_name)} to manage cloudevents-rules in tenancy",
@@ -110,7 +117,8 @@ locals {
     "allow group ${join(",", local.security_admin_group_name)} to manage cloudevents-rules in compartment ${local.security_compartment_name}",
     "allow group ${join(",", local.security_admin_group_name)} to manage alarms in compartment ${local.security_compartment_name}",
     "allow group ${join(",", local.security_admin_group_name)} to manage metrics in compartment ${local.security_compartment_name}",
-  "allow group ${join(",", local.security_admin_group_name)} to use key-delegate in compartment ${local.security_compartment_name}"] : []
+    "allow group ${join(",", local.security_admin_group_name)} to use key-delegate in compartment ${local.security_compartment_name}",
+    "allow group ${join(",", local.security_admin_group_name)} to manage agcs-instance in compartment ${local.security_compartment_name}"] : []
 
   ## Security admin grants on Network compartment
   security_admin_grants_on_network_cmp = local.enable_network_compartment ? [

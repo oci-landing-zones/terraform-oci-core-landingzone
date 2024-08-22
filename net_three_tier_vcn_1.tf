@@ -59,7 +59,7 @@ locals {
                         prohibit_internet_ingress  = var.tt_vcn1_bastion_is_access_via_public_endpoint == true ? false : true
                         prohibit_public_ip_on_vnic = var.tt_vcn1_bastion_is_access_via_public_endpoint == true ? false : true
                         route_table_key            = "TT-VCN-1-BASTION-SUBNET-ROUTE-TABLE"
-                        security_list_key          = var.tt_vcn1_bastion_is_access_via_public_endpoint == false ? "TT-VCN-1-BASTION-SUBNET-SL" : null
+                        security_list_keys          = var.tt_vcn1_bastion_is_access_via_public_endpoint == false ? ["TT-VCN-1-BASTION-SUBNET-SL"] : []
                     }
                 } : {}    
             ) # merge function
@@ -173,22 +173,21 @@ locals {
                     "TT-VCN-1-BASTION-SUBNET-ROUTE-TABLE" = {
                         display_name = "bastion-subnet-route-table"
                         route_rules = merge(
-                            {
+                            (local.hub_options[var.hub_deployment_option] != 3 && local.hub_options[var.hub_deployment_option] != 4) ? {
                                 "INTERNET-RULE" = {
                                     network_entity_key = var.tt_vcn1_bastion_is_access_via_public_endpoint == false ? "TT-VCN-1-NAT-GATEWAY" : "TT-VCN-1-INTERNET-GATEWAY"
                                     description        = "To Internet."
                                     destination        = "0.0.0.0/0"
                                     destination_type   = "CIDR_BLOCK"
-                                }
-                            },
-                            {    
+                                },
                                 "OSN-RULE" = {
                                     network_entity_key = "TT-VCN-1-SERVICE-GATEWAY"
                                     description        = "To Oracle Services Network."
                                     destination        = var.tt_vcn1_bastion_is_access_via_public_endpoint == false ? "all-services" : "objectstorage"
                                     destination_type   = "SERVICE_CIDR_BLOCK"
                                 }
-                            }  
+                            } : {},
+                            local.tt_cross_vcn_1_drg_routing  
                         )
                     }
                 } : {}    
@@ -374,44 +373,60 @@ locals {
                                 dst_port_max = 22
                             } if var.tt_vcn1_bastion_is_access_via_public_endpoint == true # Ingress rule only for jump hosts later deployed in the bastion public subnet.
                         }    
-                        egress_rules = {
-                            "EGRESS-TO-LBR-NSG-RULE" = {
-                                description = "Egress to LBR NSG."
-                                stateless   = false
-                                protocol    = "TCP"
-                                dst         = "TT-VCN-1-LBR-NSG"
-                                dst_type    = "NETWORK_SECURITY_GROUP"
-                                dst_port_min = 22
-                                dst_port_max = 22
+                        egress_rules = merge(
+                            {   
+                                "EGRESS-TO-LBR-NSG-RULE" = {
+                                    description = "Egress to LBR NSG."
+                                    stateless   = false
+                                    protocol    = "TCP"
+                                    dst         = "TT-VCN-1-LBR-NSG"
+                                    dst_type    = "NETWORK_SECURITY_GROUP"
+                                    dst_port_min = 22
+                                    dst_port_max = 22
+                                }
                             },
-                            "EGRESS-TO-APP-NSG-RULE" = {
-                                description = "Egress to App NSG."
-                                stateless   = false
-                                protocol    = "TCP"
-                                dst         = "TT-VCN-1-APP-NSG"
-                                dst_type    = "NETWORK_SECURITY_GROUP"
-                                dst_port_min = 22
-                                dst_port_max = 22
+                            {   
+                                "EGRESS-TO-APP-NSG-RULE" = {
+                                    description = "Egress to App NSG."
+                                    stateless   = false
+                                    protocol    = "TCP"
+                                    dst         = "TT-VCN-1-APP-NSG"
+                                    dst_type    = "NETWORK_SECURITY_GROUP"
+                                    dst_port_min = 22
+                                    dst_port_max = 22
+                                }
                             },
-                            "EGRESS-TO-DB-NSG-RULE" = {
-                                description = "Egress to DB NSG."
-                                stateless   = false
-                                protocol    = "TCP"
-                                dst         = "TT-VCN-1-DB-NSG"
-                                dst_type    = "NETWORK_SECURITY_GROUP"
-                                dst_port_min = 22
-                                dst_port_max = 22
+                            {   
+                                "EGRESS-TO-DB-NSG-RULE" = {
+                                    description = "Egress to DB NSG."
+                                    stateless   = false
+                                    protocol    = "TCP"
+                                    dst         = "TT-VCN-1-DB-NSG"
+                                    dst_type    = "NETWORK_SECURITY_GROUP"
+                                    dst_port_min = 22
+                                    dst_port_max = 22
+                                }
                             },
-                            "EGRESS-TO-OSN-RULE" = {
-                                description = "Egress to Oracle Services Network."
-                                stateless   = false
-                                protocol    = "TCP"
-                                dst         = "all-services"
-                                dst_type    = "SERVICE_CIDR_BLOCK"
-                                dst_port_min = 443
-                                dst_port_max = 443
-                            }
-                        }
+                            {   
+                                "EGRESS-TO-OSN-RULE" = {
+                                    description = "Egress to Oracle Services Network."
+                                    stateless   = false
+                                    protocol    = "TCP"
+                                    dst         = "all-services"
+                                    dst_type    = "SERVICE_CIDR_BLOCK"
+                                    dst_port_min = 443
+                                    dst_port_max = 443
+                                }
+                            },
+                            {for cidr in var.tt_vcn1_bastion_subnet_allowed_cidrs : "EGRESS-TO-${cidr}-RULE" => {
+                                    description  = "Egress to ${cidr}."
+                                    stateless    = false
+                                    protocol     = "TCP"
+                                    dst          = cidr
+                                    dst_type     = "CIDR_BLOCK"
+                                } if var.tt_vcn1_bastion_is_access_via_public_endpoint == true
+                            } # Ingress rule only for jump hosts later deployed in the bastion public subnet.
+                        ) # inner merge function
                     }
                 } : {}    
             ) # merge function

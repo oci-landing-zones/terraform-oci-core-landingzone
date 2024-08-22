@@ -95,34 +95,56 @@ variable "notifications_advanced_options" {
   type    = bool
   default = false
 }
+
 # ------------------------------------------------------
-# ----- Cost Management - Budget
+# ----- Service Connector Hub
 # ------------------------------------------------------
-variable "budget_alert_threshold" {
-  type        = number
-  default     = 100
-  description = "The threshold for triggering the alert expressed as a percentage. 100% is the default."
-  validation {
-    condition     = var.budget_alert_threshold > 0 && var.budget_alert_threshold < 10000
-    error_message = "Validation failed for budget_alert_threshold: The threshold percentage should be greater than 0 and less than or equal to 10,000, with no leading zeros and a maximum of 2 decimal places."
-  }
-}
-variable "budget_amount" {
-  type        = number
-  default     = 1000
-  description = "The amount of the budget expressed as a whole number in the currency of the customer's rate card"
-}
-variable "create_budget" {
+variable "enable_service_connector" {
+  description = "Whether Service Connector Hub should be enabled. If true, a single Service Connector is managed for all services log sources and the designated target specified in 'service_connector_target_kind'. The Service Connector resource is created in INACTIVE state. To activate, set 'activate_service_connector' to true (costs may incur)."
   type        = bool
   default     = false
-  description = "Create a budget."
 }
-variable "budget_alert_email_endpoints" {
-  type        = list(string)
-  default     = []
-  description = "List of email addresses for all cost related notifications."
+variable "activate_service_connector" {
+  description = "Whether Service Connector Hub should be activated. If true, costs my incur due to usage of Object Storage bucket, Streaming or Function."
+  type        = bool
+  default     = false
+}
+variable "service_connector_target_kind" {
+  type        = string
+  default     = "objectstorage"
+  description = "Service Connector Hub target resource. Valid values are 'objectstorage', 'streaming', 'functions' or 'logginganalytics'. In case of 'objectstorage', a new bucket is created. In case of 'streaming', you can provide an existing stream ocid in 'existing_service_connector_target_stream_id' and that stream is used. If no ocid is provided, a new stream is created. In case of 'functions', you must provide the existing function ocid in 'existing_service_connector_target_function_id'. If case of 'logginganalytics', a log group for Logging Analytics service is created and the service is enabled if not already."
   validation {
-    condition     = length([for e in var.budget_alert_email_endpoints : e if length(regexall("^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$", e)) > 0]) == length(var.budget_alert_email_endpoints)
-    error_message = "Validation failed budget_alert_email_endpoints: invalid email address."
+    condition     = contains(["objectstorage", "streaming", "functions", "logginganalytics"], var.service_connector_target_kind)
+    error_message = "Validation failed for service_connector_target_kind: valid values are objectstorage, streaming, functions or logginganalytics."
   }
+}
+variable "onboard_logging_analytics" {
+  description = "Whether Logging Analytics will be enabled in the tenancy. If true, the Logging Analytics service will be enabled in the tenancy and a new Logging Analytics Namespace will be created. If false, the existing Logging Analytics namespace will be used. Only applicable if 'service_connector_target_kind' is set to 'logginganalytics'."
+  type        = bool
+  default     = false
+}
+variable "existing_service_connector_bucket_vault_compartment_id" {
+  description = "The OCID of an existing compartment for the vault with the key used in Service Connector target Object Storage bucket encryption. Only applicable if 'service_connector_target_kind' is set to 'objectstorage'."
+  type        = string
+  default     = null
+}
+variable "existing_service_connector_bucket_vault_id" {
+  description = "The OCID of an existing vault for the encryption key used in Service Connector target Object Storage bucket. Only applicable if 'service_connector_target_kind' is set to 'objectstorage'."
+  type        = string
+  default     = null
+}
+variable "existing_service_connector_bucket_key_id" {
+  description = "The OCID of an existing encryption key used in Service Connector target Object Storage bucket. Only applicable if 'service_connector_target_kind' is set to 'objectstorage'."
+  type        = string
+  default     = null
+}
+variable "existing_service_connector_target_stream_id" {
+  description = "The OCID of an existing stream to be used as the Service Connector target. Only applicable if 'service_connector_target_kind' is set to 'streaming'."
+  type        = string
+  default     = null
+}
+variable "existing_service_connector_target_function_id" {
+  description = "The OCID of an existing function to be used as the Service Connector target. Only applicable if 'service_connector_target_kind' is set to 'functions'."
+  type        = string
+  default     = null
 }

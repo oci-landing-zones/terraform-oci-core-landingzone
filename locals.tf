@@ -45,7 +45,10 @@ locals {
   display_outputs = true
 
   # Tags
-  landing_zone_tags = { "cis-landing-zone" : fileexists("${path.module}/../release.txt") ? "${var.service_label}-quickstart/${file("${path.module}/../release.txt")}" : "${var.service_label}-quickstart" }
+  lz_core_version      = fileexists("${path.module}/release.txt") ? "${file("${path.module}/release.txt")}" : "undefined"
+  lz_provenant_version = coalesce(var.lz_provenant_version, "undefined")
+  lz_provenant_info    = var.lz_provenant_prefix != "core" ? "/${var.lz_provenant_prefix}${local.lz_provenant_version}" : ""
+  landing_zone_tags    = {"oci-core-landing-zone" : "${var.service_label}/core/${local.lz_core_version}${local.lz_provenant_info}"}
 
   is_windows = substr(pathexpand("~"), 0, 1) == "/" ? false : true
 
