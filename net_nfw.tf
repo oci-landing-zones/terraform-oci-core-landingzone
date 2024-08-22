@@ -10,15 +10,6 @@ locals {
   current_image_name     = local.image_name_database[local.firewall_options[var.hub_vcn_deploy_firewall_option]][0]
   current_publisher_name = local.image_name_database[local.firewall_options[var.hub_vcn_deploy_firewall_option]][1]
   
-  cluster_instances_configuration = {
-    default_compartment_id = local.network_compartment_id
-    configurations = {
-      INSTANCE-CONFIG = {
-        name = "cluster-instance-configuration"
-        template_instance_id = "CLUSTER-NETWORK-INSTANCE" 
-      }
-    }
-  }
   instances_configuration = {
     default_compartment_id              = local.network_compartment_id
     default_ssh_public_key_path         = var.fw_instance_public_rsa_key
