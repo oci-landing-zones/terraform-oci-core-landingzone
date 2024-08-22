@@ -66,6 +66,10 @@ variable "fw_instance_boot_volume_size" {
   default = 60
 }
 
+variable "fw_instance_public_rsa_key" {
+  type    = string
+}
+
 variable "customize_hub_vcn_subnets" {
   type    = bool
   default = false

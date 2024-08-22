@@ -373,6 +373,7 @@ variableGroups:
       - "fw_instance_flex_shape_memory"
       - "fw_instance_flex_shape_cpu"
       - "fw_instance_boot_volume_size"
+      - "fw_instance_public_rsa_key"
       - "hub_vcn_north_south_entry_point_ocid"
       - "hub_vcn_east_west_entry_point_ocid"
       - "customize_hub_vcn_subnets"
@@ -3224,6 +3225,26 @@ variables:
             - eq:
               - ${hub_vcn_deploy_firewall_option}
               - "OCI Firewall Service"
+
+  fw_instance_public_rsa_key:
+    type: string
+    title: "Firewall Instance public RSA Key"
+    description: "Enter a Public RSA Key to Login to Compute Instance."
+    required: true
+    visible: 
+      and:
+        - customize_net
+        - or:
+          - eq:
+            - ${hub_deployment_option}
+            - "Yes, new VCN as hub with new DRG"
+          - eq:
+            - ${hub_deployment_option}
+            - "Yes, new VCN as hub with existing DRG"
+        - not: 
+          - eq:
+            - ${hub_vcn_deploy_firewall_option}
+            - "No"
 
   hub_vcn_north_south_entry_point_ocid:
     type: string
