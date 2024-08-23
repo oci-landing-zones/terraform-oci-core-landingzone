@@ -5,7 +5,7 @@ title: "OCI Core Landing Zone"
 stackDescription: "This stack deploys the OCI Core Landing Zone, a fully operational tenancy that combines the recommendations of CIS Foundations Benchmark for OCI with OCI architecture best practices. For details, please see https://github.com/oci-landing-zones/oci-core-landingzone."
 description: "This stack deploys the OCI Core Landing Zone, a fully operational tenancy that combines the recommendations of CIS Foundations Benchmark for OCI with OCI architecture best practices. For details, please see <a href=\"https://github.com/oci-landing-zones/oci-core-landingzone\">OCI Core Landing Zone</a>."
 schemaVersion: 1.1.0
-version: "3.0.0"
+version: "0.0.1"
 locale: "en"
 
 # URL of OCI Core Landing Zone logo icon used on Application Information tab.
@@ -20,6 +20,7 @@ variableGroups:
       - "extend_landing_zone_to_new_region"
       - "customize_iam"
       - "customize_net"
+      - "display_output"
 
   - title: "Compartments"
     variables:
@@ -522,6 +523,12 @@ variables:
     description: "Check to define networking resources. By default, the Landing Zone does NOT deploy any networks."
     default: false
     visible: true  
+
+  display_output:
+    type: boolean
+    title: "Display Output?"
+    description: "Upon Terraform apply, it displays a concise set of select resource outputs with their OCIDs and names. Uncheck to suppress output display."
+    visible: true   
 
   enclosing_compartment_options:
     type: enum
@@ -4017,3 +4024,64 @@ variables:
     required: false
     visible: create_budget
     description: "List of email addresses for budget alerts. (Type an email address and hit enter to enter multiple values)"
+
+outputs:
+  release:
+    type: string
+    title: OCI Core Landing Zone Release
+
+  region:
+    type: string
+    title: Region
+
+  service_label:
+    type: string
+    title: Service Label
+
+  cis_level:
+    type: string
+    title: CIS Profile Level  
+
+  compartments:
+    type: json
+    title: Compartments
+
+  vcns:
+    type: json
+    title: Virtual Cloud Networks (VCNs)
+
+  subnets:
+    type: json
+    title: VCN Subnets  
+
+  network_security_groups:
+    type: json
+    title: Network Security Groups (NSGs)  
+
+  dynamic_routing_gateways:
+    type: json
+    title: Dynamic Routing Gateways (DRGs)  
+
+  nlb_private_ip_addresses:
+    type: json
+    title: Network Load Balancers (NLB) Private IP Addresses     
+    
+outputGroups:
+  - title: Environment
+    outputs:
+      - ${release}
+      - ${region}
+      - ${service_label}
+      - ${cis_level}
+
+  - title: IAM
+    outputs:
+      - ${compartments}
+
+  - title: Networking
+    outputs:
+      - ${vcns}
+      - ${subnets}
+      - ${network_security_groups}
+      - ${dynamic_routing_gateways}
+      - ${nlb_private_ip_addresses}
