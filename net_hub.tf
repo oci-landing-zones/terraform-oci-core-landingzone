@@ -11,15 +11,6 @@ locals {
     "Yes, new VCN as hub with existing DRG" = 4
   }
 
-  firewall_options = {
-    "No"                                    = "NO",
-    "Palo Alto Networks VM-Series Firewall" = "PALOALTO",
-    "Fortinet FortiGate Firewall"           = "FORTINET",
-    "Check Point CloudGuard Firewall"       = "CHECKPOINT",
-    "Cisco Secure Firewall"                 = "CISCO",
-    "OCI Firewall Service"                  = "OCI"
-  }
-
   enable_hub_vcn_route = ((var.add_tt_vcn1 == true && var.tt_vcn1_attach_to_drg == true && length(var.tt_vcn1_routable_vcns) > 0) ||
                           (var.add_tt_vcn2 == true && var.tt_vcn2_attach_to_drg == true && length(var.tt_vcn2_routable_vcns) > 0) ||
                           (var.add_tt_vcn3 == true && var.tt_vcn3_attach_to_drg == true && length(var.tt_vcn3_routable_vcns) > 0) ||
