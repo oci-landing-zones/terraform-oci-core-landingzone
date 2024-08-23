@@ -18,7 +18,7 @@ module "lz_network" {
   network_configuration = local.lz_network_configuration
   network_dependency    = (local.hub_options[var.hub_deployment_option] == 2 || local.hub_options[var.hub_deployment_option] == 4) ? {
     "dynamic_routing_gateways" = {
-      "HUB-DRG" = {"id" : var.existing_drg_ocid}
+      "HUB-DRG" = {"id" : trimspace(var.existing_drg_ocid)}
     }
   } : null
 }

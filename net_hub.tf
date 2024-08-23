@@ -27,7 +27,7 @@ locals {
     (local.hub_options[var.hub_deployment_option] == 1 || local.hub_options[var.hub_deployment_option] == 3) ? "dynamic_routing_gateways" : "inject_into_existing_drgs" = {
       "HUB-DRG" = {
         display_name = (local.hub_options[var.hub_deployment_option] == 1 || local.hub_options[var.hub_deployment_option] == 3) ? "${var.service_label}-hub-drg" : null
-        drg_id       = (local.hub_options[var.hub_deployment_option] == 2 || local.hub_options[var.hub_deployment_option] == 4) ? var.existing_drg_ocid : null
+        drg_id       = (local.hub_options[var.hub_deployment_option] == 2 || local.hub_options[var.hub_deployment_option] == 4) ? trimspace(var.existing_drg_ocid) : null
 
         drg_attachments = merge(
           (local.hub_options[var.hub_deployment_option] == 3 || local.hub_options[var.hub_deployment_option] == 4) ? {
