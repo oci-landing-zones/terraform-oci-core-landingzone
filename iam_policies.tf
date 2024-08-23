@@ -25,6 +25,8 @@ locals {
   exainfra_admin_policy_name         = "${var.service_label}-exainfra-admin-policy"
   cost_admin_root_policy_name        = "${var.service_label}-cost-admin-root-policy"
   storage_admin_policy_name          = "${var.service_label}-storage-admin-policy"
+  access_governance_root_policy_name = "${var.service_label}-access-governance-root-policy"
+  net_fw_app_policy_name             = "${var.service_label}-net-firewall-app-policy"
 
   #iam_grants_condition = [for g in local.cred_admin_group_name : "target.group.name != ${g}"]
   cred_admin_groups                  = var.use_custom_id_domain == false ? [for g in local.cred_admin_group_name : substr(g, 0, 1) == "'" && substr(g, length(g) - 1, 1) == "'" ? "target.group.name != ${g}" : "target.group.name != '${g}'"] : []
@@ -367,6 +369,10 @@ locals {
 
   autonomous_database_grants = concat(local.autonomous_database_grants_on_database_cmp, local.autonomous_database_grants_on_security_cmp)
 
+  ## Network firewall appliance grant. Primarily for Fortinet's Fortigate
+  net_fw_app_grants_on_enclosing_cmp = local.firewall_options[var.hub_vcn_deploy_firewall_option] == "FORTINET" && local.net_fw_app_dynamic_group_name != null ? [
+    "allow dynamic-group ${local.net_fw_app_dynamic_group_name} to read all-resources in ${local.policy_scope}"] : []
+
   ## Storage admin grants
   storage_admin_grants_on_app_cmp = local.enable_app_compartment ? [
     # Grants in appdev compartment
@@ -486,7 +492,7 @@ locals {
       defined_tags   = local.policies_defined_tags
       freeform_tags  = local.policies_freeform_tags
       statements     = local.storage_admin_grants
-    } : null,
+    } : null
   }
 
   exainfra_policy = local.enable_exainfra_compartment ? {
@@ -498,9 +504,20 @@ locals {
       freeform_tags  = local.policies_freeform_tags
       statements     = local.exainfra_admin_grants
     } : null
+  } : {}  
+
+  net_fw_app_policy = local.firewall_options[var.hub_vcn_deploy_firewall_option] == "FORTINET" ? {
+    (local.net_fw_app_policy_name) = length(local.net_fw_app_grants_on_enclosing_cmp) > 0 ? {
+      compartment_id = local.enclosing_compartment_id
+      name           = local.net_fw_app_policy_name
+      description    = "Landing Zone policy for ${join(",", local.net_fw_app_dynamic_group_name)} group to read compartment resources (policy for network firewall appliances)."
+      defined_tags   = local.policies_defined_tags
+      freeform_tags  = local.policies_freeform_tags
+      statements     = local.net_fw_app_grants_on_enclosing_cmp
+    } : null 
   } : {}
 
-  policies = merge(local.default_policies, local.exainfra_policy)
+  policies = merge(local.default_policies, local.exainfra_policy, local.net_fw_app_policy)
 
   #-- Basic grants on Root compartment
   basic_grants_default_grantees = concat(local.security_admin_group_name, local.network_admin_group_name, local.appdev_admin_group_name, local.database_admin_group_name, local.storage_admin_group_name)
@@ -594,6 +611,14 @@ locals {
       defined_tags   = local.policies_defined_tags
       freeform_tags  = local.policies_freeform_tags
       statements     = local.cost_root_permissions
+    },
+    (local.access_governance_root_policy_name) = {
+      compartment_id = var.tenancy_ocid
+      name           = local.access_governance_root_policy_name
+      description    = "Landing Zone root compartment policy for ${join(",", local.ag_admin_group_name)} group."
+      defined_tags   = local.policies_defined_tags
+      freeform_tags  = local.policies_freeform_tags
+      statements     = local.access_governance_group_grants_on_root_cmp
     }
   }
 }
