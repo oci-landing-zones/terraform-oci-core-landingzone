@@ -21,7 +21,7 @@ variable "budget_amount" {
 variable "create_budget" {
   type        = bool
   default     = false
-  description = "Create a budget."
+  description = "Whether a budget is deployed."
 }
 variable "budget_alert_email_endpoints" {
   type        = list(string)
