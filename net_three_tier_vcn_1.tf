@@ -779,7 +779,7 @@ locals {
                 description = "Egress to ${coalesce(var.exa_vcn1_client_subnet_name, "${var.service_label}-exadata-vcn-1-client-subnet")}."
                 stateless   = false
                 protocol    = "TCP"
-                dst         = ccoalesce(var.exa_vcn1_client_subnet_cidr, cidrsubnet(var.exa_vcn1_cidrs[0], 4, 0))
+                dst         = coalesce(var.exa_vcn1_client_subnet_cidr, cidrsubnet(var.exa_vcn1_cidrs[0], 4, 0))
                 dst_type    = "CIDR_BLOCK"
                 dst_port_min = 1521
                 dst_port_max = 1522
