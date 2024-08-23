@@ -18,6 +18,7 @@ variable "existing_enclosing_compartment_ocid" {
 variable "deploy_exainfra_cmp" {
   type    = bool
   default = false
+  description = "Whether a separate compartment for Exadata Cloud Infrastructure is deployed."
 }
 
 # ------------------------------------------------------

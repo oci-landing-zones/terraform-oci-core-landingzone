@@ -2,17 +2,29 @@
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 
 locals {
-  image_name_database = {
-    "PALOALTO"   = ["Palo Alto Networks VM-Series Next Generation Firewall", "Palo Alto Networks"]
-    "FORTINET"   = ["FortiGate Next-Gen Firewall (2 cores)", "Fortinet, Inc." ]
+
+  firewall_options = {
+    "No"                                    = "NO",
+    "Palo Alto Networks VM-Series Firewall" = "PALOALTO",
+    "Fortinet FortiGate Firewall"           = "FORTINET",
+    "Check Point CloudGuard Firewall"       = "CHECKPOINT", # Not available
+    "Cisco Secure Firewall"                 = "CISCO", # Not available
+    "OCI Firewall Service"                  = "OCI" # Not Available
   }
 
-  current_image_name     = local.image_name_database[local.firewall_options[var.hub_vcn_deploy_firewall_option]][0]
-  current_publisher_name = local.image_name_database[local.firewall_options[var.hub_vcn_deploy_firewall_option]][1]
+  image_name_database = {
+    "PALOALTO"   = ["Palo Alto Networks VM-Series Next Generation Firewall", "Palo Alto Networks"]
+    "FORTINET"   = ["FortiGate Next-Gen Firewall (2 cores)", "Fortinet, Inc." ] # Not being used, as we're using the OCID in fortigate_image_ocid
+  }
+
+  fortigate_image_ocid = "ocid1.image.oc1..aaaaaaaaq57pywudjr5yogjtl6qf3zs3yrwv66b5ooeiqykjgnneuerhfnia"
+
+  # current_image_name     = local.image_name_database[local.firewall_options[var.hub_vcn_deploy_firewall_option]][0]
+  # current_publisher_name = local.image_name_database[local.firewall_options[var.hub_vcn_deploy_firewall_option]][1]
   
-  instances_configuration = {
-    default_compartment_id              = local.network_compartment_id
-    default_ssh_public_key_path         = var.fw_instance_public_rsa_key
+  instances_configuration = local.firewall_options[var.hub_vcn_deploy_firewall_option] != "NO" ? {
+    default_compartment_id      = local.network_compartment_id
+    default_ssh_public_key_path = var.fw_instance_public_rsa_key
     instances = {
       FW-1 = {
         name = format("%s-%s",var.fw_instance_name_prefix,"1")
@@ -22,10 +34,10 @@ locals {
           ocpus  = var.fw_instance_flex_shape_cpu
         }
         image = local.firewall_options[var.hub_vcn_deploy_firewall_option] == "PALOALTO" ? {
-          name           = local.current_image_name
-          publisher_name = local.current_publisher_name
+          name           = local.image_name_database[local.firewall_options[var.hub_vcn_deploy_firewall_option]][0]
+          publisher_name = local.image_name_database[local.firewall_options[var.hub_vcn_deploy_firewall_option]][1]
         } : {
-          id = "ocid1.image.oc1..aaaaaaaaq57pywudjr5yogjtl6qf3zs3yrwv66b5ooeiqykjgnneuerhfnia"
+          id = local.fortigate_image_ocid
         }
         placement = {
           availability_domain = 1
@@ -70,10 +82,10 @@ locals {
           ocpus  = var.fw_instance_flex_shape_cpu
         }
         image = local.firewall_options[var.hub_vcn_deploy_firewall_option] == "PALOALTO" ? {
-          name           = local.current_image_name
-          publisher_name = local.current_publisher_name
+          name           = local.image_name_database[local.firewall_options[var.hub_vcn_deploy_firewall_option]][0]
+          publisher_name = local.image_name_database[local.firewall_options[var.hub_vcn_deploy_firewall_option]][1]
         } : {
-          id = "ocid1.image.oc1..aaaaaaaaq57pywudjr5yogjtl6qf3zs3yrwv66b5ooeiqykjgnneuerhfnia"
+          id = local.fortigate_image_ocid
         }
         placement = {
           availability_domain = 2
@@ -111,8 +123,8 @@ locals {
         }
       }
     }
-  }
-  nlb_configuration = {
+  } : null
+  nlb_configuration = local.firewall_options[var.hub_vcn_deploy_firewall_option] != "NO" ? {
       default_compartment_id = local.network_compartment_id
       nlbs = {
         INDOOR_NLB = {
@@ -135,12 +147,12 @@ locals {
                   BACKENDS-1 = {
                     name       = "backend-1"
                     port       = 80
-                    ip_address = module.network_firewall_compute_instance[0].secondary_vnics["FW-1.INDOOR"].private_ip_address
+                    ip_address = module.lz_firewall_appliance[0].secondary_vnics["FW-1.INDOOR"].private_ip_address
                   }
                   BACKENDS-2 = {
                     name       = "backend-2"
                     port       = 80
-                    ip_address = module.network_firewall_compute_instance[0].secondary_vnics["FW-2.INDOOR"].private_ip_address
+                    ip_address = module.lz_firewall_appliance[0].secondary_vnics["FW-2.INDOOR"].private_ip_address
                   }
                 }
               }
@@ -167,12 +179,12 @@ locals {
                 BACKEND-1 = {
                   name = "backend-1"
                   port = 80
-                  ip_address = module.network_firewall_compute_instance[0].secondary_vnics["FW-1.OUTDOOR"].private_ip_address
+                  ip_address = module.lz_firewall_appliance[0].secondary_vnics["FW-1.OUTDOOR"].private_ip_address
                 },
                 BACKEND-2 = {
                   name = "backend-2"
                   port = 80
-                  ip_address = module.network_firewall_compute_instance[0].secondary_vnics["FW-2.OUTDOOR"].private_ip_address
+                  ip_address = module.lz_firewall_appliance[0].secondary_vnics["FW-2.OUTDOOR"].private_ip_address
                 }
               }
             }
@@ -180,13 +192,12 @@ locals {
         }
       }
     }
-  }  
+  } : null
 }  
 
-module "network_firewall_compute_instance" {
-  count                   = var.hub_vcn_deploy_firewall_option != "No" ? 1 : 0
+module "lz_firewall_appliance" {
+  count  = local.firewall_options[var.hub_vcn_deploy_firewall_option] != "NO" ? 1 : 0
   source = "github.com/oci-landing-zones/terraform-oci-modules-workloads//cis-compute-storage?ref=release-0.1.6"
-
   instances_configuration = local.instances_configuration
   providers = {
     oci                                  = oci.home
@@ -194,8 +205,9 @@ module "network_firewall_compute_instance" {
   }
 }
 
-module "networking_lb" {
-  source                  = "github.com/oracle-quickstart/terraform-oci-cis-landing-zone-networking//modules/nlb?ref=release-0.6.9"
-  nlb_configuration       = local.nlb_configuration
+module "lz_nlb" {
+  count             = local.firewall_options[var.hub_vcn_deploy_firewall_option] != "NO" ? 1 : 0
+  source            = "github.com/oracle-quickstart/terraform-oci-cis-landing-zone-networking//modules/nlb?ref=release-0.6.9"
+  nlb_configuration = local.nlb_configuration
 }
 
