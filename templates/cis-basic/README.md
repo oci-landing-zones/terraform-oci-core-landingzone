@@ -8,11 +8,16 @@ This template can be deployed using OCI Resource Manager Service (RMS) or Terraf
 
 ## OCI RMS Deployment
 
-By clicking the button below, you are redirected to an OCI RMS Stack with variables pre-assigned for deployment. Provide real email addresses *Network Admin Email Endpoints* and *Security Admin Email Endpoints* fields and complete the stack creation.
-
-[![Deploy_To_OCI](../../images/DeployToOCI.svg)](https://cloud.oracle.com/resourcemanager/stacks/create?zipUrl=https://github.com/oci-landing-zones/oci-core-landingzone/archive/refs/heads/main.zip&zipUrlVariables={"service_label":"cisbasic","network_admin_email_endpoints":"email.address@example.com","security_admin_email_endpoints":"email.address@example.com"})
+By clicking the button below, you are redirected to an OCI RMS Stack with variables pre-assigned for deployment. 
 
 [![Deploy_To_OCI](../../images/DeployToOCI.svg)](https://cloud.oracle.com/resourcemanager/stacks/create?zipUrl=https://github.com/andrecorreaneto/v3testing/archive/refs/heads/misc.zip&zipUrlVariables={"service_label":"cisbasic","network_admin_email_endpoints":"email.address@example.com","security_admin_email_endpoints":"email.address@example.com"})
+
+You are required to review/adjust the following variable settings:
+ - Make sure to pick an OCI region for deployment.
+ - Provide real email addresses for *Network Admin Email Endpoints* and *Security Admin Email Endpoints* fields. 
+ - Uncheck *Enable Cloud Guard Service* option in case it is already enabled in your tenancy.
+
+Everything else is optional.    
 
 With the stack created, perform a Plan, followed by an Apply using RMS UI.
 
