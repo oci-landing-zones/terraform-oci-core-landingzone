@@ -510,7 +510,7 @@ locals {
     (local.net_fw_app_policy_name) = length(local.net_fw_app_grants_on_enclosing_cmp) > 0 ? {
       compartment_id = local.enclosing_compartment_id
       name           = local.net_fw_app_policy_name
-      description    = "Landing Zone policy for ${join(",", local.net_fw_app_dynamic_group_name)} group to read compartment resources (policy for network firewall appliances)."
+      description    = "Landing Zone policy for ${local.net_fw_app_dynamic_group_name} group to read compartment resources (policy for network firewall appliances)."
       defined_tags   = local.policies_defined_tags
       freeform_tags  = local.policies_freeform_tags
       statements     = local.net_fw_app_grants_on_enclosing_cmp
