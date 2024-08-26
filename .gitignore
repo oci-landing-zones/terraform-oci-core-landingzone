@@ -10,5 +10,4 @@
 **/vars_*.tfvars
 test/**
 **/creds/**
-**/tfvars/**
-**/examples/**/*.tf
+**/templates/**/*.tf
