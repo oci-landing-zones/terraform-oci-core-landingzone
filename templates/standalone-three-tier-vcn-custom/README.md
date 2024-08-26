@@ -1,6 +1,6 @@
 # CIS Landing Zone With Standalone Custom VCN Template
 
-This example shows how to deploy a CIS compliant landing zone using [OCI Core Landing Zone](../../) configuration. 
+This template shows how to deploy a CIS compliant landing zone using [OCI Core Landing Zone](../../) configuration. 
 
 In this template, a single custom three-tier VCN is deployed. The following VCN parameters are customized:
   - VCN name, CIDR blocks and DNS name.

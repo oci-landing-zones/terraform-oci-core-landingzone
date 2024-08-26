@@ -1,6 +1,6 @@
 # CIS Landing Zone With Standalone Default VCN Template
 
-This example shows how to deploy a CIS compliant landing zone using [OCI Core Landing Zone](../../) configuration. 
+This template shows how to deploy a CIS compliant landing zone using [OCI Core Landing Zone](../../) configuration. 
 
 In this template, a single default three-tier VCN is deployed. Additionally, the following services are enabled:
   - [Connector Hub](https://docs.oracle.com/en-us/iaas/Content/connector-hub/overview.htm), for logging consolidation. Collected logs are sent to an OCI stream.
