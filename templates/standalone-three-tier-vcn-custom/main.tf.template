@@ -3,7 +3,7 @@
 
 # ----------------------------------------------------------------------------------------
 # -- This configuration deploys a CIS compliant landing zone with custom VCN settings.
-# -- See other examples for other CIS compliant landing zones with alternative settings.
+# -- See other templates for other CIS compliant landing zones with alternative settings.
 # -- 1. Rename this file to main.tf. 
 # -- 2. Provide/review the variable assignments below.
 # -- 3. In this folder, execute the typical Terraform workflow:
