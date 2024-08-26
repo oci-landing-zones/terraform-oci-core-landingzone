@@ -1,14 +1,16 @@
 # Copyright (c) 2024 Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 
-# ------------------------------------------------------------------
-# ----- 1. Rename this file to main.tf. 
-# ----- 2. Provide/review the variable assignment below.
-# ----- 3. In this folder, execute the typical Terraform workflow:
-# ----------- $ terraform init
-# ----------- $ terraform plan
-# ----------- $ terraform apply
-# ------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------
+# -- This configuration deploys a CIS compliant landing zone with custom VCN settings.
+# -- See other examples for other CIS compliant landing zones with alternative settings.
+# -- 1. Rename this file to main.tf. 
+# -- 2. Provide/review the variable assignments below.
+# -- 3. In this folder, execute the typical Terraform workflow:
+# ----- $ terraform init
+# ----- $ terraform plan
+# ----- $ terraform apply
+# ----------------------------------------------------------------------------------------
 
 module "core_lz" {
     source = "../../"
@@ -21,7 +23,7 @@ module "core_lz" {
     private_key_path     = "path-to-pem-file-with-private-key"               # Replace with user private key local path.
     private_key_password = ""                                                # Replace with private key password, if any.
     region               = "us-phoenix-1" # Replace with region name.
-    service_label        = "core2"        # Prefix prepended to deployed resource names. 
+    service_label        = "custvcn"        # Prefix prepended to deployed resource names. 
 
     # ------------------------------------------------------
     # ----- Networking
@@ -55,8 +57,8 @@ module "core_lz" {
     # ------------------------------------------------------
     # ----- Notifications
     # ------------------------------------------------------
-    network_admin_email_endpoints  = ["email.address@example.com"] # for network-related changes. Replace with a real email address.
-    security_admin_email_endpoints = ["email.address@example.com"] # for security-related changes. Replace with a real email address.
+    network_admin_email_endpoints  = ["email.address@example.com"] # for network-related events. Replace with a real email address.
+    security_admin_email_endpoints = ["email.address@example.com"] # for security-related events. Replace with a real email address.
 
     # ------------------------------------------------------
     # ----- Logging
