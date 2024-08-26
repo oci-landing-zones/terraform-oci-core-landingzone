@@ -1,6 +1,6 @@
-# CIS Landing Zone Basic Template
+# CIS Landing Zone With Standalone Default VCN Template
 
-This example shows how to deploy the most basic CIS compliant landing zone using [OCI Core Landing Zone](../../) configuration. 
+This example shows how to deploy a CIS compliant landing zone using [OCI Core Landing Zone](../../) configuration. 
 
 In this template, a single default three-tier VCN is deployed. Additionally, the following services are enabled:
   - [Connector Hub](https://docs.oracle.com/en-us/iaas/Content/connector-hub/overview.htm), for logging consolidation. Collected logs are sent to an OCI stream.
@@ -16,7 +16,7 @@ This template can be deployed using OCI Resource Manager Service (RMS) or Terraf
 
 By clicking the button below, you are redirected to an OCI RMS Stack with variables pre-assigned for deployment. 
 
-[![Deploy_To_OCI](../../images/DeployToOCI.svg)](https://cloud.oracle.com/resourcemanager/stacks/create?zipUrl=https://github.com/andrecorreaneto/v3testing/archive/refs/heads/misc.zip&zipUrlVariables={"service_label":"cisbasic","network_admin_email_endpoints":"email.address@example.com","security_admin_email_endpoints":"email.address@example.com","add_tt_vcn_1":true,"enable_service_connector":true,"activate_service_connector":true,"service_connector_target_kind":"streaming","enable_security_zones":true,"vss_create":true,"create_budget":true})
+[![Deploy_To_OCI](../../images/DeployToOCI.svg)](https://cloud.oracle.com/resourcemanager/stacks/create?zipUrl=https://github.com/andrecorreaneto/v3testing/archive/refs/heads/misc.zip&zipUrlVariables={"service_label":"defvcn","network_admin_email_endpoints":"email.address@example.com","security_admin_email_endpoints":"email.address@example.com","add_tt_vcn_1":true,"enable_service_connector":true,"activate_service_connector":true,"service_connector_target_kind":"streaming","enable_security_zones":true,"vss_create":true,"create_budget":true})
 
 You are required to review/adjust the following variable settings:
  - Make sure to pick an OCI region for deployment.
