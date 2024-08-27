@@ -3235,9 +3235,9 @@ variables:
 
   fw_instance_public_rsa_key:
     type: string
-    title: "Firewall Instance public RSA Key"
-    description: "Enter a Public RSA Key to Login to Compute Instance."
-    required: true
+    title: "Firewall Instance public SSH Key"
+    description: "Enter a Public SSH Key to Login to Compute Instance."
+    required: false
     visible: 
       and:
         - customize_net
