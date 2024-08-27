@@ -207,7 +207,7 @@ module "lz_firewall_appliance" {
 
 module "lz_nlb" {
   count             = local.firewall_options[var.hub_vcn_deploy_firewall_option] != "NO" ? 1 : 0
-  source            = "github.com/oracle-quickstart/terraform-oci-cis-landing-zone-networking//modules/nlb?ref=release-0.6.9"
+  source            = "github.com/oci-landing-zones/terraform-oci-modules-networking//modules/nlb?ref=release-0.6.9"
   nlb_configuration = local.nlb_configuration
 }
 
