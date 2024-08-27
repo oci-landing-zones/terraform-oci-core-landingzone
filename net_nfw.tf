@@ -50,21 +50,21 @@ locals {
         }
         networking = {
           hostname                = "fw-1"
-          subnet_id               = module.lz_network.provisioned_networking_resources.subnets["MGMT-SUBNET"].id 
-          network_security_groups = [ module.lz_network.flat_map_of_provisioned_networking_resources["HUB-VCN-MGMT-NSG"].id]
+          subnet_id               = module.lz_firewall_appliance.provisioned_networking_resources.subnets["MGMT-SUBNET"].id 
+          network_security_groups = [ module.lz_firewall_appliance.flat_map_of_provisioned_networking_resources["HUB-VCN-MGMT-NSG"].id]
           secondary_vnics = {
             INDOOR = {
               display_name            = "fw-1-indoor"
               hostname                = "fw-1-indoor"
-              subnet_id               = module.lz_network.provisioned_networking_resources.subnets["INDOOR-SUBNET"].id 
-              network_security_groups = [ module.lz_network.flat_map_of_provisioned_networking_resources["HUB-VCN-INDOOR-NLB-NSG"].id]
+              subnet_id               = module.lz_firewall_appliance.provisioned_networking_resources.subnets["INDOOR-SUBNET"].id 
+              network_security_groups = [ module.lz_firewall_appliance.flat_map_of_provisioned_networking_resources["HUB-VCN-INDOOR-NLB-NSG"].id]
               skip_source_dest_check  = true
             }
             OUTDOOR = {
               display_name            = "fw-1-outdoor"
               hostname                = "fw-1-outdoor"
-              subnet_id               = module.lz_network.provisioned_networking_resources.subnets["OUTDOOR-SUBNET"].id 
-              network_security_groups = [ module.lz_network.flat_map_of_provisioned_networking_resources["HUB-VCN-OUTDOOR-NLB-NSG"].id ]
+              subnet_id               = module.lz_firewall_appliance.provisioned_networking_resources.subnets["OUTDOOR-SUBNET"].id 
+              network_security_groups = [ module.lz_firewall_appliance.flat_map_of_provisioned_networking_resources["HUB-VCN-OUTDOOR-NLB-NSG"].id ]
               skip_source_dest_check  = true
             }
           }
@@ -98,21 +98,21 @@ locals {
         }
         networking = {
           hostname                = "fw-2"
-          subnet_id               = module.lz_network.provisioned_networking_resources.subnets["MGMT-SUBNET"].id 
-          network_security_groups = [module.lz_network.flat_map_of_provisioned_networking_resources["HUB-VCN-MGMT-NSG"].id ]
+          subnet_id               = module.lz_firewall_appliance.provisioned_networking_resources.subnets["MGMT-SUBNET"].id 
+          network_security_groups = [module.lz_firewall_appliance.flat_map_of_provisioned_networking_resources["HUB-VCN-MGMT-NSG"].id ]
           secondary_vnics = {
             INDOOR = {
               display_name            = "fw-2-indoor"
               hostname                = "fw-2-indoor"
-              subnet_id               = module.lz_network.provisioned_networking_resources.subnets["INDOOR-SUBNET"].id 
-              network_security_groups = [ module.lz_network.flat_map_of_provisioned_networking_resources["HUB-VCN-INDOOR-NLB-NSG"].id ]
+              subnet_id               = module.lz_firewall_appliance.provisioned_networking_resources.subnets["INDOOR-SUBNET"].id 
+              network_security_groups = [ module.lz_firewall_appliance.flat_map_of_provisioned_networking_resources["HUB-VCN-INDOOR-NLB-NSG"].id ]
               skip_source_dest_check  = true
             }
             OUTDOOR = {
               display_name            = "fw-2-outdoor"
               hostname                = "fw-2-outdoor"
-              subnet_id               = module.lz_network.provisioned_networking_resources.subnets["OUTDOOR-SUBNET"].id 
-              network_security_groups = [ module.lz_network.flat_map_of_provisioned_networking_resources["HUB-VCN-OUTDOOR-NLB-NSG"].id ]
+              subnet_id               = module.lz_firewall_appliance.provisioned_networking_resources.subnets["OUTDOOR-SUBNET"].id 
+              network_security_groups = [ module.lz_firewall_appliance.flat_map_of_provisioned_networking_resources["HUB-VCN-OUTDOOR-NLB-NSG"].id ]
               skip_source_dest_check  = true
             }
           }
@@ -130,7 +130,7 @@ locals {
         INDOOR_NLB = {
           display_name = "isv-indoor-nlb"
           is_private   = true
-          subnet_id    = module.lz_network.provisioned_networking_resources.subnets["INDOOR-SUBNET"].id
+          subnet_id    = module.lz_firewall_appliance.provisioned_networking_resources.subnets["INDOOR-SUBNET"].id
           listeners = {
             LISTENER-1 = {
               port     = 80
@@ -162,7 +162,7 @@ locals {
         OUTDOOR-NLB = {
           display_name = "isv-outdoor-nlb"
           is_private = true
-          subnet_id = module.lz_network.provisioned_networking_resources.subnets["OUTDOOR-SUBNET"].id
+          subnet_id = module.lz_firewall_appliance.provisioned_networking_resources.subnets["OUTDOOR-SUBNET"].id
           listeners = {
             LISTENER-1 = {
               port = 80
