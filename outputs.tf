@@ -38,5 +38,5 @@ output "dynamic_routing_gateways" {
 }
 
 output "nlb_private_ip_addresses" {
-    value = var.display_output && length(module.lz_nlb) > 0 ? {for k, v in module.lz_nlb[0].nlbs_private_ips : k => {id:v.id}} : null
+    value = var.display_output && length(module.lz_nlb) > 0 ? merge({for k, v in module.lz_nlb[0].nlbs_primary_private_ips : k => {id:v.id}},{for k, v in module.lz_nlb[0].nlbs_public_ips : k => {id:v.private_ip_id}}) : null
 }
