@@ -471,8 +471,8 @@ locals {
         } : {},
         ## Route to TT-VCN-2
         (var.add_tt_vcn1 == true && var.tt_vcn1_attach_to_drg == true && var.add_tt_vcn2 == true && var.tt_vcn2_attach_to_drg == true) &&
-        (local.hub_options[var.hub_deployment_option] == 3 || local.hub_options[var.hub_deployment_option] == 4) ||
-        ((local.hub_options[var.hub_deployment_option] == 1 || local.hub_options[var.hub_deployment_option] == 2) && (length(var.tt_vcn1_routable_vcns) == 0 || contains(var.tt_vcn1_routable_vcns,"TT-VCN-2"))) ? { 
+        ((local.hub_options[var.hub_deployment_option] == 3 || local.hub_options[var.hub_deployment_option] == 4) ||
+        ((local.hub_options[var.hub_deployment_option] == 1 || local.hub_options[var.hub_deployment_option] == 2) && (length(var.tt_vcn1_routable_vcns) == 0 || contains(var.tt_vcn1_routable_vcns,"TT-VCN-2")))) ? { 
             for cidr in var.tt_vcn2_cidrs : "TT-VCN-2-${replace(replace(cidr,".",""),"/","")}-RULE" => { 
                 network_entity_key = "HUB-DRG"
                 description        = "To DRG."
@@ -482,8 +482,8 @@ locals {
         } : {},
         ## Route to TT-VCN-3                    
         (var.add_tt_vcn1 == true && var.tt_vcn1_attach_to_drg == true && var.add_tt_vcn3 == true && var.tt_vcn3_attach_to_drg == true) &&
-        (local.hub_options[var.hub_deployment_option] == 3 || local.hub_options[var.hub_deployment_option] == 4) ||
-        ((local.hub_options[var.hub_deployment_option] == 1 || local.hub_options[var.hub_deployment_option] == 2) && (length(var.tt_vcn1_routable_vcns) == 0 || contains(var.tt_vcn1_routable_vcns,"TT-VCN-3"))) ? {
+        ((local.hub_options[var.hub_deployment_option] == 3 || local.hub_options[var.hub_deployment_option] == 4) ||
+        ((local.hub_options[var.hub_deployment_option] == 1 || local.hub_options[var.hub_deployment_option] == 2) && (length(var.tt_vcn1_routable_vcns) == 0 || contains(var.tt_vcn1_routable_vcns,"TT-VCN-3")))) ? {
             for cidr in var.tt_vcn3_cidrs : "TT-VCN-3-${replace(replace(cidr,".",""),"/","")}-RULE" => {
                 network_entity_key = "HUB-DRG"
                 description        = "To DRG."
@@ -493,8 +493,8 @@ locals {
         } : {},
         ## Route to OKE-VCN-1
         (var.add_tt_vcn1 == true && var.tt_vcn1_attach_to_drg == true && var.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true) &&
-        (local.hub_options[var.hub_deployment_option] == 3 || local.hub_options[var.hub_deployment_option] == 4) ||
-        ((local.hub_options[var.hub_deployment_option] == 1 || local.hub_options[var.hub_deployment_option] == 2) && (length(var.tt_vcn1_routable_vcns) == 0 || contains(var.tt_vcn1_routable_vcns,"OKE-VCN-1"))) ? {
+        ((local.hub_options[var.hub_deployment_option] == 3 || local.hub_options[var.hub_deployment_option] == 4) ||
+        ((local.hub_options[var.hub_deployment_option] == 1 || local.hub_options[var.hub_deployment_option] == 2) && (length(var.tt_vcn1_routable_vcns) == 0 || contains(var.tt_vcn1_routable_vcns,"OKE-VCN-1")))) ? {
             for cidr in var.oke_vcn1_cidrs : "OKE-VCN-1-${replace(replace(cidr,".",""),"/","")}-RULE" => { 
                 network_entity_key = "HUB-DRG"
                 description        = "To DRG."
@@ -504,8 +504,8 @@ locals {
         } : {},
         ## Route to OKE-VCN-2
         (var.add_tt_vcn1 == true && var.tt_vcn1_attach_to_drg == true && var.add_oke_vcn2 == true && var.oke_vcn2_attach_to_drg == true) &&
-        (local.hub_options[var.hub_deployment_option] == 3 || local.hub_options[var.hub_deployment_option] == 4) ||
-        ((local.hub_options[var.hub_deployment_option] == 1 || local.hub_options[var.hub_deployment_option] == 2) && (length(var.tt_vcn1_routable_vcns) == 0 || contains(var.tt_vcn1_routable_vcns,"OKE-VCN-2"))) ? {
+        ((local.hub_options[var.hub_deployment_option] == 3 || local.hub_options[var.hub_deployment_option] == 4) ||
+        ((local.hub_options[var.hub_deployment_option] == 1 || local.hub_options[var.hub_deployment_option] == 2) && (length(var.tt_vcn1_routable_vcns) == 0 || contains(var.tt_vcn1_routable_vcns,"OKE-VCN-2")))) ? {
             for cidr in var.oke_vcn2_cidrs : "OKE-VCN-2-${replace(replace(cidr,".",""),"/","")}-RULE" => {
                 network_entity_key = "HUB-DRG"
                 description        = "To DRG."
@@ -515,8 +515,8 @@ locals {
         } : {},
         ## Route to OKE-VCN-3
         (var.add_tt_vcn1 == true && var.tt_vcn1_attach_to_drg == true && var.add_oke_vcn3 == true && var.oke_vcn3_attach_to_drg == true) &&
-        (local.hub_options[var.hub_deployment_option] == 3 || local.hub_options[var.hub_deployment_option] == 4) ||
-        ((local.hub_options[var.hub_deployment_option] == 1 || local.hub_options[var.hub_deployment_option] == 2) && (length(var.tt_vcn1_routable_vcns) == 0 || contains(var.tt_vcn1_routable_vcns,"OKE-VCN-3"))) ? {
+        ((local.hub_options[var.hub_deployment_option] == 3 || local.hub_options[var.hub_deployment_option] == 4) ||
+        ((local.hub_options[var.hub_deployment_option] == 1 || local.hub_options[var.hub_deployment_option] == 2) && (length(var.tt_vcn1_routable_vcns) == 0 || contains(var.tt_vcn1_routable_vcns,"OKE-VCN-3")))) ? {
             for cidr in var.oke_vcn3_cidrs : "OKE-VCN-3-${replace(replace(cidr,".",""),"/","")}-RULE" => {
                 network_entity_key = "HUB-DRG"
                 description        = "To DRG."
@@ -526,8 +526,8 @@ locals {
         } : {},
         ## Route to EXA-VCN-1
         (var.add_tt_vcn1 == true && var.tt_vcn1_attach_to_drg == true && var.add_exa_vcn1 == true && var.exa_vcn1_attach_to_drg == true) &&
-        (local.hub_options[var.hub_deployment_option] == 3 || local.hub_options[var.hub_deployment_option] == 4) ||
-        ((local.hub_options[var.hub_deployment_option] == 1 || local.hub_options[var.hub_deployment_option] == 2) && (length(var.tt_vcn1_routable_vcns) == 0 || contains(var.tt_vcn1_routable_vcns,"EXA-VCN-1"))) ? {
+        ((local.hub_options[var.hub_deployment_option] == 3 || local.hub_options[var.hub_deployment_option] == 4) ||
+        ((local.hub_options[var.hub_deployment_option] == 1 || local.hub_options[var.hub_deployment_option] == 2) && (length(var.tt_vcn1_routable_vcns) == 0 || contains(var.tt_vcn1_routable_vcns,"EXA-VCN-1")))) ? {
             for cidr in var.exa_vcn1_cidrs : "EXA-VCN-1-${replace(replace(cidr,".",""),"/","")}-RULE" => {
                 network_entity_key = "HUB-DRG"
                 description        = "To DRG."
@@ -537,8 +537,8 @@ locals {
         } : {},
         ## Route to EXA-VCN-2
         (var.add_tt_vcn1 == true && var.tt_vcn1_attach_to_drg == true && var.add_exa_vcn2 == true && var.exa_vcn2_attach_to_drg == true) &&
-        (local.hub_options[var.hub_deployment_option] == 3 || local.hub_options[var.hub_deployment_option] == 4) ||
-        ((local.hub_options[var.hub_deployment_option] == 1 || local.hub_options[var.hub_deployment_option] == 2) && (length(var.tt_vcn1_routable_vcns) == 0 || contains(var.tt_vcn1_routable_vcns,"EXA-VCN-2"))) ? {
+        ((local.hub_options[var.hub_deployment_option] == 3 || local.hub_options[var.hub_deployment_option] == 4) ||
+        ((local.hub_options[var.hub_deployment_option] == 1 || local.hub_options[var.hub_deployment_option] == 2) && (length(var.tt_vcn1_routable_vcns) == 0 || contains(var.tt_vcn1_routable_vcns,"EXA-VCN-2")))) ? {
             for cidr in var.exa_vcn2_cidrs : "EXA-VCN-2-${replace(replace(cidr,".",""),"/","")}-RULE" => {
                 network_entity_key = "HUB-DRG"
                 description        = "To DRG."
@@ -548,8 +548,8 @@ locals {
         } : {},
         ## Route to EXA-VCN-3
         (var.add_tt_vcn1 == true && var.tt_vcn1_attach_to_drg == true && var.add_exa_vcn3 == true && var.exa_vcn3_attach_to_drg == true) &&
-        (local.hub_options[var.hub_deployment_option] == 3 || local.hub_options[var.hub_deployment_option] == 4) ||
-        ((local.hub_options[var.hub_deployment_option] == 1 || local.hub_options[var.hub_deployment_option] == 2) && (length(var.tt_vcn1_routable_vcns) == 0 || contains(var.tt_vcn1_routable_vcns,"EXA-VCN-3"))) ? {
+        ((local.hub_options[var.hub_deployment_option] == 3 || local.hub_options[var.hub_deployment_option] == 4) ||
+        ((local.hub_options[var.hub_deployment_option] == 1 || local.hub_options[var.hub_deployment_option] == 2) && (length(var.tt_vcn1_routable_vcns) == 0 || contains(var.tt_vcn1_routable_vcns,"EXA-VCN-3")))) ? {
             for cidr in var.exa_vcn3_cidrs : "EXA-VCN-3-${replace(replace(cidr,".",""),"/","")}-RULE" => {
                 network_entity_key = "HUB-DRG"
                 description        = "To DRG."
@@ -580,8 +580,8 @@ locals {
     ## Egress to VCN-2 and VCN-3 web subnet
     vcn_1_to_web_subnet_cross_vcn_egress = merge(
         (var.add_tt_vcn1 == true && var.tt_vcn1_attach_to_drg == true && var.add_tt_vcn2 == true && var.tt_vcn2_attach_to_drg == true) &&
-        (local.hub_options[var.hub_deployment_option] == 3 || local.hub_options[var.hub_deployment_option] == 4) ||
-        ((local.hub_options[var.hub_deployment_option] == 1 || local.hub_options[var.hub_deployment_option] == 2) && (length(var.tt_vcn1_routable_vcns) == 0 || contains(var.tt_vcn1_routable_vcns,"TT-VCN-2"))) ? {
+        ((local.hub_options[var.hub_deployment_option] == 3 || local.hub_options[var.hub_deployment_option] == 4) ||
+        ((local.hub_options[var.hub_deployment_option] == 1 || local.hub_options[var.hub_deployment_option] == 2) && (length(var.tt_vcn1_routable_vcns) == 0 || contains(var.tt_vcn1_routable_vcns,"TT-VCN-2")))) ? {
             "EGRESS-TO-VCN-2-WEB-SUBNET-RULE" = {
                 description = "Egress to ${coalesce(var.tt_vcn2_web_subnet_name,"${var.service_label}-three-tier-vcn-2-web-subnet")}."
                 stateless   = false
@@ -593,8 +593,8 @@ locals {
             }
         } : {},    
         (var.add_tt_vcn1 == true && var.tt_vcn1_attach_to_drg == true && var.add_tt_vcn3 == true && var.tt_vcn3_attach_to_drg == true) &&
-        (local.hub_options[var.hub_deployment_option] == 3 || local.hub_options[var.hub_deployment_option] == 4) ||
-        ((local.hub_options[var.hub_deployment_option] == 1 || local.hub_options[var.hub_deployment_option] == 2) && (length(var.tt_vcn1_routable_vcns) == 0 || contains(var.tt_vcn1_routable_vcns,"TT-VCN-3"))) ? {
+        ((local.hub_options[var.hub_deployment_option] == 3 || local.hub_options[var.hub_deployment_option] == 4) ||
+        ((local.hub_options[var.hub_deployment_option] == 1 || local.hub_options[var.hub_deployment_option] == 2) && (length(var.tt_vcn1_routable_vcns) == 0 || contains(var.tt_vcn1_routable_vcns,"TT-VCN-3")))) ? {
             "EGRESS-TO-VCN-3-WEB-SUBNET-RULE" = {
                 description = "Egress to ${coalesce(var.tt_vcn3_web_subnet_name,"${var.service_label}-three-tier-vcn-3-web-subnet")}."
                 stateless   = false
@@ -609,8 +609,8 @@ locals {
     ## Egress to VCN-2 and VCN-3 app subnet
     vcn_1_to_app_subnet_cross_vcn_egress = merge(
         (var.add_tt_vcn1 == true && var.tt_vcn1_attach_to_drg == true && var.add_tt_vcn2 == true && var.tt_vcn2_attach_to_drg == true) &&
-        (local.hub_options[var.hub_deployment_option] == 3 || local.hub_options[var.hub_deployment_option] == 4) ||
-        ((local.hub_options[var.hub_deployment_option] == 1 || local.hub_options[var.hub_deployment_option] == 2) && (length(var.tt_vcn1_routable_vcns) == 0 || contains(var.tt_vcn1_routable_vcns,"TT-VCN-2"))) ? {
+        ((local.hub_options[var.hub_deployment_option] == 3 || local.hub_options[var.hub_deployment_option] == 4) ||
+        ((local.hub_options[var.hub_deployment_option] == 1 || local.hub_options[var.hub_deployment_option] == 2) && (length(var.tt_vcn1_routable_vcns) == 0 || contains(var.tt_vcn1_routable_vcns,"TT-VCN-2")))) ? {
             "EGRESS-TO-VCN-2-APP-SUBNET-RULE" = {
                 description = "Egress to ${coalesce(var.tt_vcn2_app_subnet_name,"${var.service_label}-three-tier-vcn-2-app-subnet")}."
                 stateless   = false
@@ -622,8 +622,8 @@ locals {
             }
         } : {},    
         (var.add_tt_vcn1 == true && var.tt_vcn1_attach_to_drg == true && var.add_tt_vcn3 == true && var.tt_vcn3_attach_to_drg == true) &&
-        (local.hub_options[var.hub_deployment_option] == 3 || local.hub_options[var.hub_deployment_option] == 4) ||
-        ((local.hub_options[var.hub_deployment_option] == 1 || local.hub_options[var.hub_deployment_option] == 2) && (length(var.tt_vcn1_routable_vcns) == 0 || contains(var.tt_vcn1_routable_vcns,"TT-VCN-3"))) ? {
+        ((local.hub_options[var.hub_deployment_option] == 3 || local.hub_options[var.hub_deployment_option] == 4) ||
+        ((local.hub_options[var.hub_deployment_option] == 1 || local.hub_options[var.hub_deployment_option] == 2) && (length(var.tt_vcn1_routable_vcns) == 0 || contains(var.tt_vcn1_routable_vcns,"TT-VCN-3")))) ? {
             "EGRESS-TO-VCN-3-APP-SUBNET-RULE" = {
                 description = "Egress to ${coalesce(var.tt_vcn3_app_subnet_name,"${var.service_label}-three-tier-vcn-3-app-subnet")}."
                 stateless   = false
@@ -638,8 +638,8 @@ locals {
     ## Egress to VCN-2 and VCN-3 db subnet
     vcn_1_to_db_subnet_cross_vcn_egress = merge(
         (var.add_tt_vcn1 == true && var.tt_vcn1_attach_to_drg == true && var.add_tt_vcn2 == true && var.tt_vcn2_attach_to_drg == true) &&
-        (local.hub_options[var.hub_deployment_option] == 3 || local.hub_options[var.hub_deployment_option] == 4) ||
-        ((local.hub_options[var.hub_deployment_option] == 1 || local.hub_options[var.hub_deployment_option] == 2) && (length(var.tt_vcn1_routable_vcns) == 0 || contains(var.tt_vcn1_routable_vcns,"TT-VCN-2"))) ? {
+        ((local.hub_options[var.hub_deployment_option] == 3 || local.hub_options[var.hub_deployment_option] == 4) ||
+        ((local.hub_options[var.hub_deployment_option] == 1 || local.hub_options[var.hub_deployment_option] == 2) && (length(var.tt_vcn1_routable_vcns) == 0 || contains(var.tt_vcn1_routable_vcns,"TT-VCN-2")))) ? {
             "EGRESS-TO-VCN-2-DB-SUBNET-RULE" = {
                 description = "Egress to ${coalesce(var.tt_vcn2_db_subnet_name,"${var.service_label}-three-tier-vcn-2-db-subnet")}."
                 stateless   = false
@@ -651,8 +651,8 @@ locals {
             }
         } : {},    
         (var.add_tt_vcn1 == true && var.tt_vcn1_attach_to_drg == true && var.add_tt_vcn3 == true && var.tt_vcn3_attach_to_drg == true) &&
-        (local.hub_options[var.hub_deployment_option] == 3 || local.hub_options[var.hub_deployment_option] == 4) ||
-        ((local.hub_options[var.hub_deployment_option] == 1 || local.hub_options[var.hub_deployment_option] == 2) && (length(var.tt_vcn1_routable_vcns) == 0 || contains(var.tt_vcn1_routable_vcns,"TT-VCN-3"))) ? {
+        ((local.hub_options[var.hub_deployment_option] == 3 || local.hub_options[var.hub_deployment_option] == 4) ||
+        ((local.hub_options[var.hub_deployment_option] == 1 || local.hub_options[var.hub_deployment_option] == 2) && (length(var.tt_vcn1_routable_vcns) == 0 || contains(var.tt_vcn1_routable_vcns,"TT-VCN-3")))) ? {
             "EGRESS-TO-VCN-3-DB-SUBNET-RULE" = {
                 description = "Egress to ${coalesce(var.tt_vcn3_db_subnet_name,"${var.service_label}-three-tier-vcn-3-db-subnet")}."
                 stateless   = false
@@ -668,8 +668,8 @@ locals {
     vcn_1_to_oke_cross_vcn_egress = merge(
         ## Egress to OKE-VCN-1
         (var.add_tt_vcn1 == true && var.tt_vcn1_attach_to_drg == true && var.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true) &&
-        (local.hub_options[var.hub_deployment_option] == 3 || local.hub_options[var.hub_deployment_option] == 4) ||
-        ((local.hub_options[var.hub_deployment_option] == 1 || local.hub_options[var.hub_deployment_option] == 2) && (length(var.tt_vcn1_routable_vcns) == 0 || contains(var.tt_vcn1_routable_vcns,"OKE-VCN-1"))) ? merge(
+        ((local.hub_options[var.hub_deployment_option] == 3 || local.hub_options[var.hub_deployment_option] == 4) ||
+        ((local.hub_options[var.hub_deployment_option] == 1 || local.hub_options[var.hub_deployment_option] == 2) && (length(var.tt_vcn1_routable_vcns) == 0 || contains(var.tt_vcn1_routable_vcns,"OKE-VCN-1")))) ? merge(
             {
                 "EGRESS-TO-OKE-VCN-1-SERVICES-SUBNET-RULE" = {
                     description = "Egress to ${coalesce(var.oke_vcn1_services_subnet_name,"${var.service_label}-oke-vcn-1-services-subnet")}."
@@ -702,8 +702,8 @@ locals {
         ) : {},
         ## Egress to OKE-VCN-2 
         (var.add_tt_vcn1 == true && var.tt_vcn1_attach_to_drg == true && var.add_oke_vcn2 == true && var.oke_vcn2_attach_to_drg == true) &&
-        (local.hub_options[var.hub_deployment_option] == 3 || local.hub_options[var.hub_deployment_option] == 4) ||
-        ((local.hub_options[var.hub_deployment_option] == 1 || local.hub_options[var.hub_deployment_option] == 2) && (length(var.tt_vcn1_routable_vcns) == 0 || contains(var.tt_vcn1_routable_vcns,"OKE-VCN-2"))) ? merge(
+        ((local.hub_options[var.hub_deployment_option] == 3 || local.hub_options[var.hub_deployment_option] == 4) ||
+        ((local.hub_options[var.hub_deployment_option] == 1 || local.hub_options[var.hub_deployment_option] == 2) && (length(var.tt_vcn1_routable_vcns) == 0 || contains(var.tt_vcn1_routable_vcns,"OKE-VCN-2")))) ? merge(
             {
                 "EGRESS-TO-OKE-VCN-2-SERVICES-SUBNET-RULE" = {
                     description = "Egress to ${coalesce(var.oke_vcn2_services_subnet_name,"${var.service_label}-oke-vcn-2-services-subnet")}."
@@ -736,8 +736,8 @@ locals {
         ) : {},
         ## Egress to OKE-VCN-3 
         (var.add_tt_vcn1 == true && var.tt_vcn1_attach_to_drg == true && var.add_oke_vcn3 == true && var.oke_vcn3_attach_to_drg == true) &&
-        (local.hub_options[var.hub_deployment_option] == 3 || local.hub_options[var.hub_deployment_option] == 4) ||
-        ((local.hub_options[var.hub_deployment_option] == 1 || local.hub_options[var.hub_deployment_option] == 2) && (length(var.tt_vcn1_routable_vcns) == 0 || contains(var.tt_vcn1_routable_vcns,"OKE-VCN-3"))) ? merge(
+        ((local.hub_options[var.hub_deployment_option] == 3 || local.hub_options[var.hub_deployment_option] == 4) ||
+        ((local.hub_options[var.hub_deployment_option] == 1 || local.hub_options[var.hub_deployment_option] == 2) && (length(var.tt_vcn1_routable_vcns) == 0 || contains(var.tt_vcn1_routable_vcns,"OKE-VCN-3")))) ? merge(
             {
                 "EGRESS-TO-OKE-VCN-3-SERVICES-SUBNET-RULE" = {
                     description = "Egress to ${coalesce(var.oke_vcn3_services_subnet_name,"${var.service_label}-oke-vcn-3-services-subnet")}."
@@ -773,8 +773,8 @@ locals {
     vcn_1_to_exa_cross_vcn_egress = merge(
         ## Egress to EXA-VCN-1
         (var.add_tt_vcn1 == true && var.tt_vcn1_attach_to_drg == true && var.add_exa_vcn1 == true && var.exa_vcn1_attach_to_drg == true) &&
-        (local.hub_options[var.hub_deployment_option] == 3 || local.hub_options[var.hub_deployment_option] == 4) ||
-        ((local.hub_options[var.hub_deployment_option] == 1 || local.hub_options[var.hub_deployment_option] == 2) && (length(var.tt_vcn1_routable_vcns) == 0 || contains(var.tt_vcn1_routable_vcns,"EXA-VCN-1"))) ? {
+        ((local.hub_options[var.hub_deployment_option] == 3 || local.hub_options[var.hub_deployment_option] == 4) ||
+        ((local.hub_options[var.hub_deployment_option] == 1 || local.hub_options[var.hub_deployment_option] == 2) && (length(var.tt_vcn1_routable_vcns) == 0 || contains(var.tt_vcn1_routable_vcns,"EXA-VCN-1")))) ? {
             "EGRESS-TO-EXA-VCN-1-CLIENT-SUBNET-RULE" = { 
                 description = "Egress to ${coalesce(var.exa_vcn1_client_subnet_name, "${var.service_label}-exadata-vcn-1-client-subnet")}."
                 stateless   = false
@@ -787,8 +787,8 @@ locals {
         } : {},
         ## Egress to EXA-VCN-2
         (var.add_tt_vcn1 == true && var.tt_vcn1_attach_to_drg == true && var.add_exa_vcn2 == true && var.exa_vcn2_attach_to_drg == true) &&
-        (local.hub_options[var.hub_deployment_option] == 3 || local.hub_options[var.hub_deployment_option] == 4) ||
-        ((local.hub_options[var.hub_deployment_option] == 1 || local.hub_options[var.hub_deployment_option] == 2) && (length(var.tt_vcn1_routable_vcns) == 0 || contains(var.tt_vcn1_routable_vcns,"EXA-VCN-2"))) ? {
+        ((local.hub_options[var.hub_deployment_option] == 3 || local.hub_options[var.hub_deployment_option] == 4) ||
+        ((local.hub_options[var.hub_deployment_option] == 1 || local.hub_options[var.hub_deployment_option] == 2) && (length(var.tt_vcn1_routable_vcns) == 0 || contains(var.tt_vcn1_routable_vcns,"EXA-VCN-2")))) ? {
             "EGRESS-TO-EXA-VCN-2-CLIENT-SUBNET-RULE" = {
                 description = "Egress to ${coalesce(var.exa_vcn2_client_subnet_name, "${var.service_label}-exadata-vcn-2-client-subnet")}."
                 stateless   = false
@@ -801,8 +801,8 @@ locals {
         } : {},
         ## Egress to EXA-VCN-3
         (var.add_tt_vcn1 == true && var.tt_vcn1_attach_to_drg == true && var.add_exa_vcn3 == true && var.exa_vcn3_attach_to_drg == true) &&
-        (local.hub_options[var.hub_deployment_option] == 3 || local.hub_options[var.hub_deployment_option] == 4) ||
-        ((local.hub_options[var.hub_deployment_option] == 1 || local.hub_options[var.hub_deployment_option] == 2) && (length(var.tt_vcn1_routable_vcns) == 0 || contains(var.tt_vcn1_routable_vcns,"EXA-VCN-3"))) ? {
+        ((local.hub_options[var.hub_deployment_option] == 3 || local.hub_options[var.hub_deployment_option] == 4) ||
+        ((local.hub_options[var.hub_deployment_option] == 1 || local.hub_options[var.hub_deployment_option] == 2) && (length(var.tt_vcn1_routable_vcns) == 0 || contains(var.tt_vcn1_routable_vcns,"EXA-VCN-3")))) ? {
             "EGRESS-TO-EXA-VCN-3-CLIENT-SUBNET-RULE" = {
                 description = "Egress to ${coalesce(var.exa_vcn3_client_subnet_name, "${var.service_label}-exadata-vcn-3-client-subnet")}."
                 stateless   = false
@@ -819,8 +819,8 @@ locals {
     vcn_1_to_web_subnet_cross_vcn_ingress = merge(
         ## Ingress from TT-VCN-2
         (var.add_tt_vcn1 == true && var.tt_vcn1_attach_to_drg == true && var.add_tt_vcn2 == true && var.tt_vcn2_attach_to_drg == true) &&
-        (local.hub_options[var.hub_deployment_option] == 3 || local.hub_options[var.hub_deployment_option] == 4) ||
-        ((local.hub_options[var.hub_deployment_option] == 1 || local.hub_options[var.hub_deployment_option] == 2) && (length(var.tt_vcn2_routable_vcns) == 0 || contains(var.tt_vcn2_routable_vcns,"TT-VCN-1"))) ? {
+        ((local.hub_options[var.hub_deployment_option] == 3 || local.hub_options[var.hub_deployment_option] == 4) ||
+        ((local.hub_options[var.hub_deployment_option] == 1 || local.hub_options[var.hub_deployment_option] == 2) && (length(var.tt_vcn2_routable_vcns) == 0 || contains(var.tt_vcn2_routable_vcns,"TT-VCN-1")))) ? {
             "INGRESS-FROM-TT-VCN-2-APP-SUBNET-RULE" = {
                 description  = "Ingress from ${coalesce(var.tt_vcn2_app_subnet_name,"${var.service_label}-three-tier-vcn-2-app-subnet")}."
                 stateless    = false
@@ -842,8 +842,8 @@ locals {
         } : {},
         ## Ingress from TT-VCN-3
         (var.add_tt_vcn1 == true && var.tt_vcn1_attach_to_drg == true && var.add_tt_vcn3 == true && var.tt_vcn3_attach_to_drg == true) &&
-        (local.hub_options[var.hub_deployment_option] == 3 || local.hub_options[var.hub_deployment_option] == 4) ||
-        ((local.hub_options[var.hub_deployment_option] == 1 || local.hub_options[var.hub_deployment_option] == 2) && (length(var.tt_vcn3_routable_vcns) == 0 || contains(var.tt_vcn3_routable_vcns,"TT-VCN-1"))) ? {   
+        ((local.hub_options[var.hub_deployment_option] == 3 || local.hub_options[var.hub_deployment_option] == 4) ||
+        ((local.hub_options[var.hub_deployment_option] == 1 || local.hub_options[var.hub_deployment_option] == 2) && (length(var.tt_vcn3_routable_vcns) == 0 || contains(var.tt_vcn3_routable_vcns,"TT-VCN-1")))) ? {   
             "INGRESS-FROM-TT-VCN-3-APP-SUBNET-RULE" = {
                 description  = "Ingress from ${coalesce(var.tt_vcn3_app_subnet_name,"${var.service_label}-three-tier-vcn-3-app-subnet")}."
                 stateless    = false
@@ -865,8 +865,8 @@ locals {
         } : {},
         ## Ingress from OKE-VCN-1
         (var.add_tt_vcn1 == true && var.tt_vcn1_attach_to_drg == true && var.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true) &&
-        (local.hub_options[var.hub_deployment_option] == 3 || local.hub_options[var.hub_deployment_option] == 4) ||
-        ((local.hub_options[var.hub_deployment_option] == 1 || local.hub_options[var.hub_deployment_option] == 2) && (length(var.oke_vcn1_routable_vcns) == 0 || contains(var.oke_vcn1_routable_vcns,"TT-VCN-1"))) ? merge(
+        ((local.hub_options[var.hub_deployment_option] == 3 || local.hub_options[var.hub_deployment_option] == 4) ||
+        ((local.hub_options[var.hub_deployment_option] == 1 || local.hub_options[var.hub_deployment_option] == 2) && (length(var.oke_vcn1_routable_vcns) == 0 || contains(var.oke_vcn1_routable_vcns,"TT-VCN-1")))) ? merge(
             {
                 "INGRESS-FROM-OKE-VCN-1-WORKERS-SUBNET-RULE" = {
                     description  = "Ingress from ${coalesce(var.oke_vcn1_workers_subnet_name,"${var.service_label}-oke-vcn-1-workers-subnet")}."
@@ -892,8 +892,8 @@ locals {
         ) : {},
         ## Ingress from OKE-VCN-2
         (var.add_tt_vcn1 == true && var.tt_vcn1_attach_to_drg == true && var.add_oke_vcn2 == true && var.oke_vcn2_attach_to_drg == true) &&
-        (local.hub_options[var.hub_deployment_option] == 3 || local.hub_options[var.hub_deployment_option] == 4) ||
-        ((local.hub_options[var.hub_deployment_option] == 1 || local.hub_options[var.hub_deployment_option] == 2) && (length(var.oke_vcn2_routable_vcns) == 0 || contains(var.oke_vcn2_routable_vcns,"TT-VCN-1"))) ? merge(
+        ((local.hub_options[var.hub_deployment_option] == 3 || local.hub_options[var.hub_deployment_option] == 4) ||
+        ((local.hub_options[var.hub_deployment_option] == 1 || local.hub_options[var.hub_deployment_option] == 2) && (length(var.oke_vcn2_routable_vcns) == 0 || contains(var.oke_vcn2_routable_vcns,"TT-VCN-1")))) ? merge(
             {
                 "INGRESS-FROM-OKE-VCN-2-WORKERS-SUBNET-RULE" = {
                     description  = "Ingress from ${coalesce(var.oke_vcn2_workers_subnet_name,"${var.service_label}-oke-vcn-2-workers-subnet")}."
@@ -919,8 +919,8 @@ locals {
         ) : {},
         ## Ingress from OKE-VCN-3
         (var.add_tt_vcn1 == true && var.tt_vcn1_attach_to_drg == true && var.add_oke_vcn3 == true && var.oke_vcn3_attach_to_drg == true) &&
-        (local.hub_options[var.hub_deployment_option] == 3 || local.hub_options[var.hub_deployment_option] == 4) ||
-        ((local.hub_options[var.hub_deployment_option] == 1 || local.hub_options[var.hub_deployment_option] == 2) && (length(var.oke_vcn3_routable_vcns) == 0 || contains(var.oke_vcn3_routable_vcns,"TT-VCN-1"))) ? merge(
+        ((local.hub_options[var.hub_deployment_option] == 3 || local.hub_options[var.hub_deployment_option] == 4) ||
+        ((local.hub_options[var.hub_deployment_option] == 1 || local.hub_options[var.hub_deployment_option] == 2) && (length(var.oke_vcn3_routable_vcns) == 0 || contains(var.oke_vcn3_routable_vcns,"TT-VCN-1")))) ? merge(
             {
                 "INGRESS-FROM-OKE-VCN-3-WORKERS-SUBNET-RULE" = {
                     description  = "Ingress from ${coalesce(var.oke_vcn3_workers_subnet_name,"${var.service_label}-oke-vcn-3-workers-subnet")}."
@@ -946,8 +946,8 @@ locals {
         ) : {}, 
         ## Ingress from EXA-VCN-1
         (var.add_tt_vcn1 == true && var.tt_vcn1_attach_to_drg == true && var.add_exa_vcn1 == true && var.exa_vcn1_attach_to_drg == true) &&
-        (local.hub_options[var.hub_deployment_option] == 3 || local.hub_options[var.hub_deployment_option] == 4) ||
-        ((local.hub_options[var.hub_deployment_option] == 1 || local.hub_options[var.hub_deployment_option] == 2) && (length(var.exa_vcn1_routable_vcns) == 0 || contains(var.exa_vcn1_routable_vcns,"TT-VCN-1"))) ? merge(
+        ((local.hub_options[var.hub_deployment_option] == 3 || local.hub_options[var.hub_deployment_option] == 4) ||
+        ((local.hub_options[var.hub_deployment_option] == 1 || local.hub_options[var.hub_deployment_option] == 2) && (length(var.exa_vcn1_routable_vcns) == 0 || contains(var.exa_vcn1_routable_vcns,"TT-VCN-1")))) ? merge(
             {
                 "INGRESS-FROM-EXA-VCN-1-CLIENT-SUBNET-RULE" = {
                     description  = "Ingress from ${coalesce(var.exa_vcn1_client_subnet_name,"${var.service_label}-exa-vcn-1-client-subnet")}."
@@ -962,8 +962,8 @@ locals {
         ) : {},
         ## Ingress from EXA-VCN-2
         (var.add_tt_vcn1 == true && var.tt_vcn1_attach_to_drg == true && var.add_exa_vcn2 == true && var.exa_vcn2_attach_to_drg == true) &&
-        (local.hub_options[var.hub_deployment_option] == 3 || local.hub_options[var.hub_deployment_option] == 4) ||
-        ((local.hub_options[var.hub_deployment_option] == 1 || local.hub_options[var.hub_deployment_option] == 2) && (length(var.exa_vcn2_routable_vcns) == 0 || contains(var.exa_vcn2_routable_vcns,"TT-VCN-1"))) ? merge(
+        ((local.hub_options[var.hub_deployment_option] == 3 || local.hub_options[var.hub_deployment_option] == 4) ||
+        ((local.hub_options[var.hub_deployment_option] == 1 || local.hub_options[var.hub_deployment_option] == 2) && (length(var.exa_vcn2_routable_vcns) == 0 || contains(var.exa_vcn2_routable_vcns,"TT-VCN-1")))) ? merge(
             {
                 "INGRESS-FROM-EXA-VCN-2-CLIENT-SUBNET-RULE" = {
                     description  = "Ingress from ${coalesce(var.exa_vcn2_client_subnet_name,"${var.service_label}-exa-vcn-2-client-subnet")}."
@@ -978,8 +978,8 @@ locals {
         ) : {},
         ## Ingress from EXA-VCN-3
         (var.add_tt_vcn1 == true && var.tt_vcn1_attach_to_drg == true && var.add_exa_vcn3 == true && var.exa_vcn3_attach_to_drg == true) &&
-        (local.hub_options[var.hub_deployment_option] == 3 || local.hub_options[var.hub_deployment_option] == 4) ||
-        ((local.hub_options[var.hub_deployment_option] == 1 || local.hub_options[var.hub_deployment_option] == 2) && (length(var.exa_vcn3_routable_vcns) == 0 || contains(var.exa_vcn3_routable_vcns,"TT-VCN-1"))) ? merge(
+        ((local.hub_options[var.hub_deployment_option] == 3 || local.hub_options[var.hub_deployment_option] == 4) ||
+        ((local.hub_options[var.hub_deployment_option] == 1 || local.hub_options[var.hub_deployment_option] == 2) && (length(var.exa_vcn3_routable_vcns) == 0 || contains(var.exa_vcn3_routable_vcns,"TT-VCN-1")))) ? merge(
             {
                 "INGRESS-FROM-EXA-VCN-3-CLIENT-SUBNET-RULE" = {
                     description  = "Ingress from ${coalesce(var.exa_vcn3_client_subnet_name,"${var.service_label}-exa-vcn-3-client-subnet")}."
@@ -997,8 +997,8 @@ locals {
     vcn_1_to_app_subnet_cross_vcn_ingress = merge(
         ## Ingress from TT-VCN-2
         (var.add_tt_vcn1 == true && var.tt_vcn1_attach_to_drg == true && var.add_tt_vcn2 == true && var.tt_vcn2_attach_to_drg == true) &&
-        (local.hub_options[var.hub_deployment_option] == 3 || local.hub_options[var.hub_deployment_option] == 4) ||
-        ((local.hub_options[var.hub_deployment_option] == 1 || local.hub_options[var.hub_deployment_option] == 2) && (length(var.tt_vcn2_routable_vcns) == 0 || contains(var.tt_vcn2_routable_vcns,"TT-VCN-1"))) ? {
+        ((local.hub_options[var.hub_deployment_option] == 3 || local.hub_options[var.hub_deployment_option] == 4) ||
+        ((local.hub_options[var.hub_deployment_option] == 1 || local.hub_options[var.hub_deployment_option] == 2) && (length(var.tt_vcn2_routable_vcns) == 0 || contains(var.tt_vcn2_routable_vcns,"TT-VCN-1")))) ? {
             "INGRESS-FROM-TT-VCN-2-WEB-SUBNET-RULE" = {
                 description  = "Ingress from ${coalesce(var.tt_vcn2_web_subnet_name,"${var.service_label}-three-tier-vcn-2-web-subnet")}."
                 stateless    = false
@@ -1028,8 +1028,8 @@ locals {
             }
         } : {},
         (var.add_tt_vcn1 == true && var.tt_vcn1_attach_to_drg == true && var.add_tt_vcn3 == true && var.tt_vcn3_attach_to_drg == true) &&
-        (local.hub_options[var.hub_deployment_option] == 3 || local.hub_options[var.hub_deployment_option] == 4) ||
-        ((local.hub_options[var.hub_deployment_option] == 1 || local.hub_options[var.hub_deployment_option] == 2) && (length(var.tt_vcn3_routable_vcns) == 0 || contains(var.tt_vcn3_routable_vcns,"TT-VCN-1"))) ? {
+        ((local.hub_options[var.hub_deployment_option] == 3 || local.hub_options[var.hub_deployment_option] == 4) ||
+        ((local.hub_options[var.hub_deployment_option] == 1 || local.hub_options[var.hub_deployment_option] == 2) && (length(var.tt_vcn3_routable_vcns) == 0 || contains(var.tt_vcn3_routable_vcns,"TT-VCN-1")))) ? {
             ## Ingress from TT-VCN-3
             "INGRESS-FROM-TT-VCN-3-WEB-SUBNET-RULE" = {
                 description  = "Ingress from ${coalesce(var.tt_vcn3_web_subnet_name,"${var.service_label}-three-tier-vcn-3-web-subnet")}."
@@ -1061,8 +1061,8 @@ locals {
         } : {},
         ## Ingress from OKE-VCN-1
         (var.add_tt_vcn1 == true && var.tt_vcn1_attach_to_drg == true && var.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true) &&
-        (local.hub_options[var.hub_deployment_option] == 3 || local.hub_options[var.hub_deployment_option] == 4) ||
-        ((local.hub_options[var.hub_deployment_option] == 1 || local.hub_options[var.hub_deployment_option] == 2) && (length(var.oke_vcn1_routable_vcns) == 0 || contains(var.oke_vcn1_routable_vcns,"TT-VCN-1"))) ? merge(
+        ((local.hub_options[var.hub_deployment_option] == 3 || local.hub_options[var.hub_deployment_option] == 4) ||
+        ((local.hub_options[var.hub_deployment_option] == 1 || local.hub_options[var.hub_deployment_option] == 2) && (length(var.oke_vcn1_routable_vcns) == 0 || contains(var.oke_vcn1_routable_vcns,"TT-VCN-1")))) ? merge(
             {
                 "INGRESS-FROM-OKE-VCN-1-WORKERS-SUBNET-RULE" = {
                     description  = "Ingress from ${coalesce(var.oke_vcn1_workers_subnet_name,"${var.service_label}-oke-vcn-1-workers-subnet")}."
@@ -1088,8 +1088,8 @@ locals {
         ) : {},
         ## Ingress from OKE-VCN-2
         (var.add_tt_vcn1 == true && var.tt_vcn1_attach_to_drg == true && var.add_oke_vcn2 == true && var.oke_vcn2_attach_to_drg == true) &&
-        (local.hub_options[var.hub_deployment_option] == 3 || local.hub_options[var.hub_deployment_option] == 4) ||
-        ((local.hub_options[var.hub_deployment_option] == 1 || local.hub_options[var.hub_deployment_option] == 2) && (length(var.oke_vcn2_routable_vcns) == 0 || contains(var.oke_vcn2_routable_vcns,"TT-VCN-1"))) ? merge(
+        ((local.hub_options[var.hub_deployment_option] == 3 || local.hub_options[var.hub_deployment_option] == 4) ||
+        ((local.hub_options[var.hub_deployment_option] == 1 || local.hub_options[var.hub_deployment_option] == 2) && (length(var.oke_vcn2_routable_vcns) == 0 || contains(var.oke_vcn2_routable_vcns,"TT-VCN-1")))) ? merge(
             {
                 "INGRESS-FROM-OKE-VCN-2-WORKERS-SUBNET-RULE" = {
                     description  = "Ingress from ${coalesce(var.oke_vcn2_workers_subnet_name,"${var.service_label}-oke-vcn-2-workers-subnet")}."
@@ -1115,8 +1115,8 @@ locals {
         ) : {},
         ## Ingress from OKE-VCN-3
         (var.add_tt_vcn1 == true && var.tt_vcn1_attach_to_drg == true && var.add_oke_vcn3 == true && var.oke_vcn3_attach_to_drg == true) &&
-        (local.hub_options[var.hub_deployment_option] == 3 || local.hub_options[var.hub_deployment_option] == 4) ||
-        ((local.hub_options[var.hub_deployment_option] == 1 || local.hub_options[var.hub_deployment_option] == 2) && (length(var.oke_vcn3_routable_vcns) == 0 || contains(var.oke_vcn3_routable_vcns,"TT-VCN-1"))) ? merge(
+        ((local.hub_options[var.hub_deployment_option] == 3 || local.hub_options[var.hub_deployment_option] == 4) ||
+        ((local.hub_options[var.hub_deployment_option] == 1 || local.hub_options[var.hub_deployment_option] == 2) && (length(var.oke_vcn3_routable_vcns) == 0 || contains(var.oke_vcn3_routable_vcns,"TT-VCN-1")))) ? merge(
             {
                 "INGRESS-FROM-OKE-VCN-3-WORKERS-SUBNET-RULE" = {
                     description  = "Ingress from ${coalesce(var.oke_vcn3_workers_subnet_name,"${var.service_label}-oke-vcn-3-workers-subnet")}."
@@ -1142,8 +1142,8 @@ locals {
         ) : {},
         ## Ingress from EXA-VCN-1
         (var.add_tt_vcn1 == true && var.tt_vcn1_attach_to_drg == true && var.add_exa_vcn1 == true && var.exa_vcn1_attach_to_drg == true) &&
-        (local.hub_options[var.hub_deployment_option] == 3 || local.hub_options[var.hub_deployment_option] == 4) ||
-        ((local.hub_options[var.hub_deployment_option] == 1 || local.hub_options[var.hub_deployment_option] == 2) && (length(var.exa_vcn1_routable_vcns) == 0 || contains(var.exa_vcn1_routable_vcns,"TT-VCN-1"))) ? merge(
+        ((local.hub_options[var.hub_deployment_option] == 3 || local.hub_options[var.hub_deployment_option] == 4) ||
+        ((local.hub_options[var.hub_deployment_option] == 1 || local.hub_options[var.hub_deployment_option] == 2) && (length(var.exa_vcn1_routable_vcns) == 0 || contains(var.exa_vcn1_routable_vcns,"TT-VCN-1")))) ? merge(
             {
                 "INGRESS-FROM-EXA-VCN-1-CLIENT-SUBNET-RULE" = {
                     description  = "Ingress from ${coalesce(var.exa_vcn1_client_subnet_name,"${var.service_label}-exa-vcn-1-client-subnet")}."
@@ -1158,8 +1158,8 @@ locals {
         ) : {},
         ## Ingress from EXA-VCN-2
         (var.add_tt_vcn1 == true && var.tt_vcn1_attach_to_drg == true && var.add_exa_vcn2 == true && var.exa_vcn2_attach_to_drg == true) &&
-        (local.hub_options[var.hub_deployment_option] == 3 || local.hub_options[var.hub_deployment_option] == 4) ||
-        ((local.hub_options[var.hub_deployment_option] == 1 || local.hub_options[var.hub_deployment_option] == 2) && (length(var.exa_vcn2_routable_vcns) == 0 || contains(var.exa_vcn2_routable_vcns,"TT-VCN-1"))) ? merge(
+        ((local.hub_options[var.hub_deployment_option] == 3 || local.hub_options[var.hub_deployment_option] == 4) ||
+        ((local.hub_options[var.hub_deployment_option] == 1 || local.hub_options[var.hub_deployment_option] == 2) && (length(var.exa_vcn2_routable_vcns) == 0 || contains(var.exa_vcn2_routable_vcns,"TT-VCN-1")))) ? merge(
             {
                 "INGRESS-FROM-EXA-VCN-2-CLIENT-SUBNET-RULE" = {
                     description  = "Ingress from ${coalesce(var.exa_vcn2_client_subnet_name,"${var.service_label}-exa-vcn-2-client-subnet")}."
@@ -1174,8 +1174,8 @@ locals {
         ) : {},
         ## Ingress from EXA-VCN-3
         (var.add_tt_vcn1 == true && var.tt_vcn1_attach_to_drg == true && var.add_exa_vcn3 == true && var.exa_vcn3_attach_to_drg == true) &&
-        (local.hub_options[var.hub_deployment_option] == 3 || local.hub_options[var.hub_deployment_option] == 4) ||
-        ((local.hub_options[var.hub_deployment_option] == 1 || local.hub_options[var.hub_deployment_option] == 2) && (length(var.exa_vcn3_routable_vcns) == 0 || contains(var.exa_vcn3_routable_vcns,"TT-VCN-1"))) ? merge(
+        ((local.hub_options[var.hub_deployment_option] == 3 || local.hub_options[var.hub_deployment_option] == 4) ||
+        ((local.hub_options[var.hub_deployment_option] == 1 || local.hub_options[var.hub_deployment_option] == 2) && (length(var.exa_vcn3_routable_vcns) == 0 || contains(var.exa_vcn3_routable_vcns,"TT-VCN-1")))) ? merge(
             {
                 "INGRESS-FROM-EXA-VCN-3-CLIENT-SUBNET-RULE" = {
                     description  = "Ingress from ${coalesce(var.exa_vcn3_client_subnet_name,"${var.service_label}-exa-vcn-3-client-subnet")}."
@@ -1193,8 +1193,8 @@ locals {
     vcn_1_to_db_subnet_cross_vcn_ingress = merge(
         ## Ingress from TT-VCN-2
         (var.add_tt_vcn1 == true && var.tt_vcn1_attach_to_drg == true && var.add_tt_vcn2 == true && var.tt_vcn2_attach_to_drg == true) &&
-        (local.hub_options[var.hub_deployment_option] == 3 || local.hub_options[var.hub_deployment_option] == 4) ||
-        ((local.hub_options[var.hub_deployment_option] == 1 || local.hub_options[var.hub_deployment_option] == 2) && (length(var.tt_vcn2_routable_vcns) == 0 || contains(var.tt_vcn2_routable_vcns,"TT-VCN-1"))) ? {
+        ((local.hub_options[var.hub_deployment_option] == 3 || local.hub_options[var.hub_deployment_option] == 4) ||
+        ((local.hub_options[var.hub_deployment_option] == 1 || local.hub_options[var.hub_deployment_option] == 2) && (length(var.tt_vcn2_routable_vcns) == 0 || contains(var.tt_vcn2_routable_vcns,"TT-VCN-1")))) ? {
             "INGRESS-FROM-TT-VCN-2-APP-SUBNET-RULE" = {
                 description  = "Ingress from ${coalesce(var.tt_vcn2_app_subnet_name,"${var.service_label}-three-tier-vcn-2-app-subnet")}."
                 stateless    = false
@@ -1216,8 +1216,8 @@ locals {
         } : {},
         ## Ingress from TT-VCN-3
         (var.add_tt_vcn1 == true && var.tt_vcn1_attach_to_drg == true && var.add_tt_vcn3 == true && var.tt_vcn3_attach_to_drg == true) &&
-        (local.hub_options[var.hub_deployment_option] == 3 || local.hub_options[var.hub_deployment_option] == 4) ||
-        ((local.hub_options[var.hub_deployment_option] == 1 || local.hub_options[var.hub_deployment_option] == 2) && (length(var.tt_vcn3_routable_vcns) == 0 || contains(var.tt_vcn3_routable_vcns,"TT-VCN-1"))) ? {   
+        ((local.hub_options[var.hub_deployment_option] == 3 || local.hub_options[var.hub_deployment_option] == 4) ||
+        ((local.hub_options[var.hub_deployment_option] == 1 || local.hub_options[var.hub_deployment_option] == 2) && (length(var.tt_vcn3_routable_vcns) == 0 || contains(var.tt_vcn3_routable_vcns,"TT-VCN-1")))) ? {   
             "INGRESS-FROM-TT-VCN-3-APP-SUBNET-RULE" = {
                 description  = "Ingress from ${coalesce(var.tt_vcn3_app_subnet_name,"${var.service_label}-three-tier-vcn-3-app-subnet")}."
                 stateless    = false
@@ -1239,8 +1239,8 @@ locals {
         } : {},
         ## Ingress from OKE-VCN-1
         (var.add_tt_vcn1 == true && var.tt_vcn1_attach_to_drg == true && var.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true) &&
-        (local.hub_options[var.hub_deployment_option] == 3 || local.hub_options[var.hub_deployment_option] == 4) ||
-        ((local.hub_options[var.hub_deployment_option] == 1 || local.hub_options[var.hub_deployment_option] == 2) && (length(var.oke_vcn1_routable_vcns) == 0 || contains(var.oke_vcn1_routable_vcns,"TT-VCN-1"))) ? merge(
+        ((local.hub_options[var.hub_deployment_option] == 3 || local.hub_options[var.hub_deployment_option] == 4) ||
+        ((local.hub_options[var.hub_deployment_option] == 1 || local.hub_options[var.hub_deployment_option] == 2) && (length(var.oke_vcn1_routable_vcns) == 0 || contains(var.oke_vcn1_routable_vcns,"TT-VCN-1")))) ? merge(
             {
                 "INGRESS-FROM-OKE-VCN-1-WORKERS-SUBNET-RULE" = {
                     description  = "Ingress from ${coalesce(var.oke_vcn1_workers_subnet_name,"${var.service_label}-oke-vcn-1-workers-subnet")}."
@@ -1266,8 +1266,8 @@ locals {
         ) : {},
         ## Ingress from OKE-VCN-2
         (var.add_tt_vcn1 == true && var.tt_vcn1_attach_to_drg == true && var.add_oke_vcn2 == true && var.oke_vcn2_attach_to_drg == true) &&
-        (local.hub_options[var.hub_deployment_option] == 3 || local.hub_options[var.hub_deployment_option] == 4) ||
-        ((local.hub_options[var.hub_deployment_option] == 1 || local.hub_options[var.hub_deployment_option] == 2) && (length(var.oke_vcn2_routable_vcns) == 0 || contains(var.oke_vcn2_routable_vcns,"TT-VCN-1"))) ? merge(
+        ((local.hub_options[var.hub_deployment_option] == 3 || local.hub_options[var.hub_deployment_option] == 4) ||
+        ((local.hub_options[var.hub_deployment_option] == 1 || local.hub_options[var.hub_deployment_option] == 2) && (length(var.oke_vcn2_routable_vcns) == 0 || contains(var.oke_vcn2_routable_vcns,"TT-VCN-1")))) ? merge(
             {
                 "INGRESS-FROM-OKE-VCN-2-WORKERS-SUBNET-RULE" = {
                     description  = "Ingress from ${coalesce(var.oke_vcn2_workers_subnet_name,"${var.service_label}-oke-vcn-2-workers-subnet")}."
@@ -1293,8 +1293,8 @@ locals {
         ) : {},
         ## Ingress from OKE-VCN-3
         (var.add_tt_vcn1 == true && var.tt_vcn1_attach_to_drg == true && var.add_oke_vcn3 == true && var.oke_vcn3_attach_to_drg == true) &&
-        (local.hub_options[var.hub_deployment_option] == 3 || local.hub_options[var.hub_deployment_option] == 4) ||
-        ((local.hub_options[var.hub_deployment_option] == 1 || local.hub_options[var.hub_deployment_option] == 2) && (length(var.oke_vcn3_routable_vcns) == 0 || contains(var.oke_vcn3_routable_vcns,"TT-VCN-1"))) ? merge(
+        ((local.hub_options[var.hub_deployment_option] == 3 || local.hub_options[var.hub_deployment_option] == 4) ||
+        ((local.hub_options[var.hub_deployment_option] == 1 || local.hub_options[var.hub_deployment_option] == 2) && (length(var.oke_vcn3_routable_vcns) == 0 || contains(var.oke_vcn3_routable_vcns,"TT-VCN-1")))) ? merge(
             {
                 "INGRESS-FROM-OKE-VCN-3-WORKERS-SUBNET-RULE" = {
                     description  = "Ingress from ${coalesce(var.oke_vcn3_workers_subnet_name,"${var.service_label}-oke-vcn-3-workers-subnet")}."
@@ -1320,8 +1320,8 @@ locals {
         ) : {},
         ## Ingress from EXA-VCN-1
         (var.add_tt_vcn1 == true && var.tt_vcn1_attach_to_drg == true && var.add_exa_vcn1 == true && var.exa_vcn1_attach_to_drg == true) &&
-        (local.hub_options[var.hub_deployment_option] == 3 || local.hub_options[var.hub_deployment_option] == 4) ||
-        ((local.hub_options[var.hub_deployment_option] == 1 || local.hub_options[var.hub_deployment_option] == 2) && (length(var.exa_vcn1_routable_vcns) == 0 || contains(var.exa_vcn1_routable_vcns,"TT-VCN-1"))) ? merge(
+        ((local.hub_options[var.hub_deployment_option] == 3 || local.hub_options[var.hub_deployment_option] == 4) ||
+        ((local.hub_options[var.hub_deployment_option] == 1 || local.hub_options[var.hub_deployment_option] == 2) && (length(var.exa_vcn1_routable_vcns) == 0 || contains(var.exa_vcn1_routable_vcns,"TT-VCN-1")))) ? merge(
             {
                 "INGRESS-FROM-EXA-VCN-1-CLIENT-SUBNET-RULE" = {
                     description  = "Ingress from ${coalesce(var.exa_vcn1_client_subnet_name,"${var.service_label}-exa-vcn-1-client-subnet")}."
@@ -1336,8 +1336,8 @@ locals {
         ) : {},
         ## Ingress from EXA-VCN-2
         (var.add_tt_vcn1 == true && var.tt_vcn1_attach_to_drg == true && var.add_exa_vcn2 == true && var.exa_vcn2_attach_to_drg == true) &&
-        (local.hub_options[var.hub_deployment_option] == 3 || local.hub_options[var.hub_deployment_option] == 4) ||
-        ((local.hub_options[var.hub_deployment_option] == 1 || local.hub_options[var.hub_deployment_option] == 2) && (length(var.exa_vcn2_routable_vcns) == 0 || contains(var.exa_vcn2_routable_vcns,"TT-VCN-1"))) ? merge(
+        ((local.hub_options[var.hub_deployment_option] == 3 || local.hub_options[var.hub_deployment_option] == 4) ||
+        ((local.hub_options[var.hub_deployment_option] == 1 || local.hub_options[var.hub_deployment_option] == 2) && (length(var.exa_vcn2_routable_vcns) == 0 || contains(var.exa_vcn2_routable_vcns,"TT-VCN-1")))) ? merge(
             {
                 "INGRESS-FROM-EXA-VCN-2-CLIENT-SUBNET-RULE" = {
                     description  = "Ingress from ${coalesce(var.exa_vcn2_client_subnet_name,"${var.service_label}-exa-vcn-2-client-subnet")}."
@@ -1352,8 +1352,8 @@ locals {
         ) : {},
         ## Ingress from EXA-VCN-3
         (var.add_tt_vcn1 == true && var.tt_vcn1_attach_to_drg == true && var.add_exa_vcn3 == true && var.exa_vcn3_attach_to_drg == true) &&
-        (local.hub_options[var.hub_deployment_option] == 3 || local.hub_options[var.hub_deployment_option] == 4) ||
-        ((local.hub_options[var.hub_deployment_option] == 1 || local.hub_options[var.hub_deployment_option] == 2) && (length(var.exa_vcn3_routable_vcns) == 0 || contains(var.exa_vcn3_routable_vcns,"TT-VCN-1"))) ? merge(
+        ((local.hub_options[var.hub_deployment_option] == 3 || local.hub_options[var.hub_deployment_option] == 4) ||
+        ((local.hub_options[var.hub_deployment_option] == 1 || local.hub_options[var.hub_deployment_option] == 2) && (length(var.exa_vcn3_routable_vcns) == 0 || contains(var.exa_vcn3_routable_vcns,"TT-VCN-1")))) ? merge(
             {
                 "INGRESS-FROM-EXA-VCN-3-CLIENT-SUBNET-RULE" = {
                     description  = "Ingress from ${coalesce(var.exa_vcn3_client_subnet_name,"${var.service_label}-exa-vcn-3-client-subnet")}."
