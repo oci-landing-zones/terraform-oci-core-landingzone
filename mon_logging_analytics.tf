@@ -30,7 +30,7 @@ locals {
 }
 
 module "lz_logging_analytics" {
-  source                = "github.com/oci-landing-zones/terraform-oci-modules-observability//logging?ref=release-0.1.8"
+  source                = "github.com/oci-landing-zones/terraform-oci-modules-observability//logging?ref=v0.1.8"
   count                 = var.enable_service_connector && var.service_connector_target_kind == "logginganalytics" ? 1 : 0
   logging_configuration = local.logging_analytics_configuration
   tenancy_ocid          = var.tenancy_ocid

@@ -17,7 +17,7 @@ locals {
 module "lz_cloud_guard" {
   count = var.enable_cloud_guard ? 1 : 0
   # depends_on                = [null_resource.wait_on_services_policy]
-  source                    = "github.com/oci-landing-zones/terraform-oci-modules-security//cloud-guard?ref=release-0.1.7"
+  source                    = "github.com/oci-landing-zones/terraform-oci-modules-security//cloud-guard?ref=v0.1.7"
   cloud_guard_configuration = local.cloud_guard_configuration
   tenancy_ocid              = var.tenancy_ocid
   enable_output             = true

@@ -197,7 +197,7 @@ locals {
 
 module "lz_firewall_appliance" {
   count  = local.firewall_options[var.hub_vcn_deploy_firewall_option] != "NO" ? 1 : 0
-  source = "github.com/oci-landing-zones/terraform-oci-modules-workloads//cis-compute-storage?ref=release-0.1.6"
+  source = "github.com/oci-landing-zones/terraform-oci-modules-workloads//cis-compute-storage?ref=v0.1.6"
   instances_configuration = local.instances_configuration
   providers = {
     oci                                  = oci.home

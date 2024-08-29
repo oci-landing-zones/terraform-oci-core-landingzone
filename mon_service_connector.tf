@@ -124,7 +124,7 @@ locals {
 
 module "lz_service_connector_hub" {
   count                            = var.enable_service_connector ? 1 : 0
-  source                           = "github.com/oci-landing-zones/terraform-oci-modules-observability//service-connectors?ref=release-0.1.8"
+  source                           = "github.com/oci-landing-zones/terraform-oci-modules-observability//service-connectors?ref=v0.1.8"
   tenancy_ocid                     = var.tenancy_ocid
   service_connectors_configuration = local.service_connectors_configuration
   logs_dependency                  = var.service_connector_target_kind == "logginganalytics" ? module.lz_logging_analytics[0].logging_analytics_log_groups : null
