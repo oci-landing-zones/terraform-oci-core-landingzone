@@ -1,0 +1,57 @@
+# Copyright (c) 2024 Oracle and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+
+# ----------------------------------------------------------------------------------------
+# -- This configuration deploys a CIS compliant landing zone with default VCN settings.
+# -- See other templates for other CIS compliant landing zones with alternative settings.
+# -- 1. Rename this file to main.tf. 
+# -- 2. Provide/review the variable assignments below.
+# -- 3. In this folder, execute the typical Terraform workflow:
+# ----- $ terraform init
+# ----- $ terraform plan
+# ----- $ terraform apply
+# ----------------------------------------------------------------------------------------
+
+module "core_lz" {
+    source = "../../"
+    # ------------------------------------------------------
+    # ----- Environment
+    # ------------------------------------------------------
+    tenancy_ocid         = "ocid1.tenancy.oc1..aaaaaaaa...3jb"               # Replace with your tenancy OCID.
+    user_ocid            = "ocid1.user.oc1..aaaaaaaa...xsb"                  # Replace with your user OCID.
+    fingerprint          = "19:42:xx:92:yy:b3:zz:2f:aa:ea:bb:59:cc:be:dd:ba" # Replace with user fingerprint.
+    private_key_path     = "path-to-pem-file-with-private-key"               # Replace with user private key local path.
+    private_key_password = ""                                                # Replace with private key password, if any.
+    region               = "us-phoenix-1" # Replace with region name.
+    service_label        = "defvcn"       # Prefix prepended to deployed resource names. 
+
+    # ------------------------------------------------------
+    # ----- Networking
+    # ------------------------------------------------------
+    add_tt_vcn1 = true # This deploys one three-tier VCN with default settings, like default name, CIDR, DNS name, subnet names, subnet CIDRs, subnet DNS names.
+
+    # ------------------------------------------------------
+    # ----- Notifications
+    # ------------------------------------------------------
+    network_admin_email_endpoints  = ["email.address@example.com"] # for network-related events. Replace with a real email address.
+    security_admin_email_endpoints = ["email.address@example.com"] # for security-related events. Replace with a real email address.
+
+    # ------------------------------------------------------
+    # ----- Logging
+    # ------------------------------------------------------
+    enable_service_connector      = true # Enables service connector for logging consolidation.
+    activate_service_connector    = true # Activates service connector.
+    service_connector_target_kind = "streaming" # Sends collected logs to an OCI stream.
+
+    # ------------------------------------------------------
+    # ----- Security
+    # ------------------------------------------------------
+    enable_cloud_guard    = true # Set to false if Cloud Guard has already been enabled.
+    enable_security_zones = true # Deploys a security zone for this deployment in the enclosing compartment.
+    vss_create            = true # Enables Vulnerability Scanning Service for Compute instances.
+
+    # ------------------------------------------------------
+    # ----- Governance
+    # ------------------------------------------------------
+    create_budget = true # Deploys a default budget.
+}

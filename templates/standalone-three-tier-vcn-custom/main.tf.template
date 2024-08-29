@@ -1,0 +1,81 @@
+# Copyright (c) 2024 Oracle and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+
+# ----------------------------------------------------------------------------------------
+# -- This configuration deploys a CIS compliant landing zone with custom VCN settings.
+# -- See other templates for other CIS compliant landing zones with alternative settings.
+# -- 1. Rename this file to main.tf. 
+# -- 2. Provide/review the variable assignments below.
+# -- 3. In this folder, execute the typical Terraform workflow:
+# ----- $ terraform init
+# ----- $ terraform plan
+# ----- $ terraform apply
+# ----------------------------------------------------------------------------------------
+
+module "core_lz" {
+    source = "../../"
+    # ------------------------------------------------------
+    # ----- Environment
+    # ------------------------------------------------------
+    tenancy_ocid         = "ocid1.tenancy.oc1..aaaaaaaa...3jb"               # Replace with your tenancy OCID.
+    user_ocid            = "ocid1.user.oc1..aaaaaaaa...xsb"                  # Replace with your user OCID.
+    fingerprint          = "19:42:xx:92:yy:b3:zz:2f:aa:ea:bb:59:cc:be:dd:ba" # Replace with user fingerprint.
+    private_key_path     = "path-to-pem-file-with-private-key"               # Replace with user private key local path.
+    private_key_password = ""                                                # Replace with private key password, if any.
+    region               = "us-phoenix-1" # Replace with region name.
+    service_label        = "custvcn"        # Prefix prepended to deployed resource names. 
+
+    # ------------------------------------------------------
+    # ----- Networking
+    # ------------------------------------------------------
+    add_tt_vcn1 = true # This deploys one three-tier VCN with custom settings.
+    # --- VCN settings
+    tt_vcn1_name = "my-vcn-1"                    # Provide the VCN name.
+    tt_vcn1_cidrs = ["192.168.0.0/20"]           # Provide the VCN CIDR(s) block(s).
+    tt_vcn1_dns = "myvcn1"                       # Provide the VCN DNS name.
+    # --- Web subnet settings
+    tt_vcn1_web_subnet_name = "frontend-subnet"  # Provide the web subnet name.
+    tt_vcn1_web_subnet_cidr = "192.168.0.0/24"   # Provide the web subnet CIDR block.
+    tt_vcn1_web_subnet_dns  = "frontend"         # Provide the web subnet DNS name.
+    tt_vcn1_web_subnet_is_private = true         # Provide whether the web subnet is private or public.
+    # --- App subnet settings
+    tt_vcn1_app_subnet_name = "middle-subnet"    # Provide the app subnet name.
+    tt_vcn1_app_subnet_cidr = "192.168.1.0/24"   # Provide the app subnet CIDR block.
+    tt_vcn1_app_subnet_dns  = "middle"           # Provide the app subnet DNS name.
+    # --- DB subnet settings
+    tt_vcn1_db_subnet_name = "backend-subnet"    # Provide the db subnet name.
+    tt_vcn1_db_subnet_cidr = "192.168.2.0/24"    # Provide the db subnet CIDR block.
+    tt_vcn1_db_subnet_dns  = "backend"           # Provide the db subnet DNS name.
+    # --- Bastion subnet settings
+    deploy_tt_vcn1_bastion_subnet = true                 # Provide whether a bastion subnet is deployed.
+    tt_vcn1_bastion_subnet_name = "bastion-subnet"       # Provide the bastion subnet name.
+    tt_vcn1_bastion_subnet_cidr = "192.168.3.0/29"       # Provide the bastion subnet CIDR block.
+    tt_vcn1_bastion_subnet_dns  = "bastion"              # Provide the bastion subnet DNS name.
+    tt_vcn1_bastion_is_access_via_public_endpoint = true # This makes the bastion subnet public, making the subnet suitable for the deployment of a jump host. false makes it private, making the subnet suitable for OCI Bastion service.
+    tt_vcn1_bastion_subnet_allowed_cidrs = []            # Only applicable if tt_vcn1_bastion_is_access_via_public_endpoint = true. The list of CIDR blocks allowed to SSH into a jump host that is eventually deployed in the public bastion subnet.
+
+    # ------------------------------------------------------
+    # ----- Notifications
+    # ------------------------------------------------------
+    network_admin_email_endpoints  = ["email.address@example.com"] # for network-related events. Replace with a real email address.
+    security_admin_email_endpoints = ["email.address@example.com"] # for security-related events. Replace with a real email address.
+
+    # ------------------------------------------------------
+    # ----- Logging
+    # ------------------------------------------------------
+    enable_service_connector      = true # Enables service connector for logging consolidation.
+    activate_service_connector    = true # Activates service connector.
+    service_connector_target_kind = "streaming" # Sends collected logs to an OCI stream.
+
+    # ------------------------------------------------------
+    # ----- Security
+    # ------------------------------------------------------
+    enable_cloud_guard    = true # Set to false if Cloud Guard has already been enabled.
+    enable_security_zones = true # Deploys a security zone for this deployment in the enclosing compartment.
+    vss_create            = true # Enables Vulnerability Scanning Service for Compute instances.
+
+    # ------------------------------------------------------
+    # ----- Governance
+    # ------------------------------------------------------
+    create_budget = true # Deploys a default budget.
+}

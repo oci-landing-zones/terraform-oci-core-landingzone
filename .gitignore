@@ -1,0 +1,13 @@
+**/*.tfstate*
+**/*.out
+**/.terraform/*
+**/.terraform.*
+**/.DS_Store
+**/crash.log
+**/*.pem
+**/terraform.tfvars
+**/terraform_*.tfvars
+**/vars_*.tfvars
+test/**
+**/creds/**
+**/templates/**/*.tf

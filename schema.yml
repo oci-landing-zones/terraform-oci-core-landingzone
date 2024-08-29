@@ -1736,8 +1736,8 @@ variables:
     items:
       type: string
     uniqueItems: true
-    title: "List of CIDR blocks allowed to SSH into the public Bastion subnet where the jump host is going to be deployed"
-    description: "These CIDRs are allowed to SSH into the the jump host that is eventually deployed in the public Bastion subnet. Leave it empty for no access."
+    title: "List of CIDR blocks allowed to SSH into jump hosts eventually deployed in Bastion subnet"
+    description: "These CIDRs are allowed to SSH into the the jump host that is eventually deployed in the public Bastion subnet. Leave it empty for no access. 0.0.0.0/0 is not allowed."
     required: false
     visible: 
       and:
@@ -3235,9 +3235,9 @@ variables:
 
   fw_instance_public_rsa_key:
     type: string
-    title: "Firewall Instance public RSA Key"
-    description: "Enter a Public RSA Key to Login to Compute Instance."
-    required: true
+    title: "Firewall Instance public SSH Key"
+    description: "Enter a Public SSH Key to Login to Compute Instance."
+    required: false
     visible: 
       and:
         - customize_net
