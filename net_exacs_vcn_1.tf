@@ -126,7 +126,7 @@ locals {
                 src_type     = "CIDR_BLOCK"
                 dst_port_min = 22
                 dst_port_max = 22
-              } iflocal.hub_with_vcn == true && var.exa_vcn1_attach_to_drg == true && var.add_exa_vcn1 == true
+              } if local.hub_with_vcn == true && var.exa_vcn1_attach_to_drg == true && var.add_exa_vcn1 == true
             },
             {
               "INGRESS-FROM-SSH-CLIENT-RULE" = {
