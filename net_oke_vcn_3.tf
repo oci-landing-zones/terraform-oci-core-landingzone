@@ -967,8 +967,8 @@ locals {
         protocol     = "TCP"
         dst          = coalesce(var.oke_vcn1_workers_subnet_cidr, cidrsubnet(var.oke_vcn1_cidrs[0], 8, 1))
         dst_type     = "CIDR_BLOCK"
-        dst_port_min = 443
-        dst_port_max = 443
+        dst_port_min = 30000
+        dst_port_max = 32767
       }
     } : {},
     (var.add_oke_vcn3 == true && var.oke_vcn3_attach_to_drg == true && var.add_oke_vcn2 == true && var.oke_vcn2_attach_to_drg == true) &&
@@ -979,8 +979,8 @@ locals {
         protocol     = "TCP"
         dst          = coalesce(var.oke_vcn2_workers_subnet_cidr, cidrsubnet(var.oke_vcn2_cidrs[0], 8, 1))
         dst_type     = "CIDR_BLOCK"
-        dst_port_min = 443
-        dst_port_max = 443
+        dst_port_min = 30000
+        dst_port_max = 32767
       }
     } : {}
   )
@@ -1020,8 +1020,8 @@ locals {
         protocol     = "TCP"
         dst          = coalesce(var.oke_vcn1_pods_subnet_cidr, cidrsubnet(var.oke_vcn1_cidrs[0], 3, 1))
         dst_type     = "CIDR_BLOCK"
-        dst_port_min = 443
-        dst_port_max = 443
+        #dst_port_min = 443
+        #dst_port_max = 443
       }
     } : {},
     (var.add_oke_vcn3 == true && var.oke_vcn3_attach_to_drg == true && var.add_oke_vcn2 == true && var.oke_vcn2_attach_to_drg == true) &&
@@ -1033,8 +1033,8 @@ locals {
         protocol     = "TCP"
         dst          = coalesce(var.oke_vcn2_services_subnet_cidr, cidrsubnet(var.oke_vcn2_cidrs[0], 3, 1))
         dst_type     = "CIDR_BLOCK"
-        dst_port_min = 443
-        dst_port_max = 443
+        #dst_port_min = 443
+        #dst_port_max = 443
       }
     } : {}
   )
@@ -1047,8 +1047,8 @@ locals {
         protocol     = "TCP"
         dst          = coalesce(var.exa_vcn1_client_subnet_cidr, cidrsubnet(var.exa_vcn1_cidrs[0], 4, 0))
         dst_type     = "CIDR_BLOCK"
-        dst_port_min = 443
-        dst_port_max = 443
+        dst_port_min = 1521
+        dst_port_max = 1522
       }
     } : {},
     (var.add_oke_vcn3 == true && var.oke_vcn3_attach_to_drg == true && var.add_exa_vcn2 == true && var.exa_vcn2_attach_to_drg == true) &&
@@ -1059,8 +1059,8 @@ locals {
         protocol     = "TCP"
         dst          = coalesce(var.exa_vcn2_client_subnet_cidr, cidrsubnet(var.exa_vcn2_cidrs[0], 4, 0))
         dst_type     = "CIDR_BLOCK"
-        dst_port_min = 443
-        dst_port_max = 443
+        dst_port_min = 1521
+        dst_port_max = 1522
       }
     } : {},
     (var.add_oke_vcn3 == true && var.oke_vcn3_attach_to_drg == true && var.add_exa_vcn3 == true && var.exa_vcn3_attach_to_drg == true) &&
@@ -1071,8 +1071,8 @@ locals {
         protocol     = "TCP"
         dst          = coalesce(var.exa_vcn3_client_subnet_cidr, cidrsubnet(var.exa_vcn3_cidrs[0], 4, 0))
         dst_type     = "CIDR_BLOCK"
-        dst_port_min = 443
-        dst_port_max = 443
+        dst_port_min = 1521
+        dst_port_max = 1522
       }
     } : {}
   )
@@ -1123,8 +1123,8 @@ locals {
         protocol     = "TCP"
         dst          = coalesce(var.tt_vcn1_app_subnet_cidr, cidrsubnet(var.tt_vcn1_cidrs[0], 4, 1))
         dst_type     = "CIDR_BLOCK"
-        dst_port_min = 443
-        dst_port_max = 443
+        dst_port_min = 80
+        dst_port_max = 80
       }
     } : {},
     (var.add_oke_vcn3 == true && var.oke_vcn3_attach_to_drg == true && var.add_tt_vcn2 == true && var.tt_vcn2_attach_to_drg == true) &&
@@ -1135,8 +1135,8 @@ locals {
         protocol     = "TCP"
         dst          = coalesce(var.tt_vcn2_app_subnet_cidr, cidrsubnet(var.tt_vcn2_cidrs[0], 4, 1))
         dst_type     = "CIDR_BLOCK"
-        dst_port_min = 443
-        dst_port_max = 443
+        dst_port_min = 80
+        dst_port_max = 80
       }
     } : {},
     (var.add_oke_vcn3 == true && var.oke_vcn3_attach_to_drg == true && var.add_tt_vcn3 == true && var.tt_vcn3_attach_to_drg == true) &&
@@ -1147,8 +1147,8 @@ locals {
         protocol     = "TCP"
         dst          = coalesce(var.tt_vcn3_app_subnet_cidr, cidrsubnet(var.tt_vcn3_cidrs[0], 4, 1))
         dst_type     = "CIDR_BLOCK"
-        dst_port_min = 443
-        dst_port_max = 443
+        dst_port_min = 80
+        dst_port_max = 80
       }
     } : {}
   )
@@ -1161,8 +1161,8 @@ locals {
         protocol     = "TCP"
         dst          = coalesce(var.tt_vcn1_db_subnet_cidr, cidrsubnet(var.tt_vcn1_cidrs[0], 4, 2))
         dst_type     = "CIDR_BLOCK"
-        dst_port_min = 443
-        dst_port_max = 443
+        dst_port_min = 1521
+        dst_port_max = 1522
       }
     } : {},
     (var.add_oke_vcn3 == true && var.oke_vcn3_attach_to_drg == true && var.add_tt_vcn2 == true && var.tt_vcn2_attach_to_drg == true) &&
@@ -1173,8 +1173,8 @@ locals {
         protocol     = "TCP"
         dst          = coalesce(var.tt_vcn2_db_subnet_cidr, cidrsubnet(var.tt_vcn2_cidrs[0], 4, 2))
         dst_type     = "CIDR_BLOCK"
-        dst_port_min = 443
-        dst_port_max = 443
+        dst_port_min = 1521
+        dst_port_max = 1522
       }
     } : {},
     (var.add_oke_vcn3 == true && var.oke_vcn3_attach_to_drg == true && var.add_tt_vcn3 == true && var.tt_vcn3_attach_to_drg == true) &&
@@ -1185,8 +1185,8 @@ locals {
         protocol     = "TCP"
         dst          = coalesce(var.tt_vcn3_db_subnet_cidr, cidrsubnet(var.tt_vcn3_cidrs[0], 4, 2))
         dst_type     = "CIDR_BLOCK"
-        dst_port_min = 443
-        dst_port_max = 443
+        dst_port_min = 1521
+        dst_port_max = 1522
       }
     } : {}
   )
@@ -1201,8 +1201,8 @@ locals {
         protocol     = "TCP"
         src          = coalesce(var.oke_vcn1_workers_subnet_cidr, cidrsubnet(var.oke_vcn1_cidrs[0], 8, 1))
         src_type     = "CIDR_BLOCK"
-        dst_port_min = 1521
-        dst_port_max = 1522
+        dst_port_min = 443
+        dst_port_max = 443
       },
     } : {},
     (var.add_oke_vcn3 == true && var.oke_vcn3_attach_to_drg == true && var.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true) &&
@@ -1214,8 +1214,8 @@ locals {
         protocol     = "TCP"
         src          = coalesce(var.oke_vcn1_pods_subnet_cidr, cidrsubnet(var.oke_vcn1_cidrs[0], 3, 1))
         src_type     = "CIDR_BLOCK"
-        dst_port_min = 1521
-        dst_port_max = 1522
+        dst_port_min = 443
+        dst_port_max = 443
       }
     } : {},
     (var.add_oke_vcn3 == true && var.oke_vcn3_attach_to_drg == true && var.add_oke_vcn2 == true && var.oke_vcn2_attach_to_drg == true) &&
@@ -1226,8 +1226,8 @@ locals {
         protocol     = "TCP"
         src          = coalesce(var.oke_vcn2_workers_subnet_cidr, cidrsubnet(var.oke_vcn2_cidrs[0], 8, 1))
         src_type     = "CIDR_BLOCK"
-        dst_port_min = 1521
-        dst_port_max = 1522
+        dst_port_min = 443
+        dst_port_max = 443
       },
     } : {},
     (var.add_oke_vcn3 == true && var.oke_vcn3_attach_to_drg == true && var.add_oke_vcn2 == true && var.oke_vcn2_attach_to_drg == true) &&
@@ -1239,8 +1239,8 @@ locals {
         protocol     = "TCP"
         src          = coalesce(var.oke_vcn2_pods_subnet_cidr, cidrsubnet(var.oke_vcn2_cidrs[0], 3, 1))
         src_type     = "CIDR_BLOCK"
-        dst_port_min = 1521
-        dst_port_max = 1522
+        dst_port_min = 443
+        dst_port_max = 443
       }
     } : {},
     (var.add_oke_vcn3 == true && var.oke_vcn3_attach_to_drg == true && var.add_tt_vcn1 == true && var.tt_vcn1_attach_to_drg == true) &&
@@ -1251,8 +1251,8 @@ locals {
         protocol     = "TCP"
         src          = coalesce(var.tt_vcn1_app_subnet_cidr, cidrsubnet(var.tt_vcn1_cidrs[0], 4, 1))
         src_type     = "CIDR_BLOCK"
-        dst_port_min = 1521
-        dst_port_max = 1522
+        dst_port_min = 443
+        dst_port_max = 443
       },
     } : {},
     (var.add_oke_vcn3 == true && var.oke_vcn3_attach_to_drg == true && var.add_tt_vcn1 == true && var.tt_vcn1_attach_to_drg == true) &&
@@ -1263,8 +1263,8 @@ locals {
         protocol     = "TCP"
         src          = coalesce(var.tt_vcn1_db_subnet_cidr, cidrsubnet(var.tt_vcn1_cidrs[0], 4, 2))
         src_type     = "CIDR_BLOCK"
-        dst_port_min = 1521
-        dst_port_max = 1522
+        dst_port_min = 443
+        dst_port_max = 443
       }
     } : {},
     (var.add_oke_vcn3 == true && var.oke_vcn3_attach_to_drg == true && var.add_tt_vcn2 == true && var.tt_vcn2_attach_to_drg == true) &&
@@ -1275,8 +1275,8 @@ locals {
         protocol     = "TCP"
         src          = coalesce(var.tt_vcn2_app_subnet_cidr, cidrsubnet(var.tt_vcn2_cidrs[0], 4, 1))
         src_type     = "CIDR_BLOCK"
-        dst_port_min = 1521
-        dst_port_max = 1522
+        dst_port_min = 443
+        dst_port_max = 443
       },
     } : {},
     (var.add_oke_vcn3 == true && var.oke_vcn3_attach_to_drg == true && var.add_tt_vcn2 == true && var.tt_vcn2_attach_to_drg == true) &&
@@ -1287,8 +1287,8 @@ locals {
         protocol     = "TCP"
         src          = coalesce(var.tt_vcn2_db_subnet_cidr, cidrsubnet(var.tt_vcn2_cidrs[0], 4, 2))
         src_type     = "CIDR_BLOCK"
-        dst_port_min = 1521
-        dst_port_max = 1522
+        dst_port_min = 443
+        dst_port_max = 443
       }
     } : {},
     (var.add_oke_vcn3 == true && var.oke_vcn3_attach_to_drg == true && var.add_tt_vcn3 == true && var.tt_vcn3_attach_to_drg == true) &&
@@ -1299,8 +1299,8 @@ locals {
         protocol     = "TCP"
         src          = coalesce(var.tt_vcn3_app_subnet_cidr, cidrsubnet(var.tt_vcn3_cidrs[0], 4, 1))
         src_type     = "CIDR_BLOCK"
-        dst_port_min = 1521
-        dst_port_max = 1522
+        dst_port_min = 443
+        dst_port_max = 443
       },
     } : {},
     (var.add_oke_vcn3 == true && var.oke_vcn3_attach_to_drg == true && var.add_tt_vcn3 == true && var.tt_vcn3_attach_to_drg == true) &&
@@ -1311,8 +1311,8 @@ locals {
         protocol     = "TCP"
         src          = coalesce(var.tt_vcn3_db_subnet_cidr, cidrsubnet(var.tt_vcn3_cidrs[0], 4, 2))
         src_type     = "CIDR_BLOCK"
-        dst_port_min = 1521
-        dst_port_max = 1522
+        dst_port_min = 443
+        dst_port_max = 443
       }
     } : {},
     (var.add_oke_vcn3 == true && var.oke_vcn3_attach_to_drg == true && var.add_exa_vcn1 == true && var.exa_vcn1_attach_to_drg == true) &&
@@ -1323,8 +1323,8 @@ locals {
         protocol     = "TCP"
         src          = coalesce(var.exa_vcn1_client_subnet_cidr, cidrsubnet(var.exa_vcn1_cidrs[0], 4, 0))
         src_type     = "CIDR_BLOCK"
-        dst_port_min = 1521
-        dst_port_max = 1522
+        dst_port_min = 443
+        dst_port_max = 443
       }
     } : {},
     (var.add_oke_vcn3 == true && var.oke_vcn3_attach_to_drg == true && var.add_exa_vcn2 == true && var.exa_vcn2_attach_to_drg == true) &&
@@ -1335,8 +1335,8 @@ locals {
         protocol     = "TCP"
         src          = coalesce(var.exa_vcn2_client_subnet_cidr, cidrsubnet(var.exa_vcn2_cidrs[0], 4, 0))
         src_type     = "CIDR_BLOCK"
-        dst_port_min = 1521
-        dst_port_max = 1522
+        dst_port_min = 443
+        dst_port_max = 443
       }
     } : {},
     (var.add_oke_vcn3 == true && var.oke_vcn3_attach_to_drg == true && var.add_exa_vcn3 == true && var.exa_vcn3_attach_to_drg == true) &&
@@ -1347,8 +1347,8 @@ locals {
         protocol     = "TCP"
         src          = coalesce(var.exa_vcn3_client_subnet_cidr, cidrsubnet(var.exa_vcn3_cidrs[0], 4, 0))
         src_type     = "CIDR_BLOCK"
-        dst_port_min = 1521
-        dst_port_max = 1522
+        dst_port_min = 443
+        dst_port_max = 443
       }
     } : {}
   )
@@ -1361,8 +1361,8 @@ locals {
         protocol     = "TCP"
         src          = coalesce(var.oke_vcn1_workers_subnet_cidr, cidrsubnet(var.oke_vcn1_cidrs[0], 8, 1))
         src_type     = "CIDR_BLOCK"
-        dst_port_min = 1521
-        dst_port_max = 1522
+        dst_port_min = 30000
+        dst_port_max = 32767
       },
       "INGRESS-FROM-OKE-VCN-1-SERVICES-SUBNET-RULE" = {
         description  = "Ingress from ${coalesce(var.oke_vcn1_services_subnet_name, "${var.service_label}-oke-vcn-1-services-subnet")}."
@@ -1370,8 +1370,8 @@ locals {
         protocol     = "TCP"
         src          = coalesce(var.oke_vcn1_services_subnet_cidr, cidrsubnet(var.oke_vcn1_cidrs[0], 8, 2))
         src_type     = "CIDR_BLOCK"
-        dst_port_min = 1521
-        dst_port_max = 1522
+        dst_port_min = 30000
+        dst_port_max = 32767
       }
     } : {},
     (var.add_oke_vcn3 == true && var.oke_vcn3_attach_to_drg == true && var.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true) &&
@@ -1383,8 +1383,8 @@ locals {
         protocol     = "TCP"
         src          = coalesce(var.oke_vcn1_pods_subnet_cidr, cidrsubnet(var.oke_vcn1_cidrs[0], 3, 1))
         src_type     = "CIDR_BLOCK"
-        dst_port_min = 1521
-        dst_port_max = 1522
+        dst_port_min = 30000
+        dst_port_max = 32767
       }
     } : {},
     (var.add_oke_vcn3 == true && var.oke_vcn3_attach_to_drg == true && var.add_oke_vcn2 == true && var.oke_vcn2_attach_to_drg == true) &&
@@ -1395,8 +1395,8 @@ locals {
         protocol     = "TCP"
         src          = coalesce(var.oke_vcn2_workers_subnet_cidr, cidrsubnet(var.oke_vcn2_cidrs[0], 8, 1))
         src_type     = "CIDR_BLOCK"
-        dst_port_min = 1521
-        dst_port_max = 1522
+        dst_port_min = 30000
+        dst_port_max = 32767
       },
       "INGRESS-FROM-OKE-VCN-2-SERVICES-SUBNET-RULE" = {
         description  = "Ingress from ${coalesce(var.oke_vcn2_services_subnet_name, "${var.service_label}-oke-vcn-2-services-subnet")}."
@@ -1404,8 +1404,8 @@ locals {
         protocol     = "TCP"
         src          = coalesce(var.oke_vcn2_services_subnet_cidr, cidrsubnet(var.oke_vcn2_cidrs[0], 8, 2))
         src_type     = "CIDR_BLOCK"
-        dst_port_min = 1521
-        dst_port_max = 1522
+        dst_port_min = 30000
+        dst_port_max = 32767
       },
     } : {},
     (var.add_oke_vcn3 == true && var.oke_vcn3_attach_to_drg == true && var.add_oke_vcn2 == true && var.oke_vcn2_attach_to_drg == true) &&
@@ -1417,8 +1417,8 @@ locals {
         protocol     = "TCP"
         src          = coalesce(var.oke_vcn2_pods_subnet_cidr, cidrsubnet(var.oke_vcn2_cidrs[0], 3, 1))
         src_type     = "CIDR_BLOCK"
-        dst_port_min = 1521
-        dst_port_max = 1522
+        dst_port_min = 30000
+        dst_port_max = 32767
       }
     } : {},
     (var.add_oke_vcn3 == true && var.oke_vcn3_attach_to_drg == true && var.add_tt_vcn1 == true && var.tt_vcn1_attach_to_drg == true) &&
@@ -1429,8 +1429,8 @@ locals {
         protocol     = "TCP"
         src          = coalesce(var.tt_vcn1_app_subnet_cidr, cidrsubnet(var.tt_vcn1_cidrs[0], 4, 1))
         src_type     = "CIDR_BLOCK"
-        dst_port_min = 1521
-        dst_port_max = 1522
+        dst_port_min = 30000
+        dst_port_max = 32767
       },
     } : {},
     (var.add_oke_vcn3 == true && var.oke_vcn3_attach_to_drg == true && var.add_tt_vcn1 == true && var.tt_vcn1_attach_to_drg == true) &&
@@ -1441,8 +1441,8 @@ locals {
         protocol     = "TCP"
         src          = coalesce(var.tt_vcn1_db_subnet_cidr, cidrsubnet(var.tt_vcn1_cidrs[0], 4, 2))
         src_type     = "CIDR_BLOCK"
-        dst_port_min = 1521
-        dst_port_max = 1522
+        dst_port_min = 30000
+        dst_port_max = 32767
       }
     } : {},
     (var.add_oke_vcn3 == true && var.oke_vcn3_attach_to_drg == true && var.add_tt_vcn2 == true && var.tt_vcn2_attach_to_drg == true) &&
@@ -1453,8 +1453,8 @@ locals {
         protocol     = "TCP"
         src          = coalesce(var.tt_vcn2_app_subnet_cidr, cidrsubnet(var.tt_vcn2_cidrs[0], 4, 1))
         src_type     = "CIDR_BLOCK"
-        dst_port_min = 1521
-        dst_port_max = 1522
+        dst_port_min = 30000
+        dst_port_max = 32767
       },
     } : {},
     (var.add_oke_vcn3 == true && var.oke_vcn3_attach_to_drg == true && var.add_tt_vcn2 == true && var.tt_vcn2_attach_to_drg == true) &&
@@ -1465,8 +1465,8 @@ locals {
         protocol     = "TCP"
         src          = coalesce(var.tt_vcn2_db_subnet_cidr, cidrsubnet(var.tt_vcn2_cidrs[0], 4, 2))
         src_type     = "CIDR_BLOCK"
-        dst_port_min = 1521
-        dst_port_max = 1522
+        dst_port_min = 30000
+        dst_port_max = 32767
       }
     } : {},
     (var.add_oke_vcn3 == true && var.oke_vcn3_attach_to_drg == true && var.add_tt_vcn3 == true && var.tt_vcn3_attach_to_drg == true) &&
@@ -1477,8 +1477,8 @@ locals {
         protocol     = "TCP"
         src          = coalesce(var.tt_vcn3_app_subnet_cidr, cidrsubnet(var.tt_vcn3_cidrs[0], 4, 1))
         src_type     = "CIDR_BLOCK"
-        dst_port_min = 1521
-        dst_port_max = 1522
+        dst_port_min = 30000
+        dst_port_max = 32767
       },
     } : {},
     (var.add_oke_vcn3 == true && var.oke_vcn3_attach_to_drg == true && var.add_tt_vcn3 == true && var.tt_vcn3_attach_to_drg == true) &&
@@ -1489,8 +1489,8 @@ locals {
         protocol     = "TCP"
         src          = coalesce(var.tt_vcn3_db_subnet_cidr, cidrsubnet(var.tt_vcn3_cidrs[0], 4, 2))
         src_type     = "CIDR_BLOCK"
-        dst_port_min = 1521
-        dst_port_max = 1522
+        dst_port_min = 30000
+        dst_port_max = 32767
       }
     } : {},
     (var.add_oke_vcn3 == true && var.oke_vcn3_attach_to_drg == true && var.add_exa_vcn1 == true && var.exa_vcn1_attach_to_drg == true) &&
@@ -1501,8 +1501,8 @@ locals {
         protocol     = "TCP"
         src          = coalesce(var.exa_vcn1_client_subnet_cidr, cidrsubnet(var.exa_vcn1_cidrs[0], 4, 0))
         src_type     = "CIDR_BLOCK"
-        dst_port_min = 1521
-        dst_port_max = 1522
+        dst_port_min = 30000
+        dst_port_max = 32767
       }
     } : {},
     (var.add_oke_vcn3 == true && var.oke_vcn3_attach_to_drg == true && var.add_exa_vcn2 == true && var.exa_vcn2_attach_to_drg == true) &&
@@ -1513,8 +1513,8 @@ locals {
         protocol     = "TCP"
         src          = coalesce(var.exa_vcn2_client_subnet_cidr, cidrsubnet(var.exa_vcn2_cidrs[0], 4, 0))
         src_type     = "CIDR_BLOCK"
-        dst_port_min = 1521
-        dst_port_max = 1522
+        dst_port_min = 30000
+        dst_port_max = 32767
       }
     } : {},
     (var.add_oke_vcn3 == true && var.oke_vcn3_attach_to_drg == true && var.add_exa_vcn3 == true && var.exa_vcn3_attach_to_drg == true) &&
@@ -1525,8 +1525,8 @@ locals {
         protocol     = "TCP"
         src          = coalesce(var.exa_vcn3_client_subnet_cidr, cidrsubnet(var.exa_vcn3_cidrs[0], 4, 0))
         src_type     = "CIDR_BLOCK"
-        dst_port_min = 1521
-        dst_port_max = 1522
+        dst_port_min = 30000
+        dst_port_max = 32767
       }
     } : {}
   )
@@ -1539,8 +1539,6 @@ locals {
         protocol     = "TCP"
         src          = coalesce(var.oke_vcn1_workers_subnet_cidr, cidrsubnet(var.oke_vcn1_cidrs[0], 8, 1))
         src_type     = "CIDR_BLOCK"
-        dst_port_min = 1521
-        dst_port_max = 1522
       },
       "INGRESS-FROM-OKE-VCN-1-SERVICES-SUBNET-RULE" = {
         description  = "Ingress from ${coalesce(var.oke_vcn1_services_subnet_name, "${var.service_label}-oke-vcn-1-services-subnet")}."
@@ -1548,8 +1546,6 @@ locals {
         protocol     = "TCP"
         src          = coalesce(var.oke_vcn1_services_subnet_cidr, cidrsubnet(var.oke_vcn1_cidrs[0], 8, 2))
         src_type     = "CIDR_BLOCK"
-        dst_port_min = 1521
-        dst_port_max = 1522
       }
     } : {},
     (var.add_oke_vcn3 == true && var.oke_vcn3_attach_to_drg == true && var.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true) &&
@@ -1561,8 +1557,6 @@ locals {
         protocol     = "TCP"
         src          = coalesce(var.oke_vcn1_pods_subnet_cidr, cidrsubnet(var.oke_vcn1_cidrs[0], 3, 1))
         src_type     = "CIDR_BLOCK"
-        dst_port_min = 1521
-        dst_port_max = 1522
       }
     } : {},
     (var.add_oke_vcn3 == true && var.oke_vcn3_attach_to_drg == true && var.add_oke_vcn2 == true && var.oke_vcn2_attach_to_drg == true) &&
@@ -1573,8 +1567,6 @@ locals {
         protocol     = "TCP"
         src          = coalesce(var.oke_vcn2_workers_subnet_cidr, cidrsubnet(var.oke_vcn2_cidrs[0], 8, 1))
         src_type     = "CIDR_BLOCK"
-        dst_port_min = 1521
-        dst_port_max = 1522
       },
       "INGRESS-FROM-OKE-VCN-2-SERVICES-SUBNET-RULE" = {
         description  = "Ingress from ${coalesce(var.oke_vcn2_services_subnet_name, "${var.service_label}-oke-vcn-2-services-subnet")}."
@@ -1582,8 +1574,6 @@ locals {
         protocol     = "TCP"
         src          = coalesce(var.oke_vcn2_services_subnet_cidr, cidrsubnet(var.oke_vcn2_cidrs[0], 8, 2))
         src_type     = "CIDR_BLOCK"
-        dst_port_min = 1521
-        dst_port_max = 1522
       },
     } : {},
     (var.add_oke_vcn3 == true && var.oke_vcn3_attach_to_drg == true && var.add_oke_vcn2 == true && var.oke_vcn2_attach_to_drg == true) &&
@@ -1595,8 +1585,6 @@ locals {
         protocol     = "TCP"
         src          = coalesce(var.oke_vcn3_pods_subnet_cidr, cidrsubnet(var.oke_vcn3_cidrs[0], 3, 1))
         src_type     = "CIDR_BLOCK"
-        dst_port_min = 1521
-        dst_port_max = 1522
       }
     } : {},
     (var.add_oke_vcn3 == true && var.oke_vcn3_attach_to_drg == true && var.add_tt_vcn1 == true && var.tt_vcn1_attach_to_drg == true) &&
@@ -1607,8 +1595,6 @@ locals {
         protocol     = "TCP"
         src          = coalesce(var.tt_vcn1_app_subnet_cidr, cidrsubnet(var.tt_vcn1_cidrs[0], 4, 1))
         src_type     = "CIDR_BLOCK"
-        dst_port_min = 1521
-        dst_port_max = 1522
       },
     } : {},
     (var.add_oke_vcn3 == true && var.oke_vcn3_attach_to_drg == true && var.add_tt_vcn1 == true && var.tt_vcn1_attach_to_drg == true) &&
@@ -1619,8 +1605,6 @@ locals {
         protocol     = "TCP"
         src          = coalesce(var.tt_vcn1_db_subnet_cidr, cidrsubnet(var.tt_vcn1_cidrs[0], 4, 2))
         src_type     = "CIDR_BLOCK"
-        dst_port_min = 1521
-        dst_port_max = 1522
       }
     } : {},
     (var.add_oke_vcn3 == true && var.oke_vcn3_attach_to_drg == true && var.add_tt_vcn2 == true && var.tt_vcn2_attach_to_drg == true) &&
@@ -1631,8 +1615,6 @@ locals {
         protocol     = "TCP"
         src          = coalesce(var.tt_vcn2_app_subnet_cidr, cidrsubnet(var.tt_vcn2_cidrs[0], 4, 1))
         src_type     = "CIDR_BLOCK"
-        dst_port_min = 1521
-        dst_port_max = 1522
       },
     } : {},
     (var.add_oke_vcn3 == true && var.oke_vcn3_attach_to_drg == true && var.add_tt_vcn2 == true && var.tt_vcn2_attach_to_drg == true) &&
@@ -1643,8 +1625,6 @@ locals {
         protocol     = "TCP"
         src          = coalesce(var.tt_vcn2_db_subnet_cidr, cidrsubnet(var.tt_vcn2_cidrs[0], 4, 2))
         src_type     = "CIDR_BLOCK"
-        dst_port_min = 1521
-        dst_port_max = 1522
       }
     } : {},
     (var.add_oke_vcn3 == true && var.oke_vcn3_attach_to_drg == true && var.add_tt_vcn3 == true && var.tt_vcn3_attach_to_drg == true) &&
@@ -1655,8 +1635,6 @@ locals {
         protocol     = "TCP"
         src          = coalesce(var.tt_vcn3_app_subnet_cidr, cidrsubnet(var.tt_vcn3_cidrs[0], 4, 1))
         src_type     = "CIDR_BLOCK"
-        dst_port_min = 1521
-        dst_port_max = 1522
       },
     } : {},
     (var.add_oke_vcn3 == true && var.oke_vcn3_attach_to_drg == true && var.add_tt_vcn3 == true && var.tt_vcn3_attach_to_drg == true) &&
@@ -1667,8 +1645,6 @@ locals {
         protocol     = "TCP"
         src          = coalesce(var.tt_vcn3_db_subnet_cidr, cidrsubnet(var.tt_vcn3_cidrs[0], 4, 2))
         src_type     = "CIDR_BLOCK"
-        dst_port_min = 1521
-        dst_port_max = 1522
       }
     } : {},
     (var.add_oke_vcn3 == true && var.oke_vcn3_attach_to_drg == true && var.add_exa_vcn1 == true && var.exa_vcn1_attach_to_drg == true) &&
@@ -1679,8 +1655,6 @@ locals {
         protocol     = "TCP"
         src          = coalesce(var.exa_vcn1_client_subnet_cidr, cidrsubnet(var.exa_vcn1_cidrs[0], 4, 0))
         src_type     = "CIDR_BLOCK"
-        dst_port_min = 1521
-        dst_port_max = 1522
       }
     } : {},
     (var.add_oke_vcn3 == true && var.oke_vcn3_attach_to_drg == true && var.add_exa_vcn2 == true && var.exa_vcn2_attach_to_drg == true) &&
@@ -1691,8 +1665,6 @@ locals {
         protocol     = "TCP"
         src          = coalesce(var.exa_vcn2_client_subnet_cidr, cidrsubnet(var.exa_vcn2_cidrs[0], 4, 0))
         src_type     = "CIDR_BLOCK"
-        dst_port_min = 1521
-        dst_port_max = 1522
       }
     } : {},
     (var.add_oke_vcn3 == true && var.oke_vcn3_attach_to_drg == true && var.add_exa_vcn3 == true && var.exa_vcn3_attach_to_drg == true) &&
@@ -1703,8 +1675,6 @@ locals {
         protocol     = "TCP"
         src          = coalesce(var.exa_vcn3_client_subnet_cidr, cidrsubnet(var.exa_vcn3_cidrs[0], 4, 0))
         src_type     = "CIDR_BLOCK"
-        dst_port_min = 1521
-        dst_port_max = 1522
       }
     } : {}
   )
