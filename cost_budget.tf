@@ -36,10 +36,10 @@ locals {
   compartment_based_budget = {
     COMPARTMENT-BASED-BUDGET = {
       name : local.custom_budget_display_name != null ? local.custom_budget_display_name : "${var.service_label}-main-budget"
-      description : local.use_enclosing_compartment == true ? "Tracks spending from the enclosing compartment level and down" : "Tracks spending across the tenancy"
+      description : local.enclosing_compartment_id != var.tenancy_ocid ? "Tracks spending from the enclosing compartment level and down" : "Tracks spending across the tenancy"
       target : {
         type : "COMPARTMENT"
-        values : local.use_enclosing_compartment ? [local.enclosing_compartment_id] : [var.tenancy_ocid]
+        values : local.enclosing_compartment_id != var.tenancy_ocid ? [local.enclosing_compartment_id] : [var.tenancy_ocid]
       }
       amount : var.budget_amount
       defined_tags  = local.cost_management_defined_tags
