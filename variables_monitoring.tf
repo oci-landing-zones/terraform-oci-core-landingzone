@@ -4,7 +4,7 @@
 variable "network_admin_email_endpoints" {
   type        = list(string)
   default     = []
-  description = "List of email addresses for all network related notifications."
+  description = "List of email addresses for all network related notifications. (Type an email address and hit enter to enter multiple values)"
   validation {
     condition     = length(var.network_admin_email_endpoints) > 0
     error_message = "Validation failed for network_admin_email_endpoints: at least one valid email address must be provided."
@@ -17,7 +17,7 @@ variable "network_admin_email_endpoints" {
 variable "security_admin_email_endpoints" {
   type        = list(string)
   default     = []
-  description = "List of email addresses for all security related notifications."
+  description = "List of email addresses for all security related notifications. (Type an email address and hit enter to enter multiple values)"
   validation {
     condition     = length(var.security_admin_email_endpoints) > 0
     error_message = "Validation failed for security_admin_email_endpoints: at least one valid email address must be provided."
@@ -30,7 +30,7 @@ variable "security_admin_email_endpoints" {
 variable "storage_admin_email_endpoints" {
   type        = list(string)
   default     = []
-  description = "List of email addresses for all storage related notifications."
+  description = "List of email addresses for all storage related notifications. (Type an email address and hit enter to enter multiple values)"
   validation {
     condition     = length([for e in var.storage_admin_email_endpoints : e if length(regexall("^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$", e)) > 0]) == length(var.storage_admin_email_endpoints)
     error_message = "Validation failed for storage_admin_email_endpoints: invalid email address."
@@ -39,7 +39,7 @@ variable "storage_admin_email_endpoints" {
 variable "compute_admin_email_endpoints" {
   type        = list(string)
   default     = []
-  description = "List of email addresses for all compute related notifications."
+  description = "List of email addresses for all compute related notifications. (Type an email address and hit enter to enter multiple values)"
   validation {
     condition     = length([for e in var.compute_admin_email_endpoints : e if length(regexall("^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$", e)) > 0]) == length(var.compute_admin_email_endpoints)
     error_message = "Validation failed for compute_admin_email_endpoints: invalid email address."
@@ -48,7 +48,7 @@ variable "compute_admin_email_endpoints" {
 variable "budget_admin_email_endpoints" {
   type        = list(string)
   default     = []
-  description = "List of email addresses for all budget related notifications."
+  description = "List of email addresses for all budget related notifications such as budget and finance. (Type an email address and hit enter to enter multiple values)"
   validation {
     condition     = length([for e in var.budget_admin_email_endpoints : e if length(regexall("^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$", e)) > 0]) == length(var.budget_admin_email_endpoints)
     error_message = "Validation failed for budget_admin_email_endpoints: invalid email address."
@@ -57,7 +57,7 @@ variable "budget_admin_email_endpoints" {
 variable "database_admin_email_endpoints" {
   type        = list(string)
   default     = []
-  description = "List of email addresses for all database related notifications."
+  description = "List of email addresses for all database related notifications. (Type an email address and hit enter to enter multiple values)"
   validation {
     condition     = length([for e in var.database_admin_email_endpoints : e if length(regexall("^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$", e)) > 0]) == length(var.database_admin_email_endpoints)
     error_message = "Validation failed for database_admin_email_endpoints: invalid email address."
@@ -66,7 +66,7 @@ variable "database_admin_email_endpoints" {
 variable "exainfra_admin_email_endpoints" {
   type        = list(string)
   default     = []
-  description = "List of email addresses for all Exadata infrastrcture related notifications. Only applicable if deploy_exainfra_cmp is true."
+  description = "List of email addresses for all Exadata infrastructure related notifications. (Type an email address and hit enter to enter multiple values)"
   validation {
     condition     = length([for e in var.exainfra_admin_email_endpoints : e if length(regexall("^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$", e)) > 0]) == length(var.exainfra_admin_email_endpoints)
     error_message = "Validation failed for exainfra_admin_email_endpoints: invalid email address."
@@ -75,12 +75,12 @@ variable "exainfra_admin_email_endpoints" {
 variable "create_alarms_as_enabled" {
   type        = bool
   default     = false
-  description = "Creates alarm artifacts in disabled state when set to false"
+  description = "Whether a alarms should be created in an enabled state by default. If unchecked, alarms will be created but not emit alerts."
 }
 variable "create_events_as_enabled" {
   type        = bool
   default     = false
-  description = "Creates event rules artifacts in disabled state when set to false"
+  description = "Whether events should be created in an enabled state by default. If unchecked, events will be created but not emit notifications."
 }
 variable "alarm_message_format" {
   type        = string
@@ -100,12 +100,12 @@ variable "notifications_advanced_options" {
 # ----- Service Connector Hub
 # ------------------------------------------------------
 variable "enable_service_connector" {
-  description = "Whether Service Connector Hub should be enabled. If true, a single Service Connector is managed for all services log sources and the designated target specified in 'service_connector_target_kind'. The Service Connector resource is created in INACTIVE state. To activate, set 'activate_service_connector' to true (costs may incur)."
+  description = "Whether Service Connector should be enabled. If true, a single Service Connector is managed for all services log sources and the designated target specified in 'Service Connector Target Kind'. The Service Connector resource is created in INACTIVE state. To activate, check 'Activate Service Connector?' (costs may incur)."
   type        = bool
   default     = false
 }
 variable "activate_service_connector" {
-  description = "Whether Service Connector Hub should be activated. If true, costs my incur due to usage of Object Storage bucket, Streaming or Function."
+  description = "Whether Service Connector should be activated. If true, costs my incur due to usage of Object Storage bucket, Streaming or Function."
   type        = bool
   default     = false
 }
@@ -124,27 +124,27 @@ variable "onboard_logging_analytics" {
   default     = false
 }
 variable "existing_service_connector_bucket_vault_compartment_id" {
-  description = "The OCID of an existing compartment for the vault with the key used in Service Connector target Object Storage bucket encryption. Only applicable if 'service_connector_target_kind' is set to 'objectstorage'."
+  description = "An existing compartment for the vault with the key used to encrypt Service Connector target Object Storage bucket."
   type        = string
   default     = null
 }
 variable "existing_service_connector_bucket_vault_id" {
-  description = "The OCID of an existing vault for the encryption key used in Service Connector target Object Storage bucket. Only applicable if 'service_connector_target_kind' is set to 'objectstorage'."
+  description = "An existing vault for the key used to encrypt Service Connector target Object Storage bucket."
   type        = string
   default     = null
 }
 variable "existing_service_connector_bucket_key_id" {
-  description = "The OCID of an existing encryption key used in Service Connector target Object Storage bucket. Only applicable if 'service_connector_target_kind' is set to 'objectstorage'."
+  description = "An existing key used to encrypt Service Connector target Object Storage bucket."
   type        = string
   default     = null
 }
 variable "existing_service_connector_target_stream_id" {
-  description = "The OCID of an existing stream to be used as the Service Connector target. Only applicable if 'service_connector_target_kind' is set to 'streaming'."
+  description = "An existing stream to be used as the Service Connector target. Only applicable if 'service_connector_target_kind' is set to 'streaming'."
   type        = string
   default     = null
 }
 variable "existing_service_connector_target_function_id" {
-  description = "The OCID of an existing function to be used as the Service Connector target. Only applicable if 'service_connector_target_kind' is set to 'functions'."
+  description = "An existing function to be used as the Service Connector target. Only applicable if 'service_connector_target_kind' is set to 'functions'."
   type        = string
   default     = null
 }
