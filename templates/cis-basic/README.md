@@ -5,6 +5,18 @@ This template shows how to deploy the most basic CIS compliant landing zone usin
 Please see other [templates](../../templates/) available for CIS compliant landing zones with custom configurations.
 
 
+## Default Values
+
+This template will have following parameters set by default: 
+
+### General
+
+| Variable Name | Description | Value |
+|---------------|:-----------:|:------|
+| service_label | A unique identifier to prefix the resources | cisbasic |
+
+For a detailed description of all variables that can be used, see the [Variables](../../variables.md) documentation.
+
 This template can be deployed using OCI Resource Manager Service (RMS) or Terraform CLI:
 
 ## OCI RMS Deployment
@@ -21,18 +33,6 @@ You are required to review/adjust the following variable settings:
 Everything else is optional.    
 
 With the stack created, perform a Plan, followed by an Apply using RMS UI.
-
-This RMS deployment will have following parameters set by default: 
-
-This template will have following parameters set by default: 
-
-### General
-
-| Variable Name | Description | Value |
-|---------------|:-----------:|:------|
-| service_label | A unique identifier to prefix the resources | cisbasic |
-
-For a detailed description of all variables that can be used, see the [Variables](../../variables.md) documentation.
 
 ## Terraform CLI Deployment
 

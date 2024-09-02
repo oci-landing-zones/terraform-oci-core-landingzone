@@ -10,20 +10,7 @@ In this template, a single default three-tier VCN is deployed. Additionally, the
 
 Please see other [templates](../../templates/) available for CIS compliant landing zones with custom configurations.
 
-This template can be deployed using OCI Resource Manager Service (RMS) or Terraform CLI:
-
-## OCI RMS Deployment
-
-By clicking the button below, you are redirected to an OCI RMS Stack with variables pre-assigned for deployment. 
-
-[![Deploy_To_OCI](../../images/DeployToOCI.svg)](https://cloud.oracle.com/resourcemanager/stacks/create?zipUrl=https://github.com/andrecorreaneto/v3testing/archive/refs/heads/misc.zip&zipUrlVariables={"service_label":"defvcn","network_admin_email_endpoints":"email.address@example.com","security_admin_email_endpoints":"email.address@example.com","customize_net":true,"add_tt_vcn1":true,"enable_service_connector":true,"activate_service_connector":true,"service_connector_target_kind":"streaming","enable_security_zones":true,"vss_create":true,"create_budget":true})
-
-You are required to review/adjust the following variable settings:
- - Make sure to pick an OCI region for deployment.
- - Provide real email addresses for *Network Admin Email Endpoints* and *Security Admin Email Endpoints* fields. 
- - Uncheck *Enable Cloud Guard Service* option in case it is already enabled in your tenancy.
-
-With the stack created, perform a Plan, followed by an Apply using RMS UI.
+## Default Values
 
 This template will have following parameters set by default: 
 
@@ -41,6 +28,20 @@ This template will have following parameters set by default:
 
 For a detailed description of all variables that can be used, see the [Variables](../../variables.md) documentation.
 
+This template can be deployed using OCI Resource Manager Service (RMS) or Terraform CLI:
+
+## OCI RMS Deployment
+
+By clicking the button below, you are redirected to an OCI RMS Stack with variables pre-assigned for deployment. 
+
+[![Deploy_To_OCI](../../images/DeployToOCI.svg)](https://cloud.oracle.com/resourcemanager/stacks/create?zipUrl=https://github.com/andrecorreaneto/v3testing/archive/refs/heads/misc.zip&zipUrlVariables={"service_label":"defvcn","network_admin_email_endpoints":"email.address@example.com","security_admin_email_endpoints":"email.address@example.com","customize_net":true,"add_tt_vcn1":true,"enable_service_connector":true,"activate_service_connector":true,"service_connector_target_kind":"streaming","enable_security_zones":true,"vss_create":true,"create_budget":true})
+
+You are required to review/adjust the following variable settings:
+ - Make sure to pick an OCI region for deployment.
+ - Provide real email addresses for *Network Admin Email Endpoints* and *Security Admin Email Endpoints* fields. 
+ - Uncheck *Enable Cloud Guard Service* option in case it is already enabled in your tenancy.
+
+With the stack created, perform a Plan, followed by an Apply using RMS UI.
 
 ## Terraform CLI Deployment
 
