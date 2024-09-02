@@ -38,20 +38,22 @@
     1. [IAM](#arch-iam)
     1. [Network](#arch-network)
     1. [Diagram](#arch-diagram)
-    1. [Mapping to CIS OCI Benchmark v2.0](cis-architecture-mapping.md)
+    1. [Mapping to CIS OCI Benchmark v2.0](./ARCH_MAPPING_CIS.md)
+1. [Requirements](#requirements)    
 1. [Deployment Scenarios](#deployment-scenarios)
 1. [CIS OCI Foundations Benchmark Modules Collection](#modules)
 1. [Contributing](#contributing)
 1. [License](#license)
 1. [Known Issues](#known-issues)
 
+
 ## <a name="overview">Overview</a>
 
-The OCI Core Landing Zone is the evolution of CIS Landing Zone. 
+The OCI Core Landing Zone unifies the landing zone initiatives across OCI, including [CIS Landing Zone](https://github.com/oracle-quickstart/oci-cis-landingzone-quickstart) and [Oracle Enterprise Landing Zone](https://github.com/oci-landing-zones/oracle-enterprise-landingzone). 
 
-The CIS Landing Zone will soon go in maintenance mode, with new features added to OCI Core Landing Zone only.
+Both CIS Landing Zone and Oracle Enterprise Landing Zone will soon go in maintenance mode, with new features added to OCI Core Landing Zone only.
 
-As it's predecessor, OCI Core Landing Zone deploys a standardized environment in an Oracle Cloud Infrastructure (OCI) tenancy that helps organizations to comply with the [CIS OCI Foundations Benchmark v2.0](https://www.cisecurity.org/benchmark/oracle_cloud/).    
+The OCI Core Landing Zone deploys a standardized environment in an Oracle Cloud Infrastructure (OCI) tenancy that helps organizations to comply with the [CIS OCI Foundations Benchmark v2.0](https://www.cisecurity.org/benchmark/oracle_cloud/).    
 
 It uses multiple compartments, groups, and IAM policies to segregate access to resources based on job function. The resources are configured to meet the CIS OCI Foundations Benchmark settings related to:
 
@@ -67,6 +69,7 @@ It uses multiple compartments, groups, and IAM policies to segregate access to r
 - Object Storage
 - Budgets
 - Security Zones
+
 
 ## <a name="new">What's New</a>
 
@@ -85,11 +88,12 @@ From a functional perspective, the OCI Core Landing Zone adds the following to C
 4. Ability to deploy a network firewall appliance in the Hub VCN (a.k.a. DMZ VCN).  
 4. Ability to route traffic between select spoke VCNs, or in a full mesh model.
 
+
 ## <a name="arch">Architecture</a>
 
 ### <a name="arch-iam">IAM</a>
 
-The Landing Zone creates specific compartments in the tenancy root compartment or under an enclosing compartment:
+The OCI Core Landing Zone creates specific compartments in the tenancy root compartment or under an enclosing compartment:
  - Network compartment: for all networking resources.
  - Security compartment: for all logging, key management, scanning, and notifications resources. 
  - Application Development compartment: for application development related services, including Compute, Storage, Functions, Streams, Kubernetes, API Gateway, etc. 
@@ -135,6 +139,7 @@ Some architecture scenarios enabled by the Hub VCN are:
 - **Access between multiple networks through a single DRG with a firewall between networks:** This scenario connects several VCNs to a single DRG, with all routing configured to send packets through a firewall in a Hub VCN before they can be sent to another VCN.
 
 ### <a name="arch-diagram">Diagrams</a>
+
 The diagram below shows services and resources that are deployed along with a single three-tier VCN deployment:
 
 ![arch_simple](./images/arch_simple.svg)
@@ -149,6 +154,12 @@ The diagram below expands the resources in the network compartment for covering 
 
 You can create up to three (3) three-tier VCNs, three (3) Exadata VCNs,and 3 Oracle Kubernetes Engine (OKE) VCNs in a single landing zone deployment. 
 
+
+## <a name="requirements">Requirements</a>
+
+### Terraform Version >= 1.3.0
+
+This module requires Terraform binary version 1.3.0 or greater, as its underlying modules rely on Optional Object Type Attributes feature. The feature shortens the amount of input values in complex object types, by having Terraform automatically inserting a default value for any missing optional attributes.
 
 ## <a name="deployment-scenarios">Deployment Scenarios</a>
 
@@ -177,16 +188,21 @@ Using these modules does not require a user extensive knowledge of Terraform or 
 
 
 ## <a name="contributing">Contributing</a>
+
 See [CONTRIBUTING.md](./CONTRIBUTING.md).
 
+
 ## <a name="license">License</a>
+
 Copyright (c) 2023, Oracle and/or its affiliates.
 
 Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 
 See [LICENSE](./LICENSE) for more details.
 
+
 ## <a name="known-issues">Known Issues</a>
+
 * **Terraform Apply Failure 404-NotAuthorizedorNotFound**    
     * Terraform CLI or Resource Manager fails to apply with a message similar as this:
     ```
