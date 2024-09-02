@@ -21,7 +21,7 @@ variable "budget_amount" {
 variable "create_budget" {
   type        = bool
   default     = false
-  description = "If checked, a budget will be created at the root or enclosing compartment and based on forecast spend."
+  description = "If true, a budget is created for the enclosing compartment, based on forecast or actual spending."
 }
 variable "budget_alert_email_endpoints" {
   type        = list(string)
