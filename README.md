@@ -142,13 +142,13 @@ Some architecture scenarios enabled by the Hub VCN are:
 
 The diagram below shows services and resources that are deployed along with a single three-tier VCN deployment:
 
-![arch_simple](./images/arch_simple.svg)
+![arch_simple](./images/Architecture-Simple.png)
 
 [Get the diagram in SVG format.](./images/arch_simple.svg)
 
 The diagram below expands the resources in the network compartment for covering the possibilities in a Hub/Spoke topology:
 
-![arch_advanced](./images/arch_advanced.svg)
+![arch_advanced](./images/Architecture-Advanced.png)
 
 [Get the diagram in SVG format.](./images/arch_advanced.svg)
 
