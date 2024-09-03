@@ -270,7 +270,7 @@ variable "oke_vcn2_pods_subnet_name" {
 variable "oke_vcn2_pods_subnet_dns" {
   type    = string
   default = null
-  escription = "The Pods subnet DNS name. Use only letters and numbers, no special characters."
+  description = "The Pods subnet DNS name. Use only letters and numbers, no special characters."
 }
 
 variable "oke_vcn2_pods_subnet_cidr" {
