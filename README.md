@@ -148,9 +148,9 @@ The diagram below shows services and resources that are deployed along with a si
 
 The diagram below expands the resources in the network compartment for covering the possibilities in a Hub/Spoke topology:
 
-![arch_advanced](./images/Architecture-Advanced.png)
+![arch_advanced](./images/arch-advanced.png)
 
-[Get the diagram in SVG format.](./images/arch_advanced.svg)
+[Get the diagram in SVG format.](./images/arch-advanced.svg)
 
 You can create up to three (3) three-tier VCNs, three (3) Exadata VCNs,and 3 Oracle Kubernetes Engine (OKE) VCNs in a single landing zone deployment. 
 
