@@ -25,7 +25,7 @@ locals {
 }
 
 module "lz_groups" {
-  source               = "github.com/oracle-quickstart/terraform-oci-cis-landing-zone-iam//groups?ref=release-0.2.3"
+  source               = "github.com/oci-landing-zones/terraform-oci-modules-iam//groups?ref=v0.2.3"
   providers            = { oci = oci.home }
   tenancy_ocid         = var.tenancy_ocid
   groups_configuration = var.extend_landing_zone_to_new_region == false && var.use_custom_id_domain == false ? local.groups_configuration : local.empty_groups_configuration
