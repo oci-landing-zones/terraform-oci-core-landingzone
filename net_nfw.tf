@@ -13,11 +13,11 @@ locals {
   }
 
   image_name_database = {
-    "PALOALTO"   = ["Palo Alto Networks VM-Series Next Generation Firewall", "Palo Alto Networks"]
-    "FORTINET"   = ["FortiGate Next-Gen Firewall (2 cores)", "Fortinet, Inc." ] # Not being used, as we're using the OCID in fortigate_image_ocid
+    "PALOALTO"   = ["Palo Alto Networks VM-Series Next Generation Firewall", "11.1.3"]
+    "FORTINET"   = ["FortiGate Next-Gen Firewall (2 cores)", "7.6.0_(_X64_)" ]
   }
 
-  fortigate_image_ocid = "ocid1.image.oc1..aaaaaaaaq57pywudjr5yogjtl6qf3zs3yrwv66b5ooeiqykjgnneuerhfnia"
+  #fortigate_image_ocid = "ocid1.image.oc1..aaaaaaaaq57pywudjr5yogjtl6qf3zs3yrwv66b5ooeiqykjgnneuerhfnia"
 
   # current_image_name     = local.image_name_database[local.firewall_options[var.hub_vcn_deploy_firewall_option]][0]
   # current_publisher_name = local.image_name_database[local.firewall_options[var.hub_vcn_deploy_firewall_option]][1]
@@ -33,11 +33,9 @@ locals {
           memory = var.fw_instance_flex_shape_memory
           ocpus  = var.fw_instance_flex_shape_cpu
         }
-        image = local.firewall_options[var.hub_vcn_deploy_firewall_option] == "PALOALTO" ? {
-          name           = local.image_name_database[local.firewall_options[var.hub_vcn_deploy_firewall_option]][0]
-          publisher_name = local.image_name_database[local.firewall_options[var.hub_vcn_deploy_firewall_option]][1]
-        } : {
-          id = local.fortigate_image_ocid
+        marketplace_image = {
+          name    = local.image_name_database[local.firewall_options[var.hub_vcn_deploy_firewall_option]][0]
+          version = local.image_name_database[local.firewall_options[var.hub_vcn_deploy_firewall_option]][1]
         }
         placement = {
           availability_domain = 1
@@ -81,11 +79,9 @@ locals {
           memory = var.fw_instance_flex_shape_memory
           ocpus  = var.fw_instance_flex_shape_cpu
         }
-        image = local.firewall_options[var.hub_vcn_deploy_firewall_option] == "PALOALTO" ? {
-          name           = local.image_name_database[local.firewall_options[var.hub_vcn_deploy_firewall_option]][0]
-          publisher_name = local.image_name_database[local.firewall_options[var.hub_vcn_deploy_firewall_option]][1]
-        } : {
-          id = local.fortigate_image_ocid
+        marketplace_image = {
+          name    = local.image_name_database[local.firewall_options[var.hub_vcn_deploy_firewall_option]][0]
+          version = local.image_name_database[local.firewall_options[var.hub_vcn_deploy_firewall_option]][1]
         }
         placement = {
           availability_domain = 2
@@ -197,7 +193,7 @@ locals {
 
 module "lz_firewall_appliance" {
   count  = local.firewall_options[var.hub_vcn_deploy_firewall_option] != "NO" ? 1 : 0
-  source = "github.com/oci-landing-zones/terraform-oci-modules-workloads//cis-compute-storage?ref=v0.1.6"
+  source = "github.com/oci-landing-zones/terraform-oci-modules-workloads//cis-compute-storage?ref=release-0.1.7"
   instances_configuration = local.instances_configuration
   providers = {
     oci                                  = oci.home
@@ -207,7 +203,7 @@ module "lz_firewall_appliance" {
 
 module "lz_nlb" {
   count             = local.firewall_options[var.hub_vcn_deploy_firewall_option] != "NO" ? 1 : 0
-  source            = "github.com/oci-landing-zones/terraform-oci-modules-networking//modules/nlb?ref=release-0.6.9"
+  source            = "github.com/oci-landing-zones/terraform-oci-modules-networking//modules/nlb?ref=v0.6.9"
   nlb_configuration = local.nlb_configuration
 }
 
