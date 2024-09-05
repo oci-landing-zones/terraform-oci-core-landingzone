@@ -1,3 +1,6 @@
+# Copyright (c) 2023 Oracle and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+
 locals {
 
   exa_vcn_1 = var.add_exa_vcn1 == true ? {
