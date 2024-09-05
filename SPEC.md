@@ -18,24 +18,25 @@
 | <a name="module_lz_alarms"></a> [lz\_alarms](#module\_lz\_alarms) | github.com/oci-landing-zones/terraform-oci-modules-observability//alarms | v0.1.8 |
 | <a name="module_lz_budgets"></a> [lz\_budgets](#module\_lz\_budgets) | github.com/oci-landing-zones/terraform-oci-modules-governance//budgets | v0.1.4 |
 | <a name="module_lz_cloud_guard"></a> [lz\_cloud\_guard](#module\_lz\_cloud\_guard) | github.com/oci-landing-zones/terraform-oci-modules-security//cloud-guard | v0.1.7 |
-| <a name="module_lz_compartments"></a> [lz\_compartments](#module\_lz\_compartments) | github.com/oracle-quickstart/terraform-oci-cis-landing-zone-iam//compartments | release-0.2.3 |
-| <a name="module_lz_dynamic_groups"></a> [lz\_dynamic\_groups](#module\_lz\_dynamic\_groups) | github.com/oracle-quickstart/terraform-oci-cis-landing-zone-iam//dynamic-groups | release-0.2.3 |
-| <a name="module_lz_firewall_appliance"></a> [lz\_firewall\_appliance](#module\_lz\_firewall\_appliance) | github.com/oci-landing-zones/terraform-oci-modules-workloads//cis-compute-storage | v0.1.6 |
+| <a name="module_lz_compartments"></a> [lz\_compartments](#module\_lz\_compartments) | github.com/oci-landing-zones/terraform-oci-modules-iam//compartments | v0.2.3 |
+| <a name="module_lz_dynamic_groups"></a> [lz\_dynamic\_groups](#module\_lz\_dynamic\_groups) | github.com/oci-landing-zones/terraform-oci-modules-iam//dynamic-groups | v0.2.3 |
+| <a name="module_lz_firewall_appliance"></a> [lz\_firewall\_appliance](#module\_lz\_firewall\_appliance) | github.com/oci-landing-zones/terraform-oci-modules-workloads//cis-compute-storage | release-0.1.7 |
 | <a name="module_lz_flow_logs"></a> [lz\_flow\_logs](#module\_lz\_flow\_logs) | github.com/oci-landing-zones/terraform-oci-modules-observability//logging | v0.1.8 |
-| <a name="module_lz_groups"></a> [lz\_groups](#module\_lz\_groups) | github.com/oracle-quickstart/terraform-oci-cis-landing-zone-iam//groups | release-0.2.3 |
+| <a name="module_lz_groups"></a> [lz\_groups](#module\_lz\_groups) | github.com/oci-landing-zones/terraform-oci-modules-iam//groups | v0.2.3 |
 | <a name="module_lz_home_region_notifications"></a> [lz\_home\_region\_notifications](#module\_lz\_home\_region\_notifications) | github.com/oci-landing-zones/terraform-oci-modules-observability//events | v0.1.8 |
 | <a name="module_lz_home_region_topics"></a> [lz\_home\_region\_topics](#module\_lz\_home\_region\_topics) | github.com/oci-landing-zones/terraform-oci-modules-observability//notifications | v0.1.8 |
 | <a name="module_lz_logging_analytics"></a> [lz\_logging\_analytics](#module\_lz\_logging\_analytics) | github.com/oci-landing-zones/terraform-oci-modules-observability//logging | v0.1.8 |
-| <a name="module_lz_network"></a> [lz\_network](#module\_lz\_network) | github.com/oci-landing-zones/terraform-oci-modules-networking | release-0.6.9 |
-| <a name="module_lz_nlb"></a> [lz\_nlb](#module\_lz\_nlb) | github.com/oci-landing-zones/terraform-oci-modules-networking//modules/nlb | release-0.6.9 |
+| <a name="module_lz_network"></a> [lz\_network](#module\_lz\_network) | github.com/oci-landing-zones/terraform-oci-modules-networking | v0.6.9 |
+| <a name="module_lz_nlb"></a> [lz\_nlb](#module\_lz\_nlb) | github.com/oci-landing-zones/terraform-oci-modules-networking//modules/nlb | v0.6.9 |
 | <a name="module_lz_notifications"></a> [lz\_notifications](#module\_lz\_notifications) | github.com/oci-landing-zones/terraform-oci-modules-observability//events | v0.1.8 |
-| <a name="module_lz_policies"></a> [lz\_policies](#module\_lz\_policies) | github.com/oracle-quickstart/terraform-oci-cis-landing-zone-iam//policies | release-0.2.3 |
+| <a name="module_lz_policies"></a> [lz\_policies](#module\_lz\_policies) | github.com/oci-landing-zones/terraform-oci-modules-iam//policies | v0.2.3 |
 | <a name="module_lz_regional_topics"></a> [lz\_regional\_topics](#module\_lz\_regional\_topics) | github.com/oci-landing-zones/terraform-oci-modules-observability//notifications | v0.1.8 |
-| <a name="module_lz_root_policies"></a> [lz\_root\_policies](#module\_lz\_root\_policies) | github.com/oracle-quickstart/terraform-oci-cis-landing-zone-iam//policies | release-0.2.3 |
+| <a name="module_lz_root_policies"></a> [lz\_root\_policies](#module\_lz\_root\_policies) | github.com/oci-landing-zones/terraform-oci-modules-iam//policies | v0.2.3 |
 | <a name="module_lz_scanning"></a> [lz\_scanning](#module\_lz\_scanning) | github.com/oci-landing-zones/terraform-oci-modules-security//vss | v0.1.7 |
 | <a name="module_lz_security_zones"></a> [lz\_security\_zones](#module\_lz\_security\_zones) | github.com/oci-landing-zones/terraform-oci-modules-security//security-zones | v0.1.7 |
 | <a name="module_lz_service_connector_hub"></a> [lz\_service\_connector\_hub](#module\_lz\_service\_connector\_hub) | github.com/oci-landing-zones/terraform-oci-modules-observability//service-connectors | v0.1.8 |
-| <a name="module_lz_top_compartment"></a> [lz\_top\_compartment](#module\_lz\_top\_compartment) | github.com/oracle-quickstart/terraform-oci-cis-landing-zone-iam//compartments | release-0.2.3 |
+| <a name="module_lz_tags"></a> [lz\_tags](#module\_lz\_tags) | github.com/oci-landing-zones/terraform-oci-modules-governance//tags | v0.1.4 |
+| <a name="module_lz_top_compartment"></a> [lz\_top\_compartment](#module\_lz\_top\_compartment) | github.com/oci-landing-zones/terraform-oci-modules-iam//compartments | v0.2.3 |
 | <a name="module_lz_vault"></a> [lz\_vault](#module\_lz\_vault) | github.com/oci-landing-zones/terraform-oci-modules-security//vaults | v0.1.7 |
 
 ## Resources
@@ -252,7 +253,7 @@
 | <a name="input_oke_vcn2_mgmt_subnet_name"></a> [oke\_vcn2\_mgmt\_subnet\_name](#input\_oke\_vcn2\_mgmt\_subnet\_name) | The Management subnet name. | `string` | `null` | no |
 | <a name="input_oke_vcn2_name"></a> [oke\_vcn2\_name](#input\_oke\_vcn2\_name) | The VCN name. If unassigned, a default name is provided. | `string` | `null` | no |
 | <a name="input_oke_vcn2_pods_subnet_cidr"></a> [oke\_vcn2\_pods\_subnet\_cidr](#input\_oke\_vcn2\_pods\_subnet\_cidr) | The Pods subnet CIDR block. It must be within the VCN CIDR blocks. | `string` | `null` | no |
-| <a name="input_oke_vcn2_pods_subnet_dns"></a> [oke\_vcn2\_pods\_subnet\_dns](#input\_oke\_vcn2\_pods\_subnet\_dns) | n/a | `string` | `null` | no |
+| <a name="input_oke_vcn2_pods_subnet_dns"></a> [oke\_vcn2\_pods\_subnet\_dns](#input\_oke\_vcn2\_pods\_subnet\_dns) | The Pods subnet DNS name. Use only letters and numbers, no special characters. | `string` | `null` | no |
 | <a name="input_oke_vcn2_pods_subnet_name"></a> [oke\_vcn2\_pods\_subnet\_name](#input\_oke\_vcn2\_pods\_subnet\_name) | The pods subnet name. A private subnet for pods deployment is automatically added if oke\_vcn2\_cni\_type value is 'Native'. | `string` | `null` | no |
 | <a name="input_oke_vcn2_routable_vcns"></a> [oke\_vcn2\_routable\_vcns](#input\_oke\_vcn2\_routable\_vcns) | The VCN labels that this VCN can send traffic to. Only applicable for Hub/Spoke topology where a DRG is deployed as the hub. Valid values: TT-VCN-1, TT-VCN-2, TT-VCN-3, EXA-VCN-1, EXA-VCN-2, EXA-VCN3, OKE-VCN-1, OKE-VCN-3. | `list(string)` | `[]` | no |
 | <a name="input_oke_vcn2_services_subnet_cidr"></a> [oke\_vcn2\_services\_subnet\_cidr](#input\_oke\_vcn2\_services\_subnet\_cidr) | The Services subnet CIDR block. It must be within the VCN CIDR blocks. | `string` | `null` | no |
@@ -393,13 +394,25 @@
 
 | Name | Description |
 |------|-------------|
-| <a name="output_cis_level"></a> [cis\_level](#output\_cis\_level) | n/a |
-| <a name="output_compartments"></a> [compartments](#output\_compartments) | n/a |
-| <a name="output_dynamic_routing_gateways"></a> [dynamic\_routing\_gateways](#output\_dynamic\_routing\_gateways) | n/a |
-| <a name="output_network_security_groups"></a> [network\_security\_groups](#output\_network\_security\_groups) | n/a |
-| <a name="output_nlb_private_ip_addresses"></a> [nlb\_private\_ip\_addresses](#output\_nlb\_private\_ip\_addresses) | n/a |
-| <a name="output_region"></a> [region](#output\_region) | n/a |
-| <a name="output_release"></a> [release](#output\_release) | n/a |
-| <a name="output_service_label"></a> [service\_label](#output\_service\_label) | n/a |
-| <a name="output_subnets"></a> [subnets](#output\_subnets) | n/a |
-| <a name="output_vcns"></a> [vcns](#output\_vcns) | n/a |
+| <a name="output_cis_level"></a> [cis\_level](#output\_cis\_level) | The CIS profile level. |
+| <a name="output_compartments"></a> [compartments](#output\_compartments) | The deployed compartments. |
+| <a name="output_created_alarms"></a> [created\_alarms](#output\_created\_alarms) | Alarms created by Landing Zone. |
+| <a name="output_created_budget_alert_rules"></a> [created\_budget\_alert\_rules](#output\_created\_budget\_alert\_rules) | Budget alert rules created by Landing Zone. |
+| <a name="output_created_budgets"></a> [created\_budgets](#output\_created\_budgets) | Budgets created by Landing Zone. |
+| <a name="output_created_cloud_guard_targets"></a> [created\_cloud\_guard\_targets](#output\_created\_cloud\_guard\_targets) | Cloud guard targets created by Landing Zone. |
+| <a name="output_created_events"></a> [created\_events](#output\_created\_events) | Events created by Landing Zone. |
+| <a name="output_created_home_region_events"></a> [created\_home\_region\_events](#output\_created\_home\_region\_events) | Events created by Landing Zone. |
+| <a name="output_created_home_region_topics"></a> [created\_home\_region\_topics](#output\_created\_home\_region\_topics) | Events created by Landing Zone. |
+| <a name="output_created_keys"></a> [created\_keys](#output\_created\_keys) | Keys created by Landing Zone. |
+| <a name="output_created_scanning_host_recipes"></a> [created\_scanning\_host\_recipes](#output\_created\_scanning\_host\_recipes) | The VSS host targets created. |
+| <a name="output_created_scanning_host_targets"></a> [created\_scanning\_host\_targets](#output\_created\_scanning\_host\_targets) | The VSS host targets created. |
+| <a name="output_created_topics"></a> [created\_topics](#output\_created\_topics) | Events created by Landing Zone. |
+| <a name="output_created_vaults"></a> [created\_vaults](#output\_created\_vaults) | Vaults created by Landing Zone. |
+| <a name="output_dynamic_routing_gateways"></a> [dynamic\_routing\_gateways](#output\_dynamic\_routing\_gateways) | The deployed dynamic routing gateway. |
+| <a name="output_network_security_groups"></a> [network\_security\_groups](#output\_network\_security\_groups) | The deployed network security groups. |
+| <a name="output_nlb_private_ip_addresses"></a> [nlb\_private\_ip\_addresses](#output\_nlb\_private\_ip\_addresses) | The deployed private IP addresses OCIDs. |
+| <a name="output_region"></a> [region](#output\_region) | The region where resources have been deployed. |
+| <a name="output_release"></a> [release](#output\_release) | The OCI Core Landing Zone release. |
+| <a name="output_service_label"></a> [service\_label](#output\_service\_label) | The prefix to deployed resources. |
+| <a name="output_subnets"></a> [subnets](#output\_subnets) | The deployed subnets. |
+| <a name="output_vcns"></a> [vcns](#output\_vcns) | The deployed virtual cloud networks. |
