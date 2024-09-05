@@ -32,6 +32,7 @@
 
 ## Table of Contents
 
+1. [Early Preview Disclaimer](#early-preview)
 1. [Overview](#overview)
 1. [What's New](#new)
 1. [Architecture](#arch)
@@ -46,12 +47,19 @@
 1. [License](#license)
 1. [Known Issues](#known-issues)
 
+## <a name="early-preview">Early Preview Disclaimer</a>
+
+This is an early preview version. It is still under development, with on-going testing and validation. As such, it may contain bugs, incomplete features, and unexpected behavior. This is NOT intended for production use. 
+
+This preview enables early access for OCI customers to explore the revamped, standardized Landing Zone framework and new templates, including the Core landing Zone for base tenancy provisioning and Zero Trust landing zone which is built on the Core.
+
+The modules that comprise the new landing zone framework are an evolution of landing zone modules previously published under the oracle-quickstart GitHub organization. We invite you to explore the framework and submit any feature requests, comments or questions via GitHub comments. You can subscribe to be notified once the framework is released in general availability at which point it would be supported by Oracle.
 
 ## <a name="overview">Overview</a>
 
 The OCI Core Landing Zone unifies the landing zone initiatives across OCI, including [CIS Landing Zone](https://github.com/oracle-quickstart/oci-cis-landingzone-quickstart) and [Oracle Enterprise Landing Zone](https://github.com/oci-landing-zones/oracle-enterprise-landingzone). 
 
-Both CIS Landing Zone and Oracle Enterprise Landing Zone will soon go in maintenance mode, with new features added to OCI Core Landing Zone only.
+Both CIS Landing Zone and Oracle Enterprise Landing Zone will enter maintenance mode once OCI Core Landing Zone becomes generally available. New features will be added to OCI Core Landing Zone only.
 
 The OCI Core Landing Zone deploys a standardized environment in an Oracle Cloud Infrastructure (OCI) tenancy that helps organizations to comply with the [CIS OCI Foundations Benchmark v2.0](https://www.cisecurity.org/benchmark/oracle_cloud/).    
 
@@ -70,23 +78,15 @@ It uses multiple compartments, groups, and IAM policies to segregate access to r
 - Budgets
 - Security Zones
 
-
-## <a name="new">What's New</a>
-
 From a code architecture perspective, the OCI Core Landing Zone utilizes the modules available in the [CIS OCI Foundations Benchmark Modules Collection](#modules) for actual resource management.
 
 From a functional perspective, the OCI Core Landing Zone adds the following to CIS Landing Zone:
 
-### IAM
-
 1. Ability to use groups and dynamic groups from an existing Identity Domain as the grantees of IAM policies.
-
-### Networking
-
-1. Streamlined user interface in Resource Manager, for better usability and improved customization.
-2. Ability to deploy VCNs for OKE workload deployments, in addition to three-tier and Exadata Cloud service VCNs.
+2. Streamlined user interface in Resource Manager, for better usability and improved customization.
+3. Ability to deploy VCNs for OKE workload deployments, in addition to three-tier and Exadata Cloud service VCNs.
 4. Ability to deploy a network firewall appliance in the Hub VCN (a.k.a. DMZ VCN).  
-4. Ability to route traffic between select spoke VCNs, or in a full mesh model.
+5. Ability to route traffic between select spoke VCNs, or in a full mesh model.
 
 
 ## <a name="arch">Architecture</a>
