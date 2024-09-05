@@ -14,7 +14,7 @@ locals {
 
   image_name_database = {
     "PALOALTO"   = ["Palo Alto Networks VM-Series Next Generation Firewall", "11.1.3"]
-    "FORTINET"   = ["FortiGate Next-Gen Firewall (2 cores)", "7.6.0_(_X64_)" ]
+    "FORTINET"   = ["FortiGate Next-Gen Firewall (BYOL)", "7.6.0_(_X64_)" ]
   }
 
   #fortigate_image_ocid = "ocid1.image.oc1..aaaaaaaaq57pywudjr5yogjtl6qf3zs3yrwv66b5ooeiqykjgnneuerhfnia"
