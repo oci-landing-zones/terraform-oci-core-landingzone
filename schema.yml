@@ -2,8 +2,8 @@
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 
 title: "OCI Core Landing Zone"
-stackDescription: "This stack deploys the OCI Core Landing Zone, a fully operational tenancy that combines the recommendations of CIS Foundations Benchmark for OCI with OCI architecture best practices. For details, please see https://github.com/oci-landing-zones/oci-core-landingzone."
-description: "This stack deploys the OCI Core Landing Zone, a fully operational tenancy that combines the recommendations of CIS Foundations Benchmark for OCI with OCI architecture best practices. For details, please see <a href=\"https://github.com/oci-landing-zones/oci-core-landingzone\">OCI Core Landing Zone</a>."
+stackDescription: "This stack deploys the OCI Core Landing Zone, a fully operational tenancy that combines the recommendations of CIS Foundations Benchmark for OCI with OCI architecture best practices. For details, please see https://github.com/oci-landing-zones/terraform-oci-core-landingzone."
+description: "This stack deploys the OCI Core Landing Zone, a fully operational tenancy that combines the recommendations of CIS Foundations Benchmark for OCI with OCI architecture best practices. For details, please see <a href=\"https://github.com/oci-landing-zones/terraform-oci-core-landingzone\">OCI Core Landing Zone</a>."
 schemaVersion: 1.1.0
 version: "0.0.1"
 locale: "en"
