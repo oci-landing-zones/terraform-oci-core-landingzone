@@ -52,11 +52,11 @@ This is an early preview version. It is still under development, with on-going t
 
 This preview enables early access for OCI customers to explore the revamped, standardized Landing Zone framework and new templates, including the Core landing Zone for base tenancy provisioning and Zero Trust landing zone which is built on the Core.
 
-The modules that comprise the new landing zone framework are an evolution of landing zone modules previously published under the oracle-quickstart GitHub organization. We invite you to explore the framework and submit any feature requests, comments or questions via GitHub comments. You can subscribe to be notified once the framework is released in general availability at which point it would be supported by Oracle.
+The modules that comprise the new landing zone framework are an evolution of landing zone modules previously published under the [Oracle Quick Start](https://github.com/oracle-quickstart) GitHub organization. We invite you to explore the framework and submit any feature requests, comments or questions via GitHub comments. You can subscribe to be notified once the framework is released in general availability at which point it would be supported by Oracle.
 
 ## <a name="overview">Overview</a>
 
-The OCI Core Landing Zone unifies the landing zone initiatives across OCI, including [CIS Landing Zone](https://github.com/oracle-quickstart/oci-cis-landingzone-quickstart) and [Oracle Enterprise Landing Zone](https://github.com/oci-landing-zones/oracle-enterprise-landingzone). 
+The OCI Core Landing Zone unifies the OCI landing zone initiatives that follow a centralized deployment paradigm, including [CIS Landing Zone](https://github.com/oci-landing-zones/oci-cis-landingzone-quickstart) and [Oracle Enterprise Landing Zone](https://github.com/oci-landing-zones/oracle-enterprise-landingzone). For deploying landing zones in multiple stacks, see [The OCI Operating Entities Landing Zone](https://github.com/oci-landing-zones/oci-landing-zone-operating-entities).
 
 Both CIS Landing Zone and Oracle Enterprise Landing Zone will enter maintenance mode once OCI Core Landing Zone becomes generally available. New features will be added to OCI Core Landing Zone only.
 
@@ -168,7 +168,7 @@ Some deployment scenarios are available under the [templates](./templates/) fold
 - [CIS Basic with Single Default Three-Tier VCN](./templates/standalone-three-tier-vcn-defaults/)
 - [CIS Basic with Single Custom Three-Tier VCN](./templates/standalone-three-tier-vcn-custom/)
 
-Another key deployment scenario of OCI Core Landing Zone is [Zero Trust Landing Zone](https://github.com/oci-landing-zones/oci-zerotrust-landingzone).
+Another key deployment scenario of OCI Core Landing Zone is [Zero Trust Landing Zone](https://github.com/oci-landing-zones/oci-zero-trust-landingzone).
 
 
 ## <a name="modules">CIS OCI Foundations Benchmark Modules Collection</a>
