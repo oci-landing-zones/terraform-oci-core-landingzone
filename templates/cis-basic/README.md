@@ -23,7 +23,7 @@ This template can be deployed using OCI Resource Manager Service (RMS) or Terraf
 
 By clicking the button below, you are redirected to an OCI RMS Stack with variables pre-assigned for deployment. 
 
-[![Deploy_To_OCI](../../images/DeployToOCI.svg)](https://cloud.oracle.com/resourcemanager/stacks/create?zipUrl=https://github.com/andrecorreaneto/v3testing/archive/refs/heads/misc.zip&zipUrlVariables={"service_label":"cisbasic","network_admin_email_endpoints":"email.address@example.com","security_admin_email_endpoints":"email.address@example.com"})
+[![Deploy_To_OCI](../../images/DeployToOCI.svg)](https://cloud.oracle.com/resourcemanager/stacks/create?zipUrl=https://github.com/oci-landing-zones/terraform-oci-core-landingzone/archive/refs/heads/main.zip&zipUrlVariables={"service_label":"cisbasic","network_admin_email_endpoints":"email.address@example.com","security_admin_email_endpoints":"email.address@example.com"})
 
 You are required to review/adjust the following variable settings:
  - Make sure to pick an OCI region for deployment.
