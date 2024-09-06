@@ -34,7 +34,6 @@
 
 1. [Early Preview Disclaimer](#early-preview)
 1. [Overview](#overview)
-1. [What's New](#new)
 1. [Architecture](#arch)
     1. [IAM](#arch-iam)
     1. [Network](#arch-network)
