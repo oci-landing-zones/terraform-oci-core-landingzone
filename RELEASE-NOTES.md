@@ -1,4 +1,4 @@
-# September 05, 2024 Release Notes - 0.0.1 (Early Preview Release)
+# September 06, 2024 Release Notes - 0.0.1 (Early Preview Release)
 ## New
 1. Utilizes the modules available in the [CIS OCI Foundations Benchmark Modules Collection](./README.md#modules) for actual resource management.
 2. Adds the following to CIS Landing Zone:
