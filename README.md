@@ -168,7 +168,7 @@ Some deployment scenarios are available under the [templates](./templates/) fold
 - [CIS Basic with Single Default Three-Tier VCN](./templates/standalone-three-tier-vcn-defaults/)
 - [CIS Basic with Single Custom Three-Tier VCN](./templates/standalone-three-tier-vcn-custom/)
 
-Another key deployment scenario of OCI Core Landing Zone is [Zero Trust Landing Zone](https://github.com/oci-landing-zones/oci-zero-trust-landingzone).
+Another key deployment scenario of OCI Core Landing Zone is [Zero Trust Landing Zone](https://github.com/oci-landing-zones/terraform-oci-zero-trust-landingzone).
 
 
 ## <a name="modules">CIS OCI Foundations Benchmark Modules Collection</a>
