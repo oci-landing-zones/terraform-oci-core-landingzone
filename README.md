@@ -56,7 +56,7 @@ The modules that comprise the new landing zone framework are an evolution of lan
 
 ## <a name="overview">Overview</a>
 
-The OCI Core Landing Zone unifies the OCI landing zone initiatives that follow a centralized deployment paradigm, including [CIS Landing Zone](https://github.com/oci-landing-zones/oci-cis-landingzone-quickstart) and [Oracle Enterprise Landing Zone](https://github.com/oci-landing-zones/oracle-enterprise-landingzone). For deploying landing zones in multiple stacks, see [The OCI Operating Entities Landing Zone](https://github.com/oci-landing-zones/oci-landing-zone-operating-entities).
+The OCI Core Landing Zone unifies the OCI landing zone initiatives that follow a centralized deployment paradigm for provisioning the base tenancy, including [CIS Landing Zone](https://github.com/oci-landing-zones/oci-cis-landingzone-quickstart) and [Oracle Enterprise Landing Zone](https://github.com/oci-landing-zones/oracle-enterprise-landingzone). For deploying landing zones in multiple stacks, see [The OCI Operating Entities Landing Zone](https://github.com/oci-landing-zones/oci-landing-zone-operating-entities).
 
 Both CIS Landing Zone and Oracle Enterprise Landing Zone will enter maintenance mode once OCI Core Landing Zone becomes generally available. New features will be added to OCI Core Landing Zone only.
 
