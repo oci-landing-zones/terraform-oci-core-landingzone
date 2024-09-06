@@ -15,7 +15,7 @@ This template will have following parameters set by default:
 |---------------|:-----------:|:------|
 | service_label | A unique identifier to prefix the resources | cisbasic |
 
-For a detailed description of all variables that can be used, see the [Variables](../../variables.md) documentation.
+For a detailed description of all variables that can be used, see the [Variables](../../VARIABLES.md) documentation.
 
 This template can be deployed using OCI Resource Manager Service (RMS) or Terraform CLI:
 

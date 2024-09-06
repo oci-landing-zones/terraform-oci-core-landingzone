@@ -26,7 +26,7 @@ This template will have following parameters set by default:
 | vss_create | Whether Vulnerability Scanning should be enabled. If checked, a scanning recipe is enabled and scanning targets are enabled for each Landing Zone compartment.    | true |
 | create_budget | If checked, a budget will be created at the root or enclosing compartment and based on forecast spend.      | true |
 
-For a detailed description of all variables that can be used, see the [Variables](../../variables.md) documentation.
+For a detailed description of all variables that can be used, see the [Variables](../../VARIABLES.md) documentation.
 
 This template can be deployed using OCI Resource Manager Service (RMS) or Terraform CLI:
 
