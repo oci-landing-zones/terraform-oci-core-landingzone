@@ -1,0 +1,4087 @@
+# Copyright (c) 2024 Oracle and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+
+title: "OCI Core Landing Zone"
+stackDescription: "This stack deploys the OCI Core Landing Zone, a fully operational tenancy that combines the recommendations of CIS Foundations Benchmark for OCI with OCI architecture best practices. For details, please see https://github.com/oci-landing-zones/terraform-oci-core-landingzone."
+description: "This stack deploys the OCI Core Landing Zone, a fully operational tenancy that combines the recommendations of CIS Foundations Benchmark for OCI with OCI architecture best practices. For details, please see <a href=\"https://github.com/oci-landing-zones/terraform-oci-core-landingzone\">OCI Core Landing Zone</a>."
+schemaVersion: 1.1.0
+version: "0.0.1"
+locale: "en"
+
+# URL of OCI Core Landing Zone logo icon used on Application Information tab.
+logoUrl: "https://objectstorage.us-ashburn-1.oraclecloud.com/p/taf6kC9fSJyQDNSYbxvqxS_JsdnSu56oFZ3-1h5vI7-WfJUv77mplChopLxZPePW/n/ociateam/b/cis-landing-zone/o/landing_zone_130.png"
+
+variableGroups:
+  - title: "General"
+    variables:
+      - "region"
+      - "cis_level"
+      - "service_label"
+      - "extend_landing_zone_to_new_region"
+      - "customize_iam"
+      - "customize_net"
+      - "display_output"
+
+  - title: "Compartments"
+    variables:
+      - "enclosing_compartment_options"
+      - "enclosing_compartment_parent_ocid"
+      - "existing_enclosing_compartment_ocid"
+      - "deploy_exainfra_cmp"
+    visible:
+      and:
+        - eq:
+          - ${extend_landing_zone_to_new_region}
+          - false
+        - eq:
+          - ${customize_iam}
+          - true  
+
+  - title: "Identity Domains"
+    variables:
+      - "use_custom_id_domain"
+      - "custom_id_domain_name"
+      # - "deploy_id_domain"
+      # - "id_domain_name" 
+      # - "id_domain_type" 
+    visible:
+      and:
+        - eq:
+          - ${extend_landing_zone_to_new_region}
+          - false
+        - eq:
+          - ${customize_iam}
+          - true  
+
+  - title: "Groups (Existing Identity Domain)"
+    variables:
+      - "rm_existing_id_domain_iam_admin_group_name"
+      - "rm_existing_id_domain_cred_admin_group_name"
+      - "rm_existing_id_domain_security_admin_group_name"
+      - "rm_existing_id_domain_ag_admin_group_name"
+      - "rm_existing_id_domain_network_admin_group_name"
+      - "rm_existing_id_domain_appdev_admin_group_name"
+      - "rm_existing_id_domain_database_admin_group_name"
+      - "rm_existing_id_domain_exainfra_admin_group_name"
+      - "rm_existing_id_domain_auditor_group_name"
+      - "rm_existing_id_domain_announcement_reader_group_name"
+      - "rm_existing_id_domain_cost_admin_group_name"
+      - "rm_existing_id_domain_storage_admin_group_name"  
+    visible:
+      and:
+        - eq:
+          - ${extend_landing_zone_to_new_region}
+          - false
+        - eq:
+          - ${customize_iam}
+          - true
+        - eq:
+          - ${use_custom_id_domain}
+          - true
+
+  - title: "Dynamic Groups (Existing Identity Domain)"
+    variables:
+      - "existing_id_domain_security_fun_dyn_group_name"
+      - "existing_id_domain_appdev_fun_dyn_group_name"
+      - "existing_id_domain_compute_agent_dyn_group_name"
+      - "existing_id_domain_database_kms_dyn_group_name" 
+      - "existing_id_domain_net_fw_app_dyn_group_name"
+    visible:
+      and:
+        - eq:
+          - ${extend_landing_zone_to_new_region}
+          - false
+        - eq:
+          - ${customize_iam}
+          - true
+        - eq:
+          - ${use_custom_id_domain}
+          - true      
+
+  - title: "Groups (Default Identity Domain)"
+    variables:
+      - "groups_options"
+      - "rm_existing_iam_admin_group_name"
+      - "rm_existing_cred_admin_group_name"
+      - "rm_existing_security_admin_group_name"
+      - "rm_existing_ag_admin_group_name"
+      - "rm_existing_network_admin_group_name"
+      - "rm_existing_appdev_admin_group_name"
+      - "rm_existing_database_admin_group_name"
+      - "rm_existing_exainfra_admin_group_name"
+      - "rm_existing_auditor_group_name"
+      - "rm_existing_announcement_reader_group_name"
+      - "rm_existing_cost_admin_group_name"
+      - "rm_existing_storage_admin_group_name"  
+    visible:
+      and:
+        - eq:
+          - ${extend_landing_zone_to_new_region}
+          - false
+        - eq:
+          - ${customize_iam}
+          - true
+        - eq:
+          - ${use_custom_id_domain}
+          - false    
+
+  - title: "Dynamic Groups (Default Identity Domain)"
+    variables:
+      - "dyn_groups_options"
+      - "existing_security_fun_dyn_group_name"
+      - "existing_appdev_fun_dyn_group_name"
+      - "existing_compute_agent_dyn_group_name"
+      - "existing_database_kms_dyn_group_name" 
+      - "existing_net_fw_app_dyn_group_name"
+    visible:
+      and:
+        - eq:
+          - ${extend_landing_zone_to_new_region}
+          - false
+        - eq:
+          - ${customize_iam}
+          - true
+        - eq:
+          - ${use_custom_id_domain}
+          - false      
+
+  - title: "Policies"   
+    variables:
+      - "policies_in_root_compartment"
+    #  - "enable_template_policies"  
+    visible:
+      and:
+        - eq:
+          - ${extend_landing_zone_to_new_region}
+          - false
+        - eq:
+          - ${customize_iam}
+          - true    
+
+  - title: "Networking - Three Tier VCNs"
+    variables:
+      - "add_tt_vcn1"
+      - "tt_vcn1_name"
+      - "tt_vcn1_cidrs"
+      - "tt_vcn1_dns"
+      - "tt_vcn1_attach_to_drg"
+      - "tt_vcn1_routable_vcns"
+      - "customize_tt_vcn1_subnets"
+      - "tt_vcn1_web_subnet_name"
+      - "tt_vcn1_web_subnet_cidr"
+      - "tt_vcn1_web_subnet_dns"
+      - "tt_vcn1_web_subnet_is_private"
+      - "tt_vcn1_app_subnet_name"
+      - "tt_vcn1_app_subnet_cidr"
+      - "tt_vcn1_app_subnet_dns"
+      - "tt_vcn1_db_subnet_name"
+      - "tt_vcn1_db_subnet_cidr"
+      - "tt_vcn1_db_subnet_dns"
+      - "deploy_tt_vcn1_bastion_subnet"
+      - "tt_vcn1_bastion_subnet_name"
+      - "tt_vcn1_bastion_subnet_cidr"
+      - "tt_vcn1_bastion_subnet_dns"
+      - "tt_vcn1_bastion_is_access_via_public_endpoint"
+      - "tt_vcn1_bastion_subnet_allowed_cidrs"
+      # - "add_tt_vcn1_extra1_subnet"
+      # - "tt_vcn1_extra1_subnet_name"
+      # - "tt_vcn1_extra1_subnet_cidr"
+      # - "tt_vcn1_extra1_subnet_dns"
+      # - "tt_vcn1_extra1_subnet_bastion_svc_cidrs"
+      # - "add_tt_vcn1_extra2_subnet"
+      # - "tt_vcn1_extra2_subnet_name"
+      # - "tt_vcn1_extra2_subnet_cidr"
+      # - "tt_vcn1_extra2_subnet_dns"
+      # - "tt_vcn1_extra2_subnet_bastion_svc_cidrs"
+      - "add_tt_vcn2"
+      - "tt_vcn2_name"
+      - "tt_vcn2_cidrs"
+      - "tt_vcn2_dns"
+      - "tt_vcn2_attach_to_drg"
+      - "tt_vcn2_routable_vcns"
+      - "customize_tt_vcn2_subnets"
+      - "tt_vcn2_web_subnet_name"
+      - "tt_vcn2_web_subnet_cidr"
+      - "tt_vcn2_web_subnet_dns"
+      - "tt_vcn2_web_subnet_is_private"
+      - "tt_vcn2_app_subnet_name"
+      - "tt_vcn2_app_subnet_cidr"
+      - "tt_vcn2_app_subnet_dns"
+      - "tt_vcn2_db_subnet_name"
+      - "tt_vcn2_db_subnet_cidr"
+      - "tt_vcn2_db_subnet_dns"
+      - "deploy_tt_vcn2_bastion_subnet"
+      - "tt_vcn2_bastion_subnet_name"
+      - "tt_vcn2_bastion_subnet_cidr"
+      - "tt_vcn2_bastion_subnet_dns"
+      - "tt_vcn2_bastion_is_access_via_public_endpoint"
+      - "tt_vcn2_bastion_subnet_allowed_cidrs"
+      - "add_tt_vcn3"
+      - "tt_vcn3_name"
+      - "tt_vcn3_cidrs"
+      - "tt_vcn3_dns"
+      - "tt_vcn3_attach_to_drg"
+      - "tt_vcn3_routable_vcns"
+      - "customize_tt_vcn3_subnets"
+      - "tt_vcn3_web_subnet_name"
+      - "tt_vcn3_web_subnet_cidr"
+      - "tt_vcn3_web_subnet_dns"
+      - "tt_vcn3_web_subnet_is_private"
+      - "tt_vcn3_app_subnet_name"
+      - "tt_vcn3_app_subnet_cidr"
+      - "tt_vcn3_app_subnet_dns"
+      - "tt_vcn3_db_subnet_name"
+      - "tt_vcn3_db_subnet_cidr"
+      - "tt_vcn3_db_subnet_dns"
+      - "deploy_tt_vcn3_bastion_subnet"
+      - "tt_vcn3_bastion_subnet_name"
+      - "tt_vcn3_bastion_subnet_cidr"
+      - "tt_vcn3_bastion_subnet_dns"
+      - "tt_vcn3_bastion_is_access_via_public_endpoint"
+      - "tt_vcn3_bastion_subnet_allowed_cidrs"
+      
+    visible: customize_net
+
+  - title: "Networking - Exadata Cloud Service VCNs"
+    variables:
+      - "add_exa_vcn1"
+      - "exa_vcn1_name"
+      - "exa_vcn1_cidrs"
+      - "exa_vcn1_dns"
+      - "exa_vcn1_attach_to_drg"
+      - "exa_vcn1_routable_vcns"
+      - "customize_exa_vcn1_subnets"
+      - "exa_vcn1_client_subnet_cidr"
+      - "exa_vcn1_client_subnet_name"
+      - "exa_vcn1_client_subnet_dns"
+      - "exa_vcn1_backup_subnet_cidr"
+      - "exa_vcn1_backup_subnet_name"
+      - "exa_vcn1_backup_subnet_dns"
+      - "add_exa_vcn2"
+      - "exa_vcn2_name"
+      - "exa_vcn2_cidrs"
+      - "exa_vcn2_dns"
+      - "exa_vcn2_attach_to_drg"
+      - "exa_vcn2_routable_vcns"
+      - "customize_exa_vcn2_subnets"
+      - "exa_vcn2_client_subnet_cidr"
+      - "exa_vcn2_client_subnet_name"
+      - "exa_vcn2_client_subnet_dns"
+      - "exa_vcn2_backup_subnet_cidr"
+      - "exa_vcn2_backup_subnet_name"
+      - "exa_vcn2_backup_subnet_dns"
+      - "add_exa_vcn3"
+      - "exa_vcn3_cidrs"
+      - "exa_vcn3_name"
+      - "exa_vcn3_dns"
+      - "exa_vcn3_attach_to_drg"
+      - "exa_vcn3_routable_vcns"
+      - "customize_exa_vcn3_subnets"
+      - "exa_vcn3_client_subnet_cidr"
+      - "exa_vcn3_client_subnet_name"
+      - "exa_vcn3_client_subnet_dns"
+      - "exa_vcn3_backup_subnet_cidr"
+      - "exa_vcn3_backup_subnet_name"
+      - "exa_vcn3_backup_subnet_dns"
+    visible: customize_net
+
+  - title: "Networking - OKE VCNs"
+    variables:
+      - "add_oke_vcn1"
+      - "oke_vcn1_cni_type"
+      - "oke_vcn1_name"
+      - "oke_vcn1_cidrs"
+      - "oke_vcn1_dns"
+      - "oke_vcn1_attach_to_drg"
+      - "oke_vcn1_routable_vcns"
+      - "customize_oke_vcn1_subnets"
+      - "oke_vcn1_services_subnet_name"
+      - "oke_vcn1_services_subnet_cidr"
+      - "oke_vcn1_services_subnet_dns"
+      - "oke_vcn1_workers_subnet_name"
+      - "oke_vcn1_workers_subnet_cidr"
+      - "oke_vcn1_workers_subnet_dns"
+      - "oke_vcn1_api_subnet_name"
+      - "oke_vcn1_api_subnet_cidr"
+      - "oke_vcn1_api_subnet_dns"
+      - "oke_vcn1_pods_subnet_name"
+      - "oke_vcn1_pods_subnet_cidr"
+      - "oke_vcn1_pods_subnet_dns"
+      - "add_oke_vcn1_mgmt_subnet"
+      - "oke_vcn1_mgmt_subnet_name"
+      - "oke_vcn1_mgmt_subnet_cidr"
+      - "oke_vcn1_mgmt_subnet_dns"
+      - "add_oke_vcn2"
+      - "oke_vcn2_cni_type"
+      - "oke_vcn2_name"
+      - "oke_vcn2_cidrs"
+      - "oke_vcn2_dns"
+      - "oke_vcn2_attach_to_drg"
+      - "oke_vcn2_routable_vcns"
+      - "customize_oke_vcn2_subnets"
+      - "oke_vcn2_services_subnet_name"
+      - "oke_vcn2_services_subnet_cidr"
+      - "oke_vcn2_services_subnet_dns"
+      - "oke_vcn2_workers_subnet_name"
+      - "oke_vcn2_workers_subnet_cidr"
+      - "oke_vcn2_workers_subnet_dns"
+      - "oke_vcn2_api_subnet_name"
+      - "oke_vcn2_api_subnet_cidr"
+      - "oke_vcn2_api_subnet_dns"
+      - "oke_vcn2_pods_subnet_name"
+      - "oke_vcn2_pods_subnet_cidr"
+      - "oke_vcn2_pods_subnet_dns"
+      - "add_oke_vcn2_mgmt_subnet"
+      - "oke_vcn2_mgmt_subnet_name"
+      - "oke_vcn2_mgmt_subnet_cidr"
+      - "oke_vcn2_mgmt_subnet_dns"
+      - "add_oke_vcn3"
+      - "oke_vcn3_cni_type"
+      - "oke_vcn3_name"
+      - "oke_vcn3_cidrs"
+      - "oke_vcn3_dns"
+      - "oke_vcn3_attach_to_drg"
+      - "oke_vcn3_routable_vcns"
+      - "customize_oke_vcn3_subnets"
+      - "oke_vcn3_services_subnet_name"
+      - "oke_vcn3_services_subnet_cidr"
+      - "oke_vcn3_services_subnet_dns"
+      - "oke_vcn3_workers_subnet_name"
+      - "oke_vcn3_workers_subnet_cidr"
+      - "oke_vcn3_workers_subnet_dns"
+      - "oke_vcn3_api_subnet_name"
+      - "oke_vcn3_api_subnet_cidr"
+      - "oke_vcn3_api_subnet_dns"
+      - "oke_vcn3_pods_subnet_name"
+      - "oke_vcn3_pods_subnet_cidr"
+      - "oke_vcn3_pods_subnet_dns"
+      - "add_oke_vcn3_mgmt_subnet"
+      - "oke_vcn3_mgmt_subnet_name"
+      - "oke_vcn3_mgmt_subnet_cidr"
+      - "oke_vcn3_mgmt_subnet_dns"
+    visible: customize_net   
+
+  - title: "Networking - Hub & Spoke Topology"
+    variables:
+      - "hub_deployment_option"  
+      - "existing_drg_ocid"
+      - "hub_vcn_name"
+      - "hub_vcn_cidrs"
+      - "hub_vcn_dns"
+      - "hub_vcn_deploy_firewall_option"
+      - "fw_instance_name_prefix"
+      - "fw_instance_shape"
+      - "fw_instance_flex_shape_memory"
+      - "fw_instance_flex_shape_cpu"
+      - "fw_instance_boot_volume_size"
+      - "fw_instance_public_rsa_key"
+      - "hub_vcn_north_south_entry_point_ocid"
+      - "hub_vcn_east_west_entry_point_ocid"
+      - "customize_hub_vcn_subnets"
+      - "hub_vcn_web_subnet_name"
+      - "hub_vcn_web_subnet_cidr"
+      - "hub_vcn_web_subnet_dns"
+      - "hub_vcn_web_subnet_is_private"
+      - "hub_vcn_web_subnet_jump_host_allowed_cidrs"
+      - "hub_vcn_mgmt_subnet_name"
+      - "hub_vcn_mgmt_subnet_cidr"
+      - "hub_vcn_mgmt_subnet_dns"
+      - "hub_vcn_mgmt_subnet_external_allowed_cidrs_for_http"
+      - "hub_vcn_mgmt_subnet_external_allowed_cidrs_for_ssh"
+      - "hub_vcn_outdoor_subnet_name"
+      - "hub_vcn_outdoor_subnet_cidr"
+      - "hub_vcn_outdoor_subnet_dns"
+      - "hub_vcn_indoor_subnet_name"
+      - "hub_vcn_indoor_subnet_cidr"
+      - "hub_vcn_indoor_subnet_dns"
+    visible: customize_net   
+
+  - title: "Events and Notifications"
+    variables:
+      - "network_admin_email_endpoints"
+      - "security_admin_email_endpoints"
+      - "notifications_advanced_options"
+      - "compute_admin_email_endpoints"
+      - "storage_admin_email_endpoints"
+      - "database_admin_email_endpoints"
+      - "exainfra_admin_email_endpoints"
+      - "budget_admin_email_endpoints"
+      - "create_alarms_as_enabled"
+      - "create_events_as_enabled"
+      - "alarm_message_format"
+
+  - title: "Cloud Guard"
+    variables:
+      - "enable_cloud_guard"
+      - "enable_cloud_guard_cloned_recipes"
+      - "cloud_guard_reporting_region"
+      - "cloud_guard_risk_level_threshold"
+      - "cloud_guard_admin_email_endpoints"
+
+  - title: "Security Zones"
+    variables:
+    - "enable_security_zones"
+    - "security_zones_reporting_region"
+    - "sz_security_policies"
+
+  - title: "Logging Consolidation: Service Connector Hub"
+    variables:
+      - "enable_service_connector"
+      - "activate_service_connector"
+      - "service_connector_target_kind"
+      - "onboard_logging_analytics"
+      - "existing_service_connector_bucket_vault_compartment_id"
+      - "existing_service_connector_bucket_vault_id"
+      - "existing_service_connector_bucket_key_id"
+      - "existing_service_connector_target_stream_id"
+      - "existing_service_connector_target_function_id"
+  
+  - title: "Vulnerability Scanning"
+    variables:
+      - "vss_create"
+      - "vss_scan_schedule"
+      - "vss_scan_day"
+      - "vss_port_scan_level"
+      - "vss_agent_scan_level"
+      - "vss_agent_cis_benchmark_settings_scan_level"
+      - "vss_enable_file_scan"
+      - "vss_folders_to_scan"
+
+  - title: "Cost Management"
+    variables:
+       - "create_budget"
+       - "budget_alert_threshold"
+       - "budget_amount"
+       - "budget_alert_email_endpoints"
+  
+
+  - title: "Hidden Variables"
+    visible: false
+    variables:
+      - "tenancy_ocid"
+      - "user_ocid"
+      - "fingerprint"
+      - "private_key_path"
+      - "private_key_password" 
+      - "existing_iam_admin_group_name"
+      - "existing_cred_admin_group_name"
+      - "existing_security_admin_group_name"
+      - "existing_network_admin_group_name"
+      - "existing_appdev_admin_group_name"
+      - "existing_database_admin_group_name"
+      - "existing_exainfra_admin_group_name"
+      - "existing_auditor_group_name"
+      - "existing_announcement_reader_group_name"
+      - "existing_cost_admin_group_name"
+      - "existing_storage_admin_group_name"  
+      - "existing_ag_admin_group_name"
+      - "lz_provenant_prefix"
+      - "lz_provenant_version"
+
+variables:
+  region:
+    type: oci:identity:region:name
+    title: "Region"
+    description: "The region for resources deployment."
+    required: true
+
+  cis_level:
+    type: enum
+    title: CIS Level
+    description: "Determines CIS OCI Benchmark Level of services deployed by the CIS Landing Zone in the tenancy will be configured. Level 1 (default) is be practical and prudent. Level 2 is intended for environments where security is more critical than manageability and usability. Level 2 drives the creation of an OCI Vault, buckets encryption with a customer managed key, write logs for buckets and the usage of specific policies in Security Zones. More info: <a href=\"https://www.cisecurity.org/benchmark/oracle_cloud\">CIS OCI Benchmark</a>."
+    enum:
+      - "1"
+      - "2"
+    required: true
+
+  service_label:
+    type: string
+    title: "Service Label"
+    minLength: 1
+    maxLength: 15
+    pattern: "^[A-Za-z][A-Za-z0-9]{1,14}$"
+    description: "A unique label that gets prepended to all resources deployed by the Landing Zone. Max length: 15 characters."
+    required: true
+
+  extend_landing_zone_to_new_region:
+    type: boolean
+    title: "Extend existing Landing Zone to New Region?"
+    description: "Whether an existing Landing Zone is being extended to another region. When set to true, compartments, identity domains, groups, dynamic groups, policies and resources at the home region are not provisioned. Use this when you want provision a Landing Zone in a new region, but reuse existing Landing Zone resources in the home region."
+    default: false
+    visible: true
+
+  customize_iam:
+    type: boolean
+    title: "Customize Default IAM Settings?"
+    description: "Check to customize default settings for compartments, identity domains, groups, dynamic groups and policies."
+    default: false
+    visible: true  
+
+  customize_net:
+    type: boolean
+    title: "Define Networking?"
+    description: "Check to define networking resources. By default, the Landing Zone does NOT deploy any networks."
+    default: false
+    visible: true  
+
+  display_output:
+    type: boolean
+    title: "Display Output?"
+    description: "Upon Terraform apply, it displays a concise set of select resource outputs with their OCIDs and names. Uncheck to suppress output display."
+    visible: true   
+
+  enclosing_compartment_options:
+    type: enum
+    title: "Deploy Compartments in Enclosing Compartment?"
+    description: "Whether the Landing Zone compartments (Network, Security, App, Database, Exadata) are created within an enclosing top compartment. If 'Yes, deploy new' is selected, the enclosing compartment is created in the compartment selected in 'Enclosing Compartment Parent'. If 'Yes, use existing' is selected, the Landing Zone compartments are created in the compartment selected in 'Enclosing Compartment'. If 'No' is selected, the Landing Zone compartments are created in the Root compartment."
+    required: true
+    enum:
+      - "Yes, deploy new"
+      - "Yes, use existing"
+      - "No"
+    default: "Yes, deploy new"
+  
+  enclosing_compartment_parent_ocid:
+    type: oci:identity:compartment:id
+    title: "Enclosing Compartment Parent"
+    description: "Select the existing compartment where Landing Zone enclosing compartment is created."
+    required: false 
+    visible:
+      eq:
+        - ${enclosing_compartment_options}
+        - "Yes, deploy new"
+
+  existing_enclosing_compartment_ocid:
+    type: oci:identity:compartment:id
+    title: "Enclosing Compartment"
+    description: "Select the existing compartment where Landing Zone compartments (Network, Security, App, Database) are created."
+    required: false 
+    visible:
+      eq:
+        - ${enclosing_compartment_options}
+        - "Yes, use existing"
+
+  deploy_exainfra_cmp:
+    type: boolean
+    title: "Deploy ExaCS Infra Compartment?"
+    description: "Whether a separate compartment for Exadata Cloud Service Infrastructure is deployed."
+    default: false
+  
+  use_custom_id_domain:
+    type: boolean
+    title: "Enable an Existing Identity Domain to Manage Landing Zone?"
+    description: "Your tenancy already has a default Identity Domain, whose groups are used to manage the Landing Zone. Check this box for enabling groups in an *existing* non-default Identity Domain to manage the resources deployed by the Landing Zone. See <a href='https://docs.oracle.com/en-us/iaas/Content/Identity/usingidentitydomains/oci-iam-concepts.htm'>IAM Technologies</a> for identity domains concepts."
+    default: false
+
+  custom_id_domain_name:
+    type: string
+    title: "Existing Identity Domain Name"
+    description: "Enter the existing Identity Domain name."
+    required: false
+    visible: use_custom_id_domain
+
+  rm_existing_id_domain_iam_admin_group_name:
+    type: array
+    items:
+      type: string
+    uniqueItems: true
+    title: "Existing IAM Admin Group Names"
+    description: "Enter the existing group(s) to which IAM management policies will be granted to."
+    visible: use_custom_id_domain 
+        
+  rm_existing_id_domain_cred_admin_group_name:
+    type: array
+    items:
+      type: string
+    uniqueItems: true
+    title: "Existing Credentials Admin Group Names"
+    description: "Enter the existing group(s) to which credentials management policies will be granted to."
+    visible: use_custom_id_domain
+      
+  rm_existing_id_domain_security_admin_group_name:
+    type: array
+    items:
+      type: string
+    uniqueItems: true
+    title: "Existing Security Admin Group Name"
+    description: "Enter the existing group to which security management policies will be granted to."
+    visible: use_custom_id_domain
+      
+  rm_existing_id_domain_ag_admin_group_name:
+    type: array
+    items:
+      type: string
+    uniqueItems: true
+    title: "Existing Access Governance Admin Group Names"
+    description: "Enter the existing group(s) to which Access Governance management policies will be granted to."
+    visible: use_custom_id_domain
+
+  rm_existing_id_domain_network_admin_group_name:
+    type: array
+    items:
+      type: string
+    uniqueItems: true
+    title: "Existing Network Admin Group Name"
+    description: "Enter the existing group to which network management policies will be granted to."
+    visible: use_custom_id_domain
+      
+  rm_existing_id_domain_appdev_admin_group_name:
+    type: array
+    items:
+      type: string
+    uniqueItems: true
+    title: "Existing Application Admin Group Name"
+    description: "Enter the existing group to which application development management policies will be granted to."
+    visible: use_custom_id_domain
+      
+  rm_existing_id_domain_database_admin_group_name:
+    type: array
+    items:
+      type: string
+    uniqueItems: true
+    title: "Existing Database Admin Group Name"
+    description: "Enter the existing group to which database management policies will be granted to."
+    visible: use_custom_id_domain
+  
+  rm_existing_id_domain_exainfra_admin_group_name:
+    type: array
+    items:
+      type: string
+    uniqueItems: true
+    title: "Existing Admin Group Name for Exadata Infrastructure"
+    description: "Enter the existing group to which Exadata infrastructure management policies will be granted to."
+    visible: use_custom_id_domain      
+  
+  rm_existing_id_domain_auditor_group_name:
+    type: array
+    items:
+      type: string
+    uniqueItems: true
+    title: "Enter the existing Auditors Group Name"
+    description: "Existing group to which auditing policies will be granted to."
+    visible: use_custom_id_domain
+      
+  rm_existing_id_domain_announcement_reader_group_name:
+    type: array
+    items:
+      type: string
+    uniqueItems: true
+    title: "Existing Announcement Readers Group Name"
+    description: "Enter the existing group to which announcement reading policies will be granted to."
+    visible: use_custom_id_domain 
+  
+  rm_existing_id_domain_cost_admin_group_name:
+    type: array
+    items:
+      type: string
+    uniqueItems: true
+    title: "Existing Cost Admin Group Name"
+    description: "Enter the existing group to which Cost management policies will be granted to."
+    visible: use_custom_id_domain
+
+  rm_existing_id_domain_storage_admin_group_name:
+    type: array
+    items:
+      type: string
+    uniqueItems: true
+    title: "Existing Storage Admin Group Name"
+    description: "Enter the existing group to which Storage management policies will be granted to."
+    visible: use_custom_id_domain    
+
+  existing_id_domain_security_fun_dyn_group_name:
+    type: string
+    title: "Existing Security Dynamic Group Name"
+    description: "Existing security dynamic group to run functions."
+    visible: use_custom_id_domain
+
+  existing_id_domain_appdev_fun_dyn_group_name:
+    type: string
+    title: "Existing Application Dynamic Group Name"
+    description: "Existing application dynamic group."
+    visible: use_custom_id_domain
+
+  existing_id_domain_compute_agent_dyn_group_name:
+    type: string
+    title: "Existing Compute Agent Dynamic Group Name"
+    description: "Existing compute agent dynamic group for management agent access."
+    visible: use_custom_id_domain
+
+  existing_id_domain_database_kms_dyn_group_name:
+    type: string
+    title: "Existing Database Dynamic Group Name"
+    description: "Existing database dynamic group for database to access keys."
+    visible: use_custom_id_domain
+
+  existing_id_domain_net_fw_app_dyn_group_name:
+    type: string
+    title: "Existing Network Firewall Appliance Dynamic Group Name"
+    description: "Existing network firewall appliance dynamic group for reading firewall instances."
+    visible: use_custom_id_domain  
+
+  # deploy_id_domain:
+  #   type: boolean
+  #   title: "Deploy a non-default Identity Domain?"
+  #   description: "Your tenancy already has a default Identity Domain. Click for deploying a non-default Identity Domain in the enclosing compartment. See <a href='https://docs.oracle.com/en-us/iaas/Content/Identity/usingidentitydomains/oci-iam-concepts.htm'>IAM Technologies</a> for identity domains concepts."
+  #   default: false
+
+  # id_domain_name:
+  #   type: string
+  #   title: "Identity Domain Name"
+  #   description: "The Identity Domain name to create. If not set, a default name is provided."
+  #   required: false
+  #   visible: deploy_id_domain
+
+  # id_domain_type:
+  #   type: enum
+  #   title: "Identity Domain Type"
+  #   description: "The Identity Domain type. See <a href='https://docs.oracle.com/en-us/iaas/Content/Identity/sku/overview.htm#overview'>IAM Identity Domain Types</a> for details."
+  #   required: false
+  #   enum:
+  #     - "Free"
+  #     - "Premium"
+  #     - "External User"
+  #   visible: deploy_id_domain  
+
+  groups_options:
+    type: enum
+    title: "Deploy New Groups?"
+    description: "Whether the groups are created or reused."
+    required: true
+    enum:
+      - "Yes"
+      - "No, use existing"
+    default: "Yes"
+
+  rm_existing_iam_admin_group_name:
+    type: oci:identity:groups:id
+    dependsOn:
+      compartmentId: ${tenancy_ocid}
+    title: "Existing IAM admin group name"
+    description: "Existing group to which IAM management policies will be granted to."
+    visible:
+      eq:
+        - ${groups_options}
+        - "No, use existing" 
+        
+  rm_existing_cred_admin_group_name:
+    type: oci:identity:groups:id
+    dependsOn:
+      compartmentId: ${tenancy_ocid}
+    title: "Existing credentials admin group name"
+    description: "Existing group to which credentials management policies will be granted to."
+    visible:
+      eq:
+        - ${groups_options}
+        - "No, use existing"
+      
+  rm_existing_security_admin_group_name:
+    type: oci:identity:groups:id
+    dependsOn:
+      compartmentId: ${tenancy_ocid}
+    title: "Existing security admin group name"
+    description: "Existing group to which security management policies will be granted to."
+    visible:
+      eq:
+        - ${groups_options}
+        - "No, use existing"
+      
+  rm_existing_network_admin_group_name:
+    type: oci:identity:groups:id
+    dependsOn:
+      compartmentId: ${tenancy_ocid}
+    title: "Existing network admin group name"
+    description: "Existing group to which network management policies will be granted to."
+    visible:
+      eq:
+        - ${groups_options}
+        - "No, use existing"
+      
+  rm_existing_ag_admin_group_name:
+    type: oci:identity:groups:id
+    dependsOn:
+      compartmentId: ${tenancy_ocid}
+    title: "Existing Access Governance admin group name"
+    description: "Existing group to which Access Governance management policies will be granted to."
+    visible:
+      eq:
+        - ${groups_options}
+        - "No, use existing"
+
+  rm_existing_appdev_admin_group_name:
+    type: oci:identity:groups:id
+    dependsOn:
+      compartmentId: ${tenancy_ocid}
+    title: "Existing application development admin group name"
+    description: "Existing group to which application development management policies will be granted to."
+    visible:
+      eq:
+        - ${groups_options}
+        - "No, use existing"
+      
+  rm_existing_database_admin_group_name:
+    type: oci:identity:groups:id
+    dependsOn:
+      compartmentId: ${tenancy_ocid}
+    title: "Existing database admin group name"
+    description: "Existing group to which database management policies will be granted to."
+    visible:
+      eq:
+        - ${groups_options}
+        - "No, use existing"
+  
+  rm_existing_exainfra_admin_group_name:
+    type: oci:identity:groups:id
+    dependsOn:
+      compartmentId: ${tenancy_ocid}
+    title: "Existing admin group name for Exadata infrastructure"
+    description: "Existing group to which Exadata infrastructure management policies will be granted to."
+    visible:
+      eq:
+        - ${groups_options}
+        - "No, use existing"      
+  
+  rm_existing_auditor_group_name:
+    type: oci:identity:groups:id
+    dependsOn:
+      compartmentId: ${tenancy_ocid}
+    title: "Existing auditors group name"
+    description: "Existing group to which auditing policies will be granted to."
+    visible:
+      eq:
+        - ${groups_options}
+        - "No, use existing"
+      
+  rm_existing_announcement_reader_group_name:
+    type: oci:identity:groups:id
+    dependsOn:
+      compartmentId: ${tenancy_ocid}
+    title: "Existing announcement readers group name"
+    description: "Existing group to which announcement reading policies will be granted to."
+    visible:
+      eq:
+        - ${groups_options}
+        - "No, use existing"  
+  
+  rm_existing_cost_admin_group_name:
+    type: oci:identity:groups:id
+    dependsOn:
+      compartmentId: ${tenancy_ocid}
+    title: "Existing Cost Admin group name"
+    description: "Existing group to which Cost management policies will be granted to."
+    visible:
+      eq:
+        - ${groups_options}
+        - "No, use existing"
+
+  rm_existing_storage_admin_group_name:
+    type: oci:identity:groups:id
+    dependsOn:
+      compartmentId: ${tenancy_ocid}
+    title: "Existing Storage Admin group name"
+    description: "Existing group to which Storage management policies will be granted to."
+    visible:
+      eq:
+        - ${groups_options}
+        - "No, use existing"  
+ 
+  dyn_groups_options:
+    type: enum
+    title: "Deploy New Dynamic Groups?"
+    description: "Whether the dynamic groups are created or reused."
+    required: true
+    enum:
+      - "Yes"
+      - "No, use existing"
+    default: "Yes"
+
+  existing_security_fun_dyn_group_name:
+    type: oci:identity:dynamicgroups:id
+    dependsOn:
+      compartmentId: ${tenancy_ocid}
+    title: "Existing security dynamic group name"
+    description: "Existing security dynamic group to run functions."
+    visible:
+      eq:
+        - ${dyn_groups_options}
+        - "No, use existing"
+
+  existing_appdev_fun_dyn_group_name:
+    type: oci:identity:dynamicgroups:id
+    dependsOn:
+      compartmentId: ${tenancy_ocid}
+    title: "Existing appdev dynamic group name"
+    description: "Existing appdev dynamic group."
+    visible:
+      eq:
+        - ${dyn_groups_options}
+        - "No, use existing"
+
+  existing_compute_agent_dyn_group_name:
+    type: oci:identity:dynamicgroups:id
+    dependsOn:
+      compartmentId: ${tenancy_ocid}
+    title: "Existing compute agent dynamic group name"
+    description: "Existing compute agent dynamic group for management agent access."
+    visible:
+      eq:
+        - ${dyn_groups_options}
+        - "No, use existing"
+
+  existing_database_kms_dyn_group_name:
+    type: oci:identity:dynamicgroups:id
+    dependsOn:
+      compartmentId: ${tenancy_ocid}
+    title: "Existing database dynamic group name"
+    description: "Existing database dynamic group for database to access keys."
+    visible:
+      eq:
+        - ${dyn_groups_options}
+        - "No, use existing"
+
+  existing_net_fw_app_dyn_group_name:
+    type: oci:identity:dynamicgroups:id
+    dependsOn:
+      compartmentId: ${tenancy_ocid}
+    title: "Existing network firewall appliance dynamic group name"
+    description: "Existing network firewall appliance dynamic group for reading firewall instances."
+    visible:
+      eq:
+        - ${dyn_groups_options}
+        - "No, use existing"      
+
+  policies_in_root_compartment:
+    type: enum
+    title: "CREATE or USE policies in the Root compartment?"
+    description: "Whether policies in the Root compartment should be created or simply used. If 'CREATE', you must be sure the user executing this stack has permissions to create policies in the Root compartment. If 'USE', policies must have been created previously."
+    enum:
+      - "CREATE"
+      - "USE"
+    required: true
+    default: "CREATE"
+  
+  # enable_template_policies:
+  #   type: boolean
+  #   title: "Enable template policies?"
+  #   description: "Whether policies should be created based on metadata associated to compartments. This is an alternative way of managing policies, enabled by the <a href=\"https://github.com/oracle-quickstart/terraform-oci-cis-landing-zone-iam/tree/main/policies\">CIS Landing Zone standalone IAM policy module</a>. When set to true, the grants to resources belonging to a specific compartment are combined into a single policy that is attached to the compartment itself. This differs from the default approach, where grants are combined per grantee and attached to the enclosing compartment."
+  #   default: false
+  
+# ------------------------------------------------------
+# ----- Networking - Three-tier VCN 1
+#-------------------------------------------------------
+  add_tt_vcn1:
+    type: boolean
+    title: "Add Three-Tier VCN (label: TT-VCN-1)?"
+    description: "Click to add a three-tier VCN, with three subnets: web (public by default), application (private) and database (private). An optional subnet (private by default) for bastion deployment is also available."
+    visible: customize_net
+
+  tt_vcn1_name:
+    type: string
+    title: "VCN Name (label: TT-VCN-1)"
+    description: "Enter the VCN name. Otherwise a default name is provided. The label above should be used in the 'Routable VCNs' field of other VCNs for constraining network traffic in a Hub/Spoke topology."
+    required: false
+    visible: 
+      and:
+        - customize_net
+        - add_tt_vcn1
+
+  tt_vcn1_cidrs:
+    type: array
+    items:
+      type: string
+    uniqueItems: true
+    maxItems: 3
+    minItems: 1
+    title: "List of CIDR Blocks"
+    description: "Enter the list of CIDR blocks for the VCN."
+    required: false
+    visible: 
+      and:
+        - customize_net
+        - add_tt_vcn1
+
+  tt_vcn1_dns:
+    type: string
+    title: "VCN DNS"
+    description: "Enter the VCN DNS name."
+    required: false
+    visible: 
+      and:
+        - customize_net
+        - add_tt_vcn1 
+
+  tt_vcn1_attach_to_drg:
+    type: boolean
+    title: "Attach this VCN to DRG (Dynamic Routing Gateway)?"
+    description: "Check to route private traffic to/from this VCN via a new or existing DRG."
+    visible: 
+      and:
+        - customize_net
+        - add_tt_vcn1
+
+  tt_vcn1_routable_vcns:
+    type: array
+    items:
+      type: string
+    uniqueItems: true
+    title: "Routable VCNs"
+    description: "Enter the VCN labels that this VCN can send traffic to. Only applicable for Hub/Spoke topology where a DRG is deployed as the hub."
+    visible: 
+      and:
+        - customize_net
+        - add_tt_vcn1
+        - tt_vcn1_attach_to_drg      
+
+  customize_tt_vcn1_subnets:
+    type: boolean
+    title: "Customize VCN Subnets?"
+    description: "Check to customize default subnets settings."
+    visible: 
+      and:
+        - customize_net
+        - add_tt_vcn1  
+
+  tt_vcn1_web_subnet_name:
+    type: string
+    title: "Web Subnet Name"
+    description: "Enter the Web subnet name."
+    required: false
+    visible: 
+      and:
+        - customize_net
+        - customize_tt_vcn1_subnets
+        - add_tt_vcn1
+
+  tt_vcn1_web_subnet_cidr:
+    type: string
+    title: "Web Subnet CIDR Block"
+    description: "Enter the Web subnet CIDR block. It must be within the VCN CIDR blocks."
+    required: false
+    visible: 
+      and:
+        - customize_net
+        - customize_tt_vcn1_subnets
+        - add_tt_vcn1
+
+  tt_vcn1_web_subnet_dns:
+    type: string
+    title: "Web Subnet DNS Name"
+    description: "Enter the Web subnet DNS name. Use only letters and numbers, no special characters."
+    required: false
+    visible: 
+      and:
+        - customize_net
+        - customize_tt_vcn1_subnets
+        - add_tt_vcn1      
+
+  tt_vcn1_web_subnet_is_private:
+    type: boolean
+    title: "Is Web Subnet Private?"
+    description: "Check to make the Web subnet private. It is public by default."
+    visible: 
+      and:
+        - customize_net
+        - customize_tt_vcn1_subnets
+        - add_tt_vcn1
+
+  tt_vcn1_app_subnet_name:
+    type: string
+    title: "Application Subnet Name"
+    description: "Enter the Application subnet name."
+    required: false
+    visible: 
+      and:
+        - customize_net
+        - customize_tt_vcn1_subnets
+        - add_tt_vcn1
+
+  tt_vcn1_app_subnet_cidr:
+    type: string
+    title: "Application Subnet CIDR Block"
+    description: "Enter the Application subnet CIDR block. It must be within the VCN CIDR blocks."
+    required: false
+    visible: 
+      and:
+        - customize_net
+        - customize_tt_vcn1_subnets
+        - add_tt_vcn1
+
+  tt_vcn1_app_subnet_dns:
+    type: string
+    title: "Application Subnet DNS Name"
+    description: "Enter the Application subnet DNS name. Use only letters and numbers, no special characters."
+    required: false
+    visible: 
+      and:
+        - customize_net
+        - customize_tt_vcn1_subnets
+        - add_tt_vcn1      
+
+  tt_vcn1_db_subnet_name:
+    type: string
+    title: "Database Subnet Name"
+    description: "Enter the Database subnet name."
+    required: false
+    visible: 
+      and:
+        - customize_net
+        - customize_tt_vcn1_subnets
+        - add_tt_vcn1
+
+  tt_vcn1_db_subnet_cidr:
+    type: string
+    title: "Database Subnet CIDR Block"
+    description: "Enter the Database subnet CIDR block. It must be within the VCN CIDR blocks."
+    required: false
+    visible: 
+      and:
+        - customize_net
+        - customize_tt_vcn1_subnets
+        - add_tt_vcn1
+
+  tt_vcn1_db_subnet_dns:
+    type: string
+    title: "Database Subnet DNS Name"
+    description: "Enter the Database subnet DNS name. Use only letters and numbers, no special characters."
+    required: false
+    visible: 
+      and:
+        - customize_net
+        - customize_tt_vcn1_subnets
+        - add_tt_vcn1      
+
+  deploy_tt_vcn1_bastion_subnet:
+    type: boolean
+    title: "Deploy Bastion Subnet?"
+    description: "Check to to deploy a subnet where you can further deploy OCI Bastion service or a jump host."
+    visible: 
+      and:
+        - customize_net
+        - customize_tt_vcn1_subnets
+        - add_tt_vcn1
+
+  tt_vcn1_bastion_subnet_name:
+    type: string
+    title: "Bastion Subnet Name"
+    description: "Enter the Bastion subnet name."
+    required: false
+    visible: 
+      and:
+        - customize_net
+        - customize_tt_vcn1_subnets
+        - add_tt_vcn1
+        - deploy_tt_vcn1_bastion_subnet
+
+  tt_vcn1_bastion_subnet_cidr:
+    type: string
+    title: "Bastion Subnet CIDR Block"
+    description: "Enter the Bastion subnet CIDR block. A /29 block is usually enough, unless you plan on deploying a large number of jump hosts. It must be within the VCN CIDR blocks."
+    required: false
+    visible: 
+      and:
+        - customize_net
+        - customize_tt_vcn1_subnets
+        - add_tt_vcn1
+        - deploy_tt_vcn1_bastion_subnet
+
+  tt_vcn1_bastion_subnet_dns:
+    type: string
+    title: "Bastion Subnet DNS Name"
+    description: "Enter the Bastion subnet DNS name. Use only letters and numbers, no special characters."
+    required: false
+    visible: 
+      and:
+        - customize_net
+        - customize_tt_vcn1_subnets
+        - add_tt_vcn1     
+        - deploy_tt_vcn1_bastion_subnet
+  
+  tt_vcn1_bastion_is_access_via_public_endpoint:
+    type: boolean
+    title: "Will the jump host be accessed via a public endpoint?"
+    description: "If checked, the Bastion subnet is made public where you'd later deploy and manage your jump hosts. By default, the Bastion subnet is private, where OCI Bastion service is expected to be deployed."
+    visible: 
+      and:
+        - customize_net
+        - customize_tt_vcn1_subnets
+        - add_tt_vcn1
+        - deploy_tt_vcn1_bastion_subnet
+  
+  tt_vcn1_bastion_subnet_allowed_cidrs:
+    type: array
+    items:
+      type: string
+    uniqueItems: true
+    title: "List of CIDR blocks allowed to SSH into the public Bastion subnet where the jump host is going to be deployed"
+    description: "These CIDRs are allowed to SSH into the the jump host that is eventually deployed in the public Bastion subnet. Leave it empty for no access."
+    required: false
+    visible: 
+      and:
+        - customize_net
+        - customize_tt_vcn1_subnets
+        - add_tt_vcn1
+        - deploy_tt_vcn1_bastion_subnet
+        - tt_vcn1_bastion_is_access_via_public_endpoint       
+      
+  add_tt_vcn2:
+    type: boolean
+    title: "Add Three-Tier VCN (label: TT-VCN-2)?"
+    description: "Click to add a three-tier VCN, with three subnets: web (public by default), application (private) and database (private). An optional subnet (private by default) for bastion deployment is also available."
+    visible: customize_net
+   
+      # - "add_tt_vcn1_extra1_subnet"
+      # - "tt_vcn1_extra1_subnet_name"
+      # - "tt_vcn1_extra1_subnet_cidr"
+      # - "tt_vcn1_extra1_subnet_dns"
+      # - "tt_vcn1_extra1_subnet_bastion_svc_cidrs"
+      # - "add_tt_vcn1_extra2_subnet"
+      # - "tt_vcn1_extra2_subnet_name"
+      # - "tt_vcn1_extra2_subnet_cidr"
+      # - "tt_vcn1_extra2_subnet_dns"
+      # - "tt_vcn1_extra2_subnet_bastion_svc_cidrs"
+
+# ------------------------------------------------------
+# ----- Networking - Three-tier VCN 2
+#-------------------------------------------------------
+  tt_vcn2_name:
+    type: string
+    title: "VCN Name (label: TT-VCN-2)"
+    description: "Enter the VCN name. Otherwise a default name is provided. The label above should be used in the 'Routable VCNs' field of other VCNs for constraining network traffic in a Hub/Spoke topology."
+    required: false
+    visible: 
+      and:
+        - customize_net
+        - add_tt_vcn2
+
+  tt_vcn2_cidrs:
+    type: array
+    items:
+      type: string
+    uniqueItems: true
+    maxItems: 3
+    minItems: 1
+    title: "List of CIDR Blocks"
+    description: "The list of CIDR blocks for the VCN."
+    required: false
+    visible: 
+      and:
+        - customize_net
+        - add_tt_vcn2
+
+  tt_vcn2_dns:
+    type: string
+    title: "VCN DNS"
+    description: "The VCN DNS Name."
+    required: false
+    visible: 
+      and:
+        - customize_net
+        - add_tt_vcn2 
+
+  tt_vcn2_attach_to_drg:
+    type: boolean
+    title: "Attach this VCN to DRG (Dynamic Routing Gateway)?"
+    description: "Check to route private traffic to/from this VCN via a new or existing DRG."
+    visible: 
+      and:
+        - customize_net
+        - add_tt_vcn2
+
+  tt_vcn2_routable_vcns:
+    type: array
+    items:
+      type: string
+    uniqueItems: true
+    title: "Routable VCNs"
+    description: "Enter the VCN labels that this VCN can send traffic to. Only applicable for Hub/Spoke topology where a DRG is deployed as the hub."
+    visible: 
+      and:
+        - customize_net
+        - add_tt_vcn2
+        - tt_vcn2_attach_to_drg 
+
+  customize_tt_vcn2_subnets:
+    type: boolean
+    title: "Customize VCN Subnets?"
+    description: "Check to customize default subnets settings."
+    visible: 
+      and:
+        - customize_net
+        - add_tt_vcn2  
+
+  tt_vcn2_web_subnet_name:
+    type: string
+    title: "Web Subnet Name"
+    description: "The load balancer subnet name."
+    required: false
+    visible: 
+      and:
+        - customize_net
+        - customize_tt_vcn2_subnets
+        - add_tt_vcn2
+
+  tt_vcn2_web_subnet_cidr:
+    type: string
+    title: "Web Subnet CIDR Block"
+    description: "It must be within the VCN CIDR blocks."
+    required: false
+    visible: 
+      and:
+        - customize_net
+        - customize_tt_vcn2_subnets
+        - add_tt_vcn2
+
+  tt_vcn2_web_subnet_dns:
+    type: string
+    title: "Web Subnet DNS Name"
+    description: "Use only letters and numbers, no special characters."
+    required: false
+    visible: 
+      and:
+        - customize_net
+        - customize_tt_vcn2_subnets
+        - add_tt_vcn2      
+
+  tt_vcn2_web_subnet_is_private:
+    type: boolean
+    title: "Is Subnet Private?"
+    description: "Whether subnet is private or public."
+    visible: 
+      and:
+        - customize_net
+        - customize_tt_vcn2_subnets
+        - add_tt_vcn2
+
+  tt_vcn2_app_subnet_name:
+    type: string
+    title: "Application Subnet Name"
+    description: "The application subnet name."
+    required: false
+    visible: 
+      and:
+        - customize_net
+        - customize_tt_vcn2_subnets
+        - add_tt_vcn2
+
+  tt_vcn2_app_subnet_cidr:
+    type: string
+    title: "Application Subnet CIDR Block"
+    description: "It must be within the VCN CIDR blocks."
+    required: false
+    visible: 
+      and:
+        - customize_net
+        - customize_tt_vcn2_subnets
+        - add_tt_vcn2
+
+  tt_vcn2_app_subnet_dns:
+    type: string
+    title: "Application Subnet DNS Name"
+    description: "Use only letters and numbers, no special characters."
+    required: false
+    visible: 
+      and:
+        - customize_net
+        - customize_tt_vcn2_subnets
+        - add_tt_vcn2      
+
+  tt_vcn2_db_subnet_name:
+    type: string
+    title: "Database Subnet Name"
+    description: "The database subnet name."
+    required: false
+    visible: 
+      and:
+        - customize_net
+        - customize_tt_vcn2_subnets
+        - add_tt_vcn2
+
+  tt_vcn2_db_subnet_cidr:
+    type: string
+    title: "Database Subnet CIDR Block"
+    description: "It must be within the VCN CIDR blocks."
+    required: false
+    visible: 
+      and:
+        - customize_net
+        - customize_tt_vcn2_subnets
+        - add_tt_vcn2
+
+  tt_vcn2_db_subnet_dns:
+    type: string
+    title: "Database Subnet DNS Name"
+    description: "Use only letters and numbers, no special characters."
+    required: false
+    visible: 
+      and:
+        - customize_net
+        - customize_tt_vcn2_subnets
+        - add_tt_vcn2      
+
+  deploy_tt_vcn2_bastion_subnet:
+    type: boolean
+    title: "Deploy Bastion Subnet?"
+    description: "Check to to deploy a subnet where you can further deploy OCI Bastion service or a jump host."
+    visible: 
+      and:
+        - customize_net
+        - customize_tt_vcn2_subnets
+        - add_tt_vcn2
+
+  tt_vcn2_bastion_subnet_name:
+    type: string
+    title: "Bastion Subnet Name"
+    description: "Enter the Bastion subnet name."
+    required: false
+    visible: 
+      and:
+        - customize_net
+        - customize_tt_vcn2_subnets
+        - add_tt_vcn2
+        - deploy_tt_vcn2_bastion_subnet
+
+  tt_vcn2_bastion_subnet_cidr:
+    type: string
+    title: "Bastion Subnet CIDR Block"
+    description: "Enter the Bastion subnet CIDR block. A /29 block is usually enough, unless you plan on deploying a large number of jump hosts. It must be within the VCN CIDR blocks."
+    required: false
+    visible: 
+      and:
+        - customize_net
+        - customize_tt_vcn2_subnets
+        - add_tt_vcn2
+        - deploy_tt_vcn2_bastion_subnet
+
+  tt_vcn2_bastion_subnet_dns:
+    type: string
+    title: "Bastion Subnet DNS Name"
+    description: "Enter the Bastion subnet DNS name. Use only letters and numbers, no special characters."
+    required: false
+    visible: 
+      and:
+        - customize_net
+        - customize_tt_vcn2_subnets
+        - add_tt_vcn2
+        - deploy_tt_vcn2_bastion_subnet     
+  
+  tt_vcn2_bastion_is_access_via_public_endpoint:
+    type: boolean
+    title: "Will the jump host be accessed via a public endpoint?"
+    description: "If checked, the Bastion subnet is made public where you'd later deploy and manage your jump hosts. By default, the Bastion subnet is private, where OCI Bastion service is expected to be deployed."
+    visible: 
+      and:
+        - customize_net
+        - customize_tt_vcn2_subnets
+        - add_tt_vcn2
+        - deploy_tt_vcn2_bastion_subnet
+  
+  tt_vcn2_bastion_subnet_allowed_cidrs:
+    type: array
+    items:
+      type: string
+    uniqueItems: true
+    title: "List of CIDR blocks allowed to SSH into the public Bastion subnet where the jump host is going to be deployed"
+    description: "These CIDRs are allowed to SSH into the the jump host that is eventually deployed in the public Bastion subnet. Leave it empty for no access."
+    required: false
+    visible: 
+      and:
+        - customize_net
+        - customize_tt_vcn2_subnets
+        - add_tt_vcn2
+        - tt_vcn2_bastion_is_access_via_public_endpoint
+        - deploy_tt_vcn2_bastion_subnet       
+  
+  add_tt_vcn3:
+    type: boolean
+    title: "Add Three-Tier VCN (label: TT-VCN-3)?"
+    description: "Click to add a three-tier VCN, with three subnets: web (public by default), application (private) and database (private). An optional subnet (private by default) for bastion deployment is also available."
+    visible: customize_net
+    
+# ------------------------------------------------------
+# ----- Networking - Three-tier VCN 3
+#-------------------------------------------------------
+  tt_vcn3_name:
+    type: string
+    title: "VCN Name (label: TT-VCN-3)"
+    description: "Enter the VCN name. Otherwise a default name is provided. The label above should be used in the 'Routable VCNs' field of other VCNs for constraining network traffic in a Hub/Spoke topology."
+    required: false
+    visible: 
+      and:
+        - customize_net
+        - add_tt_vcn3
+
+  tt_vcn3_cidrs:
+    type: array
+    items:
+      type: string
+    uniqueItems: true
+    maxItems: 3
+    minItems: 1
+    title: "List of CIDR Blocks"
+    description: "The list of CIDR blocks for the VCN."
+    required: false
+    visible: 
+      and:
+        - customize_net
+        - add_tt_vcn3
+
+  tt_vcn3_dns:
+    type: string
+    title: "VCN DNS"
+    description: "The VCN DNS Name."
+    required: false
+    visible: 
+      and:
+        - customize_net
+        - add_tt_vcn3 
+
+  tt_vcn3_attach_to_drg:
+    type: boolean
+    title: "Attach this VCN to DRG (Dynamic Routing Gateway)?"
+    description: "Check to route private traffic to/from this VCN via a new or existing DRG."
+    visible: 
+      and:
+        - customize_net
+        - add_tt_vcn3
+
+  tt_vcn3_routable_vcns:
+    type: array
+    items:
+      type: string
+    uniqueItems: true
+    title: "Routable VCNs"
+    description: "Enter the VCN labels that this VCN can send traffic to. Only applicable for Hub/Spoke topology where a DRG is deployed as the hub."
+    visible: 
+      and:
+        - customize_net
+        - add_tt_vcn3
+        - tt_vcn3_attach_to_drg       
+
+  customize_tt_vcn3_subnets:
+    type: boolean
+    title: "Customize VCN Subnets?"
+    description: "Check to customize default subnets settings."
+    visible: 
+      and:
+        - customize_net
+        - add_tt_vcn3  
+
+  tt_vcn3_web_subnet_name:
+    type: string
+    title: "Web Subnet Name"
+    description: "The load balancer subnet name."
+    required: false
+    visible: 
+      and:
+        - customize_net
+        - customize_tt_vcn3_subnets
+        - add_tt_vcn3
+
+  tt_vcn3_web_subnet_cidr:
+    type: string
+    title: "Web Subnet CIDR Block"
+    description: "It must be within the VCN CIDR blocks."
+    required: false
+    visible: 
+      and:
+        - customize_net
+        - customize_tt_vcn3_subnets
+        - add_tt_vcn3
+
+  tt_vcn3_web_subnet_dns:
+    type: string
+    title: "Web Subnet DNS Name"
+    description: "Use only letters and numbers, no special characters."
+    required: false
+    visible: 
+      and:
+        - customize_net
+        - customize_tt_vcn3_subnets
+        - add_tt_vcn3      
+
+  tt_vcn3_web_subnet_is_private:
+    type: boolean
+    title: "Is Subnet Private?"
+    description: "Whether subnet is private or public."
+    visible: 
+      and:
+        - customize_net
+        - customize_tt_vcn3_subnets
+        - add_tt_vcn3
+
+  tt_vcn3_app_subnet_name:
+    type: string
+    title: "Application Subnet Name"
+    description: "The application subnet name."
+    required: false
+    visible: 
+      and:
+        - customize_net
+        - customize_tt_vcn3_subnets
+        - add_tt_vcn3
+
+  tt_vcn3_app_subnet_cidr:
+    type: string
+    title: "Application Subnet CIDR Block"
+    description: "It must be within the VCN CIDR blocks."
+    required: false
+    visible: 
+      and:
+        - customize_net
+        - customize_tt_vcn3_subnets
+        - add_tt_vcn3
+
+  tt_vcn3_app_subnet_dns:
+    type: string
+    title: "Application Subnet DNS Name"
+    description: "Use only letters and numbers, no special characters."
+    required: false
+    visible: 
+      and:
+        - customize_net
+        - customize_tt_vcn3_subnets
+        - add_tt_vcn3      
+
+  tt_vcn3_db_subnet_name:
+    type: string
+    title: "Database Subnet Name"
+    description: "The database subnet name."
+    required: false
+    visible: 
+      and:
+        - customize_net
+        - customize_tt_vcn3_subnets
+        - add_tt_vcn3
+
+  tt_vcn3_db_subnet_cidr:
+    type: string
+    title: "Database Subnet CIDR Block"
+    description: "It must be within the VCN CIDR blocks."
+    required: false
+    visible: 
+      and:
+        - customize_net
+        - customize_tt_vcn3_subnets
+        - add_tt_vcn3
+
+  tt_vcn3_db_subnet_dns:
+    type: string
+    title: "Database Subnet DNS Name"
+    description: "Use only letters and numbers, no special characters."
+    required: false
+    visible: 
+      and:
+        - customize_net
+        - customize_tt_vcn3_subnets
+        - add_tt_vcn3      
+
+  deploy_tt_vcn3_bastion_subnet:
+    type: boolean
+    title: "Deploy Bastion Subnet?"
+    description: "Check to to deploy a subnet where you can further deploy OCI Bastion service or a jump host."
+    visible: 
+      and:
+        - customize_net
+        - customize_tt_vcn3_subnets
+        - add_tt_vcn3
+
+  tt_vcn3_bastion_subnet_name:
+    type: string
+    title: "Bastion Subnet Name"
+    description: "Enter the Bastion subnet name."
+    required: false
+    visible: 
+      and:
+        - customize_net
+        - customize_tt_vcn3_subnets
+        - add_tt_vcn3
+        - deploy_tt_vcn3_bastion_subnet
+
+  tt_vcn3_bastion_subnet_cidr:
+    type: string
+    title: "Bastion Subnet CIDR Block"
+    description: "Enter the Bastion subnet CIDR block. A /29 block is usually enough, unless you plan on deploying a large number of jump hosts. It must be within the VCN CIDR blocks."
+    required: false
+    visible: 
+      and:
+        - customize_net
+        - customize_tt_vcn3_subnets
+        - add_tt_vcn3
+        - deploy_tt_vcn3_bastion_subnet
+
+  tt_vcn3_bastion_subnet_dns:
+    type: string
+    title: "Bastion Subnet DNS Name"
+    description: "Enter the Bastion subnet DNS name. Use only letters and numbers, no special characters."
+    required: false
+    visible: 
+      and:
+        - customize_net
+        - customize_tt_vcn3_subnets
+        - add_tt_vcn3     
+        - deploy_tt_vcn3_bastion_subnet
+  
+  tt_vcn3_bastion_is_access_via_public_endpoint:
+    type: boolean
+    title: "Will the jump host be accessed via a public endpoint?"
+    description: "If checked, the Bastion subnet is made public where you'd later deploy and manage your jump hosts. By default, the Bastion subnet is private, where OCI Bastion service is expected to be deployed."
+    visible: 
+      and:
+        - customize_net
+        - customize_tt_vcn3_subnets
+        - add_tt_vcn3
+        - deploy_tt_vcn3_bastion_subnet
+  
+  tt_vcn3_bastion_subnet_allowed_cidrs:
+    type: array
+    items:
+      type: string
+    uniqueItems: true
+    title: "List of CIDR blocks allowed to SSH into jump hosts eventually deployed in Bastion subnet"
+    description: "These CIDRs are allowed to SSH into the the jump host that is eventually deployed in the public Bastion subnet. Leave it empty for no access. 0.0.0.0/0 is not allowed."
+    required: false
+    visible: 
+      and:
+        - customize_net
+        - customize_tt_vcn3_subnets
+        - add_tt_vcn3
+        - tt_vcn3_bastion_is_access_via_public_endpoint
+        - deploy_tt_vcn3_bastion_subnet   
+      
+  # ------------------------------------------------------
+  # ----- Networking - Exadata Cloud Service VCN 1
+  #-------------------------------------------------------
+  add_exa_vcn1:
+    type: boolean
+    title: "Add Exadata Cloud Service VCN (label: EXA-VCN-1)?"
+    description: "Click to add a VCN configured for Exadata Cloud Service deployment, with two subnets: client (private) and backup (private)."
+    visible: customize_net
+
+  exa_vcn1_name:
+    type: string
+    title: "VCN Name (label: EXA-VCN-1)"
+    description: "Enter the VCN name. Otherwise a default name is provided. The label above should be used in the 'Routable VCNs' field of other VCNs for constraining network traffic in a Hub/Spoke topology."
+    required: false
+    visible:
+      and:
+        - customize_net
+        - add_exa_vcn1
+
+  exa_vcn1_cidrs:
+    type: array
+    items:
+      type: string
+    uniqueItems: true
+    maxItems: 3
+    minItems: 1
+    title: "List of CIDR Blocks"
+    description: "Enter the list of CIDR blocks for the VCN."
+    required: false
+    visible:
+      and:
+        - customize_net
+        - add_exa_vcn1
+
+  exa_vcn1_dns:
+    type: string
+    title: "VCN DNS"
+    description: "Enter the VCN DNS name."
+    required: false
+    visible:
+      and:
+        - customize_net
+        - add_exa_vcn1
+
+  exa_vcn1_attach_to_drg:
+    type: boolean
+    title: "Attach this VCN to DRG (Dynamic Routing Gateway)?"
+    description: "Check to route private traffic to/from this VCN via a new or existing DRG."
+    visible:
+      and:
+        - customize_net
+        - add_exa_vcn1
+
+  exa_vcn1_routable_vcns:
+    type: array
+    items:
+      type: string
+    uniqueItems: true
+    title: "Routable VCNs"
+    description: "Enter the VCN labels that this VCN can send traffic to. Only applicable for Hub/Spoke topology where a DRG is deployed as the hub."
+    visible:
+      and:
+        - customize_net
+        - add_exa_vcn1
+        - exa_vcn1_attach_to_drg
+
+  customize_exa_vcn1_subnets:
+    type: boolean
+    title: "Customize VCN Subnets?"
+    description: "Check to customize default subnets settings."
+    visible:
+      and:
+        - customize_net
+        - add_exa_vcn1
+
+  exa_vcn1_client_subnet_name:
+    type: string
+    title: "Client Subnet Name"
+    description: "Enter the Client subnet name."
+    required: false
+    visible:
+      and:
+        - customize_net
+        - customize_exa_vcn1_subnets
+        - add_exa_vcn1
+
+  exa_vcn1_client_subnet_cidr:
+    type: string
+    title: "Client Subnet CIDR block"
+    description: "Enter the Client subnet CIDR block. It must be within the VCN CIDR blocks."
+    required: false
+    visible:
+      and:
+        - customize_net
+        - customize_exa_vcn1_subnets
+        - add_exa_vcn1
+
+  exa_vcn1_client_subnet_dns:
+    type: string
+    title: "Client Subnet DNS name"
+    description: "Enter the Client subnet DNS name. Use only letters and numbers, no special characters."
+    required: false
+    visible:
+      and:
+        - customize_net
+        - customize_exa_vcn1_subnets
+        - add_exa_vcn1
+
+  exa_vcn1_backup_subnet_name:
+    type: string
+    title: "Backup Subnet Name"
+    description: "Enter the Backup subnet name."
+    required: false
+    visible:
+      and:
+        - customize_net
+        - customize_exa_vcn1_subnets
+        - add_exa_vcn1
+
+  exa_vcn1_backup_subnet_cidr:
+    type: string
+    title: "Backup Subnet CIDR block"
+    description: "Enter the Backup subnet CIDR block. It must be within the VCN CIDR blocks."
+    required: false
+    visible:
+      and:
+        - customize_net
+        - customize_exa_vcn1_subnets
+        - add_exa_vcn1
+
+  exa_vcn1_backup_subnet_dns:
+    type: string
+    title: "Backup Subnet DNS name"
+    description: "Enter the Backup subnet DNS name. Use only letters and numbers, no special characters."
+    required: false
+    visible:
+      and:
+        - customize_net
+        - customize_exa_vcn1_subnets
+        - add_exa_vcn1
+
+  # ------------------------------------------------------
+  # ----- Networking - Exadata Cloud Service VCN 2
+  #-------------------------------------------------------
+  add_exa_vcn2:
+    type: boolean
+    title: "Add Exadata Cloud Service VCN (label: EXA-VCN-2)?"
+    description: "Click to add a VCN configured for Exadata Cloud Service deployment, with two subnets: client (private) and backup (private)."
+    visible: customize_net
+
+  exa_vcn2_name:
+    type: string
+    title: "VCN Name (label: EXA-VCN-2)"
+    description: "Enter the VCN name. Otherwise a default name is provided. The label above should be used in the 'Routable VCNs' field of other VCNs for constraining network traffic in a Hub/Spoke topology."
+    required: false
+    visible:
+      and:
+        - customize_net
+        - add_exa_vcn2
+
+  exa_vcn2_cidrs:
+    type: array
+    items:
+      type: string
+    uniqueItems: true
+    maxItems: 3
+    minItems: 1
+    title: "List of CIDR Blocks"
+    description: "Enter the list of CIDR blocks for the VCN."
+    required: false
+    visible:
+      and:
+        - customize_net
+        - add_exa_vcn2
+
+  exa_vcn2_dns:
+    type: string
+    title: "VCN DNS"
+    description: "Enter the VCN DNS name."
+    required: false
+    visible:
+      and:
+        - customize_net
+        - add_exa_vcn2
+
+  exa_vcn2_attach_to_drg:
+    type: boolean
+    title: "Attach this VCN to DRG (Dynamic Routing Gateway)?"
+    description: "Check to route private traffic to/from this VCN via a new or existing DRG."
+    visible:
+      and:
+        - customize_net
+        - add_exa_vcn2
+
+  exa_vcn2_routable_vcns:
+    type: array
+    items:
+      type: string
+    uniqueItems: true
+    title: "Routable VCNs"
+    description: "Enter the VCN labels that this VCN can send traffic to. Only applicable for Hub/Spoke topology where a DRG is deployed as the hub."
+    visible:
+      and:
+        - customize_net
+        - add_exa_vcn2
+        - exa_vcn2_attach_to_drg
+
+  customize_exa_vcn2_subnets:
+    type: boolean
+    title: "Customize VCN Subnets?"
+    description: "Check to customize default subnets settings."
+    visible:
+      and:
+        - customize_net
+        - add_exa_vcn2
+
+  exa_vcn2_client_subnet_name:
+    type: string
+    title: "Client Subnet Name"
+    description: "Enter the Client subnet name."
+    required: false
+    visible:
+      and:
+        - customize_net
+        - customize_exa_vcn2_subnets
+        - add_exa_vcn2
+
+  exa_vcn2_client_subnet_cidr:
+    type: string
+    title: "Client Subnet CIDR block"
+    description: "Enter the Client subnet CIDR block. It must be within the VCN CIDR blocks."
+    required: false
+    visible:
+      and:
+        - customize_net
+        - customize_exa_vcn2_subnets
+        - add_exa_vcn2
+
+  exa_vcn2_client_subnet_dns:
+    type: string
+    title: "Client Subnet DNS name"
+    description: "Enter the Client subnet DNS name. Use only letters and numbers, no special characters."
+    required: false
+    visible:
+      and:
+        - customize_net
+        - customize_exa_vcn2_subnets
+        - add_exa_vcn2
+
+  exa_vcn2_backup_subnet_name:
+    type: string
+    title: "Backup Subnet Name"
+    description: "Enter the Backup subnet name."
+    required: false
+    visible:
+      and:
+        - customize_net
+        - customize_exa_vcn2_subnets
+        - add_exa_vcn2
+
+  exa_vcn2_backup_subnet_cidr:
+    type: string
+    title: "Backup Subnet CIDR block"
+    description: "Enter the Backup subnet CIDR block. It must be within the VCN CIDR blocks."
+    required: false
+    visible:
+      and:
+        - customize_net
+        - customize_exa_vcn2_subnets
+        - add_exa_vcn2
+
+  exa_vcn2_backup_subnet_dns:
+    type: string
+    title: "Backup Subnet DNS name"
+    description: "Enter the Backup subnet DNS name. Use only letters and numbers, no special characters."
+    required: false
+    visible:
+      and:
+        - customize_net
+        - customize_exa_vcn2_subnets
+        - add_exa_vcn2
+
+
+  # ------------------------------------------------------
+  # ----- Networking - Exadata Cloud Service VCN 3
+  #-------------------------------------------------------
+  add_exa_vcn3:
+    type: boolean
+    title: "Add Exadata Cloud Service VCN (label: EXA-VCN-3)?"
+    description: "Click to add a VCN configured for Exadata Cloud Service deployment, with two subnets: client (private) and backup (private)."
+    visible: customize_net
+
+  exa_vcn3_name:
+    type: string
+    title: "VCN Name (label: EXA-VCN-3)"
+    description: "Enter the VCN name. Otherwise a default name is provided. The label above should be used in the 'Routable VCNs' field of other VCNs for constraining network traffic in a Hub/Spoke topology."
+    required: false
+    visible:
+      and:
+        - customize_net
+        - add_exa_vcn3
+
+  exa_vcn3_cidrs:
+    type: array
+    items:
+      type: string
+    uniqueItems: true
+    maxItems: 3
+    minItems: 1
+    title: "List of CIDR Blocks"
+    description: "Enter the list of CIDR blocks for the VCN."
+    required: false
+    visible:
+      and:
+        - customize_net
+        - add_exa_vcn3
+
+  exa_vcn3_dns:
+    type: string
+    title: "VCN DNS"
+    description: "Enter the VCN DNS name."
+    required: false
+    visible:
+      and:
+        - customize_net
+        - add_exa_vcn3
+
+  exa_vcn3_attach_to_drg:
+    type: boolean
+    title: "Attach this VCN to DRG (Dynamic Routing Gateway)?"
+    description: "Check to route private traffic to/from this VCN via a new or existing DRG."
+    visible:
+      and:
+        - customize_net
+        - add_exa_vcn3
+
+  exa_vcn3_routable_vcns:
+    type: array
+    items:
+      type: string
+    uniqueItems: true
+    title: "Routable VCNs"
+    description: "Enter the VCN labels that this VCN can send traffic to. Only applicable for Hub/Spoke topology where a DRG is deployed as the hub."
+    visible:
+      and:
+        - customize_net
+        - add_exa_vcn3
+        - exa_vcn3_attach_to_drg
+
+  customize_exa_vcn3_subnets:
+    type: boolean
+    title: "Customize VCN Subnets?"
+    description: "Check to customize default subnets settings."
+    visible:
+      and:
+        - customize_net
+        - add_exa_vcn3
+
+  exa_vcn3_client_subnet_name:
+    type: string
+    title: "Client Subnet Name"
+    description: "Enter the Client subnet name."
+    required: false
+    visible:
+      and:
+        - customize_net
+        - customize_exa_vcn3_subnets
+        - add_exa_vcn3
+
+  exa_vcn3_client_subnet_cidr:
+    type: string
+    title: "Client Subnet CIDR block"
+    description: "Enter the Client subnet CIDR block. It must be within the VCN CIDR blocks."
+    required: false
+    visible:
+      and:
+        - customize_net
+        - customize_exa_vcn3_subnets
+        - add_exa_vcn3
+
+  exa_vcn3_client_subnet_dns:
+    type: string
+    title: "Client Subnet DNS name"
+    description: "Enter the Client subnet DNS name. Use only letters and numbers, no special characters."
+    required: false
+    visible:
+      and:
+        - customize_net
+        - customize_exa_vcn3_subnets
+        - add_exa_vcn3
+
+  exa_vcn3_backup_subnet_name:
+    type: string
+    title: "Backup Subnet Name"
+    description: "Enter the Backup subnet name."
+    required: false
+    visible:
+      and:
+        - customize_net
+        - customize_exa_vcn3_subnets
+        - add_exa_vcn3
+
+  exa_vcn3_backup_subnet_cidr:
+    type: string
+    title: "Backup Subnet CIDR block"
+    description: "Enter the Backup subnet CIDR block. It must be within the VCN CIDR blocks."
+    required: false
+    visible:
+      and:
+        - customize_net
+        - customize_exa_vcn3_subnets
+        - add_exa_vcn3
+
+  exa_vcn3_backup_subnet_dns:
+    type: string
+    title: "Backup Subnet DNS name"
+    description: "Enter the Backup subnet DNS name. Use only letters and numbers, no special characters."
+    required: false
+    visible:
+      and:
+        - customize_net
+        - customize_exa_vcn3_subnets
+        - add_exa_vcn3
+
+# ------------------------------------------------------
+# ----- Networking - OKE VCN 1
+#-------------------------------------------------------
+
+  add_oke_vcn1:
+    type: boolean
+    title: "Add OKE VCN (label: OKE-VCN-1)?"
+    description: "Click to add a VCN configured for OKE deployment, with at least three subnets: service (public by default), workers (private) and API endpoint (private). Additionally, a private subnet for pods deployment is created if the OKE CNI Type is 'Native'. You can also enable an extra private subnet for managing the OKE cluster."
+    visible: customize_net  
+
+  oke_vcn1_cni_type:
+    type: enum
+    title: "OKE CNI Type"
+    description: "CNI type of OKE clusters (ex: Flannel or Native)"
+    enum:
+      - "Native"
+      - "Flannel"
+    visible:
+      and:
+      - customize_net
+      - add_oke_vcn1
+    required: true
+
+  oke_vcn1_name:
+    type: string
+    title: "VCN Name (label: OKE-VCN-1)"
+    description: "Enter the VCN name. Otherwise a default name is provided. The label above should be used in the 'Routable VCNs' field of other VCNs for constraining network traffic in a Hub/Spoke topology."
+    required: false
+    visible:
+      and:
+        - customize_net
+        - add_oke_vcn1
+
+  oke_vcn1_cidrs:
+    type: array
+    items:
+      type: string
+    uniqueItems: true
+    maxItems: 3
+    minItems: 1
+    title: "List of CIDR Blocks"
+    description: "The list of CIDR blocks for the VCN."
+    required: false
+    visible:
+      and:
+        - customize_net
+        - add_oke_vcn1
+
+  oke_vcn1_dns:
+    type: string
+    title: "VCN DNS"
+    description: "The VCN DNS name."
+    required: false
+    visible:
+      and:
+        - customize_net
+        - add_oke_vcn1
+
+  oke_vcn1_attach_to_drg:
+    type: boolean
+    title: "Attach this VCN to DRG (Dynamic Routing Gateway)?"
+    description: "Check to route private traffic to/from this VCN via a new or existing DRG."
+    visible:
+      and:
+        - customize_net
+        - add_oke_vcn1
+
+  oke_vcn1_routable_vcns:
+    type: array
+    items:
+      type: string
+    uniqueItems: true
+    title: "Routable VCNs"
+    description: "Enter the VCN labels that this VCN can send traffic to. Only applicable for Hub/Spoke topology where a DRG is deployed as the hub."
+    visible:
+      and:
+        - customize_net
+        - add_oke_vcn1
+        - oke_vcn1_attach_to_drg
+
+  customize_oke_vcn1_subnets:
+    type: boolean
+    title: "Customize VCN Subnets?"
+    description: "Check to customize default subnets settings."
+    visible:
+      and:
+        - customize_net
+        - add_oke_vcn1
+
+  oke_vcn1_api_subnet_name:
+    type: string
+    title: "API Subnet Name"
+    description: "The API subnet name."
+    required: false
+    visible:
+      and:
+        - customize_net
+        - customize_oke_vcn1_subnets
+        - add_oke_vcn1
+
+  oke_vcn1_api_subnet_cidr:
+    type: string
+    title: "API Subnet CIDR block"
+    description: "It must be within the VCN CIDR blocks."
+    required: false
+    visible:
+      and:
+        - customize_net
+        - customize_oke_vcn1_subnets
+        - add_oke_vcn1
+
+  oke_vcn1_api_subnet_dns:
+    type: string
+    title: "API Subnet DNS name"
+    description: "Use only letters and numbers, no special characters."
+    required: false
+    visible:
+      and:
+        - customize_net
+        - customize_oke_vcn1_subnets
+        - add_oke_vcn1
+
+  oke_vcn1_workers_subnet_name:
+    type: string
+    title: "Workers Subnet Name"
+    description: "The workers subnet name."
+    required: false
+    visible:
+      and:
+        - customize_net
+        - customize_oke_vcn1_subnets
+        - add_oke_vcn1
+
+  oke_vcn1_workers_subnet_cidr:
+    type: string
+    title: "Workers Subnet CIDR block"
+    description: "It must be within the VCN CIDR blocks."
+    required: false
+    visible:
+      and:
+        - customize_net
+        - customize_oke_vcn1_subnets
+        - add_oke_vcn1
+
+  oke_vcn1_workers_subnet_dns:
+    type: string
+    title: "Workers Subnet DNS name"
+    description: "Use only letters and numbers, no special characters."
+    required: false
+    visible:
+      and:
+        - customize_net
+        - customize_oke_vcn1_subnets
+        - add_oke_vcn1
+
+  oke_vcn1_services_subnet_name:
+    type: string
+    title: "Services Subnet Name"
+    description: "The services subnet name."
+    required: false
+    visible:
+      and:
+        - customize_net
+        - customize_oke_vcn1_subnets
+        - add_oke_vcn1
+
+  oke_vcn1_services_subnet_cidr:
+    type: string
+    title: "Services Subnet CIDR block"
+    description: "It must be within the VCN CIDR blocks."
+    required: false
+    visible:
+      and:
+        - customize_net
+        - customize_oke_vcn1_subnets
+        - add_oke_vcn1
+
+  oke_vcn1_services_subnet_dns:
+    type: string
+    title: "Services Subnet DNS name"
+    description: "Use only letters and numbers, no special characters."
+    required: false
+    visible:
+      and:
+        - customize_net
+        - customize_oke_vcn1_subnets
+        - add_oke_vcn1
+
+  add_oke_vcn1_mgmt_subnet:
+    type: boolean
+    title: "Add Management Subnet?"
+    description: "Check to add a private subnet for cluster management."
+    visible:
+      and:
+        - customize_net
+        - customize_oke_vcn1_subnets
+        - add_oke_vcn1
+
+  oke_vcn1_mgmt_subnet_name:
+    type: string
+    title: "Management Subnet Name"
+    description: "The management subnet name."
+    required: false
+    visible:
+      and:
+        - customize_net
+        - customize_oke_vcn1_subnets
+        - add_oke_vcn1
+        - add_oke_vcn1_mgmt_subnet
+
+  oke_vcn1_mgmt_subnet_cidr:
+    type: string
+    title: "Management Subnet CIDR block"
+    description: "It must be within the VCN CIDR blocks."
+    required: false
+    visible:
+      and:
+        - customize_net
+        - customize_oke_vcn1_subnets
+        - add_oke_vcn1
+        - add_oke_vcn1_mgmt_subnet
+
+  oke_vcn1_mgmt_subnet_dns:
+    type: string
+    title: "Management Subnet DNS name"
+    description: "Use only letters and numbers, no special characters."
+    required: false
+    visible:
+      and:
+        - customize_net
+        - customize_oke_vcn1_subnets
+        - add_oke_vcn1
+        - add_oke_vcn1_mgmt_subnet
+
+  oke_vcn1_pods_subnet_name:
+    type: string
+    title: "Pods Subnet Name"
+    description: "The pods subnet name."
+    required: false
+    visible:
+      and:
+        - customize_net
+        - customize_oke_vcn1_subnets
+        - add_oke_vcn1
+        - eq:
+            - ${oke_vcn1_cni_type}
+            - "Native"
+
+  oke_vcn1_pods_subnet_cidr:
+    type: string
+    title: "Pods Subnet CIDR block"
+    description: "It must be within the VCN CIDR blocks."
+    required: false
+    visible:
+      and:
+        - customize_net
+        - customize_oke_vcn1_subnets
+        - add_oke_vcn1
+        - eq:
+            - ${oke_vcn1_cni_type}
+            - "Native"
+
+  oke_vcn1_pods_subnet_dns:
+    type: string
+    title: "Pods Subnet DNS name"
+    description: "Use only letters and numbers, no special characters."
+    required: false
+    visible:
+      and:
+        - customize_net
+        - customize_oke_vcn1_subnets
+        - add_oke_vcn1
+        - eq:
+            - ${oke_vcn1_cni_type}
+            - "Native"
+
+  # ------------------------------------------------------
+  # ----- Networking - OKE VCN 2
+  #-------------------------------------------------------
+  add_oke_vcn2:
+    type: boolean
+    title: "Add OKE VCN (label: OKE-VCN-2)?"
+    description: "Click to add a VCN configured for OKE deployment, with at least three subnets: service (public by default), workers (private) and API endpoint (private). Additionally, a private subnet for pods deployment is created if the OKE CNI Type is 'Native'. You can also enable an extra private subnet for managing the OKE cluster."
+    visible: customize_net
+
+  oke_vcn2_cni_type:
+    type: enum
+    title: "OKE CNI Type"
+    description: "CNI type of OKE clusters (ex: Flannel or Native)"
+    enum:
+      - "Native"
+      - "Flannel"
+    visible:
+      and:
+      - customize_net
+      - add_oke_vcn2
+    required: true
+
+  oke_vcn2_name:
+    type: string
+    title: "VCN Name (label: OKE-VCN-2)"
+    description: "Enter the VCN name. Otherwise a default name is provided. The label above should be used in the 'Routable VCNs' field of other VCNs for constraining network traffic in a Hub/Spoke topology."
+    required: false
+    visible:
+      and:
+        - customize_net
+        - add_oke_vcn2
+
+  oke_vcn2_cidrs:
+    type: array
+    items:
+      type: string
+    uniqueItems: true
+    maxItems: 3
+    minItems: 1
+    title: "List of CIDR Blocks"
+    description: "The list of CIDR blocks for the VCN."
+    required: false
+    visible:
+      and:
+        - customize_net
+        - add_oke_vcn2
+
+  oke_vcn2_dns:
+    type: string
+    title: "VCN DNS"
+    description: "The VCN DNS name."
+    required: false
+    visible:
+      and:
+        - customize_net
+        - add_oke_vcn2
+
+  oke_vcn2_attach_to_drg:
+    type: boolean
+    title: "Attach this VCN to DRG (Dynamic Routing Gateway)?"
+    description: "Check to route private traffic to/from this VCN via a new or existing DRG."
+    visible:
+      and:
+        - customize_net
+        - add_oke_vcn2
+
+  oke_vcn2_routable_vcns:
+    type: array
+    items:
+      type: string
+    uniqueItems: true
+    title: "Routable VCNs"
+    description: "Enter the VCN labels that this VCN can send traffic to. Only applicable for Hub/Spoke topology where a DRG is deployed as the hub."
+    visible:
+      and:
+        - customize_net
+        - add_oke_vcn2
+        - oke_vcn2_attach_to_drg
+
+  customize_oke_vcn2_subnets:
+    type: boolean
+    title: "Customize VCN Subnets?"
+    description: "Check to customize default subnets settings."
+    visible:
+      and:
+        - customize_net
+        - add_oke_vcn2
+
+  oke_vcn2_api_subnet_name:
+    type: string
+    title: "API Subnet Name"
+    description: "The API subnet name."
+    required: false
+    visible:
+      and:
+        - customize_net
+        - customize_oke_vcn2_subnets
+        - add_oke_vcn2
+
+  oke_vcn2_api_subnet_cidr:
+    type: string
+    title: "API Subnet CIDR block"
+    description: "It must be within the VCN CIDR blocks."
+    required: false
+    visible:
+      and:
+        - customize_net
+        - customize_oke_vcn2_subnets
+        - add_oke_vcn2
+
+  oke_vcn2_api_subnet_dns:
+    type: string
+    title: "API Subnet DNS name"
+    description: "Use only letters and numbers, no special characters."
+    required: false
+    visible:
+      and:
+        - customize_net
+        - customize_oke_vcn2_subnets
+        - add_oke_vcn2
+
+  oke_vcn2_workers_subnet_name:
+    type: string
+    title: "Workers Subnet Name"
+    description: "The workers subnet name."
+    required: false
+    visible:
+      and:
+        - customize_net
+        - customize_oke_vcn2_subnets
+        - add_oke_vcn2
+
+  oke_vcn2_workers_subnet_cidr:
+    type: string
+    title: "Workers Subnet CIDR block"
+    description: "It must be within the VCN CIDR blocks."
+    required: false
+    visible:
+      and:
+        - customize_net
+        - customize_oke_vcn2_subnets
+        - add_oke_vcn2
+
+  oke_vcn2_workers_subnet_dns:
+    type: string
+    title: "Workers Subnet DNS name"
+    description: "Use only letters and numbers, no special characters."
+    required: false
+    visible:
+      and:
+        - customize_net
+        - customize_oke_vcn2_subnets
+        - add_oke_vcn2
+
+  oke_vcn2_services_subnet_name:
+    type: string
+    title: "Services Subnet Name"
+    description: "The services subnet name."
+    required: false
+    visible:
+      and:
+        - customize_net
+        - customize_oke_vcn2_subnets
+        - add_oke_vcn1
+
+  oke_vcn2_services_subnet_cidr:
+    type: string
+    title: "Services Subnet CIDR block"
+    description: "It must be within the VCN CIDR blocks."
+    required: false
+    visible:
+      and:
+        - customize_net
+        - customize_oke_vcn2_subnets
+        - add_oke_vcn2
+
+  oke_vcn2_services_subnet_dns:
+    type: string
+    title: "Services Subnet DNS name"
+    description: "Use only letters and numbers, no special characters."
+    required: false
+    visible:
+      and:
+        - customize_net
+        - customize_oke_vcn2_subnets
+        - add_oke_vcn2
+
+  add_oke_vcn2_mgmt_subnet:
+    type: boolean
+    title: "Add Management Subnet?"
+    description: "Check to add a private subnet for cluster management."
+    visible:
+      and:
+        - customize_net
+        - customize_oke_vcn2_subnets
+        - add_oke_vcn2
+
+  oke_vcn2_mgmt_subnet_name:
+    type: string
+    title: "Management Subnet Name"
+    description: "The management subnet name."
+    required: false
+    visible:
+      and:
+        - customize_net
+        - customize_oke_vcn2_subnets
+        - add_oke_vcn2
+        - add_oke_vcn2_mgmt_subnet
+
+  oke_vcn2_mgmt_subnet_cidr:
+    type: string
+    title: "Management Subnet CIDR block"
+    description: "It must be within the VCN CIDR blocks."
+    required: false
+    visible:
+      and:
+        - customize_net
+        - customize_oke_vcn2_subnets
+        - add_oke_vcn2
+        - add_oke_vcn2_mgmt_subnet
+
+  oke_vcn2_mgmt_subnet_dns:
+    type: string
+    title: "Management Subnet DNS name"
+    description: "Use only letters and numbers, no special characters."
+    required: false
+    visible:
+      and:
+        - customize_net
+        - customize_oke_vcn2_subnets
+        - add_oke_vcn2
+        - add_oke_vcn2_mgmt_subnet
+
+  oke_vcn2_pods_subnet_name:
+    type: string
+    title: "Pods Subnet Name"
+    description: "The pods subnet name."
+    required: false
+    visible:
+      and:
+        - customize_net
+        - customize_oke_vcn2_subnets
+        - add_oke_vcn2
+        - eq:
+          - ${oke_vcn2_cni_type}
+          - "Native"
+
+  oke_vcn2_pods_subnet_cidr:
+    type: string
+    title: "Pods Subnet CIDR block"
+    description: "It must be within the VCN CIDR blocks."
+    required: false
+    visible:
+      and:
+        - customize_net
+        - customize_oke_vcn2_subnets
+        - add_oke_vcn2
+        - eq:
+          - ${oke_vcn2_cni_type}
+          - "Native"
+
+  oke_vcn2_pods_subnet_dns:
+    type: string
+    title: "Pods Subnet DNS name"
+    description: "Use only letters and numbers, no special characters."
+    required: false
+    visible:
+      and:
+        - customize_net
+        - customize_oke_vcn2_subnets
+        - add_oke_vcn2
+        - eq:
+            - ${oke_vcn2_cni_type}
+            - "Native"
+  # ------------------------------------------------------
+  # ----- Networking - OKE VCN 3
+  #-------------------------------------------------------
+  add_oke_vcn3:
+    type: boolean
+    title: "Add OKE VCN (label: OKE-VCN-3)?"
+    description: "Click to add a VCN configured for OKE deployment, with at least three subnets: service (public by default), workers (private) and API endpoint (private). Additionally, a private subnet for pods deployment is created if the OKE CNI Type is 'Native'. You can also enable an extra private subnet for managing the OKE cluster."
+    visible: customize_net
+
+  oke_vcn3_cni_type:
+    type: enum
+    title: "OKE CNI Type"
+    description: "CNI type of OKE clusters (ex: Flannel or Native)"
+    enum:
+      - "Native"
+      - "Flannel"
+    visible:
+      and:
+        - customize_net
+        - add_oke_vcn3
+    required: true
+
+  oke_vcn3_name:
+    type: string
+    title: "VCN Name (label: OKE-VCN-3)"
+    description: "Enter the VCN name. Otherwise a default name is provided. The label above should be used in the 'Routable VCNs' field of other VCNs for constraining network traffic in a Hub/Spoke topology."
+    required: false
+    visible:
+      and:
+        - customize_net
+        - add_oke_vcn3
+
+  oke_vcn3_cidrs:
+    type: array
+    items:
+      type: string
+    uniqueItems: true
+    maxItems: 3
+    minItems: 1
+    title: "List of CIDR Blocks"
+    description: "The list of CIDR blocks for the VCN."
+    required: false
+    visible:
+      and:
+        - customize_net
+        - add_oke_vcn3
+
+  oke_vcn3_dns:
+    type: string
+    title: "VCN DNS"
+    description: "The VCN DNS name."
+    required: false
+    visible:
+      and:
+        - customize_net
+        - add_oke_vcn3
+
+  oke_vcn3_attach_to_drg:
+    type: boolean
+    title: "Attach this VCN to DRG (Dynamic Routing Gateway)?"
+    description: "Check to route private traffic to/from this VCN via a new or existing DRG."
+    visible:
+      and:
+        - customize_net
+        - add_oke_vcn3
+
+  oke_vcn3_routable_vcns:
+    type: array
+    items:
+      type: string
+    uniqueItems: true
+    title: "Routable VCNs"
+    description: "Enter the VCN labels that this VCN can send traffic to. Only applicable for Hub/Spoke topology where a DRG is deployed as the hub."
+    visible:
+      and:
+        - customize_net
+        - add_oke_vcn3
+        - oke_vcn3_attach_to_drg
+
+  customize_oke_vcn3_subnets:
+    type: boolean
+    title: "Customize VCN Subnets?"
+    description: "Check to customize default subnets settings."
+    visible:
+      and:
+        - customize_net
+        - add_oke_vcn3
+
+  oke_vcn3_api_subnet_name:
+    type: string
+    title: "API Subnet Name"
+    description: "The API subnet name."
+    required: false
+    visible:
+      and:
+        - customize_net
+        - customize_oke_vcn3_subnets
+        - add_oke_vcn3
+
+  oke_vcn3_api_subnet_cidr:
+    type: string
+    title: "API Subnet CIDR block"
+    description: "It must be within the VCN CIDR blocks."
+    required: false
+    visible:
+      and:
+        - customize_net
+        - customize_oke_vcn3_subnets
+        - add_oke_vcn3
+
+  oke_vcn3_api_subnet_dns:
+    type: string
+    title: "API Subnet DNS name"
+    description: "Use only letters and numbers, no special characters."
+    required: false
+    visible:
+      and:
+        - customize_net
+        - customize_oke_vcn3_subnets
+        - add_oke_vcn3
+
+  oke_vcn3_workers_subnet_name:
+    type: string
+    title: "Workers Subnet Name"
+    description: "The workers subnet name."
+    required: false
+    visible:
+      and:
+        - customize_net
+        - customize_oke_vcn3_subnets
+        - add_oke_vcn3
+
+  oke_vcn3_workers_subnet_cidr:
+    type: string
+    title: "Workers Subnet CIDR block"
+    description: "It must be within the VCN CIDR blocks."
+    required: false
+    visible:
+      and:
+        - customize_net
+        - customize_oke_vcn3_subnets
+        - add_oke_vcn3
+
+  oke_vcn3_workers_subnet_dns:
+    type: string
+    title: "Workers Subnet DNS name"
+    description: "Use only letters and numbers, no special characters."
+    required: false
+    visible:
+      and:
+        - customize_net
+        - customize_oke_vcn3_subnets
+        - add_oke_vcn3
+
+  oke_vcn3_services_subnet_name:
+    type: string
+    title: "Services Subnet Name"
+    description: "The services subnet name."
+    required: false
+    visible:
+      and:
+        - customize_net
+        - customize_oke_vcn3_subnets
+        - add_oke_vcn1
+
+  oke_vcn3_services_subnet_cidr:
+    type: string
+    title: "Services Subnet CIDR block"
+    description: "It must be within the VCN CIDR blocks."
+    required: false
+    visible:
+      and:
+        - customize_net
+        - customize_oke_vcn3_subnets
+        - add_oke_vcn3
+
+  oke_vcn3_services_subnet_dns:
+    type: string
+    title: "Services Subnet DNS name"
+    description: "Use only letters and numbers, no special characters."
+    required: false
+    visible:
+      and:
+        - customize_net
+        - customize_oke_vcn3_subnets
+        - add_oke_vcn3
+
+  add_oke_vcn3_mgmt_subnet:
+    type: boolean
+    title: "Add Management Subnet?"
+    description: "Check to add a private subnet for cluster management."
+    visible:
+      and:
+        - customize_net
+        - customize_oke_vcn3_subnets
+        - add_oke_vcn3
+
+  oke_vcn3_mgmt_subnet_name:
+    type: string
+    title: "Management Subnet Name"
+    description: "The management subnet name."
+    required: false
+    visible:
+      and:
+        - customize_net
+        - customize_oke_vcn3_subnets
+        - add_oke_vcn3
+        - add_oke_vcn3_mgmt_subnet
+
+  oke_vcn3_mgmt_subnet_cidr:
+    type: string
+    title: "Management Subnet CIDR block"
+    description: "It must be within the VCN CIDR blocks."
+    required: false
+    visible:
+      and:
+        - customize_net
+        - customize_oke_vcn3_subnets
+        - add_oke_vcn3
+        - add_oke_vcn3_mgmt_subnet
+
+  oke_vcn3_mgmt_subnet_dns:
+    type: string
+    title: "Management Subnet DNS name"
+    description: "Use only letters and numbers, no special characters."
+    required: false
+    visible:
+      and:
+        - customize_net
+        - customize_oke_vcn3_subnets
+        - add_oke_vcn3
+        - add_oke_vcn3_mgmt_subnet
+
+  oke_vcn3_pods_subnet_name:
+    type: string
+    title: "Pods Subnet Name"
+    description: "The pods subnet name."
+    required: false
+    visible:
+      and:
+        - customize_net
+        - customize_oke_vcn3_subnets
+        - add_oke_vcn3
+        - eq:
+          - ${oke_vcn3_cni_type}
+          - "Native"
+
+  oke_vcn3_pods_subnet_cidr:
+    type: string
+    title: "Pods Subnet CIDR block"
+    description: "It must be within the VCN CIDR blocks."
+    required: false
+    visible:
+      and:
+        - customize_net
+        - customize_oke_vcn3_subnets
+        - add_oke_vcn3
+        - eq:
+          - ${oke_vcn3_cni_type}
+          - "Native"
+
+  oke_vcn3_pods_subnet_dns:
+    type: string
+    title: "Pods Subnet DNS name"
+    description: "Use only letters and numbers, no special characters."
+    required: false
+    visible:
+      and:
+        - customize_net
+        - customize_oke_vcn3_subnets
+        - add_oke_vcn3
+        - eq:
+          - ${oke_vcn3_cni_type}
+          - "Native"
+# ------------------------------------------------------
+# ----- Networking - Hub
+#-------------------------------------------------------
+  hub_deployment_option:
+    type: enum
+    title: "Deploy Hub & Spoke Topology?"
+    description: "Choose one of the available options for deploying a Hub & Spoke topology. All the VCNs that attach to the DRG join the topology as spokes."
+    visible: customize_net  
+    enum:
+      - "No"
+      - "Yes, new DRG as hub"
+      - "Yes, existing DRG as hub"
+      - "Yes, new VCN as hub with new DRG"
+      - "Yes, new VCN as hub with existing DRG"
+    default: "No"    
+
+  existing_drg_ocid:
+    type: string
+    title: "Existing DRG OCID"
+    description: "Enter the OCID of an existing DRG that you want to reuse for deploying the topology."
+    required: 
+      or:
+        - eq:
+          - ${hub_deployment_option}
+          - "Yes, existing DRG as hub"
+        - eq:
+          - ${hub_deployment_option}
+          - "Yes, new VCN as hub with existing DRG"
+
+    visible: 
+      and:
+        - customize_net
+        - or:
+          - eq:
+            - ${hub_deployment_option}
+            - "Yes, existing DRG as hub"
+          - eq:
+            - ${hub_deployment_option}
+            - "Yes, new VCN as hub with existing DRG"
+
+  hub_vcn_name:
+    type: string
+    title: "Hub VCN Name"
+    description: "Enter the Hub VCN name."
+    required: false
+    visible: 
+      and:
+        - customize_net
+        - or:
+          - eq:
+            - ${hub_deployment_option}
+            - "Yes, new VCN as hub with new DRG"
+          - eq:
+            - ${hub_deployment_option}
+            - "Yes, new VCN as hub with existing DRG"  
+
+  hub_vcn_cidrs:
+    type: array
+    items:
+      type: string
+    uniqueItems: true
+    maxItems: 3
+    minItems: 1
+    title: "Hub VCN list of CIDR Blocks"
+    description: "Enter the CIDR blocks for the Hub VCN."
+    required: false
+    visible: 
+      and:
+        - customize_net
+        - or:
+          - eq:
+            - ${hub_deployment_option}
+            - "Yes, new VCN as hub with new DRG"
+          - eq:
+            - ${hub_deployment_option}
+            - "Yes, new VCN as hub with existing DRG"
+
+  hub_vcn_dns:
+    type: string
+    title: "HuB VCN DNS"
+    description: "Enter the Hub VCN DNS name."
+    required: false
+    visible: 
+      and:
+        - customize_net
+        - or:
+          - eq:
+            - ${hub_deployment_option}
+            - "Yes, new VCN as hub with new DRG"
+          - eq:
+            - ${hub_deployment_option}
+            - "Yes, new VCN as hub with existing DRG"
+
+  hub_vcn_deploy_firewall_option:
+    type: enum
+    title: "Deploy Firewall?"
+    description: "Choose one of the available firewall options for deploying in the Hub VCN. Costs are incurred."
+    enum:
+      - "No"
+      - "Palo Alto Networks VM-Series Firewall"
+      - "Fortinet FortiGate Firewall"
+      #- "Check Point CloudGuard Firewall"
+      #- "Cisco Secure Firewall"
+      #- "OCI Firewall Service"
+    visible: 
+      and:
+        - customize_net
+        - or:
+          - eq:
+            - ${hub_deployment_option}
+            - "Yes, new VCN as hub with new DRG"
+          - eq:
+            - ${hub_deployment_option}
+            - "Yes, new VCN as hub with existing DRG"
+    default: "No"
+
+  fw_instance_name_prefix:
+    type: string
+    title: "Firewall Name Common Prefix"
+    description: "Enter a common prefix to firewall name. To this common prefix, numbers 1 and 2 are appended the corresponding instance."
+    required: false
+    visible: 
+      and:
+        - customize_net
+        - or:
+          - eq:
+            - ${hub_deployment_option}
+            - "Yes, new VCN as hub with new DRG"
+          - eq:
+            - ${hub_deployment_option}
+            - "Yes, new VCN as hub with existing DRG"
+        - not: 
+          - eq:
+            - ${hub_vcn_deploy_firewall_option}  
+            - "No"      
+      
+  fw_instance_shape:
+    type: oci:core:instanceshape:name
+    dependsOn:
+      compartmentId: ${tenancy_ocid}
+    title: "Firewall Instance Shape"
+    description: "Select the instance shape for the firewall."
+    required: false
+    visible: 
+      and:
+        - customize_net
+        - or:
+          - eq:
+            - ${hub_deployment_option}
+            - "Yes, new VCN as hub with new DRG"
+          - eq:
+            - ${hub_deployment_option}
+            - "Yes, new VCN as hub with existing DRG"
+        - and: 
+          - not:   
+            - eq: 
+              - ${hub_vcn_deploy_firewall_option}  
+              - "No"
+          - not:    
+            - eq:
+              - ${hub_vcn_deploy_firewall_option}
+              - "OCI Firewall Service"
+
+  fw_instance_flex_shape_memory:
+    type: string
+    title: "Firewall Amount of Memory for the Selected Flex Shape"
+    description: "Enter the amount of memory (in GB) for the selected flex shape. Applicable to flexible shapes only."
+    required: false
+    visible: 
+      and:
+        - customize_net
+        - or:
+          - eq:
+            - ${hub_deployment_option}
+            - "Yes, new VCN as hub with new DRG"
+          - eq:
+            - ${hub_deployment_option}
+            - "Yes, new VCN as hub with existing DRG"
+        - and: 
+          - not:   
+            - eq: 
+              - ${hub_vcn_deploy_firewall_option}  
+              - "No"
+          - not:    
+            - eq:
+              - ${hub_vcn_deploy_firewall_option}
+              - "OCI Firewall Service"
+
+  fw_instance_flex_shape_cpu:
+    type: string
+    title: "Firewall Number of OCPUs for the Selected Flex Shape"
+    description: "Enter the number of OCPUs for the selected flex shape. Applicable to flexible shapes only."
+    required: false
+    visible: 
+      and:
+        - customize_net
+        - or:
+          - eq:
+            - ${hub_deployment_option}
+            - "Yes, new VCN as hub with new DRG"
+          - eq:
+            - ${hub_deployment_option}
+            - "Yes, new VCN as hub with existing DRG"
+        - and: 
+          - not:   
+            - eq: 
+              - ${hub_vcn_deploy_firewall_option}  
+              - "No"
+          - not:    
+            - eq:
+              - ${hub_vcn_deploy_firewall_option}
+              - "OCI Firewall Service"          
+
+  fw_instance_boot_volume_size:
+    type: string
+    title: "Firewall Boot Volume Size"
+    description: "Enter the boot volume size (in GB) for the firewall instances."
+    required: false
+    visible: 
+      and:
+        - customize_net
+        - or:
+          - eq:
+            - ${hub_deployment_option}
+            - "Yes, new VCN as hub with new DRG"
+          - eq:
+            - ${hub_deployment_option}
+            - "Yes, new VCN as hub with existing DRG"
+        - and: 
+          - not:   
+            - eq: 
+              - ${hub_vcn_deploy_firewall_option}  
+              - "No"
+          - not:    
+            - eq:
+              - ${hub_vcn_deploy_firewall_option}
+              - "OCI Firewall Service"
+
+  fw_instance_public_rsa_key:
+    type: string
+    title: "Firewall Instance public SSH Key"
+    description: "Enter a Public SSH Key to Login to Compute Instance."
+    required: false
+    visible: 
+      and:
+        - customize_net
+        - or:
+          - eq:
+            - ${hub_deployment_option}
+            - "Yes, new VCN as hub with new DRG"
+          - eq:
+            - ${hub_deployment_option}
+            - "Yes, new VCN as hub with existing DRG"
+        - not: 
+          - eq:
+            - ${hub_vcn_deploy_firewall_option}
+            - "No"
+
+  hub_vcn_north_south_entry_point_ocid:
+    type: string
+    title: "Hub VCN North/South Traffic Destination OCID"
+    description: "Enter the private OCID of the Outdoor Network Load Balancer, where all inbound Internet (North/South) traffic is sent to in the Hub VCN."
+    required: false
+    visible: 
+      and:
+        - customize_net
+        - or:
+          - eq:
+            - ${hub_deployment_option}
+            - "Yes, new VCN as hub with new DRG"
+          - eq:
+            - ${hub_deployment_option}
+            - "Yes, new VCN as hub with existing DRG"
+        - and: 
+          - not:   
+            - eq: 
+              - ${hub_vcn_deploy_firewall_option}  
+              - "No"
+
+  hub_vcn_east_west_entry_point_ocid:
+    type: string
+    title: "Hub VCN East/West Traffic Destination OCID"
+    description: "Enter the private OCID of the Indoor Network Load Balancer, where all inter-VCN (East/West) traffic is sent to in the Hub VCN."
+    required: false
+    visible: 
+      and:
+        - customize_net
+        - or:
+          - eq:
+            - ${hub_deployment_option}
+            - "Yes, new VCN as hub with new DRG"
+          - eq:
+            - ${hub_deployment_option}
+            - "Yes, new VCN as hub with existing DRG"
+        - and: 
+          - not:   
+            - eq: 
+              - ${hub_vcn_deploy_firewall_option}  
+              - "No"              
+
+  customize_hub_vcn_subnets:
+    type: boolean
+    title: "Customize Hub VCN Subnets?"
+    description: "Check to customize default subnets settings."
+    visible: 
+      and:
+        - customize_net
+        - or:
+          - eq:
+            - ${hub_deployment_option}
+            - "Yes, new VCN as hub with new DRG"
+          - eq:
+            - ${hub_deployment_option}
+            - "Yes, new VCN as hub with existing DRG"
+
+# -------------------------------------------
+# ----- Networking - Hub Web Subnet
+#--------------------------------------------
+  hub_vcn_web_subnet_name:
+    type: string
+    title: "Web Subnet Name"
+    description: "Enter the Web subnet name."
+    required: false
+    visible: 
+      and:
+        - customize_net
+        - customize_hub_vcn_subnets
+        - or:
+          - eq:
+            - ${hub_deployment_option}
+            - "Yes, new VCN as hub with new DRG"
+          - eq:
+            - ${hub_deployment_option}
+            - "Yes, new VCN as hub with existing DRG"
+
+  hub_vcn_web_subnet_cidr:
+    type: string
+    title: "Web Subnet CIDR Block"
+    description: "Enter the Web subnet CIDR block. It must be within the VCN CIDR blocks."
+    required: false
+    visible: 
+      and:
+        - customize_net
+        - customize_hub_vcn_subnets
+        - or:
+          - eq:
+            - ${hub_deployment_option}
+            - "Yes, new VCN as hub with new DRG"
+          - eq:
+            - ${hub_deployment_option}
+            - "Yes, new VCN as hub with existing DRG"
+
+  hub_vcn_web_subnet_dns:
+    type: string
+    title: "Web Subnet DNS Name"
+    description: "Enter the Web subnet DNS name. Use only letters and numbers, no special characters."
+    required: false
+    visible: 
+      and:
+        - customize_net
+        - customize_hub_vcn_subnets
+        - or:
+          - eq:
+            - ${hub_deployment_option}
+            - "Yes, new VCN as hub with new DRG"
+          - eq:
+            - ${hub_deployment_option}
+            - "Yes, new VCN as hub with existing DRG"      
+
+  hub_vcn_web_subnet_is_private:
+    type: boolean
+    title: "Is Web Subnet Private?"
+    description: "Check to make the Web subnet private. It is public by default."
+    visible: 
+      and:
+        - customize_net
+        - customize_hub_vcn_subnets
+        - or:
+          - eq:
+            - ${hub_deployment_option}
+            - "Yes, new VCN as hub with new DRG"
+          - eq:
+            - ${hub_deployment_option}
+            - "Yes, new VCN as hub with existing DRG"
+
+  hub_vcn_web_subnet_jump_host_allowed_cidrs:
+    type: array
+    items:
+      type: string
+    uniqueItems: true
+    maxItems: 3
+    minItems: 1
+    title: "List of CIDR blocks allowed to SSH into the Web Subnet"
+    description: "These CIDRs are allowed to SSH into the Web subnet via a jump host eventually deployed in the Web subnet. Leave empty for no access."
+    required: false
+    visible: 
+      and:
+        - customize_net
+        - customize_hub_vcn_subnets
+        - or:
+          - eq:
+            - ${hub_deployment_option}
+            - "Yes, new VCN as hub with new DRG"
+          - eq:
+            - ${hub_deployment_option}
+            - "Yes, new VCN as hub with existing DRG"          
+
+# -------------------------------------------
+# ----- Networking - Hub Mgmt Subnet
+#--------------------------------------------
+  hub_vcn_mgmt_subnet_name:
+    type: string
+    title: "Mgmt Subnet Name"
+    description: "Enter the Mgmt subnet Name."
+    required: false
+    visible: 
+      and:
+        - customize_net
+        - customize_hub_vcn_subnets
+        - or:
+          - eq:
+            - ${hub_deployment_option}
+            - "Yes, new VCN as hub with new DRG"
+          - eq:
+            - ${hub_deployment_option}
+            - "Yes, new VCN as hub with existing DRG"
+
+  hub_vcn_mgmt_subnet_cidr:
+    type: string
+    title: "Mgmt Subnet CIDR Block"
+    description: "Enter the Mgmt subnet CIDR block. It must be within the VCN CIDR blocks."
+    required: false
+    visible: 
+      and:
+        - customize_net
+        - customize_hub_vcn_subnets
+        - or:
+          - eq:
+            - ${hub_deployment_option}
+            - "Yes, new VCN as hub with new DRG"
+          - eq:
+            - ${hub_deployment_option}
+            - "Yes, new VCN as hub with existing DRG"
+
+  hub_vcn_mgmt_subnet_dns:
+    type: string
+    title: "Mgmt Subnet DNS Name"
+    description: "Enter the Mgmt subnet DNS name. Use only letters and numbers, no special characters."
+    required: false
+    visible: 
+      and:
+        - customize_net
+        - customize_hub_vcn_subnets
+        - or:
+          - eq:
+            - ${hub_deployment_option}
+            - "Yes, new VCN as hub with new DRG"
+          - eq:
+            - ${hub_deployment_option}
+            - "Yes, new VCN as hub with existing DRG"      
+
+  hub_vcn_mgmt_subnet_external_allowed_cidrs_for_http:
+    type: array
+    items:
+      type: string
+    uniqueItems: true
+    maxItems: 3
+    minItems: 1
+    title: "List of CIDR blocks allowed to connect to Mgmt Subnet over HTTP"
+    description: "Enter the CIDR blocks allowed to connect to Mgmt subnet over HTTP. Leave empty for no access."
+    required: false
+    visible: 
+      and:
+        - customize_net
+        - customize_hub_vcn_subnets
+        - or:
+          - eq:
+            - ${hub_deployment_option}
+            - "Yes, new VCN as hub with new DRG"
+          - eq:
+            - ${hub_deployment_option}
+            - "Yes, new VCN as hub with existing DRG"          
+
+  hub_vcn_mgmt_subnet_external_allowed_cidrs_for_ssh:
+    type: array
+    items:
+      type: string
+    uniqueItems: true
+    maxItems: 3
+    minItems: 1
+    title: "List of CIDR blocks allowed to connect to Mgmt Subnet over SSH"
+    description: "Enter the CIDR blocks allowed to connect to Mgmt subnet over SSH. Leave empty for no access."
+    required: false
+    visible: 
+      and:
+        - customize_net
+        - customize_hub_vcn_subnets
+        - or:
+          - eq:
+            - ${hub_deployment_option}
+            - "Yes, new VCN as hub with new DRG"
+          - eq:
+            - ${hub_deployment_option}
+            - "Yes, new VCN as hub with existing DRG"     
+
+# -------------------------------------------
+# ----- Networking - Hub Outdoor Subnet
+#--------------------------------------------
+  hub_vcn_outdoor_subnet_name:
+    type: string
+    title: "Outdoor Subnet CIDR Block"
+    description: "Enter the Outdoor subnet CIDR block. It must be within the VCN CIDR blocks."
+    required: false
+    visible: 
+      and:
+        - customize_net
+        - customize_hub_vcn_subnets
+        - or:
+          - eq:
+            - ${hub_deployment_option}
+            - "Yes, new VCN as hub with new DRG"
+          - eq:
+            - ${hub_deployment_option}
+            - "Yes, new VCN as hub with existing DRG"
+
+  hub_vcn_outdoor_subnet_cidr:
+    type: string
+    title: "Outdoor Subnet DNS Name"
+    description: "Enter the Outdoor subnet DNS name. Use only letters and numbers, no special characters."
+    required: false
+    visible: 
+      and:
+        - customize_net
+        - customize_hub_vcn_subnets
+        - or:
+          - eq:
+            - ${hub_deployment_option}
+            - "Yes, new VCN as hub with new DRG"
+          - eq:
+            - ${hub_deployment_option}
+            - "Yes, new VCN as hub with existing DRG"      
+
+  hub_vcn_outdoor_subnet_dns:
+    type: string
+    title: "Outdoor Subnet DNS Name"
+    description: "Enter the Outdoor subnet DNS name. Use only letters and numbers, no special characters."
+    required: false
+    visible: 
+      and:
+        - customize_net
+        - customize_hub_vcn_subnets
+        - or:
+          - eq:
+            - ${hub_deployment_option}
+            - "Yes, new VCN as hub with new DRG"
+          - eq:
+            - ${hub_deployment_option}
+            - "Yes, new VCN as hub with existing DRG"           
+
+# -------------------------------------------
+# ----- Networking - Hub Indoor Subnet
+#--------------------------------------------
+  hub_vcn_indoor_subnet_name:
+    type: string
+    title: "Indoor Subnet CIDR Block"
+    description: "Enter the Indoor subnet CIDR block. It must be within the VCN CIDR blocks."
+    required: false
+    visible: 
+      and:
+        - customize_net
+        - customize_hub_vcn_subnets
+        - or:
+          - eq:
+            - ${hub_deployment_option}
+            - "Yes, new VCN as hub with new DRG"
+          - eq:
+            - ${hub_deployment_option}
+            - "Yes, new VCN as hub with existing DRG"
+
+  hub_vcn_indoor_subnet_cidr:
+    type: string
+    title: "Indoor Subnet DNS Name"
+    description: "Enter the Indoor subnet DNS name. Use only letters and numbers, no special characters."
+    required: false
+    visible: 
+      and:
+        - customize_net
+        - customize_hub_vcn_subnets
+        - or:
+          - eq:
+            - ${hub_deployment_option}
+            - "Yes, new VCN as hub with new DRG"
+          - eq:
+            - ${hub_deployment_option}
+            - "Yes, new VCN as hub with existing DRG"      
+
+  hub_vcn_indoor_subnet_dns:
+    type: string
+    title: "Indoor Subnet DNS Name"
+    description: "Enter the Indoor subnet DNS name. Use only letters and numbers, no special characters."
+    required: false
+    visible: 
+      and:
+        - customize_net
+        - customize_hub_vcn_subnets
+        - or:
+          - eq:
+            - ${hub_deployment_option}
+            - "Yes, new VCN as hub with new DRG"
+          - eq:
+            - ${hub_deployment_option}
+            - "Yes, new VCN as hub with existing DRG"           
+
+  network_admin_email_endpoints:
+    type: array
+    items:
+      type: string
+    uniqueItems: true
+    title: "Network Admin Email Endpoints"
+    required: true
+    description: "List of email addresses for all network related notifications. (Type an email address and hit enter to enter multiple values)"
+
+  security_admin_email_endpoints:
+    type: array
+    items:
+      type: string
+    uniqueItems: true
+    title: "Security Admin Email Endpoints"
+    required: true
+    description: "List of email addresses for all security related notifications. (Type an email address and hit enter to enter multiple values)"
+
+  notifications_advanced_options:
+    type: boolean
+    title: "Additional Notification Endpoints"
+    description: "Allows for notifications that are not required by CIS Benchmark."
+    default: false
+  
+  compute_admin_email_endpoints:
+    type: array
+    items:
+      type: string
+    uniqueItems: true
+    title: "Compute Admin Email Endpoints"
+    required: false
+    description: "List of email addresses for all compute related notifications. (Type an email address and hit enter to enter multiple values)"
+    visible: notifications_advanced_options
+
+  storage_admin_email_endpoints:
+    type: array
+    items:
+      type: string
+    uniqueItems: true
+    title: "Storage Admin Email Endpoints"
+    required: false
+    description: "List of email addresses for all storage related notifications. (Type an email address and hit enter to enter multiple values)"
+    visible: notifications_advanced_options
+
+  database_admin_email_endpoints:
+    type: array
+    items:
+      type: string
+    uniqueItems: true
+    title: "Database Admin Email Endpoints"
+    required: false
+    description: "List of email addresses for all database related notifications. (Type an email address and hit enter to enter multiple values)"
+    visible: notifications_advanced_options
+
+  exainfra_admin_email_endpoints:
+    type: array
+    items:
+      type: string
+    uniqueItems: true
+    title: "Exadata Infrastructure Admin Email Endpoints"
+    required: false
+    description: "List of email addresses for all Exadata infrastructure related notifications. (Type an email address and hit enter to enter multiple values)"
+    visible: notifications_advanced_options  
+
+  budget_admin_email_endpoints:
+    type: array
+    items:
+      type: string
+    uniqueItems: true
+    title: "Budget Admin Email Endpoints"
+    required: false
+    description: "List of email addresses for all budget related notifications such as budget and finance. (Type an email address and hit enter to enter multiple values)"
+    visible: notifications_advanced_options
+
+  create_alarms_as_enabled:
+    type: boolean
+    title: "Create alarms as enabled?"
+    description: "Whether a alarms should be created in an enabled state by default. If unchecked, alarms will be created but not emit alerts."
+    default: false
+    visible: notifications_advanced_options
+    
+  create_events_as_enabled:
+    type: boolean
+    title: "Create events as enabled?"
+    description: "Whether events should be created in an enabled state by default. If unchecked, events will be created but not emit notifications."
+    default: false
+    visible: notifications_advanced_options
+
+  alarm_message_format:
+    type: enum
+    title: "Alarm Message Format"
+    description: "Format of the message sent by Alarms"
+    required: true
+    enum:
+      - PRETTY_JSON
+      - ONS_OPTIMIZED
+      - RAW
+    visible: notifications_advanced_options  
+      
+  enable_cloud_guard:
+    type: boolean
+    title: "Enable Cloud Guard Service? (Uncheck if Cloud Guard is already enabled and a target exists for the Root compartment)"
+    description: "If selected, Cloud Guard service is enabled and the Root compartment is configured with a Cloud Guard target, as long as there is no pre-existing Cloud Guard target for the Root compartment (or target creation will fail). Keep in mind that once you select this, Cloud Guard target is managed by Landing Zone. If later on you unselect this option, the managed target is deleted and all (open, resolved and dismissed) problems associated with the deleted target are moved to 'deleted' state. This operation happens in the background and would take some time to complete. Deleted problems can be viewed from the problems page using the 'deleted' status filter. For more details on Cloud Guard problems lifecycle, see <a href=\"https://docs.oracle.com/en-us/iaas/cloud-guard/using/problems-page.htm#problems-page__sect_prob_lifecycle\">documentation</a>. If Cloud Guard is already enabled and a target exists for the Root compartment, unselect this option."
+    required: true
+
+  enable_cloud_guard_cloned_recipes:
+    type: boolean
+    title: "Enable Cloud Guard Cloned Recipes?"  
+    description: "Whether cloned recipes are attached to the managed Cloud Guard target. If not set, Oracle managed recipes are attached."
+    required: false
+    visible: enable_cloud_guard
+      
+  cloud_guard_reporting_region:
+    type: oci:identity:region:name
+    title: "Reporting Region"
+    description: "Cloud Guard reporting region, where Cloud Guard reporting resources are kept. If not set, it defaults to home region."
+    required: false
+    visible: enable_cloud_guard
+
+  cloud_guard_risk_level_threshold:
+    type: enum
+    title: "Minimum Risk Level Threshold"
+    description: "Determines the minimum risk level that will trigger an event and send information about the problem to the Cloud Guard Email Endpoints. E.g. a minimum risk level of High will include problems with High or Critical risk levels."
+    required: false
+    default: High
+    enum:
+      - Critical
+      - High
+      - Medium
+      - Minor
+      - Low
+    visible: enable_cloud_guard  
+
+  cloud_guard_admin_email_endpoints:
+    type: array
+    items:
+      type: string
+    uniqueItems: true
+    title: "Cloud Guard Admin Email Endpoints"
+    required: false
+    description: "List of email addresses for Cloud Guard related notifications. (Type an email address and hit enter to enter multiple values)"
+    visible: enable_cloud_guard  
+  
+  # Security Zone - Variables
+  enable_security_zones:
+    type: boolean
+    title: Enable Security Zones
+    description: "Determines if Security Zones are enabled in Landing Zone compartments. When set to true, the Security Zone is enabled for the enclosing compartment. If no enclosing compartment is used, then the Security Zone is not enabled."
+    default: false
+
+  security_zones_reporting_region:
+    type: string
+    title: Security Zones Reporting Region
+    description: "The reporting region of security zones. It defaults to tenancy home region if undefined."
+    default: ""
+    required: false
+    visible:
+      and:
+        - ${enable_security_zones}
+
+  sz_security_policies:
+    type: array
+    items:
+      type: string
+    uniqueItems: true
+    title: Security Zones Policies
+    description: "Additional Security Zones Policy OCIDs to add to security zone recipe (The default policies are added based on CIS level).Type a Security Zone policy OCID and hit enter to enter multiple values.To get a Security Zone policy OCID use the oci cli:  osecurity-policy-collection list-security-policies --compartment-id <tenancy-ocid>."
+    required: false
+    visible:
+      and:
+        - ${enable_security_zones}
+
+  # -------------------------------------------
+  # ----- Service Connector Hub - Audit Logs
+  #--------------------------------------------
+
+  enable_service_connector:
+    type: boolean
+    required: true
+    title: "Enable Service Connector?"
+    description: "Whether Service Connector should be enabled. If true, a single Service Connector is managed for all services log sources and the designated target specified in 'Service Connector Target Kind'. The Service Connector resource is created in INACTIVE state. To activate, check 'Activate Service Connector?' (costs may incur)."
+  
+  activate_service_connector:
+    type: boolean
+    required: true
+    title: "Activate Service Connector? (This might incur some cost)"
+    description: "Whether Service Connector should be activated. If true, costs my incur due to usage of Object Storage bucket, Streaming or Function."
+    visible: enable_service_connector
+  
+  service_connector_target_kind:
+    type: enum
+    required: false
+    title: "Service Connector Target Kind"
+    description: "Service Connector Hub target resource. Valid values are 'objectstorage', 'streaming', 'functions' or 'logginganalytics'. In case of 'objectstorage', a new bucket is created. In case of 'streaming', you can provide an existing stream ocid in 'existing_service_connector_target_stream_id' and that stream is used. If no ocid is provided, a new stream is created. In case of 'functions', you must provide the existing function ocid in 'existing_service_connector_target_function_id'. If case of 'logginganalytics', a log group for Logging Analytics service is created and the service is enabled if not already."
+    default: objectstorage
+    visible: enable_service_connector
+    enum:
+      - objectstorage
+      - streaming
+      - functions
+      - logginganalytics
+
+  onboard_logging_analytics:
+    type: boolean
+    required: true
+    title: "Onboard Logging Analytics?"
+    description: "Whether Logging Analytics will be enabled in the tenancy. If true, the Logging Analytics service will be enabled in the tenancy and a new Logging Analytics Namespace will be created. If false, the existing Logging Analytics namespace will be used. Only applicable if 'service_connector_target_kind' is set to 'logginganalytics'."
+    visible:
+      and:
+        - ${enable_service_connector}
+        - eq:
+            - service_connector_target_kind
+            - "logginganalytics"
+
+  existing_service_connector_bucket_vault_compartment_id:
+    type: oci:identity:compartment:id
+    title: "Existing Vault Compartment"
+    description: "An existing compartment for the vault with the key used to encrypt Service Connector target Object Storage bucket."
+    required: false
+    visible:
+      and:
+        - ${enable_service_connector}
+        - eq:
+          - service_connector_target_kind
+          - "objectstorage"
+        - eq:
+          - cis_level
+          - "2"  
+
+  existing_service_connector_bucket_vault_id:
+    type: oci:kms:vault:id
+    title: "Existing Vault"
+    description: "An existing vault for the key used to encrypt Service Connector target Object Storage bucket."
+    required: false
+    dependsOn: 
+      compartmentId: ${existing_service_connector_bucket_vault_compartment_id}
+    visible:
+      and:
+        - ${enable_service_connector}
+        - eq:
+          - service_connector_target_kind
+          - "objectstorage"
+        - eq:
+          - cis_level
+          - "2"
+
+  existing_service_connector_bucket_key_id:
+    type: oci:kms:key:id
+    title: "Existing Encryption Key"
+    description: "An existing key used to encrypt Service Connector target Object Storage bucket."
+    required: false
+    dependsOn: 
+      compartmentId: ${existing_service_connector_bucket_vault_compartment_id}
+      vaultId: ${existing_service_connector_bucket_vault_id}
+    visible:
+      and:
+        - ${enable_service_connector}
+        - eq:
+          - service_connector_target_kind
+          - "objectstorage"
+        - eq:
+          - cis_level
+          - "2"
+
+  existing_service_connector_target_stream_id:
+    type: string
+    required: false
+    title: "Existing Target Stream"
+    description: "An existing stream to be used as the Service Connector target. Only applicable if 'service_connector_target_kind' is set to 'streaming'."
+    visible:
+      and:
+        - ${enable_service_connector}
+        - eq:
+          - service_connector_target_kind
+          - "streaming"
+
+  existing_service_connector_target_function_id:
+    type: string
+    required: false
+    title: "Existing Target Function"
+    description: "An existing function to be used as the Service Connector target. Only applicable if 'service_connector_target_kind' is set to 'functions'."
+    visible:
+      and:
+        - ${enable_service_connector}
+        - eq:
+          - service_connector_target_kind
+          - "functions"
+
+  # Vulnerability Scanning
+  vss_create:
+    type: boolean
+    title: "Enable Vulnerability Scanning?"
+    description: "Whether Vulnerability Scanning should be enabled. If checked, a scanning recipe is enabled and scanning targets are enabled for each Landing Zone compartment."
+  
+  vss_scan_schedule:
+    type: enum
+    title: "Scanning Schedule"
+    description: "When to scan. WEEKLY or DAILY."
+    #default: WEEKLY
+    visible: vss_create
+    enum:
+      - WEEKLY
+      - DAILY
+
+  vss_scan_day:
+    type: enum
+    title: "Scanning Day"
+    description: "The day when to scan. Applies to weekly scans only."
+    #default: SUNDAY
+    enum:
+      - SUNDAY
+      - MONDAY
+      - TUESDAY
+      - WEDNESDAY
+      - THURSDAY
+      - FRIDAY
+      - SATURDAY 
+    visible:
+      and:
+        - ${vss_create}
+        - eq:
+          - vss_scan_schedule
+          - "WEEKLY"
+
+  vss_port_scan_level:
+    type: enum
+    title: "Port Scan Level"
+    description : "Checks for open ports using a network mapper that searches your public IP addresses. STANDARD checks the 1000 most common port numbers, LIGHT checks the 100 most common port numbers, NONE does not check for open ports."
+    enum:
+      - STANDARD
+      - LIGHT
+      - NONE  
+    visible: vss_create
+
+  vss_agent_scan_level:
+    type: enum
+    title: "Agent Scan Level"
+    description : "Checks for open ports on both public and private IP addresses, OS vulnerabilities; compliance with industry benchmarks, vulnerabilities in third-party application files (for application files scanning, check 'Enable File Scanning' below)."
+    enum:
+      - STANDARD
+      - NONE  
+    visible: vss_create   
+
+  vss_agent_cis_benchmark_settings_scan_level:
+    type: enum
+    title: "Agent CIS Benchmark Settings Scan Level"
+    description : "Checks targets for compliance with industry-standard benchmarks published by the Center for Internet Security (CIS)"
+    enum:
+      - STRICT
+      - MEDIUM
+      - LIGHTWEIGTH
+      - NONE
+    visible:
+      and:
+        - ${vss_create}
+        - eq:
+          - vss_agent_scan_level
+          - "STANDARD"
+
+  vss_enable_file_scan:
+    type: boolean
+    title: "Enable File Scanning?"
+    description: "Whether file scanning is enabled."
+    visible:
+      and:
+        - ${vss_create}
+        - eq:
+          - vss_agent_scan_level
+          - "STANDARD"
+
+  vss_folders_to_scan:
+    type: array
+    items:
+      type: string
+    uniqueItems: true
+    title: "Folders to Scan"
+    required: false
+    description: "List of file system folders to scan. Required if 'Enable Folder Scanning?' is selected. Currently, the Scanning service checks for vulnerabilities only in log4j and spring4shell (Type a value and hit enter to enter multiple values)."
+    visible: 
+      and:
+        - ${vss_create}
+        - ${vss_enable_file_scan}
+        - eq:
+          - vss_agent_scan_level
+          - "STANDARD"
+          
+# Cost Management
+  create_budget:
+    type: boolean
+    title: "Create a default budget?"
+    description: "If checked, a budget will be created at the root or enclosing compartment and based on forecast spend."
+    default: false
+  
+  budget_alert_threshold:
+    type: integer
+    title: "Percentage of Budget"
+    description: "The threshold for triggering the alert expressed as a percentage of the monthly forecast spend. 100% is the default."
+    required: false
+    visible: create_budget
+
+  budget_amount:
+    type: integer
+    title: "Monthly Budget Amount (in US$)"
+    description: "The amount of the budget expressed as a whole number in the currency of the customer's rate card."
+    required: false
+    visible: create_budget
+  
+  budget_alert_email_endpoints:
+    type: array
+    items:
+      type: string
+    uniqueItems: true
+    title: "Budget Alert Email Endpoints"
+    required: false
+    visible: create_budget
+    description: "List of email addresses for budget alerts. (Type an email address and hit enter to enter multiple values)"
+
+outputs:
+  release:
+    type: string
+    title: OCI Core Landing Zone Release
+
+  region:
+    type: string
+    title: Region
+
+  service_label:
+    type: string
+    title: Service Label
+
+  cis_level:
+    type: string
+    title: CIS Profile Level  
+
+  compartments:
+    type: json
+    title: Compartments
+
+  vcns:
+    type: json
+    title: Virtual Cloud Networks (VCNs)
+
+  subnets:
+    type: json
+    title: VCN Subnets  
+
+  network_security_groups:
+    type: json
+    title: Network Security Groups (NSGs)  
+
+  dynamic_routing_gateways:
+    type: json
+    title: Dynamic Routing Gateways (DRGs)  
+
+  nlb_private_ip_addresses:
+    type: json
+    title: Network Load Balancers (NLB) Private IP Addresses     
+    
+outputGroups:
+  - title: Environment
+    outputs:
+      - ${release}
+      - ${region}
+      - ${service_label}
+      - ${cis_level}
+
+  - title: IAM
+    outputs:
+      - ${compartments}
+
+  - title: Networking
+    outputs:
+      - ${vcns}
+      - ${subnets}
+      - ${network_security_groups}
+      - ${dynamic_routing_gateways}
+      - ${nlb_private_ip_addresses}
