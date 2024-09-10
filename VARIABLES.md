@@ -16,8 +16,8 @@
 |---------------|-------------|------|---------|----------|
 | service_label | A unique label that gets prepended to all resources deployed by the Landing Zone. Max length: 15 characters. | `any` |  | yes |
 | cis_level | Determines CIS OCI Benchmark Level to apply on Landing Zone managed resources. Level 1 is be practical and prudent. Level 2 is intended for environments where security is more critical than manageability and usability. Level 2 drives the creation of an OCI Vault, buckets encryption with a customer managed key, write logs for buckets and the usage of specific policies in Security Zones. | `string` | 1 | no |
-| customize_iam | Whether Landing Zone IAM settings are to be customized. Customizable options are identity domains, groups, dynamic groups and policies. | `bool` | `false` | no |
-| customize_net | Whether networking is defined as part of this Landing Zone. By default, no networking resources are created. | `bool` | `false` | no |
+| customize_iam | Whether Landing Zone IAM settings are to be customized. Customizable options are identity domains, groups, dynamic groups and policies. Currently, this variable is ignored in the terraform code but is used to control the user experience in Oracle Resource Manager | `bool` | `false` | no |
+| customize_net | Whether networking is defined as part of this Landing Zone. By default, no networking resources are created. Currently, this variable is ignored in the terraform code but is used to control the user experience in Oracle Resource Manager | `bool` | `false` | no |
 | display_output | Whether to display a concise set of select resource outputs with their OCIDs and names. | `bool` | `true` | no |
 | extend_landing_zone_to_new_region | Whether Landing Zone is being extended to another region. When set to true, compartments, groups, policies and resources at the home region are not provisioned. Use this when you want to provision a Landing Zone in a new region, but reuse existing Landing Zone resources in the home region. | `bool` | `false` | no |
 | lz_provenant_prefix | The provenant landing zone prefix or code that identifies the client of this Landing Zone. This information goes into a freeform tag applied to all deployed resources. | `string` | `core` | no |
@@ -111,9 +111,9 @@
 | add_tt_vcn1 | Whether to add a VCN configured for three-tier workload deployments, with up to four subnets: web (public by default), application (private), database (private). An optional subnet (private by default) for bastion deployment is also available. The added VCN is labelled 'TT-VCN-1'. The label should be used in the '*\_routable\_vcns' fields of other VCNs for constraining network traffic to those respective VCNs in a Hub/Spoke topology. | `bool` | `false` | no |
 | add_tt_vcn2 | Whether to add a second VCN configured for three-tier workload deployments, with up to four subnets: web (public by default), application (private), database (private). An optional subnet (private by default) for bastion deployment is also available. The added VCN is labelled 'TT-VCN-2'. The label should be used in the '*\_routable\_vcns' fields of other VCNs for constraining network traffic to those respective VCNs in a Hub/Spoke topology. | `bool` | `false` | no |
 | add_tt_vcn3 | Whether to add a third VCN configured for three-tier workload deployments, with up to four subnets: web (public by default), application (private), database (private). An optional subnet (private by default) for bastion deployment is also available. The added VCN is labelled 'TT-VCN-3'. The label should be used in the '*\_routable\_vcns' fields of other VCNs for constraining network traffic to those respective VCNs in a Hub/Spoke topology. | `bool` | `false` | no |
-| customize_tt_vcn1_subnets | If true, allows for the customization of default subnets settings. Only applicable to RMS deployments. | `bool` | `false` | no |
-| customize_tt_vcn2_subnets | If true, allows for the customization of default subnets settings. Only applicable to RMS deployments. | `bool` | `false` | no |
-| customize_tt_vcn3_subnets | If true, allows for the customization of default subnets settings. Only applicable to RMS deployments. | `bool` | `false` | no |
+| customize_tt_vcn1_subnets | If true, allows for the customization of default subnets settings. Currently, this variable is ignored in the terraform code but is used to control the user experience in Oracle Resource Manager | `bool` | `false` | no |
+| customize_tt_vcn2_subnets | If true, allows for the customization of default subnets settings. Currently, this variable is ignored in the terraform code but is used to control the user experience in Oracle Resource Manager | `bool` | `false` | no |
+| customize_tt_vcn3_subnets | If true, allows for the customization of default subnets settings. Currently, this variable is ignored in the terraform code but is used to control the user experience in Oracle Resource Manager | `bool` | `false` | no |
 | deploy_tt_vcn1_bastion_subnet | Whether to deploy a subnet where you can further deploy OCI Bastion service or a jump host. | `bool` | `false` | no |
 | deploy_tt_vcn2_bastion_subnet | Whether to deploy a subnet where you can further deploy OCI Bastion service or a jump host. | `bool` | `false` | no |
 | deploy_tt_vcn3_bastion_subnet | Whether to deploy a subnet where you can further deploy OCI Bastion service or a jump host. | `bool` | `false` | no |
@@ -297,7 +297,7 @@
 
 | Variable Name | Description | Type | Default | Required |
 |---------------|-------------|------|---------|----------|
-| customize_hub_vcn_subnets | Whether to customize default subnets settings of the Hub VCN. Only applicable to RMS deployments. | `bool` | `false` | no |
+| customize_hub_vcn_subnets | Whether to customize default subnets settings of the Hub VCN. Currently, this variable is ignored in the terraform code but is used to control the user experience in Oracle Resource Manager | `bool` | `false` | no |
 | existing_drg_ocid | The OCID of an existing DRG that you want to reuse for hub deployment. Only applicable if hub\_deployment\_option is 'Yes, existing DRG as hub' or 'Yes, new VCN as hub with existing DRG'. | `string` | `null` | no |
 | fw_instance_boot_volume_size | The boot volume size (in GB) for the firewall instances. | `number` | `60` | no |
 | fw_instance_flex_shape_cpu | The number of OCPUs for the selected flex shape. Applicable to flexible shapes only. | `number` | `2` | no |
