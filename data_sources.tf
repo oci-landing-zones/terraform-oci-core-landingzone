@@ -1,4 +1,4 @@
-# Copyright (c) 2020 Oracle and/or its affiliates.
+# Copyright (c) 2023 Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 
 data "oci_identity_regions" "these" {}
@@ -67,6 +67,11 @@ data "oci_identity_group" "existing_cost_admin_group" {
 
 data "oci_identity_group" "existing_storage_admin_group" {
   for_each = length(trimspace(var.rm_existing_storage_admin_group_name)) > 0 ? toset([var.rm_existing_storage_admin_group_name]) : toset(var.existing_storage_admin_group_name)
+  group_id = length(trimspace(each.value)) > 0 ? each.value : "nogroup"
+}
+
+data "oci_identity_group" "existing_ag_admin_group" {
+  for_each = length(trimspace(var.rm_existing_ag_admin_group_name)) > 0 ? toset([var.rm_existing_ag_admin_group_name]) : toset(var.existing_ag_admin_group_name)
   group_id = length(trimspace(each.value)) > 0 ? each.value : "nogroup"
 }
 

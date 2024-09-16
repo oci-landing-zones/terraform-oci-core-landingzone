@@ -1,4 +1,4 @@
-# Copyright (c) 2021 Oracle and/or its affiliates.
+# Copyright (c) 2023 Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 
 locals {
@@ -12,14 +12,14 @@ locals {
 
 module "lz_home_region_topics" {
   count  = var.extend_landing_zone_to_new_region == false ? 1 : 0
-  source = "github.com/oracle-quickstart/terraform-oci-cis-landing-zone-observability//notifications?ref=v0.1.6"
+  source = "github.com/oci-landing-zones/terraform-oci-modules-observability//notifications?ref=v0.1.8"
   # depends_on = [ null_resource.wait_on_compartments ]
   providers                   = { oci = oci.home }
   notifications_configuration = local.home_region_notifications_configuration
 }
 
 module "lz_regional_topics" {
-  source = "github.com/oracle-quickstart/terraform-oci-cis-landing-zone-observability//notifications?ref=v0.1.6"
+  source = "github.com/oci-landing-zones/terraform-oci-modules-observability//notifications?ref=v0.1.8"
   # depends_on = [ null_resource.wait_on_compartments ]
   notifications_configuration = local.regional_notifications_configuration
 }

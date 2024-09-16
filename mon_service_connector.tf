@@ -1,4 +1,4 @@
-# Copyright (c) 2024 Oracle and/or its affiliates.
+# Copyright (c) 2023 Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 
 locals {
@@ -124,12 +124,13 @@ locals {
 
 module "lz_service_connector_hub" {
   count                            = var.enable_service_connector ? 1 : 0
-  source                           = "github.com/oracle-quickstart/terraform-oci-cis-landing-zone-observability//service-connectors?ref=v0.1.6"
+  source                           = "github.com/oci-landing-zones/terraform-oci-modules-observability//service-connectors?ref=v0.1.8"
   tenancy_ocid                     = var.tenancy_ocid
   service_connectors_configuration = local.service_connectors_configuration
   logs_dependency                  = var.service_connector_target_kind == "logginganalytics" ? module.lz_logging_analytics[0].logging_analytics_log_groups : null
   providers = {
-    oci      = oci
-    oci.home = oci.home
+    oci                  = oci
+    oci.home             = oci.home
+    oci.secondary_region = oci.secondary_region
   }
 }

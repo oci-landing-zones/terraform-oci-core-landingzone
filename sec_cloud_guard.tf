@@ -1,4 +1,4 @@
-# Copyright (c) 2024 Oracle and/or its affiliates.
+# Copyright (c) 2023 Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 
 locals {
@@ -17,7 +17,7 @@ locals {
 module "lz_cloud_guard" {
   count = var.enable_cloud_guard ? 1 : 0
   # depends_on                = [null_resource.wait_on_services_policy]
-  source                    = "github.com/oracle-quickstart/terraform-oci-cis-landing-zone-security//cloud-guard?ref=v0.1.6"
+  source                    = "github.com/oci-landing-zones/terraform-oci-modules-security//cloud-guard?ref=v0.1.7"
   cloud_guard_configuration = local.cloud_guard_configuration
   tenancy_ocid              = var.tenancy_ocid
   enable_output             = true

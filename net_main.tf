@@ -1,4 +1,4 @@
-# Copyright (c) 2024 Oracle and/or its affiliates.
+# Copyright (c) 2023 Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 
 locals {
@@ -14,6 +14,11 @@ locals {
 }
 
 module "lz_network" {
-  source                = "github.com/oracle-quickstart/terraform-oci-cis-landing-zone-networking?ref=v0.6.7"
+  source                = "github.com/oci-landing-zones/terraform-oci-modules-networking?ref=v0.6.9"
   network_configuration = local.lz_network_configuration
+  network_dependency    = (local.hub_options[var.hub_deployment_option] == 2 || local.hub_options[var.hub_deployment_option] == 4) ? {
+    "dynamic_routing_gateways" = {
+      "HUB-DRG" = {"id" : trimspace(var.existing_drg_ocid)}
+    }
+  } : null
 }

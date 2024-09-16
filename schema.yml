@@ -2,10 +2,10 @@
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 
 title: "OCI Core Landing Zone"
-stackDescription: "This stack deploys the OCI Core Landing Zone, a fully operational tenancy that combines the recommendations of CIS Foundations Benchmark for OCI with OCI architecture best practices. For details, please see https://github.com/oracle-quickstart/oci-cis-landingzone-quickstart."
-description: "This stack deploys the OCI Core Landing Zone, a fully operational tenancy that combines the recommendations of CIS Foundations Benchmark for OCI with OCI architecture best practices. For details, please see <a href=\"https://github.com/oracle-quickstart/oci-cis-landingzone-quickstart\">OCI Core Landing Zone</a>."
+stackDescription: "This stack deploys the OCI Core Landing Zone, a fully operational tenancy that combines the recommendations of CIS Foundations Benchmark for OCI with OCI architecture best practices. For details, please see https://github.com/oci-landing-zones/terraform-oci-core-landingzone."
+description: "This stack deploys the OCI Core Landing Zone, a fully operational tenancy that combines the recommendations of CIS Foundations Benchmark for OCI with OCI architecture best practices. For details, please see <a href=\"https://github.com/oci-landing-zones/terraform-oci-core-landingzone\">OCI Core Landing Zone</a>."
 schemaVersion: 1.1.0
-version: "3.0.0"
+version: "0.0.1"
 locale: "en"
 
 # URL of OCI Core Landing Zone logo icon used on Application Information tab.
@@ -20,24 +20,14 @@ variableGroups:
       - "extend_landing_zone_to_new_region"
       - "customize_iam"
       - "customize_net"
+      - "display_output"
 
-  - title: "Base Compartments"
+  - title: "Compartments"
     variables:
       - "enclosing_compartment_options"
       - "enclosing_compartment_parent_ocid"
       - "existing_enclosing_compartment_ocid"
-      - "customize_default_compartments"
-      - "enclosing_cmp_name"
-      - "deploy_network_cmp"
-      - "network_cmp_name"
-      - "deploy_security_cmp"
-      - "security_cmp_name"
-      - "deploy_app_cmp"
-      - "app_cmp_name"
-      - "deploy_database_cmp"
-      - "database_cmp_name"
       - "deploy_exainfra_cmp"
-      - "exainfra_cmp_name"
     visible:
       and:
         - eq:
@@ -47,12 +37,36 @@ variableGroups:
           - ${customize_iam}
           - true  
 
-  - title: "Workload Compartments"
+  - title: "Identity Domains"
     variables:
-      - "deploy_app_workload_cmps"
-      - "app_workload_cmp_names"
-      - "deploy_database_workload_cmps"
-      - "database_workload_cmp_names"
+      - "use_custom_id_domain"
+      - "custom_id_domain_name"
+      # - "deploy_id_domain"
+      # - "id_domain_name" 
+      # - "id_domain_type" 
+    visible:
+      and:
+        - eq:
+          - ${extend_landing_zone_to_new_region}
+          - false
+        - eq:
+          - ${customize_iam}
+          - true  
+
+  - title: "Groups (Existing Identity Domain)"
+    variables:
+      - "rm_existing_id_domain_iam_admin_group_name"
+      - "rm_existing_id_domain_cred_admin_group_name"
+      - "rm_existing_id_domain_security_admin_group_name"
+      - "rm_existing_id_domain_ag_admin_group_name"
+      - "rm_existing_id_domain_network_admin_group_name"
+      - "rm_existing_id_domain_appdev_admin_group_name"
+      - "rm_existing_id_domain_database_admin_group_name"
+      - "rm_existing_id_domain_exainfra_admin_group_name"
+      - "rm_existing_id_domain_auditor_group_name"
+      - "rm_existing_id_domain_announcement_reader_group_name"
+      - "rm_existing_id_domain_cost_admin_group_name"
+      - "rm_existing_id_domain_storage_admin_group_name"  
     visible:
       and:
         - eq:
@@ -61,12 +75,17 @@ variableGroups:
         - eq:
           - ${customize_iam}
           - true
+        - eq:
+          - ${use_custom_id_domain}
+          - true
 
-  - title: "Identity Domains"
+  - title: "Dynamic Groups (Existing Identity Domain)"
     variables:
-      - "deploy_id_domain"
-      - "id_domain_name" 
-      - "id_domain_type" 
+      - "existing_id_domain_security_fun_dyn_group_name"
+      - "existing_id_domain_appdev_fun_dyn_group_name"
+      - "existing_id_domain_compute_agent_dyn_group_name"
+      - "existing_id_domain_database_kms_dyn_group_name" 
+      - "existing_id_domain_net_fw_app_dyn_group_name"
     visible:
       and:
         - eq:
@@ -74,14 +93,18 @@ variableGroups:
           - false
         - eq:
           - ${customize_iam}
-          - true  
+          - true
+        - eq:
+          - ${use_custom_id_domain}
+          - true      
 
-  - title: "Groups"
+  - title: "Groups (Default Identity Domain)"
     variables:
       - "groups_options"
       - "rm_existing_iam_admin_group_name"
       - "rm_existing_cred_admin_group_name"
       - "rm_existing_security_admin_group_name"
+      - "rm_existing_ag_admin_group_name"
       - "rm_existing_network_admin_group_name"
       - "rm_existing_appdev_admin_group_name"
       - "rm_existing_database_admin_group_name"
@@ -97,15 +120,19 @@ variableGroups:
           - false
         - eq:
           - ${customize_iam}
-          - true  
+          - true
+        - eq:
+          - ${use_custom_id_domain}
+          - false    
 
-  - title: "Dynamic Groups"
+  - title: "Dynamic Groups (Default Identity Domain)"
     variables:
       - "dyn_groups_options"
       - "existing_security_fun_dyn_group_name"
       - "existing_appdev_fun_dyn_group_name"
       - "existing_compute_agent_dyn_group_name"
       - "existing_database_kms_dyn_group_name" 
+      - "existing_net_fw_app_dyn_group_name"
     visible:
       and:
         - eq:
@@ -113,12 +140,15 @@ variableGroups:
           - false
         - eq:
           - ${customize_iam}
-          - true    
+          - true
+        - eq:
+          - ${use_custom_id_domain}
+          - false      
 
   - title: "Policies"   
     variables:
       - "policies_in_root_compartment"
-      - "enable_template_policies"  
+    #  - "enable_template_policies"  
     visible:
       and:
         - eq:
@@ -344,7 +374,9 @@ variableGroups:
       - "fw_instance_flex_shape_memory"
       - "fw_instance_flex_shape_cpu"
       - "fw_instance_boot_volume_size"
-      - "hub_vcn_ingress_route_table_network_entity_ocid"
+      - "fw_instance_public_rsa_key"
+      - "hub_vcn_north_south_entry_point_ocid"
+      - "hub_vcn_east_west_entry_point_ocid"
       - "customize_hub_vcn_subnets"
       - "hub_vcn_web_subnet_name"
       - "hub_vcn_web_subnet_cidr"
@@ -378,13 +410,6 @@ variableGroups:
       - "create_events_as_enabled"
       - "alarm_message_format"
 
-  - title: "Object Storage"
-    variables:
-      - "enable_oss_bucket"
-      - "existing_bucket_vault_compartment_id"
-      - "existing_bucket_vault_id"
-      - "existing_bucket_key_id"
-
   - title: "Cloud Guard"
     variables:
       - "enable_cloud_guard"
@@ -396,6 +421,7 @@ variableGroups:
   - title: "Security Zones"
     variables:
     - "enable_security_zones"
+    - "security_zones_reporting_region"
     - "sz_security_policies"
 
   - title: "Logging Consolidation: Service Connector Hub"
@@ -447,7 +473,10 @@ variableGroups:
       - "existing_auditor_group_name"
       - "existing_announcement_reader_group_name"
       - "existing_cost_admin_group_name"
-      - "existing_storage_admin_group_name"     
+      - "existing_storage_admin_group_name"  
+      - "existing_ag_admin_group_name"
+      - "lz_provenant_prefix"
+      - "lz_provenant_version"
 
 variables:
   region:
@@ -459,7 +488,7 @@ variables:
   cis_level:
     type: enum
     title: CIS Level
-    description: "Determines CIS OCI Benchmark Level of services deployed by the CIS Landing Zone in the tenancy will be configured. Level 1 is be practical and prudent. Level 2 is intended for environments where security is more critical than manageability and usability. Level 2 drives the creation of an OCI Vault, buckets encryption with a customer managed key, write logs for buckets and the usage of specific policies in Security Zones. More info: <a href=\"https://www.cisecurity.org/benchmark/oracle_cloud\">CIS OCI Benchmark</a>."
+    description: "Determines CIS OCI Benchmark Level of services deployed by the CIS Landing Zone in the tenancy will be configured. Level 1 (default) is be practical and prudent. Level 2 is intended for environments where security is more critical than manageability and usability. Level 2 drives the creation of an OCI Vault, buckets encryption with a customer managed key, write logs for buckets and the usage of specific policies in Security Zones. More info: <a href=\"https://www.cisecurity.org/benchmark/oracle_cloud\">CIS OCI Benchmark</a>."
     enum:
       - "1"
       - "2"
@@ -469,9 +498,9 @@ variables:
     type: string
     title: "Service Label"
     minLength: 1
-    maxLength: 8
-    pattern: "^[A-Za-z][A-Za-z0-9]{1,7}$"
-    description: "A unique label that gets prepended to all resources created by the Landing Zone."
+    maxLength: 15
+    pattern: "^[A-Za-z][A-Za-z0-9]{1,14}$"
+    description: "A unique label that gets prepended to all resources deployed by the Landing Zone. Max length: 15 characters."
     required: true
 
   extend_landing_zone_to_new_region:
@@ -491,14 +520,20 @@ variables:
   customize_net:
     type: boolean
     title: "Define Networking?"
-    description: "Check to define networking resources."
+    description: "Check to define networking resources. By default, the Landing Zone does NOT deploy any networks."
     default: false
     visible: true  
 
+  display_output:
+    type: boolean
+    title: "Display Output?"
+    description: "Upon Terraform apply, it displays a concise set of select resource outputs with their OCIDs and names. Uncheck to suppress output display."
+    visible: true   
+
   enclosing_compartment_options:
     type: enum
-    title: "Deploy Base Compartments in Enclosing Compartment?"
-    description: "Whether the Landing Zone compartments are created within an enclosing compartment. If 'Yes, deploy new' is selected, the enclosing compartment is created in the Root compartment. If 'No' is selected, the Landing Zone compartments are created in the Root compartment. In either case, permission to manage compartments is required at the tenancy level."
+    title: "Deploy Compartments in Enclosing Compartment?"
+    description: "Whether the Landing Zone compartments (Network, Security, App, Database, Exadata) are created within an enclosing top compartment. If 'Yes, deploy new' is selected, the enclosing compartment is created in the compartment selected in 'Enclosing Compartment Parent'. If 'Yes, use existing' is selected, the Landing Zone compartments are created in the compartment selected in 'Enclosing Compartment'. If 'No' is selected, the Landing Zone compartments are created in the Root compartment."
     required: true
     enum:
       - "Yes, deploy new"
@@ -508,8 +543,8 @@ variables:
   
   enclosing_compartment_parent_ocid:
     type: oci:identity:compartment:id
-    title: "Enclosing compartment parent"
-    description: "Select the parent compartment of the enclosing compartment that is created."
+    title: "Enclosing Compartment Parent"
+    description: "Select the existing compartment where Landing Zone enclosing compartment is created."
     required: false 
     visible:
       eq:
@@ -518,186 +553,194 @@ variables:
 
   existing_enclosing_compartment_ocid:
     type: oci:identity:compartment:id
-    title: "Existing enclosing compartment"
-    description: "Select the existing compartment where Landing Zone base compartments are created."
+    title: "Enclosing Compartment"
+    description: "Select the existing compartment where Landing Zone compartments (Network, Security, App, Database) are created."
     required: false 
     visible:
       eq:
         - ${enclosing_compartment_options}
         - "Yes, use existing"
 
-  customize_default_compartments:
-    type: boolean
-    title: "Customize Base Compartments?"
-    description: "Choose which compartments are deployed and assign them custom names."
-    default: false
-
-  enclosing_cmp_name:
-    type: string
-    title: "Enclosing Compartment Name."
-    description: "The enclosing compartment custom name."
-    required: false
-    visible: 
-      and:
-        - ${customize_default_compartments}
-        - eq:
-          - ${enclosing_compartment_options}
-          - "Yes, deploy new"
-
-  deploy_network_cmp:
-    type: boolean
-    title: "Deploy Network Compartment?"
-    description: "Whether Network compartment is deployed"
-    default: true
-    visible: customize_default_compartments
-
-  network_cmp_name:
-    type: string
-    title: "Network Compartment Custom Name."
-    description: "The Network compartment custom name. If not set, a default name is provided."
-    required: false
-    visible: 
-      and:
-        - deploy_network_cmp  
-        - customize_default_compartments
-
-  deploy_security_cmp:
-    type: boolean
-    title: "Deploy Security Compartment?"
-    description: "Whether Security compartment is deployed"
-    default: true
-    visible: customize_default_compartments
-
-  security_cmp_name:
-    type: string
-    title: "Security Compartment Custom Name."
-    description: "The Security compartment custom name. If not set, a default name is provided."
-    required: false
-    visible: 
-      and:
-        - deploy_security_cmp  
-        - customize_default_compartments    
-
-  deploy_app_cmp:
-    type: boolean
-    title: "Deploy Application Compartment?"
-    description: "Whether Application compartment is deployed"
-    default: true
-    visible: customize_default_compartments
-
-  app_cmp_name:
-    type: string
-    title: "Application Compartment Custom Name."
-    description: "The Application compartment custom name. If not set, a default name is provided."
-    required: false
-    visible: 
-      and:
-        - deploy_app_cmp  
-        - customize_default_compartments  
-
-  deploy_database_cmp:
-    type: boolean
-    title: "Deploy Database Compartment?"
-    description: "Whether Database compartment is deployed"
-    default: true
-    visible: customize_default_compartments
-
-  database_cmp_name:
-    type: string
-    title: "Database Compartment Custom Name."
-    description: "The Database compartment custom name. If not set, a default name is provided."
-    required: false
-    visible: 
-      and:
-        - deploy_database_cmp  
-        - customize_default_compartments  
-
   deploy_exainfra_cmp:
     type: boolean
     title: "Deploy ExaCS Infra Compartment?"
-    description: "Whether ExaCS Infra compartment is deployed."
+    description: "Whether a separate compartment for Exadata Cloud Service Infrastructure is deployed."
     default: false
-    visible: customize_default_compartments
-
-  exainfra_cmp_name:
-    type: string
-    title: "ExaCS Infra Compartment Custom Name"
-    description: "The ExaCS Infra compartment custom name. If not set, a default name is provided."
-    required: false
-    visible: 
-      and:
-        - deploy_exainfra_cmp  
-        - customize_default_compartments  
-
-  deploy_app_workload_cmps:
+  
+  use_custom_id_domain:
     type: boolean
-    title: "Deploy Application Workload Compartments?"
-    description: "Application workload compartments are deployed as sub-compartments of base Application compartment."
+    title: "Enable an Existing Identity Domain to Manage Landing Zone?"
+    description: "Your tenancy already has a default Identity Domain, whose groups are used to manage the Landing Zone. Check this box for enabling groups in an *existing* non-default Identity Domain to manage the resources deployed by the Landing Zone. See <a href='https://docs.oracle.com/en-us/iaas/Content/Identity/usingidentitydomains/oci-iam-concepts.htm'>IAM Technologies</a> for identity domains concepts."
     default: false
-    visible: deploy_app_cmp
 
-  app_workload_cmp_names:
+  custom_id_domain_name:
+    type: string
+    title: "Existing Identity Domain Name"
+    description: "Enter the existing Identity Domain name."
+    required: false
+    visible: use_custom_id_domain
+
+  rm_existing_id_domain_iam_admin_group_name:
     type: array
     items:
       type: string
     uniqueItems: true
-    maxItems: 3
-    minItems: 1
-    title: "List of Application Workload Compartment Names"
-    description: "The list of Application workload compartment names to create. They are all created in the base Application compartment."
-    required: false
-    visible: 
-      and:
-        - deploy_app_workload_cmps
-        - deploy_app_cmp
-    default: [] 
-
-  deploy_database_workload_cmps:
-    type: boolean
-    title: "Deploy Database Workload Compartments?"
-    description: "Database workload compartments are deployed as sub-compartments of base Database compartment."
-    default: false
-    visible: deploy_database_cmp
-
-  database_workload_cmp_names:
+    title: "Existing IAM Admin Group Names"
+    description: "Enter the existing group(s) to which IAM management policies will be granted to."
+    visible: use_custom_id_domain 
+        
+  rm_existing_id_domain_cred_admin_group_name:
     type: array
     items:
       type: string
     uniqueItems: true
-    maxItems: 3
-    minItems: 1
-    title: "List of Database Workload Compartment Names"
-    description: "The list of Database workload compartment names to create. They are all created in the base Database compartment."
-    required: false
-    visible: 
-      and:
-        - deploy_database_workload_cmps
-        - deploy_database_cmp
-    default: []  
+    title: "Existing Credentials Admin Group Names"
+    description: "Enter the existing group(s) to which credentials management policies will be granted to."
+    visible: use_custom_id_domain
+      
+  rm_existing_id_domain_security_admin_group_name:
+    type: array
+    items:
+      type: string
+    uniqueItems: true
+    title: "Existing Security Admin Group Name"
+    description: "Enter the existing group to which security management policies will be granted to."
+    visible: use_custom_id_domain
+      
+  rm_existing_id_domain_ag_admin_group_name:
+    type: array
+    items:
+      type: string
+    uniqueItems: true
+    title: "Existing Access Governance Admin Group Names"
+    description: "Enter the existing group(s) to which Access Governance management policies will be granted to."
+    visible: use_custom_id_domain
 
-  deploy_id_domain:
-    type: boolean
-    title: "Deploy a non-default Identity Domain?"
-    description: "Your tenancy already has a default Identity Domain. Click for deploying a non-default Identity Domain in the enclosing compartment. See <a href='https://docs.oracle.com/en-us/iaas/Content/Identity/usingidentitydomains/oci-iam-concepts.htm'>IAM Technologies</a> for identity domains concepts."
-    default: false
+  rm_existing_id_domain_network_admin_group_name:
+    type: array
+    items:
+      type: string
+    uniqueItems: true
+    title: "Existing Network Admin Group Name"
+    description: "Enter the existing group to which network management policies will be granted to."
+    visible: use_custom_id_domain
+      
+  rm_existing_id_domain_appdev_admin_group_name:
+    type: array
+    items:
+      type: string
+    uniqueItems: true
+    title: "Existing Application Admin Group Name"
+    description: "Enter the existing group to which application development management policies will be granted to."
+    visible: use_custom_id_domain
+      
+  rm_existing_id_domain_database_admin_group_name:
+    type: array
+    items:
+      type: string
+    uniqueItems: true
+    title: "Existing Database Admin Group Name"
+    description: "Enter the existing group to which database management policies will be granted to."
+    visible: use_custom_id_domain
+  
+  rm_existing_id_domain_exainfra_admin_group_name:
+    type: array
+    items:
+      type: string
+    uniqueItems: true
+    title: "Existing Admin Group Name for Exadata Infrastructure"
+    description: "Enter the existing group to which Exadata infrastructure management policies will be granted to."
+    visible: use_custom_id_domain      
+  
+  rm_existing_id_domain_auditor_group_name:
+    type: array
+    items:
+      type: string
+    uniqueItems: true
+    title: "Enter the existing Auditors Group Name"
+    description: "Existing group to which auditing policies will be granted to."
+    visible: use_custom_id_domain
+      
+  rm_existing_id_domain_announcement_reader_group_name:
+    type: array
+    items:
+      type: string
+    uniqueItems: true
+    title: "Existing Announcement Readers Group Name"
+    description: "Enter the existing group to which announcement reading policies will be granted to."
+    visible: use_custom_id_domain 
+  
+  rm_existing_id_domain_cost_admin_group_name:
+    type: array
+    items:
+      type: string
+    uniqueItems: true
+    title: "Existing Cost Admin Group Name"
+    description: "Enter the existing group to which Cost management policies will be granted to."
+    visible: use_custom_id_domain
 
-  id_domain_name:
+  rm_existing_id_domain_storage_admin_group_name:
+    type: array
+    items:
+      type: string
+    uniqueItems: true
+    title: "Existing Storage Admin Group Name"
+    description: "Enter the existing group to which Storage management policies will be granted to."
+    visible: use_custom_id_domain    
+
+  existing_id_domain_security_fun_dyn_group_name:
     type: string
-    title: "Identity Domain Name"
-    description: "The Identity Domain name to create. If not set, a default name is provided."
-    required: false
-    visible: deploy_id_domain
+    title: "Existing Security Dynamic Group Name"
+    description: "Existing security dynamic group to run functions."
+    visible: use_custom_id_domain
 
-  id_domain_type:
-    type: enum
-    title: "Identity Domain Type"
-    description: "The Identity Domain type. See <a href='https://docs.oracle.com/en-us/iaas/Content/Identity/sku/overview.htm#overview'>IAM Identity Domain Types</a> for details."
-    required: false
-    enum:
-      - "Free"
-      - "Premium"
-      - "External User"
-    visible: deploy_id_domain  
+  existing_id_domain_appdev_fun_dyn_group_name:
+    type: string
+    title: "Existing Application Dynamic Group Name"
+    description: "Existing application dynamic group."
+    visible: use_custom_id_domain
+
+  existing_id_domain_compute_agent_dyn_group_name:
+    type: string
+    title: "Existing Compute Agent Dynamic Group Name"
+    description: "Existing compute agent dynamic group for management agent access."
+    visible: use_custom_id_domain
+
+  existing_id_domain_database_kms_dyn_group_name:
+    type: string
+    title: "Existing Database Dynamic Group Name"
+    description: "Existing database dynamic group for database to access keys."
+    visible: use_custom_id_domain
+
+  existing_id_domain_net_fw_app_dyn_group_name:
+    type: string
+    title: "Existing Network Firewall Appliance Dynamic Group Name"
+    description: "Existing network firewall appliance dynamic group for reading firewall instances."
+    visible: use_custom_id_domain  
+
+  # deploy_id_domain:
+  #   type: boolean
+  #   title: "Deploy a non-default Identity Domain?"
+  #   description: "Your tenancy already has a default Identity Domain. Click for deploying a non-default Identity Domain in the enclosing compartment. See <a href='https://docs.oracle.com/en-us/iaas/Content/Identity/usingidentitydomains/oci-iam-concepts.htm'>IAM Technologies</a> for identity domains concepts."
+  #   default: false
+
+  # id_domain_name:
+  #   type: string
+  #   title: "Identity Domain Name"
+  #   description: "The Identity Domain name to create. If not set, a default name is provided."
+  #   required: false
+  #   visible: deploy_id_domain
+
+  # id_domain_type:
+  #   type: enum
+  #   title: "Identity Domain Type"
+  #   description: "The Identity Domain type. See <a href='https://docs.oracle.com/en-us/iaas/Content/Identity/sku/overview.htm#overview'>IAM Identity Domain Types</a> for details."
+  #   required: false
+  #   enum:
+  #     - "Free"
+  #     - "Premium"
+  #     - "External User"
+  #   visible: deploy_id_domain  
 
   groups_options:
     type: enum
@@ -753,6 +796,17 @@ variables:
         - ${groups_options}
         - "No, use existing"
       
+  rm_existing_ag_admin_group_name:
+    type: oci:identity:groups:id
+    dependsOn:
+      compartmentId: ${tenancy_ocid}
+    title: "Existing Access Governance admin group name"
+    description: "Existing group to which Access Governance management policies will be granted to."
+    visible:
+      eq:
+        - ${groups_options}
+        - "No, use existing"
+
   rm_existing_appdev_admin_group_name:
     type: oci:identity:groups:id
     dependsOn:
@@ -873,7 +927,6 @@ variables:
         - ${dyn_groups_options}
         - "No, use existing"
 
-
   existing_database_kms_dyn_group_name:
     type: oci:identity:dynamicgroups:id
     dependsOn:
@@ -885,6 +938,17 @@ variables:
         - ${dyn_groups_options}
         - "No, use existing"
 
+  existing_net_fw_app_dyn_group_name:
+    type: oci:identity:dynamicgroups:id
+    dependsOn:
+      compartmentId: ${tenancy_ocid}
+    title: "Existing network firewall appliance dynamic group name"
+    description: "Existing network firewall appliance dynamic group for reading firewall instances."
+    visible:
+      eq:
+        - ${dyn_groups_options}
+        - "No, use existing"      
+
   policies_in_root_compartment:
     type: enum
     title: "CREATE or USE policies in the Root compartment?"
@@ -895,11 +959,11 @@ variables:
     required: true
     default: "CREATE"
   
-  enable_template_policies:
-    type: boolean
-    title: "Enable template policies?"
-    description: "Whether policies should be created based on metadata associated to compartments. This is an alternative way of managing policies, enabled by the <a href=\"https://github.com/oracle-quickstart/terraform-oci-cis-landing-zone-iam/tree/main/policies\">CIS Landing Zone standalone IAM policy module</a>. When set to true, the grants to resources belonging to a specific compartment are combined into a single policy that is attached to the compartment itself. This differs from the default approach, where grants are combined per grantee and attached to the enclosing compartment."
-    default: false
+  # enable_template_policies:
+  #   type: boolean
+  #   title: "Enable template policies?"
+  #   description: "Whether policies should be created based on metadata associated to compartments. This is an alternative way of managing policies, enabled by the <a href=\"https://github.com/oracle-quickstart/terraform-oci-cis-landing-zone-iam/tree/main/policies\">CIS Landing Zone standalone IAM policy module</a>. When set to true, the grants to resources belonging to a specific compartment are combined into a single policy that is attached to the compartment itself. This differs from the default approach, where grants are combined per grantee and attached to the enclosing compartment."
+  #   default: false
   
 # ------------------------------------------------------
 # ----- Networking - Three-tier VCN 1
@@ -1672,8 +1736,8 @@ variables:
     items:
       type: string
     uniqueItems: true
-    title: "List of CIDR blocks allowed to SSH into the public Bastion subnet where the jump host is going to be deployed"
-    description: "These CIDRs are allowed to SSH into the the jump host that is eventually deployed in the public Bastion subnet. Leave it empty for no access."
+    title: "List of CIDR blocks allowed to SSH into jump hosts eventually deployed in Bastion subnet"
+    description: "These CIDRs are allowed to SSH into the the jump host that is eventually deployed in the public Bastion subnet. Leave it empty for no access. 0.0.0.0/0 is not allowed."
     required: false
     visible: 
       and:
@@ -1815,7 +1879,7 @@ variables:
 
   exa_vcn1_backup_subnet_dns:
     type: string
-    title: "Client Subnet DNS name"
+    title: "Backup Subnet DNS name"
     description: "Enter the Backup subnet DNS name. Use only letters and numbers, no special characters."
     required: false
     visible:
@@ -1956,7 +2020,7 @@ variables:
 
   exa_vcn2_backup_subnet_dns:
     type: string
-    title: "Client Subnet DNS name"
+    title: "Backup Subnet DNS name"
     description: "Enter the Backup subnet DNS name. Use only letters and numbers, no special characters."
     required: false
     visible:
@@ -2098,7 +2162,7 @@ variables:
 
   exa_vcn3_backup_subnet_dns:
     type: string
-    title: "Client Subnet DNS name"
+    title: "Backup Subnet DNS name"
     description: "Enter the Backup subnet DNS name. Use only letters and numbers, no special characters."
     required: false
     visible:
@@ -2307,8 +2371,8 @@ variables:
 
   oke_vcn1_mgmt_subnet_name:
     type: string
-    title: "Mgmt Subnet Name"
-    description: "The mgmt subnet name."
+    title: "Management Subnet Name"
+    description: "The management subnet name."
     required: false
     visible:
       and:
@@ -2319,7 +2383,7 @@ variables:
 
   oke_vcn1_mgmt_subnet_cidr:
     type: string
-    title: "Mgmt Subnet CIDR block"
+    title: "Management Subnet CIDR block"
     description: "It must be within the VCN CIDR blocks."
     required: false
     visible:
@@ -2331,7 +2395,7 @@ variables:
 
   oke_vcn1_mgmt_subnet_dns:
     type: string
-    title: "Mgmt Subnet DNS name"
+    title: "Management Subnet DNS name"
     description: "Use only letters and numbers, no special characters."
     required: false
     visible:
@@ -2582,8 +2646,8 @@ variables:
 
   oke_vcn2_mgmt_subnet_name:
     type: string
-    title: "Mgmt Subnet Name"
-    description: "The mgmt subnet name."
+    title: "Management Subnet Name"
+    description: "The management subnet name."
     required: false
     visible:
       and:
@@ -2594,7 +2658,7 @@ variables:
 
   oke_vcn2_mgmt_subnet_cidr:
     type: string
-    title: "Mgmt Subnet CIDR block"
+    title: "Management Subnet CIDR block"
     description: "It must be within the VCN CIDR blocks."
     required: false
     visible:
@@ -2606,7 +2670,7 @@ variables:
 
   oke_vcn2_mgmt_subnet_dns:
     type: string
-    title: "Mgmt Subnet DNS name"
+    title: "Management Subnet DNS name"
     description: "Use only letters and numbers, no special characters."
     required: false
     visible:
@@ -2856,8 +2920,8 @@ variables:
 
   oke_vcn3_mgmt_subnet_name:
     type: string
-    title: "Mgmt Subnet Name"
-    description: "The mgmt subnet name."
+    title: "Management Subnet Name"
+    description: "The management subnet name."
     required: false
     visible:
       and:
@@ -2868,7 +2932,7 @@ variables:
 
   oke_vcn3_mgmt_subnet_cidr:
     type: string
-    title: "Mgmt Subnet CIDR block"
+    title: "Management Subnet CIDR block"
     description: "It must be within the VCN CIDR blocks."
     required: false
     visible:
@@ -2880,7 +2944,7 @@ variables:
 
   oke_vcn3_mgmt_subnet_dns:
     type: string
-    title: "Mgmt Subnet DNS name"
+    title: "Management Subnet DNS name"
     description: "Use only letters and numbers, no special characters."
     required: false
     visible:
@@ -2951,7 +3015,15 @@ variables:
     type: string
     title: "Existing DRG OCID"
     description: "Enter the OCID of an existing DRG that you want to reuse for deploying the topology."
-    required: false
+    required: 
+      or:
+        - eq:
+          - ${hub_deployment_option}
+          - "Yes, existing DRG as hub"
+        - eq:
+          - ${hub_deployment_option}
+          - "Yes, new VCN as hub with existing DRG"
+
     visible: 
       and:
         - customize_net
@@ -3024,9 +3096,9 @@ variables:
       - "No"
       - "Palo Alto Networks VM-Series Firewall"
       - "Fortinet FortiGate Firewall"
-      - "Check Point CloudGuard Firewall"
-      - "Cisco Secure Firewall"
-      - "OCI Firewall Service"
+      #- "Check Point CloudGuard Firewall"
+      #- "Cisco Secure Firewall"
+      #- "OCI Firewall Service"
     visible: 
       and:
         - customize_net
@@ -3161,10 +3233,51 @@ variables:
               - ${hub_vcn_deploy_firewall_option}
               - "OCI Firewall Service"
 
-  hub_vcn_ingress_route_table_network_entity_ocid:
+  fw_instance_public_rsa_key:
     type: string
-    title: "Hub VCN Traffic Destination OCID"
-    description: "Enter the OCID of the network resource where traffic is sent to in the Hub VCN. This is typically the OCID of a resource that processes requests made by the spoke VCNs attached to this VCN, like a load balancer or firewall."
+    title: "Firewall Instance public SSH Key"
+    description: "Enter a Public SSH Key to Login to Compute Instance."
+    required: false
+    visible: 
+      and:
+        - customize_net
+        - or:
+          - eq:
+            - ${hub_deployment_option}
+            - "Yes, new VCN as hub with new DRG"
+          - eq:
+            - ${hub_deployment_option}
+            - "Yes, new VCN as hub with existing DRG"
+        - not: 
+          - eq:
+            - ${hub_vcn_deploy_firewall_option}
+            - "No"
+
+  hub_vcn_north_south_entry_point_ocid:
+    type: string
+    title: "Hub VCN North/South Traffic Destination OCID"
+    description: "Enter the private OCID of the Outdoor Network Load Balancer, where all inbound Internet (North/South) traffic is sent to in the Hub VCN."
+    required: false
+    visible: 
+      and:
+        - customize_net
+        - or:
+          - eq:
+            - ${hub_deployment_option}
+            - "Yes, new VCN as hub with new DRG"
+          - eq:
+            - ${hub_deployment_option}
+            - "Yes, new VCN as hub with existing DRG"
+        - and: 
+          - not:   
+            - eq: 
+              - ${hub_vcn_deploy_firewall_option}  
+              - "No"
+
+  hub_vcn_east_west_entry_point_ocid:
+    type: string
+    title: "Hub VCN East/West Traffic Destination OCID"
+    description: "Enter the private OCID of the Indoor Network Load Balancer, where all inter-VCN (East/West) traffic is sent to in the Hub VCN."
     required: false
     visible: 
       and:
@@ -3441,7 +3554,7 @@ variables:
             - ${hub_deployment_option}
             - "Yes, new VCN as hub with existing DRG"           
 
-  # -------------------------------------------
+# -------------------------------------------
 # ----- Networking - Hub Indoor Subnet
 #--------------------------------------------
   hub_vcn_indoor_subnet_name:
@@ -3645,14 +3758,25 @@ variables:
     description: "Determines if Security Zones are enabled in Landing Zone compartments. When set to true, the Security Zone is enabled for the enclosing compartment. If no enclosing compartment is used, then the Security Zone is not enabled."
     default: false
 
+  security_zones_reporting_region:
+    type: string
+    title: Security Zones Reporting Region
+    description: "The reporting region of security zones. It defaults to tenancy home region if undefined."
+    default: ""
+    required: false
+    visible:
+      and:
+        - ${enable_security_zones}
+
   sz_security_policies:
     type: array
     items:
       type: string
     uniqueItems: true
-    title: Security Zone policies
-    description: "List of Security Zones Policy OCIDs to add to security zone recipe. (Type a Security Zone policy OCID and hit enter to enter multiple values). To get a Security Zone policy OCID use the oci cli:  oci cloud-guard security-policy-collection list-security-policies --compartment-id your-tenancy-ocid"
-    visible: 
+    title: Security Zones Policies
+    description: "Additional Security Zones Policy OCIDs to add to security zone recipe (The default policies are added based on CIS level).Type a Security Zone policy OCID and hit enter to enter multiple values.To get a Security Zone policy OCID use the oci cli:  osecurity-policy-collection list-security-policies --compartment-id <tenancy-ocid>."
+    required: false
+    visible:
       and:
         - ${enable_security_zones}
 
@@ -3900,3 +4024,64 @@ variables:
     required: false
     visible: create_budget
     description: "List of email addresses for budget alerts. (Type an email address and hit enter to enter multiple values)"
+
+outputs:
+  release:
+    type: string
+    title: OCI Core Landing Zone Release
+
+  region:
+    type: string
+    title: Region
+
+  service_label:
+    type: string
+    title: Service Label
+
+  cis_level:
+    type: string
+    title: CIS Profile Level  
+
+  compartments:
+    type: json
+    title: Compartments
+
+  vcns:
+    type: json
+    title: Virtual Cloud Networks (VCNs)
+
+  subnets:
+    type: json
+    title: VCN Subnets  
+
+  network_security_groups:
+    type: json
+    title: Network Security Groups (NSGs)  
+
+  dynamic_routing_gateways:
+    type: json
+    title: Dynamic Routing Gateways (DRGs)  
+
+  nlb_private_ip_addresses:
+    type: json
+    title: Network Load Balancers (NLB) Private IP Addresses     
+    
+outputGroups:
+  - title: Environment
+    outputs:
+      - ${release}
+      - ${region}
+      - ${service_label}
+      - ${cis_level}
+
+  - title: IAM
+    outputs:
+      - ${compartments}
+
+  - title: Networking
+    outputs:
+      - ${vcns}
+      - ${subnets}
+      - ${network_security_groups}
+      - ${dynamic_routing_gateways}
+      - ${nlb_private_ip_addresses}

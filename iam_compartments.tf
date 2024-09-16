@@ -1,4 +1,4 @@
-# Copyright (c) 2024 Oracle and/or its affiliates.
+# Copyright (c) 2023 Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 
 locals {
@@ -11,7 +11,7 @@ locals {
 
 module "lz_top_compartment" {
   count                      = var.extend_landing_zone_to_new_region == false && local.deploy_enclosing_compartment ? 1 : 0
-  source                     = "github.com/oracle-quickstart/terraform-oci-cis-landing-zone-iam//compartments?ref=v0.1.7"
+  source                     = "github.com/oci-landing-zones/terraform-oci-modules-iam//compartments?ref=v0.2.3"
   providers                  = { oci = oci.home }
   tenancy_ocid               = var.tenancy_ocid
   compartments_configuration = local.enclosing_compartment_configuration
@@ -19,7 +19,7 @@ module "lz_top_compartment" {
 
 module "lz_compartments" {
   count                      = var.extend_landing_zone_to_new_region == false ? 1 : 0
-  source                     = "github.com/oracle-quickstart/terraform-oci-cis-landing-zone-iam//compartments?ref=v0.1.7"
+  source                     = "github.com/oci-landing-zones/terraform-oci-modules-iam//compartments?ref=v0.2.3"
   providers                  = { oci = oci.home }
   tenancy_ocid               = var.tenancy_ocid
   compartments_configuration = local.enclosed_compartments_configuration
@@ -33,10 +33,10 @@ locals {
   deploy_enclosing_compartment = (var.enclosing_compartment_options == "Yes, deploy new")
   use_enclosing_compartment    = (var.enclosing_compartment_options == "Yes, use existing")
 
-  enable_network_compartment  = var.deploy_network_cmp
-  enable_security_compartment = var.deploy_security_cmp
-  enable_app_compartment      = var.deploy_app_cmp
-  enable_database_compartment = var.deploy_database_cmp
+  enable_network_compartment  = true
+  enable_security_compartment = true
+  enable_app_compartment      = true
+  enable_database_compartment = true
   enable_exainfra_compartment = var.deploy_exainfra_cmp
 
   #-----------------------------------------------------------
@@ -61,12 +61,12 @@ locals {
   #----------------------------------------------------------------------------------------------------------
   #----- Provided compartment names
   #----------------------------------------------------------------------------------------------------------
-  provided_enclosing_compartment_name = coalesce(var.enclosing_cmp_name, "${var.service_label}-top-cmp")
-  provided_network_compartment_name   = coalesce(var.network_cmp_name, "${var.service_label}-network-cmp")
-  provided_security_compartment_name  = coalesce(var.security_cmp_name, "${var.service_label}-security-cmp")
-  provided_app_compartment_name       = coalesce(var.app_cmp_name, "${var.service_label}-app-cmp")
-  provided_database_compartment_name  = coalesce(var.database_cmp_name, "${var.service_label}-database-cmp")
-  provided_exainfra_compartment_name  = coalesce(var.exainfra_cmp_name, "${var.service_label}-exainfra-cmp")
+  provided_enclosing_compartment_name = "${var.service_label}-top-cmp"
+  provided_network_compartment_name   = "${var.service_label}-network-cmp"
+  provided_security_compartment_name  = "${var.service_label}-security-cmp"
+  provided_app_compartment_name       = "${var.service_label}-app-cmp"
+  provided_database_compartment_name  = "${var.service_label}-database-cmp"
+  provided_exainfra_compartment_name  = "${var.service_label}-exainfra-cmp"
 
   #----------------------------------------------------------------------
   #----- Auxiliary object for Terraform ternary operator satisfaction
@@ -121,13 +121,7 @@ locals {
       description : "CIS Landing Zone compartment for all resources related to application development: compute instances, storage, functions, OKE, API Gateway, streaming, and others.",
       defined_tags : local.cmps_defined_tags,
       freeform_tags : local.cmps_freeform_tags,
-      children : { for i in range(0, length(var.app_workload_cmp_names)) : "WORKLOAD-${i}-${local.app_compartment_key}" => {
-        name : element(var.app_workload_cmp_names, i),
-        description : "CIS Landing Zone compartment for application workloads: compute instances, storage, functions, OKE, API Gateway, streaming, and others.",
-        defined_tags : local.cmps_defined_tags,
-        freeform_tags : local.cmps_freeform_tags,
-        children = {}
-      } if var.deploy_app_workload_cmps && length(var.app_workload_cmp_names) > 0 }
+      children : {}
     }
   } : {}
 
@@ -137,13 +131,7 @@ locals {
       description : "CIS Landing Zone compartment for all database related resources.",
       defined_tags : local.cmps_defined_tags,
       freeform_tags : local.cmps_freeform_tags,
-      children : { for i in range(0, length(var.database_workload_cmp_names)) : "WORKLOAD-${i}-${local.database_compartment_key}" => {
-        name : element(var.database_workload_cmp_names, i),
-        description : "CIS Landing Zone compartment for database workloads.",
-        defined_tags : local.cmps_defined_tags,
-        freeform_tags : local.cmps_freeform_tags,
-        children = {}
-      } if var.deploy_database_workload_cmps && length(var.database_workload_cmp_names) > 0 }
+      children : {}
     }
   } : {}
 
@@ -186,6 +174,5 @@ locals {
   database_compartment_id   = var.extend_landing_zone_to_new_region == false && local.enable_security_compartment == true ? module.lz_compartments[0].compartments[local.database_compartment_key].id : length(data.oci_identity_compartments.database.compartments) > 0 ? data.oci_identity_compartments.database.compartments[0].id : null
 
   exainfra_compartment_name = var.extend_landing_zone_to_new_region == false && local.enable_exainfra_compartment == true ? module.lz_compartments[0].compartments[local.exainfra_compartment_key].name : local.provided_exainfra_compartment_name
-  #exainfra_compartment_id   = var.extend_landing_zone_to_new_region == false && local.enable_exainfra_compartment == true ? module.lz_compartments[0].compartments[local.exainfra_compartment_key].id : data.oci_identity_compartments.exainfra.compartments[0].id
-  exainfra_compartment_id = var.extend_landing_zone_to_new_region == false && local.enable_exainfra_compartment == true ? module.lz_compartments[0].compartments[local.exainfra_compartment_key].id : length(data.oci_identity_compartments.exainfra.compartments) > 0 ? data.oci_identity_compartments.exainfra.compartments[0].id : null
+  exainfra_compartment_id   = var.extend_landing_zone_to_new_region == false && local.enable_exainfra_compartment == true ? module.lz_compartments[0].compartments[local.exainfra_compartment_key].id : length(data.oci_identity_compartments.exainfra.compartments) > 0 ? data.oci_identity_compartments.exainfra.compartments[0].id : null
 }

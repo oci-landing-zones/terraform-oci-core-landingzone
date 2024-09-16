@@ -1,4 +1,4 @@
-# Copyright (c) 2024 Oracle and/or its affiliates.
+# Copyright (c) 2023 Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 
 locals {
@@ -39,7 +39,7 @@ locals {
 #-- KMS Keys used by AppDev bucket and Service Connector bucket
 #---------------------------------------------------------------------------
 module "lz_vault" {
-  source     = "github.com/oracle-quickstart/terraform-oci-cis-landing-zone-security//vaults?ref=v0.1.6"
+  source     = "github.com/oci-landing-zones/terraform-oci-modules-security//vaults?ref=v0.1.7"
   depends_on = [time_sleep.wait_on_services_policy]
   count      = local.enable_vault ? 1 : 0
   providers = {
