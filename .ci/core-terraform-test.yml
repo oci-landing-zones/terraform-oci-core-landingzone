@@ -1,0 +1,33 @@
+variables:
+  BUCKET_NAME: $BUCKET_NAME
+  NAMESPACE: $LZTEAM_NAMESPACE
+  PROXY_SERVER: $PROXY_SERVER
+  TEST_CASES_ZIP: $TEST_CASES_ZIP
+  PAR_LOCATION: ""
+
+core-lz-prep-test-cases:
+  stage: tf-prep-test-case
+  # tags:
+  #   - terraform
+  # rules:
+  #   - if: '$CI_PIPELINE_SOURCE == "push" || $CI_PIPELINE_SOURCE == "merge_request_event"'
+  #     changes:
+  #       - scripts/cis_reports.py
+  script:
+    - set -o pipefail
+    - echo "  ----- BEGIN - Running Test Cases -----  "
+    - export https_proxy=$PROXY_SERVER:80
+    - export http_proxy=$PROXY_SERVER:80
+    - oci os object get -bn $BUCKET_NAME --file $TEST_CASES_ZIP --name $TEST_CASES_ZIP -ns $LZTEAM_NAMESPACE
+    - unzip $TEST_CASES_ZIP
+    - export TEST_CASES_DIR=${TEST_CASES_ZIP::-4}
+    - echo $TEST_CASES_DIR
+    - terraform fmt
+    - python3 /home/gitlab-runner/pipeline-tools/preprocessor.py $TEST_CASES_DIR -f tfvars.template -d . --plan
+    - echo "Hello World"
+    # - TF_DIR=`pwd`
+    # - terraform init 
+    # - terraform plan -var-file=./test-vss.tfvars --out test_vss.out
+    # - cd /home/gitlab-runner/terratest
+    # - go test -count=1 -timeout 30m -p 1 . | tee test_output.log
+    - echo "  ----- END - Running Test 5 Cases -----  "
