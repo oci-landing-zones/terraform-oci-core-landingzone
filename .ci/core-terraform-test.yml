@@ -7,12 +7,9 @@ variables:
 
 core-lz-prep-test-cases:
   stage: tf-prep-test-case
-  # tags:
-  #   - terraform
   rules:
     - if: '$CI_PIPELINE_SOURCE == "push"'
-      changes:
-        - *.tf
+
   script:
     - set -o pipefail
     - echo "  ----- BEGIN - Running Test Cases on Pull Request -----  "
