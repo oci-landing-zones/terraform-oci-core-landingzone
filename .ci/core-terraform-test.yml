@@ -21,7 +21,6 @@ core-lz-prep-test-cases-pull:
     - echo $TEST_CASES_DIR
     - terraform fmt
     - python3 /home/gitlab-runner/pipeline-tools/preprocessor.py $TEST_CASES_DIR -f tfvars.template -d . --plan
-    - echo "Hello World"
     - echo "  ----- END - Running Test for Pull Request Cases -----  "
 
 core-lz-prep-test-cases-merge:
@@ -41,4 +40,4 @@ core-lz-prep-test-cases-merge:
     # - terraform fmt
     # - python3 /home/gitlab-runner/pipeline-tools/preprocessor.py $TEST_CASES_DIR -f tfvars.template -d . --plan
     # - echo "Hello World"
-    - echo "  ----- END - Running Test Merge Request Cases -----  "
+    - echo "  ----- END - Running Test MERGE Request Cases -----  "
