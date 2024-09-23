@@ -5,8 +5,8 @@ variables:
   TEST_CASES_ZIP: $TEST_CASES_ZIP
   PAR_LOCATION: ""
 
-core-lz-prep-test-cases:
-  stage: tf-prep-test-case
+core-lz-prep-test-cases-pull:
+  stage: tf-prep-test-case-pull
   rules:
     - if: '$CI_PIPELINE_SOURCE == "push"'
 
@@ -22,5 +22,23 @@ core-lz-prep-test-cases:
     - terraform fmt
     - python3 /home/gitlab-runner/pipeline-tools/preprocessor.py $TEST_CASES_DIR -f tfvars.template -d . --plan
     - echo "Hello World"
-    - echo "  ----- END - Running Test 5 Cases -----  "
+    - echo "  ----- END - Running Test for Pull Request Cases -----  "
 
+core-lz-prep-test-cases-merge:
+  stage: tf-prep-test-case-merge
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+
+  script:
+    - set -o pipefail
+    - echo "  ----- BEGIN - Running Test Cases on MERGE Request -----  "
+    - export https_proxy=$PROXY_SERVER:80
+    - export http_proxy=$PROXY_SERVER:80
+    # - oci os object get -bn $BUCKET_NAME --file $TEST_CASES_ZIP --name $TEST_CASES_ZIP -ns $LZTEAM_NAMESPACE
+    # - unzip $TEST_CASES_ZIP
+    # - export TEST_CASES_DIR=${TEST_CASES_ZIP::-4}
+    # - echo $TEST_CASES_DIR
+    # - terraform fmt
+    # - python3 /home/gitlab-runner/pipeline-tools/preprocessor.py $TEST_CASES_DIR -f tfvars.template -d . --plan
+    # - echo "Hello World"
+    - echo "  ----- END - Running Test Merge Request Cases -----  "
