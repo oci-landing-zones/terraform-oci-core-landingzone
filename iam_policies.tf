@@ -15,7 +15,7 @@ locals {
   network_admin_policy_name          = "${var.service_label}-network-admin-policy"
   compute_agent_policy_name          = "${var.service_label}-compute-agent-policy"
   database_admin_policy_name         = "${var.service_label}-database-admin-policy"
-  database_dynamic_group_policy_name = "${var.service_label}-database-dynamic_group-policy"
+  database_dynamic_group_policy_name = "${var.service_label}-database-dynamic-group-policy"
   appdev_admin_policy_name           = "${var.service_label}-appdev-admin-policy"
   iam_admin_policy_name              = "${var.service_label}-iam-admin-policy"
   iam_admin_root_policy_name         = "${var.service_label}-iam-admin-root-policy"

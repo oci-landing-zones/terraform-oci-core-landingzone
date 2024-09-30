@@ -515,7 +515,10 @@ variables:
     title: "Customize Default IAM Settings?"
     description: "Check to customize default settings for compartments, identity domains, groups, dynamic groups and policies."
     default: false
-    visible: true  
+    visible:
+      eq:
+        - ${extend_landing_zone_to_new_region}
+        - false
 
   customize_net:
     type: boolean
