@@ -43,7 +43,7 @@ variable "customize_iam" {
   type        = bool
   default     = false
 }
-variable "customize_net" {
+variable "define_net" {
   description = "Whether networking is defined as part of this Landing Zone. By default, no networking resources are created."
   type        = bool
   default     = false

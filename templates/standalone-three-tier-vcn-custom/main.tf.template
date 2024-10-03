@@ -28,6 +28,7 @@ module "core_lz" {
     # ------------------------------------------------------
     # ----- Networking
     # ------------------------------------------------------
+    define_net  = true # enables network resources provisioning
     add_tt_vcn1 = true # This deploys one three-tier VCN with custom settings.
     # --- VCN settings
     tt_vcn1_name = "my-vcn-1"                    # Provide the VCN name.
