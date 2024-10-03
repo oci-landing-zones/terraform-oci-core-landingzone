@@ -4,7 +4,7 @@
 locals {
 
   firewall_options = {
-    "Don't deploy any network appliance at this time" = "Don't deploy any network appliance at this time",
+    "No"                                    = "NO",
     "Palo Alto Networks VM-Series Firewall" = "PALOALTO",
     "Fortinet FortiGate Firewall"           = "FORTINET",
     "Check Point CloudGuard Firewall"       = "CHECKPOINT", # Not available
@@ -22,7 +22,7 @@ locals {
   # current_image_name     = local.image_name_database[local.firewall_options[var.hub_vcn_deploy_firewall_option]][0]
   # current_publisher_name = local.image_name_database[local.firewall_options[var.hub_vcn_deploy_firewall_option]][1]
   
-  instances_configuration = local.firewall_options[var.hub_vcn_deploy_firewall_option] != "Don't deploy any network appliance at this time" ? {
+  instances_configuration = local.firewall_options[var.hub_vcn_deploy_firewall_option] != "NO" ? {
     default_compartment_id      = local.network_compartment_id
     default_ssh_public_key_path = var.fw_instance_public_rsa_key
     instances = {
@@ -120,7 +120,7 @@ locals {
       }
     }
   } : null
-  nlb_configuration = local.firewall_options[var.hub_vcn_deploy_firewall_option] != "Don't deploy any network appliance at this time" ? {
+  nlb_configuration = local.firewall_options[var.hub_vcn_deploy_firewall_option] != "NO" ? {
       default_compartment_id = local.network_compartment_id
       nlbs = {
         INDOOR_NLB = {
@@ -192,7 +192,7 @@ locals {
 }  
 
 module "lz_firewall_appliance" {
-  count  = local.firewall_options[var.hub_vcn_deploy_firewall_option] != "Don't deploy any network appliance at this time" ? 1 : 0
+  count  = local.firewall_options[var.hub_vcn_deploy_firewall_option] != "NO" ? 1 : 0
   source = "github.com/oci-landing-zones/terraform-oci-modules-workloads//cis-compute-storage?ref=release-0.1.7"
   instances_configuration = local.instances_configuration
   providers = {
@@ -202,7 +202,7 @@ module "lz_firewall_appliance" {
 }
 
 module "lz_nlb" {
-  count             = local.firewall_options[var.hub_vcn_deploy_firewall_option] != "Don't deploy any network appliance at this time" ? 1 : 0
+  count             = local.firewall_options[var.hub_vcn_deploy_firewall_option] != "NO" ? 1 : 0
   source            = "github.com/oci-landing-zones/terraform-oci-modules-networking//modules/nlb?ref=v0.6.9"
   nlb_configuration = local.nlb_configuration
 }
