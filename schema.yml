@@ -3093,7 +3093,7 @@ variables:
     title: "Deploy Firewall?"
     description: "Choose one of the available firewall options for deploying in the Hub VCN. Costs are incurred."
     enum:
-      - "Don't deploy any network appliance at this time"
+      - "No"
       - "Palo Alto Networks VM-Series Firewall"
       - "Fortinet FortiGate Firewall"
       #- "Check Point CloudGuard Firewall"
@@ -3109,7 +3109,7 @@ variables:
           - eq:
             - ${hub_deployment_option}
             - "Yes, new VCN as hub with existing DRG"
-    default: "Don't deploy any network appliance at this time"
+    default: "No"
 
   fw_instance_name_prefix:
     type: string
@@ -3129,7 +3129,7 @@ variables:
         - not: 
           - eq:
             - ${hub_vcn_deploy_firewall_option}  
-            - "Don't deploy any network appliance at this time"
+            - "No"      
       
   fw_instance_shape:
     type: oci:core:instanceshape:name
@@ -3152,7 +3152,7 @@ variables:
           - not:   
             - eq: 
               - ${hub_vcn_deploy_firewall_option}  
-              - "Don't deploy any network appliance at this time"
+              - "No"
           - not:    
             - eq:
               - ${hub_vcn_deploy_firewall_option}
@@ -3177,7 +3177,7 @@ variables:
           - not:   
             - eq: 
               - ${hub_vcn_deploy_firewall_option}  
-              - "Don't deploy any network appliance at this time"
+              - "No"
           - not:    
             - eq:
               - ${hub_vcn_deploy_firewall_option}
@@ -3202,7 +3202,7 @@ variables:
           - not:   
             - eq: 
               - ${hub_vcn_deploy_firewall_option}  
-              - "Don't deploy any network appliance at this time"
+              - "No"
           - not:    
             - eq:
               - ${hub_vcn_deploy_firewall_option}
@@ -3227,7 +3227,7 @@ variables:
           - not:   
             - eq: 
               - ${hub_vcn_deploy_firewall_option}  
-              - "Don't deploy any network appliance at this time"
+              - "No"
           - not:    
             - eq:
               - ${hub_vcn_deploy_firewall_option}
@@ -3251,7 +3251,7 @@ variables:
         - not: 
           - eq:
             - ${hub_vcn_deploy_firewall_option}
-            - "Don't deploy any network appliance at this time"
+            - "No"
 
   hub_vcn_north_south_entry_point_ocid:
     type: string
@@ -3272,7 +3272,7 @@ variables:
           - not:   
             - eq: 
               - ${hub_vcn_deploy_firewall_option}  
-              - "Don't deploy any network appliance at this time"
+              - "No"
 
   hub_vcn_east_west_entry_point_ocid:
     type: string
@@ -3293,7 +3293,7 @@ variables:
           - not:   
             - eq: 
               - ${hub_vcn_deploy_firewall_option}  
-              - "Don't deploy any network appliance at this time"
+              - "No"              
 
   customize_hub_vcn_subnets:
     type: boolean
