@@ -3099,7 +3099,7 @@ variables:
       #- "Check Point CloudGuard Firewall"
       #- "Cisco Secure Firewall"
       #- "OCI Firewall Service"
-    visible: 
+    visible:
       and:
         - customize_net
         - or:
@@ -3109,14 +3109,14 @@ variables:
           - eq:
             - ${hub_deployment_option}
             - "Yes, new VCN as hub with existing DRG"
-    default: "No"
+    default: "x"
 
   fw_instance_name_prefix:
     type: string
     title: "Firewall Name Common Prefix"
     description: "Enter a common prefix to firewall name. To this common prefix, numbers 1 and 2 are appended the corresponding instance."
     required: false
-    visible: 
+    visible:
       and:
         - customize_net
         - or:
@@ -3126,11 +3126,11 @@ variables:
           - eq:
             - ${hub_deployment_option}
             - "Yes, new VCN as hub with existing DRG"
-        - not: 
+        - not:
           - eq:
-            - ${hub_vcn_deploy_firewall_option}  
-            - "No"      
-      
+            - ${hub_vcn_deploy_firewall_option}
+            - "No"
+
   fw_instance_shape:
     type: oci:core:instanceshape:name
     dependsOn:
@@ -3138,7 +3138,7 @@ variables:
     title: "Firewall Instance Shape"
     description: "Select the instance shape for the firewall."
     required: false
-    visible: 
+    visible:
       and:
         - customize_net
         - or:
@@ -3148,12 +3148,12 @@ variables:
           - eq:
             - ${hub_deployment_option}
             - "Yes, new VCN as hub with existing DRG"
-        - and: 
-          - not:   
-            - eq: 
-              - ${hub_vcn_deploy_firewall_option}  
+        - and:
+          - not:
+            - eq:
+              - ${hub_vcn_deploy_firewall_option}
               - "No"
-          - not:    
+          - not:
             - eq:
               - ${hub_vcn_deploy_firewall_option}
               - "OCI Firewall Service"
@@ -3163,7 +3163,7 @@ variables:
     title: "Firewall Amount of Memory for the Selected Flex Shape"
     description: "Enter the amount of memory (in GB) for the selected flex shape. Applicable to flexible shapes only."
     required: false
-    visible: 
+    visible:
       and:
         - customize_net
         - or:
@@ -3173,12 +3173,12 @@ variables:
           - eq:
             - ${hub_deployment_option}
             - "Yes, new VCN as hub with existing DRG"
-        - and: 
-          - not:   
-            - eq: 
-              - ${hub_vcn_deploy_firewall_option}  
+        - and:
+          - not:
+            - eq:
+              - ${hub_vcn_deploy_firewall_option}
               - "No"
-          - not:    
+          - not:
             - eq:
               - ${hub_vcn_deploy_firewall_option}
               - "OCI Firewall Service"
@@ -3188,7 +3188,7 @@ variables:
     title: "Firewall Number of OCPUs for the Selected Flex Shape"
     description: "Enter the number of OCPUs for the selected flex shape. Applicable to flexible shapes only."
     required: false
-    visible: 
+    visible:
       and:
         - customize_net
         - or:
@@ -3198,22 +3198,22 @@ variables:
           - eq:
             - ${hub_deployment_option}
             - "Yes, new VCN as hub with existing DRG"
-        - and: 
-          - not:   
-            - eq: 
-              - ${hub_vcn_deploy_firewall_option}  
-              - "No"
-          - not:    
+        - and:
+          - not:
             - eq:
               - ${hub_vcn_deploy_firewall_option}
-              - "OCI Firewall Service"          
+              - "No"
+          - not:
+            - eq:
+              - ${hub_vcn_deploy_firewall_option}
+              - "OCI Firewall Service"
 
   fw_instance_boot_volume_size:
     type: string
     title: "Firewall Boot Volume Size"
     description: "Enter the boot volume size (in GB) for the firewall instances."
     required: false
-    visible: 
+    visible:
       and:
         - customize_net
         - or:
@@ -3223,12 +3223,12 @@ variables:
           - eq:
             - ${hub_deployment_option}
             - "Yes, new VCN as hub with existing DRG"
-        - and: 
-          - not:   
-            - eq: 
-              - ${hub_vcn_deploy_firewall_option}  
+        - and:
+          - not:
+            - eq:
+              - ${hub_vcn_deploy_firewall_option}
               - "No"
-          - not:    
+          - not:
             - eq:
               - ${hub_vcn_deploy_firewall_option}
               - "OCI Firewall Service"
@@ -3238,7 +3238,7 @@ variables:
     title: "Firewall Instance public SSH Key"
     description: "Enter a Public SSH Key to Login to Compute Instance."
     required: false
-    visible: 
+    visible:
       and:
         - customize_net
         - or:
@@ -3248,7 +3248,7 @@ variables:
           - eq:
             - ${hub_deployment_option}
             - "Yes, new VCN as hub with existing DRG"
-        - not: 
+        - not:
           - eq:
             - ${hub_vcn_deploy_firewall_option}
             - "No"
@@ -3258,7 +3258,7 @@ variables:
     title: "Hub VCN North/South Traffic Destination OCID"
     description: "Enter the private OCID of the Outdoor Network Load Balancer, where all inbound Internet (North/South) traffic is sent to in the Hub VCN."
     required: false
-    visible: 
+    visible:
       and:
         - customize_net
         - or:
@@ -3268,10 +3268,10 @@ variables:
           - eq:
             - ${hub_deployment_option}
             - "Yes, new VCN as hub with existing DRG"
-        - and: 
-          - not:   
-            - eq: 
-              - ${hub_vcn_deploy_firewall_option}  
+        - and:
+          - not:
+            - eq:
+              - ${hub_vcn_deploy_firewall_option}
               - "No"
 
   hub_vcn_east_west_entry_point_ocid:
@@ -3279,7 +3279,7 @@ variables:
     title: "Hub VCN East/West Traffic Destination OCID"
     description: "Enter the private OCID of the Indoor Network Load Balancer, where all inter-VCN (East/West) traffic is sent to in the Hub VCN."
     required: false
-    visible: 
+    visible:
       and:
         - customize_net
         - or:
@@ -3289,11 +3289,11 @@ variables:
           - eq:
             - ${hub_deployment_option}
             - "Yes, new VCN as hub with existing DRG"
-        - and: 
-          - not:   
-            - eq: 
-              - ${hub_vcn_deploy_firewall_option}  
-              - "No"              
+        - and:
+          - not:
+            - eq:
+              - ${hub_vcn_deploy_firewall_option}
+              - "No"
 
   customize_hub_vcn_subnets:
     type: boolean
