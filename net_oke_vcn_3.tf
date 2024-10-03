@@ -22,7 +22,6 @@ locals {
             dns_label                  = replace(coalesce(var.oke_vcn3_api_subnet_dns, "api-subnet"), "-", "")
             ipv6cidr_blocks            = []
             prohibit_internet_ingress  = true
-            prohibit_public_ip_on_vnic = true
             route_table_key            = "OKE-VCN-3-API-SUBNET-ROUTE-TABLE"
             security_list_keys         = ["OKE-VCN-3-API-SUBNET-SL"]
           }
@@ -35,7 +34,6 @@ locals {
             dns_label                  = replace(coalesce(var.oke_vcn3_workers_subnet_dns, "workers-subnet"), "-", "")
             ipv6cidr_blocks            = []
             prohibit_internet_ingress  = true
-            prohibit_public_ip_on_vnic = true
             route_table_key            = "OKE-VCN-3-WORKERS-SUBNET-ROUTE-TABLE"
             security_list_keys         = ["OKE-VCN-3-WORKERS-SUBNET-SL"]
           }
@@ -48,7 +46,6 @@ locals {
             dns_label                  = replace(coalesce(var.oke_vcn3_services_subnet_dns, "services-subnet"), "-", "")
             ipv6cidr_blocks            = []
             prohibit_internet_ingress  = false
-            prohibit_public_ip_on_vnic = false
             route_table_key            = "OKE-VCN-3-SERVICES-SUBNET-ROUTE-TABLE"
             security_list_keys         = ["OKE-VCN-3-SERVICES-SUBNET-SL"]
           }
@@ -61,7 +58,6 @@ locals {
             dns_label                  = replace(coalesce(var.oke_vcn3_mgmt_subnet_dns, "mgmt-subnet"), "-", "")
             ipv6cidr_blocks            = []
             prohibit_internet_ingress  = true
-            prohibit_public_ip_on_vnic = true
             route_table_key            = "OKE-VCN-3-MGMT-SUBNET-ROUTE-TABLE"
             security_list_keys         = ["OKE-VCN-3-MGMT-SUBNET-SL"]
           }
@@ -74,7 +70,6 @@ locals {
             dns_label                  = replace(coalesce(var.oke_vcn3_pods_subnet_dns, "pods-subnet"), "-", "")
             ipv6cidr_blocks            = []
             prohibit_internet_ingress  = true
-            prohibit_public_ip_on_vnic = true
             route_table_key            = "OKE-VCN-3-PODS-SUBNET-ROUTE-TABLE"
             security_list_keys         = ["OKE-VCN-3-PODS-SUBNET-SL"]
           }

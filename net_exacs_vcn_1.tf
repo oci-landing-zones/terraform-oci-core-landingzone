@@ -22,7 +22,6 @@ locals {
           dns_label                  = replace(coalesce(var.exa_vcn1_client_subnet_dns, "client-subnet"), "-", "")
           ipv6cidr_blocks            = []
           prohibit_internet_ingress  = true
-          prohibit_public_ip_on_vnic = true
           route_table_key            = "EXA-VCN-1-CLIENT-SUBNET-ROUTE-TABLE"
         }
         "EXA-VCN-1-BACKUP-SUBNET" = {
@@ -32,7 +31,6 @@ locals {
           dns_label                  = replace(coalesce(var.exa_vcn1_backup_subnet_dns, "backup-subnet"), "-", "")
           ipv6cidr_blocks            = []
           prohibit_internet_ingress  = true
-          prohibit_public_ip_on_vnic = true
           route_table_key            = "EXA-VCN-1-BACKUP-SUBNET-ROUTE-TABLE"
         }
       }

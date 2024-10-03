@@ -23,7 +23,6 @@ locals {
                         dns_label                  = replace(coalesce(var.tt_vcn3_web_subnet_dns,"web-subnet"),"-","")
                         ipv6cidr_blocks            = []
                         prohibit_internet_ingress  = var.tt_vcn3_web_subnet_is_private
-                        prohibit_public_ip_on_vnic = var.tt_vcn3_web_subnet_is_private
                         route_table_key            = "TT-VCN-3-WEB-SUBNET-ROUTE-TABLE"
                     }
                 },
@@ -35,7 +34,6 @@ locals {
                         dns_label                  = replace(coalesce(var.tt_vcn3_app_subnet_dns,"app-subnet"),"-","")
                         ipv6cidr_blocks            = []
                         prohibit_internet_ingress  = true
-                        prohibit_public_ip_on_vnic = true
                         route_table_key            = "TT-VCN-3-APP-SUBNET-ROUTE-TABLE"
                     }
                 },
@@ -47,7 +45,6 @@ locals {
                         dns_label                  = replace(coalesce(var.tt_vcn3_db_subnet_dns,"db-subnet"),"-","")
                         ipv6cidr_blocks            = []
                         prohibit_internet_ingress  = true
-                        prohibit_public_ip_on_vnic = true
                         route_table_key            = "TT-VCN-3-DB-SUBNET-ROUTE-TABLE"
                     }
                 },
@@ -59,7 +56,6 @@ locals {
                         dns_label                  = replace(coalesce(var.tt_vcn3_bastion_subnet_dns,"bastion-subnet"),"-","")
                         ipv6cidr_blocks            = []
                         prohibit_internet_ingress  = var.tt_vcn3_bastion_is_access_via_public_endpoint == true ? false : true
-                        prohibit_public_ip_on_vnic = var.tt_vcn3_bastion_is_access_via_public_endpoint == true ? false : true
                         route_table_key            = "TT-VCN-3-BASTION-SUBNET-ROUTE-TABLE"
                         security_list_keys         = var.tt_vcn3_bastion_is_access_via_public_endpoint == false ? ["TT-VCN-3-BASTION-SUBNET-SL"] : []
                     }
