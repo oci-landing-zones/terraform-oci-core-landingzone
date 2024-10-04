@@ -31,6 +31,14 @@ module "lz_groups" {
   groups_configuration = var.extend_landing_zone_to_new_region == false && var.use_custom_id_domain == false ? local.groups_configuration : local.empty_groups_configuration
 }
 
+module "lz_custom_domain_groups" {
+  source                               = "github.com/oci-landing-zones/terraform-oci-modules-iam//identity-domains?ref=v0.2.3"
+  count                                = var.deploy_custom_domain_groups ? 1 : 0
+  providers                            = { oci = oci.home }
+  tenancy_ocid                         = var.tenancy_ocid
+  identity_domain_groups_configuration = var.extend_landing_zone_to_new_region == false && var.use_custom_id_domain == true ? local.custom_domain_groups_configuration : local.empty_groups_configuration
+}
+
 locals {
   #------------------------------------------------------------------------------------------------------
   #-- These variables are not meant to be overriden
@@ -52,7 +60,6 @@ locals {
   default_iam_admin_group_name  = "iam-admin-group"
   provided_iam_admin_group_name = coalesce(local.custom_iam_admin_group_name, "${var.service_label}-${local.default_iam_admin_group_name}")
 
-  #iam_admin_group = length(trimspace(var.existing_iam_admin_group_name)) == 0 ? {
   iam_admin_group = length(var.existing_iam_admin_group_name) == 0 && length(trimspace(var.rm_existing_iam_admin_group_name)) == 0 ? {
     (local.iam_admin_group_key) = {
       name          = local.provided_iam_admin_group_name
@@ -60,6 +67,17 @@ locals {
       members       = []
       defined_tags  = local.groups_defined_tags
       freeform_tags = local.groups_freeform_tags
+    }
+  } : {}
+
+  custom_domain_iam_admin_group = var.deploy_custom_domain_groups ? {
+    (local.iam_admin_group_key) = {
+      identity_domain_id = var.custom_id_domain_ocid
+      name               = local.provided_iam_admin_group_name
+      description        = "Landing Zone group for managing IAM resources in the tenancy."
+      members            = []
+      defined_tags       = local.groups_defined_tags
+      freeform_tags      = local.groups_freeform_tags
     }
   } : {}
 
@@ -80,6 +98,17 @@ locals {
     }
   } : {}
 
+  custom_domain_cred_admin_group = var.deploy_custom_domain_groups ? {
+    (local.cred_admin_group_key) = {
+      identity_domain_id = var.custom_id_domain_ocid
+      name               = local.provided_cred_admin_group_name
+      description        = "Landing Zone group for managing users credentials in the tenancy."
+      members            = []
+      defined_tags       = local.groups_defined_tags
+      freeform_tags      = local.groups_freeform_tags
+    }
+  } : {}
+
   #--------------------------------------------------------------------
   #-- Cost Admin
   #--------------------------------------------------------------------
@@ -94,6 +123,17 @@ locals {
       members       = []
       defined_tags  = local.groups_defined_tags
       freeform_tags = local.groups_freeform_tags
+    }
+  } : {}
+
+  custom_domain_cost_admin_group = var.deploy_custom_domain_groups ? {
+    (local.cost_admin_group_key) = {
+      identity_domain_id = var.custom_id_domain_ocid
+      name               = local.provided_cost_admin_group_name
+      description        = "Landing Zone group for Cost management."
+      members            = []
+      defined_tags       = local.groups_defined_tags
+      freeform_tags      = local.groups_freeform_tags
     }
   } : {}
 
@@ -114,6 +154,17 @@ locals {
     }
   } : {}
 
+  custom_domain_network_admin_group = var.deploy_custom_domain_groups ? {
+    (local.network_admin_group_key) = {
+      identity_domain_id = var.custom_id_domain_ocid
+      name               = local.provided_network_admin_group_name
+      description        = "Landing Zone group for network management."
+      members            = []
+      defined_tags       = local.groups_defined_tags
+      freeform_tags      = local.groups_freeform_tags
+    }
+  } : {}
+
   #--------------------------------------------------------------------
   #-- Security Admin
   #--------------------------------------------------------------------
@@ -128,6 +179,17 @@ locals {
       members       = []
       defined_tags  = local.groups_defined_tags
       freeform_tags = local.groups_freeform_tags
+    }
+  } : {}
+
+  custom_domain_security_admin_group = var.deploy_custom_domain_groups ? {
+    (local.security_admin_group_key) = {
+      identity_domain_id = var.custom_id_domain_ocid
+      name               = local.provided_security_admin_group_name
+      description        = "Landing Zone group for security services management."
+      members            = []
+      defined_tags       = local.groups_defined_tags
+      freeform_tags      = local.groups_freeform_tags
     }
   } : {}
 
@@ -148,6 +210,17 @@ locals {
     }
   } : {}
 
+  custom_domain_appdev_admin_group = var.deploy_custom_domain_groups ? {
+    (local.appdev_admin_group_key) = {
+      identity_domain_id = var.custom_id_domain_ocid
+      name               = local.provided_appdev_admin_group_name
+      description        = "Landing Zone group for managing app development related services."
+      members            = []
+      defined_tags       = local.groups_defined_tags
+      freeform_tags      = local.groups_freeform_tags
+    }
+  } : {}
+
   #--------------------------------------------------------------------
   #-- Database Admin
   #--------------------------------------------------------------------
@@ -162,6 +235,17 @@ locals {
       members       = []
       defined_tags  = local.groups_defined_tags
       freeform_tags = local.groups_freeform_tags
+    }
+  } : {}
+
+  custom_domain_database_admin_group = var.deploy_custom_domain_groups ? {
+    (local.database_admin_group_key) = {
+      identity_domain_id = var.custom_id_domain_ocid
+      name               = local.provided_database_admin_group_name
+      description        = "Landing Zone group for managing databases."
+      members            = []
+      defined_tags       = local.groups_defined_tags
+      freeform_tags      = local.groups_freeform_tags
     }
   } : {}
 
@@ -182,6 +266,17 @@ locals {
     }
   } : {}
 
+  custom_domain_exainfra_admin_group = var.deploy_exainfra_cmp == true && var.deploy_custom_domain_groups ? {
+    (local.exainfra_admin_group_key) = {
+      identity_domain_id = var.custom_id_domain_ocid
+      name               = local.provided_exainfra_admin_group_name
+      description        = "Landing Zone group for managing Exadata Cloud Service infrastructure."
+      members            = []
+      defined_tags       = local.groups_defined_tags
+      freeform_tags      = local.groups_freeform_tags
+    }
+  } : {}
+
   #------------------------------------------------------------------------
   #-- Storage admin
   #------------------------------------------------------------------------
@@ -196,6 +291,17 @@ locals {
       members       = []
       defined_tags  = local.groups_defined_tags
       freeform_tags = local.groups_freeform_tags
+    }
+  } : {}
+
+  custom_domain_storage_admin_group = var.deploy_custom_domain_groups ? {
+    (local.storage_admin_group_key) = {
+      identity_domain_id = var.custom_id_domain_ocid
+      name               = local.provided_storage_admin_group_name
+      description        = "Landing Zone group for storage services management."
+      members            = []
+      defined_tags       = local.groups_defined_tags
+      freeform_tags      = local.groups_freeform_tags
     }
   } : {}
 
@@ -216,6 +322,17 @@ locals {
     }
   } : {}
 
+  custom_domain_auditor_group = var.deploy_custom_domain_groups ? {
+    (local.auditor_group_key) = {
+      identity_domain_id = var.custom_id_domain_ocid
+      name               = local.provided_auditor_group_name
+      description        = "Landing Zone group for auditing the tenancy."
+      members            = []
+      defined_tags       = local.groups_defined_tags
+      freeform_tags      = local.groups_freeform_tags
+    }
+  } : {}
+
   #------------------------------------------------------------------------
   #-- Announcement readers
   #------------------------------------------------------------------------
@@ -230,6 +347,17 @@ locals {
       members       = []
       defined_tags  = local.groups_defined_tags
       freeform_tags = local.groups_freeform_tags
+    }
+  } : {}
+
+  custom_domain_announcement_reader_group = var.deploy_custom_domain_groups ? {
+    (local.announcement_reader_group_key) = {
+      identity_domain_id = var.custom_id_domain_ocid
+      name               = local.provided_announcement_reader_group_name
+      description        = "Landing Zone group for reading Console announcements."
+      members            = []
+      defined_tags       = local.groups_defined_tags
+      freeform_tags      = local.groups_freeform_tags
     }
   } : {}
 
@@ -249,6 +377,18 @@ locals {
       freeform_tags = local.groups_freeform_tags
     }
   } : {}
+
+  custom_domain_ag_admin_group = var.deploy_custom_domain_groups ? {
+    (local.ag_admin_group_key) = {
+      identity_domain_id = var.custom_id_domain_ocid
+      name               = local.provided_ag_admin_group_name
+      description        = "Landing Zone group for managing Access Governance resources in the tenancy."
+      members            = []
+      defined_tags       = local.groups_defined_tags
+      freeform_tags      = local.groups_freeform_tags
+    }
+  } : {}
+
   #------------------------------------------------------------------------
   #----- Groups configuration definition. Input to module.
   #------------------------------------------------------------------------  
@@ -257,7 +397,15 @@ locals {
       local.network_admin_group, local.security_admin_group,
       local.appdev_admin_group, local.database_admin_group, local.exainfra_admin_group,
       local.storage_admin_group, local.auditor_group, local.announcement_reader_group,
-      local.ag_admin_group)
+    local.ag_admin_group)
+  }
+
+  custom_domain_groups_configuration = {
+    groups : merge(local.custom_domain_iam_admin_group, local.custom_domain_cred_admin_group, local.custom_domain_cost_admin_group,
+      local.custom_domain_network_admin_group, local.custom_domain_security_admin_group,
+      local.custom_domain_appdev_admin_group, local.custom_domain_database_admin_group, local.custom_domain_exainfra_admin_group,
+      local.custom_domain_storage_admin_group, local.custom_domain_auditor_group, local.custom_domain_announcement_reader_group,
+    local.custom_domain_ag_admin_group)
   }
 
   empty_groups_configuration = {
