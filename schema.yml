@@ -156,7 +156,42 @@ variableGroups:
           - false
         - eq:
           - ${customize_iam}
-          - true    
+          - true
+  
+  - title: "Networking - Hub & Spoke Topology"
+    variables:
+      - "hub_deployment_option"  
+      - "existing_drg_ocid"
+      - "hub_vcn_name"
+      - "hub_vcn_cidrs"
+      - "hub_vcn_dns"
+      - "hub_vcn_deploy_firewall_option"
+      - "fw_instance_name_prefix"
+      - "fw_instance_shape"
+      - "fw_instance_flex_shape_memory"
+      - "fw_instance_flex_shape_cpu"
+      - "fw_instance_boot_volume_size"
+      - "fw_instance_public_rsa_key"
+      - "hub_vcn_north_south_entry_point_ocid"
+      - "hub_vcn_east_west_entry_point_ocid"
+      - "customize_hub_vcn_subnets"
+      - "hub_vcn_web_subnet_name"
+      - "hub_vcn_web_subnet_cidr"
+      - "hub_vcn_web_subnet_dns"
+      - "hub_vcn_web_subnet_is_private"
+      - "hub_vcn_web_subnet_jump_host_allowed_cidrs"
+      - "hub_vcn_mgmt_subnet_name"
+      - "hub_vcn_mgmt_subnet_cidr"
+      - "hub_vcn_mgmt_subnet_dns"
+      - "hub_vcn_mgmt_subnet_external_allowed_cidrs_for_http"
+      - "hub_vcn_mgmt_subnet_external_allowed_cidrs_for_ssh"
+      - "hub_vcn_outdoor_subnet_name"
+      - "hub_vcn_outdoor_subnet_cidr"
+      - "hub_vcn_outdoor_subnet_dns"
+      - "hub_vcn_indoor_subnet_name"
+      - "hub_vcn_indoor_subnet_cidr"
+      - "hub_vcn_indoor_subnet_dns"
+    visible: customize_net
 
   - title: "Networking - Three Tier VCNs"
     variables:
@@ -239,7 +274,6 @@ variableGroups:
       - "tt_vcn3_bastion_subnet_dns"
       - "tt_vcn3_bastion_is_access_via_public_endpoint"
       - "tt_vcn3_bastion_subnet_allowed_cidrs"
-      
     visible: customize_net
 
   - title: "Networking - Exadata Cloud Service VCNs"
@@ -359,42 +393,7 @@ variableGroups:
       - "oke_vcn3_mgmt_subnet_name"
       - "oke_vcn3_mgmt_subnet_cidr"
       - "oke_vcn3_mgmt_subnet_dns"
-    visible: customize_net   
-
-  - title: "Networking - Hub & Spoke Topology"
-    variables:
-      - "hub_deployment_option"  
-      - "existing_drg_ocid"
-      - "hub_vcn_name"
-      - "hub_vcn_cidrs"
-      - "hub_vcn_dns"
-      - "hub_vcn_deploy_firewall_option"
-      - "fw_instance_name_prefix"
-      - "fw_instance_shape"
-      - "fw_instance_flex_shape_memory"
-      - "fw_instance_flex_shape_cpu"
-      - "fw_instance_boot_volume_size"
-      - "fw_instance_public_rsa_key"
-      - "hub_vcn_north_south_entry_point_ocid"
-      - "hub_vcn_east_west_entry_point_ocid"
-      - "customize_hub_vcn_subnets"
-      - "hub_vcn_web_subnet_name"
-      - "hub_vcn_web_subnet_cidr"
-      - "hub_vcn_web_subnet_dns"
-      - "hub_vcn_web_subnet_is_private"
-      - "hub_vcn_web_subnet_jump_host_allowed_cidrs"
-      - "hub_vcn_mgmt_subnet_name"
-      - "hub_vcn_mgmt_subnet_cidr"
-      - "hub_vcn_mgmt_subnet_dns"
-      - "hub_vcn_mgmt_subnet_external_allowed_cidrs_for_http"
-      - "hub_vcn_mgmt_subnet_external_allowed_cidrs_for_ssh"
-      - "hub_vcn_outdoor_subnet_name"
-      - "hub_vcn_outdoor_subnet_cidr"
-      - "hub_vcn_outdoor_subnet_dns"
-      - "hub_vcn_indoor_subnet_name"
-      - "hub_vcn_indoor_subnet_cidr"
-      - "hub_vcn_indoor_subnet_dns"
-    visible: customize_net   
+    visible: customize_net
 
   - title: "Events and Notifications"
     variables:
@@ -1032,7 +1031,17 @@ variables:
       and:
         - customize_net
         - add_tt_vcn1
-        - tt_vcn1_attach_to_drg      
+        - tt_vcn1_attach_to_drg
+        - or:
+          - eq:
+            - ${hub_deployment_option}
+            - "No intra VCN or on-premises connectivity"
+          - eq:
+            - ${hub_deployment_option}
+            - "VCN or on-premises connectivity routing via DRG (DRG will be created)"
+          - eq:
+            - ${hub_deployment_option}
+            - "VCN or on-premises connectivity routing via DRG (existing DRG)"
 
   customize_tt_vcn1_subnets:
     type: boolean
@@ -1300,7 +1309,17 @@ variables:
       and:
         - customize_net
         - add_tt_vcn2
-        - tt_vcn2_attach_to_drg 
+        - tt_vcn2_attach_to_drg
+        - or:
+          - eq:
+            - ${hub_deployment_option}
+            - "No intra VCN or on-premises connectivity"
+          - eq:
+            - ${hub_deployment_option}
+            - "VCN or on-premises connectivity routing via DRG (DRG will be created)"
+          - eq:
+            - ${hub_deployment_option}
+            - "VCN or on-premises connectivity routing via DRG (existing DRG)"
 
   customize_tt_vcn2_subnets:
     type: boolean
@@ -1557,7 +1576,17 @@ variables:
       and:
         - customize_net
         - add_tt_vcn3
-        - tt_vcn3_attach_to_drg       
+        - tt_vcn3_attach_to_drg
+        - or:
+          - eq:
+            - ${hub_deployment_option}
+            - "No intra VCN or on-premises connectivity"
+          - eq:
+            - ${hub_deployment_option}
+            - "VCN or on-premises connectivity routing via DRG (DRG will be created)"
+          - eq:
+            - ${hub_deployment_option}
+            - "VCN or on-premises connectivity routing via DRG (existing DRG)"
 
   customize_tt_vcn3_subnets:
     type: boolean
@@ -1815,6 +1844,16 @@ variables:
         - customize_net
         - add_exa_vcn1
         - exa_vcn1_attach_to_drg
+        - or:
+          - eq:
+            - ${hub_deployment_option}
+            - "No intra VCN or on-premises connectivity"
+          - eq:
+            - ${hub_deployment_option}
+            - "VCN or on-premises connectivity routing via DRG (DRG will be created)"
+          - eq:
+            - ${hub_deployment_option}
+            - "VCN or on-premises connectivity routing via DRG (existing DRG)"
 
   customize_exa_vcn1_subnets:
     type: boolean
@@ -1956,6 +1995,16 @@ variables:
         - customize_net
         - add_exa_vcn2
         - exa_vcn2_attach_to_drg
+        - or:
+          - eq:
+            - ${hub_deployment_option}
+            - "No intra VCN or on-premises connectivity"
+          - eq:
+            - ${hub_deployment_option}
+            - "VCN or on-premises connectivity routing via DRG (DRG will be created)"
+          - eq:
+            - ${hub_deployment_option}
+            - "VCN or on-premises connectivity routing via DRG (existing DRG)"
 
   customize_exa_vcn2_subnets:
     type: boolean
@@ -2098,6 +2147,16 @@ variables:
         - customize_net
         - add_exa_vcn3
         - exa_vcn3_attach_to_drg
+        - or:
+          - eq:
+            - ${hub_deployment_option}
+            - "No intra VCN or on-premises connectivity"
+          - eq:
+            - ${hub_deployment_option}
+            - "VCN or on-premises connectivity routing via DRG (DRG will be created)"
+          - eq:
+            - ${hub_deployment_option}
+            - "VCN or on-premises connectivity routing via DRG (existing DRG)"
 
   customize_exa_vcn3_subnets:
     type: boolean
@@ -2253,6 +2312,16 @@ variables:
         - customize_net
         - add_oke_vcn1
         - oke_vcn1_attach_to_drg
+        - or:
+          - eq:
+            - ${hub_deployment_option}
+            - "No intra VCN or on-premises connectivity"
+          - eq:
+            - ${hub_deployment_option}
+            - "VCN or on-premises connectivity routing via DRG (DRG will be created)"
+          - eq:
+            - ${hub_deployment_option}
+            - "VCN or on-premises connectivity routing via DRG (existing DRG)"
 
   customize_oke_vcn1_subnets:
     type: boolean
@@ -2528,6 +2597,16 @@ variables:
         - customize_net
         - add_oke_vcn2
         - oke_vcn2_attach_to_drg
+        - or:
+          - eq:
+            - ${hub_deployment_option}
+            - "No intra VCN or on-premises connectivity"
+          - eq:
+            - ${hub_deployment_option}
+            - "VCN or on-premises connectivity routing via DRG (DRG will be created)"
+          - eq:
+            - ${hub_deployment_option}
+            - "VCN or on-premises connectivity routing via DRG (existing DRG)"
 
   customize_oke_vcn2_subnets:
     type: boolean
@@ -2802,6 +2881,16 @@ variables:
         - customize_net
         - add_oke_vcn3
         - oke_vcn3_attach_to_drg
+        - or:
+          - eq:
+            - ${hub_deployment_option}
+            - "No intra VCN or on-premises connectivity"
+          - eq:
+            - ${hub_deployment_option}
+            - "VCN or on-premises connectivity routing via DRG (DRG will be created)"
+          - eq:
+            - ${hub_deployment_option}
+            - "VCN or on-premises connectivity routing via DRG (existing DRG)"
 
   customize_oke_vcn3_subnets:
     type: boolean
@@ -3007,12 +3096,12 @@ variables:
     description: "Choose one of the available options for deploying a Hub & Spoke topology. All the VCNs that attach to the DRG join the topology as spokes."
     visible: customize_net  
     enum:
-      - "No"
-      - "Yes, new DRG as hub"
-      - "Yes, existing DRG as hub"
-      - "Yes, new VCN as hub with new DRG"
-      - "Yes, new VCN as hub with existing DRG"
-    default: "No"    
+      - "No intra VCN or on-premises connectivity"
+      - "VCN or on-premises connectivity routing via DRG (DRG will be created)"
+      - "VCN or on-premises connectivity routing via DRG (existing DRG)"
+      - "VCN or on-premises connectivity routing through DMZ VCN with Network Virtual Appliance (DRG and DMZ VCN will be created)"
+      - "VCN or on-premises connectivity routed through DMZ VCN with Network Virtual Appliance existing DRG (DMZ VCN will be created and DRG ID required)"
+    default: "No intra VCN or on-premises connectivity"    
 
   existing_drg_ocid:
     type: string
@@ -3022,21 +3111,20 @@ variables:
       or:
         - eq:
           - ${hub_deployment_option}
-          - "Yes, existing DRG as hub"
+          - "VCN or on-premises connectivity routing via DRG (existing DRG)"
         - eq:
           - ${hub_deployment_option}
-          - "Yes, new VCN as hub with existing DRG"
-
+          - "VCN or on-premises connectivity routed through DMZ VCN with Network Virtual Appliance existing DRG (DMZ VCN will be created and DRG ID required)"
     visible: 
       and:
         - customize_net
         - or:
           - eq:
             - ${hub_deployment_option}
-            - "Yes, existing DRG as hub"
+            - "VCN or on-premises connectivity routing via DRG (existing DRG)"
           - eq:
             - ${hub_deployment_option}
-            - "Yes, new VCN as hub with existing DRG"
+            - "VCN or on-premises connectivity routed through DMZ VCN with Network Virtual Appliance existing DRG (DMZ VCN will be created and DRG ID required)"
 
   hub_vcn_name:
     type: string
@@ -3049,10 +3137,10 @@ variables:
         - or:
           - eq:
             - ${hub_deployment_option}
-            - "Yes, new VCN as hub with new DRG"
+            - "VCN or on-premises connectivity routing through DMZ VCN with Network Virtual Appliance (DRG and DMZ VCN will be created)"
           - eq:
             - ${hub_deployment_option}
-            - "Yes, new VCN as hub with existing DRG"  
+            - "VCN or on-premises connectivity routed through DMZ VCN with Network Virtual Appliance existing DRG (DMZ VCN will be created and DRG ID required)"  
 
   hub_vcn_cidrs:
     type: array
@@ -3070,10 +3158,10 @@ variables:
         - or:
           - eq:
             - ${hub_deployment_option}
-            - "Yes, new VCN as hub with new DRG"
+            - "VCN or on-premises connectivity routing through DMZ VCN with Network Virtual Appliance (DRG and DMZ VCN will be created)"
           - eq:
             - ${hub_deployment_option}
-            - "Yes, new VCN as hub with existing DRG"
+            - "VCN or on-premises connectivity routed through DMZ VCN with Network Virtual Appliance existing DRG (DMZ VCN will be created and DRG ID required)"
 
   hub_vcn_dns:
     type: string
@@ -3086,10 +3174,10 @@ variables:
         - or:
           - eq:
             - ${hub_deployment_option}
-            - "Yes, new VCN as hub with new DRG"
+            - "VCN or on-premises connectivity routing through DMZ VCN with Network Virtual Appliance (DRG and DMZ VCN will be created)"
           - eq:
             - ${hub_deployment_option}
-            - "Yes, new VCN as hub with existing DRG"
+            - "VCN or on-premises connectivity routed through DMZ VCN with Network Virtual Appliance existing DRG (DMZ VCN will be created and DRG ID required)"
 
   hub_vcn_deploy_firewall_option:
     type: enum
@@ -3108,10 +3196,10 @@ variables:
         - or:
           - eq:
             - ${hub_deployment_option}
-            - "Yes, new VCN as hub with new DRG"
+            - "VCN or on-premises connectivity routing through DMZ VCN with Network Virtual Appliance (DRG and DMZ VCN will be created)"
           - eq:
             - ${hub_deployment_option}
-            - "Yes, new VCN as hub with existing DRG"
+            - "VCN or on-premises connectivity routed through DMZ VCN with Network Virtual Appliance existing DRG (DMZ VCN will be created and DRG ID required)"
     default: "No"
 
   fw_instance_name_prefix:
@@ -3125,10 +3213,10 @@ variables:
         - or:
           - eq:
             - ${hub_deployment_option}
-            - "Yes, new VCN as hub with new DRG"
+            - "VCN or on-premises connectivity routing through DMZ VCN with Network Virtual Appliance (DRG and DMZ VCN will be created)"
           - eq:
             - ${hub_deployment_option}
-            - "Yes, new VCN as hub with existing DRG"
+            - "VCN or on-premises connectivity routed through DMZ VCN with Network Virtual Appliance existing DRG (DMZ VCN will be created and DRG ID required)"
         - not: 
           - eq:
             - ${hub_vcn_deploy_firewall_option}  
@@ -3147,10 +3235,10 @@ variables:
         - or:
           - eq:
             - ${hub_deployment_option}
-            - "Yes, new VCN as hub with new DRG"
+            - "VCN or on-premises connectivity routing through DMZ VCN with Network Virtual Appliance (DRG and DMZ VCN will be created)"
           - eq:
             - ${hub_deployment_option}
-            - "Yes, new VCN as hub with existing DRG"
+            - "VCN or on-premises connectivity routed through DMZ VCN with Network Virtual Appliance existing DRG (DMZ VCN will be created and DRG ID required)"
         - and: 
           - not:   
             - eq: 
@@ -3172,10 +3260,10 @@ variables:
         - or:
           - eq:
             - ${hub_deployment_option}
-            - "Yes, new VCN as hub with new DRG"
+            - "VCN or on-premises connectivity routing through DMZ VCN with Network Virtual Appliance (DRG and DMZ VCN will be created)"
           - eq:
             - ${hub_deployment_option}
-            - "Yes, new VCN as hub with existing DRG"
+            - "VCN or on-premises connectivity routed through DMZ VCN with Network Virtual Appliance existing DRG (DMZ VCN will be created and DRG ID required)"
         - and: 
           - not:   
             - eq: 
@@ -3197,10 +3285,10 @@ variables:
         - or:
           - eq:
             - ${hub_deployment_option}
-            - "Yes, new VCN as hub with new DRG"
+            - "VCN or on-premises connectivity routing through DMZ VCN with Network Virtual Appliance (DRG and DMZ VCN will be created)"
           - eq:
             - ${hub_deployment_option}
-            - "Yes, new VCN as hub with existing DRG"
+            - "VCN or on-premises connectivity routed through DMZ VCN with Network Virtual Appliance existing DRG (DMZ VCN will be created and DRG ID required)"
         - and: 
           - not:   
             - eq: 
@@ -3222,10 +3310,10 @@ variables:
         - or:
           - eq:
             - ${hub_deployment_option}
-            - "Yes, new VCN as hub with new DRG"
+            - "VCN or on-premises connectivity routing through DMZ VCN with Network Virtual Appliance (DRG and DMZ VCN will be created)"
           - eq:
             - ${hub_deployment_option}
-            - "Yes, new VCN as hub with existing DRG"
+            - "VCN or on-premises connectivity routed through DMZ VCN with Network Virtual Appliance existing DRG (DMZ VCN will be created and DRG ID required)"
         - and: 
           - not:   
             - eq: 
@@ -3247,10 +3335,10 @@ variables:
         - or:
           - eq:
             - ${hub_deployment_option}
-            - "Yes, new VCN as hub with new DRG"
+            - "VCN or on-premises connectivity routing through DMZ VCN with Network Virtual Appliance (DRG and DMZ VCN will be created)"
           - eq:
             - ${hub_deployment_option}
-            - "Yes, new VCN as hub with existing DRG"
+            - "VCN or on-premises connectivity routed through DMZ VCN with Network Virtual Appliance existing DRG (DMZ VCN will be created and DRG ID required)"
         - not: 
           - eq:
             - ${hub_vcn_deploy_firewall_option}
@@ -3267,10 +3355,10 @@ variables:
         - or:
           - eq:
             - ${hub_deployment_option}
-            - "Yes, new VCN as hub with new DRG"
+            - "VCN or on-premises connectivity routing through DMZ VCN with Network Virtual Appliance (DRG and DMZ VCN will be created)"
           - eq:
             - ${hub_deployment_option}
-            - "Yes, new VCN as hub with existing DRG"
+            - "VCN or on-premises connectivity routed through DMZ VCN with Network Virtual Appliance existing DRG (DMZ VCN will be created and DRG ID required)"
         - and: 
           - not:   
             - eq: 
@@ -3288,10 +3376,10 @@ variables:
         - or:
           - eq:
             - ${hub_deployment_option}
-            - "Yes, new VCN as hub with new DRG"
+            - "VCN or on-premises connectivity routing through DMZ VCN with Network Virtual Appliance (DRG and DMZ VCN will be created)"
           - eq:
             - ${hub_deployment_option}
-            - "Yes, new VCN as hub with existing DRG"
+            - "VCN or on-premises connectivity routed through DMZ VCN with Network Virtual Appliance existing DRG (DMZ VCN will be created and DRG ID required)"
         - and: 
           - not:   
             - eq: 
@@ -3308,10 +3396,10 @@ variables:
         - or:
           - eq:
             - ${hub_deployment_option}
-            - "Yes, new VCN as hub with new DRG"
+            - "VCN or on-premises connectivity routing through DMZ VCN with Network Virtual Appliance (DRG and DMZ VCN will be created)"
           - eq:
             - ${hub_deployment_option}
-            - "Yes, new VCN as hub with existing DRG"
+            - "VCN or on-premises connectivity routed through DMZ VCN with Network Virtual Appliance existing DRG (DMZ VCN will be created and DRG ID required)"
 
 # -------------------------------------------
 # ----- Networking - Hub Web Subnet
@@ -3328,10 +3416,10 @@ variables:
         - or:
           - eq:
             - ${hub_deployment_option}
-            - "Yes, new VCN as hub with new DRG"
+            - "VCN or on-premises connectivity routing through DMZ VCN with Network Virtual Appliance (DRG and DMZ VCN will be created)"
           - eq:
             - ${hub_deployment_option}
-            - "Yes, new VCN as hub with existing DRG"
+            - "VCN or on-premises connectivity routed through DMZ VCN with Network Virtual Appliance existing DRG (DMZ VCN will be created and DRG ID required)"
 
   hub_vcn_web_subnet_cidr:
     type: string
@@ -3345,10 +3433,10 @@ variables:
         - or:
           - eq:
             - ${hub_deployment_option}
-            - "Yes, new VCN as hub with new DRG"
+            - "VCN or on-premises connectivity routing through DMZ VCN with Network Virtual Appliance (DRG and DMZ VCN will be created)"
           - eq:
             - ${hub_deployment_option}
-            - "Yes, new VCN as hub with existing DRG"
+            - "VCN or on-premises connectivity routed through DMZ VCN with Network Virtual Appliance existing DRG (DMZ VCN will be created and DRG ID required)"
 
   hub_vcn_web_subnet_dns:
     type: string
@@ -3362,10 +3450,10 @@ variables:
         - or:
           - eq:
             - ${hub_deployment_option}
-            - "Yes, new VCN as hub with new DRG"
+            - "VCN or on-premises connectivity routing through DMZ VCN with Network Virtual Appliance (DRG and DMZ VCN will be created)"
           - eq:
             - ${hub_deployment_option}
-            - "Yes, new VCN as hub with existing DRG"      
+            - "VCN or on-premises connectivity routed through DMZ VCN with Network Virtual Appliance existing DRG (DMZ VCN will be created and DRG ID required)"      
 
   hub_vcn_web_subnet_is_private:
     type: boolean
@@ -3378,10 +3466,10 @@ variables:
         - or:
           - eq:
             - ${hub_deployment_option}
-            - "Yes, new VCN as hub with new DRG"
+            - "VCN or on-premises connectivity routing through DMZ VCN with Network Virtual Appliance (DRG and DMZ VCN will be created)"
           - eq:
             - ${hub_deployment_option}
-            - "Yes, new VCN as hub with existing DRG"
+            - "VCN or on-premises connectivity routed through DMZ VCN with Network Virtual Appliance existing DRG (DMZ VCN will be created and DRG ID required)"
 
   hub_vcn_web_subnet_jump_host_allowed_cidrs:
     type: array
@@ -3400,10 +3488,10 @@ variables:
         - or:
           - eq:
             - ${hub_deployment_option}
-            - "Yes, new VCN as hub with new DRG"
+            - "VCN or on-premises connectivity routing through DMZ VCN with Network Virtual Appliance (DRG and DMZ VCN will be created)"
           - eq:
             - ${hub_deployment_option}
-            - "Yes, new VCN as hub with existing DRG"          
+            - "VCN or on-premises connectivity routed through DMZ VCN with Network Virtual Appliance existing DRG (DMZ VCN will be created and DRG ID required)"          
 
 # -------------------------------------------
 # ----- Networking - Hub Mgmt Subnet
@@ -3420,10 +3508,10 @@ variables:
         - or:
           - eq:
             - ${hub_deployment_option}
-            - "Yes, new VCN as hub with new DRG"
+            - "VCN or on-premises connectivity routing through DMZ VCN with Network Virtual Appliance (DRG and DMZ VCN will be created)"
           - eq:
             - ${hub_deployment_option}
-            - "Yes, new VCN as hub with existing DRG"
+            - "VCN or on-premises connectivity routed through DMZ VCN with Network Virtual Appliance existing DRG (DMZ VCN will be created and DRG ID required)"
 
   hub_vcn_mgmt_subnet_cidr:
     type: string
@@ -3437,10 +3525,10 @@ variables:
         - or:
           - eq:
             - ${hub_deployment_option}
-            - "Yes, new VCN as hub with new DRG"
+            - "VCN or on-premises connectivity routing through DMZ VCN with Network Virtual Appliance (DRG and DMZ VCN will be created)"
           - eq:
             - ${hub_deployment_option}
-            - "Yes, new VCN as hub with existing DRG"
+            - "VCN or on-premises connectivity routed through DMZ VCN with Network Virtual Appliance existing DRG (DMZ VCN will be created and DRG ID required)"
 
   hub_vcn_mgmt_subnet_dns:
     type: string
@@ -3454,10 +3542,10 @@ variables:
         - or:
           - eq:
             - ${hub_deployment_option}
-            - "Yes, new VCN as hub with new DRG"
+            - "VCN or on-premises connectivity routing through DMZ VCN with Network Virtual Appliance (DRG and DMZ VCN will be created)"
           - eq:
             - ${hub_deployment_option}
-            - "Yes, new VCN as hub with existing DRG"      
+            - "VCN or on-premises connectivity routed through DMZ VCN with Network Virtual Appliance existing DRG (DMZ VCN will be created and DRG ID required)"      
 
   hub_vcn_mgmt_subnet_external_allowed_cidrs_for_http:
     type: array
@@ -3476,10 +3564,10 @@ variables:
         - or:
           - eq:
             - ${hub_deployment_option}
-            - "Yes, new VCN as hub with new DRG"
+            - "VCN or on-premises connectivity routing through DMZ VCN with Network Virtual Appliance (DRG and DMZ VCN will be created)"
           - eq:
             - ${hub_deployment_option}
-            - "Yes, new VCN as hub with existing DRG"          
+            - "VCN or on-premises connectivity routed through DMZ VCN with Network Virtual Appliance existing DRG (DMZ VCN will be created and DRG ID required)"          
 
   hub_vcn_mgmt_subnet_external_allowed_cidrs_for_ssh:
     type: array
@@ -3498,10 +3586,10 @@ variables:
         - or:
           - eq:
             - ${hub_deployment_option}
-            - "Yes, new VCN as hub with new DRG"
+            - "VCN or on-premises connectivity routing through DMZ VCN with Network Virtual Appliance (DRG and DMZ VCN will be created)"
           - eq:
             - ${hub_deployment_option}
-            - "Yes, new VCN as hub with existing DRG"     
+            - "VCN or on-premises connectivity routed through DMZ VCN with Network Virtual Appliance existing DRG (DMZ VCN will be created and DRG ID required)"     
 
 # -------------------------------------------
 # ----- Networking - Hub Outdoor Subnet
@@ -3518,10 +3606,10 @@ variables:
         - or:
           - eq:
             - ${hub_deployment_option}
-            - "Yes, new VCN as hub with new DRG"
+            - "VCN or on-premises connectivity routing through DMZ VCN with Network Virtual Appliance (DRG and DMZ VCN will be created)"
           - eq:
             - ${hub_deployment_option}
-            - "Yes, new VCN as hub with existing DRG"
+            - "VCN or on-premises connectivity routed through DMZ VCN with Network Virtual Appliance existing DRG (DMZ VCN will be created and DRG ID required)"
 
   hub_vcn_outdoor_subnet_cidr:
     type: string
@@ -3535,10 +3623,10 @@ variables:
         - or:
           - eq:
             - ${hub_deployment_option}
-            - "Yes, new VCN as hub with new DRG"
+            - "VCN or on-premises connectivity routing through DMZ VCN with Network Virtual Appliance (DRG and DMZ VCN will be created)"
           - eq:
             - ${hub_deployment_option}
-            - "Yes, new VCN as hub with existing DRG"      
+            - "VCN or on-premises connectivity routed through DMZ VCN with Network Virtual Appliance existing DRG (DMZ VCN will be created and DRG ID required)"      
 
   hub_vcn_outdoor_subnet_dns:
     type: string
@@ -3552,10 +3640,10 @@ variables:
         - or:
           - eq:
             - ${hub_deployment_option}
-            - "Yes, new VCN as hub with new DRG"
+            - "VCN or on-premises connectivity routing through DMZ VCN with Network Virtual Appliance (DRG and DMZ VCN will be created)"
           - eq:
             - ${hub_deployment_option}
-            - "Yes, new VCN as hub with existing DRG"           
+            - "VCN or on-premises connectivity routed through DMZ VCN with Network Virtual Appliance existing DRG (DMZ VCN will be created and DRG ID required)"           
 
 # -------------------------------------------
 # ----- Networking - Hub Indoor Subnet
@@ -3572,10 +3660,10 @@ variables:
         - or:
           - eq:
             - ${hub_deployment_option}
-            - "Yes, new VCN as hub with new DRG"
+            - "VCN or on-premises connectivity routing through DMZ VCN with Network Virtual Appliance (DRG and DMZ VCN will be created)"
           - eq:
             - ${hub_deployment_option}
-            - "Yes, new VCN as hub with existing DRG"
+            - "VCN or on-premises connectivity routed through DMZ VCN with Network Virtual Appliance existing DRG (DMZ VCN will be created and DRG ID required)"
 
   hub_vcn_indoor_subnet_cidr:
     type: string
@@ -3589,10 +3677,10 @@ variables:
         - or:
           - eq:
             - ${hub_deployment_option}
-            - "Yes, new VCN as hub with new DRG"
+            - "VCN or on-premises connectivity routing through DMZ VCN with Network Virtual Appliance (DRG and DMZ VCN will be created)"
           - eq:
             - ${hub_deployment_option}
-            - "Yes, new VCN as hub with existing DRG"      
+            - "VCN or on-premises connectivity routed through DMZ VCN with Network Virtual Appliance existing DRG (DMZ VCN will be created and DRG ID required)"      
 
   hub_vcn_indoor_subnet_dns:
     type: string
@@ -3606,10 +3694,10 @@ variables:
         - or:
           - eq:
             - ${hub_deployment_option}
-            - "Yes, new VCN as hub with new DRG"
+            - "VCN or on-premises connectivity routing through DMZ VCN with Network Virtual Appliance (DRG and DMZ VCN will be created)"
           - eq:
             - ${hub_deployment_option}
-            - "Yes, new VCN as hub with existing DRG"           
+            - "VCN or on-premises connectivity routed through DMZ VCN with Network Virtual Appliance existing DRG (DMZ VCN will be created and DRG ID required)"           
 
   network_admin_email_endpoints:
     type: array
