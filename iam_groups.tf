@@ -32,7 +32,7 @@ module "lz_groups" {
 }
 
 module "lz_custom_domain_groups" {
-  source                               = "github.com/oci-landing-zones/terraform-oci-modules-iam//identity-domains?ref=v0.2.3"
+  source                               = "github.com/oci-landing-zones/terraform-oci-modules-iam//identity-domains?ref=v0.2.4"
   count                                = var.deploy_custom_domain_groups ? 1 : 0
   providers                            = { oci = oci.home }
   tenancy_ocid                         = var.tenancy_ocid

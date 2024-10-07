@@ -24,7 +24,7 @@ module "lz_dynamic_groups" {
 }
 
 module "lz_custom_domain_dynamic_groups" {
-  source                                       = "github.com/oci-landing-zones/terraform-oci-modules-iam//identity-domains?ref=v0.2.3"
+  source                                       = "github.com/oci-landing-zones/terraform-oci-modules-iam//identity-domains?ref=v0.2.4"
   count                                        = var.deploy_custom_domain_groups ? 1 : 0
   tenancy_ocid                                 = var.tenancy_ocid
   identity_domain_dynamic_groups_configuration = var.extend_landing_zone_to_new_region == false && var.use_custom_id_domain == true ? (local.custom_dynamic_groups_configuration != null ? local.custom_dynamic_groups_configuration : local.custom_domain_dynamic_groups_configuration) : local.empty_dynamic_groups_configuration
