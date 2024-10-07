@@ -4,11 +4,11 @@
 locals {
 
   hub_options = {
-    "No"                                    = 0,
-    "Yes, new DRG as hub"                   = 1,
-    "Yes, existing DRG as hub"              = 2,
-    "Yes, new VCN as hub with new DRG"      = 3
-    "Yes, new VCN as hub with existing DRG" = 4
+    "No cross-VCN or on-premises connectivity"                                                                                                         = 0,
+    "VCN or on-premises connectivity routing via DRG (DRG will be created)"                                                                            = 1,
+    "VCN or on-premises connectivity routing via DRG (existing DRG)"                                                                                   = 2,
+    "VCN or on-premises connectivity routing through DMZ VCN with Network Virtual Appliance (DRG and DMZ VCN will be created)"                         = 3,
+    "VCN or on-premises connectivity routed through DMZ VCN with Network Virtual Appliance existing DRG (DMZ VCN will be created and DRG ID required)" = 4
   }
 
   deploy_new_drg    = (local.hub_options[var.hub_deployment_option] == 1 || local.hub_options[var.hub_deployment_option] == 3)
