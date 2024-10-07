@@ -6,13 +6,13 @@
 #-------------------------------------------------------
 variable "hub_deployment_option" {
   type    = string
-  default = "No"
-  description = "The available options for hub deployment. Valid values: 'No', 'Yes, new DRG as hub', 'Yes, existing DRG as hub', 'Yes, new VCN as hub with new DRG', 'Yes, new VCN as hub with existing DRG'. All the VCNs that attach to the DRG join the topology as spokes."
+  default = "No cross-VCN or on-premises connectivity"
+  description = "The available options for hub deployment. Valid values: 'No cross-VCN or on-premises connectivity', 'VCN or on-premises connectivity routing via DRG (DRG will be created)', 'VCN or on-premises connectivity routing via DRG (existing DRG)', 'VCN or on-premises connectivity routing through DMZ VCN with Network Virtual Appliance (DRG and DMZ VCN will be created)', 'VCN or on-premises connectivity routed through DMZ VCN with Network Virtual Appliance existing DRG (DMZ VCN will be created and DRG ID required)'. All the VCNs that attach to the DRG join the topology as spokes."
 }
 variable "existing_drg_ocid" {
   type    = string
   default = null
-  description = "The OCID of an existing DRG that you want to reuse for hub deployment. Only applicable if hub_deployment_option is 'Yes, existing DRG as hub' or 'Yes, new VCN as hub with existing DRG'."
+  description = "The OCID of an existing DRG that you want to reuse for hub deployment. Only applicable if hub_deployment_option is 'VCN or on-premises connectivity routing via DRG (existing DRG)' or 'VCN or on-premises connectivity routed through DMZ VCN with Network Virtual Appliance existing DRG (DMZ VCN will be created and DRG ID required)'."
 }
 variable "hub_vcn_east_west_entry_point_ocid" {
   type    = string
