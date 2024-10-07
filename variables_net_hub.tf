@@ -44,8 +44,8 @@ variable "hub_vcn_dns" {
 #-------------------------------------------------------
 variable "hub_vcn_deploy_firewall_option" {
   type    = string
-  default = "No"
-  description = "The firewall option for deploying in the Hub VCN. Valid values: 'No' (default), 'Palo Alto Networks VM-Series Firewall', 'Fortinet FortiGate Firewall'. Costs are incurred."
+  default = "Don't deploy any network appliance at this time"
+  description = "The firewall option for deploying in the Hub VCN. Valid values: 'Don't deploy any network appliance at this time' (default), 'Palo Alto Networks VM-Series Firewall', 'Fortinet FortiGate Firewall'. Costs are incurred."
 }
 
 variable "fw_instance_name_prefix" {

@@ -7,4 +7,5 @@ include:
   - /.ci/core-terraform-test.yml
 
 stages:
-  - tf-prep-test-case
+  - tf-prep-test-case-pull
+  - tf-prep-test-case-merge

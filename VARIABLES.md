@@ -307,7 +307,7 @@
 | fw_instance_shape | The instance shape for the firewall nodes. | `string` | `VM.Optimized3.Flex` | no |
 | hub_deployment_option | The available options for hub deployment. Valid values: 'No', 'Yes, new DRG as hub', 'Yes, existing DRG as hub', 'Yes, new VCN as hub with new DRG', 'Yes, new VCN as hub with existing DRG'. All the VCNs that attach to the DRG join the topology as spokes. | `string` | `No` | no |
 | hub_vcn_cidrs | List of CIDR blocks for the Hub VCN. | `list(string)` |  `[192.168.0.0/26]` | no |
-| hub_vcn_deploy_firewall_option | The firewall option for deploying in the Hub VCN. Valid values: 'No' (default), 'Palo Alto Networks VM-Series Firewall', 'Fortinet FortiGate Firewall'. Costs are incurred. | `string` | `No` | no |
+| hub_vcn_deploy_firewall_option | The firewall option for deploying in the Hub VCN. Valid values: 'Don't deploy any network appliance at this time' (default), 'Palo Alto Networks VM-Series Firewall', 'Fortinet FortiGate Firewall'. Costs are incurred. | `string` | `Don't deploy any network appliance at this time` | no |
 | hub_vcn_dns | The Hub VCN DNS name. | `string` | `null` | no |
 | hub_vcn_east_west_entry_point_ocid | The OCID of a private address the Hub VCN routes traffic to for inbound internal cross-vcn traffic (East/West). This variable is to be assigned with the OCID of the indoor network load balancer's private IP address. | `string` | `null` | no |
 | hub_vcn_indoor_subnet_cidr | The Hub VCN Indoor subnet CIDR block. It must be within the VCN CIDR blocks. | `string` | `null` | no |

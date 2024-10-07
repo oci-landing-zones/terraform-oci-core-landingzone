@@ -4,7 +4,7 @@
 locals {
 
   firewall_options = {
-    "No"                                    = "NO",
+    "Don't deploy any network appliance at this time" = "NO",
     "Palo Alto Networks VM-Series Firewall" = "PALOALTO",
     "Fortinet FortiGate Firewall"           = "FORTINET",
     "Check Point CloudGuard Firewall"       = "CHECKPOINT", # Not available
