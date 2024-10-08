@@ -27,12 +27,6 @@ variable "exa_vcn1_attach_to_drg" {
   description = "If true, the VCN is attached to a DRG, enabling cross-vcn traffic routing."
 }
 
-variable "exa_vcn1_dns" {
-  type    = string
-  default = null
-  description = "The VCN DNS name."
-}
-
 variable "exa_vcn1_client_subnet_cidr" {
   type    = string
   default = null
@@ -42,11 +36,6 @@ variable "exa_vcn1_client_subnet_name" {
   type    = string
   default = null
   description = "The Client subnet name."
-}
-variable "exa_vcn1_client_subnet_dns" {
-  type    = string
-  default = null
-  description = "The Client subnet DNS name. Use only letters and numbers, no special characters."
 }
 variable "exa_vcn1_backup_subnet_cidr" {
   type    = string
@@ -58,12 +47,6 @@ variable "exa_vcn1_backup_subnet_name" {
   default = null
   description = "The Backup subnet name."
 }
-variable "exa_vcn1_backup_subnet_dns" {
-  type    = string
-  default = null
-  description = "The Backup subnet DNS name. Use only letters and numbers, no special characters."
-}
-
 variable "exa_vcn1_routable_vcns" {
   type    = list(string)
   default = []
@@ -97,11 +80,6 @@ variable "exa_vcn2_name" {
   type    = string
   description = "The VCN name. If unassigned, a default name is provided. VCN label: EXA-VCN-2"
 }
-variable "exa_vcn2_dns" {
-  default = ""
-  type    = string
-  description = "The VCN DNS name."
-}
 variable "exa_vcn2_client_subnet_cidr" {
   type    = string
   default = null
@@ -112,11 +90,6 @@ variable "exa_vcn2_client_subnet_name" {
   default = null
   description = "The Client subnet name."
 }
-variable "exa_vcn2_client_subnet_dns" {
-  type    = string
-  default = null
-  description = "The Client subnet DNS name. Use only letters and numbers, no special characters."
-}
 variable "exa_vcn2_backup_subnet_cidr" {
   type    = string
   default = null
@@ -126,11 +99,6 @@ variable "exa_vcn2_backup_subnet_name" {
   type    = string
   default = null
   description = "The Backup subnet name."
-}
-variable "exa_vcn2_backup_subnet_dns" {
-  type    = string
-  default = null
-  description = "The Backup subnet DNS name. Use only letters and numbers, no special characters."
 }
 
 variable "exa_vcn2_routable_vcns" {
@@ -165,11 +133,6 @@ variable "exa_vcn3_name" {
   default = ""
   description = "The VCN name. If unassigned, a default name is provided. Label: EXA-VCN-3."
 }
-variable "exa_vcn3_dns" {
-  type    = string
-  default = ""
-  description = "The VCN DNS name."
-}
 variable "exa_vcn3_client_subnet_cidr" {
   type    = string
   default = null
@@ -180,11 +143,6 @@ variable "exa_vcn3_client_subnet_name" {
   default = null
   description = "The Client subnet name."
 }
-variable "exa_vcn3_client_subnet_dns" {
-  type    = string
-  default = null
-  description = "The Client subnet DNS name. Use only letters and numbers, no special characters."
-}
 variable "exa_vcn3_backup_subnet_cidr" {
   type    = string
   default = null
@@ -194,11 +152,6 @@ variable "exa_vcn3_backup_subnet_name" {
   type    = string
   default = null
   description = "The Backup subnet name."
-}
-variable "exa_vcn3_backup_subnet_dns" {
-  type    = string
-  default = null
-  description = "The Backup subnet DNS name. Use only letters and numbers, no special characters."
 }
 
 variable "exa_vcn3_routable_vcns" {
