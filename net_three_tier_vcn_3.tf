@@ -11,7 +11,7 @@ locals {
             is_ipv6enabled                   = false
             is_oracle_gua_allocation_enabled = false
             cidr_blocks                      = var.tt_vcn3_cidrs,
-            dns_label                        = substr(replace(coalesce(var.tt_vcn3_name,"three-tier-vcn-1"),"/[^\\w]/",""),0,14)
+            dns_label                        = substr(replace(coalesce(var.tt_vcn3_name,"three-tier-vcn-3"),"/[^\\w]/",""),0,14)
             block_nat_traffic                = false
 
             subnets = merge(
