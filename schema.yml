@@ -967,6 +967,10 @@ variables:
       and:
         - define_net
         - add_tt_vcn1
+        - not: 
+          - eq:
+            - ${hub_deployment_option}  
+            - "No cross-VCN or on-premises connectivity"
 
   tt_vcn1_routable_vcns:
     type: array
