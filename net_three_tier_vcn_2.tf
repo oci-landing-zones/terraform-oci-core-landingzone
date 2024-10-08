@@ -300,7 +300,18 @@ locals {
                                     dst_port_min = 443
                                     dst_port_max = 443
                                 }
-                            }, 
+                            },
+                            {
+                                "EGRESS-TO-ALL" = { 
+                                    description = "Egress to All." 
+                                    stateless = false 
+                                    protocol = "TCP" 
+                                    dst = "0.0.0.0/0" 
+                                    dst_type = "CIDR_BLOCK" 
+                                    dst_port_min = 0 
+                                    dst_port_max = 65535 
+                                }
+                            },
                             local.vcn_2_to_hub_indoor_subnet_cross_vcn_egress,    
                             local.vcn_2_to_web_subnet_cross_vcn_egress,
                             local.vcn_2_to_app_subnet_cross_vcn_egress,
