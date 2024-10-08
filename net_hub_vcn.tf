@@ -20,7 +20,6 @@ locals {
           dns_label                  = replace(coalesce(var.hub_vcn_web_subnet_dns, "web-subnet"), "-", "")
           ipv6cidr_blocks            = []
           prohibit_internet_ingress  = false
-          prohibit_public_ip_on_vnic = false
           route_table_key            = "WEB-SUBNET-ROUTE-TABLE"
           security_list_keys         = ["HUB-VCN-SL"]
         }
@@ -31,7 +30,6 @@ locals {
           dns_label                  = replace(coalesce(var.hub_vcn_outdoor_subnet_dns, "outdoor-subnet"), "-", "")
           ipv6cidr_blocks            = []
           prohibit_internet_ingress  = true
-          prohibit_public_ip_on_vnic = true
           route_table_key            = "OUTDOOR-SUBNET-ROUTE-TABLE"
           security_list_keys         = ["HUB-VCN-SL"]
         }
@@ -42,7 +40,6 @@ locals {
           dns_label                  = replace(coalesce(var.hub_vcn_indoor_subnet_dns, "indoor-subnet"), "-", "")
           ipv6cidr_blocks            = []
           prohibit_internet_ingress  = true
-          prohibit_public_ip_on_vnic = true
           route_table_key            = "INDOOR-SUBNET-ROUTE-TABLE"
           security_list_keys         = ["HUB-VCN-SL"]
         }
@@ -53,7 +50,6 @@ locals {
           dns_label                  = replace(coalesce(var.hub_vcn_mgmt_subnet_dns, "mgmt-subnet"), "-", "")
           ipv6cidr_blocks            = [],
           prohibit_internet_ingress  = true
-          prohibit_public_ip_on_vnic = true
           route_table_key            = "MGMT-SUBNET-ROUTE-TABLE"
           security_list_keys         = ["MGMT-SUB-SL"]
         }

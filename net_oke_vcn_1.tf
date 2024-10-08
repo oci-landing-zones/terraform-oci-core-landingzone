@@ -3,7 +3,9 @@
 
 locals {
 
-  oke_vcn_1 = var.add_oke_vcn1 == true ? {
+  add_oke_vcn1 = var.define_net == true && var.add_oke_vcn1 == true
+
+  oke_vcn_1 = local.add_oke_vcn1 == true ? {
     "OKE-VCN-1" = {
       display_name                     = coalesce(var.oke_vcn1_name, "${var.service_label}-oke-vcn-1")
       is_ipv6enabled                   = false
@@ -20,7 +22,6 @@ locals {
             dns_label                  = replace(coalesce(var.oke_vcn1_api_subnet_dns, "api-subnet"), "-", "")
             ipv6cidr_blocks            = []
             prohibit_internet_ingress  = true
-            prohibit_public_ip_on_vnic = true
             route_table_key            = "OKE-VCN-1-API-SUBNET-ROUTE-TABLE"
             security_list_keys         = ["OKE-VCN-1-API-SUBNET-SL"]
           }
@@ -33,7 +34,6 @@ locals {
             dns_label                  = replace(coalesce(var.oke_vcn1_workers_subnet_dns, "workers-subnet"), "-", "")
             ipv6cidr_blocks            = []
             prohibit_internet_ingress  = true
-            prohibit_public_ip_on_vnic = true
             route_table_key            = "OKE-VCN-1-WORKERS-SUBNET-ROUTE-TABLE"
             security_list_keys         = ["OKE-VCN-1-WORKERS-SUBNET-SL"]
           }
@@ -46,7 +46,6 @@ locals {
             dns_label                  = replace(coalesce(var.oke_vcn1_services_subnet_dns, "services-subnet"), "-", "")
             ipv6cidr_blocks            = []
             prohibit_internet_ingress  = false
-            prohibit_public_ip_on_vnic = false
             route_table_key            = "OKE-VCN-1-SERVICES-SUBNET-ROUTE-TABLE"
             security_list_keys         = ["OKE-VCN-1-SERVICES-SUBNET-SL"]
           }
@@ -59,7 +58,6 @@ locals {
             dns_label                  = replace(coalesce(var.oke_vcn1_mgmt_subnet_dns, "mgmt-subnet"), "-", "")
             ipv6cidr_blocks            = []
             prohibit_internet_ingress  = true
-            prohibit_public_ip_on_vnic = true
             route_table_key            = "OKE-VCN-1-MGMT-SUBNET-ROUTE-TABLE"
             security_list_keys         = ["OKE-VCN-1-MGMT-SUBNET-SL"]
           }
@@ -72,7 +70,6 @@ locals {
             dns_label                  = replace(coalesce(var.oke_vcn1_pods_subnet_dns, "pods-subnet"), "-", "")
             ipv6cidr_blocks            = []
             prohibit_internet_ingress  = true
-            prohibit_public_ip_on_vnic = true
             route_table_key            = "OKE-VCN-1-PODS-SUBNET-ROUTE-TABLE"
             security_list_keys         = ["OKE-VCN-1-PODS-SUBNET-SL"]
           }
@@ -884,7 +881,7 @@ locals {
   ## 1) If there's a Hub VCN (3 or 4), the route to DRG is always enabled, because the Firewall in the Hub VCN will constrain traffic appropriately.
   ## 2) If there's no Hub VCN (1 or 2), the route to DRG is enabled by default or if explicitly configured via the 'tt_vcn1_routable_vcns' attribute.
   oke_vcn_1_drg_routing = merge(
-    (var.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true && var.add_oke_vcn2 == true && var.oke_vcn2_attach_to_drg == true) &&
+    (local.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true && var.add_oke_vcn2 == true && var.oke_vcn2_attach_to_drg == true) &&
     (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.oke_vcn1_routable_vcns) == 0 || contains(var.oke_vcn1_routable_vcns, "OKE-VCN-2")))) ? {
       for cidr in var.oke_vcn2_cidrs : "OKE-VCN-2-${replace(replace(cidr, ".", ""), "/", "")}-RULE" => {
         network_entity_key = "HUB-DRG"
@@ -893,7 +890,7 @@ locals {
         destination_type   = "CIDR_BLOCK"
       }
     } : {},
-    (var.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true && var.add_oke_vcn3 == true && var.oke_vcn3_attach_to_drg == true) &&
+    (local.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true && var.add_oke_vcn3 == true && var.oke_vcn3_attach_to_drg == true) &&
     (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.oke_vcn1_routable_vcns) == 0 || contains(var.oke_vcn1_routable_vcns, "OKE-VCN-3")))) ? {
       for cidr in var.oke_vcn3_cidrs : "OKE-VCN-3-${replace(replace(cidr, ".", ""), "/", "")}-RULE" => {
         network_entity_key = "HUB-DRG"
@@ -902,7 +899,7 @@ locals {
         destination_type   = "CIDR_BLOCK"
       }
     } : {},
-    (var.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true && var.add_tt_vcn1 == true && var.tt_vcn1_attach_to_drg == true) &&
+    (local.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true && var.add_tt_vcn1 == true && var.tt_vcn1_attach_to_drg == true) &&
     (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.oke_vcn1_routable_vcns) == 0 || contains(var.oke_vcn1_routable_vcns, "TT-VCN-1")))) ? {
       for cidr in var.tt_vcn1_cidrs : "TT-VCN-1-${replace(replace(cidr, ".", ""), "/", "")}-RULE" => {
         network_entity_key = "HUB-DRG"
@@ -911,7 +908,7 @@ locals {
         destination_type   = "CIDR_BLOCK"
       }
     } : {},
-    (var.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true && var.add_tt_vcn2 == true && var.tt_vcn2_attach_to_drg == true) &&
+    (local.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true && var.add_tt_vcn2 == true && var.tt_vcn2_attach_to_drg == true) &&
     (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.oke_vcn1_routable_vcns) == 0 || contains(var.oke_vcn1_routable_vcns, "TT-VCN-2")))) ? {
       for cidr in var.tt_vcn2_cidrs : "TT-VCN-2-${replace(replace(cidr, ".", ""), "/", "")}-RULE" => {
         network_entity_key = "HUB-DRG"
@@ -920,7 +917,7 @@ locals {
         destination_type   = "CIDR_BLOCK"
       }
     } : {},
-    (var.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true && var.add_tt_vcn3 == true && var.tt_vcn3_attach_to_drg == true) &&
+    (local.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true && var.add_tt_vcn3 == true && var.tt_vcn3_attach_to_drg == true) &&
     (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.oke_vcn1_routable_vcns) == 0 || contains(var.oke_vcn1_routable_vcns, "TT-VCN-3")))) ? {
       for cidr in var.tt_vcn3_cidrs : "TT-VCN-3-${replace(replace(cidr, ".", ""), "/", "")}-RULE" => {
         network_entity_key = "HUB-DRG"
@@ -929,7 +926,7 @@ locals {
         destination_type   = "CIDR_BLOCK"
       }
     } : {},
-    (var.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true && var.add_exa_vcn1 == true && var.exa_vcn1_attach_to_drg == true) &&
+    (local.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true && var.add_exa_vcn1 == true && var.exa_vcn1_attach_to_drg == true) &&
     (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.oke_vcn1_routable_vcns) == 0 || contains(var.oke_vcn1_routable_vcns, "EXA-VCN-1")))) ? {
       for cidr in var.exa_vcn1_cidrs : "EXA-VCN-1-${replace(replace(cidr, ".", ""), "/", "")}-RULE" => {
         network_entity_key = "HUB-DRG"
@@ -938,7 +935,7 @@ locals {
         destination_type   = "CIDR_BLOCK"
       }
     } : {},
-    (var.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true && var.add_exa_vcn2 == true && var.exa_vcn2_attach_to_drg == true) &&
+    (local.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true && var.add_exa_vcn2 == true && var.exa_vcn2_attach_to_drg == true) &&
     (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.oke_vcn1_routable_vcns) == 0 || contains(var.oke_vcn1_routable_vcns, "EXA-VCN-2")))) ? {
       for cidr in var.exa_vcn2_cidrs : "EXA-VCN-2-${replace(replace(cidr, ".", ""), "/", "")}-RULE" => {
         network_entity_key = "HUB-DRG"
@@ -947,7 +944,7 @@ locals {
         destination_type   = "CIDR_BLOCK"
       }
     } : {},
-    (var.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true && var.add_exa_vcn3 == true && var.exa_vcn3_attach_to_drg == true) &&
+    (local.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true && var.add_exa_vcn3 == true && var.exa_vcn3_attach_to_drg == true) &&
     (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.oke_vcn1_routable_vcns) == 0 || contains(var.oke_vcn1_routable_vcns, "EXA-VCN-3")))) ? {
       for cidr in var.exa_vcn3_cidrs : "EXA-VCN-3-${replace(replace(cidr, ".", ""), "/", "")}-RULE" => {
         network_entity_key = "HUB-DRG"
@@ -961,7 +958,7 @@ locals {
   ## OKE-VCN-1
   ## Egress rules
   oke_vcn_1_to_workers_subnet_cross_vcn_egress = merge(
-    (var.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true && var.add_oke_vcn2 == true && var.oke_vcn2_attach_to_drg == true) &&
+    (local.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true && var.add_oke_vcn2 == true && var.oke_vcn2_attach_to_drg == true) &&
     (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.oke_vcn1_routable_vcns) == 0 || contains(var.oke_vcn1_routable_vcns, "OKE-VCN-2")))) ? {
       "EGRESS-TO-OKE-VCN-2-WORKERS-SUBNET-RULE" = {
         description  = "Egress to ${coalesce(var.oke_vcn2_workers_subnet_name, "${var.service_label}-oke-vcn-2-workers-subnet")}."
@@ -973,7 +970,7 @@ locals {
         dst_port_max = 32767
       }
     } : {},
-    (var.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true && var.add_oke_vcn3 == true && var.oke_vcn3_attach_to_drg == true) &&
+    (local.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true && var.add_oke_vcn3 == true && var.oke_vcn3_attach_to_drg == true) &&
     (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.oke_vcn1_routable_vcns) == 0 || contains(var.oke_vcn1_routable_vcns, "OKE-VCN-3")))) ? {
       "EGRESS-TO-OKE-VCN-3-WORKERS-SUBNET-RULE" = {
         description  = "Egress to ${coalesce(var.oke_vcn3_workers_subnet_name, "${var.service_label}-oke-vcn-3-workers-subnet")}."
@@ -987,7 +984,7 @@ locals {
     } : {}
   )
   oke_vcn_1_to_services_subnet_cross_vcn_egress = merge(
-    (var.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true && var.add_oke_vcn2 == true && var.oke_vcn2_attach_to_drg == true) &&
+    (local.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true && var.add_oke_vcn2 == true && var.oke_vcn2_attach_to_drg == true) &&
     (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.oke_vcn1_routable_vcns) == 0 || contains(var.oke_vcn1_routable_vcns, "OKE-VCN-2")))) ? {
       "EGRESS-TO-OKE-VCN-2-SERVICES-SUBNET-RULE" = {
         description  = "Egress to ${coalesce(var.oke_vcn2_services_subnet_name, "${var.service_label}-oke-vcn-2-services-subnet")}."
@@ -999,7 +996,7 @@ locals {
         dst_port_max = 443
       }
     } : {},
-    (var.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true && var.add_oke_vcn3 == true && var.oke_vcn3_attach_to_drg == true) &&
+    (local.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true && var.add_oke_vcn3 == true && var.oke_vcn3_attach_to_drg == true) &&
     (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.oke_vcn1_routable_vcns) == 0 || contains(var.oke_vcn1_routable_vcns, "OKE-VCN-3")))) ? {
       "EGRESS-TO-OKE-VCN-3-SERVICES-SUBNET-RULE" = {
         description  = "Egress to ${coalesce(var.oke_vcn3_services_subnet_name, "${var.service_label}-oke-vcn-3-services-subnet")}."
@@ -1013,7 +1010,7 @@ locals {
     } : {}
   )
   oke_vcn_1_to_pods_subnet_cross_vcn_egress = merge(
-    (var.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true && var.add_oke_vcn2 == true && var.oke_vcn2_attach_to_drg == true) &&
+    (local.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true && var.add_oke_vcn2 == true && var.oke_vcn2_attach_to_drg == true) &&
     (upper(var.oke_vcn2_cni_type) == "NATIVE") &&
     (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.oke_vcn1_routable_vcns) == 0 || contains(var.oke_vcn1_routable_vcns, "OKE-VCN-2")))) ? {
       "EGRESS-TO-OKE-VCN-2-PODS-SUBNET-RULE" = {
@@ -1026,7 +1023,7 @@ locals {
         #dst_port_max = 443
       }
     } : {},
-    (var.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true && var.add_oke_vcn3 == true && var.oke_vcn3_attach_to_drg == true) &&
+    (local.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true && var.add_oke_vcn3 == true && var.oke_vcn3_attach_to_drg == true) &&
     (upper(var.oke_vcn3_cni_type) == "NATIVE") &&
     (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.oke_vcn1_routable_vcns) == 0 || contains(var.oke_vcn1_routable_vcns, "OKE-VCN-3")))) ? {
       "EGRESS-TO-OKE-VCN-3-PODS-SUBNET-RULE" = {
@@ -1041,7 +1038,7 @@ locals {
     } : {}
   )
   oke_vcn_1_to_client_subnet_cross_vcn_egress = merge(
-    (var.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true && var.add_exa_vcn1 == true && var.exa_vcn1_attach_to_drg == true) &&
+    (local.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true && var.add_exa_vcn1 == true && var.exa_vcn1_attach_to_drg == true) &&
     (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.oke_vcn1_routable_vcns) == 0 || contains(var.oke_vcn1_routable_vcns, "EXA-VCN-1")))) ? {
       "EGRESS-TO-EXA-VCN-1-CLIENT-SUBNET-RULE" = {
         description  = "Egress to ${coalesce(var.exa_vcn1_client_subnet_name, "${var.service_label}-exa-vcn-1-client-subnet")}."
@@ -1053,7 +1050,7 @@ locals {
         dst_port_max = 1522
       }
     } : {},
-    (var.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true && var.add_exa_vcn2 == true && var.exa_vcn2_attach_to_drg == true) &&
+    (local.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true && var.add_exa_vcn2 == true && var.exa_vcn2_attach_to_drg == true) &&
     (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.oke_vcn1_routable_vcns) == 0 || contains(var.oke_vcn1_routable_vcns, "EXA-VCN-2")))) ? {
       "EGRESS-TO-EXA-VCN-2-CLIENT-SUBNET-RULE" = {
         description  = "Egress to ${coalesce(var.exa_vcn2_client_subnet_name, "${var.service_label}-exa-vcn-2-client-subnet")}."
@@ -1065,7 +1062,7 @@ locals {
         dst_port_max = 1522
       }
     } : {},
-    (var.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true && var.add_exa_vcn3 == true && var.exa_vcn3_attach_to_drg == true) &&
+    (local.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true && var.add_exa_vcn3 == true && var.exa_vcn3_attach_to_drg == true) &&
     (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.oke_vcn1_routable_vcns) == 0 || contains(var.oke_vcn1_routable_vcns, "EXA-VCN-3")))) ? {
       "EGRESS-TO-EXA-VCN-3-CLIENT-SUBNET-RULE" = {
         description  = "Egress to ${coalesce(var.exa_vcn3_client_subnet_name, "${var.service_label}-exa-vcn-3-client-subnet")}."
@@ -1079,7 +1076,7 @@ locals {
     } : {}
   )
   oke_vcn_1_to_web_subnet_cross_vcn_egress = merge(
-    (var.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true && var.add_tt_vcn1 == true && var.tt_vcn1_attach_to_drg == true) &&
+    (local.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true && var.add_tt_vcn1 == true && var.tt_vcn1_attach_to_drg == true) &&
     (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.oke_vcn1_routable_vcns) == 0 || contains(var.oke_vcn1_routable_vcns, "TT-VCN-1")))) ? {
       "EGRESS-TO-TT-VCN-1-WEB-SUBNET-RULE" = {
         description  = "Egress to ${coalesce(var.tt_vcn1_web_subnet_name, "${var.service_label}-tt-vcn-1-web-subnet")}."
@@ -1091,7 +1088,7 @@ locals {
         dst_port_max = 443
       }
     } : {},
-    (var.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true && var.add_tt_vcn2 == true && var.tt_vcn2_attach_to_drg == true) &&
+    (local.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true && var.add_tt_vcn2 == true && var.tt_vcn2_attach_to_drg == true) &&
     (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.oke_vcn1_routable_vcns) == 0 || contains(var.oke_vcn1_routable_vcns, "TT-VCN-2")))) ? {
       "EGRESS-TO-TT-VCN-2-WEB-SUBNET-RULE" = {
         description  = "Egress to ${coalesce(var.tt_vcn2_web_subnet_name, "${var.service_label}-tt-vcn-2-web-subnet")}."
@@ -1103,7 +1100,7 @@ locals {
         dst_port_max = 443
       }
     } : {},
-    (var.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true && var.add_tt_vcn3 == true && var.tt_vcn3_attach_to_drg == true) &&
+    (local.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true && var.add_tt_vcn3 == true && var.tt_vcn3_attach_to_drg == true) &&
     (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.oke_vcn1_routable_vcns) == 0 || contains(var.oke_vcn1_routable_vcns, "TT-VCN-3")))) ? {
       "EGRESS-TO-TT-VCN-3-WEB-SUBNET-RULE" = {
         description  = "Egress to ${coalesce(var.tt_vcn3_web_subnet_name, "${var.service_label}-tt-vcn-3-web-subnet")}."
@@ -1117,7 +1114,7 @@ locals {
     } : {}
   )
   oke_vcn_1_to_app_subnet_cross_vcn_egress = merge(
-    (var.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true && var.add_tt_vcn1 == true && var.tt_vcn1_attach_to_drg == true) &&
+    (local.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true && var.add_tt_vcn1 == true && var.tt_vcn1_attach_to_drg == true) &&
     (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.oke_vcn1_routable_vcns) == 0 || contains(var.oke_vcn1_routable_vcns, "TT-VCN-1")))) ? {
       "EGRESS-TO-TT-VCN-1-APP-SUBNET-RULE" = {
         description  = "Egress to ${coalesce(var.tt_vcn1_app_subnet_name, "${var.service_label}-tt-vcn-1-app-subnet")}."
@@ -1129,7 +1126,7 @@ locals {
         dst_port_max = 80
       }
     } : {},
-    (var.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true && var.add_tt_vcn2 == true && var.tt_vcn2_attach_to_drg == true) &&
+    (local.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true && var.add_tt_vcn2 == true && var.tt_vcn2_attach_to_drg == true) &&
     (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.oke_vcn1_routable_vcns) == 0 || contains(var.oke_vcn1_routable_vcns, "TT-VCN-2")))) ? {
       "EGRESS-TO-TT-VCN-2-APP-SUBNET-RULE" = {
         description  = "Egress to ${coalesce(var.tt_vcn2_app_subnet_name, "${var.service_label}-tt-vcn-2-app-subnet")}."
@@ -1141,7 +1138,7 @@ locals {
         dst_port_max = 80
       }
     } : {},
-    (var.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true && var.add_tt_vcn3 == true && var.tt_vcn3_attach_to_drg == true) &&
+    (local.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true && var.add_tt_vcn3 == true && var.tt_vcn3_attach_to_drg == true) &&
     (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.oke_vcn1_routable_vcns) == 0 || contains(var.oke_vcn1_routable_vcns, "TT-VCN-3")))) ? {
       "EGRESS-TO-TT-VCN-3-APP-SUBNET-RULE" = {
         description  = "Egress to ${coalesce(var.tt_vcn3_app_subnet_name, "${var.service_label}-tt-vcn-3-app-subnet")}."
@@ -1155,7 +1152,7 @@ locals {
     } : {}
   )
   oke_vcn_1_to_db_subnet_cross_vcn_egress = merge(
-    (var.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true && var.add_tt_vcn1 == true && var.tt_vcn1_attach_to_drg == true) &&
+    (local.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true && var.add_tt_vcn1 == true && var.tt_vcn1_attach_to_drg == true) &&
     (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.oke_vcn1_routable_vcns) == 0 || contains(var.oke_vcn1_routable_vcns, "TT-VCN-1")))) ? {
       "EGRESS-TO-TT-VCN-1-DB-SUBNET-RULE" = {
         description  = "Egress to ${coalesce(var.tt_vcn1_db_subnet_name, "${var.service_label}-tt-vcn-1-db-subnet")}."
@@ -1167,7 +1164,7 @@ locals {
         dst_port_max = 1522
       }
     } : {},
-    (var.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true && var.add_tt_vcn2 == true && var.tt_vcn2_attach_to_drg == true) &&
+    (local.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true && var.add_tt_vcn2 == true && var.tt_vcn2_attach_to_drg == true) &&
     (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.oke_vcn1_routable_vcns) == 0 || contains(var.oke_vcn1_routable_vcns, "TT-VCN-2")))) ? {
       "EGRESS-TO-TT-VCN-2-DB-SUBNET-RULE" = {
         description  = "Egress to ${coalesce(var.tt_vcn2_db_subnet_name, "${var.service_label}-tt-vcn-2-db-subnet")}."
@@ -1179,7 +1176,7 @@ locals {
         dst_port_max = 1522
       }
     } : {},
-    (var.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true && var.add_tt_vcn3 == true && var.tt_vcn3_attach_to_drg == true) &&
+    (local.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true && var.add_tt_vcn3 == true && var.tt_vcn3_attach_to_drg == true) &&
     (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.oke_vcn1_routable_vcns) == 0 || contains(var.oke_vcn1_routable_vcns, "TT-VCN-3")))) ? {
       "EGRESS-TO-TT-VCN-3-DB-SUBNET-RULE" = {
         description  = "Egress to ${coalesce(var.tt_vcn3_db_subnet_name, "${var.service_label}-tt-vcn-3-db-subnet")}."
@@ -1195,7 +1192,7 @@ locals {
 
   ## Ingress rules
   oke_vcn_1_to_services_subnet_cross_vcn_ingress = merge(
-    (var.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true && var.add_oke_vcn2 == true && var.oke_vcn2_attach_to_drg == true) &&
+    (local.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true && var.add_oke_vcn2 == true && var.oke_vcn2_attach_to_drg == true) &&
     (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.oke_vcn1_routable_vcns) == 0 || contains(var.oke_vcn1_routable_vcns, "OKE-VCN-2")))) ? {
       "INGRESS-FROM-OKE-VCN-2-WORKERS-SUBNET-RULE" = {
         description  = "Ingress from ${coalesce(var.oke_vcn2_workers_subnet_name, "${var.service_label}-oke-vcn-2-workers-subnet")}."
@@ -1207,7 +1204,7 @@ locals {
         dst_port_max = 443
       },
     } : {},
-    (var.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true && var.add_oke_vcn2 == true && var.oke_vcn2_attach_to_drg == true) &&
+    (local.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true && var.add_oke_vcn2 == true && var.oke_vcn2_attach_to_drg == true) &&
     (upper(var.oke_vcn2_cni_type) == "NATIVE") &&
     (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.oke_vcn1_routable_vcns) == 0 || contains(var.oke_vcn1_routable_vcns, "OKE-VCN-2")))) ? {
       "INGRESS-FROM-OKE-VCN-2-PODS-SUBNET-RULE" = {
@@ -1220,7 +1217,7 @@ locals {
         dst_port_max = 443
       }
     } : {},
-    (var.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true && var.add_oke_vcn3 == true && var.oke_vcn3_attach_to_drg == true) &&
+    (local.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true && var.add_oke_vcn3 == true && var.oke_vcn3_attach_to_drg == true) &&
     (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.oke_vcn1_routable_vcns) == 0 || contains(var.oke_vcn1_routable_vcns, "OKE-VCN-3")))) ? {
       "INGRESS-FROM-OKE-VCN-3-WORKERS-SUBNET-RULE" = {
         description  = "Ingress from ${coalesce(var.oke_vcn3_workers_subnet_name, "${var.service_label}-oke-vcn-3-workers-subnet")}."
@@ -1232,7 +1229,7 @@ locals {
         dst_port_max = 443
       },
     } : {},
-    (var.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true && var.add_oke_vcn3 == true && var.oke_vcn3_attach_to_drg == true) &&
+    (local.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true && var.add_oke_vcn3 == true && var.oke_vcn3_attach_to_drg == true) &&
     (upper(var.oke_vcn3_cni_type) == "NATIVE") &&
     (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.oke_vcn1_routable_vcns) == 0 || contains(var.oke_vcn1_routable_vcns, "OKE-VCN-3")))) ? {
       "INGRESS-FROM-OKE-VCN-3-PODS-SUBNET-RULE" = {
@@ -1245,7 +1242,7 @@ locals {
         dst_port_max = 443
       }
     } : {},
-    (var.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true && var.add_tt_vcn1 == true && var.tt_vcn1_attach_to_drg == true) &&
+    (local.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true && var.add_tt_vcn1 == true && var.tt_vcn1_attach_to_drg == true) &&
     (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.oke_vcn1_routable_vcns) == 0 || contains(var.oke_vcn1_routable_vcns, "TT-VCN-1")))) ? {
       "INGRESS-FROM-TT-VCN-1-APP-SUBNET-RULE" = {
         description  = "Ingress from ${coalesce(var.tt_vcn1_app_subnet_name, "${var.service_label}-tt-vcn-1-app-subnet")}."
@@ -1257,7 +1254,7 @@ locals {
         dst_port_max = 443
       },
     } : {},
-    (var.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true && var.add_tt_vcn1 == true && var.tt_vcn1_attach_to_drg == true) &&
+    (local.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true && var.add_tt_vcn1 == true && var.tt_vcn1_attach_to_drg == true) &&
     (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.oke_vcn1_routable_vcns) == 0 || contains(var.oke_vcn1_routable_vcns, "TT-VCN-1")))) ? {
       "INGRESS-FROM-TT-VCN-1-DB-SUBNET-RULE" = {
         description  = "Ingress from ${coalesce(var.tt_vcn1_db_subnet_name, "${var.service_label}-tt-vcn-1-db-subnet")}."
@@ -1269,7 +1266,7 @@ locals {
         dst_port_max = 443
       }
     } : {},
-    (var.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true && var.add_tt_vcn2 == true && var.tt_vcn2_attach_to_drg == true) &&
+    (local.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true && var.add_tt_vcn2 == true && var.tt_vcn2_attach_to_drg == true) &&
     (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.oke_vcn1_routable_vcns) == 0 || contains(var.oke_vcn1_routable_vcns, "TT-VCN-2")))) ? {
       "INGRESS-FROM-TT-VCN-2-APP-SUBNET-RULE" = {
         description  = "Ingress from ${coalesce(var.tt_vcn2_app_subnet_name, "${var.service_label}-tt-vcn-2-app-subnet")}."
@@ -1281,7 +1278,7 @@ locals {
         dst_port_max = 443
       },
     } : {},
-    (var.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true && var.add_tt_vcn2 == true && var.tt_vcn2_attach_to_drg == true) &&
+    (local.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true && var.add_tt_vcn2 == true && var.tt_vcn2_attach_to_drg == true) &&
     (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.oke_vcn1_routable_vcns) == 0 || contains(var.oke_vcn1_routable_vcns, "TT-VCN-2")))) ? {
       "INGRESS-FROM-TT-VCN-2-DB-SUBNET-RULE" = {
         description  = "Ingress from ${coalesce(var.tt_vcn2_db_subnet_name, "${var.service_label}-tt-vcn-2-db-subnet")}."
@@ -1293,7 +1290,7 @@ locals {
         dst_port_max = 443
       }
     } : {},
-    (var.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true && var.add_tt_vcn3 == true && var.tt_vcn3_attach_to_drg == true) &&
+    (local.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true && var.add_tt_vcn3 == true && var.tt_vcn3_attach_to_drg == true) &&
     (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.oke_vcn1_routable_vcns) == 0 || contains(var.oke_vcn1_routable_vcns, "TT-VCN-3")))) ? {
       "INGRESS-FROM-TT-VCN-3-APP-SUBNET-RULE" = {
         description  = "Ingress from ${coalesce(var.tt_vcn3_app_subnet_name, "${var.service_label}-tt-vcn-3-app-subnet")}."
@@ -1305,7 +1302,7 @@ locals {
         dst_port_max = 443
       },
     } : {},
-    (var.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true && var.add_tt_vcn3 == true && var.tt_vcn3_attach_to_drg == true) &&
+    (local.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true && var.add_tt_vcn3 == true && var.tt_vcn3_attach_to_drg == true) &&
     (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.oke_vcn1_routable_vcns) == 0 || contains(var.oke_vcn1_routable_vcns, "TT-VCN-3")))) ? {
       "INGRESS-FROM-TT-VCN-3-DB-SUBNET-RULE" = {
         description  = "Ingress from ${coalesce(var.tt_vcn3_db_subnet_name, "${var.service_label}-tt-vcn-3-db-subnet")}."
@@ -1317,7 +1314,7 @@ locals {
         dst_port_max = 443
       }
     } : {},
-    (var.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true && var.add_exa_vcn1 == true && var.exa_vcn1_attach_to_drg == true) &&
+    (local.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true && var.add_exa_vcn1 == true && var.exa_vcn1_attach_to_drg == true) &&
     (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.oke_vcn1_routable_vcns) == 0 || contains(var.oke_vcn1_routable_vcns, "EXA-VCN-1")))) ? {
       "INGRESS-FROM-EXA-VCN-1-CLIENT-SUBNET-RULE" = {
         description  = "Ingress from ${coalesce(var.exa_vcn1_client_subnet_name, "${var.service_label}-exa-vcn-1-client-subnet")}."
@@ -1329,7 +1326,7 @@ locals {
         dst_port_max = 443
       }
     } : {},
-    (var.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true && var.add_exa_vcn2 == true && var.exa_vcn2_attach_to_drg == true) &&
+    (local.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true && var.add_exa_vcn2 == true && var.exa_vcn2_attach_to_drg == true) &&
     (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.oke_vcn1_routable_vcns) == 0 || contains(var.oke_vcn1_routable_vcns, "EXA-VCN-2")))) ? {
       "INGRESS-FROM-EXA-VCN-2-CLIENT-SUBNET-RULE" = {
         description  = "Ingress from ${coalesce(var.exa_vcn2_client_subnet_name, "${var.service_label}-exa-vcn-2-client-subnet")}."
@@ -1341,7 +1338,7 @@ locals {
         dst_port_max = 443
       }
     } : {},
-    (var.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true && var.add_exa_vcn3 == true && var.exa_vcn3_attach_to_drg == true) &&
+    (local.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true && var.add_exa_vcn3 == true && var.exa_vcn3_attach_to_drg == true) &&
     (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.oke_vcn1_routable_vcns) == 0 || contains(var.oke_vcn1_routable_vcns, "EXA-VCN-3")))) ? {
       "INGRESS-FROM-EXA-VCN-3-CLIENT-SUBNET-RULE" = {
         description  = "Ingress from ${coalesce(var.exa_vcn3_client_subnet_name, "${var.service_label}-exa-vcn-3-client-subnet")}."
@@ -1355,7 +1352,7 @@ locals {
     } : {}
   )
   oke_vcn_1_to_workers_subnet_cross_vcn_ingress = merge(
-    (var.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true && var.add_oke_vcn2 == true && var.oke_vcn2_attach_to_drg == true) &&
+    (local.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true && var.add_oke_vcn2 == true && var.oke_vcn2_attach_to_drg == true) &&
     (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.oke_vcn1_routable_vcns) == 0 || contains(var.oke_vcn1_routable_vcns, "OKE-VCN-2")))) ? {
       "INGRESS-FROM-OKE-VCN-2-WORKERS-SUBNET-RULE" = {
         description  = "Ingress from ${coalesce(var.oke_vcn2_workers_subnet_name, "${var.service_label}-oke-vcn-2-workers-subnet")}."
@@ -1376,7 +1373,7 @@ locals {
         dst_port_max = 32767
       }
     } : {},
-    (var.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true && var.add_oke_vcn2 == true && var.oke_vcn2_attach_to_drg == true) &&
+    (local.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true && var.add_oke_vcn2 == true && var.oke_vcn2_attach_to_drg == true) &&
     (upper(var.oke_vcn2_cni_type) == "NATIVE") &&
     (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.oke_vcn1_routable_vcns) == 0 || contains(var.oke_vcn1_routable_vcns, "OKE-VCN-2")))) ? {
       "INGRESS-FROM-OKE-VCN-2-PODS-SUBNET-RULE" = {
@@ -1389,7 +1386,7 @@ locals {
         dst_port_max = 32767
       }
     } : {},
-    (var.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true && var.add_oke_vcn3 == true && var.oke_vcn3_attach_to_drg == true) &&
+    (local.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true && var.add_oke_vcn3 == true && var.oke_vcn3_attach_to_drg == true) &&
     (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.oke_vcn1_routable_vcns) == 0 || contains(var.oke_vcn1_routable_vcns, "OKE-VCN-3")))) ? {
       "INGRESS-FROM-OKE-VCN-3-WORKERS-SUBNET-RULE" = {
         description  = "Ingress from ${coalesce(var.oke_vcn3_workers_subnet_name, "${var.service_label}-oke-vcn-3-workers-subnet")}."
@@ -1410,7 +1407,7 @@ locals {
         dst_port_max = 32767
       },
     } : {},
-    (var.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true && var.add_oke_vcn3 == true && var.oke_vcn3_attach_to_drg == true) &&
+    (local.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true && var.add_oke_vcn3 == true && var.oke_vcn3_attach_to_drg == true) &&
     (upper(var.oke_vcn3_cni_type) == "NATIVE") &&
     (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.oke_vcn1_routable_vcns) == 0 || contains(var.oke_vcn1_routable_vcns, "OKE-VCN-3")))) ? {
       "INGRESS-FROM-OKE-VCN-3-PODS-SUBNET-RULE" = {
@@ -1423,7 +1420,7 @@ locals {
         dst_port_max = 32767
       }
     } : {},
-    (var.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true && var.add_tt_vcn1 == true && var.tt_vcn1_attach_to_drg == true) &&
+    (local.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true && var.add_tt_vcn1 == true && var.tt_vcn1_attach_to_drg == true) &&
     (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.oke_vcn1_routable_vcns) == 0 || contains(var.oke_vcn1_routable_vcns, "TT-VCN-1")))) ? {
       "INGRESS-FROM-TT-VCN-1-APP-SUBNET-RULE" = {
         description  = "Ingress from ${coalesce(var.tt_vcn1_app_subnet_name, "${var.service_label}-tt-vcn-1-app-subnet")}."
@@ -1435,7 +1432,7 @@ locals {
         dst_port_max = 32767
       },
     } : {},
-    (var.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true && var.add_tt_vcn1 == true && var.tt_vcn1_attach_to_drg == true) &&
+    (local.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true && var.add_tt_vcn1 == true && var.tt_vcn1_attach_to_drg == true) &&
     (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.oke_vcn1_routable_vcns) == 0 || contains(var.oke_vcn1_routable_vcns, "TT-VCN-1")))) ? {
       "INGRESS-FROM-TT-VCN-1-DB-SUBNET-RULE" = {
         description  = "Ingress from ${coalesce(var.tt_vcn1_db_subnet_name, "${var.service_label}-tt-vcn-1-db-subnet")}."
@@ -1447,7 +1444,7 @@ locals {
         dst_port_max = 32767
       }
     } : {},
-    (var.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true && var.add_tt_vcn2 == true && var.tt_vcn2_attach_to_drg == true) &&
+    (local.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true && var.add_tt_vcn2 == true && var.tt_vcn2_attach_to_drg == true) &&
     (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.oke_vcn1_routable_vcns) == 0 || contains(var.oke_vcn1_routable_vcns, "TT-VCN-2")))) ? {
       "INGRESS-FROM-TT-VCN-2-APP-SUBNET-RULE" = {
         description  = "Ingress from ${coalesce(var.tt_vcn2_app_subnet_name, "${var.service_label}-tt-vcn-2-app-subnet")}."
@@ -1459,7 +1456,7 @@ locals {
         dst_port_max = 32767
       },
     } : {},
-    (var.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true && var.add_tt_vcn2 == true && var.tt_vcn2_attach_to_drg == true) &&
+    (local.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true && var.add_tt_vcn2 == true && var.tt_vcn2_attach_to_drg == true) &&
     (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.oke_vcn1_routable_vcns) == 0 || contains(var.oke_vcn1_routable_vcns, "TT-VCN-2")))) ? {
       "INGRESS-FROM-TT-VCN-2-DB-SUBNET-RULE" = {
         description  = "Ingress from ${coalesce(var.tt_vcn2_db_subnet_name, "${var.service_label}-tt-vcn-2-db-subnet")}."
@@ -1471,7 +1468,7 @@ locals {
         dst_port_max = 32767
       }
     } : {},
-    (var.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true && var.add_tt_vcn3 == true && var.tt_vcn3_attach_to_drg == true) &&
+    (local.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true && var.add_tt_vcn3 == true && var.tt_vcn3_attach_to_drg == true) &&
     (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.oke_vcn1_routable_vcns) == 0 || contains(var.oke_vcn1_routable_vcns, "TT-VCN-3")))) ? {
       "INGRESS-FROM-TT-VCN-3-APP-SUBNET-RULE" = {
         description  = "Ingress from ${coalesce(var.tt_vcn3_app_subnet_name, "${var.service_label}-tt-vcn-3-app-subnet")}."
@@ -1483,7 +1480,7 @@ locals {
         dst_port_max = 32767
       },
     } : {},
-    (var.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true && var.add_tt_vcn3 == true && var.tt_vcn3_attach_to_drg == true) &&
+    (local.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true && var.add_tt_vcn3 == true && var.tt_vcn3_attach_to_drg == true) &&
     (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.oke_vcn1_routable_vcns) == 0 || contains(var.oke_vcn1_routable_vcns, "TT-VCN-3")))) ? {
       "INGRESS-FROM-TT-VCN-3-DB-SUBNET-RULE" = {
         description  = "Ingress from ${coalesce(var.tt_vcn3_db_subnet_name, "${var.service_label}-tt-vcn-3-db-subnet")}."
@@ -1495,7 +1492,7 @@ locals {
         dst_port_max = 32767
       }
     } : {},
-    (var.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true && var.add_exa_vcn1 == true && var.exa_vcn1_attach_to_drg == true) &&
+    (local.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true && var.add_exa_vcn1 == true && var.exa_vcn1_attach_to_drg == true) &&
     (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.oke_vcn1_routable_vcns) == 0 || contains(var.oke_vcn1_routable_vcns, "EXA-VCN-1")))) ? {
       "INGRESS-FROM-EXA-VCN-1-CLIENT-SUBNET-RULE" = {
         description  = "Ingress from ${coalesce(var.exa_vcn1_client_subnet_name, "${var.service_label}-exa-vcn-1-client-subnet")}."
@@ -1507,7 +1504,7 @@ locals {
         dst_port_max = 32767
       }
     } : {},
-    (var.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true && var.add_exa_vcn2 == true && var.exa_vcn2_attach_to_drg == true) &&
+    (local.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true && var.add_exa_vcn2 == true && var.exa_vcn2_attach_to_drg == true) &&
     (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.oke_vcn1_routable_vcns) == 0 || contains(var.oke_vcn1_routable_vcns, "EXA-VCN-2")))) ? {
       "INGRESS-FROM-EXA-VCN-2-CLIENT-SUBNET-RULE" = {
         description  = "Ingress from ${coalesce(var.exa_vcn2_client_subnet_name, "${var.service_label}-exa-vcn-2-client-subnet")}."
@@ -1519,7 +1516,7 @@ locals {
         dst_port_max = 32767
       }
     } : {},
-    (var.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true && var.add_exa_vcn3 == true && var.exa_vcn3_attach_to_drg == true) &&
+    (local.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true && var.add_exa_vcn3 == true && var.exa_vcn3_attach_to_drg == true) &&
     (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.oke_vcn1_routable_vcns) == 0 || contains(var.oke_vcn1_routable_vcns, "EXA-VCN-3")))) ? {
       "INGRESS-FROM-EXA-VCN-3-CLIENT-SUBNET-RULE" = {
         description  = "Ingress from ${coalesce(var.exa_vcn3_client_subnet_name, "${var.service_label}-exa-vcn-3-client-subnet")}."
@@ -1533,7 +1530,7 @@ locals {
     } : {},
   )
   oke_vcn_1_to_pods_subnet_cross_vcn_ingress = merge(
-    (var.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true && var.add_oke_vcn2 == true && var.oke_vcn2_attach_to_drg == true) &&
+    (local.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true && var.add_oke_vcn2 == true && var.oke_vcn2_attach_to_drg == true) &&
     (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.oke_vcn1_routable_vcns) == 0 || contains(var.oke_vcn1_routable_vcns, "OKE-VCN-2")))) ? {
       "INGRESS-FROM-OKE-VCN-2-WORKERS-SUBNET-RULE" = {
         description  = "Ingress from ${coalesce(var.oke_vcn2_workers_subnet_name, "${var.service_label}-oke-vcn-2-workers-subnet")}."
@@ -1550,7 +1547,7 @@ locals {
         src_type     = "CIDR_BLOCK"
       }
     } : {},
-    (var.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true && var.add_oke_vcn2 == true && var.oke_vcn2_attach_to_drg == true) &&
+    (local.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true && var.add_oke_vcn2 == true && var.oke_vcn2_attach_to_drg == true) &&
     (upper(var.oke_vcn2_cni_type) == "NATIVE") &&
     (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.oke_vcn1_routable_vcns) == 0 || contains(var.oke_vcn1_routable_vcns, "OKE-VCN-2")))) ? {
       "INGRESS-FROM-OKE-VCN-2-PODS-SUBNET-RULE" = {
@@ -1561,7 +1558,7 @@ locals {
         src_type     = "CIDR_BLOCK"
       }
     } : {},
-    (var.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true && var.add_oke_vcn3 == true && var.oke_vcn3_attach_to_drg == true) &&
+    (local.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true && var.add_oke_vcn3 == true && var.oke_vcn3_attach_to_drg == true) &&
     (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.oke_vcn1_routable_vcns) == 0 || contains(var.oke_vcn1_routable_vcns, "OKE-VCN-3")))) ? {
       "INGRESS-FROM-OKE-VCN-3-WORKERS-SUBNET-RULE" = {
         description  = "Ingress from ${coalesce(var.oke_vcn3_workers_subnet_name, "${var.service_label}-oke-vcn-3-workers-subnet")}."
@@ -1578,7 +1575,7 @@ locals {
         src_type     = "CIDR_BLOCK"
       },
     } : {},
-    (var.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true && var.add_oke_vcn3 == true && var.oke_vcn3_attach_to_drg == true) &&
+    (local.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true && var.add_oke_vcn3 == true && var.oke_vcn3_attach_to_drg == true) &&
     (upper(var.oke_vcn3_cni_type) == "NATIVE") &&
     (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.oke_vcn1_routable_vcns) == 0 || contains(var.oke_vcn1_routable_vcns, "OKE-VCN-3")))) ? {
       "INGRESS-FROM-OKE-VCN-3-PODS-SUBNET-RULE" = {
@@ -1589,7 +1586,7 @@ locals {
         src_type     = "CIDR_BLOCK"
       }
     } : {},
-    (var.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true && var.add_tt_vcn1 == true && var.tt_vcn1_attach_to_drg == true) &&
+    (local.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true && var.add_tt_vcn1 == true && var.tt_vcn1_attach_to_drg == true) &&
     (local.hub_with_vcn == true ||
     (local.hub_with_drg_only == true && (length(var.oke_vcn1_routable_vcns) == 0 || contains(var.oke_vcn1_routable_vcns, "TT-VCN-1")))) ? {
       "INGRESS-FROM-TT-VCN-1-APP-SUBNET-RULE" = {
@@ -1600,7 +1597,7 @@ locals {
         src_type     = "CIDR_BLOCK"
       },
     } : {},
-    (var.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true && var.add_tt_vcn1 == true && var.tt_vcn1_attach_to_drg == true) &&
+    (local.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true && var.add_tt_vcn1 == true && var.tt_vcn1_attach_to_drg == true) &&
     (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.oke_vcn1_routable_vcns) == 0 || contains(var.oke_vcn1_routable_vcns, "TT-VCN-1")))) ? {
       "INGRESS-FROM-TT-VCN-1-DB-SUBNET-RULE" = {
         description  = "Ingress from ${coalesce(var.tt_vcn1_db_subnet_name, "${var.service_label}-tt-vcn-1-db-subnet")}."
@@ -1610,7 +1607,7 @@ locals {
         src_type     = "CIDR_BLOCK"
       }
     } : {},
-    (var.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true && var.add_tt_vcn2 == true && var.tt_vcn2_attach_to_drg == true) &&
+    (local.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true && var.add_tt_vcn2 == true && var.tt_vcn2_attach_to_drg == true) &&
     (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.oke_vcn1_routable_vcns) == 0 || contains(var.oke_vcn1_routable_vcns, "TT-VCN-2")))) ? {
       "INGRESS-FROM-TT-VCN-2-APP-SUBNET-RULE" = {
         description  = "Ingress from ${coalesce(var.tt_vcn2_app_subnet_name, "${var.service_label}-tt-vcn-2-app-subnet")}."
@@ -1620,7 +1617,7 @@ locals {
         src_type     = "CIDR_BLOCK"
       },
     } : {},
-    (var.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true && var.add_tt_vcn2 == true && var.tt_vcn2_attach_to_drg == true) &&
+    (local.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true && var.add_tt_vcn2 == true && var.tt_vcn2_attach_to_drg == true) &&
     (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.oke_vcn1_routable_vcns) == 0 || contains(var.oke_vcn1_routable_vcns, "TT-VCN-2")))) ? {
       "INGRESS-FROM-TT-VCN-2-DB-SUBNET-RULE" = {
         description  = "Ingress from ${coalesce(var.tt_vcn2_db_subnet_name, "${var.service_label}-tt-vcn-2-db-subnet")}."
@@ -1630,7 +1627,7 @@ locals {
         src_type     = "CIDR_BLOCK"
       }
     } : {},
-    (var.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true && var.add_tt_vcn3 == true && var.tt_vcn3_attach_to_drg == true) &&
+    (local.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true && var.add_tt_vcn3 == true && var.tt_vcn3_attach_to_drg == true) &&
     (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.oke_vcn1_routable_vcns) == 0 || contains(var.oke_vcn1_routable_vcns, "TT-VCN-3")))) ? {
       "INGRESS-FROM-TT-VCN-3-APP-SUBNET-RULE" = {
         description  = "Ingress from ${coalesce(var.tt_vcn3_app_subnet_name, "${var.service_label}-tt-vcn-3-app-subnet")}."
@@ -1640,7 +1637,7 @@ locals {
         src_type     = "CIDR_BLOCK"
       },
     } : {},
-    (var.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true && var.add_tt_vcn3 == true && var.tt_vcn3_attach_to_drg == true) &&
+    (local.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true && var.add_tt_vcn3 == true && var.tt_vcn3_attach_to_drg == true) &&
     (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.oke_vcn1_routable_vcns) == 0 || contains(var.oke_vcn1_routable_vcns, "TT-VCN-3")))) ? {
       "INGRESS-FROM-TT-VCN-3-DB-SUBNET-RULE" = {
         description  = "Ingress from ${coalesce(var.tt_vcn3_db_subnet_name, "${var.service_label}-tt-vcn-3-db-subnet")}."
@@ -1650,7 +1647,7 @@ locals {
         src_type     = "CIDR_BLOCK"
       }
     } : {},
-    (var.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true && var.add_exa_vcn1 == true && var.exa_vcn1_attach_to_drg == true) &&
+    (local.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true && var.add_exa_vcn1 == true && var.exa_vcn1_attach_to_drg == true) &&
     (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.oke_vcn1_routable_vcns) == 0 || contains(var.oke_vcn1_routable_vcns, "EXA-VCN-1")))) ? {
       "INGRESS-FROM-EXA-VCN-1-CLIENT-SUBNET-RULE" = {
         description  = "Ingress from ${coalesce(var.exa_vcn1_client_subnet_name, "${var.service_label}-exa-vcn-1-client-subnet")}."
@@ -1660,7 +1657,7 @@ locals {
         src_type     = "CIDR_BLOCK"
       }
     } : {},
-    (var.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true && var.add_exa_vcn2 == true && var.exa_vcn2_attach_to_drg == true) &&
+    (local.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true && var.add_exa_vcn2 == true && var.exa_vcn2_attach_to_drg == true) &&
     (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.oke_vcn1_routable_vcns) == 0 || contains(var.oke_vcn1_routable_vcns, "EXA-VCN-2")))) ? {
       "INGRESS-FROM-EXA-VCN-2-CLIENT-SUBNET-RULE" = {
         description  = "Ingress from ${coalesce(var.exa_vcn2_client_subnet_name, "${var.service_label}-exa-vcn-2-client-subnet")}."
@@ -1670,7 +1667,7 @@ locals {
         src_type     = "CIDR_BLOCK"
       }
     } : {},
-    (var.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true && var.add_exa_vcn3 == true && var.exa_vcn3_attach_to_drg == true) &&
+    (local.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true && var.add_exa_vcn3 == true && var.exa_vcn3_attach_to_drg == true) &&
     (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.oke_vcn1_routable_vcns) == 0 || contains(var.oke_vcn1_routable_vcns, "EXA-VCN-3")))) ? {
       "INGRESS-FROM-EXA-VCN-3-CLIENT-SUBNET-RULE" = {
         description  = "Ingress from ${coalesce(var.exa_vcn3_client_subnet_name, "${var.service_label}-exa-vcn-3-client-subnet")}."
