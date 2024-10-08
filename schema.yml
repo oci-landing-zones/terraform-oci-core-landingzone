@@ -353,36 +353,6 @@ variableGroups:
       - "oke_vcn3_mgmt_subnet_dns"
     visible: define_net
     
-  - title: "Networking - Hub & Spoke Topology"
-    variables:
-      - "hub_deployment_option"  
-      - "existing_drg_ocid"
-      - "hub_vcn_name"
-      - "hub_vcn_cidrs"
-      - "hub_vcn_deploy_firewall_option"
-      - "fw_instance_name_prefix"
-      - "fw_instance_shape"
-      - "fw_instance_flex_shape_memory"
-      - "fw_instance_flex_shape_cpu"
-      - "fw_instance_boot_volume_size"
-      - "fw_instance_public_rsa_key"
-      - "hub_vcn_north_south_entry_point_ocid"
-      - "hub_vcn_east_west_entry_point_ocid"
-      - "customize_hub_vcn_subnets"
-      - "hub_vcn_web_subnet_name"
-      - "hub_vcn_web_subnet_cidr"
-      - "hub_vcn_web_subnet_is_private"
-      - "hub_vcn_web_subnet_jump_host_allowed_cidrs"
-      - "hub_vcn_mgmt_subnet_name"
-      - "hub_vcn_mgmt_subnet_cidr"
-      - "hub_vcn_mgmt_subnet_external_allowed_cidrs_for_http"
-      - "hub_vcn_mgmt_subnet_external_allowed_cidrs_for_ssh"
-      - "hub_vcn_outdoor_subnet_name"
-      - "hub_vcn_outdoor_subnet_cidr"
-      - "hub_vcn_indoor_subnet_name"
-      - "hub_vcn_indoor_subnet_cidr"
-    visible: customize_net   
-
   - title: "Events and Notifications"
     variables:
       - "network_admin_email_endpoints"
