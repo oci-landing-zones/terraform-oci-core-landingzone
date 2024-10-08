@@ -9,7 +9,7 @@ locals {
       is_ipv6enabled                   = false
       is_oracle_gua_allocation_enabled = false
       cidr_blocks                      = var.oke_vcn3_cidrs,
-      dns_label                        = replace(coalesce(var.oke_vcn3_dns, "oke-vcn-3"), "-", "")
+      dns_label                        = substr(replace(coalesce(var.oke_vcn3_name,"oke-vcn-3"),"/[^\\w]/",""),0,14)
       block_nat_traffic                = false
       subnets = merge(
         {
@@ -17,7 +17,7 @@ locals {
             cidr_block                 = coalesce(var.oke_vcn3_api_subnet_cidr, cidrsubnet(var.oke_vcn3_cidrs[0], 14, 0))
             dhcp_options_key           = "default_dhcp_options"
             display_name               = coalesce(var.oke_vcn3_api_subnet_name, "${var.service_label}-oke-vcn-3-api-subnet")
-            dns_label                  = replace(coalesce(var.oke_vcn3_api_subnet_dns, "api-subnet"), "-", "")
+            dns_label                  = substr(replace(coalesce(var.oke_vcn3_api_subnet_name,"api-subnet"),"/[^\\w]/",""),0,14)
             ipv6cidr_blocks            = []
             prohibit_internet_ingress  = true
             prohibit_public_ip_on_vnic = true
@@ -30,7 +30,7 @@ locals {
             cidr_block                 = coalesce(var.oke_vcn3_workers_subnet_cidr, cidrsubnet(var.oke_vcn3_cidrs[0], 8, 1))
             dhcp_options_key           = "default_dhcp_options"
             display_name               = coalesce(var.oke_vcn3_workers_subnet_name, "${var.service_label}-oke-vcn-3-workers-subnet")
-            dns_label                  = replace(coalesce(var.oke_vcn3_workers_subnet_dns, "workers-subnet"), "-", "")
+            dns_label                  = substr(replace(coalesce(var.oke_vcn3_workers_subnet_name,"workers-subnet"),"/[^\\w]/",""),0,14)
             ipv6cidr_blocks            = []
             prohibit_internet_ingress  = true
             prohibit_public_ip_on_vnic = true
@@ -43,7 +43,7 @@ locals {
             cidr_block                 = coalesce(var.oke_vcn3_services_subnet_cidr, cidrsubnet(var.oke_vcn3_cidrs[0], 8, 2))
             dhcp_options_key           = "default_dhcp_options"
             display_name               = coalesce(var.oke_vcn3_services_subnet_name, "${var.service_label}-oke-vcn-3-services-subnet")
-            dns_label                  = replace(coalesce(var.oke_vcn3_services_subnet_dns, "services-subnet"), "-", "")
+            dns_label                  = substr(replace(coalesce(var.oke_vcn3_services_subnet_name,"services-subnet"),"/[^\\w]/",""),0,14)
             ipv6cidr_blocks            = []
             prohibit_internet_ingress  = false
             prohibit_public_ip_on_vnic = false
@@ -56,7 +56,7 @@ locals {
             cidr_block                 = coalesce(var.oke_vcn3_mgmt_subnet_cidr, cidrsubnet(var.oke_vcn3_cidrs[0], 12, 48))
             dhcp_options_key           = "default_dhcp_options"
             display_name               = coalesce(var.oke_vcn3_mgmt_subnet_name, "${var.service_label}-oke-vcn-3-mgmt-subnet")
-            dns_label                  = replace(coalesce(var.oke_vcn3_mgmt_subnet_dns, "mgmt-subnet"), "-", "")
+            dns_label                  = substr(replace(coalesce(var.oke_vcn3_mgmt_subnet_name,"mgmt-subnet"),"/[^\\w]/",""),0,14)
             ipv6cidr_blocks            = []
             prohibit_internet_ingress  = true
             prohibit_public_ip_on_vnic = true
@@ -69,7 +69,7 @@ locals {
             cidr_block                 = coalesce(var.oke_vcn3_pods_subnet_cidr, cidrsubnet(var.oke_vcn3_cidrs[0], 3, 1))
             dhcp_options_key           = "default_dhcp_options"
             display_name               = coalesce(var.oke_vcn3_pods_subnet_name, "${var.service_label}-oke-vcn-3-pods-subnet")
-            dns_label                  = replace(coalesce(var.oke_vcn3_pods_subnet_dns, "pods-subnet"), "-", "")
+            dns_label                  = substr(replace(coalesce(var.oke_vcn3_pods_subnet_name,"pods-subnet"),"/[^\\w]/",""),0,14)
             ipv6cidr_blocks            = []
             prohibit_internet_ingress  = true
             prohibit_public_ip_on_vnic = true

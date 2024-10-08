@@ -19,11 +19,6 @@ variable "tt_vcn1_cidrs" {
   default = ["10.0.0.0/20"]
   description = "The list of CIDR blocks for the VCN."
 }
-variable "tt_vcn1_dns" {
-  type    = string
-  default = null
-  description = "The VCN DNS name. Use only letters and numbers, no special characters."
-}
 variable "tt_vcn1_attach_to_drg" {
   type    = bool
   default = false
@@ -49,11 +44,6 @@ variable "tt_vcn1_web_subnet_cidr" {
   default = null
   description = "The Web subnet CIDR block. It must be within the VCN CIDR blocks."
 }
-variable "tt_vcn1_web_subnet_dns" {
-  type    = string
-  default = null
-  description = "The Web subnet DNS name. Use only letters and numbers, no special characters."
-}
 variable "tt_vcn1_web_subnet_is_private" {
   type    = bool
   default = false
@@ -69,11 +59,6 @@ variable "tt_vcn1_app_subnet_cidr" {
   default = null
   description = "The Application subnet CIDR block. It must be within the VCN CIDR blocks."
 }
-variable "tt_vcn1_app_subnet_dns" {
-  type    = string
-  default = null
-  description = "The Application subnet DNS name. Use only letters and numbers, no special characters."
-}
 variable "tt_vcn1_db_subnet_name" {
   type    = string
   default = null
@@ -83,11 +68,6 @@ variable "tt_vcn1_db_subnet_cidr" {
   type    = string
   default = null
   description = "The Database subnet CIDR block. It must be within the VCN CIDR blocks."
-}
-variable "tt_vcn1_db_subnet_dns" {
-  type    = string
-  default = null
-  description = "The Database subnet DNS name. Use only letters and numbers, no special characters."
 }
 variable "deploy_tt_vcn1_bastion_subnet" {
   type    = bool
@@ -103,11 +83,6 @@ variable "tt_vcn1_bastion_subnet_cidr" {
   type    = string
   default = null
   description = "The Bastion subnet CIDR block. A /29 block is usually enough, unless you plan on deploying a large number of jump hosts. It must be within the VCN CIDR blocks."
-}
-variable "tt_vcn1_bastion_subnet_dns" {
-  type    = string
-  default = null
-  description = "The Bastion subnet DNS name. Use only letters and numbers, no special characters."
 }
 variable "tt_vcn1_bastion_is_access_via_public_endpoint" {
   type    = bool
@@ -138,11 +113,6 @@ variable "tt_vcn2_cidrs" {
   default = ["10.1.0.0/20"]
   description = "The list of CIDR blocks for the VCN."
 }
-variable "tt_vcn2_dns" {
-  type    = string
-  default = null
-  description = "The VCN DNS Name."
-}
 variable "tt_vcn2_attach_to_drg" {
   type    = bool
   default = false
@@ -168,11 +138,6 @@ variable "tt_vcn2_web_subnet_cidr" {
   default = null
   description = "The Web subnet CIDR block. It must be within the VCN CIDR blocks."
 }
-variable "tt_vcn2_web_subnet_dns" {
-  type    = string
-  default = null
-  description = "The Web subnet DNS name. Use only letters and numbers, no special characters."
-}
 variable "tt_vcn2_web_subnet_is_private" {
   type    = bool
   default = false
@@ -188,11 +153,6 @@ variable "tt_vcn2_app_subnet_cidr" {
   default = null
   description = "The Application subnet CIDR block. It must be within the VCN CIDR blocks."
 }
-variable "tt_vcn2_app_subnet_dns" {
-  type    = string
-  default = null
-  description = "The Application subnet DNS name. Use only letters and numbers, no special characters."
-}
 variable "tt_vcn2_db_subnet_name" {
   type    = string
   default = null
@@ -202,11 +162,6 @@ variable "tt_vcn2_db_subnet_cidr" {
   type    = string
   default = null
   description = "The Database subnet CIDR block. It must be within the VCN CIDR blocks."
-}
-variable "tt_vcn2_db_subnet_dns" {
-  type    = string
-  default = null
-  description = "The Database subnet DNS name. Use only letters and numbers, no special characters."
 }
 variable "deploy_tt_vcn2_bastion_subnet" {
   type    = bool
@@ -222,11 +177,6 @@ variable "tt_vcn2_bastion_subnet_cidr" {
   type    = string
   default = null
   description = "The Bastion subnet CIDR block. A /29 block is usually enough, unless you plan on deploying a large number of jump hosts. It must be within the VCN CIDR blocks."
-}
-variable "tt_vcn2_bastion_subnet_dns" {
-  type    = string
-  default = null
-  description = "The Bastion subnet DNS name. Use only letters and numbers, no special characters."
 }
 variable "tt_vcn2_bastion_is_access_via_public_endpoint" {
   type    = bool
@@ -258,11 +208,6 @@ variable "tt_vcn3_cidrs" {
   default = ["10.2.0.0/20"]
   description = "The list of CIDR blocks for the VCN."
 }
-variable "tt_vcn3_dns" {
-  type    = string
-  default = null
-  description = "The VCN DNS Name."
-}
 variable "tt_vcn3_attach_to_drg" {
   type    = bool
   default = false
@@ -288,11 +233,6 @@ variable "tt_vcn3_web_subnet_cidr" {
   default = null
   description = "The Web subnet CIDR block. It must be within the VCN CIDR blocks."
 }
-variable "tt_vcn3_web_subnet_dns" {
-  type    = string
-  default = null
-  description = "The Web subnet DNS name. Use only letters and numbers, no special characters."
-}
 variable "tt_vcn3_web_subnet_is_private" {
   type    = bool
   default = false
@@ -308,11 +248,6 @@ variable "tt_vcn3_app_subnet_cidr" {
   default = null
   description = "The Application subnet CIDR block. It must be within the VCN CIDR blocks."
 }
-variable "tt_vcn3_app_subnet_dns" {
-  type    = string
-  default = null
-  description = "The Application subnet DNS name. Use only letters and numbers, no special characters."
-}
 variable "tt_vcn3_db_subnet_name" {
   type    = string
   default = null
@@ -322,11 +257,6 @@ variable "tt_vcn3_db_subnet_cidr" {
   type    = string
   default = null
   description = "The Database subnet CIDR block. It must be within the VCN CIDR blocks."
-}
-variable "tt_vcn3_db_subnet_dns" {
-  type    = string
-  default = null
-  description = "The Database subnet DNS name. Use only letters and numbers, no special characters."
 }
 variable "deploy_tt_vcn3_bastion_subnet" {
   type    = bool
@@ -342,11 +272,6 @@ variable "tt_vcn3_bastion_subnet_cidr" {
   type    = string
   default = null
   description = "The Bastion subnet CIDR block. A /29 block is usually enough, unless you plan on deploying a large number of jump hosts. It must be within the VCN CIDR blocks."
-}
-variable "tt_vcn3_bastion_subnet_dns" {
-  type    = string
-  default = null
-  description = "The Bastion subnet DNS name. Use only letters and numbers, no special characters."
 }
 variable "tt_vcn3_bastion_is_access_via_public_endpoint" {
   type    = bool

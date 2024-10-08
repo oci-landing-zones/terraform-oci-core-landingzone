@@ -9,7 +9,7 @@ locals {
       is_ipv6enabled                   = false
       is_oracle_gua_allocation_enabled = false
       cidr_blocks                      = var.exa_vcn3_cidrs,
-      dns_label                        = replace(coalesce(var.exa_vcn3_dns, "exa-vcn-3"), "-", "")
+      dns_label                        = substr(replace(coalesce(var.exa_vcn3_name,"exadata-vcn-3"),"/[^\\w]/",""),0,14)
       block_nat_traffic                = false
 
       subnets = {
@@ -17,7 +17,7 @@ locals {
           cidr_block                 = coalesce(var.exa_vcn3_client_subnet_cidr, cidrsubnet(var.exa_vcn3_cidrs[0], 4, 0))
           dhcp_options_key           = "default_dhcp_options"
           display_name               = coalesce(var.exa_vcn3_client_subnet_name, "${var.service_label}-exadata-vcn-3-client-subnet")
-          dns_label                  = replace(coalesce(var.exa_vcn3_client_subnet_dns, "client-subnet"), "-", "")
+          dns_label                  = substr(replace(coalesce(var.exa_vcn3_client_subnet_name,"client-subnet"),"/[^\\w]/",""),0,14)
           ipv6cidr_blocks            = []
           prohibit_internet_ingress  = true
           prohibit_public_ip_on_vnic = true
@@ -27,7 +27,7 @@ locals {
           cidr_block                 = coalesce(var.exa_vcn3_backup_subnet_cidr, cidrsubnet(var.exa_vcn3_cidrs[0], 4, 1))
           dhcp_options_key           = "default_dhcp_options"
           display_name               = coalesce(var.exa_vcn3_backup_subnet_name, "${var.service_label}-exadata-vcn-3-backup-subnet")
-          dns_label                  = replace(coalesce(var.exa_vcn3_backup_subnet_dns, "backup-subnet"), "-", "")
+          dns_label                  = substr(replace(coalesce(var.exa_vcn3_backup_subnet_name,"backup-subnet"),"/[^\\w]/",""),0,14)
           ipv6cidr_blocks            = []
           prohibit_internet_ingress  = true
           prohibit_public_ip_on_vnic = true

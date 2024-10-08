@@ -34,11 +34,6 @@ variable "hub_vcn_cidrs" {
   default = ["192.168.0.0/26"]
   description = "List of CIDR blocks for the Hub VCN."
 }
-variable "hub_vcn_dns" {
-  type    = string
-  default = null
-  description = "The Hub VCN DNS name."
-}
 # ------------------------------------------------------
 # ----- Networking - Firewall settings
 #-------------------------------------------------------
@@ -103,11 +98,6 @@ variable "hub_vcn_web_subnet_cidr" {
   default = null
   description = "The Hub VCN Web subnet CIDR block. It must be within the VCN CIDR blocks."
 }
-variable "hub_vcn_web_subnet_dns" {
-  type    = string
-  default = null
-  description = "The Hub VCN Web subnet DNS name. Use only letters and numbers, no special characters."
-}
 variable "hub_vcn_web_subnet_is_private" {
   type    = bool
   default = false
@@ -130,11 +120,6 @@ variable "hub_vcn_mgmt_subnet_cidr" {
   type    = string
   default = null
   description = "The Hub VCN Management subnet CIDR block. It must be within the VCN CIDR blocks."
-}
-variable "hub_vcn_mgmt_subnet_dns" {
-  type    = string
-  default = null
-  description = "The Hub VCN Management subnet DNS name. Use only letters and numbers, no special characters."
 }
 variable "hub_vcn_mgmt_subnet_external_allowed_cidrs_for_http" {
   type    = list(string)
@@ -159,11 +144,6 @@ variable "hub_vcn_outdoor_subnet_cidr" {
   default = null
   description = "The Hub VCN Outdoor subnet CIDR block. It must be within the VCN CIDR blocks."
 }
-variable "hub_vcn_outdoor_subnet_dns" {
-  type    = string
-  default = null
-  description = "The Hub VCN Outdoor subnet DNS name. Use only letters and numbers, no special characters."
-}
 # -------------------------------------------
 # ----- Networking - Hub Indoor Subnet
 #--------------------------------------------
@@ -176,9 +156,4 @@ variable "hub_vcn_indoor_subnet_cidr" {
   type    = string
   default = null
   description = "The Hub VCN Indoor subnet CIDR block. It must be within the VCN CIDR blocks."
-}
-variable "hub_vcn_indoor_subnet_dns" {
-  type    = string
-  default = null
-  description = "The Hub VCN Indoor subnet DNS name. Use only letters and numbers, no special characters."
 }
