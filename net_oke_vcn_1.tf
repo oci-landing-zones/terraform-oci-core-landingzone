@@ -11,7 +11,7 @@ locals {
       is_ipv6enabled                   = false
       is_oracle_gua_allocation_enabled = false
       cidr_blocks                      = var.oke_vcn1_cidrs,
-      dns_label                        = replace(coalesce(var.oke_vcn1_dns, "oke-vcn-1"), "-", "")
+      dns_label                        = substr(replace(coalesce(var.oke_vcn1_name,"oke-vcn-1"),"/[^\\w]/",""),0,14)
       block_nat_traffic                = false
       subnets = merge(
         {
@@ -19,7 +19,7 @@ locals {
             cidr_block                 = coalesce(var.oke_vcn1_api_subnet_cidr, cidrsubnet(var.oke_vcn1_cidrs[0], 14, 0))
             dhcp_options_key           = "default_dhcp_options"
             display_name               = coalesce(var.oke_vcn1_api_subnet_name, "${var.service_label}-oke-vcn-1-api-subnet")
-            dns_label                  = replace(coalesce(var.oke_vcn1_api_subnet_dns, "api-subnet"), "-", "")
+            dns_label                  = substr(replace(coalesce(var.oke_vcn1_api_subnet_name,"api-subnet"),"/[^\\w]/",""),0,14)
             ipv6cidr_blocks            = []
             prohibit_internet_ingress  = true
             route_table_key            = "OKE-VCN-1-API-SUBNET-ROUTE-TABLE"
@@ -31,7 +31,7 @@ locals {
             cidr_block                 = coalesce(var.oke_vcn1_workers_subnet_cidr, cidrsubnet(var.oke_vcn1_cidrs[0], 8, 1))
             dhcp_options_key           = "default_dhcp_options"
             display_name               = coalesce(var.oke_vcn1_workers_subnet_name, "${var.service_label}-oke-vcn-1-workers-subnet")
-            dns_label                  = replace(coalesce(var.oke_vcn1_workers_subnet_dns, "workers-subnet"), "-", "")
+            dns_label                  = substr(replace(coalesce(var.oke_vcn1_workers_subnet_name,"workers-subnet"),"/[^\\w]/",""),0,14)
             ipv6cidr_blocks            = []
             prohibit_internet_ingress  = true
             route_table_key            = "OKE-VCN-1-WORKERS-SUBNET-ROUTE-TABLE"
@@ -43,7 +43,7 @@ locals {
             cidr_block                 = coalesce(var.oke_vcn1_services_subnet_cidr, cidrsubnet(var.oke_vcn1_cidrs[0], 8, 2))
             dhcp_options_key           = "default_dhcp_options"
             display_name               = coalesce(var.oke_vcn1_services_subnet_name, "${var.service_label}-oke-vcn-1-services-subnet")
-            dns_label                  = replace(coalesce(var.oke_vcn1_services_subnet_dns, "services-subnet"), "-", "")
+            dns_label                  = substr(replace(coalesce(var.oke_vcn1_services_subnet_name,"services-subnet"),"/[^\\w]/",""),0,14)
             ipv6cidr_blocks            = []
             prohibit_internet_ingress  = false
             route_table_key            = "OKE-VCN-1-SERVICES-SUBNET-ROUTE-TABLE"
@@ -55,7 +55,7 @@ locals {
             cidr_block                 = coalesce(var.oke_vcn1_mgmt_subnet_cidr, cidrsubnet(var.oke_vcn1_cidrs[0], 12, 48))
             dhcp_options_key           = "default_dhcp_options"
             display_name               = coalesce(var.oke_vcn1_mgmt_subnet_name, "${var.service_label}-oke-vcn-1-mgmt-subnet")
-            dns_label                  = replace(coalesce(var.oke_vcn1_mgmt_subnet_dns, "mgmt-subnet"), "-", "")
+            dns_label                  = substr(replace(coalesce(var.oke_vcn1_mgmt_subnet_name,"mgmt-subnet"),"/[^\\w]/",""),0,14)
             ipv6cidr_blocks            = []
             prohibit_internet_ingress  = true
             route_table_key            = "OKE-VCN-1-MGMT-SUBNET-ROUTE-TABLE"
@@ -67,7 +67,7 @@ locals {
             cidr_block                 = coalesce(var.oke_vcn1_pods_subnet_cidr, cidrsubnet(var.oke_vcn1_cidrs[0], 3, 1))
             dhcp_options_key           = "default_dhcp_options"
             display_name               = coalesce(var.oke_vcn1_pods_subnet_name, "${var.service_label}-oke-vcn-1-pods-subnet")
-            dns_label                  = replace(coalesce(var.oke_vcn1_pods_subnet_dns, "pods-subnet"), "-", "")
+            dns_label                  = substr(replace(coalesce(var.oke_vcn1_pods_subnet_name,"pods-subnet"),"/[^\\w]/",""),0,14)
             ipv6cidr_blocks            = []
             prohibit_internet_ingress  = true
             route_table_key            = "OKE-VCN-1-PODS-SUBNET-ROUTE-TABLE"

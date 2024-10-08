@@ -9,7 +9,7 @@ locals {
       is_ipv6enabled                   = false
       is_oracle_gua_allocation_enabled = false
       cidr_blocks                      = var.hub_vcn_cidrs
-      dns_label                        = replace(coalesce(var.hub_vcn_dns, "${var.service_label}-hub-vcn"), "-", "")
+      dns_label                        = substr(replace(coalesce(var.hub_vcn_name,"hub-vcn"),"/[^\\w]/",""),0,14)
       block_nat_traffic                = false
 
       subnets = {
@@ -17,7 +17,7 @@ locals {
           cidr_block                 = coalesce(var.hub_vcn_web_subnet_cidr, cidrsubnet(var.hub_vcn_cidrs[0], 2, 0))
           dhcp_options_key           = "default_dhcp_options"
           display_name               = coalesce(var.hub_vcn_web_subnet_name, "${var.service_label}-hub-vcn-web-subnet")
-          dns_label                  = replace(coalesce(var.hub_vcn_web_subnet_dns, "web-subnet"), "-", "")
+          dns_label                  = substr(replace(coalesce(var.hub_vcn_web_subnet_name,"web-subnet"),"/[^\\w]/",""),0,14)
           ipv6cidr_blocks            = []
           prohibit_internet_ingress  = false
           route_table_key            = "WEB-SUBNET-ROUTE-TABLE"
@@ -27,7 +27,7 @@ locals {
           cidr_block                 = coalesce(var.hub_vcn_outdoor_subnet_cidr, cidrsubnet(var.hub_vcn_cidrs[0], 2, 1))
           dhcp_options_key           = "default_dhcp_options"
           display_name               = coalesce(var.hub_vcn_outdoor_subnet_name, "${var.service_label}-hub-vcn-outdoor-subnet")
-          dns_label                  = replace(coalesce(var.hub_vcn_outdoor_subnet_dns, "outdoor-subnet"), "-", "")
+          dns_label                  = substr(replace(coalesce(var.hub_vcn_outdoor_subnet_name,"outdoor-subnet"),"/[^\\w]/",""),0,14)
           ipv6cidr_blocks            = []
           prohibit_internet_ingress  = true
           route_table_key            = "OUTDOOR-SUBNET-ROUTE-TABLE"
@@ -37,7 +37,7 @@ locals {
           cidr_block                 = coalesce(var.hub_vcn_indoor_subnet_cidr, cidrsubnet(var.hub_vcn_cidrs[0], 2, 2))
           dhcp_options_key           = "default_dhcp_options"
           display_name               = coalesce(var.hub_vcn_indoor_subnet_name, "${var.service_label}-hub-vcn-indoor-subnet")
-          dns_label                  = replace(coalesce(var.hub_vcn_indoor_subnet_dns, "indoor-subnet"), "-", "")
+          dns_label                  = substr(replace(coalesce(var.hub_vcn_indoor_subnet_name,"indoor-subnet"),"/[^\\w]/",""),0,14)
           ipv6cidr_blocks            = []
           prohibit_internet_ingress  = true
           route_table_key            = "INDOOR-SUBNET-ROUTE-TABLE"
@@ -47,7 +47,7 @@ locals {
           cidr_block                 = coalesce(var.hub_vcn_mgmt_subnet_cidr, cidrsubnet(var.hub_vcn_cidrs[0], 2, 3))
           dhcp_options_key           = "default_dhcp_options"
           display_name               = coalesce(var.hub_vcn_mgmt_subnet_name, "${var.service_label}-hub-vcn-mgmt-subnet")
-          dns_label                  = replace(coalesce(var.hub_vcn_mgmt_subnet_dns, "mgmt-subnet"), "-", "")
+          dns_label                  = substr(replace(coalesce(var.hub_vcn_mgmt_subnet_name,"mgmt-subnet"),"/[^\\w]/",""),0,14)
           ipv6cidr_blocks            = [],
           prohibit_internet_ingress  = true
           route_table_key            = "MGMT-SUBNET-ROUTE-TABLE"

@@ -11,7 +11,7 @@ locals {
             is_ipv6enabled                   = false
             is_oracle_gua_allocation_enabled = false
             cidr_blocks                      = var.tt_vcn3_cidrs,
-            dns_label                        = replace(coalesce(var.tt_vcn3_dns,"three-tier-vcn-3"),"-","")
+            dns_label                        = substr(replace(coalesce(var.tt_vcn3_name,"three-tier-vcn-1"),"/[^\\w]/",""),0,14)
             block_nat_traffic                = false
 
             subnets = merge(
@@ -20,7 +20,7 @@ locals {
                         cidr_block                 = coalesce(var.tt_vcn3_web_subnet_cidr, cidrsubnet(var.tt_vcn3_cidrs[0],4,0))
                         dhcp_options_key           = "default_dhcp_options"
                         display_name               = coalesce(var.tt_vcn3_web_subnet_name,"${var.service_label}-three-tier-vcn-3-web-subnet")
-                        dns_label                  = replace(coalesce(var.tt_vcn3_web_subnet_dns,"web-subnet"),"-","")
+                        dns_label                  = substr(replace(coalesce(var.tt_vcn3_web_subnet_name,"web-subnet"),"/[^\\w]/",""),0,14)
                         ipv6cidr_blocks            = []
                         prohibit_internet_ingress  = var.tt_vcn3_web_subnet_is_private
                         route_table_key            = "TT-VCN-3-WEB-SUBNET-ROUTE-TABLE"
@@ -31,7 +31,7 @@ locals {
                         cidr_block                 = coalesce(var.tt_vcn3_app_subnet_cidr, cidrsubnet(var.tt_vcn3_cidrs[0],4,1))
                         dhcp_options_key           = "default_dhcp_options"
                         display_name               = coalesce(var.tt_vcn3_app_subnet_name,"${var.service_label}-three-tier-vcn-3-app-subnet")
-                        dns_label                  = replace(coalesce(var.tt_vcn3_app_subnet_dns,"app-subnet"),"-","")
+                        dns_label                  = substr(replace(coalesce(var.tt_vcn3_app_subnet_name,"app-subnet"),"/[^\\w]/",""),0,14)
                         ipv6cidr_blocks            = []
                         prohibit_internet_ingress  = true
                         route_table_key            = "TT-VCN-3-APP-SUBNET-ROUTE-TABLE"
@@ -42,7 +42,7 @@ locals {
                         cidr_block                 = coalesce(var.tt_vcn3_db_subnet_cidr, cidrsubnet(var.tt_vcn3_cidrs[0],4,2))
                         dhcp_options_key           = "default_dhcp_options"
                         display_name               = coalesce(var.tt_vcn3_db_subnet_name,"${var.service_label}-three-tier-vcn-3-db-subnet")
-                        dns_label                  = replace(coalesce(var.tt_vcn3_db_subnet_dns,"db-subnet"),"-","")
+                        dns_label                  = substr(replace(coalesce(var.tt_vcn3_db_subnet_name,"db-subnet"),"/[^\\w]/",""),0,14)
                         ipv6cidr_blocks            = []
                         prohibit_internet_ingress  = true
                         route_table_key            = "TT-VCN-3-DB-SUBNET-ROUTE-TABLE"
@@ -53,7 +53,7 @@ locals {
                         cidr_block                 = coalesce(var.tt_vcn3_bastion_subnet_cidr, cidrsubnet(var.tt_vcn3_cidrs[0],9,96))
                         dhcp_options_key           = "default_dhcp_options"
                         display_name               = coalesce(var.tt_vcn3_bastion_subnet_name,"${var.service_label}-three-tier-vcn-3-bastion-subnet")
-                        dns_label                  = replace(coalesce(var.tt_vcn3_bastion_subnet_dns,"bastion-subnet"),"-","")
+                        dns_label                  = substr(replace(coalesce(var.tt_vcn3_bastion_subnet_name,"bastion-subnet"),"/[^\\w]/",""),0,14)
                         ipv6cidr_blocks            = []
                         prohibit_internet_ingress  = var.tt_vcn3_bastion_is_access_via_public_endpoint == true ? false : true
                         route_table_key            = "TT-VCN-3-BASTION-SUBNET-ROUTE-TABLE"
