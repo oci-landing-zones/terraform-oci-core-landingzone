@@ -370,7 +370,7 @@ locals {
   autonomous_database_grants = concat(local.autonomous_database_grants_on_database_cmp, local.autonomous_database_grants_on_security_cmp)
 
   ## Network firewall appliance grant. Primarily for Fortinet's Fortigate
-  net_fw_app_grants_on_enclosing_cmp = local.firewall_options[var.hub_vcn_deploy_firewall_option] == "FORTINET" && local.net_fw_app_dynamic_group_name != null ? [
+  net_fw_app_grants_on_enclosing_cmp = local.firewall_options[var.hub_vcn_deploy_net_appliance_option] == "FORTINET" && local.net_fw_app_dynamic_group_name != null ? [
     "allow dynamic-group ${local.net_fw_app_dynamic_group_name} to read all-resources in ${local.policy_scope}"] : []
 
   ## Storage admin grants
@@ -506,7 +506,7 @@ locals {
     } : null
   } : {}  
 
-  net_fw_app_policy = local.firewall_options[var.hub_vcn_deploy_firewall_option] == "FORTINET" ? {
+  net_fw_app_policy = local.firewall_options[var.hub_vcn_deploy_net_appliance_option] == "FORTINET" ? {
     (local.net_fw_app_policy_name) = length(local.net_fw_app_grants_on_enclosing_cmp) > 0 ? {
       compartment_id = local.enclosing_compartment_id
       name           = local.net_fw_app_policy_name
