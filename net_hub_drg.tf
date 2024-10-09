@@ -157,64 +157,55 @@ locals {
               import_drg_route_distribution_key = "HUB-VCN-DRG-IMPORT-ROUTE-DISTRIBUTION"
             }
           } : {},
-          (local.add_tt_vcn1 == true && var.tt_vcn1_attach_to_drg == true && length(var.tt_vcn1_routable_vcns) > 0 &&
-            local.hub_with_drg_only == true) ? {
+          (local.add_tt_vcn1 == true && var.tt_vcn1_attach_to_drg == true) ? {
             "TT-VCN-1-DRG-ROUTE-TABLE" = {
               display_name                      = "${coalesce(var.tt_vcn1_name, "${var.service_label}-three-tier-vcn-1")}-drg-route-table"
               import_drg_route_distribution_key = "TT-VCN-1-DRG-IMPORT-ROUTE-DISTRIBUTION"
             }
           } : {},
-          (local.add_tt_vcn2 == true && var.tt_vcn2_attach_to_drg == true && length(var.tt_vcn2_routable_vcns) > 0 &&
-            local.hub_with_drg_only == true) ? {
+          (local.add_tt_vcn2 == true && var.tt_vcn2_attach_to_drg == true) ? {
             "TT-VCN-2-DRG-ROUTE-TABLE" = {
               display_name                      = "${coalesce(var.tt_vcn2_name, "${var.service_label}-three-tier-vcn-2")}-drg-route-table"
               import_drg_route_distribution_key = "TT-VCN-2-DRG-IMPORT-ROUTE-DISTRIBUTION"
             }
           } : {},
-          (local.add_tt_vcn3 == true && var.tt_vcn3_attach_to_drg == true && length(var.tt_vcn3_routable_vcns) > 0 &&
-            local.hub_with_drg_only == true) ? {
+          (local.add_tt_vcn3 == true && var.tt_vcn3_attach_to_drg == true) ? {
             "TT-VCN-3-DRG-ROUTE-TABLE" = {
               display_name                      = "${coalesce(var.tt_vcn3_name, "${var.service_label}-three-tier-vcn-3")}-drg-route-table"
               import_drg_route_distribution_key = "TT-VCN-3-DRG-IMPORT-ROUTE-DISTRIBUTION"
             }
           } : {},
-          (local.add_exa_vcn1 == true && var.exa_vcn1_attach_to_drg == true && length(var.exa_vcn1_routable_vcns) > 0 &&
-            local.hub_with_drg_only == true) ? {
+          (local.add_exa_vcn1 == true && var.exa_vcn1_attach_to_drg == true) ? {
             "EXA-VCN-1-DRG-ROUTE-TABLE" = {
               display_name                      = "${coalesce(var.exa_vcn1_name, "${var.service_label}-exadata-vcn-1")}-drg-route-table"
               import_drg_route_distribution_key = "EXA-VCN-1-DRG-IMPORT-ROUTE-DISTRIBUTION"
             }
           } : {},
-          (local.add_exa_vcn2 == true && var.exa_vcn2_attach_to_drg == true && length(var.exa_vcn2_routable_vcns) > 0) &&
-          local.hub_with_drg_only == true ? {
+          (local.add_exa_vcn2 == true && var.exa_vcn2_attach_to_drg == true) ? {
             "EXA-VCN-2-DRG-ROUTE-TABLE" = {
               display_name                      = "${coalesce(var.exa_vcn2_name, "${var.service_label}-exadata-vcn-2")}-drg-route-table"
               import_drg_route_distribution_key = "EXA-VCN-2-DRG-IMPORT-ROUTE-DISTRIBUTION"
             }
           } : {},
-          (local.add_exa_vcn3 == true && var.exa_vcn3_attach_to_drg == true && length(var.exa_vcn3_routable_vcns) > 0) &&
-          local.hub_with_drg_only == true ? {
+          (local.add_exa_vcn3 == true && var.exa_vcn3_attach_to_drg == true) ? {
             "EXA-VCN-3-DRG-ROUTE-TABLE" = {
               display_name                      = "${coalesce(var.exa_vcn3_name, "${var.service_label}-exadata-vcn-3")}-drg-route-table"
               import_drg_route_distribution_key = "EXA-VCN-3-DRG-IMPORT-ROUTE-DISTRIBUTION"
             }
           } : {},
-          (local.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true && length(var.oke_vcn1_routable_vcns) > 0) &&
-          local.hub_with_drg_only == true ? {
+          (local.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true) ? {
             "OKE-VCN-1-DRG-ROUTE-TABLE" = {
               display_name                      = "${coalesce(var.oke_vcn1_name, "${var.service_label}-oke-vcn-1")}-drg-route-table"
               import_drg_route_distribution_key = "OKE-VCN-1-DRG-IMPORT-ROUTE-DISTRIBUTION"
             }
           } : {},
-          (local.add_oke_vcn2 == true && var.oke_vcn2_attach_to_drg == true && length(var.oke_vcn2_routable_vcns) > 0) &&
-          local.hub_with_drg_only == true ? {
+          (local.add_oke_vcn2 == true && var.oke_vcn2_attach_to_drg == true) ? {
             "OKE-VCN-2-DRG-ROUTE-TABLE" = {
               display_name                      = "${coalesce(var.oke_vcn2_name, "${var.service_label}-oke-vcn-2")}-drg-route-table"
               import_drg_route_distribution_key = "OKE-VCN-2-DRG-IMPORT-ROUTE-DISTRIBUTION"
             }
           } : {},
-          (local.add_oke_vcn3 == true && var.oke_vcn3_attach_to_drg == true && length(var.oke_vcn3_routable_vcns) > 0) &&
-          local.hub_with_drg_only == true ? {
+          (local.add_oke_vcn3 == true && var.oke_vcn3_attach_to_drg == true) ? {
             "OKE-VCN-3-DRG-ROUTE-TABLE" = {
               display_name                      = "${coalesce(var.oke_vcn3_name, "${var.service_label}-oke-vcn-3")}-drg-route-table"
               import_drg_route_distribution_key = "OKE-VCN-3-DRG-IMPORT-ROUTE-DISTRIBUTION"
