@@ -2691,7 +2691,7 @@ variables:
     required: true
     visible:
       and:
-        - customize_net
+        - define_net
         - or:
           - eq:
             - ${hub_deployment_option}
@@ -2699,18 +2699,10 @@ variables:
           - eq:
             - ${hub_deployment_option}
             - "VCN or on-premises connectivity routed through DMZ VCN with Network Virtual Appliance existing DRG (DMZ VCN will be created and DRG ID required)"
-        - not:
+        - and:
           - eq:
             - ${hub_vcn_deploy_net_appliance_option}
-            - "Don't deploy any network appliance at this time"
-        - not:
-          - eq:
-            - ${hub_vcn_deploy_net_appliance_option}
-            - "Palo Alto Networks VM-Series Firewall"
-        - not:
-          - eq:
-            - ${hub_vcn_deploy_net_appliance_option}
-            - "Fortinet FortiGate Firewall"
+            - "User-Provided Virtual Network Appliance"
 
   net_appliance_image_ocid:
     type: oci:core:image:id
@@ -2721,7 +2713,7 @@ variables:
     required: true
     visible:
       and:
-        - customize_net
+        - define_net
         - or:
           - eq:
             - ${hub_deployment_option}
@@ -2729,18 +2721,10 @@ variables:
           - eq:
             - ${hub_deployment_option}
             - "VCN or on-premises connectivity routed through DMZ VCN with Network Virtual Appliance existing DRG (DMZ VCN will be created and DRG ID required)"
-        - not:
+        - and:
           - eq:
             - ${hub_vcn_deploy_net_appliance_option}
-            - "Don't deploy any network appliance at this time"
-        - not:
-          - eq:
-            - ${hub_vcn_deploy_net_appliance_option}
-            - "Palo Alto Networks VM-Series Firewall"
-        - not:
-          - eq:
-            - ${hub_vcn_deploy_net_appliance_option}
-            - "Fortinet FortiGate Firewall"
+            - "User-Provided Virtual Network Appliance"
 
   net_appliance_name_prefix:
     type: string
