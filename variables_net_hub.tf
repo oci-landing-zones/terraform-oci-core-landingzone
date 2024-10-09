@@ -85,11 +85,11 @@ variable "net_appliance_image_ocid" {
   description = "The custom image ocid of the user-provided virtual network appliance."
 }
 
-variable "net_appliance_image_compartment_ocid" {
-  type        = string
-  default     = null
-  description = "The compartment ocid of the network appliance image resource."
-}
+# variable "net_appliance_image_compartment_ocid" {
+#   type        = string
+#   default     = null
+#   description = "The compartment ocid of the network appliance image resource."
+# }
 
 variable "customize_hub_vcn_subnets" {
   type    = bool

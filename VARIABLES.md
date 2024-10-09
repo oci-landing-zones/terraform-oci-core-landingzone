@@ -302,7 +302,6 @@
 | net_appliance_boot_volume_size | The boot volume size (in GB) for the network appliances. | `number` | `60` | no |
 | net_appliance_flex_shape_cpu | The number of OCPUs for the selected flex shape. Applicable to flexible shapes only. | `number` | `2` | no |
 | net_appliance_flex_shape_memory | The amount of memory (in GB) for the selected flex shape. Applicable to flexible shapes only. | `number` | `56` | no |
-| net_appliance_image_compartment_ocid | The compartment ocid of the network appliance image resource. | `string` | `null` | no 
 | net_appliance_image_ocid | The custom image ocid of the user-provided virtual network appliance. | `string` | `null` | no 
 | net_appliance_name_prefix | Common prefix to network appliance name. To this common prefix, numbers 1 and 2 are appended to the corresponding instance. | `string` | `net-appliance-instance` | no |
 | net_appliance_public_rsa_key | The SSH public key to login to Network Appliance Compute instance. | `string` | `null` | no |
