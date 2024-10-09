@@ -166,7 +166,7 @@ variableGroups:
       - "hub_vcn_cidrs"
       - "hub_vcn_dns"
       - "hub_vcn_deploy_net_appliance_option"
-      - "net_appliance_image_compartment_ocid"
+      # - "net_appliance_image_compartment_ocid"
       - "net_appliance_image_ocid"
       - "net_appliance_name_prefix"
       - "net_appliance_shape"
@@ -2682,34 +2682,39 @@ variables:
             - "VCN or on-premises connectivity routed through DMZ VCN with Network Virtual Appliance existing DRG (DMZ VCN will be created and DRG ID required)"
     default: "Don't deploy any network appliance at this time"
 
-  net_appliance_image_compartment_ocid:
-    type: oci:identity:compartment:id
-    dependsOn:
-      compartmentId: ${tenacy_ocid}
-    title: "Compartment of the Network Appliance Image"
-    description: "Select the compartment where the network appliance image resource resides."
-    required: true
-    visible:
-      and:
-        - define_net
-        - or:
-          - eq:
-            - ${hub_deployment_option}
-            - "VCN or on-premises connectivity routing through DMZ VCN with Network Virtual Appliance (DRG and DMZ VCN will be created)"
-          - eq:
-            - ${hub_deployment_option}
-            - "VCN or on-premises connectivity routed through DMZ VCN with Network Virtual Appliance existing DRG (DMZ VCN will be created and DRG ID required)"
-        - and:
-          - eq:
-            - ${hub_vcn_deploy_net_appliance_option}
-            - "User-Provided Virtual Network Appliance"
+  # net_appliance_image_compartment_ocid:
+  #   type: oci:identity:compartment:id
+  #   dependsOn:
+  #     compartmentId: ${tenacy_ocid}
+  #   title: "Compartment of the Network Appliance Image"
+  #   description: "Select the compartment where the network appliance image resource resides."
+  #   required: true
+  #   visible:
+  #     and:
+  #       - define_net
+  #       - or:
+  #         - eq:
+  #           - ${hub_deployment_option}
+  #           - "VCN or on-premises connectivity routing through DMZ VCN with Network Virtual Appliance (DRG and DMZ VCN will be created)"
+  #         - eq:
+  #           - ${hub_deployment_option}
+  #           - "VCN or on-premises connectivity routed through DMZ VCN with Network Virtual Appliance existing DRG (DMZ VCN will be created and DRG ID required)"
+  #       - and:
+  #         - eq:
+  #           - ${hub_vcn_deploy_net_appliance_option}
+  #           - "User-Provided Virtual Network Appliance"
 
   net_appliance_image_ocid:
-    type: oci:core:image:id
-    dependsOn:
-      compartmentId: ${net_appliance_image_compartment_ocid}
-    title: "Network Appliance Image"
-    description: "Select the Network Appliance Image."
+    # type: oci:core:image:id
+    # dependsOn:
+    #   compartmentId: ${net_appliance_image_compartment_ocid}
+    # title: "Network Appliance Image"
+    # description: "Select the Network Appliance Image."
+    # required: true
+    # visible:
+    type: string
+    title: "Network Appliance Image OCID"
+    description: "Enter the Image OCID of the Network Appliance."
     required: true
     visible:
       and:
