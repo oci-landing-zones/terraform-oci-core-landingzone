@@ -165,13 +165,15 @@ variableGroups:
       - "hub_vcn_name"
       - "hub_vcn_cidrs"
       - "hub_vcn_dns"
-      - "hub_vcn_deploy_firewall_option"
-      - "fw_instance_name_prefix"
-      - "fw_instance_shape"
-      - "fw_instance_flex_shape_memory"
-      - "fw_instance_flex_shape_cpu"
-      - "fw_instance_boot_volume_size"
-      - "fw_instance_public_rsa_key"
+      - "hub_vcn_deploy_net_appliance_option"
+      # - "net_appliance_image_compartment_ocid"
+      - "net_appliance_image_ocid"
+      - "net_appliance_name_prefix"
+      - "net_appliance_shape"
+      - "net_appliance_flex_shape_memory"
+      - "net_appliance_flex_shape_cpu"
+      - "net_appliance_boot_volume_size"
+      - "net_appliance_public_rsa_key"
       - "hub_vcn_north_south_entry_point_ocid"
       - "hub_vcn_east_west_entry_point_ocid"
       - "customize_hub_vcn_subnets"
@@ -2703,10 +2705,10 @@ variables:
             - ${hub_deployment_option}
             - "VCN or on-premises connectivity routed through DMZ VCN with Network Virtual Appliance existing DRG (DMZ VCN will be created and DRG ID required)"
 
-  hub_vcn_deploy_firewall_option:
+  hub_vcn_deploy_net_appliance_option:
     type: enum
-    title: "Deploy Firewall?"
-    description: "Choose one of the available firewall options for deploying in the Hub VCN. Costs are incurred."
+    title: "Deploy Network Appliance?"
+    description: "Choose one of the available network appliance options for deploying in the Hub VCN. Costs are incurred."
     enum:
       - "Don't deploy any network appliance at this time"
       - "Palo Alto Networks VM-Series Firewall"
@@ -2714,6 +2716,7 @@ variables:
       #- "Check Point CloudGuard Firewall"
       #- "Cisco Secure Firewall"
       #- "OCI Firewall Service"
+      - "User-Provided Virtual Network Appliance"
     visible: 
       and:
         - define_net
@@ -2726,10 +2729,59 @@ variables:
             - "VCN or on-premises connectivity routed through DMZ VCN with Network Virtual Appliance existing DRG (DMZ VCN will be created and DRG ID required)"
     default: "Don't deploy any network appliance at this time"
 
-  fw_instance_name_prefix:
+  # net_appliance_image_compartment_ocid:
+  #   type: oci:identity:compartment:id
+  #   dependsOn:
+  #     compartmentId: ${tenacy_ocid}
+  #   title: "Compartment of the Network Appliance Image"
+  #   description: "Select the compartment where the network appliance image resource resides."
+  #   required: true
+  #   visible:
+  #     and:
+  #       - define_net
+  #       - or:
+  #         - eq:
+  #           - ${hub_deployment_option}
+  #           - "VCN or on-premises connectivity routing through DMZ VCN with Network Virtual Appliance (DRG and DMZ VCN will be created)"
+  #         - eq:
+  #           - ${hub_deployment_option}
+  #           - "VCN or on-premises connectivity routed through DMZ VCN with Network Virtual Appliance existing DRG (DMZ VCN will be created and DRG ID required)"
+  #       - and:
+  #         - eq:
+  #           - ${hub_vcn_deploy_net_appliance_option}
+  #           - "User-Provided Virtual Network Appliance"
+
+  net_appliance_image_ocid:
+    # type: oci:core:image:id
+    # dependsOn:
+    #   compartmentId: ${net_appliance_image_compartment_ocid}
+    # title: "Network Appliance Image"
+    # description: "Select the Network Appliance Image."
+    # required: true
+    # visible:
     type: string
-    title: "Firewall Name Common Prefix"
-    description: "Enter a common prefix to firewall name. To this common prefix, numbers 1 and 2 are appended the corresponding instance."
+    title: "Network Appliance Image OCID"
+    description: "Enter the Image OCID of the Network Appliance."
+    required: true
+    visible:
+      and:
+        - define_net
+        - or:
+          - eq:
+            - ${hub_deployment_option}
+            - "VCN or on-premises connectivity routing through DMZ VCN with Network Virtual Appliance (DRG and DMZ VCN will be created)"
+          - eq:
+            - ${hub_deployment_option}
+            - "VCN or on-premises connectivity routed through DMZ VCN with Network Virtual Appliance existing DRG (DMZ VCN will be created and DRG ID required)"
+        - and:
+          - eq:
+            - ${hub_vcn_deploy_net_appliance_option}
+            - "User-Provided Virtual Network Appliance"
+
+  net_appliance_name_prefix:
+    type: string
+    title: "Network Appliance Name Common Prefix"
+    description: "Enter a common prefix to network appliance name. To this common prefix, numbers 1 and 2 are appended the corresponding instance."
     required: false
     visible: 
       and:
@@ -2743,15 +2795,15 @@ variables:
             - "VCN or on-premises connectivity routed through DMZ VCN with Network Virtual Appliance existing DRG (DMZ VCN will be created and DRG ID required)"
         - not: 
           - eq:
-            - ${hub_vcn_deploy_firewall_option}  
+            - ${hub_vcn_deploy_net_appliance_option}
             - "Don't deploy any network appliance at this time"
       
-  fw_instance_shape:
+  net_appliance_shape:
     type: oci:core:instanceshape:name
     dependsOn:
       compartmentId: ${tenancy_ocid}
-    title: "Firewall Instance Shape"
-    description: "Select the instance shape for the firewall."
+    title: "Network Appliance Instance Shape"
+    description: "Select the instance shape for the network appliance."
     required: false
     visible: 
       and:
@@ -2766,16 +2818,16 @@ variables:
         - and: 
           - not:   
             - eq: 
-              - ${hub_vcn_deploy_firewall_option}  
+              - ${hub_vcn_deploy_net_appliance_option}
               - "Don't deploy any network appliance at this time"
           - not:    
             - eq:
-              - ${hub_vcn_deploy_firewall_option}
+              - ${hub_vcn_deploy_net_appliance_option}
               - "OCI Firewall Service"
 
-  fw_instance_flex_shape_memory:
+  net_appliance_flex_shape_memory:
     type: string
-    title: "Firewall Amount of Memory for the Selected Flex Shape"
+    title: "Network Appliance Amount of Memory for the Selected Flex Shape"
     description: "Enter the amount of memory (in GB) for the selected flex shape. Applicable to flexible shapes only."
     required: false
     visible: 
@@ -2791,16 +2843,16 @@ variables:
         - and: 
           - not:   
             - eq: 
-              - ${hub_vcn_deploy_firewall_option}  
+              - ${hub_vcn_deploy_net_appliance_option}
               - "Don't deploy any network appliance at this time"
           - not:    
             - eq:
-              - ${hub_vcn_deploy_firewall_option}
+              - ${hub_vcn_deploy_net_appliance_option}
               - "OCI Firewall Service"
 
-  fw_instance_flex_shape_cpu:
+  net_appliance_flex_shape_cpu:
     type: string
-    title: "Firewall Number of OCPUs for the Selected Flex Shape"
+    title: "Network Appliance Number of OCPUs for the Selected Flex Shape"
     description: "Enter the number of OCPUs for the selected flex shape. Applicable to flexible shapes only."
     required: false
     visible: 
@@ -2816,17 +2868,17 @@ variables:
         - and: 
           - not:   
             - eq: 
-              - ${hub_vcn_deploy_firewall_option}  
+              - ${hub_vcn_deploy_net_appliance_option}
               - "Don't deploy any network appliance at this time"
-          - not:    
+          - not:
             - eq:
-              - ${hub_vcn_deploy_firewall_option}
+              - ${hub_vcn_deploy_net_appliance_option}
               - "OCI Firewall Service"          
 
-  fw_instance_boot_volume_size:
+  net_appliance_boot_volume_size:
     type: string
-    title: "Firewall Boot Volume Size"
-    description: "Enter the boot volume size (in GB) for the firewall instances."
+    title: "Network Appliance Boot Volume Size"
+    description: "Enter the boot volume size (in GB) for the network appliance instances."
     required: false
     visible: 
       and:
@@ -2841,16 +2893,16 @@ variables:
         - and: 
           - not:   
             - eq: 
-              - ${hub_vcn_deploy_firewall_option}  
+              - ${hub_vcn_deploy_net_appliance_option}
               - "Don't deploy any network appliance at this time"
           - not:    
             - eq:
-              - ${hub_vcn_deploy_firewall_option}
+              - ${hub_vcn_deploy_net_appliance_option}
               - "OCI Firewall Service"
 
-  fw_instance_public_rsa_key:
+  net_appliance_public_rsa_key:
     type: string
-    title: "Firewall Instance public SSH Key"
+    title: "Network Appliance Instance public SSH Key"
     description: "Enter a Public SSH Key to Login to Compute Instance."
     required: false
     visible: 
@@ -2865,7 +2917,7 @@ variables:
             - "VCN or on-premises connectivity routed through DMZ VCN with Network Virtual Appliance existing DRG (DMZ VCN will be created and DRG ID required)"
         - not: 
           - eq:
-            - ${hub_vcn_deploy_firewall_option}
+            - ${hub_vcn_deploy_net_appliance_option}
             - "Don't deploy any network appliance at this time"
 
   hub_vcn_north_south_entry_point_ocid:
@@ -2886,7 +2938,7 @@ variables:
         - and: 
           - not:   
             - eq: 
-              - ${hub_vcn_deploy_firewall_option}  
+              - ${hub_vcn_deploy_net_appliance_option}
               - "Don't deploy any network appliance at this time"
 
   hub_vcn_east_west_entry_point_ocid:
@@ -2907,7 +2959,7 @@ variables:
         - and: 
           - not:   
             - eq: 
-              - ${hub_vcn_deploy_firewall_option}  
+              - ${hub_vcn_deploy_net_appliance_option}
               - "Don't deploy any network appliance at this time"
 
   customize_hub_vcn_subnets:

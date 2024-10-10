@@ -299,15 +299,16 @@
 |---------------|-------------|------|---------|----------|
 | customize_hub_vcn_subnets | Whether to customize default subnets settings of the Hub VCN. Only applicable to RMS deployments. | `bool` | `false` | no |
 | existing_drg_ocid | The OCID of an existing DRG that you want to reuse for hub deployment. Only applicable if hub\_deployment\_option is 'VCN or on-premises connectivity routing via DRG (existing DRG)' or 'VCN or on-premises connectivity routed through DMZ VCN with Network Virtual Appliance existing DRG (DMZ VCN will be created and DRG ID required)'. | `string` | `null` | no |
-| fw_instance_boot_volume_size | The boot volume size (in GB) for the firewall instances. | `number` | `60` | no |
-| fw_instance_flex_shape_cpu | The number of OCPUs for the selected flex shape. Applicable to flexible shapes only. | `number` | `2` | no |
-| fw_instance_flex_shape_memory | The amount of memory (in GB) for the selected flex shape. Applicable to flexible shapes only. | `number` | `56` | no |
-| fw_instance_name_prefix | Common prefix to firewall name. To this common prefix, numbers 1 and 2 are appended to the corresponding instance. | `string` | `firewall-instance` | no |
-| fw_instance_public_rsa_key | The SSH public key to login to firewall Compute instance. | `string` | `null` | no |
-| fw_instance_shape | The instance shape for the firewall nodes. | `string` | `VM.Optimized3.Flex` | no |
+| net_appliance_boot_volume_size | The boot volume size (in GB) for the network appliances. | `number` | `60` | no |
+| net_appliance_flex_shape_cpu | The number of OCPUs for the selected flex shape. Applicable to flexible shapes only. | `number` | `2` | no |
+| net_appliance_flex_shape_memory | The amount of memory (in GB) for the selected flex shape. Applicable to flexible shapes only. | `number` | `56` | no |
+| net_appliance_image_ocid | The custom image ocid of the user-provided virtual network appliance. | `string` | `null` | no 
+| net_appliance_name_prefix | Common prefix to network appliance name. To this common prefix, numbers 1 and 2 are appended to the corresponding instance. | `string` | `net-appliance-instance` | no |
+| net_appliance_public_rsa_key | The SSH public key to login to Network Appliance Compute instance. | `string` | `null` | no |
+| net_appliance_shape | The instance shape for the network appliance nodes. | `string` | `VM.Optimized3.Flex` | no |
 | hub_deployment_option | The available options for hub deployment. Valid values: 'No cross-VCN or on-premises connectivity', 'VCN or on-premises connectivity routing via DRG (DRG will be created)', 'VCN or on-premises connectivity routing via DRG (existing DRG)', 'VCN or on-premises connectivity routing through DMZ VCN with Network Virtual Appliance (DRG and DMZ VCN will be created)', 'VCN or on-premises connectivity routed through DMZ VCN with Network Virtual Appliance existing DRG (DMZ VCN will be created and DRG ID required)'. All the VCNs that attach to the DRG join the topology as spokes. | `string` | `No cross-VCN or on-premises connectivity` | no |
 | hub_vcn_cidrs | List of CIDR blocks for the Hub VCN. | `list(string)` |  `[192.168.0.0/26]` | no |
-| hub_vcn_deploy_firewall_option | The firewall option for deploying in the Hub VCN. Valid values: 'Don't deploy any network appliance at this time' (default), 'Palo Alto Networks VM-Series Firewall', 'Fortinet FortiGate Firewall'. Costs are incurred. | `string` | `Don't deploy any network appliance at this time` | no |
+| hub_vcn_deploy_net_appliance_option | The network appliance option for deploying in the Hub VCN. Valid values: 'Don't deploy any network appliance at this time' (default), 'Palo Alto Networks VM-Series Firewall', 'Fortinet FortiGate Firewall'. Costs are incurred. | `string` | `Don't deploy any network appliance at this time` | no |
 | hub_vcn_dns | The Hub VCN DNS name. | `string` | `null` | no |
 | hub_vcn_east_west_entry_point_ocid | The OCID of a private address the Hub VCN routes traffic to for inbound internal cross-vcn traffic (East/West). This variable is to be assigned with the OCID of the indoor network load balancer's private IP address. | `string` | `null` | no |
 | hub_vcn_indoor_subnet_cidr | The Hub VCN Indoor subnet CIDR block. It must be within the VCN CIDR blocks. | `string` | `null` | no |
