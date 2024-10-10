@@ -28,7 +28,7 @@
 
 | Variable Name | Description | Type | Default | Required |
 |---------------|-------------|------|---------|----------|
-| custom_id_domain_name | The existing identity domain name. | `string` | `null` | no |
+| custom_id_domain_ocid | The existing identity domain OCID. | `string` | `null` | no |
 | deploy_exainfra_cmp | Whether a separate compartment for Exadata Cloud Service Infrastructure is deployed. | `bool` | `false` | no |
 | dyn_groups_options | IAM - Dynamic Groups | `string` | `Yes` | no |
 | enclosing_compartment_parent_ocid | The existing compartment where Landing Zone enclosing compartment is created. | `string` | `null` | no |

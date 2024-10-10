@@ -8,7 +8,7 @@
 
 | Name | Version |
 |------|---------|
-| <a name="provider_oci"></a> [oci](#provider\_oci) | 6.12.0 |
+| <a name="provider_oci"></a> [oci](#provider\_oci) | 6.13.0 |
 | <a name="provider_time"></a> [time](#provider\_time) | 0.12.1 |
 
 ## Modules
@@ -19,10 +19,12 @@
 | <a name="module_lz_budgets"></a> [lz\_budgets](#module\_lz\_budgets) | github.com/oci-landing-zones/terraform-oci-modules-governance//budgets | v0.1.4 |
 | <a name="module_lz_cloud_guard"></a> [lz\_cloud\_guard](#module\_lz\_cloud\_guard) | github.com/oci-landing-zones/terraform-oci-modules-security//cloud-guard | v0.1.7 |
 | <a name="module_lz_compartments"></a> [lz\_compartments](#module\_lz\_compartments) | github.com/oci-landing-zones/terraform-oci-modules-iam//compartments | v0.2.3 |
-| <a name="module_lz_dynamic_groups"></a> [lz\_dynamic\_groups](#module\_lz\_dynamic\_groups) | github.com/oci-landing-zones/terraform-oci-modules-iam//dynamic-groups | v0.2.3 |
+| <a name="module_lz_custom_domain_dynamic_groups"></a> [lz\_custom\_domain\_dynamic\_groups](#module\_lz\_custom\_domain\_dynamic\_groups) | github.com/oci-landing-zones/terraform-oci-modules-iam//identity-domains | v0.2.4 |
+| <a name="module_lz_custom_domain_groups"></a> [lz\_custom\_domain\_groups](#module\_lz\_custom\_domain\_groups) | github.com/oci-landing-zones/terraform-oci-modules-iam//identity-domains | v0.2.4 |
+| <a name="module_lz_dynamic_groups"></a> [lz\_dynamic\_groups](#module\_lz\_dynamic\_groups) | github.com/oci-landing-zones/terraform-oci-modules-iam//dynamic-groups | v0.2.4 |
 | <a name="module_lz_firewall_appliance"></a> [lz\_firewall\_appliance](#module\_lz\_firewall\_appliance) | github.com/oci-landing-zones/terraform-oci-modules-workloads//cis-compute-storage | release-0.1.7b |
 | <a name="module_lz_flow_logs"></a> [lz\_flow\_logs](#module\_lz\_flow\_logs) | github.com/oci-landing-zones/terraform-oci-modules-observability//logging | v0.1.8 |
-| <a name="module_lz_groups"></a> [lz\_groups](#module\_lz\_groups) | github.com/oci-landing-zones/terraform-oci-modules-iam//groups | v0.2.3 |
+| <a name="module_lz_groups"></a> [lz\_groups](#module\_lz\_groups) | github.com/oci-landing-zones/terraform-oci-modules-iam//groups | v0.2.4 |
 | <a name="module_lz_home_region_notifications"></a> [lz\_home\_region\_notifications](#module\_lz\_home\_region\_notifications) | github.com/oci-landing-zones/terraform-oci-modules-observability//events | v0.1.8 |
 | <a name="module_lz_home_region_topics"></a> [lz\_home\_region\_topics](#module\_lz\_home\_region\_topics) | github.com/oci-landing-zones/terraform-oci-modules-observability//notifications | v0.1.8 |
 | <a name="module_lz_logging_analytics"></a> [lz\_logging\_analytics](#module\_lz\_logging\_analytics) | github.com/oci-landing-zones/terraform-oci-modules-observability//logging | v0.1.8 |
@@ -52,6 +54,7 @@
 | [oci_identity_compartments.exainfra](https://registry.terraform.io/providers/oracle/oci/latest/docs/data-sources/identity_compartments) | data source |
 | [oci_identity_compartments.network](https://registry.terraform.io/providers/oracle/oci/latest/docs/data-sources/identity_compartments) | data source |
 | [oci_identity_compartments.security](https://registry.terraform.io/providers/oracle/oci/latest/docs/data-sources/identity_compartments) | data source |
+| [oci_identity_domain.existing_identity_domain](https://registry.terraform.io/providers/oracle/oci/latest/docs/data-sources/identity_domain) | data source |
 | [oci_identity_dynamic_groups.all](https://registry.terraform.io/providers/oracle/oci/latest/docs/data-sources/identity_dynamic_groups) | data source |
 | [oci_identity_group.existing_ag_admin_group](https://registry.terraform.io/providers/oracle/oci/latest/docs/data-sources/identity_group) | data source |
 | [oci_identity_group.existing_announcement_reader_group](https://registry.terraform.io/providers/oracle/oci/latest/docs/data-sources/identity_group) | data source |
@@ -101,7 +104,7 @@
 | <a name="input_create_alarms_as_enabled"></a> [create\_alarms\_as\_enabled](#input\_create\_alarms\_as\_enabled) | Whether a alarms should be created in an enabled state by default. If unchecked, alarms will be created but not emit alerts. | `bool` | `false` | no |
 | <a name="input_create_budget"></a> [create\_budget](#input\_create\_budget) | If true, a budget is created for the enclosing compartment, based on forecast or actual spending. | `bool` | `false` | no |
 | <a name="input_create_events_as_enabled"></a> [create\_events\_as\_enabled](#input\_create\_events\_as\_enabled) | Whether events should be created in an enabled state by default. If unchecked, events will be created but not emit notifications. | `bool` | `false` | no |
-| <a name="input_custom_id_domain_name"></a> [custom\_id\_domain\_name](#input\_custom\_id\_domain\_name) | The existing identity domain name. | `string` | `null` | no |
+| <a name="input_custom_id_domain_ocid"></a> [custom\_id\_domain\_ocid](#input\_custom\_id\_domain\_ocid) | The existing identity domain OCID. | `string` | `null` | no |
 | <a name="input_customize_hub_vcn_subnets"></a> [customize\_hub\_vcn\_subnets](#input\_customize\_hub\_vcn\_subnets) | Whether to customize default subnets settings of the Hub VCN. Only applicable to RMS deployments. | `bool` | `false` | no |
 | <a name="input_customize_iam"></a> [customize\_iam](#input\_customize\_iam) | Whether Landing Zone IAM settings are to be customized. Customizable options are identity domains, groups, dynamic groups and policies. | `bool` | `false` | no |
 | <a name="input_customize_tt_vcn1_subnets"></a> [customize\_tt\_vcn1\_subnets](#input\_customize\_tt\_vcn1\_subnets) | If true, allows for the customization of default subnets settings. Only applicable to RMS deployments. | `bool` | `false` | no |
@@ -109,6 +112,7 @@
 | <a name="input_customize_tt_vcn3_subnets"></a> [customize\_tt\_vcn3\_subnets](#input\_customize\_tt\_vcn3\_subnets) | If true, allows for the customization of default subnets settings. Only applicable to RMS deployments. | `bool` | `false` | no |
 | <a name="input_database_admin_email_endpoints"></a> [database\_admin\_email\_endpoints](#input\_database\_admin\_email\_endpoints) | List of email addresses for all database related notifications. (Type an email address and hit enter to enter multiple values) | `list(string)` | `[]` | no |
 | <a name="input_define_net"></a> [define\_net](#input\_define\_net) | Whether networking is defined as part of this Landing Zone. By default, no networking resources are created. | `bool` | `false` | no |
+| <a name="input_deploy_custom_domain_groups"></a> [deploy\_custom\_domain\_groups](#input\_deploy\_custom\_domain\_groups) | Whether to deploy IAM domain groups and dynamic groups in the existing domain. If false, the Landing Zone will use the existing groups and dynamic groups in the existing domain. | `bool` | `false` | no |
 | <a name="input_deploy_exainfra_cmp"></a> [deploy\_exainfra\_cmp](#input\_deploy\_exainfra\_cmp) | Whether a separate compartment for Exadata Cloud Service Infrastructure is deployed. | `bool` | `false` | no |
 | <a name="input_deploy_tt_vcn1_bastion_subnet"></a> [deploy\_tt\_vcn1\_bastion\_subnet](#input\_deploy\_tt\_vcn1\_bastion\_subnet) | Whether to deploy a subnet where you can further deploy OCI Bastion service or a jump host. | `bool` | `false` | no |
 | <a name="input_deploy_tt_vcn2_bastion_subnet"></a> [deploy\_tt\_vcn2\_bastion\_subnet](#input\_deploy\_tt\_vcn2\_bastion\_subnet) | Whether to deploy a subnet where you can further deploy OCI Bastion service or a jump host. | `bool` | `false` | no |

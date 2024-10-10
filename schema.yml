@@ -40,7 +40,7 @@ variableGroups:
   - title: "Identity Domains"
     variables:
       - "use_custom_id_domain"
-      - "custom_id_domain_name"
+      # - "custom_id_domain_name"
       - "custom_id_domain_ocid"
       - "deploy_custom_domain_groups"
       # - "id_domain_type" 
@@ -535,12 +535,12 @@ variables:
     description: "Your tenancy already has a default Identity Domain, whose groups are used to manage the Landing Zone. Check this box for enabling groups in an *existing* non-default Identity Domain to manage the resources deployed by the Landing Zone. See <a href='https://docs.oracle.com/en-us/iaas/Content/Identity/usingidentitydomains/oci-iam-concepts.htm'>IAM Technologies</a> for identity domains concepts."
     default: false
 
-  custom_id_domain_name:
-    type: string
-    title: "Existing Identity Domain Name"
-    description: "Enter the existing Identity Domain name."
-    required: false
-    visible: use_custom_id_domain
+  # custom_id_domain_name:
+  #   type: string
+  #   title: "Existing Identity Domain Name"
+  #   description: "Enter the existing Identity Domain name."
+  #   required: false
+  #   visible: use_custom_id_domain
 
   custom_id_domain_ocid:
     type: oci:identity:domain:id
