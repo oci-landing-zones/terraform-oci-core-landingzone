@@ -17,7 +17,7 @@ This template will have following parameters set by default:
 | Variable Name | Description | Value |
 |---------------|:-----------|:------|
 | service_label | A unique identifier to prefix the resources | defvcn |
-| customize_net | Check to define networking resources. By default, the Landing Zone does NOT deploy any networks.     | true |
+| define_net | Check to define networking resources. By default, the Landing Zone does NOT deploy any networks.     | true |
 | add_tt_vcn1 | Click to add a three-tier VCN, with three subnets: web (public by default), application (private) and database (private). An optional subnet (private by default) for bastion deployment is also available     | true |
 | enable_service_connector | Whether Service Connector should be enabled. If true, a single Service Connector is managed for all services log sources and the designated target specified in 'Service Connector Target Kind'. The Service Connector resource is created in INACTIVE state. To activate, check 'Activate Service Connector?' (costs may incur).      | true |
 | activate_service_connector | Whether Service Connector should be activated. If true, costs my incur due to usage of Object Storage bucket, Streaming or Function.      | true |
@@ -34,7 +34,7 @@ This template can be deployed using OCI Resource Manager Service (RMS) or Terraf
 
 By clicking the button below, you are redirected to an OCI RMS Stack with variables pre-assigned for deployment. 
 
-[![Deploy_To_OCI](../../images/DeployToOCI.svg)](https://cloud.oracle.com/resourcemanager/stacks/create?zipUrl=https://github.com/oci-landing-zones/terraform-oci-core-landingzone/archive/refs/heads/main.zip&zipUrlVariables={"service_label":"defvcn","network_admin_email_endpoints":"email.address@example.com","security_admin_email_endpoints":"email.address@example.com","customize_net":true,"add_tt_vcn1":true,"enable_service_connector":true,"activate_service_connector":true,"service_connector_target_kind":"streaming","enable_security_zones":true,"vss_create":true,"create_budget":true})
+[![Deploy_To_OCI](../../images/DeployToOCI.svg)](https://cloud.oracle.com/resourcemanager/stacks/create?zipUrl=https://github.com/oci-landing-zones/terraform-oci-core-landingzone/archive/refs/heads/main.zip&zipUrlVariables={"service_label":"defvcn","network_admin_email_endpoints":"email.address@example.com","security_admin_email_endpoints":"email.address@example.com","define_net":true,"add_tt_vcn1":true,"enable_service_connector":true,"activate_service_connector":true,"service_connector_target_kind":"streaming","enable_security_zones":true,"vss_create":true,"create_budget":true})
 
 You are required to review/adjust the following variable settings:
  - Make sure to pick an OCI region for deployment.

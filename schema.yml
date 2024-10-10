@@ -19,7 +19,7 @@ variableGroups:
       - "service_label"
       - "extend_landing_zone_to_new_region"
       - "customize_iam"
-      - "customize_net"
+      - "define_net"
       - "display_output"
 
   - title: "Compartments"
@@ -165,13 +165,15 @@ variableGroups:
       - "hub_vcn_name"
       - "hub_vcn_cidrs"
       - "hub_vcn_dns"
-      - "hub_vcn_deploy_firewall_option"
-      - "fw_instance_name_prefix"
-      - "fw_instance_shape"
-      - "fw_instance_flex_shape_memory"
-      - "fw_instance_flex_shape_cpu"
-      - "fw_instance_boot_volume_size"
-      - "fw_instance_public_rsa_key"
+      - "hub_vcn_deploy_net_appliance_option"
+      # - "net_appliance_image_compartment_ocid"
+      - "net_appliance_image_ocid"
+      - "net_appliance_name_prefix"
+      - "net_appliance_shape"
+      - "net_appliance_flex_shape_memory"
+      - "net_appliance_flex_shape_cpu"
+      - "net_appliance_boot_volume_size"
+      - "net_appliance_public_rsa_key"
       - "hub_vcn_north_south_entry_point_ocid"
       - "hub_vcn_east_west_entry_point_ocid"
       - "customize_hub_vcn_subnets"
@@ -191,133 +193,108 @@ variableGroups:
       - "hub_vcn_indoor_subnet_name"
       - "hub_vcn_indoor_subnet_cidr"
       - "hub_vcn_indoor_subnet_dns"
-    visible: customize_net
+    visible: define_net
 
   - title: "Networking - Three Tier VCNs"
     variables:
       - "add_tt_vcn1"
       - "tt_vcn1_name"
       - "tt_vcn1_cidrs"
-      - "tt_vcn1_dns"
       - "tt_vcn1_attach_to_drg"
       - "tt_vcn1_routable_vcns"
       - "customize_tt_vcn1_subnets"
       - "tt_vcn1_web_subnet_name"
       - "tt_vcn1_web_subnet_cidr"
-      - "tt_vcn1_web_subnet_dns"
       - "tt_vcn1_web_subnet_is_private"
       - "tt_vcn1_app_subnet_name"
       - "tt_vcn1_app_subnet_cidr"
-      - "tt_vcn1_app_subnet_dns"
       - "tt_vcn1_db_subnet_name"
       - "tt_vcn1_db_subnet_cidr"
-      - "tt_vcn1_db_subnet_dns"
       - "deploy_tt_vcn1_bastion_subnet"
       - "tt_vcn1_bastion_subnet_name"
       - "tt_vcn1_bastion_subnet_cidr"
-      - "tt_vcn1_bastion_subnet_dns"
       - "tt_vcn1_bastion_is_access_via_public_endpoint"
       - "tt_vcn1_bastion_subnet_allowed_cidrs"
       # - "add_tt_vcn1_extra1_subnet"
       # - "tt_vcn1_extra1_subnet_name"
       # - "tt_vcn1_extra1_subnet_cidr"
-      # - "tt_vcn1_extra1_subnet_dns"
       # - "tt_vcn1_extra1_subnet_bastion_svc_cidrs"
       # - "add_tt_vcn1_extra2_subnet"
       # - "tt_vcn1_extra2_subnet_name"
       # - "tt_vcn1_extra2_subnet_cidr"
-      # - "tt_vcn1_extra2_subnet_dns"
       # - "tt_vcn1_extra2_subnet_bastion_svc_cidrs"
       - "add_tt_vcn2"
       - "tt_vcn2_name"
       - "tt_vcn2_cidrs"
-      - "tt_vcn2_dns"
       - "tt_vcn2_attach_to_drg"
       - "tt_vcn2_routable_vcns"
       - "customize_tt_vcn2_subnets"
       - "tt_vcn2_web_subnet_name"
       - "tt_vcn2_web_subnet_cidr"
-      - "tt_vcn2_web_subnet_dns"
       - "tt_vcn2_web_subnet_is_private"
       - "tt_vcn2_app_subnet_name"
       - "tt_vcn2_app_subnet_cidr"
-      - "tt_vcn2_app_subnet_dns"
       - "tt_vcn2_db_subnet_name"
       - "tt_vcn2_db_subnet_cidr"
-      - "tt_vcn2_db_subnet_dns"
       - "deploy_tt_vcn2_bastion_subnet"
       - "tt_vcn2_bastion_subnet_name"
       - "tt_vcn2_bastion_subnet_cidr"
-      - "tt_vcn2_bastion_subnet_dns"
       - "tt_vcn2_bastion_is_access_via_public_endpoint"
       - "tt_vcn2_bastion_subnet_allowed_cidrs"
       - "add_tt_vcn3"
       - "tt_vcn3_name"
       - "tt_vcn3_cidrs"
-      - "tt_vcn3_dns"
       - "tt_vcn3_attach_to_drg"
       - "tt_vcn3_routable_vcns"
       - "customize_tt_vcn3_subnets"
       - "tt_vcn3_web_subnet_name"
       - "tt_vcn3_web_subnet_cidr"
-      - "tt_vcn3_web_subnet_dns"
       - "tt_vcn3_web_subnet_is_private"
       - "tt_vcn3_app_subnet_name"
       - "tt_vcn3_app_subnet_cidr"
-      - "tt_vcn3_app_subnet_dns"
       - "tt_vcn3_db_subnet_name"
       - "tt_vcn3_db_subnet_cidr"
-      - "tt_vcn3_db_subnet_dns"
       - "deploy_tt_vcn3_bastion_subnet"
       - "tt_vcn3_bastion_subnet_name"
       - "tt_vcn3_bastion_subnet_cidr"
-      - "tt_vcn3_bastion_subnet_dns"
       - "tt_vcn3_bastion_is_access_via_public_endpoint"
       - "tt_vcn3_bastion_subnet_allowed_cidrs"
-    visible: customize_net
+    visible: define_net
 
   - title: "Networking - Exadata Cloud Service VCNs"
     variables:
       - "add_exa_vcn1"
       - "exa_vcn1_name"
       - "exa_vcn1_cidrs"
-      - "exa_vcn1_dns"
       - "exa_vcn1_attach_to_drg"
       - "exa_vcn1_routable_vcns"
       - "customize_exa_vcn1_subnets"
       - "exa_vcn1_client_subnet_cidr"
       - "exa_vcn1_client_subnet_name"
-      - "exa_vcn1_client_subnet_dns"
       - "exa_vcn1_backup_subnet_cidr"
       - "exa_vcn1_backup_subnet_name"
-      - "exa_vcn1_backup_subnet_dns"
       - "add_exa_vcn2"
       - "exa_vcn2_name"
       - "exa_vcn2_cidrs"
-      - "exa_vcn2_dns"
       - "exa_vcn2_attach_to_drg"
       - "exa_vcn2_routable_vcns"
       - "customize_exa_vcn2_subnets"
       - "exa_vcn2_client_subnet_cidr"
       - "exa_vcn2_client_subnet_name"
-      - "exa_vcn2_client_subnet_dns"
       - "exa_vcn2_backup_subnet_cidr"
       - "exa_vcn2_backup_subnet_name"
-      - "exa_vcn2_backup_subnet_dns"
       - "add_exa_vcn3"
       - "exa_vcn3_cidrs"
       - "exa_vcn3_name"
-      - "exa_vcn3_dns"
       - "exa_vcn3_attach_to_drg"
       - "exa_vcn3_routable_vcns"
       - "customize_exa_vcn3_subnets"
       - "exa_vcn3_client_subnet_cidr"
       - "exa_vcn3_client_subnet_name"
-      - "exa_vcn3_client_subnet_dns"
       - "exa_vcn3_backup_subnet_cidr"
       - "exa_vcn3_backup_subnet_name"
       - "exa_vcn3_backup_subnet_dns"
-    visible: customize_net
+    visible: define_net
 
   - title: "Networking - OKE VCNs"
     variables:
@@ -325,76 +302,59 @@ variableGroups:
       - "oke_vcn1_cni_type"
       - "oke_vcn1_name"
       - "oke_vcn1_cidrs"
-      - "oke_vcn1_dns"
       - "oke_vcn1_attach_to_drg"
       - "oke_vcn1_routable_vcns"
       - "customize_oke_vcn1_subnets"
       - "oke_vcn1_services_subnet_name"
       - "oke_vcn1_services_subnet_cidr"
-      - "oke_vcn1_services_subnet_dns"
       - "oke_vcn1_workers_subnet_name"
       - "oke_vcn1_workers_subnet_cidr"
-      - "oke_vcn1_workers_subnet_dns"
       - "oke_vcn1_api_subnet_name"
       - "oke_vcn1_api_subnet_cidr"
-      - "oke_vcn1_api_subnet_dns"
       - "oke_vcn1_pods_subnet_name"
       - "oke_vcn1_pods_subnet_cidr"
-      - "oke_vcn1_pods_subnet_dns"
       - "add_oke_vcn1_mgmt_subnet"
       - "oke_vcn1_mgmt_subnet_name"
       - "oke_vcn1_mgmt_subnet_cidr"
-      - "oke_vcn1_mgmt_subnet_dns"
       - "add_oke_vcn2"
       - "oke_vcn2_cni_type"
       - "oke_vcn2_name"
       - "oke_vcn2_cidrs"
-      - "oke_vcn2_dns"
       - "oke_vcn2_attach_to_drg"
       - "oke_vcn2_routable_vcns"
       - "customize_oke_vcn2_subnets"
       - "oke_vcn2_services_subnet_name"
       - "oke_vcn2_services_subnet_cidr"
-      - "oke_vcn2_services_subnet_dns"
       - "oke_vcn2_workers_subnet_name"
       - "oke_vcn2_workers_subnet_cidr"
-      - "oke_vcn2_workers_subnet_dns"
       - "oke_vcn2_api_subnet_name"
       - "oke_vcn2_api_subnet_cidr"
-      - "oke_vcn2_api_subnet_dns"
       - "oke_vcn2_pods_subnet_name"
       - "oke_vcn2_pods_subnet_cidr"
-      - "oke_vcn2_pods_subnet_dns"
       - "add_oke_vcn2_mgmt_subnet"
       - "oke_vcn2_mgmt_subnet_name"
       - "oke_vcn2_mgmt_subnet_cidr"
-      - "oke_vcn2_mgmt_subnet_dns"
       - "add_oke_vcn3"
       - "oke_vcn3_cni_type"
       - "oke_vcn3_name"
       - "oke_vcn3_cidrs"
-      - "oke_vcn3_dns"
       - "oke_vcn3_attach_to_drg"
       - "oke_vcn3_routable_vcns"
       - "customize_oke_vcn3_subnets"
       - "oke_vcn3_services_subnet_name"
       - "oke_vcn3_services_subnet_cidr"
-      - "oke_vcn3_services_subnet_dns"
       - "oke_vcn3_workers_subnet_name"
       - "oke_vcn3_workers_subnet_cidr"
-      - "oke_vcn3_workers_subnet_dns"
       - "oke_vcn3_api_subnet_name"
       - "oke_vcn3_api_subnet_cidr"
-      - "oke_vcn3_api_subnet_dns"
       - "oke_vcn3_pods_subnet_name"
       - "oke_vcn3_pods_subnet_cidr"
-      - "oke_vcn3_pods_subnet_dns"
       - "add_oke_vcn3_mgmt_subnet"
       - "oke_vcn3_mgmt_subnet_name"
       - "oke_vcn3_mgmt_subnet_cidr"
       - "oke_vcn3_mgmt_subnet_dns"
-    visible: customize_net
-
+    visible: define_net
+    
   - title: "Events and Notifications"
     variables:
       - "network_admin_email_endpoints"
@@ -519,7 +479,7 @@ variables:
         - ${extend_landing_zone_to_new_region}
         - false
 
-  customize_net:
+  define_net:
     type: boolean
     title: "Define Networking?"
     description: "Check to define networking resources. By default, the Landing Zone does NOT deploy any networks."
@@ -1057,7 +1017,7 @@ variables:
     type: boolean
     title: "Add Three-Tier VCN (label: TT-VCN-1)?"
     description: "Click to add a three-tier VCN, with three subnets: web (public by default), application (private) and database (private). An optional subnet (private by default) for bastion deployment is also available."
-    visible: customize_net
+    visible: define_net
 
   tt_vcn1_name:
     type: string
@@ -1066,7 +1026,7 @@ variables:
     required: false
     visible: 
       and:
-        - customize_net
+        - define_net
         - add_tt_vcn1
 
   tt_vcn1_cidrs:
@@ -1081,18 +1041,8 @@ variables:
     required: false
     visible: 
       and:
-        - customize_net
+        - define_net
         - add_tt_vcn1
-
-  tt_vcn1_dns:
-    type: string
-    title: "VCN DNS"
-    description: "Enter the VCN DNS name."
-    required: false
-    visible: 
-      and:
-        - customize_net
-        - add_tt_vcn1 
 
   tt_vcn1_attach_to_drg:
     type: boolean
@@ -1100,8 +1050,12 @@ variables:
     description: "Check to route private traffic to/from this VCN via a new or existing DRG."
     visible: 
       and:
-        - customize_net
+        - define_net
         - add_tt_vcn1
+        - not: 
+          - eq:
+            - ${hub_deployment_option}  
+            - "No cross-VCN or on-premises connectivity"
 
   tt_vcn1_routable_vcns:
     type: array
@@ -1112,7 +1066,7 @@ variables:
     description: "Enter the VCN labels that this VCN can send traffic to. Only applicable for Hub/Spoke topology where a DRG is deployed as the hub."
     visible: 
       and:
-        - customize_net
+        - define_net
         - add_tt_vcn1
         - tt_vcn1_attach_to_drg
         - or:
@@ -1132,7 +1086,7 @@ variables:
     description: "Check to customize default subnets settings."
     visible: 
       and:
-        - customize_net
+        - define_net
         - add_tt_vcn1  
 
   tt_vcn1_web_subnet_name:
@@ -1142,7 +1096,7 @@ variables:
     required: false
     visible: 
       and:
-        - customize_net
+        - define_net
         - customize_tt_vcn1_subnets
         - add_tt_vcn1
 
@@ -1153,20 +1107,9 @@ variables:
     required: false
     visible: 
       and:
-        - customize_net
+        - define_net
         - customize_tt_vcn1_subnets
         - add_tt_vcn1
-
-  tt_vcn1_web_subnet_dns:
-    type: string
-    title: "Web Subnet DNS Name"
-    description: "Enter the Web subnet DNS name. Use only letters and numbers, no special characters."
-    required: false
-    visible: 
-      and:
-        - customize_net
-        - customize_tt_vcn1_subnets
-        - add_tt_vcn1      
 
   tt_vcn1_web_subnet_is_private:
     type: boolean
@@ -1174,7 +1117,7 @@ variables:
     description: "Check to make the Web subnet private. It is public by default."
     visible: 
       and:
-        - customize_net
+        - define_net
         - customize_tt_vcn1_subnets
         - add_tt_vcn1
 
@@ -1185,7 +1128,7 @@ variables:
     required: false
     visible: 
       and:
-        - customize_net
+        - define_net
         - customize_tt_vcn1_subnets
         - add_tt_vcn1
 
@@ -1196,20 +1139,9 @@ variables:
     required: false
     visible: 
       and:
-        - customize_net
+        - define_net
         - customize_tt_vcn1_subnets
         - add_tt_vcn1
-
-  tt_vcn1_app_subnet_dns:
-    type: string
-    title: "Application Subnet DNS Name"
-    description: "Enter the Application subnet DNS name. Use only letters and numbers, no special characters."
-    required: false
-    visible: 
-      and:
-        - customize_net
-        - customize_tt_vcn1_subnets
-        - add_tt_vcn1      
 
   tt_vcn1_db_subnet_name:
     type: string
@@ -1218,7 +1150,7 @@ variables:
     required: false
     visible: 
       and:
-        - customize_net
+        - define_net
         - customize_tt_vcn1_subnets
         - add_tt_vcn1
 
@@ -1229,20 +1161,9 @@ variables:
     required: false
     visible: 
       and:
-        - customize_net
+        - define_net
         - customize_tt_vcn1_subnets
         - add_tt_vcn1
-
-  tt_vcn1_db_subnet_dns:
-    type: string
-    title: "Database Subnet DNS Name"
-    description: "Enter the Database subnet DNS name. Use only letters and numbers, no special characters."
-    required: false
-    visible: 
-      and:
-        - customize_net
-        - customize_tt_vcn1_subnets
-        - add_tt_vcn1      
 
   deploy_tt_vcn1_bastion_subnet:
     type: boolean
@@ -1250,7 +1171,7 @@ variables:
     description: "Check to to deploy a subnet where you can further deploy OCI Bastion service or a jump host."
     visible: 
       and:
-        - customize_net
+        - define_net
         - customize_tt_vcn1_subnets
         - add_tt_vcn1
 
@@ -1261,7 +1182,7 @@ variables:
     required: false
     visible: 
       and:
-        - customize_net
+        - define_net
         - customize_tt_vcn1_subnets
         - add_tt_vcn1
         - deploy_tt_vcn1_bastion_subnet
@@ -1273,30 +1194,18 @@ variables:
     required: false
     visible: 
       and:
-        - customize_net
+        - define_net
         - customize_tt_vcn1_subnets
         - add_tt_vcn1
         - deploy_tt_vcn1_bastion_subnet
 
-  tt_vcn1_bastion_subnet_dns:
-    type: string
-    title: "Bastion Subnet DNS Name"
-    description: "Enter the Bastion subnet DNS name. Use only letters and numbers, no special characters."
-    required: false
-    visible: 
-      and:
-        - customize_net
-        - customize_tt_vcn1_subnets
-        - add_tt_vcn1     
-        - deploy_tt_vcn1_bastion_subnet
-  
   tt_vcn1_bastion_is_access_via_public_endpoint:
     type: boolean
     title: "Will the jump host be accessed via a public endpoint?"
     description: "If checked, the Bastion subnet is made public where you'd later deploy and manage your jump hosts. By default, the Bastion subnet is private, where OCI Bastion service is expected to be deployed."
     visible: 
       and:
-        - customize_net
+        - define_net
         - customize_tt_vcn1_subnets
         - add_tt_vcn1
         - deploy_tt_vcn1_bastion_subnet
@@ -1311,7 +1220,7 @@ variables:
     required: false
     visible: 
       and:
-        - customize_net
+        - define_net
         - customize_tt_vcn1_subnets
         - add_tt_vcn1
         - deploy_tt_vcn1_bastion_subnet
@@ -1321,17 +1230,15 @@ variables:
     type: boolean
     title: "Add Three-Tier VCN (label: TT-VCN-2)?"
     description: "Click to add a three-tier VCN, with three subnets: web (public by default), application (private) and database (private). An optional subnet (private by default) for bastion deployment is also available."
-    visible: customize_net
+    visible: define_net
    
       # - "add_tt_vcn1_extra1_subnet"
       # - "tt_vcn1_extra1_subnet_name"
       # - "tt_vcn1_extra1_subnet_cidr"
-      # - "tt_vcn1_extra1_subnet_dns"
       # - "tt_vcn1_extra1_subnet_bastion_svc_cidrs"
       # - "add_tt_vcn1_extra2_subnet"
       # - "tt_vcn1_extra2_subnet_name"
       # - "tt_vcn1_extra2_subnet_cidr"
-      # - "tt_vcn1_extra2_subnet_dns"
       # - "tt_vcn1_extra2_subnet_bastion_svc_cidrs"
 
 # ------------------------------------------------------
@@ -1344,7 +1251,7 @@ variables:
     required: false
     visible: 
       and:
-        - customize_net
+        - define_net
         - add_tt_vcn2
 
   tt_vcn2_cidrs:
@@ -1359,18 +1266,8 @@ variables:
     required: false
     visible: 
       and:
-        - customize_net
+        - define_net
         - add_tt_vcn2
-
-  tt_vcn2_dns:
-    type: string
-    title: "VCN DNS"
-    description: "The VCN DNS Name."
-    required: false
-    visible: 
-      and:
-        - customize_net
-        - add_tt_vcn2 
 
   tt_vcn2_attach_to_drg:
     type: boolean
@@ -1378,7 +1275,7 @@ variables:
     description: "Check to route private traffic to/from this VCN via a new or existing DRG."
     visible: 
       and:
-        - customize_net
+        - define_net
         - add_tt_vcn2
 
   tt_vcn2_routable_vcns:
@@ -1390,7 +1287,7 @@ variables:
     description: "Enter the VCN labels that this VCN can send traffic to. Only applicable for Hub/Spoke topology where a DRG is deployed as the hub."
     visible: 
       and:
-        - customize_net
+        - define_net
         - add_tt_vcn2
         - tt_vcn2_attach_to_drg
         - or:
@@ -1410,7 +1307,7 @@ variables:
     description: "Check to customize default subnets settings."
     visible: 
       and:
-        - customize_net
+        - define_net
         - add_tt_vcn2  
 
   tt_vcn2_web_subnet_name:
@@ -1420,7 +1317,7 @@ variables:
     required: false
     visible: 
       and:
-        - customize_net
+        - define_net
         - customize_tt_vcn2_subnets
         - add_tt_vcn2
 
@@ -1431,20 +1328,9 @@ variables:
     required: false
     visible: 
       and:
-        - customize_net
+        - define_net
         - customize_tt_vcn2_subnets
         - add_tt_vcn2
-
-  tt_vcn2_web_subnet_dns:
-    type: string
-    title: "Web Subnet DNS Name"
-    description: "Use only letters and numbers, no special characters."
-    required: false
-    visible: 
-      and:
-        - customize_net
-        - customize_tt_vcn2_subnets
-        - add_tt_vcn2      
 
   tt_vcn2_web_subnet_is_private:
     type: boolean
@@ -1452,7 +1338,7 @@ variables:
     description: "Whether subnet is private or public."
     visible: 
       and:
-        - customize_net
+        - define_net
         - customize_tt_vcn2_subnets
         - add_tt_vcn2
 
@@ -1463,7 +1349,7 @@ variables:
     required: false
     visible: 
       and:
-        - customize_net
+        - define_net
         - customize_tt_vcn2_subnets
         - add_tt_vcn2
 
@@ -1474,20 +1360,9 @@ variables:
     required: false
     visible: 
       and:
-        - customize_net
+        - define_net
         - customize_tt_vcn2_subnets
         - add_tt_vcn2
-
-  tt_vcn2_app_subnet_dns:
-    type: string
-    title: "Application Subnet DNS Name"
-    description: "Use only letters and numbers, no special characters."
-    required: false
-    visible: 
-      and:
-        - customize_net
-        - customize_tt_vcn2_subnets
-        - add_tt_vcn2      
 
   tt_vcn2_db_subnet_name:
     type: string
@@ -1496,7 +1371,7 @@ variables:
     required: false
     visible: 
       and:
-        - customize_net
+        - define_net
         - customize_tt_vcn2_subnets
         - add_tt_vcn2
 
@@ -1507,20 +1382,9 @@ variables:
     required: false
     visible: 
       and:
-        - customize_net
+        - define_net
         - customize_tt_vcn2_subnets
         - add_tt_vcn2
-
-  tt_vcn2_db_subnet_dns:
-    type: string
-    title: "Database Subnet DNS Name"
-    description: "Use only letters and numbers, no special characters."
-    required: false
-    visible: 
-      and:
-        - customize_net
-        - customize_tt_vcn2_subnets
-        - add_tt_vcn2      
 
   deploy_tt_vcn2_bastion_subnet:
     type: boolean
@@ -1528,7 +1392,7 @@ variables:
     description: "Check to to deploy a subnet where you can further deploy OCI Bastion service or a jump host."
     visible: 
       and:
-        - customize_net
+        - define_net
         - customize_tt_vcn2_subnets
         - add_tt_vcn2
 
@@ -1539,7 +1403,7 @@ variables:
     required: false
     visible: 
       and:
-        - customize_net
+        - define_net
         - customize_tt_vcn2_subnets
         - add_tt_vcn2
         - deploy_tt_vcn2_bastion_subnet
@@ -1551,30 +1415,18 @@ variables:
     required: false
     visible: 
       and:
-        - customize_net
+        - define_net
         - customize_tt_vcn2_subnets
         - add_tt_vcn2
         - deploy_tt_vcn2_bastion_subnet
 
-  tt_vcn2_bastion_subnet_dns:
-    type: string
-    title: "Bastion Subnet DNS Name"
-    description: "Enter the Bastion subnet DNS name. Use only letters and numbers, no special characters."
-    required: false
-    visible: 
-      and:
-        - customize_net
-        - customize_tt_vcn2_subnets
-        - add_tt_vcn2
-        - deploy_tt_vcn2_bastion_subnet     
-  
   tt_vcn2_bastion_is_access_via_public_endpoint:
     type: boolean
     title: "Will the jump host be accessed via a public endpoint?"
     description: "If checked, the Bastion subnet is made public where you'd later deploy and manage your jump hosts. By default, the Bastion subnet is private, where OCI Bastion service is expected to be deployed."
     visible: 
       and:
-        - customize_net
+        - define_net
         - customize_tt_vcn2_subnets
         - add_tt_vcn2
         - deploy_tt_vcn2_bastion_subnet
@@ -1589,7 +1441,7 @@ variables:
     required: false
     visible: 
       and:
-        - customize_net
+        - define_net
         - customize_tt_vcn2_subnets
         - add_tt_vcn2
         - tt_vcn2_bastion_is_access_via_public_endpoint
@@ -1599,7 +1451,7 @@ variables:
     type: boolean
     title: "Add Three-Tier VCN (label: TT-VCN-3)?"
     description: "Click to add a three-tier VCN, with three subnets: web (public by default), application (private) and database (private). An optional subnet (private by default) for bastion deployment is also available."
-    visible: customize_net
+    visible: define_net
     
 # ------------------------------------------------------
 # ----- Networking - Three-tier VCN 3
@@ -1611,7 +1463,7 @@ variables:
     required: false
     visible: 
       and:
-        - customize_net
+        - define_net
         - add_tt_vcn3
 
   tt_vcn3_cidrs:
@@ -1626,18 +1478,8 @@ variables:
     required: false
     visible: 
       and:
-        - customize_net
+        - define_net
         - add_tt_vcn3
-
-  tt_vcn3_dns:
-    type: string
-    title: "VCN DNS"
-    description: "The VCN DNS Name."
-    required: false
-    visible: 
-      and:
-        - customize_net
-        - add_tt_vcn3 
 
   tt_vcn3_attach_to_drg:
     type: boolean
@@ -1645,7 +1487,7 @@ variables:
     description: "Check to route private traffic to/from this VCN via a new or existing DRG."
     visible: 
       and:
-        - customize_net
+        - define_net
         - add_tt_vcn3
 
   tt_vcn3_routable_vcns:
@@ -1657,7 +1499,7 @@ variables:
     description: "Enter the VCN labels that this VCN can send traffic to. Only applicable for Hub/Spoke topology where a DRG is deployed as the hub."
     visible: 
       and:
-        - customize_net
+        - define_net
         - add_tt_vcn3
         - tt_vcn3_attach_to_drg
         - or:
@@ -1677,7 +1519,7 @@ variables:
     description: "Check to customize default subnets settings."
     visible: 
       and:
-        - customize_net
+        - define_net
         - add_tt_vcn3  
 
   tt_vcn3_web_subnet_name:
@@ -1687,7 +1529,7 @@ variables:
     required: false
     visible: 
       and:
-        - customize_net
+        - define_net
         - customize_tt_vcn3_subnets
         - add_tt_vcn3
 
@@ -1698,20 +1540,9 @@ variables:
     required: false
     visible: 
       and:
-        - customize_net
+        - define_net
         - customize_tt_vcn3_subnets
         - add_tt_vcn3
-
-  tt_vcn3_web_subnet_dns:
-    type: string
-    title: "Web Subnet DNS Name"
-    description: "Use only letters and numbers, no special characters."
-    required: false
-    visible: 
-      and:
-        - customize_net
-        - customize_tt_vcn3_subnets
-        - add_tt_vcn3      
 
   tt_vcn3_web_subnet_is_private:
     type: boolean
@@ -1719,7 +1550,7 @@ variables:
     description: "Whether subnet is private or public."
     visible: 
       and:
-        - customize_net
+        - define_net
         - customize_tt_vcn3_subnets
         - add_tt_vcn3
 
@@ -1730,7 +1561,7 @@ variables:
     required: false
     visible: 
       and:
-        - customize_net
+        - define_net
         - customize_tt_vcn3_subnets
         - add_tt_vcn3
 
@@ -1741,20 +1572,9 @@ variables:
     required: false
     visible: 
       and:
-        - customize_net
+        - define_net
         - customize_tt_vcn3_subnets
         - add_tt_vcn3
-
-  tt_vcn3_app_subnet_dns:
-    type: string
-    title: "Application Subnet DNS Name"
-    description: "Use only letters and numbers, no special characters."
-    required: false
-    visible: 
-      and:
-        - customize_net
-        - customize_tt_vcn3_subnets
-        - add_tt_vcn3      
 
   tt_vcn3_db_subnet_name:
     type: string
@@ -1763,7 +1583,7 @@ variables:
     required: false
     visible: 
       and:
-        - customize_net
+        - define_net
         - customize_tt_vcn3_subnets
         - add_tt_vcn3
 
@@ -1774,20 +1594,9 @@ variables:
     required: false
     visible: 
       and:
-        - customize_net
+        - define_net
         - customize_tt_vcn3_subnets
         - add_tt_vcn3
-
-  tt_vcn3_db_subnet_dns:
-    type: string
-    title: "Database Subnet DNS Name"
-    description: "Use only letters and numbers, no special characters."
-    required: false
-    visible: 
-      and:
-        - customize_net
-        - customize_tt_vcn3_subnets
-        - add_tt_vcn3      
 
   deploy_tt_vcn3_bastion_subnet:
     type: boolean
@@ -1795,7 +1604,7 @@ variables:
     description: "Check to to deploy a subnet where you can further deploy OCI Bastion service or a jump host."
     visible: 
       and:
-        - customize_net
+        - define_net
         - customize_tt_vcn3_subnets
         - add_tt_vcn3
 
@@ -1806,7 +1615,7 @@ variables:
     required: false
     visible: 
       and:
-        - customize_net
+        - define_net
         - customize_tt_vcn3_subnets
         - add_tt_vcn3
         - deploy_tt_vcn3_bastion_subnet
@@ -1818,30 +1627,18 @@ variables:
     required: false
     visible: 
       and:
-        - customize_net
+        - define_net
         - customize_tt_vcn3_subnets
         - add_tt_vcn3
         - deploy_tt_vcn3_bastion_subnet
 
-  tt_vcn3_bastion_subnet_dns:
-    type: string
-    title: "Bastion Subnet DNS Name"
-    description: "Enter the Bastion subnet DNS name. Use only letters and numbers, no special characters."
-    required: false
-    visible: 
-      and:
-        - customize_net
-        - customize_tt_vcn3_subnets
-        - add_tt_vcn3     
-        - deploy_tt_vcn3_bastion_subnet
-  
   tt_vcn3_bastion_is_access_via_public_endpoint:
     type: boolean
     title: "Will the jump host be accessed via a public endpoint?"
     description: "If checked, the Bastion subnet is made public where you'd later deploy and manage your jump hosts. By default, the Bastion subnet is private, where OCI Bastion service is expected to be deployed."
     visible: 
       and:
-        - customize_net
+        - define_net
         - customize_tt_vcn3_subnets
         - add_tt_vcn3
         - deploy_tt_vcn3_bastion_subnet
@@ -1856,7 +1653,7 @@ variables:
     required: false
     visible: 
       and:
-        - customize_net
+        - define_net
         - customize_tt_vcn3_subnets
         - add_tt_vcn3
         - tt_vcn3_bastion_is_access_via_public_endpoint
@@ -1869,7 +1666,7 @@ variables:
     type: boolean
     title: "Add Exadata Cloud Service VCN (label: EXA-VCN-1)?"
     description: "Click to add a VCN configured for Exadata Cloud Service deployment, with two subnets: client (private) and backup (private)."
-    visible: customize_net
+    visible: define_net
 
   exa_vcn1_name:
     type: string
@@ -1878,7 +1675,7 @@ variables:
     required: false
     visible:
       and:
-        - customize_net
+        - define_net
         - add_exa_vcn1
 
   exa_vcn1_cidrs:
@@ -1893,17 +1690,7 @@ variables:
     required: false
     visible:
       and:
-        - customize_net
-        - add_exa_vcn1
-
-  exa_vcn1_dns:
-    type: string
-    title: "VCN DNS"
-    description: "Enter the VCN DNS name."
-    required: false
-    visible:
-      and:
-        - customize_net
+        - define_net
         - add_exa_vcn1
 
   exa_vcn1_attach_to_drg:
@@ -1912,7 +1699,7 @@ variables:
     description: "Check to route private traffic to/from this VCN via a new or existing DRG."
     visible:
       and:
-        - customize_net
+        - define_net
         - add_exa_vcn1
 
   exa_vcn1_routable_vcns:
@@ -1924,7 +1711,7 @@ variables:
     description: "Enter the VCN labels that this VCN can send traffic to. Only applicable for Hub/Spoke topology where a DRG is deployed as the hub."
     visible:
       and:
-        - customize_net
+        - define_net
         - add_exa_vcn1
         - exa_vcn1_attach_to_drg
         - or:
@@ -1944,7 +1731,7 @@ variables:
     description: "Check to customize default subnets settings."
     visible:
       and:
-        - customize_net
+        - define_net
         - add_exa_vcn1
 
   exa_vcn1_client_subnet_name:
@@ -1954,7 +1741,7 @@ variables:
     required: false
     visible:
       and:
-        - customize_net
+        - define_net
         - customize_exa_vcn1_subnets
         - add_exa_vcn1
 
@@ -1965,18 +1752,7 @@ variables:
     required: false
     visible:
       and:
-        - customize_net
-        - customize_exa_vcn1_subnets
-        - add_exa_vcn1
-
-  exa_vcn1_client_subnet_dns:
-    type: string
-    title: "Client Subnet DNS name"
-    description: "Enter the Client subnet DNS name. Use only letters and numbers, no special characters."
-    required: false
-    visible:
-      and:
-        - customize_net
+        - define_net
         - customize_exa_vcn1_subnets
         - add_exa_vcn1
 
@@ -1987,7 +1763,7 @@ variables:
     required: false
     visible:
       and:
-        - customize_net
+        - define_net
         - customize_exa_vcn1_subnets
         - add_exa_vcn1
 
@@ -1998,18 +1774,7 @@ variables:
     required: false
     visible:
       and:
-        - customize_net
-        - customize_exa_vcn1_subnets
-        - add_exa_vcn1
-
-  exa_vcn1_backup_subnet_dns:
-    type: string
-    title: "Backup Subnet DNS name"
-    description: "Enter the Backup subnet DNS name. Use only letters and numbers, no special characters."
-    required: false
-    visible:
-      and:
-        - customize_net
+        - define_net
         - customize_exa_vcn1_subnets
         - add_exa_vcn1
 
@@ -2020,7 +1785,7 @@ variables:
     type: boolean
     title: "Add Exadata Cloud Service VCN (label: EXA-VCN-2)?"
     description: "Click to add a VCN configured for Exadata Cloud Service deployment, with two subnets: client (private) and backup (private)."
-    visible: customize_net
+    visible: define_net
 
   exa_vcn2_name:
     type: string
@@ -2029,7 +1794,7 @@ variables:
     required: false
     visible:
       and:
-        - customize_net
+        - define_net
         - add_exa_vcn2
 
   exa_vcn2_cidrs:
@@ -2044,17 +1809,7 @@ variables:
     required: false
     visible:
       and:
-        - customize_net
-        - add_exa_vcn2
-
-  exa_vcn2_dns:
-    type: string
-    title: "VCN DNS"
-    description: "Enter the VCN DNS name."
-    required: false
-    visible:
-      and:
-        - customize_net
+        - define_net
         - add_exa_vcn2
 
   exa_vcn2_attach_to_drg:
@@ -2063,7 +1818,7 @@ variables:
     description: "Check to route private traffic to/from this VCN via a new or existing DRG."
     visible:
       and:
-        - customize_net
+        - define_net
         - add_exa_vcn2
 
   exa_vcn2_routable_vcns:
@@ -2075,7 +1830,7 @@ variables:
     description: "Enter the VCN labels that this VCN can send traffic to. Only applicable for Hub/Spoke topology where a DRG is deployed as the hub."
     visible:
       and:
-        - customize_net
+        - define_net
         - add_exa_vcn2
         - exa_vcn2_attach_to_drg
         - or:
@@ -2095,7 +1850,7 @@ variables:
     description: "Check to customize default subnets settings."
     visible:
       and:
-        - customize_net
+        - define_net
         - add_exa_vcn2
 
   exa_vcn2_client_subnet_name:
@@ -2105,7 +1860,7 @@ variables:
     required: false
     visible:
       and:
-        - customize_net
+        - define_net
         - customize_exa_vcn2_subnets
         - add_exa_vcn2
 
@@ -2116,18 +1871,7 @@ variables:
     required: false
     visible:
       and:
-        - customize_net
-        - customize_exa_vcn2_subnets
-        - add_exa_vcn2
-
-  exa_vcn2_client_subnet_dns:
-    type: string
-    title: "Client Subnet DNS name"
-    description: "Enter the Client subnet DNS name. Use only letters and numbers, no special characters."
-    required: false
-    visible:
-      and:
-        - customize_net
+        - define_net
         - customize_exa_vcn2_subnets
         - add_exa_vcn2
 
@@ -2138,7 +1882,7 @@ variables:
     required: false
     visible:
       and:
-        - customize_net
+        - define_net
         - customize_exa_vcn2_subnets
         - add_exa_vcn2
 
@@ -2149,21 +1893,9 @@ variables:
     required: false
     visible:
       and:
-        - customize_net
+        - define_net
         - customize_exa_vcn2_subnets
         - add_exa_vcn2
-
-  exa_vcn2_backup_subnet_dns:
-    type: string
-    title: "Backup Subnet DNS name"
-    description: "Enter the Backup subnet DNS name. Use only letters and numbers, no special characters."
-    required: false
-    visible:
-      and:
-        - customize_net
-        - customize_exa_vcn2_subnets
-        - add_exa_vcn2
-
 
   # ------------------------------------------------------
   # ----- Networking - Exadata Cloud Service VCN 3
@@ -2172,7 +1904,7 @@ variables:
     type: boolean
     title: "Add Exadata Cloud Service VCN (label: EXA-VCN-3)?"
     description: "Click to add a VCN configured for Exadata Cloud Service deployment, with two subnets: client (private) and backup (private)."
-    visible: customize_net
+    visible: define_net
 
   exa_vcn3_name:
     type: string
@@ -2181,7 +1913,7 @@ variables:
     required: false
     visible:
       and:
-        - customize_net
+        - define_net
         - add_exa_vcn3
 
   exa_vcn3_cidrs:
@@ -2196,17 +1928,7 @@ variables:
     required: false
     visible:
       and:
-        - customize_net
-        - add_exa_vcn3
-
-  exa_vcn3_dns:
-    type: string
-    title: "VCN DNS"
-    description: "Enter the VCN DNS name."
-    required: false
-    visible:
-      and:
-        - customize_net
+        - define_net
         - add_exa_vcn3
 
   exa_vcn3_attach_to_drg:
@@ -2215,7 +1937,7 @@ variables:
     description: "Check to route private traffic to/from this VCN via a new or existing DRG."
     visible:
       and:
-        - customize_net
+        - define_net
         - add_exa_vcn3
 
   exa_vcn3_routable_vcns:
@@ -2227,7 +1949,7 @@ variables:
     description: "Enter the VCN labels that this VCN can send traffic to. Only applicable for Hub/Spoke topology where a DRG is deployed as the hub."
     visible:
       and:
-        - customize_net
+        - define_net
         - add_exa_vcn3
         - exa_vcn3_attach_to_drg
         - or:
@@ -2247,7 +1969,7 @@ variables:
     description: "Check to customize default subnets settings."
     visible:
       and:
-        - customize_net
+        - define_net
         - add_exa_vcn3
 
   exa_vcn3_client_subnet_name:
@@ -2257,7 +1979,7 @@ variables:
     required: false
     visible:
       and:
-        - customize_net
+        - define_net
         - customize_exa_vcn3_subnets
         - add_exa_vcn3
 
@@ -2268,18 +1990,7 @@ variables:
     required: false
     visible:
       and:
-        - customize_net
-        - customize_exa_vcn3_subnets
-        - add_exa_vcn3
-
-  exa_vcn3_client_subnet_dns:
-    type: string
-    title: "Client Subnet DNS name"
-    description: "Enter the Client subnet DNS name. Use only letters and numbers, no special characters."
-    required: false
-    visible:
-      and:
-        - customize_net
+        - define_net
         - customize_exa_vcn3_subnets
         - add_exa_vcn3
 
@@ -2290,7 +2001,7 @@ variables:
     required: false
     visible:
       and:
-        - customize_net
+        - define_net
         - customize_exa_vcn3_subnets
         - add_exa_vcn3
 
@@ -2301,18 +2012,7 @@ variables:
     required: false
     visible:
       and:
-        - customize_net
-        - customize_exa_vcn3_subnets
-        - add_exa_vcn3
-
-  exa_vcn3_backup_subnet_dns:
-    type: string
-    title: "Backup Subnet DNS name"
-    description: "Enter the Backup subnet DNS name. Use only letters and numbers, no special characters."
-    required: false
-    visible:
-      and:
-        - customize_net
+        - define_net
         - customize_exa_vcn3_subnets
         - add_exa_vcn3
 
@@ -2324,7 +2024,7 @@ variables:
     type: boolean
     title: "Add OKE VCN (label: OKE-VCN-1)?"
     description: "Click to add a VCN configured for OKE deployment, with at least three subnets: service (public by default), workers (private) and API endpoint (private). Additionally, a private subnet for pods deployment is created if the OKE CNI Type is 'Native'. You can also enable an extra private subnet for managing the OKE cluster."
-    visible: customize_net  
+    visible: define_net  
 
   oke_vcn1_cni_type:
     type: enum
@@ -2335,7 +2035,7 @@ variables:
       - "Flannel"
     visible:
       and:
-      - customize_net
+      - define_net
       - add_oke_vcn1
     required: true
 
@@ -2346,7 +2046,7 @@ variables:
     required: false
     visible:
       and:
-        - customize_net
+        - define_net
         - add_oke_vcn1
 
   oke_vcn1_cidrs:
@@ -2361,17 +2061,7 @@ variables:
     required: false
     visible:
       and:
-        - customize_net
-        - add_oke_vcn1
-
-  oke_vcn1_dns:
-    type: string
-    title: "VCN DNS"
-    description: "The VCN DNS name."
-    required: false
-    visible:
-      and:
-        - customize_net
+        - define_net
         - add_oke_vcn1
 
   oke_vcn1_attach_to_drg:
@@ -2380,7 +2070,7 @@ variables:
     description: "Check to route private traffic to/from this VCN via a new or existing DRG."
     visible:
       and:
-        - customize_net
+        - define_net
         - add_oke_vcn1
 
   oke_vcn1_routable_vcns:
@@ -2392,7 +2082,7 @@ variables:
     description: "Enter the VCN labels that this VCN can send traffic to. Only applicable for Hub/Spoke topology where a DRG is deployed as the hub."
     visible:
       and:
-        - customize_net
+        - define_net
         - add_oke_vcn1
         - oke_vcn1_attach_to_drg
         - or:
@@ -2412,7 +2102,7 @@ variables:
     description: "Check to customize default subnets settings."
     visible:
       and:
-        - customize_net
+        - define_net
         - add_oke_vcn1
 
   oke_vcn1_api_subnet_name:
@@ -2422,7 +2112,7 @@ variables:
     required: false
     visible:
       and:
-        - customize_net
+        - define_net
         - customize_oke_vcn1_subnets
         - add_oke_vcn1
 
@@ -2433,18 +2123,7 @@ variables:
     required: false
     visible:
       and:
-        - customize_net
-        - customize_oke_vcn1_subnets
-        - add_oke_vcn1
-
-  oke_vcn1_api_subnet_dns:
-    type: string
-    title: "API Subnet DNS name"
-    description: "Use only letters and numbers, no special characters."
-    required: false
-    visible:
-      and:
-        - customize_net
+        - define_net
         - customize_oke_vcn1_subnets
         - add_oke_vcn1
 
@@ -2455,7 +2134,7 @@ variables:
     required: false
     visible:
       and:
-        - customize_net
+        - define_net
         - customize_oke_vcn1_subnets
         - add_oke_vcn1
 
@@ -2466,18 +2145,7 @@ variables:
     required: false
     visible:
       and:
-        - customize_net
-        - customize_oke_vcn1_subnets
-        - add_oke_vcn1
-
-  oke_vcn1_workers_subnet_dns:
-    type: string
-    title: "Workers Subnet DNS name"
-    description: "Use only letters and numbers, no special characters."
-    required: false
-    visible:
-      and:
-        - customize_net
+        - define_net
         - customize_oke_vcn1_subnets
         - add_oke_vcn1
 
@@ -2488,7 +2156,7 @@ variables:
     required: false
     visible:
       and:
-        - customize_net
+        - define_net
         - customize_oke_vcn1_subnets
         - add_oke_vcn1
 
@@ -2499,18 +2167,7 @@ variables:
     required: false
     visible:
       and:
-        - customize_net
-        - customize_oke_vcn1_subnets
-        - add_oke_vcn1
-
-  oke_vcn1_services_subnet_dns:
-    type: string
-    title: "Services Subnet DNS name"
-    description: "Use only letters and numbers, no special characters."
-    required: false
-    visible:
-      and:
-        - customize_net
+        - define_net
         - customize_oke_vcn1_subnets
         - add_oke_vcn1
 
@@ -2520,7 +2177,7 @@ variables:
     description: "Check to add a private subnet for cluster management."
     visible:
       and:
-        - customize_net
+        - define_net
         - customize_oke_vcn1_subnets
         - add_oke_vcn1
 
@@ -2531,7 +2188,7 @@ variables:
     required: false
     visible:
       and:
-        - customize_net
+        - define_net
         - customize_oke_vcn1_subnets
         - add_oke_vcn1
         - add_oke_vcn1_mgmt_subnet
@@ -2543,19 +2200,7 @@ variables:
     required: false
     visible:
       and:
-        - customize_net
-        - customize_oke_vcn1_subnets
-        - add_oke_vcn1
-        - add_oke_vcn1_mgmt_subnet
-
-  oke_vcn1_mgmt_subnet_dns:
-    type: string
-    title: "Management Subnet DNS name"
-    description: "Use only letters and numbers, no special characters."
-    required: false
-    visible:
-      and:
-        - customize_net
+        - define_net
         - customize_oke_vcn1_subnets
         - add_oke_vcn1
         - add_oke_vcn1_mgmt_subnet
@@ -2567,7 +2212,7 @@ variables:
     required: false
     visible:
       and:
-        - customize_net
+        - define_net
         - customize_oke_vcn1_subnets
         - add_oke_vcn1
         - eq:
@@ -2581,21 +2226,7 @@ variables:
     required: false
     visible:
       and:
-        - customize_net
-        - customize_oke_vcn1_subnets
-        - add_oke_vcn1
-        - eq:
-            - ${oke_vcn1_cni_type}
-            - "Native"
-
-  oke_vcn1_pods_subnet_dns:
-    type: string
-    title: "Pods Subnet DNS name"
-    description: "Use only letters and numbers, no special characters."
-    required: false
-    visible:
-      and:
-        - customize_net
+        - define_net
         - customize_oke_vcn1_subnets
         - add_oke_vcn1
         - eq:
@@ -2609,7 +2240,7 @@ variables:
     type: boolean
     title: "Add OKE VCN (label: OKE-VCN-2)?"
     description: "Click to add a VCN configured for OKE deployment, with at least three subnets: service (public by default), workers (private) and API endpoint (private). Additionally, a private subnet for pods deployment is created if the OKE CNI Type is 'Native'. You can also enable an extra private subnet for managing the OKE cluster."
-    visible: customize_net
+    visible: define_net
 
   oke_vcn2_cni_type:
     type: enum
@@ -2620,7 +2251,7 @@ variables:
       - "Flannel"
     visible:
       and:
-      - customize_net
+      - define_net
       - add_oke_vcn2
     required: true
 
@@ -2631,7 +2262,7 @@ variables:
     required: false
     visible:
       and:
-        - customize_net
+        - define_net
         - add_oke_vcn2
 
   oke_vcn2_cidrs:
@@ -2646,17 +2277,7 @@ variables:
     required: false
     visible:
       and:
-        - customize_net
-        - add_oke_vcn2
-
-  oke_vcn2_dns:
-    type: string
-    title: "VCN DNS"
-    description: "The VCN DNS name."
-    required: false
-    visible:
-      and:
-        - customize_net
+        - define_net
         - add_oke_vcn2
 
   oke_vcn2_attach_to_drg:
@@ -2665,7 +2286,7 @@ variables:
     description: "Check to route private traffic to/from this VCN via a new or existing DRG."
     visible:
       and:
-        - customize_net
+        - define_net
         - add_oke_vcn2
 
   oke_vcn2_routable_vcns:
@@ -2677,7 +2298,7 @@ variables:
     description: "Enter the VCN labels that this VCN can send traffic to. Only applicable for Hub/Spoke topology where a DRG is deployed as the hub."
     visible:
       and:
-        - customize_net
+        - define_net
         - add_oke_vcn2
         - oke_vcn2_attach_to_drg
         - or:
@@ -2697,7 +2318,7 @@ variables:
     description: "Check to customize default subnets settings."
     visible:
       and:
-        - customize_net
+        - define_net
         - add_oke_vcn2
 
   oke_vcn2_api_subnet_name:
@@ -2707,7 +2328,7 @@ variables:
     required: false
     visible:
       and:
-        - customize_net
+        - define_net
         - customize_oke_vcn2_subnets
         - add_oke_vcn2
 
@@ -2718,18 +2339,7 @@ variables:
     required: false
     visible:
       and:
-        - customize_net
-        - customize_oke_vcn2_subnets
-        - add_oke_vcn2
-
-  oke_vcn2_api_subnet_dns:
-    type: string
-    title: "API Subnet DNS name"
-    description: "Use only letters and numbers, no special characters."
-    required: false
-    visible:
-      and:
-        - customize_net
+        - define_net
         - customize_oke_vcn2_subnets
         - add_oke_vcn2
 
@@ -2740,7 +2350,7 @@ variables:
     required: false
     visible:
       and:
-        - customize_net
+        - define_net
         - customize_oke_vcn2_subnets
         - add_oke_vcn2
 
@@ -2751,18 +2361,7 @@ variables:
     required: false
     visible:
       and:
-        - customize_net
-        - customize_oke_vcn2_subnets
-        - add_oke_vcn2
-
-  oke_vcn2_workers_subnet_dns:
-    type: string
-    title: "Workers Subnet DNS name"
-    description: "Use only letters and numbers, no special characters."
-    required: false
-    visible:
-      and:
-        - customize_net
+        - define_net
         - customize_oke_vcn2_subnets
         - add_oke_vcn2
 
@@ -2773,7 +2372,7 @@ variables:
     required: false
     visible:
       and:
-        - customize_net
+        - define_net
         - customize_oke_vcn2_subnets
         - add_oke_vcn1
 
@@ -2784,18 +2383,7 @@ variables:
     required: false
     visible:
       and:
-        - customize_net
-        - customize_oke_vcn2_subnets
-        - add_oke_vcn2
-
-  oke_vcn2_services_subnet_dns:
-    type: string
-    title: "Services Subnet DNS name"
-    description: "Use only letters and numbers, no special characters."
-    required: false
-    visible:
-      and:
-        - customize_net
+        - define_net
         - customize_oke_vcn2_subnets
         - add_oke_vcn2
 
@@ -2805,7 +2393,7 @@ variables:
     description: "Check to add a private subnet for cluster management."
     visible:
       and:
-        - customize_net
+        - define_net
         - customize_oke_vcn2_subnets
         - add_oke_vcn2
 
@@ -2816,7 +2404,7 @@ variables:
     required: false
     visible:
       and:
-        - customize_net
+        - define_net
         - customize_oke_vcn2_subnets
         - add_oke_vcn2
         - add_oke_vcn2_mgmt_subnet
@@ -2828,19 +2416,7 @@ variables:
     required: false
     visible:
       and:
-        - customize_net
-        - customize_oke_vcn2_subnets
-        - add_oke_vcn2
-        - add_oke_vcn2_mgmt_subnet
-
-  oke_vcn2_mgmt_subnet_dns:
-    type: string
-    title: "Management Subnet DNS name"
-    description: "Use only letters and numbers, no special characters."
-    required: false
-    visible:
-      and:
-        - customize_net
+        - define_net
         - customize_oke_vcn2_subnets
         - add_oke_vcn2
         - add_oke_vcn2_mgmt_subnet
@@ -2852,7 +2428,7 @@ variables:
     required: false
     visible:
       and:
-        - customize_net
+        - define_net
         - customize_oke_vcn2_subnets
         - add_oke_vcn2
         - eq:
@@ -2866,26 +2442,13 @@ variables:
     required: false
     visible:
       and:
-        - customize_net
+        - define_net
         - customize_oke_vcn2_subnets
         - add_oke_vcn2
         - eq:
           - ${oke_vcn2_cni_type}
           - "Native"
 
-  oke_vcn2_pods_subnet_dns:
-    type: string
-    title: "Pods Subnet DNS name"
-    description: "Use only letters and numbers, no special characters."
-    required: false
-    visible:
-      and:
-        - customize_net
-        - customize_oke_vcn2_subnets
-        - add_oke_vcn2
-        - eq:
-            - ${oke_vcn2_cni_type}
-            - "Native"
   # ------------------------------------------------------
   # ----- Networking - OKE VCN 3
   #-------------------------------------------------------
@@ -2893,7 +2456,7 @@ variables:
     type: boolean
     title: "Add OKE VCN (label: OKE-VCN-3)?"
     description: "Click to add a VCN configured for OKE deployment, with at least three subnets: service (public by default), workers (private) and API endpoint (private). Additionally, a private subnet for pods deployment is created if the OKE CNI Type is 'Native'. You can also enable an extra private subnet for managing the OKE cluster."
-    visible: customize_net
+    visible: define_net
 
   oke_vcn3_cni_type:
     type: enum
@@ -2904,7 +2467,7 @@ variables:
       - "Flannel"
     visible:
       and:
-        - customize_net
+        - define_net
         - add_oke_vcn3
     required: true
 
@@ -2915,7 +2478,7 @@ variables:
     required: false
     visible:
       and:
-        - customize_net
+        - define_net
         - add_oke_vcn3
 
   oke_vcn3_cidrs:
@@ -2930,17 +2493,7 @@ variables:
     required: false
     visible:
       and:
-        - customize_net
-        - add_oke_vcn3
-
-  oke_vcn3_dns:
-    type: string
-    title: "VCN DNS"
-    description: "The VCN DNS name."
-    required: false
-    visible:
-      and:
-        - customize_net
+        - define_net
         - add_oke_vcn3
 
   oke_vcn3_attach_to_drg:
@@ -2949,7 +2502,7 @@ variables:
     description: "Check to route private traffic to/from this VCN via a new or existing DRG."
     visible:
       and:
-        - customize_net
+        - define_net
         - add_oke_vcn3
 
   oke_vcn3_routable_vcns:
@@ -2961,7 +2514,7 @@ variables:
     description: "Enter the VCN labels that this VCN can send traffic to. Only applicable for Hub/Spoke topology where a DRG is deployed as the hub."
     visible:
       and:
-        - customize_net
+        - define_net
         - add_oke_vcn3
         - oke_vcn3_attach_to_drg
         - or:
@@ -2981,7 +2534,7 @@ variables:
     description: "Check to customize default subnets settings."
     visible:
       and:
-        - customize_net
+        - define_net
         - add_oke_vcn3
 
   oke_vcn3_api_subnet_name:
@@ -2991,7 +2544,7 @@ variables:
     required: false
     visible:
       and:
-        - customize_net
+        - define_net
         - customize_oke_vcn3_subnets
         - add_oke_vcn3
 
@@ -3002,18 +2555,7 @@ variables:
     required: false
     visible:
       and:
-        - customize_net
-        - customize_oke_vcn3_subnets
-        - add_oke_vcn3
-
-  oke_vcn3_api_subnet_dns:
-    type: string
-    title: "API Subnet DNS name"
-    description: "Use only letters and numbers, no special characters."
-    required: false
-    visible:
-      and:
-        - customize_net
+        - define_net
         - customize_oke_vcn3_subnets
         - add_oke_vcn3
 
@@ -3024,7 +2566,7 @@ variables:
     required: false
     visible:
       and:
-        - customize_net
+        - define_net
         - customize_oke_vcn3_subnets
         - add_oke_vcn3
 
@@ -3035,18 +2577,7 @@ variables:
     required: false
     visible:
       and:
-        - customize_net
-        - customize_oke_vcn3_subnets
-        - add_oke_vcn3
-
-  oke_vcn3_workers_subnet_dns:
-    type: string
-    title: "Workers Subnet DNS name"
-    description: "Use only letters and numbers, no special characters."
-    required: false
-    visible:
-      and:
-        - customize_net
+        - define_net
         - customize_oke_vcn3_subnets
         - add_oke_vcn3
 
@@ -3057,7 +2588,7 @@ variables:
     required: false
     visible:
       and:
-        - customize_net
+        - define_net
         - customize_oke_vcn3_subnets
         - add_oke_vcn1
 
@@ -3068,18 +2599,7 @@ variables:
     required: false
     visible:
       and:
-        - customize_net
-        - customize_oke_vcn3_subnets
-        - add_oke_vcn3
-
-  oke_vcn3_services_subnet_dns:
-    type: string
-    title: "Services Subnet DNS name"
-    description: "Use only letters and numbers, no special characters."
-    required: false
-    visible:
-      and:
-        - customize_net
+        - define_net
         - customize_oke_vcn3_subnets
         - add_oke_vcn3
 
@@ -3089,7 +2609,7 @@ variables:
     description: "Check to add a private subnet for cluster management."
     visible:
       and:
-        - customize_net
+        - define_net
         - customize_oke_vcn3_subnets
         - add_oke_vcn3
 
@@ -3100,7 +2620,7 @@ variables:
     required: false
     visible:
       and:
-        - customize_net
+        - define_net
         - customize_oke_vcn3_subnets
         - add_oke_vcn3
         - add_oke_vcn3_mgmt_subnet
@@ -3112,19 +2632,7 @@ variables:
     required: false
     visible:
       and:
-        - customize_net
-        - customize_oke_vcn3_subnets
-        - add_oke_vcn3
-        - add_oke_vcn3_mgmt_subnet
-
-  oke_vcn3_mgmt_subnet_dns:
-    type: string
-    title: "Management Subnet DNS name"
-    description: "Use only letters and numbers, no special characters."
-    required: false
-    visible:
-      and:
-        - customize_net
+        - define_net
         - customize_oke_vcn3_subnets
         - add_oke_vcn3
         - add_oke_vcn3_mgmt_subnet
@@ -3136,7 +2644,7 @@ variables:
     required: false
     visible:
       and:
-        - customize_net
+        - define_net
         - customize_oke_vcn3_subnets
         - add_oke_vcn3
         - eq:
@@ -3150,26 +2658,13 @@ variables:
     required: false
     visible:
       and:
-        - customize_net
+        - define_net
         - customize_oke_vcn3_subnets
         - add_oke_vcn3
         - eq:
           - ${oke_vcn3_cni_type}
           - "Native"
 
-  oke_vcn3_pods_subnet_dns:
-    type: string
-    title: "Pods Subnet DNS name"
-    description: "Use only letters and numbers, no special characters."
-    required: false
-    visible:
-      and:
-        - customize_net
-        - customize_oke_vcn3_subnets
-        - add_oke_vcn3
-        - eq:
-          - ${oke_vcn3_cni_type}
-          - "Native"
 # ------------------------------------------------------
 # ----- Networking - Hub
 #-------------------------------------------------------
@@ -3177,7 +2672,7 @@ variables:
     type: enum
     title: "Deploy Hub & Spoke Topology?"
     description: "Choose one of the available options for deploying a Hub & Spoke topology. All the VCNs that attach to the DRG join the topology as spokes."
-    visible: customize_net  
+    visible: define_net  
     enum:
       - "No cross-VCN or on-premises connectivity"
       - "VCN or on-premises connectivity routing via DRG (DRG will be created)"
@@ -3200,7 +2695,7 @@ variables:
           - "VCN or on-premises connectivity routed through DMZ VCN with Network Virtual Appliance existing DRG (DMZ VCN will be created and DRG ID required)"
     visible: 
       and:
-        - customize_net
+        - define_net
         - or:
           - eq:
             - ${hub_deployment_option}
@@ -3216,7 +2711,7 @@ variables:
     required: false
     visible: 
       and:
-        - customize_net
+        - define_net
         - or:
           - eq:
             - ${hub_deployment_option}
@@ -3237,7 +2732,7 @@ variables:
     required: false
     visible: 
       and:
-        - customize_net
+        - define_net
         - or:
           - eq:
             - ${hub_deployment_option}
@@ -3246,26 +2741,10 @@ variables:
             - ${hub_deployment_option}
             - "VCN or on-premises connectivity routed through DMZ VCN with Network Virtual Appliance existing DRG (DMZ VCN will be created and DRG ID required)"
 
-  hub_vcn_dns:
-    type: string
-    title: "HuB VCN DNS"
-    description: "Enter the Hub VCN DNS name."
-    required: false
-    visible: 
-      and:
-        - customize_net
-        - or:
-          - eq:
-            - ${hub_deployment_option}
-            - "VCN or on-premises connectivity routing through DMZ VCN with Network Virtual Appliance (DRG and DMZ VCN will be created)"
-          - eq:
-            - ${hub_deployment_option}
-            - "VCN or on-premises connectivity routed through DMZ VCN with Network Virtual Appliance existing DRG (DMZ VCN will be created and DRG ID required)"
-
-  hub_vcn_deploy_firewall_option:
+  hub_vcn_deploy_net_appliance_option:
     type: enum
-    title: "Deploy Firewall?"
-    description: "Choose one of the available firewall options for deploying in the Hub VCN. Costs are incurred."
+    title: "Deploy Network Appliance?"
+    description: "Choose one of the available network appliance options for deploying in the Hub VCN. Costs are incurred."
     enum:
       - "Don't deploy any network appliance at this time"
       - "Palo Alto Networks VM-Series Firewall"
@@ -3273,9 +2752,10 @@ variables:
       #- "Check Point CloudGuard Firewall"
       #- "Cisco Secure Firewall"
       #- "OCI Firewall Service"
+      - "User-Provided Virtual Network Appliance"
     visible: 
       and:
-        - customize_net
+        - define_net
         - or:
           - eq:
             - ${hub_deployment_option}
@@ -3285,14 +2765,63 @@ variables:
             - "VCN or on-premises connectivity routed through DMZ VCN with Network Virtual Appliance existing DRG (DMZ VCN will be created and DRG ID required)"
     default: "Don't deploy any network appliance at this time"
 
-  fw_instance_name_prefix:
+  # net_appliance_image_compartment_ocid:
+  #   type: oci:identity:compartment:id
+  #   dependsOn:
+  #     compartmentId: ${tenacy_ocid}
+  #   title: "Compartment of the Network Appliance Image"
+  #   description: "Select the compartment where the network appliance image resource resides."
+  #   required: true
+  #   visible:
+  #     and:
+  #       - define_net
+  #       - or:
+  #         - eq:
+  #           - ${hub_deployment_option}
+  #           - "VCN or on-premises connectivity routing through DMZ VCN with Network Virtual Appliance (DRG and DMZ VCN will be created)"
+  #         - eq:
+  #           - ${hub_deployment_option}
+  #           - "VCN or on-premises connectivity routed through DMZ VCN with Network Virtual Appliance existing DRG (DMZ VCN will be created and DRG ID required)"
+  #       - and:
+  #         - eq:
+  #           - ${hub_vcn_deploy_net_appliance_option}
+  #           - "User-Provided Virtual Network Appliance"
+
+  net_appliance_image_ocid:
+    # type: oci:core:image:id
+    # dependsOn:
+    #   compartmentId: ${net_appliance_image_compartment_ocid}
+    # title: "Network Appliance Image"
+    # description: "Select the Network Appliance Image."
+    # required: true
+    # visible:
     type: string
-    title: "Firewall Name Common Prefix"
-    description: "Enter a common prefix to firewall name. To this common prefix, numbers 1 and 2 are appended the corresponding instance."
+    title: "Network Appliance Image OCID"
+    description: "Enter the Image OCID of the Network Appliance."
+    required: true
+    visible:
+      and:
+        - define_net
+        - or:
+          - eq:
+            - ${hub_deployment_option}
+            - "VCN or on-premises connectivity routing through DMZ VCN with Network Virtual Appliance (DRG and DMZ VCN will be created)"
+          - eq:
+            - ${hub_deployment_option}
+            - "VCN or on-premises connectivity routed through DMZ VCN with Network Virtual Appliance existing DRG (DMZ VCN will be created and DRG ID required)"
+        - and:
+          - eq:
+            - ${hub_vcn_deploy_net_appliance_option}
+            - "User-Provided Virtual Network Appliance"
+
+  net_appliance_name_prefix:
+    type: string
+    title: "Network Appliance Name Common Prefix"
+    description: "Enter a common prefix to network appliance name. To this common prefix, numbers 1 and 2 are appended the corresponding instance."
     required: false
     visible: 
       and:
-        - customize_net
+        - define_net
         - or:
           - eq:
             - ${hub_deployment_option}
@@ -3302,19 +2831,19 @@ variables:
             - "VCN or on-premises connectivity routed through DMZ VCN with Network Virtual Appliance existing DRG (DMZ VCN will be created and DRG ID required)"
         - not: 
           - eq:
-            - ${hub_vcn_deploy_firewall_option}  
+            - ${hub_vcn_deploy_net_appliance_option}
             - "Don't deploy any network appliance at this time"
       
-  fw_instance_shape:
+  net_appliance_shape:
     type: oci:core:instanceshape:name
     dependsOn:
       compartmentId: ${tenancy_ocid}
-    title: "Firewall Instance Shape"
-    description: "Select the instance shape for the firewall."
+    title: "Network Appliance Instance Shape"
+    description: "Select the instance shape for the network appliance."
     required: false
     visible: 
       and:
-        - customize_net
+        - define_net
         - or:
           - eq:
             - ${hub_deployment_option}
@@ -3325,21 +2854,21 @@ variables:
         - and: 
           - not:   
             - eq: 
-              - ${hub_vcn_deploy_firewall_option}  
+              - ${hub_vcn_deploy_net_appliance_option}
               - "Don't deploy any network appliance at this time"
           - not:    
             - eq:
-              - ${hub_vcn_deploy_firewall_option}
+              - ${hub_vcn_deploy_net_appliance_option}
               - "OCI Firewall Service"
 
-  fw_instance_flex_shape_memory:
+  net_appliance_flex_shape_memory:
     type: string
-    title: "Firewall Amount of Memory for the Selected Flex Shape"
+    title: "Network Appliance Amount of Memory for the Selected Flex Shape"
     description: "Enter the amount of memory (in GB) for the selected flex shape. Applicable to flexible shapes only."
     required: false
     visible: 
       and:
-        - customize_net
+        - define_net
         - or:
           - eq:
             - ${hub_deployment_option}
@@ -3350,21 +2879,21 @@ variables:
         - and: 
           - not:   
             - eq: 
-              - ${hub_vcn_deploy_firewall_option}  
+              - ${hub_vcn_deploy_net_appliance_option}
               - "Don't deploy any network appliance at this time"
           - not:    
             - eq:
-              - ${hub_vcn_deploy_firewall_option}
+              - ${hub_vcn_deploy_net_appliance_option}
               - "OCI Firewall Service"
 
-  fw_instance_flex_shape_cpu:
+  net_appliance_flex_shape_cpu:
     type: string
-    title: "Firewall Number of OCPUs for the Selected Flex Shape"
+    title: "Network Appliance Number of OCPUs for the Selected Flex Shape"
     description: "Enter the number of OCPUs for the selected flex shape. Applicable to flexible shapes only."
     required: false
     visible: 
       and:
-        - customize_net
+        - define_net
         - or:
           - eq:
             - ${hub_deployment_option}
@@ -3375,21 +2904,21 @@ variables:
         - and: 
           - not:   
             - eq: 
-              - ${hub_vcn_deploy_firewall_option}  
+              - ${hub_vcn_deploy_net_appliance_option}
               - "Don't deploy any network appliance at this time"
-          - not:    
+          - not:
             - eq:
-              - ${hub_vcn_deploy_firewall_option}
+              - ${hub_vcn_deploy_net_appliance_option}
               - "OCI Firewall Service"          
 
-  fw_instance_boot_volume_size:
+  net_appliance_boot_volume_size:
     type: string
-    title: "Firewall Boot Volume Size"
-    description: "Enter the boot volume size (in GB) for the firewall instances."
+    title: "Network Appliance Boot Volume Size"
+    description: "Enter the boot volume size (in GB) for the network appliance instances."
     required: false
     visible: 
       and:
-        - customize_net
+        - define_net
         - or:
           - eq:
             - ${hub_deployment_option}
@@ -3400,21 +2929,21 @@ variables:
         - and: 
           - not:   
             - eq: 
-              - ${hub_vcn_deploy_firewall_option}  
+              - ${hub_vcn_deploy_net_appliance_option}
               - "Don't deploy any network appliance at this time"
           - not:    
             - eq:
-              - ${hub_vcn_deploy_firewall_option}
+              - ${hub_vcn_deploy_net_appliance_option}
               - "OCI Firewall Service"
 
-  fw_instance_public_rsa_key:
+  net_appliance_public_rsa_key:
     type: string
-    title: "Firewall Instance public SSH Key"
+    title: "Network Appliance Instance public SSH Key"
     description: "Enter a Public SSH Key to Login to Compute Instance."
     required: false
     visible: 
       and:
-        - customize_net
+        - define_net
         - or:
           - eq:
             - ${hub_deployment_option}
@@ -3424,7 +2953,7 @@ variables:
             - "VCN or on-premises connectivity routed through DMZ VCN with Network Virtual Appliance existing DRG (DMZ VCN will be created and DRG ID required)"
         - not: 
           - eq:
-            - ${hub_vcn_deploy_firewall_option}
+            - ${hub_vcn_deploy_net_appliance_option}
             - "Don't deploy any network appliance at this time"
 
   hub_vcn_north_south_entry_point_ocid:
@@ -3434,7 +2963,7 @@ variables:
     required: false
     visible: 
       and:
-        - customize_net
+        - define_net
         - or:
           - eq:
             - ${hub_deployment_option}
@@ -3445,7 +2974,7 @@ variables:
         - and: 
           - not:   
             - eq: 
-              - ${hub_vcn_deploy_firewall_option}  
+              - ${hub_vcn_deploy_net_appliance_option}
               - "Don't deploy any network appliance at this time"
 
   hub_vcn_east_west_entry_point_ocid:
@@ -3455,7 +2984,7 @@ variables:
     required: false
     visible: 
       and:
-        - customize_net
+        - define_net
         - or:
           - eq:
             - ${hub_deployment_option}
@@ -3466,7 +2995,7 @@ variables:
         - and: 
           - not:   
             - eq: 
-              - ${hub_vcn_deploy_firewall_option}  
+              - ${hub_vcn_deploy_net_appliance_option}
               - "Don't deploy any network appliance at this time"
 
   customize_hub_vcn_subnets:
@@ -3475,7 +3004,7 @@ variables:
     description: "Check to customize default subnets settings."
     visible: 
       and:
-        - customize_net
+        - define_net
         - or:
           - eq:
             - ${hub_deployment_option}
@@ -3494,7 +3023,7 @@ variables:
     required: false
     visible: 
       and:
-        - customize_net
+        - define_net
         - customize_hub_vcn_subnets
         - or:
           - eq:
@@ -3511,7 +3040,7 @@ variables:
     required: false
     visible: 
       and:
-        - customize_net
+        - define_net
         - customize_hub_vcn_subnets
         - or:
           - eq:
@@ -3521,30 +3050,13 @@ variables:
             - ${hub_deployment_option}
             - "VCN or on-premises connectivity routed through DMZ VCN with Network Virtual Appliance existing DRG (DMZ VCN will be created and DRG ID required)"
 
-  hub_vcn_web_subnet_dns:
-    type: string
-    title: "Web Subnet DNS Name"
-    description: "Enter the Web subnet DNS name. Use only letters and numbers, no special characters."
-    required: false
-    visible: 
-      and:
-        - customize_net
-        - customize_hub_vcn_subnets
-        - or:
-          - eq:
-            - ${hub_deployment_option}
-            - "VCN or on-premises connectivity routing through DMZ VCN with Network Virtual Appliance (DRG and DMZ VCN will be created)"
-          - eq:
-            - ${hub_deployment_option}
-            - "VCN or on-premises connectivity routed through DMZ VCN with Network Virtual Appliance existing DRG (DMZ VCN will be created and DRG ID required)"      
-
   hub_vcn_web_subnet_is_private:
     type: boolean
     title: "Is Web Subnet Private?"
     description: "Check to make the Web subnet private. It is public by default."
     visible: 
       and:
-        - customize_net
+        - define_net
         - customize_hub_vcn_subnets
         - or:
           - eq:
@@ -3566,7 +3078,7 @@ variables:
     required: false
     visible: 
       and:
-        - customize_net
+        - define_net
         - customize_hub_vcn_subnets
         - or:
           - eq:
@@ -3586,7 +3098,7 @@ variables:
     required: false
     visible: 
       and:
-        - customize_net
+        - define_net
         - customize_hub_vcn_subnets
         - or:
           - eq:
@@ -3603,7 +3115,7 @@ variables:
     required: false
     visible: 
       and:
-        - customize_net
+        - define_net
         - customize_hub_vcn_subnets
         - or:
           - eq:
@@ -3612,23 +3124,6 @@ variables:
           - eq:
             - ${hub_deployment_option}
             - "VCN or on-premises connectivity routed through DMZ VCN with Network Virtual Appliance existing DRG (DMZ VCN will be created and DRG ID required)"
-
-  hub_vcn_mgmt_subnet_dns:
-    type: string
-    title: "Mgmt Subnet DNS Name"
-    description: "Enter the Mgmt subnet DNS name. Use only letters and numbers, no special characters."
-    required: false
-    visible: 
-      and:
-        - customize_net
-        - customize_hub_vcn_subnets
-        - or:
-          - eq:
-            - ${hub_deployment_option}
-            - "VCN or on-premises connectivity routing through DMZ VCN with Network Virtual Appliance (DRG and DMZ VCN will be created)"
-          - eq:
-            - ${hub_deployment_option}
-            - "VCN or on-premises connectivity routed through DMZ VCN with Network Virtual Appliance existing DRG (DMZ VCN will be created and DRG ID required)"      
 
   hub_vcn_mgmt_subnet_external_allowed_cidrs_for_http:
     type: array
@@ -3642,7 +3137,7 @@ variables:
     required: false
     visible: 
       and:
-        - customize_net
+        - define_net
         - customize_hub_vcn_subnets
         - or:
           - eq:
@@ -3664,7 +3159,7 @@ variables:
     required: false
     visible: 
       and:
-        - customize_net
+        - define_net
         - customize_hub_vcn_subnets
         - or:
           - eq:
@@ -3679,12 +3174,12 @@ variables:
 #--------------------------------------------
   hub_vcn_outdoor_subnet_name:
     type: string
-    title: "Outdoor Subnet CIDR Block"
-    description: "Enter the Outdoor subnet CIDR block. It must be within the VCN CIDR blocks."
+    title: "Outdoor Subnet Name"
+    description: "Enter the Outdoor subnet name."
     required: false
     visible: 
       and:
-        - customize_net
+        - define_net
         - customize_hub_vcn_subnets
         - or:
           - eq:
@@ -3696,12 +3191,12 @@ variables:
 
   hub_vcn_outdoor_subnet_cidr:
     type: string
-    title: "Outdoor Subnet DNS Name"
-    description: "Enter the Outdoor subnet DNS name. Use only letters and numbers, no special characters."
+    title: "Outdoor Subnet CIDR Block"
+    description: "Enter the Outdoor subnet CIDR block. It must be within the VCN CIDR blocks."
     required: false
     visible: 
       and:
-        - customize_net
+        - define_net
         - customize_hub_vcn_subnets
         - or:
           - eq:
@@ -3711,34 +3206,17 @@ variables:
             - ${hub_deployment_option}
             - "VCN or on-premises connectivity routed through DMZ VCN with Network Virtual Appliance existing DRG (DMZ VCN will be created and DRG ID required)"      
 
-  hub_vcn_outdoor_subnet_dns:
-    type: string
-    title: "Outdoor Subnet DNS Name"
-    description: "Enter the Outdoor subnet DNS name. Use only letters and numbers, no special characters."
-    required: false
-    visible: 
-      and:
-        - customize_net
-        - customize_hub_vcn_subnets
-        - or:
-          - eq:
-            - ${hub_deployment_option}
-            - "VCN or on-premises connectivity routing through DMZ VCN with Network Virtual Appliance (DRG and DMZ VCN will be created)"
-          - eq:
-            - ${hub_deployment_option}
-            - "VCN or on-premises connectivity routed through DMZ VCN with Network Virtual Appliance existing DRG (DMZ VCN will be created and DRG ID required)"           
-
 # -------------------------------------------
 # ----- Networking - Hub Indoor Subnet
 #--------------------------------------------
   hub_vcn_indoor_subnet_name:
     type: string
-    title: "Indoor Subnet CIDR Block"
-    description: "Enter the Indoor subnet CIDR block. It must be within the VCN CIDR blocks."
+    title: "Indoor Subnet Name"
+    description: "Enter the Indoor subnet name."
     required: false
     visible: 
       and:
-        - customize_net
+        - define_net
         - customize_hub_vcn_subnets
         - or:
           - eq:
@@ -3750,12 +3228,12 @@ variables:
 
   hub_vcn_indoor_subnet_cidr:
     type: string
-    title: "Indoor Subnet DNS Name"
-    description: "Enter the Indoor subnet DNS name. Use only letters and numbers, no special characters."
+    title: "Indoor Subnet CIDR Block"
+    description: "Enter the Indoor subnet CIDR block. It must be within the VCN CIDR blocks."
     required: false
     visible: 
       and:
-        - customize_net
+        - define_net
         - customize_hub_vcn_subnets
         - or:
           - eq:
@@ -3764,23 +3242,6 @@ variables:
           - eq:
             - ${hub_deployment_option}
             - "VCN or on-premises connectivity routed through DMZ VCN with Network Virtual Appliance existing DRG (DMZ VCN will be created and DRG ID required)"      
-
-  hub_vcn_indoor_subnet_dns:
-    type: string
-    title: "Indoor Subnet DNS Name"
-    description: "Enter the Indoor subnet DNS name. Use only letters and numbers, no special characters."
-    required: false
-    visible: 
-      and:
-        - customize_net
-        - customize_hub_vcn_subnets
-        - or:
-          - eq:
-            - ${hub_deployment_option}
-            - "VCN or on-premises connectivity routing through DMZ VCN with Network Virtual Appliance (DRG and DMZ VCN will be created)"
-          - eq:
-            - ${hub_deployment_option}
-            - "VCN or on-premises connectivity routed through DMZ VCN with Network Virtual Appliance existing DRG (DMZ VCN will be created and DRG ID required)"           
 
   network_admin_email_endpoints:
     type: array
