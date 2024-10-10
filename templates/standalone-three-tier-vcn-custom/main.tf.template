@@ -29,20 +29,24 @@ module "core_lz" {
     # ----- Networking
     # ------------------------------------------------------
     define_net  = true # enables network resources provisioning
+    
     add_tt_vcn1 = true # This deploys one three-tier VCN with custom settings.
-    # --- VCN settings
     tt_vcn1_name = "my-vcn-1"                    # Provide the VCN name.
     tt_vcn1_cidrs = ["192.168.0.0/20"]           # Provide the VCN CIDR(s) block(s).
+    
     # --- Web subnet settings
     tt_vcn1_web_subnet_name = "frontend-subnet"  # Provide the web subnet name.
     tt_vcn1_web_subnet_cidr = "192.168.0.0/24"   # Provide the web subnet CIDR block.
     tt_vcn1_web_subnet_is_private = true         # Provide whether the web subnet is private or public.
+    
     # --- App subnet settings
     tt_vcn1_app_subnet_name = "middle-subnet"    # Provide the app subnet name.
     tt_vcn1_app_subnet_cidr = "192.168.1.0/24"   # Provide the app subnet CIDR block.
+    
     # --- DB subnet settings
     tt_vcn1_db_subnet_name = "backend-subnet"    # Provide the db subnet name.
     tt_vcn1_db_subnet_cidr = "192.168.2.0/24"    # Provide the db subnet CIDR block.
+    
     # --- Bastion subnet settings
     deploy_tt_vcn1_bastion_subnet = true                 # Provide whether a bastion subnet is deployed.
     tt_vcn1_bastion_subnet_name = "bastion-subnet"       # Provide the bastion subnet name.
