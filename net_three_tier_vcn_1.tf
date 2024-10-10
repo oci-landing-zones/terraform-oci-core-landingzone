@@ -308,8 +308,8 @@ locals {
                                     protocol = "TCP" 
                                     dst = "0.0.0.0/0" 
                                     dst_type = "CIDR_BLOCK" 
-                                    dst_port_min = 0 
-                                    dst_port_max = 65535 
+                                    dst_port_min = null
+                                    dst_port_max = null
                                 }
                             },
                             local.vcn_1_to_hub_indoor_subnet_cross_vcn_egress,   
