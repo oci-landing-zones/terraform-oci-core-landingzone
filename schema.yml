@@ -973,21 +973,26 @@ variables:
             - "No cross-VCN or on-premises connectivity"
 
   tt_vcn1_routable_vcns:
-    type: array
-    items:
-      type: string
-    uniqueItems: true
+    type: enum
     title: "Routable VCNs"
-    description: "Enter the VCN labels that this VCN can send traffic to. Only applicable for Hub/Spoke topology where a DRG is deployed as the hub."
+    description: "Select the VCN labels that this VCN can send traffic to. Only applicable for Hub/Spoke topology where a DRG is deployed as the hub."
+    additionalProps:
+        allowMultiple: true
+    enum:
+      - "TT-VCN-2"
+      - "TT-VCN-3"
+      - "EXA-VCN-1"
+      - "EXA-VCN-2"
+      - "EXA-VCN-3"
+      - "OKE-VCN-1"
+      - "OKE-VCN-2"
+      - "OKE-VCN-3"    
     visible: 
       and:
         - define_net
         - add_tt_vcn1
         - tt_vcn1_attach_to_drg
         - or:
-          - eq:
-            - ${hub_deployment_option}
-            - "No cross-VCN or on-premises connectivity"
           - eq:
             - ${hub_deployment_option}
             - "VCN or on-premises connectivity routing via DRG (DRG will be created)"
@@ -1194,12 +1199,20 @@ variables:
         - add_tt_vcn2
 
   tt_vcn2_routable_vcns:
-    type: array
-    items:
-      type: string
-    uniqueItems: true
+    type: enum
     title: "Routable VCNs"
-    description: "Enter the VCN labels that this VCN can send traffic to. Only applicable for Hub/Spoke topology where a DRG is deployed as the hub."
+    description: "Select the VCN labels that this VCN can send traffic to. Only applicable for Hub/Spoke topology where a DRG is deployed as the hub."
+    additionalProps:
+        allowMultiple: true
+    enum:
+      - "TT-VCN-1"
+      - "TT-VCN-3"
+      - "EXA-VCN-1"
+      - "EXA-VCN-2"
+      - "EXA-VCN-3"
+      - "OKE-VCN-1"
+      - "OKE-VCN-2"
+      - "OKE-VCN-3"    
     visible: 
       and:
         - define_net
@@ -1208,13 +1221,11 @@ variables:
         - or:
           - eq:
             - ${hub_deployment_option}
-            - "No cross-VCN or on-premises connectivity"
-          - eq:
-            - ${hub_deployment_option}
             - "VCN or on-premises connectivity routing via DRG (DRG will be created)"
           - eq:
             - ${hub_deployment_option}
             - "VCN or on-premises connectivity routing via DRG (existing DRG)"
+
 
   customize_tt_vcn2_subnets:
     type: boolean
@@ -1406,12 +1417,20 @@ variables:
         - add_tt_vcn3
 
   tt_vcn3_routable_vcns:
-    type: array
-    items:
-      type: string
-    uniqueItems: true
+    type: enum
     title: "Routable VCNs"
-    description: "Enter the VCN labels that this VCN can send traffic to. Only applicable for Hub/Spoke topology where a DRG is deployed as the hub."
+    description: "Select the VCN labels that this VCN can send traffic to. Only applicable for Hub/Spoke topology where a DRG is deployed as the hub."
+    additionalProps:
+        allowMultiple: true
+    enum:
+      - "TT-VCN-1"
+      - "TT-VCN-2"
+      - "EXA-VCN-1"
+      - "EXA-VCN-2"
+      - "EXA-VCN-3"
+      - "OKE-VCN-1"
+      - "OKE-VCN-2"
+      - "OKE-VCN-3"    
     visible: 
       and:
         - define_net
@@ -1420,13 +1439,11 @@ variables:
         - or:
           - eq:
             - ${hub_deployment_option}
-            - "No cross-VCN or on-premises connectivity"
-          - eq:
-            - ${hub_deployment_option}
             - "VCN or on-premises connectivity routing via DRG (DRG will be created)"
           - eq:
             - ${hub_deployment_option}
             - "VCN or on-premises connectivity routing via DRG (existing DRG)"
+
 
   customize_tt_vcn3_subnets:
     type: boolean
@@ -1618,21 +1635,26 @@ variables:
         - add_exa_vcn1
 
   exa_vcn1_routable_vcns:
-    type: array
-    items:
-      type: string
-    uniqueItems: true
+    type: enum
     title: "Routable VCNs"
-    description: "Enter the VCN labels that this VCN can send traffic to. Only applicable for Hub/Spoke topology where a DRG is deployed as the hub."
-    visible:
+    description: "Select the VCN labels that this VCN can send traffic to. Only applicable for Hub/Spoke topology where a DRG is deployed as the hub."
+    additionalProps:
+        allowMultiple: true
+    enum:
+      - "EXA-VCN-2"
+      - "EXA-VCN-3"
+      - "TT-VCN-1"
+      - "TT-VCN-2"
+      - "TT-VCN-3"
+      - "OKE-VCN-1"
+      - "OKE-VCN-2"
+      - "OKE-VCN-3"    
+    visible: 
       and:
         - define_net
         - add_exa_vcn1
         - exa_vcn1_attach_to_drg
         - or:
-          - eq:
-            - ${hub_deployment_option}
-            - "No cross-VCN or on-premises connectivity"
           - eq:
             - ${hub_deployment_option}
             - "VCN or on-premises connectivity routing via DRG (DRG will be created)"
@@ -1737,21 +1759,26 @@ variables:
         - add_exa_vcn2
 
   exa_vcn2_routable_vcns:
-    type: array
-    items:
-      type: string
-    uniqueItems: true
+    type: enum
     title: "Routable VCNs"
-    description: "Enter the VCN labels that this VCN can send traffic to. Only applicable for Hub/Spoke topology where a DRG is deployed as the hub."
-    visible:
+    description: "Select the VCN labels that this VCN can send traffic to. Only applicable for Hub/Spoke topology where a DRG is deployed as the hub."
+    additionalProps:
+        allowMultiple: true
+    enum:
+      - "EXA-VCN-1"
+      - "EXA-VCN-3"
+      - "TT-VCN-1"
+      - "TT-VCN-2"
+      - "TT-VCN-3"
+      - "OKE-VCN-1"
+      - "OKE-VCN-2"
+      - "OKE-VCN-3"    
+    visible: 
       and:
         - define_net
         - add_exa_vcn2
         - exa_vcn2_attach_to_drg
         - or:
-          - eq:
-            - ${hub_deployment_option}
-            - "No cross-VCN or on-premises connectivity"
           - eq:
             - ${hub_deployment_option}
             - "VCN or on-premises connectivity routing via DRG (DRG will be created)"
@@ -1856,21 +1883,26 @@ variables:
         - add_exa_vcn3
 
   exa_vcn3_routable_vcns:
-    type: array
-    items:
-      type: string
-    uniqueItems: true
+    type: enum
     title: "Routable VCNs"
-    description: "Enter the VCN labels that this VCN can send traffic to. Only applicable for Hub/Spoke topology where a DRG is deployed as the hub."
-    visible:
+    description: "Select the VCN labels that this VCN can send traffic to. Only applicable for Hub/Spoke topology where a DRG is deployed as the hub."
+    additionalProps:
+        allowMultiple: true
+    enum:
+      - "EXA-VCN-1"
+      - "EXA-VCN-2"
+      - "TT-VCN-1"
+      - "TT-VCN-2"
+      - "TT-VCN-3"
+      - "OKE-VCN-1"
+      - "OKE-VCN-2"
+      - "OKE-VCN-3"    
+    visible: 
       and:
         - define_net
         - add_exa_vcn3
         - exa_vcn3_attach_to_drg
         - or:
-          - eq:
-            - ${hub_deployment_option}
-            - "No cross-VCN or on-premises connectivity"
           - eq:
             - ${hub_deployment_option}
             - "VCN or on-premises connectivity routing via DRG (DRG will be created)"
@@ -1989,21 +2021,26 @@ variables:
         - add_oke_vcn1
 
   oke_vcn1_routable_vcns:
-    type: array
-    items:
-      type: string
-    uniqueItems: true
+    type: enum
     title: "Routable VCNs"
-    description: "Enter the VCN labels that this VCN can send traffic to. Only applicable for Hub/Spoke topology where a DRG is deployed as the hub."
-    visible:
+    description: "Select the VCN labels that this VCN can send traffic to. Only applicable for Hub/Spoke topology where a DRG is deployed as the hub."
+    additionalProps:
+        allowMultiple: true
+    enum:
+      - "OKE-VCN-2"
+      - "OKE-VCN-3"
+      - "EXA-VCN-1"
+      - "EXA-VCN-2"
+      - "EXA-VCN-3"
+      - "TT-VCN-1"
+      - "TT-VCN-2"
+      - "TT-VCN-3"
+    visible: 
       and:
         - define_net
         - add_oke_vcn1
         - oke_vcn1_attach_to_drg
         - or:
-          - eq:
-            - ${hub_deployment_option}
-            - "No cross-VCN or on-premises connectivity"
           - eq:
             - ${hub_deployment_option}
             - "VCN or on-premises connectivity routing via DRG (DRG will be created)"
@@ -2205,21 +2242,26 @@ variables:
         - add_oke_vcn2
 
   oke_vcn2_routable_vcns:
-    type: array
-    items:
-      type: string
-    uniqueItems: true
+    type: enum
     title: "Routable VCNs"
-    description: "Enter the VCN labels that this VCN can send traffic to. Only applicable for Hub/Spoke topology where a DRG is deployed as the hub."
-    visible:
+    description: "Select the VCN labels that this VCN can send traffic to. Only applicable for Hub/Spoke topology where a DRG is deployed as the hub."
+    additionalProps:
+        allowMultiple: true
+    enum:
+      - "OKE-VCN-2"
+      - "OKE-VCN-3"
+      - "EXA-VCN-1"
+      - "EXA-VCN-2"
+      - "EXA-VCN-3"
+      - "TT-VCN-1"
+      - "TT-VCN-2"
+      - "TT-VCN-3"
+    visible: 
       and:
         - define_net
         - add_oke_vcn2
         - oke_vcn2_attach_to_drg
         - or:
-          - eq:
-            - ${hub_deployment_option}
-            - "No cross-VCN or on-premises connectivity"
           - eq:
             - ${hub_deployment_option}
             - "VCN or on-premises connectivity routing via DRG (DRG will be created)"
@@ -2421,21 +2463,26 @@ variables:
         - add_oke_vcn3
 
   oke_vcn3_routable_vcns:
-    type: array
-    items:
-      type: string
-    uniqueItems: true
+    type: enum
     title: "Routable VCNs"
-    description: "Enter the VCN labels that this VCN can send traffic to. Only applicable for Hub/Spoke topology where a DRG is deployed as the hub."
-    visible:
+    description: "Select the VCN labels that this VCN can send traffic to. Only applicable for Hub/Spoke topology where a DRG is deployed as the hub."
+    additionalProps:
+        allowMultiple: true
+    enum:
+      - "OKE-VCN-1"
+      - "OKE-VCN-2"
+      - "EXA-VCN-1"
+      - "EXA-VCN-2"
+      - "EXA-VCN-3"
+      - "TT-VCN-1"
+      - "TT-VCN-2"
+      - "TT-VCN-3"
+    visible: 
       and:
         - define_net
         - add_oke_vcn3
         - oke_vcn3_attach_to_drg
         - or:
-          - eq:
-            - ${hub_deployment_option}
-            - "No cross-VCN or on-premises connectivity"
           - eq:
             - ${hub_deployment_option}
             - "VCN or on-premises connectivity routing via DRG (DRG will be created)"

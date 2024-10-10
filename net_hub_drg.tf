@@ -342,7 +342,7 @@ locals {
                     }
                   }
                 } : {},
-                (contains(var.tt_vcn1_routable_vcns, "TT-VCN-2")) ? {
+                (length(var.tt_vcn1_routable_vcns) == 0 || contains(var.tt_vcn1_routable_vcns, "TT-VCN-2")) ? {
                   "TT-VCN-1-TO-TT-VCN-2-STMT" = {
                     action   = "ACCEPT",
                     priority = 2,
@@ -353,7 +353,7 @@ locals {
                     }
                   }
                 } : {},
-                (contains(var.tt_vcn1_routable_vcns, "TT-VCN-3")) ? {
+                (length(var.tt_vcn1_routable_vcns) == 0 || contains(var.tt_vcn1_routable_vcns, "TT-VCN-3")) ? {
                   "TT-VCN-1-TO-TT-VCN-3-STMT" = {
                     action   = "ACCEPT",
                     priority = 3,
@@ -364,7 +364,7 @@ locals {
                     }
                   }
                 } : {},
-                (contains(var.tt_vcn1_routable_vcns, "EXA-VCN-1")) ? {
+                (length(var.tt_vcn1_routable_vcns) == 0 || contains(var.tt_vcn1_routable_vcns, "EXA-VCN-1")) ? {
                   "TT-VCN-1-TO-EXA-VCN-1-STMT" = {
                     action   = "ACCEPT",
                     priority = 4,
@@ -375,7 +375,7 @@ locals {
                     }
                   }
                 } : {},
-                (contains(var.tt_vcn1_routable_vcns, "EXA-VCN-2")) ? {
+                (length(var.tt_vcn1_routable_vcns) == 0 || contains(var.tt_vcn1_routable_vcns, "EXA-VCN-2")) ? {
                   "TT-VCN-1-TO-EXA-VCN-2-STMT" = {
                     action   = "ACCEPT",
                     priority = 5,
@@ -386,7 +386,7 @@ locals {
                     }
                   }
                 } : {},
-                (contains(var.tt_vcn1_routable_vcns, "EXA-VCN-3")) ? {
+                (length(var.tt_vcn1_routable_vcns) == 0 || contains(var.tt_vcn1_routable_vcns, "EXA-VCN-3")) ? {
                   "TT-VCN-1-TO-EXA-VCN-3-STMT" = {
                     action   = "ACCEPT",
                     priority = 6,
@@ -397,7 +397,7 @@ locals {
                     }
                   }
                 } : {},
-                (contains(var.tt_vcn1_routable_vcns, "OKE-VCN-1")) ? {
+                (length(var.tt_vcn1_routable_vcns) == 0 || contains(var.tt_vcn1_routable_vcns, "OKE-VCN-1")) ? {
                   "TT-VCN-1-TO-OKE-VCN-1-STMT" = {
                     action   = "ACCEPT",
                     priority = 7,
@@ -408,7 +408,7 @@ locals {
                     }
                   }
                 } : {},
-                (contains(var.tt_vcn1_routable_vcns, "OKE-VCN-2")) ? {
+                (length(var.tt_vcn1_routable_vcns) == 0 || contains(var.tt_vcn1_routable_vcns, "OKE-VCN-2")) ? {
                   "TT-VCN-1-TO-OKE-VCN-2-STMT" = {
                     action   = "ACCEPT",
                     priority = 8,
@@ -419,7 +419,7 @@ locals {
                     }
                   }
                 } : {},
-                (contains(var.tt_vcn1_routable_vcns, "OKE-VCN-3")) ? {
+                (length(var.tt_vcn1_routable_vcns) == 0 || contains(var.tt_vcn1_routable_vcns, "OKE-VCN-3")) ? {
                   "TT-VCN-1-TO-OKE-VCN-3-STMT" = {
                     action   = "ACCEPT",
                     priority = 9,
@@ -451,7 +451,7 @@ locals {
                     }
                   }
                 } : {},
-                (contains(var.tt_vcn2_routable_vcns, "TT-VCN-1")) ? {
+                (length(var.tt_vcn2_routable_vcns) == 0 || contains(var.tt_vcn2_routable_vcns, "TT-VCN-1")) ? {
                   "TT-VCN-2-TO-TT-VCN-1-STMT" = {
                     action   = "ACCEPT",
                     priority = 2,
@@ -462,7 +462,7 @@ locals {
                     }
                   }
                 } : {},
-                (contains(var.tt_vcn2_routable_vcns, "TT-VCN-3")) ? {
+                (length(var.tt_vcn2_routable_vcns) == 0 || contains(var.tt_vcn2_routable_vcns, "TT-VCN-3")) ? {
                   "TT-VCN-2-TO-TT-VCN-3-STMT" = {
                     action   = "ACCEPT",
                     priority = 3,
@@ -473,7 +473,7 @@ locals {
                     }
                   }
                 } : {},
-                (contains(var.tt_vcn2_routable_vcns, "EXA-VCN-1")) ? {
+                (length(var.tt_vcn2_routable_vcns) == 0 || contains(var.tt_vcn2_routable_vcns, "EXA-VCN-1")) ? {
                   "TT-VCN-2-TO-EXA-VCN-1-STMT" = {
                     action   = "ACCEPT",
                     priority = 4,
@@ -484,7 +484,7 @@ locals {
                     }
                   }
                 } : {},
-                (contains(var.tt_vcn2_routable_vcns, "EXA-VCN-2")) ? {
+                (length(var.tt_vcn2_routable_vcns) == 0 || contains(var.tt_vcn2_routable_vcns, "EXA-VCN-2")) ? {
                   "TT-VCN-2-TO-EXA-VCN-2-STMT" = {
                     action   = "ACCEPT",
                     priority = 5,
@@ -495,7 +495,7 @@ locals {
                     }
                   }
                 } : {},
-                (contains(var.tt_vcn2_routable_vcns, "EXA-VCN-3")) ? {
+                (length(var.tt_vcn2_routable_vcns) == 0 || contains(var.tt_vcn2_routable_vcns, "EXA-VCN-3")) ? {
                   "TT-VCN-2-TO-EXA-VCN-3-STMT" = {
                     action   = "ACCEPT",
                     priority = 6,
@@ -506,7 +506,7 @@ locals {
                     }
                   }
                 } : {},
-                (contains(var.tt_vcn2_routable_vcns, "OKE-VCN-1")) ? {
+                (length(var.tt_vcn2_routable_vcns) == 0 || contains(var.tt_vcn2_routable_vcns, "OKE-VCN-1")) ? {
                   "TT-VCN-2-TO-OKE-VCN-1-STMT" = {
                     action   = "ACCEPT",
                     priority = 7,
@@ -517,7 +517,7 @@ locals {
                     }
                   }
                 } : {},
-                (contains(var.tt_vcn2_routable_vcns, "OKE-VCN-2")) ? {
+                (length(var.tt_vcn2_routable_vcns) == 0 || contains(var.tt_vcn2_routable_vcns, "OKE-VCN-2")) ? {
                   "TT-VCN-2-TO-OKE-VCN-2-STMT" = {
                     action   = "ACCEPT",
                     priority = 8,
@@ -528,7 +528,7 @@ locals {
                     }
                   }
                 } : {},
-                (contains(var.tt_vcn2_routable_vcns, "OKE-VCN-3")) ? {
+                (length(var.tt_vcn2_routable_vcns) == 0 || contains(var.tt_vcn2_routable_vcns, "OKE-VCN-3")) ? {
                   "TT-VCN-2-TO-OKE-VCN-3-STMT" = {
                     action   = "ACCEPT",
                     priority = 9,
@@ -560,7 +560,7 @@ locals {
                     }
                   }
                 } : {},
-                (contains(var.tt_vcn3_routable_vcns, "TT-VCN-1")) ? {
+                (length(var.tt_vcn3_routable_vcns) == 0 || contains(var.tt_vcn3_routable_vcns, "TT-VCN-1")) ? {
                   "TT-VCN-3-TO-TT-VCN-1-STMT" = {
                     action   = "ACCEPT",
                     priority = 2,
@@ -571,7 +571,7 @@ locals {
                     }
                   }
                 } : {},
-                (contains(var.tt_vcn3_routable_vcns, "TT-VCN-2")) ? {
+                (length(var.tt_vcn3_routable_vcns) == 0 || contains(var.tt_vcn3_routable_vcns, "TT-VCN-2")) ? {
                   "TT-VCN-3-TO-TT-VCN-2-STMT" = {
                     action   = "ACCEPT",
                     priority = 3,
@@ -582,7 +582,7 @@ locals {
                     }
                   }
                 } : {},
-                (contains(var.tt_vcn3_routable_vcns, "EXA-VCN-1")) ? {
+                (length(var.tt_vcn3_routable_vcns) == 0 || contains(var.tt_vcn3_routable_vcns, "EXA-VCN-1")) ? {
                   "TT-VCN-3-TO-EXA-VCN-1-STMT" = {
                     action   = "ACCEPT",
                     priority = 4,
@@ -593,7 +593,7 @@ locals {
                     }
                   }
                 } : {},
-                (contains(var.tt_vcn3_routable_vcns, "EXA-VCN-2")) ? {
+                (length(var.tt_vcn3_routable_vcns) == 0 || contains(var.tt_vcn3_routable_vcns, "EXA-VCN-2")) ? {
                   "TT-VCN-3-TO-EXA-VCN-2-STMT" = {
                     action   = "ACCEPT",
                     priority = 5,
@@ -604,7 +604,7 @@ locals {
                     }
                   }
                 } : {},
-                (contains(var.tt_vcn3_routable_vcns, "EXA-VCN-3")) ? {
+                (length(var.tt_vcn3_routable_vcns) == 0 || contains(var.tt_vcn3_routable_vcns, "EXA-VCN-3")) ? {
                   "TT-VCN-3-TO-EXA-VCN-3-STMT" = {
                     action   = "ACCEPT",
                     priority = 6,
@@ -615,7 +615,7 @@ locals {
                     }
                   }
                 } : {},
-                (contains(var.tt_vcn3_routable_vcns, "OKE-VCN-1")) ? {
+                (length(var.tt_vcn3_routable_vcns) == 0 || contains(var.tt_vcn3_routable_vcns, "OKE-VCN-1")) ? {
                   "TT-VCN-3-TO-OKE-VCN-1-STMT" = {
                     action   = "ACCEPT",
                     priority = 7,
@@ -626,7 +626,7 @@ locals {
                     }
                   }
                 } : {},
-                (contains(var.tt_vcn3_routable_vcns, "OKE-VCN-2")) ? {
+                (length(var.tt_vcn3_routable_vcns) == 0 || contains(var.tt_vcn3_routable_vcns, "OKE-VCN-2")) ? {
                   "TT-VCN-3-TO-OKE-VCN-2-STMT" = {
                     action   = "ACCEPT",
                     priority = 8,
@@ -637,7 +637,7 @@ locals {
                     }
                   }
                 } : {},
-                (contains(var.tt_vcn3_routable_vcns, "OKE-VCN-3")) ? {
+                (length(var.tt_vcn3_routable_vcns) == 0 || contains(var.tt_vcn3_routable_vcns, "OKE-VCN-3")) ? {
                   "TT-VCN-3-TO-OKE-VCN-3-STMT" = {
                     action   = "ACCEPT",
                     priority = 9,
@@ -669,7 +669,7 @@ locals {
                     }
                   }
                 } : {},
-                (contains(var.exa_vcn1_routable_vcns, "EXA-VCN-2")) ? {
+                (length(var.exa_vcn1_routable_vcns) == 0 || contains(var.exa_vcn1_routable_vcns, "EXA-VCN-2")) ? {
                   "EXA-VCN-1-TO-EXA-VCN-2-STMT" = {
                     action   = "ACCEPT",
                     priority = 2,
@@ -680,7 +680,7 @@ locals {
                     }
                   }
                 } : {},
-                (contains(var.exa_vcn1_routable_vcns, "EXA-VCN-3")) ? {
+                (length(var.exa_vcn1_routable_vcns) == 0 || contains(var.exa_vcn1_routable_vcns, "EXA-VCN-3")) ? {
                   "EXA-VCN-1-TO-EXA-VCN-3-STMT" = {
                     action   = "ACCEPT",
                     priority = 3,
@@ -691,7 +691,7 @@ locals {
                     }
                   }
                 } : {},
-                (contains(var.exa_vcn1_routable_vcns, "TT-VCN-1")) ? {
+                (length(var.exa_vcn1_routable_vcns) == 0 || contains(var.exa_vcn1_routable_vcns, "TT-VCN-1")) ? {
                   "EXA-VCN-1-TO-TT-VCN-1-STMT" = {
                     action   = "ACCEPT",
                     priority = 4,
@@ -702,7 +702,7 @@ locals {
                     }
                   }
                 } : {},
-                (contains(var.exa_vcn1_routable_vcns, "TT-VCN-2")) ? {
+                (length(var.exa_vcn1_routable_vcns) == 0 || contains(var.exa_vcn1_routable_vcns, "TT-VCN-2")) ? {
                   "EXA-VCN-1-TO-TT-VCN-2-STMT" = {
                     action   = "ACCEPT",
                     priority = 5,
@@ -713,7 +713,7 @@ locals {
                     }
                   }
                 } : {},
-                (contains(var.exa_vcn1_routable_vcns, "TT-VCN-3")) ? {
+                (length(var.exa_vcn1_routable_vcns) == 0 || contains(var.exa_vcn1_routable_vcns, "TT-VCN-3")) ? {
                   "EXA-VCN-1-TO-TT-VCN-3-STMT" = {
                     action   = "ACCEPT",
                     priority = 6,
@@ -724,7 +724,7 @@ locals {
                     }
                   }
                 } : {},
-                (contains(var.exa_vcn1_routable_vcns, "OKE-VCN-1")) ? {
+                (length(var.exa_vcn1_routable_vcns) == 0 || contains(var.exa_vcn1_routable_vcns, "OKE-VCN-1")) ? {
                   "EXA-VCN-1-TO-OKE-VCN-1-STMT" = {
                     action   = "ACCEPT",
                     priority = 7,
@@ -735,7 +735,7 @@ locals {
                     }
                   }
                 } : {},
-                (contains(var.exa_vcn1_routable_vcns, "OKE-VCN-2")) ? {
+                (length(var.exa_vcn1_routable_vcns) == 0 || contains(var.exa_vcn1_routable_vcns, "OKE-VCN-2")) ? {
                   "EXA-VCN-1-TO-OKE-VCN-2-STMT" = {
                     action   = "ACCEPT",
                     priority = 8,
@@ -746,7 +746,7 @@ locals {
                     }
                   }
                 } : {},
-                (contains(var.exa_vcn1_routable_vcns, "OKE-VCN-3")) ? {
+                (length(var.exa_vcn1_routable_vcns) == 0 || contains(var.exa_vcn1_routable_vcns, "OKE-VCN-3")) ? {
                   "EXA-VCN-1-TO-OKE-VCN-3-STMT" = {
                     action   = "ACCEPT",
                     priority = 9,
@@ -778,7 +778,7 @@ locals {
                     }
                   }
                 } : {},
-                (contains(var.exa_vcn2_routable_vcns, "EXA-VCN-1")) ? {
+                (length(var.exa_vcn2_routable_vcns) == 0 || contains(var.exa_vcn2_routable_vcns, "EXA-VCN-1")) ? {
                   "EXA-VCN-2-TO-EXA-VCN-1-STMT" = {
                     action   = "ACCEPT",
                     priority = 2,
@@ -789,7 +789,7 @@ locals {
                     }
                   }
                 } : {},
-                (contains(var.exa_vcn2_routable_vcns, "EXA-VCN-3")) ? {
+                (length(var.exa_vcn2_routable_vcns) == 0 || contains(var.exa_vcn2_routable_vcns, "EXA-VCN-3")) ? {
                   "EXA-VCN-2-TO-EXA-VCN-3-STMT" = {
                     action   = "ACCEPT",
                     priority = 3,
@@ -800,7 +800,7 @@ locals {
                     }
                   }
                 } : {},
-                (contains(var.exa_vcn2_routable_vcns, "TT-VCN-1")) ? {
+                (length(var.exa_vcn2_routable_vcns) == 0 || contains(var.exa_vcn2_routable_vcns, "TT-VCN-1")) ? {
                   "EXA-VCN-2-TO-TT-VCN-1-STMT" = {
                     action   = "ACCEPT",
                     priority = 4,
@@ -811,7 +811,7 @@ locals {
                     }
                   }
                 } : {},
-                (contains(var.exa_vcn2_routable_vcns, "TT-VCN-2")) ? {
+                (length(var.exa_vcn2_routable_vcns) == 0 || contains(var.exa_vcn2_routable_vcns, "TT-VCN-2")) ? {
                   "EXA-VCN-2-TO-TT-VCN-2-STMT" = {
                     action   = "ACCEPT",
                     priority = 5,
@@ -822,7 +822,7 @@ locals {
                     }
                   }
                 } : {},
-                (contains(var.exa_vcn2_routable_vcns, "TT-VCN-3")) ? {
+                (length(var.exa_vcn2_routable_vcns) == 0 || contains(var.exa_vcn2_routable_vcns, "TT-VCN-3")) ? {
                   "EXA-VCN-2-TO-TT-VCN-3-STMT" = {
                     action   = "ACCEPT",
                     priority = 6,
@@ -833,7 +833,7 @@ locals {
                     }
                   }
                 } : {},
-                (contains(var.exa_vcn2_routable_vcns, "OKE-VCN-1")) ? {
+                (length(var.exa_vcn2_routable_vcns) == 0 || contains(var.exa_vcn2_routable_vcns, "OKE-VCN-1")) ? {
                   "EXA-VCN-2-TO-OKE-VCN-1-STMT" = {
                     action   = "ACCEPT",
                     priority = 7,
@@ -844,7 +844,7 @@ locals {
                     }
                   }
                 } : {},
-                (contains(var.exa_vcn2_routable_vcns, "OKE-VCN-2")) ? {
+                (length(var.exa_vcn2_routable_vcns) == 0 || contains(var.exa_vcn2_routable_vcns, "OKE-VCN-2")) ? {
                   "EXA-VCN-2-TO-OKE-VCN-2-STMT" = {
                     action   = "ACCEPT",
                     priority = 8,
@@ -855,7 +855,7 @@ locals {
                     }
                   }
                 } : {},
-                (contains(var.exa_vcn2_routable_vcns, "OKE-VCN-3")) ? {
+                (length(var.exa_vcn2_routable_vcns) == 0 || contains(var.exa_vcn2_routable_vcns, "OKE-VCN-3")) ? {
                   "EXA-VCN-2-TO-OKE-VCN-3-STMT" = {
                     action   = "ACCEPT",
                     priority = 9,
@@ -887,7 +887,7 @@ locals {
                     }
                   }
                 } : {},
-                (contains(var.exa_vcn3_routable_vcns, "EXA-VCN-1")) ? {
+                (length(var.exa_vcn3_routable_vcns) == 0 || contains(var.exa_vcn3_routable_vcns, "EXA-VCN-1")) ? {
                   "EXA-VCN-3-TO-EXA-VCN-1-STMT" = {
                     action   = "ACCEPT",
                     priority = 2,
@@ -898,7 +898,7 @@ locals {
                     }
                   }
                 } : {},
-                (contains(var.exa_vcn3_routable_vcns, "EXA-VCN-2")) ? {
+                (length(var.exa_vcn3_routable_vcns) == 0 || contains(var.exa_vcn3_routable_vcns, "EXA-VCN-2")) ? {
                   "EXA-VCN-3-TO-EXA-VCN-2-STMT" = {
                     action   = "ACCEPT",
                     priority = 3,
@@ -909,7 +909,7 @@ locals {
                     }
                   }
                 } : {},
-                (contains(var.exa_vcn3_routable_vcns, "TT-VCN-1")) ? {
+                (length(var.exa_vcn3_routable_vcns) == 0 || contains(var.exa_vcn3_routable_vcns, "TT-VCN-1")) ? {
                   "EXA-VCN-3-TO-TT-VCN-1-STMT" = {
                     action   = "ACCEPT",
                     priority = 4,
@@ -920,7 +920,7 @@ locals {
                     }
                   }
                 } : {},
-                (contains(var.exa_vcn3_routable_vcns, "TT-VCN-2")) ? {
+                (length(var.exa_vcn3_routable_vcns) == 0 || contains(var.exa_vcn3_routable_vcns, "TT-VCN-2")) ? {
                   "EXA-VCN-3-TO-TT-VCN-2-STMT" = {
                     action   = "ACCEPT",
                     priority = 5,
@@ -931,7 +931,7 @@ locals {
                     }
                   }
                 } : {},
-                (contains(var.exa_vcn3_routable_vcns, "TT-VCN-3")) ? {
+                (length(var.exa_vcn3_routable_vcns) == 0 || contains(var.exa_vcn3_routable_vcns, "TT-VCN-3")) ? {
                   "EXA-VCN-3-TO-TT-VCN-3-STMT" = {
                     action   = "ACCEPT",
                     priority = 6,
@@ -942,7 +942,7 @@ locals {
                     }
                   }
                 } : {},
-                (contains(var.exa_vcn3_routable_vcns, "OKE-VCN-1")) ? {
+                (length(var.exa_vcn3_routable_vcns) == 0 || contains(var.exa_vcn3_routable_vcns, "OKE-VCN-1")) ? {
                   "EXA-VCN-3-TO-OKE-VCN-1-STMT" = {
                     action   = "ACCEPT",
                     priority = 7,
@@ -953,7 +953,7 @@ locals {
                     }
                   }
                 } : {},
-                (contains(var.exa_vcn3_routable_vcns, "OKE-VCN-2")) ? {
+                (length(var.exa_vcn3_routable_vcns) == 0 || contains(var.exa_vcn3_routable_vcns, "OKE-VCN-2")) ? {
                   "EXA-VCN-3-TO-OKE-VCN-2-STMT" = {
                     action   = "ACCEPT",
                     priority = 8,
@@ -964,7 +964,7 @@ locals {
                     }
                   }
                 } : {},
-                (contains(var.exa_vcn3_routable_vcns, "OKE-VCN-3")) ? {
+                (length(var.exa_vcn3_routable_vcns) == 0 || contains(var.exa_vcn3_routable_vcns, "OKE-VCN-3")) ? {
                   "EXA-VCN-3-TO-OKE-VCN-3-STMT" = {
                     action   = "ACCEPT",
                     priority = 9,
@@ -996,7 +996,7 @@ locals {
                     }
                   }
                 } : {},
-                (contains(var.oke_vcn1_routable_vcns, "OKE-VCN-2")) ? {
+                (length(var.oke_vcn1_routable_vcns) == 0 || contains(var.oke_vcn1_routable_vcns, "OKE-VCN-2")) ? {
                   "OKE-VCN-1-TO-OKE-VCN-2-STMT" = {
                     action   = "ACCEPT",
                     priority = 2,
@@ -1007,7 +1007,7 @@ locals {
                     }
                   }
                 } : {},
-                (contains(var.oke_vcn1_routable_vcns, "OKE-VCN-3")) ? {
+                (length(var.oke_vcn1_routable_vcns) == 0 || contains(var.oke_vcn1_routable_vcns, "OKE-VCN-3")) ? {
                   "OKE-VCN-1-TO-OKE-VCN-3-STMT" = {
                     action   = "ACCEPT",
                     priority = 3,
@@ -1018,7 +1018,7 @@ locals {
                     }
                   }
                 } : {},
-                (contains(var.oke_vcn1_routable_vcns, "EXA-VCN-1")) ? {
+                (length(var.oke_vcn1_routable_vcns) == 0 || contains(var.oke_vcn1_routable_vcns, "EXA-VCN-1")) ? {
                   "OKE-VCN-1-TO-EXA-VCN-1-STMT" = {
                     action   = "ACCEPT",
                     priority = 4,
@@ -1029,7 +1029,7 @@ locals {
                     }
                   }
                 } : {},
-                (contains(var.oke_vcn1_routable_vcns, "EXA-VCN-2")) ? {
+                (length(var.oke_vcn1_routable_vcns) == 0 || contains(var.oke_vcn1_routable_vcns, "EXA-VCN-2")) ? {
                   "OKE-VCN-1-TO-EXA-VCN-2-STMT" = {
                     action   = "ACCEPT",
                     priority = 5,
@@ -1040,7 +1040,7 @@ locals {
                     }
                   }
                 } : {},
-                (contains(var.oke_vcn1_routable_vcns, "EXA-VCN-3")) ? {
+                (length(var.oke_vcn1_routable_vcns) == 0 || contains(var.oke_vcn1_routable_vcns, "EXA-VCN-3")) ? {
                   "OKE-VCN-1-TO-EXA-VCN-3-STMT" = {
                     action   = "ACCEPT",
                     priority = 6,
@@ -1051,7 +1051,7 @@ locals {
                     }
                   }
                 } : {},
-                (contains(var.oke_vcn1_routable_vcns, "TT-VCN-1")) ? {
+                (length(var.oke_vcn1_routable_vcns) == 0 || contains(var.oke_vcn1_routable_vcns, "TT-VCN-1")) ? {
                   "OKE-VCN-1-TO-TT-VCN-1-STMT" = {
                     action   = "ACCEPT",
                     priority = 7,
@@ -1062,7 +1062,7 @@ locals {
                     }
                   }
                 } : {},
-                (contains(var.oke_vcn1_routable_vcns, "TT-VCN-2")) ? {
+                (length(var.oke_vcn1_routable_vcns) == 0 || contains(var.oke_vcn1_routable_vcns, "TT-VCN-2")) ? {
                   "OKE-VCN-1-TO-TT-VCN-2-STMT" = {
                     action   = "ACCEPT",
                     priority = 8,
@@ -1073,7 +1073,7 @@ locals {
                     }
                   }
                 } : {},
-                (contains(var.oke_vcn1_routable_vcns, "TT-VCN-3")) ? {
+                (length(var.oke_vcn1_routable_vcns) == 0 || contains(var.oke_vcn1_routable_vcns, "TT-VCN-3")) ? {
                   "OKE-VCN-1-TO-TT-VCN-3-STMT" = {
                     action   = "ACCEPT",
                     priority = 9,
@@ -1105,7 +1105,7 @@ locals {
                     }
                   }
                 } : {},
-                (contains(var.oke_vcn2_routable_vcns, "OKE-VCN-1")) ? {
+                (length(var.oke_vcn2_routable_vcns) == 0 || contains(var.oke_vcn2_routable_vcns, "OKE-VCN-1")) ? {
                   "OKE-VCN-2-TO-OKE-VCN-1-STMT" = {
                     action   = "ACCEPT",
                     priority = 2,
@@ -1116,7 +1116,7 @@ locals {
                     }
                   }
                 } : {},
-                (contains(var.oke_vcn2_routable_vcns, "OKE-VCN-3")) ? {
+                (length(var.oke_vcn2_routable_vcns) == 0 || contains(var.oke_vcn2_routable_vcns, "OKE-VCN-3")) ? {
                   "OKE-VCN-2-TO-OKE-VCN-3-STMT" = {
                     action   = "ACCEPT",
                     priority = 3,
@@ -1127,7 +1127,7 @@ locals {
                     }
                   }
                 } : {},
-                (contains(var.oke_vcn2_routable_vcns, "EXA-VCN-1")) ? {
+                (length(var.oke_vcn2_routable_vcns) == 0 || contains(var.oke_vcn2_routable_vcns, "EXA-VCN-1")) ? {
                   "OKE-VCN-2-TO-EXA-VCN-1-STMT" = {
                     action   = "ACCEPT",
                     priority = 4,
@@ -1138,7 +1138,7 @@ locals {
                     }
                   }
                 } : {},
-                (contains(var.oke_vcn2_routable_vcns, "EXA-VCN-2")) ? {
+                (length(var.oke_vcn2_routable_vcns) == 0 || contains(var.oke_vcn2_routable_vcns, "EXA-VCN-2")) ? {
                   "OKE-VCN-2-TO-EXA-VCN-2-STMT" = {
                     action   = "ACCEPT",
                     priority = 5,
@@ -1149,7 +1149,7 @@ locals {
                     }
                   }
                 } : {},
-                (contains(var.oke_vcn2_routable_vcns, "EXA-VCN-3")) ? {
+                (length(var.oke_vcn2_routable_vcns) == 0 || contains(var.oke_vcn2_routable_vcns, "EXA-VCN-3")) ? {
                   "OKE-VCN-2-TO-EXA-VCN-3-STMT" = {
                     action   = "ACCEPT",
                     priority = 6,
@@ -1160,7 +1160,7 @@ locals {
                     }
                   }
                 } : {},
-                (contains(var.oke_vcn2_routable_vcns, "TT-VCN-1")) ? {
+                (length(var.oke_vcn2_routable_vcns) == 0 || contains(var.oke_vcn2_routable_vcns, "TT-VCN-1")) ? {
                   "OKE-VCN-2-TO-TT-VCN-1-STMT" = {
                     action   = "ACCEPT",
                     priority = 7,
@@ -1171,7 +1171,7 @@ locals {
                     }
                   }
                 } : {},
-                (contains(var.oke_vcn2_routable_vcns, "TT-VCN-2")) ? {
+                (length(var.oke_vcn2_routable_vcns) == 0 || contains(var.oke_vcn2_routable_vcns, "TT-VCN-2")) ? {
                   "OKE-VCN-2-TO-TT-VCN-2-STMT" = {
                     action   = "ACCEPT",
                     priority = 8,
@@ -1182,7 +1182,7 @@ locals {
                     }
                   }
                 } : {},
-                (contains(var.oke_vcn2_routable_vcns, "TT-VCN-3")) ? {
+                (length(var.oke_vcn2_routable_vcns) == 0 || contains(var.oke_vcn2_routable_vcns, "TT-VCN-3")) ? {
                   "OKE-VCN-2-TO-TT-VCN-3-STMT" = {
                     action   = "ACCEPT",
                     priority = 9,
@@ -1214,7 +1214,7 @@ locals {
                     }
                   }
                 } : {},
-                (contains(var.oke_vcn3_routable_vcns, "OKE-VCN-1")) ? {
+                (length(var.oke_vcn3_routable_vcns) == 0 || contains(var.oke_vcn3_routable_vcns, "OKE-VCN-1")) ? {
                   "OKE-VCN-3-TO-OKE-VCN-1-STMT" = {
                     action   = "ACCEPT",
                     priority = 2,
@@ -1225,7 +1225,7 @@ locals {
                     }
                   }
                 } : {},
-                (contains(var.oke_vcn3_routable_vcns, "OKE-VCN-2")) ? {
+                (length(var.oke_vcn3_routable_vcns) == 0 || contains(var.oke_vcn3_routable_vcns, "OKE-VCN-2")) ? {
                   "OKE-VCN-3-TO-OKE-VCN-2-STMT" = {
                     action   = "ACCEPT",
                     priority = 3,
@@ -1236,7 +1236,7 @@ locals {
                     }
                   }
                 } : {},
-                (contains(var.oke_vcn3_routable_vcns, "EXA-VCN-1")) ? {
+                (length(var.oke_vcn3_routable_vcns) == 0 || contains(var.oke_vcn3_routable_vcns, "EXA-VCN-1")) ? {
                   "OKE-VCN-3-TO-EXA-VCN-1-STMT" = {
                     action   = "ACCEPT",
                     priority = 4,
@@ -1247,7 +1247,7 @@ locals {
                     }
                   }
                 } : {},
-                (contains(var.oke_vcn3_routable_vcns, "EXA-VCN-2")) ? {
+                (length(var.oke_vcn3_routable_vcns) == 0 || contains(var.oke_vcn3_routable_vcns, "EXA-VCN-2")) ? {
                   "OKE-VCN-3-TO-EXA-VCN-2-STMT" = {
                     action   = "ACCEPT",
                     priority = 5,
@@ -1258,7 +1258,7 @@ locals {
                     }
                   }
                 } : {},
-                (contains(var.oke_vcn3_routable_vcns, "EXA-VCN-3")) ? {
+                (length(var.oke_vcn3_routable_vcns) == 0 || contains(var.oke_vcn3_routable_vcns, "EXA-VCN-3")) ? {
                   "OKE-VCN-3-TO-EXA-VCN-3-STMT" = {
                     action   = "ACCEPT",
                     priority = 6,
@@ -1269,7 +1269,7 @@ locals {
                     }
                   }
                 } : {},
-                (contains(var.oke_vcn3_routable_vcns, "TT-VCN-1")) ? {
+                (length(var.oke_vcn3_routable_vcns) == 0 || contains(var.oke_vcn3_routable_vcns, "TT-VCN-1")) ? {
                   "OKE-VCN-3-TO-TT-VCN-1-STMT" = {
                     action   = "ACCEPT",
                     priority = 7,
@@ -1280,7 +1280,7 @@ locals {
                     }
                   }
                 } : {},
-                (contains(var.oke_vcn3_routable_vcns, "TT-VCN-2")) ? {
+                (length(var.oke_vcn3_routable_vcns) == 0 || contains(var.oke_vcn3_routable_vcns, "TT-VCN-2")) ? {
                   "OKE-VCN-3-TO-TT-VCN-2-STMT" = {
                     action   = "ACCEPT",
                     priority = 8,
@@ -1291,7 +1291,7 @@ locals {
                     }
                   }
                 } : {},
-                (contains(var.oke_vcn3_routable_vcns, "TT-VCN-3")) ? {
+                (length(var.oke_vcn3_routable_vcns) == 0 || contains(var.oke_vcn3_routable_vcns, "TT-VCN-3")) ? {
                   "OKE-VCN-3-TO-TT-VCN-3-STMT" = {
                     action   = "ACCEPT",
                     priority = 9,
