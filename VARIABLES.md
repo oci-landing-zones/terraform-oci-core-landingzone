@@ -17,7 +17,7 @@
 | service_label | A unique label that gets prepended to all resources deployed by the Landing Zone. Max length: 15 characters. | `any` |  | yes |
 | cis_level | Determines CIS OCI Benchmark Level to apply on Landing Zone managed resources. Level 1 is be practical and prudent. Level 2 is intended for environments where security is more critical than manageability and usability. Level 2 drives the creation of an OCI Vault, buckets encryption with a customer managed key, write logs for buckets and the usage of specific policies in Security Zones. | `string` | 1 | no |
 | customize_iam | Whether Landing Zone IAM settings are to be customized. Customizable options are identity domains, groups, dynamic groups and policies. | `bool` | `false` | no |
-| customize_net | Whether networking is defined as part of this Landing Zone. By default, no networking resources are created. | `bool` | `false` | no |
+| define_net | Whether networking is defined as part of this Landing Zone. By default, no networking resources are created. | `bool` | `false` | no |
 | display_output | Whether to display a concise set of select resource outputs with their OCIDs and names. | `bool` | `true` | no |
 | extend_landing_zone_to_new_region | Whether Landing Zone is being extended to another region. When set to true, compartments, groups, policies and resources at the home region are not provisioned. Use this when you want to provision a Landing Zone in a new region, but reuse existing Landing Zone resources in the home region. | `bool` | `false` | no |
 | lz_provenant_prefix | The provenant landing zone prefix or code that identifies the client of this Landing Zone. This information goes into a freeform tag applied to all deployed resources. | `string` | `core` | no |
