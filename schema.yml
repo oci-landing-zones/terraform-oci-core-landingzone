@@ -1125,6 +1125,16 @@ variables:
         - define_net
         - customize_tt_vcn1_subnets
         - add_tt_vcn1
+        - or:
+          - eq:
+            - ${hub_deployment_option}
+            - "No cross-VCN or on-premises connectivity"
+          - eq:
+            - ${hub_deployment_option}
+            - "VCN or on-premises connectivity routing via DRG (DRG will be created)"
+          - eq:
+            - ${hub_deployment_option}
+            - "VCN or on-premises connectivity routing via DRG (existing DRG)"  
 
   tt_vcn1_app_subnet_name:
     type: string
@@ -1345,13 +1355,23 @@ variables:
 
   tt_vcn2_web_subnet_is_private:
     type: boolean
-    title: "Is Subnet Private?"
-    description: "Whether subnet is private or public."
+    title: "Is Web Subnet Private?"
+    description: "Check to make the Web subnet private. It is public by default."
     visible: 
       and:
         - define_net
         - customize_tt_vcn2_subnets
         - add_tt_vcn2
+        - or:
+          - eq:
+            - ${hub_deployment_option}
+            - "No cross-VCN or on-premises connectivity"
+          - eq:
+            - ${hub_deployment_option}
+            - "VCN or on-premises connectivity routing via DRG (DRG will be created)"
+          - eq:
+            - ${hub_deployment_option}
+            - "VCN or on-premises connectivity routing via DRG (existing DRG)"
 
   tt_vcn2_app_subnet_name:
     type: string
@@ -1563,13 +1583,23 @@ variables:
 
   tt_vcn3_web_subnet_is_private:
     type: boolean
-    title: "Is Subnet Private?"
-    description: "Whether subnet is private or public."
+    title: "Is Web Subnet Private?"
+    description: "Check to make the Web subnet private. It is public by default."
     visible: 
       and:
         - define_net
         - customize_tt_vcn3_subnets
         - add_tt_vcn3
+        - or:
+          - eq:
+            - ${hub_deployment_option}
+            - "No cross-VCN or on-premises connectivity"
+          - eq:
+            - ${hub_deployment_option}
+            - "VCN or on-premises connectivity routing via DRG (DRG will be created)"
+          - eq:
+            - ${hub_deployment_option}
+            - "VCN or on-premises connectivity routing via DRG (existing DRG)"
 
   tt_vcn3_app_subnet_name:
     type: string

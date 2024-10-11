@@ -45,7 +45,7 @@ locals {
             display_name               = coalesce(var.oke_vcn3_services_subnet_name, "${var.service_label}-oke-vcn-3-services-subnet")
             dns_label                  = substr(replace(coalesce(var.oke_vcn3_services_subnet_name,"services-subnet"),"/[^\\w]/",""),0,14)
             ipv6cidr_blocks            = []
-            prohibit_internet_ingress  = false
+            prohibit_internet_ingress  = (local.hub_with_vcn == true && var.oke_vcn3_attach_to_drg == true) ? true : false
             route_table_key            = "OKE-VCN-3-SERVICES-SUBNET-ROUTE-TABLE"
             security_list_keys         = ["OKE-VCN-3-SERVICES-SUBNET-SL"]
           }

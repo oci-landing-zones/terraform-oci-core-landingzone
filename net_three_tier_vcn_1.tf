@@ -22,7 +22,7 @@ locals {
                         display_name               = coalesce(var.tt_vcn1_web_subnet_name,"${var.service_label}-three-tier-vcn-1-web-subnet")
                         dns_label                  = substr(replace(coalesce(var.tt_vcn1_web_subnet_name,"web-subnet"),"/[^\\w]/",""),0,14)
                         ipv6cidr_blocks            = []
-                        prohibit_internet_ingress  = var.tt_vcn1_web_subnet_is_private
+                        prohibit_internet_ingress  = (local.hub_with_vcn == true && var.tt_vcn1_attach_to_drg == true) ? true : var.tt_vcn1_web_subnet_is_private
                         route_table_key            = "TT-VCN-1-WEB-SUBNET-ROUTE-TABLE"
                     }
                 },
