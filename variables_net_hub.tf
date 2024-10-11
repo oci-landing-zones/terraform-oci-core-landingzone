@@ -169,3 +169,16 @@ variable "hub_vcn_indoor_subnet_cidr" {
   default = null
   description = "The Hub VCN Indoor subnet CIDR block. It must be within the VCN CIDR blocks."
 }
+
+# -------------------------------------------
+# ----- Networking - Connectivity to On-Premises
+#--------------------------------------------
+variable "onprem_cidrs" {
+  type        = list(string)
+  description = "List of on-premises CIDR blocks allowed to connect to the Landing Zone network via a DRG."
+  default     = []
+  validation {
+    condition     = length([for c in var.onprem_cidrs : c if length(regexall("^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/([0-9]|[1-2][0-9]|3[0-2]))?$", c)) > 0]) == length(var.onprem_cidrs)
+    error_message = "Validation failed for onprem_cidrs: values must be in CIDR notation."
+  }
+}
