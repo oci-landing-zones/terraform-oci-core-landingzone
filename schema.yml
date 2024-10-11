@@ -938,7 +938,7 @@ variables:
 
   tt_vcn1_name:
     type: string
-    title: "VCN Name (label: TT-VCN-1)"
+    title: "<img src='https://objectstorage.us-ashburn-1.oraclecloud.com/p/taf6kC9fSJyQDNSYbxvqxS_JsdnSu56oFZ3-1h5vI7-WfJUv77mplChopLxZPePW/n/ociateam/b/cis-landing-zone/o/landing_zone_130.pngVCN'> Name (label: TT-VCN-1)"
     description: "Enter the VCN name. Otherwise a default name is provided. The label above should be used in the 'Routable VCNs' field of other VCNs for constraining network traffic in a Hub/Spoke topology."
     required: false
     visible: 
@@ -1272,8 +1272,8 @@ variables:
 
   tt_vcn2_web_subnet_is_private:
     type: boolean
-    title: "Is Subnet Private?"
-    description: "Whether subnet is private or public."
+    title: "Is Web Subnet Private?"
+    description: "Check to make the Web subnet private. It is public by default."
     visible: 
       and:
         - define_net
@@ -1500,8 +1500,8 @@ variables:
 
   tt_vcn3_web_subnet_is_private:
     type: boolean
-    title: "Is Subnet Private?"
-    description: "Whether subnet is private or public."
+    title: "Is Web Subnet Private?"
+    description: "Check to make the Web subnet private. It is public by default."
     visible: 
       and:
         - define_net
