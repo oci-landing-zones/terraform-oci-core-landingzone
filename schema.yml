@@ -1042,6 +1042,16 @@ variables:
         - define_net
         - customize_tt_vcn1_subnets
         - add_tt_vcn1
+        - or:
+          - eq:
+            - ${hub_deployment_option}
+            - "No cross-VCN or on-premises connectivity"
+          - eq:
+            - ${hub_deployment_option}
+            - "VCN or on-premises connectivity routing via DRG (DRG will be created)"
+          - eq:
+            - ${hub_deployment_option}
+            - "VCN or on-premises connectivity routing via DRG (existing DRG)"  
 
   tt_vcn1_app_subnet_name:
     type: string
@@ -1269,6 +1279,16 @@ variables:
         - define_net
         - customize_tt_vcn2_subnets
         - add_tt_vcn2
+        - or:
+          - eq:
+            - ${hub_deployment_option}
+            - "No cross-VCN or on-premises connectivity"
+          - eq:
+            - ${hub_deployment_option}
+            - "VCN or on-premises connectivity routing via DRG (DRG will be created)"
+          - eq:
+            - ${hub_deployment_option}
+            - "VCN or on-premises connectivity routing via DRG (existing DRG)"
 
   tt_vcn2_app_subnet_name:
     type: string
@@ -1487,6 +1507,16 @@ variables:
         - define_net
         - customize_tt_vcn3_subnets
         - add_tt_vcn3
+        - or:
+          - eq:
+            - ${hub_deployment_option}
+            - "No cross-VCN or on-premises connectivity"
+          - eq:
+            - ${hub_deployment_option}
+            - "VCN or on-premises connectivity routing via DRG (DRG will be created)"
+          - eq:
+            - ${hub_deployment_option}
+            - "VCN or on-premises connectivity routing via DRG (existing DRG)"
 
   tt_vcn3_app_subnet_name:
     type: string
