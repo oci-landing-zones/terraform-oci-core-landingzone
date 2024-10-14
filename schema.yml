@@ -161,6 +161,7 @@ variableGroups:
   - title: "Networking - Hub & Spoke Topology"
     variables:
       - "hub_deployment_option"  
+      - "onprem_cidrs"
       - "existing_drg_ocid"
       - "hub_vcn_name"
       - "hub_vcn_cidrs"
@@ -355,10 +356,6 @@ variableGroups:
       - "oke_vcn3_mgmt_subnet_dns"
     visible: define_net
 
-  - title: "Networking - Connectivity to On-Premises"
-    variables:
-      - "onprem_cidrs"
-    
   - title: "Events and Notifications"
     variables:
       - "network_admin_email_endpoints"
@@ -2746,22 +2743,6 @@ variables:
           - ${oke_vcn3_cni_type}
           - "Native"
 
-# ------------------------------------------------------
-# ----- Networking - Connectivity to On-Premises
-# ------------------------------------------------------
-  onprem_cidrs:
-    type: array
-    items:
-      type: string
-    uniqueItems: true  
-    title: "On-premises Network CIDR Blocks"
-    pattern: "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/([0-9]|[1-2][0-9]|3[0-2]))$"
-    description: "List of on-premises IP ranges allowed to connect to the Landing Zone network via a DRG."
-    visible:
-      not: 
-        - eq:
-          - ${hub_deployment_option}
-          - "No cross-VCN or on-premises connectivity"
 
 # ------------------------------------------------------
 # ----- Networking - Hub
@@ -2778,6 +2759,20 @@ variables:
       - "VCN or on-premises connectivity routing through DMZ VCN with Network Virtual Appliance (DRG and DMZ VCN will be created)"
       - "VCN or on-premises connectivity routed through DMZ VCN with Network Virtual Appliance existing DRG (DMZ VCN will be created and DRG ID required)"
     default: "No cross-VCN or on-premises connectivity"    
+
+  onprem_cidrs:
+    type: array
+    items:
+      type: string
+    uniqueItems: true  
+    title: "On-premises Network CIDR Blocks"
+    pattern: "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/([0-9]|[1-2][0-9]|3[0-2]))$"
+    description: "List of on-premises IP ranges allowed to connect to the Landing Zone network via a DRG."
+    visible:
+      not: 
+        - eq:
+          - ${hub_deployment_option}
+          - "No cross-VCN or on-premises connectivity"
 
   existing_drg_ocid:
     type: string
