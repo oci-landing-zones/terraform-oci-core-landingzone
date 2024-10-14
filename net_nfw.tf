@@ -162,7 +162,7 @@ locals {
             protocol = "ANY"
             backend_set = {
               name = "default-backend-set"
-                health_checker = local.health_checkers[local.chosen_firewall_option]
+              health_checker = local.health_checkers[local.chosen_firewall_option]
               backends = {
                 BACKENDS-1 = {
                   name       = "backend-1"
