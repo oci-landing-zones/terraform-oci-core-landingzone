@@ -15,6 +15,17 @@ data "oci_identity_compartment" "existing_enclosing_compartment" {
   id = coalesce(var.existing_enclosing_compartment_ocid, var.tenancy_ocid)
 }
 
+data "oci_identity_domain" "existing_identity_domain" {
+    count = var.use_custom_id_domain == true ? 1 : 0
+    domain_id = trimspace(var.custom_id_domain_ocid)
+    lifecycle {
+      precondition {
+        condition     = var.custom_id_domain_ocid != null
+        error_message = "Existing domain id must be provided when using an existing domain."
+      }
+    }
+}
+
 data "oci_identity_group" "existing_iam_admin_group" {
   for_each = length(trimspace(var.rm_existing_iam_admin_group_name)) > 0 ? toset([var.rm_existing_iam_admin_group_name]) : toset(var.existing_iam_admin_group_name)
   group_id = length(trimspace(each.value)) > 0 ? each.value : "nogroup"

@@ -40,9 +40,9 @@ variableGroups:
   - title: "Identity Domains"
     variables:
       - "use_custom_id_domain"
-      - "custom_id_domain_name"
-      # - "deploy_id_domain"
-      # - "id_domain_name" 
+      # - "custom_id_domain_name"
+      - "custom_id_domain_ocid"
+      - "deploy_custom_domain_groups"
       # - "id_domain_type" 
     visible:
       and:
@@ -535,10 +535,25 @@ variables:
     description: "Your tenancy already has a default Identity Domain, whose groups are used to manage the Landing Zone. Check this box for enabling groups in an *existing* non-default Identity Domain to manage the resources deployed by the Landing Zone. See <a href='https://docs.oracle.com/en-us/iaas/Content/Identity/usingidentitydomains/oci-iam-concepts.htm'>IAM Technologies</a> for identity domains concepts."
     default: false
 
-  custom_id_domain_name:
-    type: string
-    title: "Existing Identity Domain Name"
-    description: "Enter the existing Identity Domain name."
+  # custom_id_domain_name:
+  #   type: string
+  #   title: "Existing Identity Domain Name"
+  #   description: "Enter the existing Identity Domain name."
+  #   required: false
+  #   visible: use_custom_id_domain
+
+  custom_id_domain_ocid:
+    type: oci:identity:domain:id
+    title: "Existing Identity Domain OCID"
+    description: "Enter the OCID of the existing Identity Domain"
+    required: false
+    visible: use_custom_id_domain
+
+  deploy_custom_domain_groups:
+    type: boolean
+    title: "Deploy IAM groups and dynamic groups in existing Identity Domain?"
+    description: "Check this box to enable Landing Zone to create IAM Domain Groups and Dynamic Groups in the existing, non-default Identity Domain."
+    default: false
     required: false
     visible: use_custom_id_domain
 
@@ -549,8 +564,12 @@ variables:
     uniqueItems: true
     title: "Existing IAM Admin Group Names"
     description: "Enter the existing group(s) to which IAM management policies will be granted to."
-    visible: use_custom_id_domain 
-        
+    visible:
+      and:
+        - use_custom_id_domain
+        - not:
+            - deploy_custom_domain_groups
+
   rm_existing_id_domain_cred_admin_group_name:
     type: array
     items:
@@ -558,8 +577,12 @@ variables:
     uniqueItems: true
     title: "Existing Credentials Admin Group Names"
     description: "Enter the existing group(s) to which credentials management policies will be granted to."
-    visible: use_custom_id_domain
-      
+    visible:
+      and:
+        - use_custom_id_domain
+        - not:
+            - deploy_custom_domain_groups
+
   rm_existing_id_domain_security_admin_group_name:
     type: array
     items:
@@ -567,7 +590,11 @@ variables:
     uniqueItems: true
     title: "Existing Security Admin Group Name"
     description: "Enter the existing group to which security management policies will be granted to."
-    visible: use_custom_id_domain
+    visible:
+      and:
+        - use_custom_id_domain
+        - not:
+            - deploy_custom_domain_groups
       
   rm_existing_id_domain_ag_admin_group_name:
     type: array
@@ -576,7 +603,11 @@ variables:
     uniqueItems: true
     title: "Existing Access Governance Admin Group Names"
     description: "Enter the existing group(s) to which Access Governance management policies will be granted to."
-    visible: use_custom_id_domain
+    visible:
+      and:
+        - use_custom_id_domain
+        - not:
+            - deploy_custom_domain_groups
 
   rm_existing_id_domain_network_admin_group_name:
     type: array
@@ -585,7 +616,11 @@ variables:
     uniqueItems: true
     title: "Existing Network Admin Group Name"
     description: "Enter the existing group to which network management policies will be granted to."
-    visible: use_custom_id_domain
+    visible:
+      and:
+        - use_custom_id_domain
+        - not:
+            - deploy_custom_domain_groups
       
   rm_existing_id_domain_appdev_admin_group_name:
     type: array
@@ -594,7 +629,11 @@ variables:
     uniqueItems: true
     title: "Existing Application Admin Group Name"
     description: "Enter the existing group to which application development management policies will be granted to."
-    visible: use_custom_id_domain
+    visible:
+      and:
+        - use_custom_id_domain
+        - not:
+            - deploy_custom_domain_groups
       
   rm_existing_id_domain_database_admin_group_name:
     type: array
@@ -603,7 +642,11 @@ variables:
     uniqueItems: true
     title: "Existing Database Admin Group Name"
     description: "Enter the existing group to which database management policies will be granted to."
-    visible: use_custom_id_domain
+    visible:
+      and:
+        - use_custom_id_domain
+        - not:
+            - deploy_custom_domain_groups
   
   rm_existing_id_domain_exainfra_admin_group_name:
     type: array
@@ -612,7 +655,11 @@ variables:
     uniqueItems: true
     title: "Existing Admin Group Name for Exadata Infrastructure"
     description: "Enter the existing group to which Exadata infrastructure management policies will be granted to."
-    visible: use_custom_id_domain      
+    visible:
+      and:
+        - use_custom_id_domain
+        - not:
+            - deploy_custom_domain_groups
   
   rm_existing_id_domain_auditor_group_name:
     type: array
@@ -621,7 +668,11 @@ variables:
     uniqueItems: true
     title: "Enter the existing Auditors Group Name"
     description: "Existing group to which auditing policies will be granted to."
-    visible: use_custom_id_domain
+    visible:
+      and:
+        - use_custom_id_domain
+        - not:
+            - deploy_custom_domain_groups
       
   rm_existing_id_domain_announcement_reader_group_name:
     type: array
@@ -630,7 +681,11 @@ variables:
     uniqueItems: true
     title: "Existing Announcement Readers Group Name"
     description: "Enter the existing group to which announcement reading policies will be granted to."
-    visible: use_custom_id_domain 
+    visible:
+      and:
+        - use_custom_id_domain
+        - not:
+            - deploy_custom_domain_groups
   
   rm_existing_id_domain_cost_admin_group_name:
     type: array
@@ -639,7 +694,11 @@ variables:
     uniqueItems: true
     title: "Existing Cost Admin Group Name"
     description: "Enter the existing group to which Cost management policies will be granted to."
-    visible: use_custom_id_domain
+    visible:
+      and:
+        - use_custom_id_domain
+        - not:
+            - deploy_custom_domain_groups
 
   rm_existing_id_domain_storage_admin_group_name:
     type: array
@@ -648,37 +707,61 @@ variables:
     uniqueItems: true
     title: "Existing Storage Admin Group Name"
     description: "Enter the existing group to which Storage management policies will be granted to."
-    visible: use_custom_id_domain    
+    visible:
+      and:
+        - use_custom_id_domain
+        - not:
+            - deploy_custom_domain_groups
 
   existing_id_domain_security_fun_dyn_group_name:
     type: string
     title: "Existing Security Dynamic Group Name"
     description: "Existing security dynamic group to run functions."
-    visible: use_custom_id_domain
+    visible:
+      and:
+        - use_custom_id_domain
+        - not:
+            - deploy_custom_domain_groups
 
   existing_id_domain_appdev_fun_dyn_group_name:
     type: string
     title: "Existing Application Dynamic Group Name"
     description: "Existing application dynamic group."
-    visible: use_custom_id_domain
+    visible:
+      and:
+        - use_custom_id_domain
+        - not:
+            - deploy_custom_domain_groups
 
   existing_id_domain_compute_agent_dyn_group_name:
     type: string
     title: "Existing Compute Agent Dynamic Group Name"
     description: "Existing compute agent dynamic group for management agent access."
-    visible: use_custom_id_domain
+    visible:
+      and:
+        - use_custom_id_domain
+        - not:
+            - deploy_custom_domain_groups
 
   existing_id_domain_database_kms_dyn_group_name:
     type: string
     title: "Existing Database Dynamic Group Name"
     description: "Existing database dynamic group for database to access keys."
-    visible: use_custom_id_domain
+    visible:
+      and:
+        - use_custom_id_domain
+        - not:
+            - deploy_custom_domain_groups
 
   existing_id_domain_net_fw_app_dyn_group_name:
     type: string
     title: "Existing Network Firewall Appliance Dynamic Group Name"
     description: "Existing network firewall appliance dynamic group for reading firewall instances."
-    visible: use_custom_id_domain  
+    visible:
+      and:
+        - use_custom_id_domain
+        - not:
+            - deploy_custom_domain_groups
 
   # deploy_id_domain:
   #   type: boolean
