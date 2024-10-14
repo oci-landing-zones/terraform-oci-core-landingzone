@@ -18,24 +18,46 @@ locals {
     "FORTINET" = ["FortiGate Next-Gen Firewall (BYOL)", "7.6.0_(_X64_)"]
   }
 
+  chosen_firewall_option = local.firewall_options[var.hub_vcn_deploy_net_appliance_option]
+  health_checkers = {
+    "FORTINET" = {
+      protocol = "HTTP"
+      port = 8008
+      return_code = 200
+      url_path = "/"
+    }
+    "PALOALTO" = {
+      protocol = "HTTPS"
+      port = 443
+      return_code = 200
+      url_path = "/php/login.php"
+    }
+    "CUSTOM" = {
+      protocol = "HTTP"
+      port = 80
+      return_code = 200
+      url_path = "/"
+    }
+  }
+
   #fortigate_image_ocid = "ocid1.image.oc1..aaaaaaaaq57pywudjr5yogjtl6qf3zs3yrwv66b5ooeiqykjgnneuerhfnia"
 
-  # current_image_name     = local.image_name_database[local.firewall_options[var.hub_vcn_deploy_net_appliance_option]][0]
-  # current_publisher_name = local.image_name_database[local.firewall_options[var.hub_vcn_deploy_net_appliance_option]][1]
+  # current_image_name     = local.image_name_database[local.chosen_firewall_option][0]
+  # current_publisher_name = local.image_name_database[local.chosen_firewall_option][1]
 
-  image_source = local.firewall_options[var.hub_vcn_deploy_net_appliance_option] == "CUSTOM" ? "custom_image" : "marketplace_image"
-  image_options = local.firewall_options[var.hub_vcn_deploy_net_appliance_option] == "CUSTOM" ? {
+  image_source = local.chosen_firewall_option == "CUSTOM" ? "custom_image" : "marketplace_image"
+  image_options = local.chosen_firewall_option == "CUSTOM" ? {
     "custom_image" = {
       ocid = var.net_appliance_image_ocid
     }
   } : {
-    "marketplace_image" = local.firewall_options[var.hub_vcn_deploy_net_appliance_option] != "NO" ? {
-      name    = local.image_name_database[local.firewall_options[var.hub_vcn_deploy_net_appliance_option]][0]
-      version = local.image_name_database[local.firewall_options[var.hub_vcn_deploy_net_appliance_option]][1]      
+    "marketplace_image" = local.chosen_firewall_option != "NO" ? {
+      name    = local.image_name_database[local.chosen_firewall_option][0]
+      version = local.image_name_database[local.chosen_firewall_option][1]
     } : {}
   }
   
-  instances_configuration = local.firewall_options[var.hub_vcn_deploy_net_appliance_option] != "NO" ? {
+  instances_configuration = local.chosen_firewall_option != "NO" ? {
     default_compartment_id      = local.network_compartment_id
     default_ssh_public_key_path = var.net_appliance_public_rsa_key
     instances = {
@@ -127,7 +149,7 @@ locals {
       }
     }
   } : null
-  nlb_configuration = local.firewall_options[var.hub_vcn_deploy_net_appliance_option] != "NO" ? {
+  nlb_configuration = local.chosen_firewall_option != "NO" ? {
     default_compartment_id = local.network_compartment_id
     nlbs = {
       INDOOR_NLB = {
@@ -136,25 +158,20 @@ locals {
         subnet_id    = module.lz_network.provisioned_networking_resources.subnets["INDOOR-SUBNET"].id
         listeners = {
           LISTENER-1 = {
-            port     = 80
-            protocol = "TCP"
+            port     = 0
+            protocol = "ANY"
             backend_set = {
               name = "default-backend-set"
-              health_checker = {
-                protocol    = "HTTP"
-                port        = 80
-                return_code = 200
-                url_path    = "/php/login.php"
-              }
+                health_checker = local.health_checkers[local.chosen_firewall_option]
               backends = {
                 BACKENDS-1 = {
                   name       = "backend-1"
-                  port       = 80
+                  port       = 0
                   ip_address = module.lz_firewall_appliance[0].secondary_vnics["FW-1.INDOOR"].private_ip_address
                 }
                 BACKENDS-2 = {
                   name       = "backend-2"
-                  port       = 80
+                  port       = 0
                   ip_address = module.lz_firewall_appliance[0].secondary_vnics["FW-2.INDOOR"].private_ip_address
                 }
               }
@@ -168,25 +185,20 @@ locals {
         subnet_id    = module.lz_network.provisioned_networking_resources.subnets["OUTDOOR-SUBNET"].id
         listeners = {
           LISTENER-1 = {
-            port     = 80
-            protocol = "TCP"
+            port     = 0
+            protocol = "ANY"
             backend_set = {
               name = "default-backend-set"
-              health_checker = {
-                protocol    = "HTTP"
-                port        = 80
-                return_code = 200
-                url_path    = "/php/login.php"
-              }
+              health_checker = local.health_checkers[local.chosen_firewall_option]
               backends = {
                 BACKEND-1 = {
                   name       = "backend-1"
-                  port       = 80
+                  port       = 0
                   ip_address = module.lz_firewall_appliance[0].secondary_vnics["FW-1.OUTDOOR"].private_ip_address
                 },
                 BACKEND-2 = {
                   name       = "backend-2"
-                  port       = 80
+                  port       = 0
                   ip_address = module.lz_firewall_appliance[0].secondary_vnics["FW-2.OUTDOOR"].private_ip_address
                 }
               }
@@ -199,7 +211,7 @@ locals {
 }
 
 module "lz_firewall_appliance" {
-  count                   = local.firewall_options[var.hub_vcn_deploy_net_appliance_option] != "NO" ? 1 : 0
+  count                   = local.chosen_firewall_option != "NO" ? 1 : 0
   source                  = "github.com/oci-landing-zones/terraform-oci-modules-workloads//cis-compute-storage?ref=v0.1.7"
   instances_configuration = local.instances_configuration
   providers = {
@@ -209,7 +221,7 @@ module "lz_firewall_appliance" {
 }
 
 module "lz_nlb" {
-  count             = local.firewall_options[var.hub_vcn_deploy_net_appliance_option] != "NO" ? 1 : 0
+  count             = local.chosen_firewall_option != "NO" ? 1 : 0
   source            = "github.com/oci-landing-zones/terraform-oci-modules-networking//modules/nlb?ref=v0.7.0"
   nlb_configuration = local.nlb_configuration
 }
