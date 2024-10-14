@@ -42,22 +42,22 @@ locals {
 
   #fortigate_image_ocid = "ocid1.image.oc1..aaaaaaaaq57pywudjr5yogjtl6qf3zs3yrwv66b5ooeiqykjgnneuerhfnia"
 
-  # current_image_name     = local.image_name_database[chosen_firewall_option][0]
-  # current_publisher_name = local.image_name_database[chosen_firewall_option][1]
+  # current_image_name     = local.image_name_database[local.chosen_firewall_option][0]
+  # current_publisher_name = local.image_name_database[local.chosen_firewall_option][1]
 
-  image_source = chosen_firewall_option == "CUSTOM" ? "custom_image" : "marketplace_image"
-  image_options = chosen_firewall_option == "CUSTOM" ? {
+  image_source = local.chosen_firewall_option == "CUSTOM" ? "custom_image" : "marketplace_image"
+  image_options = local.chosen_firewall_option == "CUSTOM" ? {
     "custom_image" = {
       ocid = var.net_appliance_image_ocid
     }
   } : {
-    "marketplace_image" = chosen_firewall_option != "NO" ? {
-      name    = local.image_name_database[chosen_firewall_option][0]
-      version = local.image_name_database[chosen_firewall_option][1]
+    "marketplace_image" = local.chosen_firewall_option != "NO" ? {
+      name    = local.image_name_database[local.chosen_firewall_option][0]
+      version = local.image_name_database[local.chosen_firewall_option][1]
     } : {}
   }
   
-  instances_configuration = chosen_firewall_option != "NO" ? {
+  instances_configuration = local.chosen_firewall_option != "NO" ? {
     default_compartment_id      = local.network_compartment_id
     default_ssh_public_key_path = var.net_appliance_public_rsa_key
     instances = {
@@ -149,7 +149,7 @@ locals {
       }
     }
   } : null
-  nlb_configuration = chosen_firewall_option != "NO" ? {
+  nlb_configuration = local.chosen_firewall_option != "NO" ? {
     default_compartment_id = local.network_compartment_id
     nlbs = {
       INDOOR_NLB = {
@@ -211,7 +211,7 @@ locals {
 }
 
 module "lz_firewall_appliance" {
-  count                   = chosen_firewall_option != "NO" ? 1 : 0
+  count                   = local.chosen_firewall_option != "NO" ? 1 : 0
   source                  = "github.com/oci-landing-zones/terraform-oci-modules-workloads//cis-compute-storage?ref=release-0.1.7b"
   instances_configuration = local.instances_configuration
   providers = {
@@ -221,7 +221,7 @@ module "lz_firewall_appliance" {
 }
 
 module "lz_nlb" {
-  count             = chosen_firewall_option != "NO" ? 1 : 0
+  count             = local.chosen_firewall_option != "NO" ? 1 : 0
   source            = "github.com/oci-landing-zones/terraform-oci-modules-networking//modules/nlb?ref=v0.6.9"
   nlb_configuration = local.nlb_configuration
 }
