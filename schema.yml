@@ -1293,6 +1293,10 @@ variables:
       and:
         - define_net
         - add_tt_vcn2
+        - not: 
+          - eq:
+            - ${hub_deployment_option}  
+            - "No cross-VCN or on-premises connectivity"
 
   tt_vcn2_routable_vcns:
     type: enum
@@ -1521,6 +1525,10 @@ variables:
       and:
         - define_net
         - add_tt_vcn3
+        - not: 
+          - eq:
+            - ${hub_deployment_option}  
+            - "No cross-VCN or on-premises connectivity"
 
   tt_vcn3_routable_vcns:
     type: enum
@@ -1749,6 +1757,10 @@ variables:
       and:
         - define_net
         - add_exa_vcn1
+        - not: 
+          - eq:
+            - ${hub_deployment_option}  
+            - "No cross-VCN or on-premises connectivity"
 
   exa_vcn1_routable_vcns:
     type: enum
@@ -1873,6 +1885,10 @@ variables:
       and:
         - define_net
         - add_exa_vcn2
+        - not: 
+          - eq:
+            - ${hub_deployment_option}  
+            - "No cross-VCN or on-premises connectivity"
 
   exa_vcn2_routable_vcns:
     type: enum
@@ -1997,6 +2013,10 @@ variables:
       and:
         - define_net
         - add_exa_vcn3
+        - not: 
+          - eq:
+            - ${hub_deployment_option}  
+            - "No cross-VCN or on-premises connectivity"
 
   exa_vcn3_routable_vcns:
     type: enum
@@ -2135,6 +2155,10 @@ variables:
       and:
         - define_net
         - add_oke_vcn1
+        - not: 
+          - eq:
+            - ${hub_deployment_option}  
+            - "No cross-VCN or on-premises connectivity"
 
   oke_vcn1_routable_vcns:
     type: enum
@@ -2356,6 +2380,10 @@ variables:
       and:
         - define_net
         - add_oke_vcn2
+        - not: 
+          - eq:
+            - ${hub_deployment_option}  
+            - "No cross-VCN or on-premises connectivity"
 
   oke_vcn2_routable_vcns:
     type: enum
@@ -2577,6 +2605,10 @@ variables:
       and:
         - define_net
         - add_oke_vcn3
+        - not: 
+          - eq:
+            - ${hub_deployment_option}  
+            - "No cross-VCN or on-premises connectivity"
 
   oke_vcn3_routable_vcns:
     type: enum
