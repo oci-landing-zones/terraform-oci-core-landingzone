@@ -950,6 +950,16 @@ locals {
         destination        = cidr
         destination_type   = "CIDR_BLOCK"
       }
+    } : {},
+    ## Route to on-premises CIDRs
+    (local.add_oke_vcn3 == true && var.oke_vcn3_attach_to_drg == true && length(var.onprem_cidrs) > 0) &&
+    (local.hub_with_vcn == true || local.hub_with_drg_only == true) ? {
+        for cidr in var.onprem_cidrs : "ONPREM-${replace(replace(cidr,".",""),"/","")}-RULE" => {
+            network_entity_key = "HUB-DRG"
+            description        = "Traffic destined to on-premises ${cidr} CIDR range goes to DRG."
+            destination        = cidr
+            destination_type   = "CIDR_BLOCK"
+        }
     } : {}
   )
 
@@ -1347,6 +1357,19 @@ locals {
         dst_port_min = 443
         dst_port_max = 443
       }
+    } : {},
+    ## Ingress from on-premises CIDRs
+    (local.add_oke_vcn3 == true && var.oke_vcn3_attach_to_drg == true && length(var.onprem_cidrs) > 0) &&
+    (local.hub_with_vcn == true || local.hub_with_drg_only == true) && (length(var.onprem_cidrs)) > 0 ? {
+      for cidr in var.onprem_cidrs : "INGRESS-FROM-ONPREM--${replace(replace(cidr,".",""),"/","")}-RULE" => {
+        description  = "Ingress from onprem ${cidr}"
+        stateless    = false
+        protocol     = "TCP"
+        src          = cidr
+        src_type     = "CIDR_BLOCK"
+        dst_port_min = 443
+        dst_port_max = 443
+      }
     } : {}
   )
   oke_vcn_3_to_workers_subnet_cross_vcn_ingress = merge(
@@ -1521,6 +1544,19 @@ locals {
         stateless    = false
         protocol     = "TCP"
         src          = coalesce(var.exa_vcn3_client_subnet_cidr, cidrsubnet(var.exa_vcn3_cidrs[0], 4, 0))
+        src_type     = "CIDR_BLOCK"
+        dst_port_min = 30000
+        dst_port_max = 32767
+      }
+    } : {},
+    ## Ingress from on-premises CIDRs
+    (local.add_oke_vcn3 == true && var.oke_vcn3_attach_to_drg == true && length(var.onprem_cidrs) > 0) &&
+    (local.hub_with_vcn == true || local.hub_with_drg_only == true) && (length(var.onprem_cidrs)) > 0 ? {
+      for cidr in var.onprem_cidrs : "INGRESS-FROM-ONPREM--${replace(replace(cidr,".",""),"/","")}-RULE" => {
+        description  = "Ingress from onprem ${cidr}"
+        stateless    = false
+        protocol     = "TCP"
+        src          = cidr
         src_type     = "CIDR_BLOCK"
         dst_port_min = 30000
         dst_port_max = 32767
