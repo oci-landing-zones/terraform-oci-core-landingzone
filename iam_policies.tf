@@ -559,7 +559,7 @@ locals {
       statements     = local.security_admin_grants_on_root_cmp
     },
     (local.network_admin_root_policy_name) = {
-      compartment_ocid = var.tenancy_ocid
+      compartment_id   = var.tenancy_ocid
       name             = local.network_admin_root_policy_name
       description      = "Landing Zone root compartment policy for ${join(",", local.network_admin_group_name)} group."
       defined_tags     = local.policies_defined_tags
@@ -654,7 +654,7 @@ locals {
 
 module "lz_root_policies" {
   depends_on             = [module.lz_top_compartment, module.lz_groups] ### Explicitly declaring dependencies on the group and compartments modules.
-  source                 = "github.com/oci-landing-zones/terraform-oci-modules-iam//policies?ref=v0.2.3"
+  source                 = "github.com/oci-landing-zones/terraform-oci-modules-iam//policies?ref=v0.2.4"
   providers              = { oci = oci.home }
   tenancy_ocid           = var.tenancy_ocid
   policies_configuration = var.extend_landing_zone_to_new_region == false /*&& var.enable_template_policies == false*/ ? (local.use_existing_root_cmp_grants == true ? local.empty_policies_configuration : local.root_policies_configuration) : local.empty_policies_configuration
@@ -662,7 +662,7 @@ module "lz_root_policies" {
 
 module "lz_policies" {
   depends_on             = [module.lz_compartments, module.lz_groups, module.lz_dynamic_groups]
-  source                 = "github.com/oci-landing-zones/terraform-oci-modules-iam//policies?ref=v0.2.3"
+  source                 = "github.com/oci-landing-zones/terraform-oci-modules-iam//policies?ref=v0.2.4"
   providers              = { oci = oci.home }
   tenancy_ocid           = var.tenancy_ocid
   policies_configuration = var.extend_landing_zone_to_new_region == false /*&& var.enable_template_policies == false*/ ? local.policies_configuration : local.empty_policies_configuration
