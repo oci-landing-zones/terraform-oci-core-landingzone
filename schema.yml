@@ -2798,7 +2798,6 @@ variables:
       type: string
     uniqueItems: true  
     title: "On-premises Network CIDR Blocks"
-    pattern: "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/([0-9]|[1-2][0-9]|3[0-2]))$"
     description: "List of on-premises IP ranges allowed to connect to the Landing Zone network via a DRG. Only VCNs with checked 'Attach this VCN to DRG (Dynamic Routing Gateway)?' will connect."
     visible:
       not:
