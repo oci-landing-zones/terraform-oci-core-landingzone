@@ -854,9 +854,9 @@ locals {
         dst_port_max = 1522
       }
     } : {},
-      ## Ingress from on-premises CIDRs
-      (local.add_exa_vcn1 == true && var.exa_vcn1_attach_to_drg == true && length(var.onprem_cidrs) > 0) &&
-      (local.hub_with_vcn == true || local.hub_with_drg_only == true) && (length(var.onprem_cidrs)) > 0 ? {
+    ## Ingress from on-premises CIDRs
+    (local.add_exa_vcn1 == true && var.exa_vcn1_attach_to_drg == true && length(var.onprem_cidrs) > 0) &&
+    (local.hub_with_vcn == true || local.hub_with_drg_only == true) ? {
         for cidr in var.onprem_cidrs : "INGRESS-FROM-ONPREM--${replace(replace(cidr,".",""),"/","")}-RULE" => {
                 description  = "Ingress from onprem ${cidr}"
                 stateless    = false
@@ -866,6 +866,6 @@ locals {
                 dst_port_min = 1521
                 dst_port_max = 1522
           }
-      } : {}
+    } : {}
   )
 }

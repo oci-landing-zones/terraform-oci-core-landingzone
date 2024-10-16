@@ -1362,7 +1362,7 @@ locals {
     } : {},
     ## Ingress from on-premises CIDRs
     (local.add_oke_vcn2 == true && var.oke_vcn2_attach_to_drg == true && length(var.onprem_cidrs) > 0) &&
-    (local.hub_with_vcn == true || local.hub_with_drg_only == true) && (length(var.onprem_cidrs)) > 0 ? {
+    (local.hub_with_vcn == true || local.hub_with_drg_only == true) ? {
       for cidr in var.onprem_cidrs : "INGRESS-FROM-ONPREM--${replace(replace(cidr,".",""),"/","")}-RULE" => {
         description  = "Ingress from onprem ${cidr}"
         stateless    = false
@@ -1554,7 +1554,7 @@ locals {
     } : {},
     ## Ingress from on-premises CIDRs
     (local.add_oke_vcn2 == true && var.oke_vcn2_attach_to_drg == true && length(var.onprem_cidrs) > 0) &&
-    (local.hub_with_vcn == true || local.hub_with_drg_only == true) && (length(var.onprem_cidrs)) > 0 ? {
+    (local.hub_with_vcn == true || local.hub_with_drg_only == true) ? {
       for cidr in var.onprem_cidrs : "INGRESS-FROM-ONPREM--${replace(replace(cidr,".",""),"/","")}-RULE" => {
         description  = "Ingress from onprem ${cidr}"
         stateless    = false
