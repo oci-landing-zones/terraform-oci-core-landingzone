@@ -333,6 +333,17 @@ locals {
         destination_type   = "CIDR_BLOCK"
       }
     } : {},
+
+    ## Route to on-premises CIDRs
+    (local.add_exa_vcn2 == true && var.exa_vcn2_attach_to_drg == true && length(var.onprem_cidrs) > 0) &&
+    (local.hub_with_vcn == true || local.hub_with_drg_only == true) ? {
+        for cidr in var.onprem_cidrs : "ONPREM-${replace(replace(cidr,".",""),"/","")}-RULE" => {
+            network_entity_key = "HUB-DRG"
+            description        = "Traffic destined to on-premises ${cidr} CIDR range goes to DRG."
+            destination        = cidr
+            destination_type   = "CIDR_BLOCK"
+        }
+    } : {}
   )
 
   #### Cross VCN NSG Rules
@@ -843,5 +854,18 @@ locals {
         dst_port_max = 1522
       }
     } : {},
+    ## Ingress from on-premises CIDRs
+    (local.add_exa_vcn2 == true && var.exa_vcn2_attach_to_drg == true && length(var.onprem_cidrs) > 0) &&
+    (local.hub_with_vcn == true || local.hub_with_drg_only == true) ? {
+      for cidr in var.onprem_cidrs : "INGRESS-FROM-ONPREM--${replace(replace(cidr,".",""),"/","")}-RULE" => {
+              description  = "Ingress from onprem ${cidr}"
+              stateless    = false
+              protocol     = "TCP"
+              src          = cidr
+              src_type     = "CIDR_BLOCK"
+              dst_port_min = 1521
+              dst_port_max = 1522
+        }
+    } : {}
   )
 }

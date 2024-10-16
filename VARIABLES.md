@@ -329,6 +329,7 @@
 | hub_vcn_web_subnet_is_private | Whether the Web subnet private. It is public by default. | `bool` | `false` | no |
 | hub_vcn_web_subnet_jump_host_allowed_cidrs | List of CIDRs allowed to SSH into the Web subnet via a jump host eventually deployed in the Web subnet. Leave empty for no access. | `list(string)` | `[]` | no |
 | hub_vcn_web_subnet_name | The Hub VCN Web subnet name. | `string` | `null` | no |
+| onprem_cidrs | List of on-premises CIDR blocks allowed to connect to the Landing Zone network via a DRG. | `list(string)` | `[]` | no 
 
 ### Monitoring
 

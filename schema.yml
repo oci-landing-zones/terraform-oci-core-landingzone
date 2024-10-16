@@ -161,6 +161,7 @@ variableGroups:
   - title: "Networking - Hub & Spoke Topology"
     variables:
       - "hub_deployment_option"  
+      - "onprem_cidrs"
       - "existing_drg_ocid"
       - "hub_vcn_name"
       - "hub_vcn_cidrs"
@@ -354,7 +355,7 @@ variableGroups:
       - "oke_vcn3_mgmt_subnet_cidr"
       - "oke_vcn3_mgmt_subnet_dns"
     visible: define_net
-    
+
   - title: "Events and Notifications"
     variables:
       - "network_admin_email_endpoints"
@@ -1292,6 +1293,10 @@ variables:
       and:
         - define_net
         - add_tt_vcn2
+        - not: 
+          - eq:
+            - ${hub_deployment_option}  
+            - "No cross-VCN or on-premises connectivity"
 
   tt_vcn2_routable_vcns:
     type: enum
@@ -1520,6 +1525,10 @@ variables:
       and:
         - define_net
         - add_tt_vcn3
+        - not: 
+          - eq:
+            - ${hub_deployment_option}  
+            - "No cross-VCN or on-premises connectivity"
 
   tt_vcn3_routable_vcns:
     type: enum
@@ -1748,6 +1757,10 @@ variables:
       and:
         - define_net
         - add_exa_vcn1
+        - not: 
+          - eq:
+            - ${hub_deployment_option}  
+            - "No cross-VCN or on-premises connectivity"
 
   exa_vcn1_routable_vcns:
     type: enum
@@ -1872,6 +1885,10 @@ variables:
       and:
         - define_net
         - add_exa_vcn2
+        - not: 
+          - eq:
+            - ${hub_deployment_option}  
+            - "No cross-VCN or on-premises connectivity"
 
   exa_vcn2_routable_vcns:
     type: enum
@@ -1996,6 +2013,10 @@ variables:
       and:
         - define_net
         - add_exa_vcn3
+        - not: 
+          - eq:
+            - ${hub_deployment_option}  
+            - "No cross-VCN or on-premises connectivity"
 
   exa_vcn3_routable_vcns:
     type: enum
@@ -2134,6 +2155,10 @@ variables:
       and:
         - define_net
         - add_oke_vcn1
+        - not: 
+          - eq:
+            - ${hub_deployment_option}  
+            - "No cross-VCN or on-premises connectivity"
 
   oke_vcn1_routable_vcns:
     type: enum
@@ -2355,6 +2380,10 @@ variables:
       and:
         - define_net
         - add_oke_vcn2
+        - not: 
+          - eq:
+            - ${hub_deployment_option}  
+            - "No cross-VCN or on-premises connectivity"
 
   oke_vcn2_routable_vcns:
     type: enum
@@ -2576,6 +2605,10 @@ variables:
       and:
         - define_net
         - add_oke_vcn3
+        - not: 
+          - eq:
+            - ${hub_deployment_option}  
+            - "No cross-VCN or on-premises connectivity"
 
   oke_vcn3_routable_vcns:
     type: enum
@@ -2742,6 +2775,7 @@ variables:
           - ${oke_vcn3_cni_type}
           - "Native"
 
+
 # ------------------------------------------------------
 # ----- Networking - Hub
 #-------------------------------------------------------
@@ -2758,6 +2792,19 @@ variables:
       - "VCN or on-premises connectivity routed through DMZ VCN with Network Virtual Appliance existing DRG (DMZ VCN will be created and DRG ID required)"
     default: "No cross-VCN or on-premises connectivity"    
 
+  onprem_cidrs:
+    type: array
+    items:
+      type: string
+    uniqueItems: true  
+    title: "On-premises Network CIDR Blocks"
+    description: "List of on-premises IP ranges allowed to connect to the Landing Zone network via a DRG. Only VCNs with checked 'Attach this VCN to DRG (Dynamic Routing Gateway)?' will connect."
+    visible:
+      not:
+        - eq:
+          - ${hub_deployment_option}
+          - "No cross-VCN or on-premises connectivity"
+      
   existing_drg_ocid:
     type: string
     title: "Existing DRG OCID"

@@ -22,14 +22,14 @@
 | <a name="module_lz_custom_domain_dynamic_groups"></a> [lz\_custom\_domain\_dynamic\_groups](#module\_lz\_custom\_domain\_dynamic\_groups) | github.com/oci-landing-zones/terraform-oci-modules-iam//identity-domains | v0.2.4 |
 | <a name="module_lz_custom_domain_groups"></a> [lz\_custom\_domain\_groups](#module\_lz\_custom\_domain\_groups) | github.com/oci-landing-zones/terraform-oci-modules-iam//identity-domains | v0.2.4 |
 | <a name="module_lz_dynamic_groups"></a> [lz\_dynamic\_groups](#module\_lz\_dynamic\_groups) | github.com/oci-landing-zones/terraform-oci-modules-iam//dynamic-groups | v0.2.4 |
-| <a name="module_lz_firewall_appliance"></a> [lz\_firewall\_appliance](#module\_lz\_firewall\_appliance) | github.com/oci-landing-zones/terraform-oci-modules-workloads//cis-compute-storage | release-0.1.7b |
+| <a name="module_lz_firewall_appliance"></a> [lz\_firewall\_appliance](#module\_lz\_firewall\_appliance) | github.com/oci-landing-zones/terraform-oci-modules-workloads//cis-compute-storage | v0.1.7 |
 | <a name="module_lz_flow_logs"></a> [lz\_flow\_logs](#module\_lz\_flow\_logs) | github.com/oci-landing-zones/terraform-oci-modules-observability//logging | v0.1.8 |
 | <a name="module_lz_groups"></a> [lz\_groups](#module\_lz\_groups) | github.com/oci-landing-zones/terraform-oci-modules-iam//groups | v0.2.4 |
 | <a name="module_lz_home_region_notifications"></a> [lz\_home\_region\_notifications](#module\_lz\_home\_region\_notifications) | github.com/oci-landing-zones/terraform-oci-modules-observability//events | v0.1.8 |
 | <a name="module_lz_home_region_topics"></a> [lz\_home\_region\_topics](#module\_lz\_home\_region\_topics) | github.com/oci-landing-zones/terraform-oci-modules-observability//notifications | v0.1.8 |
 | <a name="module_lz_logging_analytics"></a> [lz\_logging\_analytics](#module\_lz\_logging\_analytics) | github.com/oci-landing-zones/terraform-oci-modules-observability//logging | v0.1.8 |
-| <a name="module_lz_network"></a> [lz\_network](#module\_lz\_network) | github.com/oci-landing-zones/terraform-oci-modules-networking | v0.6.9 |
-| <a name="module_lz_nlb"></a> [lz\_nlb](#module\_lz\_nlb) | github.com/oci-landing-zones/terraform-oci-modules-networking//modules/nlb | v0.6.9 |
+| <a name="module_lz_network"></a> [lz\_network](#module\_lz\_network) | github.com/oci-landing-zones/terraform-oci-modules-networking | v0.7.0 |
+| <a name="module_lz_nlb"></a> [lz\_nlb](#module\_lz\_nlb) | github.com/oci-landing-zones/terraform-oci-modules-networking//modules/nlb | v0.7.0 |
 | <a name="module_lz_notifications"></a> [lz\_notifications](#module\_lz\_notifications) | github.com/oci-landing-zones/terraform-oci-modules-observability//events | v0.1.8 |
 | <a name="module_lz_policies"></a> [lz\_policies](#module\_lz\_policies) | github.com/oci-landing-zones/terraform-oci-modules-iam//policies | v0.2.3 |
 | <a name="module_lz_regional_topics"></a> [lz\_regional\_topics](#module\_lz\_regional\_topics) | github.com/oci-landing-zones/terraform-oci-modules-observability//notifications | v0.1.8 |
@@ -107,7 +107,6 @@
 | <a name="input_custom_id_domain_ocid"></a> [custom\_id\_domain\_ocid](#input\_custom\_id\_domain\_ocid) | The existing identity domain OCID. | `string` | `null` | no |
 | <a name="input_customize_hub_vcn_subnets"></a> [customize\_hub\_vcn\_subnets](#input\_customize\_hub\_vcn\_subnets) | Whether to customize default subnets settings of the Hub VCN. Only applicable to RMS deployments. | `bool` | `false` | no |
 | <a name="input_customize_iam"></a> [customize\_iam](#input\_customize\_iam) | Whether Landing Zone IAM settings are to be customized. Customizable options are identity domains, groups, dynamic groups and policies. | `bool` | `false` | no |
-| <a name="input_define_net"></a> [customize\_net](#input\_customize\_net) | Whether networking is defined as part of this Landing Zone. By default, no networking resources are created. | `bool` | `false` | no |
 | <a name="input_customize_tt_vcn1_subnets"></a> [customize\_tt\_vcn1\_subnets](#input\_customize\_tt\_vcn1\_subnets) | If true, allows for the customization of default subnets settings. Only applicable to RMS deployments. | `bool` | `false` | no |
 | <a name="input_customize_tt_vcn2_subnets"></a> [customize\_tt\_vcn2\_subnets](#input\_customize\_tt\_vcn2\_subnets) | If true, allows for the customization of default subnets settings. Only applicable to RMS deployments. | `bool` | `false` | no |
 | <a name="input_customize_tt_vcn3_subnets"></a> [customize\_tt\_vcn3\_subnets](#input\_customize\_tt\_vcn3\_subnets) | If true, allows for the customization of default subnets settings. Only applicable to RMS deployments. | `bool` | `false` | no |
@@ -258,6 +257,7 @@
 | <a name="input_oke_vcn3_workers_subnet_cidr"></a> [oke\_vcn3\_workers\_subnet\_cidr](#input\_oke\_vcn3\_workers\_subnet\_cidr) | The Workers subnet CIDR block. It must be within the VCN CIDR blocks. | `string` | `null` | no |
 | <a name="input_oke_vcn3_workers_subnet_name"></a> [oke\_vcn3\_workers\_subnet\_name](#input\_oke\_vcn3\_workers\_subnet\_name) | The Workers subnet name. | `string` | `null` | no |
 | <a name="input_onboard_logging_analytics"></a> [onboard\_logging\_analytics](#input\_onboard\_logging\_analytics) | Whether Logging Analytics will be enabled in the tenancy. If true, the Logging Analytics service will be enabled in the tenancy and a new Logging Analytics Namespace will be created. If false, the existing Logging Analytics namespace will be used. Only applicable if 'service\_connector\_target\_kind' is set to 'logginganalytics'. | `bool` | `false` | no |
+| <a name="input_onprem_cidrs"></a> [onprem\_cidrs](#input\_onprem\_cidrs) | List of on-premises CIDR blocks allowed to connect to the Landing Zone network via a DRG. | `list(string)` | `[]` | no |
 | <a name="input_policies_in_root_compartment"></a> [policies\_in\_root\_compartment](#input\_policies\_in\_root\_compartment) | Whether policies in the Root compartment should be created or simply used. If 'CREATE', you must be sure the user executing this stack has permissions to create policies in the Root compartment. If 'USE', policies must have been created previously. | `string` | `"CREATE"` | no |
 | <a name="input_private_key_password"></a> [private\_key\_password](#input\_private\_key\_password) | n/a | `string` | `""` | no |
 | <a name="input_private_key_path"></a> [private\_key\_path](#input\_private\_key\_path) | n/a | `string` | `""` | no |

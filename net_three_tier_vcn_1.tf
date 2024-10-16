@@ -556,6 +556,16 @@ locals {
                 destination        = cidr
                 destination_type   = "CIDR_BLOCK"
             }
+        } : {},
+        ## Route to on-premises CIDRs
+        (local.add_tt_vcn1 == true && var.tt_vcn1_attach_to_drg == true && length(var.onprem_cidrs) > 0) &&
+        (local.hub_with_vcn == true || local.hub_with_drg_only == true) ? {
+            for cidr in var.onprem_cidrs : "ONPREM-${replace(replace(cidr,".",""),"/","")}-RULE" => {
+                network_entity_key = "HUB-DRG"
+                description        = "Traffic destined to on-premises ${cidr} CIDR range goes to DRG."
+                destination        = cidr
+                destination_type   = "CIDR_BLOCK"
+            }
         } : {}
     )
        
@@ -971,7 +981,20 @@ locals {
                     dst_port_max = 443
                 }
             } 
-        ) : {}     
+        ) : {},
+        ## Ingress from on-premises CIDRs into TT-VCN-1 web subnet
+        (local.add_tt_vcn1 == true && var.tt_vcn1_attach_to_drg == true && length(var.onprem_cidrs) > 0) &&
+        (local.hub_with_vcn == true || local.hub_with_drg_only == true) ? {
+            for cidr in var.onprem_cidrs : "INGRESS-FROM-ONPREM--${replace(replace(cidr,".",""),"/","")}-RULE" => {
+                    description  = "Ingress from onprem ${cidr}"
+                    stateless    = false
+                    protocol     = "TCP"
+                    src          = cidr
+                    src_type     = "CIDR_BLOCK"
+                    dst_port_min = 443
+                    dst_port_max = 443
+            }
+        } : {}
     )
     ## Ingress rules into TT-VCN-1 app subnet
     vcn_1_to_app_subnet_cross_vcn_ingress = merge(
@@ -1159,7 +1182,20 @@ locals {
                     dst_port_max = 80
                 }
             } 
-        ) : {}
+        ) : {},
+        ## Ingress from on-premises CIDRs into TT-VCN-1 app subnet
+        (local.add_tt_vcn1 == true && var.tt_vcn1_attach_to_drg == true && length(var.onprem_cidrs) > 0) &&
+        (local.hub_with_vcn == true || local.hub_with_drg_only == true) ? {
+            for cidr in var.onprem_cidrs : "INGRESS-FROM-ONPREM--${replace(replace(cidr,".",""),"/","")}-RULE" => {
+                    description  = "Ingress from onprem ${cidr}"
+                    stateless    = false
+                    protocol     = "TCP"
+                    src          = cidr
+                    src_type     = "CIDR_BLOCK"
+                    dst_port_min = 80
+                    dst_port_max = 80
+            }
+        } : {}
     )
     ## Ingress rules into TT-VCN-1 db subnet
     vcn_1_to_db_subnet_cross_vcn_ingress = merge(
@@ -1329,6 +1365,19 @@ locals {
                     dst_port_max = 1522
                 }
             } 
-        ) : {}
+        ) : {},
+        ## Ingress from on-premises CIDRs into TT-VCN-1 db subnet
+        (local.add_tt_vcn1 == true && var.tt_vcn1_attach_to_drg == true && length(var.onprem_cidrs) > 0) &&
+        (local.hub_with_vcn == true || local.hub_with_drg_only == true) ? {
+            for cidr in var.onprem_cidrs : "INGRESS-FROM-ONPREM--${replace(replace(cidr,".",""),"/","")}-RULE" => {
+                    description  = "Ingress from onprem ${cidr}"
+                    stateless    = false
+                    protocol     = "TCP"
+                    src          = cidr
+                    src_type     = "CIDR_BLOCK"
+                    dst_port_min = 1521
+                    dst_port_max = 1522
+            }
+        } : {}
     )
 }
