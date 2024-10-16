@@ -83,7 +83,7 @@ locals {
     "allow group ${join(",", local.security_admin_group_name)} to read usage-reports in tenancy",
     "allow group ${join(",", local.security_admin_group_name)} to manage zpr-configuration in tenancy",
     "allow group ${join(",", local.security_admin_group_name)} to manage zpr-policy in tenancy",
-    "allow group ${join(",", local.security_admin_group_name)} to manage security-attribute-namespace in tenancy"]]
+    "allow group ${join(",", local.security_admin_group_name)} to manage security-attribute-namespace in tenancy"]
 
   ## Security admin grants at the enclosing compartment level, which *can* be the root compartment
   security_admin_grants_on_enclosing_cmp = [
