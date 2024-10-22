@@ -437,6 +437,7 @@ variableGroups:
       - "existing_ag_admin_group_name"
       - "lz_provenant_prefix"
       - "lz_provenant_version"
+      - "hub_deployment"
 
 variables:
   region:
