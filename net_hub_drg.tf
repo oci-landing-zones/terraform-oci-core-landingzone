@@ -11,10 +11,11 @@ locals {
     "VCN or on-premises connectivity routed through DMZ VCN with Network Virtual Appliance existing DRG (DMZ VCN will be created and DRG ID required)" = 4
   }
 
-  deploy_new_drg    = var.define_net == true && (local.hub_options[var.hub_deployment_option] == 1 || local.hub_options[var.hub_deployment_option] == 3)
-  use_existing_drg  = var.define_net == true && (local.hub_options[var.hub_deployment_option] == 2 || local.hub_options[var.hub_deployment_option] == 4)
-  hub_with_drg_only = var.define_net == true && (local.hub_options[var.hub_deployment_option] == 1 || local.hub_options[var.hub_deployment_option] == 2)
-  hub_with_vcn      = var.define_net == true && (local.hub_options[var.hub_deployment_option] == 3 || local.hub_options[var.hub_deployment_option] == 4)
+  chosen_hub_option = var.hub_deployment_option == "" ? var.hub_deployment : local.hub_options[var.hub_deployment_option]
+  deploy_new_drg    = var.define_net == true && (local.chosen_hub_option == 1 || local.chosen_hub_option == 3)
+  use_existing_drg  = var.define_net == true && (local.chosen_hub_option == 2 || local.chosen_hub_option == 4)
+  hub_with_drg_only = var.define_net == true && (local.chosen_hub_option == 1 || local.chosen_hub_option == 2)
+  hub_with_vcn      = var.define_net == true && (local.chosen_hub_option == 3 || local.chosen_hub_option == 4)
 
   # enable_hub_vcn_route = ((local.add_tt_vcn1 == true && var.tt_vcn1_attach_to_drg == true && length(var.tt_vcn1_routable_vcns) > 0) ||
   #                         (local.add_tt_vcn2 == true && var.tt_vcn2_attach_to_drg == true && length(var.tt_vcn2_routable_vcns) > 0) ||
@@ -26,7 +27,7 @@ locals {
   #                         (local.add_oke_vcn2 == true && var.oke_vcn2_attach_to_drg == true && length(var.oke_vcn2_routable_vcns) > 0) ||
   #                         (local.add_oke_vcn3 == true && var.oke_vcn3_attach_to_drg == true && length(var.oke_vcn3_routable_vcns) > 0))
 
-  drg = (local.hub_options[var.hub_deployment_option] != 0) ? {
+  drg = (local.chosen_hub_option != 0) ? {
     # "dynamic_routing_gateways" is for creating a new DRG.
     # "inject_into_existing_drgs" is for reusing an existing DRG.
     local.deploy_new_drg == true ? "dynamic_routing_gateways" : "inject_into_existing_drgs" = {

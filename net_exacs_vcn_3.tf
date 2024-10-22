@@ -39,7 +39,7 @@ locals {
         "EXA-VCN-3-CLIENT-SUBNET-ROUTE-TABLE" = {
           display_name = "client-subnet-route-table"
           route_rules = merge(
-            (local.hub_options[var.hub_deployment_option] != 3 && local.hub_options[var.hub_deployment_option] != 4) ? {
+            (local.chosen_hub_option != 3 && local.chosen_hub_option != 4) ? {
               "OSN-RULE" = {
                 network_entity_key = "EXA-VCN-3-SERVICE-GATEWAY"
                 description        = "To Oracle Services Network."
@@ -60,7 +60,7 @@ locals {
         "EXA-VCN-3-BACKUP-SUBNET-ROUTE-TABLE" = {
           display_name = "backup-subnet-route-table"
           route_rules = merge(
-            (local.hub_options[var.hub_deployment_option] != 3 && local.hub_options[var.hub_deployment_option] != 4) ? {
+            (local.chosen_hub_option != 3 && local.chosen_hub_option != 4) ? {
               "OSN-RULE" = {
                 network_entity_key = "EXA-VCN-3-SERVICE-GATEWAY"
                 description        = "To Oracle Services Network."
@@ -236,7 +236,7 @@ locals {
         }
       }
 
-      vcn_specific_gateways = (local.hub_options[var.hub_deployment_option] != 3 && local.hub_options[var.hub_deployment_option] != 4) ? {
+      vcn_specific_gateways = (local.chosen_hub_option != 3 && local.chosen_hub_option != 4) ? {
         service_gateways = {
           "EXA-VCN-3-SERVICE-GATEWAY" = {
             display_name = "service-gateway"

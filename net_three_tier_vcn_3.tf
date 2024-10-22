@@ -105,7 +105,7 @@ locals {
                     "TT-VCN-3-WEB-SUBNET-ROUTE-TABLE" = {
                         display_name = "web-subnet-rtable"
                         route_rules = merge(
-                            (local.hub_options[var.hub_deployment_option] != 3 && local.hub_options[var.hub_deployment_option] != 4) ? {
+                            (local.chosen_hub_option != 3 && local.chosen_hub_option != 4) ? {
                                 "INTERNET-RULE" = {
                                     network_entity_key = var.tt_vcn1_web_subnet_is_private == false ? "TT-VCN-3-INTERNET-GATEWAY" : "TT-VCN-3-NAT-GATEWAY"
                                     description        = "To Internet."
@@ -127,7 +127,7 @@ locals {
                     "TT-VCN-3-APP-SUBNET-ROUTE-TABLE" = {
                         display_name = "app-subnet-rtable"
                         route_rules = merge(
-                            (local.hub_options[var.hub_deployment_option] != 3 && local.hub_options[var.hub_deployment_option] != 4) ? {
+                            (local.chosen_hub_option != 3 && local.chosen_hub_option != 4) ? {
                                 "INTERNET-RULE" = {
                                     network_entity_key = "TT-VCN-3-NAT-GATEWAY"
                                     description        = "To Internet."
@@ -149,7 +149,7 @@ locals {
                     "TT-VCN-3-DB-SUBNET-ROUTE-TABLE" = {
                         display_name = "db-subnet-rtable"
                         route_rules = merge(
-                            (local.hub_options[var.hub_deployment_option] != 3 && local.hub_options[var.hub_deployment_option] != 4) ? {
+                            (local.chosen_hub_option != 3 && local.chosen_hub_option != 4) ? {
                                 "INTERNET-RULE" = {
                                     network_entity_key = "TT-VCN-3-NAT-GATEWAY"
                                     description        = "To Internet."
@@ -171,7 +171,7 @@ locals {
                     "TT-VCN-3-BASTION-SUBNET-ROUTE-TABLE" = {
                         display_name = "bastion-subnet-route-table"
                         route_rules = merge(
-                            (local.hub_options[var.hub_deployment_option] != 3 && local.hub_options[var.hub_deployment_option] != 4) ? {
+                            (local.chosen_hub_option != 3 && local.chosen_hub_option != 4) ? {
                                 "INTERNET-RULE" = {
                                     network_entity_key = var.tt_vcn3_bastion_is_access_via_public_endpoint == false ? "TT-VCN-3-NAT-GATEWAY" : "TT-VCN-3-INTERNET-GATEWAY"
                                     description        = "To Internet."

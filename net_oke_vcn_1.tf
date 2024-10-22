@@ -203,7 +203,7 @@ locals {
         "OKE-VCN-1-API-SUBNET-ROUTE-TABLE" = {
           display_name = "api-subnet-route-table"
           route_rules = merge(
-            (local.hub_options[var.hub_deployment_option] != 3 && local.hub_options[var.hub_deployment_option] != 4) ? {
+            (local.chosen_hub_option != 3 && local.chosen_hub_option != 4) ? {
               "SGW-RULE" = {
                 network_entity_key = "OKE-VCN-1-SERVICE-GATEWAY"
                 description        = "Route for sgw"
@@ -218,7 +218,7 @@ locals {
                 destination_type   = "CIDR_BLOCK"
               }
             },
-            (local.hub_options[var.hub_deployment_option] != 3 && local.hub_options[var.hub_deployment_option] != 4) && upper(var.oke_vcn1_cni_type) == "NATIVE" ? {
+            (local.chosen_hub_option != 3 && local.chosen_hub_option != 4) && upper(var.oke_vcn1_cni_type) == "NATIVE" ? {
               "NATGW-RULE" = {
                 network_entity_key = "OKE-VCN-1-NAT-GATEWAY"
                 description        = "Route for internet access via NAT GW"
@@ -233,7 +233,7 @@ locals {
           "OKE-VCN-1-WORKERS-SUBNET-ROUTE-TABLE" = {
             display_name = "workers-subnet-route-table"
             route_rules = merge(
-              (local.hub_options[var.hub_deployment_option] != 3 && local.hub_options[var.hub_deployment_option] != 4) ? {
+              (local.chosen_hub_option != 3 && local.chosen_hub_option != 4) ? {
                 "SGW-RULE" = {
                   network_entity_key = "OKE-VCN-1-SERVICE-GATEWAY"
                   description        = "Route for sgw"
@@ -261,7 +261,7 @@ locals {
         {
           "OKE-VCN-1-SERVICES-SUBNET-ROUTE-TABLE" = {
             display_name = "services-subnet-route-table"
-            route_rules = (local.hub_options[var.hub_deployment_option] != 3 && local.hub_options[var.hub_deployment_option] != 4) ? {
+            route_rules = (local.chosen_hub_option != 3 && local.chosen_hub_option != 4) ? {
               "IGW-RULE" = {
                 network_entity_key = "OKE-VCN-1-INTERNET-GATEWAY"
                 description        = "Route for igw"
@@ -281,7 +281,7 @@ locals {
         var.add_oke_vcn1_mgmt_subnet ? {
           "OKE-VCN-1-MGMT-SUBNET-ROUTE-TABLE" = {
             display_name = "mgmt-subnet-route-table"
-            route_rules = (local.hub_options[var.hub_deployment_option] != 3 && local.hub_options[var.hub_deployment_option] != 4) ? {
+            route_rules = (local.chosen_hub_option != 3 && local.chosen_hub_option != 4) ? {
               "SGW-RULE" = {
                 network_entity_key = "OKE-VCN-1-SERVICE-GATEWAY"
                 description        = "Route for sgw"
@@ -307,7 +307,7 @@ locals {
         upper(var.oke_vcn1_cni_type) == "NATIVE" ? {
           "OKE-VCN-1-PODS-SUBNET-ROUTE-TABLE" = {
             display_name = "pods-subnet-route-table"
-            route_rules = merge((local.hub_options[var.hub_deployment_option] != 3 && local.hub_options[var.hub_deployment_option] != 4) ? {
+            route_rules = merge((local.chosen_hub_option != 3 && local.chosen_hub_option != 4) ? {
               "SGW-RULE" = {
                 network_entity_key = "OKE-VCN-1-SERVICE-GATEWAY"
                 description        = "Route for sgw"
@@ -851,7 +851,7 @@ locals {
           }
         } : {}
       )
-      vcn_specific_gateways = (local.hub_options[var.hub_deployment_option] != 3 && local.hub_options[var.hub_deployment_option] != 4) ? {
+      vcn_specific_gateways = (local.chosen_hub_option != 3 && local.chosen_hub_option != 4) ? {
         internet_gateways = {
           // don't deploy when deploying Hub VCN
           "OKE-VCN-1-INTERNET-GATEWAY" = {
