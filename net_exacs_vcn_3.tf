@@ -39,7 +39,7 @@ locals {
         "EXA-VCN-3-CLIENT-SUBNET-ROUTE-TABLE" = {
           display_name = "client-subnet-route-table"
           route_rules = merge(
-            (local.hub_options[var.hub_deployment_option] != 3 && local.hub_options[var.hub_deployment_option] != 4) ? {
+            (local.chosen_hub_option != 3 && local.chosen_hub_option != 4) ? {
               "OSN-RULE" = {
                 network_entity_key = "EXA-VCN-3-SERVICE-GATEWAY"
                 description        = "To Oracle Services Network."
@@ -60,7 +60,7 @@ locals {
         "EXA-VCN-3-BACKUP-SUBNET-ROUTE-TABLE" = {
           display_name = "backup-subnet-route-table"
           route_rules = merge(
-            (local.hub_options[var.hub_deployment_option] != 3 && local.hub_options[var.hub_deployment_option] != 4) ? {
+            (local.chosen_hub_option != 3 && local.chosen_hub_option != 4) ? {
               "OSN-RULE" = {
                 network_entity_key = "EXA-VCN-3-SERVICE-GATEWAY"
                 description        = "To Oracle Services Network."
@@ -236,7 +236,7 @@ locals {
         }
       }
 
-      vcn_specific_gateways = (local.hub_options[var.hub_deployment_option] != 3 && local.hub_options[var.hub_deployment_option] != 4) ? {
+      vcn_specific_gateways = (local.chosen_hub_option != 3 && local.chosen_hub_option != 4) ? {
         service_gateways = {
           "EXA-VCN-3-SERVICE-GATEWAY" = {
             display_name = "service-gateway"
@@ -333,6 +333,17 @@ locals {
         destination        = cidr
         destination_type   = "CIDR_BLOCK"
       }
+    } : {},
+
+    ## Route to on-premises CIDRs
+    (local.add_exa_vcn3 == true && var.exa_vcn3_attach_to_drg == true && length(var.onprem_cidrs) > 0) &&
+    (local.hub_with_vcn == true || local.hub_with_drg_only == true) ? {
+        for cidr in var.onprem_cidrs : "ONPREM-${replace(replace(cidr,".",""),"/","")}-RULE" => {
+            network_entity_key = "HUB-DRG"
+            description        = "Traffic destined to on-premises ${cidr} CIDR range goes to DRG."
+            destination        = cidr
+            destination_type   = "CIDR_BLOCK"
+        }
     } : {}
   )
 
@@ -844,5 +855,18 @@ locals {
         dst_port_max = 1522
       }
     } : {},
+    ## Ingress from on-premises CIDRs
+    (local.add_exa_vcn3 == true && var.exa_vcn3_attach_to_drg == true && length(var.onprem_cidrs) > 0) &&
+    (local.hub_with_vcn == true || local.hub_with_drg_only == true) ? {
+      for cidr in var.onprem_cidrs : "INGRESS-FROM-ONPREM--${replace(replace(cidr,".",""),"/","")}-RULE" => {
+              description  = "Ingress from onprem ${cidr}"
+              stateless    = false
+              protocol     = "TCP"
+              src          = cidr
+              src_type     = "CIDR_BLOCK"
+              dst_port_min = 1521
+              dst_port_max = 1522
+        }
+    } : {}
   )
 }

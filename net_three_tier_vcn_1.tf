@@ -105,7 +105,7 @@ locals {
                     "TT-VCN-1-WEB-SUBNET-ROUTE-TABLE" = {
                         display_name = "web-subnet-route-table"
                         route_rules = merge(
-                            (local.hub_options[var.hub_deployment_option] != 3 && local.hub_options[var.hub_deployment_option] != 4) ? {
+                            (local.chosen_hub_option != 3 && local.chosen_hub_option != 4) ? {
                                 "INTERNET-RULE" = {
                                     network_entity_key = var.tt_vcn1_web_subnet_is_private == false ? "TT-VCN-1-INTERNET-GATEWAY" : "TT-VCN-1-NAT-GATEWAY"
                                     description        = "To Internet."
@@ -127,7 +127,7 @@ locals {
                     "TT-VCN-1-APP-SUBNET-ROUTE-TABLE" = {
                         display_name = "app-subnet-route-table"
                         route_rules = merge(
-                            (local.hub_options[var.hub_deployment_option] != 3 && local.hub_options[var.hub_deployment_option] != 4) ? {
+                            (local.chosen_hub_option != 3 && local.chosen_hub_option != 4) ? {
                                 "INTERNET-RULE" = {
                                     network_entity_key = "TT-VCN-1-NAT-GATEWAY"
                                     description        = "To Internet."
@@ -149,7 +149,7 @@ locals {
                     "TT-VCN-1-DB-SUBNET-ROUTE-TABLE" = {
                         display_name = "db-subnet-route-table"
                         route_rules = merge(
-                            (local.hub_options[var.hub_deployment_option] != 3 && local.hub_options[var.hub_deployment_option] != 4) ? {
+                            (local.chosen_hub_option != 3 && local.chosen_hub_option != 4) ? {
                                 "INTERNET-RULE" = {
                                     network_entity_key = "TT-VCN-1-NAT-GATEWAY"
                                     description        = "To Internet."
@@ -171,7 +171,7 @@ locals {
                     "TT-VCN-1-BASTION-SUBNET-ROUTE-TABLE" = {
                         display_name = "bastion-subnet-route-table"
                         route_rules = merge(
-                            (local.hub_options[var.hub_deployment_option] != 3 && local.hub_options[var.hub_deployment_option] != 4) ? {
+                            (local.chosen_hub_option != 3 && local.chosen_hub_option != 4) ? {
                                 "INTERNET-RULE" = {
                                     network_entity_key = var.tt_vcn1_bastion_is_access_via_public_endpoint == false ? "TT-VCN-1-NAT-GATEWAY" : "TT-VCN-1-INTERNET-GATEWAY"
                                     description        = "To Internet."
@@ -440,7 +440,7 @@ locals {
                 } : {}    
             ) # merge function
             
-            vcn_specific_gateways = (local.hub_options[var.hub_deployment_option] != 3 && local.hub_options[var.hub_deployment_option] != 4) ? {
+            vcn_specific_gateways = (local.chosen_hub_option != 3 && local.chosen_hub_option != 4) ? {
                 internet_gateways = {
                     "TT-VCN-1-INTERNET-GATEWAY" = {
                         enabled      = true
@@ -553,6 +553,16 @@ locals {
             for cidr in var.exa_vcn3_cidrs : "EXA-VCN-3-${replace(replace(cidr,".",""),"/","")}-RULE" => {
                 network_entity_key = "HUB-DRG"
                 description        = "To DRG."
+                destination        = cidr
+                destination_type   = "CIDR_BLOCK"
+            }
+        } : {},
+        ## Route to on-premises CIDRs
+        (local.add_tt_vcn1 == true && var.tt_vcn1_attach_to_drg == true && length(var.onprem_cidrs) > 0) &&
+        (local.hub_with_vcn == true || local.hub_with_drg_only == true) ? {
+            for cidr in var.onprem_cidrs : "ONPREM-${replace(replace(cidr,".",""),"/","")}-RULE" => {
+                network_entity_key = "HUB-DRG"
+                description        = "Traffic destined to on-premises ${cidr} CIDR range goes to DRG."
                 destination        = cidr
                 destination_type   = "CIDR_BLOCK"
             }
@@ -971,7 +981,20 @@ locals {
                     dst_port_max = 443
                 }
             } 
-        ) : {}     
+        ) : {},
+        ## Ingress from on-premises CIDRs into TT-VCN-1 web subnet
+        (local.add_tt_vcn1 == true && var.tt_vcn1_attach_to_drg == true && length(var.onprem_cidrs) > 0) &&
+        (local.hub_with_vcn == true || local.hub_with_drg_only == true) ? {
+            for cidr in var.onprem_cidrs : "INGRESS-FROM-ONPREM--${replace(replace(cidr,".",""),"/","")}-RULE" => {
+                    description  = "Ingress from onprem ${cidr}"
+                    stateless    = false
+                    protocol     = "TCP"
+                    src          = cidr
+                    src_type     = "CIDR_BLOCK"
+                    dst_port_min = 443
+                    dst_port_max = 443
+            }
+        } : {}
     )
     ## Ingress rules into TT-VCN-1 app subnet
     vcn_1_to_app_subnet_cross_vcn_ingress = merge(
@@ -1159,7 +1182,20 @@ locals {
                     dst_port_max = 80
                 }
             } 
-        ) : {}
+        ) : {},
+        ## Ingress from on-premises CIDRs into TT-VCN-1 app subnet
+        (local.add_tt_vcn1 == true && var.tt_vcn1_attach_to_drg == true && length(var.onprem_cidrs) > 0) &&
+        (local.hub_with_vcn == true || local.hub_with_drg_only == true) ? {
+            for cidr in var.onprem_cidrs : "INGRESS-FROM-ONPREM--${replace(replace(cidr,".",""),"/","")}-RULE" => {
+                    description  = "Ingress from onprem ${cidr}"
+                    stateless    = false
+                    protocol     = "TCP"
+                    src          = cidr
+                    src_type     = "CIDR_BLOCK"
+                    dst_port_min = 80
+                    dst_port_max = 80
+            }
+        } : {}
     )
     ## Ingress rules into TT-VCN-1 db subnet
     vcn_1_to_db_subnet_cross_vcn_ingress = merge(
@@ -1329,6 +1365,19 @@ locals {
                     dst_port_max = 1522
                 }
             } 
-        ) : {}
+        ) : {},
+        ## Ingress from on-premises CIDRs into TT-VCN-1 db subnet
+        (local.add_tt_vcn1 == true && var.tt_vcn1_attach_to_drg == true && length(var.onprem_cidrs) > 0) &&
+        (local.hub_with_vcn == true || local.hub_with_drg_only == true) ? {
+            for cidr in var.onprem_cidrs : "INGRESS-FROM-ONPREM--${replace(replace(cidr,".",""),"/","")}-RULE" => {
+                    description  = "Ingress from onprem ${cidr}"
+                    stateless    = false
+                    protocol     = "TCP"
+                    src          = cidr
+                    src_type     = "CIDR_BLOCK"
+                    dst_port_min = 1521
+                    dst_port_max = 1522
+            }
+        } : {}
     )
 }

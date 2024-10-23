@@ -203,7 +203,7 @@ locals {
         "OKE-VCN-1-API-SUBNET-ROUTE-TABLE" = {
           display_name = "api-subnet-route-table"
           route_rules = merge(
-            (local.hub_options[var.hub_deployment_option] != 3 && local.hub_options[var.hub_deployment_option] != 4) ? {
+            (local.chosen_hub_option != 3 && local.chosen_hub_option != 4) ? {
               "SGW-RULE" = {
                 network_entity_key = "OKE-VCN-1-SERVICE-GATEWAY"
                 description        = "Route for sgw"
@@ -218,7 +218,7 @@ locals {
                 destination_type   = "CIDR_BLOCK"
               }
             },
-            (local.hub_options[var.hub_deployment_option] != 3 && local.hub_options[var.hub_deployment_option] != 4) && upper(var.oke_vcn1_cni_type) == "NATIVE" ? {
+            (local.chosen_hub_option != 3 && local.chosen_hub_option != 4) && upper(var.oke_vcn1_cni_type) == "NATIVE" ? {
               "NATGW-RULE" = {
                 network_entity_key = "OKE-VCN-1-NAT-GATEWAY"
                 description        = "Route for internet access via NAT GW"
@@ -233,7 +233,7 @@ locals {
           "OKE-VCN-1-WORKERS-SUBNET-ROUTE-TABLE" = {
             display_name = "workers-subnet-route-table"
             route_rules = merge(
-              (local.hub_options[var.hub_deployment_option] != 3 && local.hub_options[var.hub_deployment_option] != 4) ? {
+              (local.chosen_hub_option != 3 && local.chosen_hub_option != 4) ? {
                 "SGW-RULE" = {
                   network_entity_key = "OKE-VCN-1-SERVICE-GATEWAY"
                   description        = "Route for sgw"
@@ -261,7 +261,7 @@ locals {
         {
           "OKE-VCN-1-SERVICES-SUBNET-ROUTE-TABLE" = {
             display_name = "services-subnet-route-table"
-            route_rules = (local.hub_options[var.hub_deployment_option] != 3 && local.hub_options[var.hub_deployment_option] != 4) ? {
+            route_rules = (local.chosen_hub_option != 3 && local.chosen_hub_option != 4) ? {
               "IGW-RULE" = {
                 network_entity_key = "OKE-VCN-1-INTERNET-GATEWAY"
                 description        = "Route for igw"
@@ -281,7 +281,7 @@ locals {
         var.add_oke_vcn1_mgmt_subnet ? {
           "OKE-VCN-1-MGMT-SUBNET-ROUTE-TABLE" = {
             display_name = "mgmt-subnet-route-table"
-            route_rules = (local.hub_options[var.hub_deployment_option] != 3 && local.hub_options[var.hub_deployment_option] != 4) ? {
+            route_rules = (local.chosen_hub_option != 3 && local.chosen_hub_option != 4) ? {
               "SGW-RULE" = {
                 network_entity_key = "OKE-VCN-1-SERVICE-GATEWAY"
                 description        = "Route for sgw"
@@ -307,7 +307,7 @@ locals {
         upper(var.oke_vcn1_cni_type) == "NATIVE" ? {
           "OKE-VCN-1-PODS-SUBNET-ROUTE-TABLE" = {
             display_name = "pods-subnet-route-table"
-            route_rules = merge((local.hub_options[var.hub_deployment_option] != 3 && local.hub_options[var.hub_deployment_option] != 4) ? {
+            route_rules = merge((local.chosen_hub_option != 3 && local.chosen_hub_option != 4) ? {
               "SGW-RULE" = {
                 network_entity_key = "OKE-VCN-1-SERVICE-GATEWAY"
                 description        = "Route for sgw"
@@ -851,7 +851,7 @@ locals {
           }
         } : {}
       )
-      vcn_specific_gateways = (local.hub_options[var.hub_deployment_option] != 3 && local.hub_options[var.hub_deployment_option] != 4) ? {
+      vcn_specific_gateways = (local.chosen_hub_option != 3 && local.chosen_hub_option != 4) ? {
         internet_gateways = {
           // don't deploy when deploying Hub VCN
           "OKE-VCN-1-INTERNET-GATEWAY" = {
@@ -952,6 +952,16 @@ locals {
         destination        = cidr
         destination_type   = "CIDR_BLOCK"
       }
+    } : {},
+    ## Route to on-premises CIDRs
+    (local.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true && length(var.onprem_cidrs) > 0) &&
+    (local.hub_with_vcn == true || local.hub_with_drg_only == true) ? {
+        for cidr in var.onprem_cidrs : "ONPREM-${replace(replace(cidr,".",""),"/","")}-RULE" => {
+            network_entity_key = "HUB-DRG"
+            description        = "Traffic destined to on-premises ${cidr} CIDR range goes to DRG."
+            destination        = cidr
+            destination_type   = "CIDR_BLOCK"
+        }
     } : {}
   )
 
@@ -1349,6 +1359,19 @@ locals {
         dst_port_min = 443
         dst_port_max = 443
       }
+    } : {},
+    ## Ingress from on-premises CIDRs
+    (local.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true && length(var.onprem_cidrs) > 0) &&
+    (local.hub_with_vcn == true || local.hub_with_drg_only == true) ? {
+      for cidr in var.onprem_cidrs : "INGRESS-FROM-ONPREM--${replace(replace(cidr,".",""),"/","")}-RULE" => {
+        description  = "Ingress from onprem ${cidr}"
+        stateless    = false
+        protocol     = "TCP"
+        src          = cidr
+        src_type     = "CIDR_BLOCK"
+        dst_port_min = 443
+        dst_port_max = 443
+      }
     } : {}
   )
   oke_vcn_1_to_workers_subnet_cross_vcn_ingress = merge(
@@ -1528,6 +1551,19 @@ locals {
         dst_port_max = 32767
       }
     } : {},
+    ## Ingress from on-premises CIDRs
+    (local.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true && length(var.onprem_cidrs) > 0) &&
+    (local.hub_with_vcn == true || local.hub_with_drg_only == true) ? {
+      for cidr in var.onprem_cidrs : "INGRESS-FROM-ONPREM--${replace(replace(cidr,".",""),"/","")}-RULE" => {
+        description  = "Ingress from onprem ${cidr}"
+        stateless    = false
+        protocol     = "TCP"
+        src          = cidr
+        src_type     = "CIDR_BLOCK"
+        dst_port_min = 30000
+        dst_port_max = 32767
+      }
+    } : {}
   )
   oke_vcn_1_to_pods_subnet_cross_vcn_ingress = merge(
     (local.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true && var.add_oke_vcn2 == true && var.oke_vcn2_attach_to_drg == true) &&

@@ -124,20 +124,32 @@ locals {
         {
           "OUTDOOR-SUBNET-ROUTE-TABLE" = {
             display_name = "outdoor-subnet-route-table"
-            route_rules = {
-              "OSN-RULE" = {
-                network_entity_key = "HUB-VCN-SERVICE-GATEWAY"
-                description        = "To Oracle Services Network."
-                destination        = "all-services"
-                destination_type   = "SERVICE_CIDR_BLOCK"
+            route_rules = merge(
+              {
+                "OSN-RULE" = {
+                  network_entity_key = "HUB-VCN-SERVICE-GATEWAY"
+                  description        = "To Oracle Services Network."
+                  destination        = "all-services"
+                  destination_type   = "SERVICE_CIDR_BLOCK"
+                }
               },
-              "INTERNET-RULE" = {
-                network_entity_key = "HUB-VCN-NAT-GATEWAY"
-                description        = "To Internet."
-                destination        = "0.0.0.0/0"
-                destination_type   = "CIDR_BLOCK"
+              {
+                "INTERNET-RULE" = {
+                  network_entity_key = "HUB-VCN-NAT-GATEWAY"
+                  description        = "To Internet."
+                  destination        = "0.0.0.0/0"
+                  destination_type   = "CIDR_BLOCK"
+                }
+              },
+              {
+                for cidr in var.onprem_cidrs : "ONPREM-${replace(replace(cidr,".",""),"/","")}-RULE" => {
+                  network_entity_key = "HUB-DRG"
+                  description        = "Traffic destined to on-premises ${cidr} CIDR range goes to DRG."
+                  destination        = cidr
+                  destination_type   = "CIDR_BLOCK"
+                }
               }
-            }
+            )
           }
         },
         {
