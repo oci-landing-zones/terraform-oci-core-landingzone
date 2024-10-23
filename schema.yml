@@ -168,6 +168,8 @@ variableGroups:
       - "hub_vcn_deploy_net_appliance_option"
       # - "net_appliance_image_compartment_ocid"
       - "net_appliance_image_ocid"
+      - "net_palo_alto_version"
+      - "net_fortigate_version"
       - "net_appliance_name_prefix"
       - "net_appliance_shape"
       - "net_appliance_flex_shape_memory"
@@ -2890,6 +2892,52 @@ variables:
           - eq:
             - ${hub_vcn_deploy_net_appliance_option}
             - "User-Provided Virtual Network Appliance"
+  
+  net_palo_alto_version:
+    type: enum
+    title: "Palo Alto Network Firewall Version"
+    description: "Palo Alto Network Firewall Version."
+    enum:
+      - "11.1.3"
+      - "11.1.2-h3"
+    required: true
+    visible:
+      and:
+        - define_net
+        - or:
+          - eq:
+            - ${hub_deployment_option}
+            - "VCN or on-premises connectivity routing through DMZ VCN with Network Virtual Appliance (DRG and DMZ VCN will be created)"
+          - eq:
+            - ${hub_deployment_option}
+            - "VCN or on-premises connectivity routed through DMZ VCN with Network Virtual Appliance existing DRG (DMZ VCN will be created and DRG ID required)"
+        - and:
+          - eq:
+            - ${hub_vcn_deploy_net_appliance_option}
+            - "Palo Alto Networks VM-Series Firewall"
+
+  net_fortigate_version:
+    type: enum
+    title: "Fortinet Fortigate Firewall Version"
+    description: "Fortinet Fortigate Firewall Version."
+    enum:
+      - "7.6.0_(_X64_)"
+      - "7.4.3_(_X64_)"
+    required: true
+    visible:
+      and:
+        - define_net
+        - or:
+          - eq:
+            - ${hub_deployment_option}
+            - "VCN or on-premises connectivity routing through DMZ VCN with Network Virtual Appliance (DRG and DMZ VCN will be created)"
+          - eq:
+            - ${hub_deployment_option}
+            - "VCN or on-premises connectivity routed through DMZ VCN with Network Virtual Appliance existing DRG (DMZ VCN will be created and DRG ID required)"
+        - and:
+          - eq:
+            - ${hub_vcn_deploy_net_appliance_option}
+            - "Fortinet FortiGate Firewall"
 
   net_appliance_name_prefix:
     type: string
