@@ -2895,7 +2895,7 @@ variables:
   
   net_palo_alto_version:
     type: enum
-    title: "Palo Alto Network Firewall Version"
+    title: "Palo Alto Network Firewall Version."
     description: "Palo Alto Network Firewall Version."
     enum:
       - "11.1.3"
