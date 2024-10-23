@@ -67,7 +67,7 @@ variable "net_palo_alto_version" {
 variable "net_fortigate_version" {
   type    = string
   description = "Fortinet Fortigate Firewall Version."
-  default = "7.6.0_(_X64_)"
+  default = "7.2.9_(_X64_)"
 }
 
 variable "net_appliance_name_prefix" {
