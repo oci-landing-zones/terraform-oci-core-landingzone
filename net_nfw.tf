@@ -14,8 +14,8 @@ locals {
   }
 
   image_name_database = {
-    "PALOALTO" = ["Palo Alto Networks VM-Series Next Generation Firewall", "11.1.3"]
-    "FORTINET" = ["FortiGate Next-Gen Firewall (BYOL)", "7.6.0_(_X64_)"]
+    "PALOALTO" = ["Palo Alto Networks VM-Series Next Generation Firewall", var.net_palo_alto_version]
+    "FORTINET" = ["FortiGate Next-Gen Firewall (BYOL)", var.net_fortigate_version ]
   }
 
   chosen_firewall_option = local.firewall_options[var.hub_vcn_deploy_net_appliance_option]

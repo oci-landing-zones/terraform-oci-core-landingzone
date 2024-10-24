@@ -58,6 +58,18 @@ variable "hub_vcn_deploy_net_appliance_option" {
   description = "The network appliance option for deploying in the Hub VCN. Valid values: 'Don't deploy any network appliance at this time' (default), 'Palo Alto Networks VM-Series Firewall', 'Fortinet FortiGate Firewall'. Costs are incurred."
 }
 
+variable "net_palo_alto_version" {
+  type    = string
+  description = "Palo Alto Firewall Version."
+  default = "11.1.3"
+}
+
+variable "net_fortigate_version" {
+  type    = string
+  description = "Fortinet Fortigate Firewall Version."
+  default = "7.2.9_(_X64_)"
+}
+
 variable "net_appliance_name_prefix" {
   type    = string
   default = "net-appliance-instance"
