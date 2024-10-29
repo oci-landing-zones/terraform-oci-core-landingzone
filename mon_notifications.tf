@@ -130,14 +130,14 @@ locals {
   exainfra_events_key = "EXAINFRA-EVENTS"
   exainfra_events = length(var.exainfra_admin_email_endpoints) > 0 && var.deploy_exainfra_cmp == true ? {
     (local.storage_events_key) = {
-      compartment_id                 = local.exainfra_compartment_id
-      event_display_name             = "${var.service_label}-notify-on-exainfra-changes-rule"
-      event_description              = "Landing Zone events rule to detect Exadata infrastructure events."
+      compartment_id                  = local.exainfra_compartment_id
+      event_display_name              = "${var.service_label}-notify-on-exainfra-changes-rule"
+      event_description               = "Landing Zone events rule to detect Exadata infrastructure events."
       preconfigured_events_categories = ["exainfra"]
-      destination_topic_ids          = ["EXAINFRA-TOPIC"]
-      is_enabled                     = var.create_events_as_enabled
-      defined_tags                   = local.notifications_defined_tags
-      freeform_tags                  = local.notifications_freeform_tags
+      destination_topic_ids           = ["EXAINFRA-TOPIC"]
+      is_enabled                      = var.create_events_as_enabled
+      defined_tags                    = local.notifications_defined_tags
+      freeform_tags                   = local.notifications_freeform_tags
     }
   } : {}
 
