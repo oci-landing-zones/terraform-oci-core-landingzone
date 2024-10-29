@@ -141,7 +141,7 @@ Some architecture scenarios enabled by the Hub VCN are:
 
 The diagram below shows services and resources that are deployed along with a single three-tier VCN deployment:
 
-![arch_simple](./images/Architecture-Simple.png)
+![arch_simple](./images/arch_simple.png)
 
 [Get the diagram in SVG format.](./images/arch_simple.svg)
 
