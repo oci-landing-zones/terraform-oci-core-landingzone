@@ -133,7 +133,7 @@ locals {
       compartment_id                 = local.exainfra_compartment_id
       event_display_name             = "${var.service_label}-notify-on-exainfra-changes-rule"
       event_description              = "Landing Zone events rule to detect Exadata infrastructure events."
-      reconfigured_events_categories = ["exainfra"]
+      preconfigured_events_categories = ["exainfra"]
       destination_topic_ids          = ["EXAINFRA-TOPIC"]
       is_enabled                     = var.create_events_as_enabled
       defined_tags                   = local.notifications_defined_tags
