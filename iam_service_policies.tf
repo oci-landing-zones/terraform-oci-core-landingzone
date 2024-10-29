@@ -61,7 +61,7 @@ locals {
 
   services_policy = { 
     ("${var.service_label}-services-policy") : {
-      compartment_ocid = var.tenancy_ocid
+      compartment_id   = var.tenancy_ocid
       name             = "${var.service_label}-services-policy"
       description      = "CIS Landing Zone policy for OCI services."
       statements       = concat(local.cloud_guard_statements, local.vss_statements, local.os_mgmt_statements, local.keys_access_statements)
@@ -85,7 +85,7 @@ locals {
 
   oke_clusters_policy = { 
     ("${var.service_label}-oke-clusters-policy") : {
-      compartment_ocid = local.enclosing_compartment_id
+      compartment_id   = local.enclosing_compartment_id
       name             = "${var.service_label}-oke-clusters-policy"
       description      = "Landing Zone policy for OKE clusters. It allows OKE clusters to use Native Pod Networking (NPN) and to use network resources in the Network compartment."
       statements       = local.oke_clusters_statements
