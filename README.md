@@ -186,7 +186,7 @@ Copyright (c) 2024, Oracle and/or its affiliates.
 
 Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 
-See [LICENSE](./LICENSE) for more details.
+See [LICENSE](./LICENSE.txt) for more details.
 
 
 ## <a name="known-issues">Known Issues</a>
