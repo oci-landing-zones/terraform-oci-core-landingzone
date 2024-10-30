@@ -16,7 +16,6 @@
     1. [Governance](#governance-4)
     1. [Security Services](#security-services)
     1. [Deploying Lifecycle Environments](#deploying-lifecycle-environments)
-    1. [Deploying without Full Permissions](#deploying-without-full-permissions)
 1. [Ways to Deploy](#ways-to-deploy)
     1. [Deploying with Terraform CLI](#deploying-with-terraform-cli)
     1. [Deploying with OCI Resource Manager UI](#deploying-with-orm-ui)
