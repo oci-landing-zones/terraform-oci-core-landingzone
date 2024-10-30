@@ -1,0 +1,47 @@
+# Copyright (c) 2023 Oracle and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+
+# -------------------------------------------------------------------------------------
+# -- This configuration deploys a landing zone with integration of a pre-existing IAM identity domain.
+# -- No VCN is deployed.
+# -- See other templates for other CIS compliant landing zones with custom settings.
+# -- 1. Rename this file to main.tf. 
+# -- 2. Provide/review the variable assignments below.
+# -- 3. In this folder, execute the typical Terraform workflow:
+# ----- $ terraform init
+# ----- $ terraform plan
+# ----- $ terraform apply
+# -------------------------------------------------------------------------------------
+
+module "core_lz" {
+    source = "../../"
+    # ------------------------------------------------------
+    # ----- Environment
+    # ------------------------------------------------------
+    tenancy_ocid         = "ocid1.tenancy.oc1..aaaaaaaa...3jb"               # Replace with your tenancy OCID.
+    user_ocid            = "ocid1.user.oc1..aaaaaaaa...xsb"                  # Replace with your user OCID.
+    fingerprint          = "19:42:xx:92:yy:b3:zz:2f:aa:ea:bb:59:cc:be:dd:ba" # Replace with user fingerprint.
+    private_key_path     = "path-to-pem-file-with-private-key"               # Replace with user private key local path.
+    private_key_password = ""                                                # Replace with private key password, if any.
+    region               = "us-phoenix-1" # Replace with region name.
+    service_label        = "cisbasic"     # Prefix prepended to deployed resource names. 
+
+    # ------------------------------------------------------
+    # ----- Notifications
+    # ------------------------------------------------------
+    network_admin_email_endpoints  = ["email.address@example.com"] # for network-related events. Replace with a real email address.
+    security_admin_email_endpoints = ["email.address@example.com"] # for security-related events. Replace with a real email address.
+
+    # ------------------------------------------------------
+    # ----- Security
+    # ------------------------------------------------------
+    enable_cloud_guard = false # Set to true if Cloud Guard has not already been enabled.
+    enable_security_zones=false # Set to true if Security Zones are required.
+
+    # ------------------------------------------------------
+    # ----- Existing Identity Domain
+    # ------------------------------------------------------
+    use_custom_id_domain = true # Designate to Landing Zone that you want to use a pre-existing identity domain.
+    custom_id_domain_ocid = <existing identity domain ocid> # Replace with your identity domain OCID.
+    deploy_custom_domain_groups = true # This is a critical setting for this template.
+}
