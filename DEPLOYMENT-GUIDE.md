@@ -20,9 +20,6 @@
     1. [Deploying with Terraform CLI](#deploying-with-terraform-cli)
     1. [Deploying with OCI Resource Manager UI](#deploying-with-orm-ui)
     1. [Deploying with OCI Resource Manager CLI](#deploying-with-orm-cli)
-1. [Customizing the Landing Zone](#custom-lz)
-    1. [Using Terraform Overrides](#using-terraform-overrides)
-1. [Deployment Samples](#samples)
 
 # <a name="introduction"></a>1. Introduction
 
@@ -152,7 +149,7 @@ The Landing Zone’s IAM model seeks to enforce segregation of duties and the le
 Each tenancy includes a Default identity domain created in the root compartment that contains the initial tenant administrator user and group and a default Policy that allows administrators to manage any resource in the tenancy. The Default identity domain lives with the life cycle of the tenancy and can't be deleted.
 
 #### Custom Domain
-Landing Zone allows for creation of additional identity domains within the enclosing compartment. A bespoke identity domain is useful when you need a separate environment for a cloud service or application (for example, one environment for development and one for production). For added security, you can configure each identity domain to have its own credentials (for example, Password and Sign-On policies).
+Landing Zone allows for the usage of custom identity domains groups and dynamic groups to manage/access its managed resources. A bespoke identity domain is useful when you need a separate environment for a cloud service or application (for example, one environment for development and one for production). For added security, you can configure each identity domain to have its own credentials (for example, Password and Sign-On policies).
 
 Landing Zone uses policies, groups and dynamic groups in a custom identity domain for security based segregation of roles and workload administration.
 
@@ -183,8 +180,8 @@ By default, the Landing Zone defines the following personas that account for mos
 - **Cost Administrators**: manage budgets and usage reports.
 - **Auditors**: entitled with read-only access across the tenancy and the ability to use cloud-shell to run the *cis\_reports.py* script.
 - **Announcement Readers**: for reading announcements displayed in OCI Console.
-- **Security Administrators**: manage security services and resources including Vaults, Keys, Logging, Vulnerability Scanning, Web Application Firewall, Bastion, Service Connector Hub.
-- **Network Administrators**: manage OCI network family, including VCNs, Load Balancers, DRGs, VNICs, IP addresses.
+- **Security Administrators**: manage security services and resources including Vaults, Keys, Logging, Vulnerability Scanning, Web Application Firewall, Bastion, Service Connector Hub, ZPR.
+- **Network Administrators**: manage OCI network family, including VCNs, Load Balancers, DRGs, VNICs, IP addresses, OCI Network Firewall.
 - **Application Administrators**: manage application related resources including Compute images, OCI Functions, Kubernetes clusters, Streams, Object Storage, Block Storage, File Storage.
 - **Database Administrators**: manage database services, including Oracle VMDB (Virtual Machine), BMDB (Bare Metal), ADB (Autonomous databases), Exadata databases, MySQL, NoSQL, etc.
 - **ExaCS Administrators** (only created when ExaCS compartment is created): manage Exadata infrastructure and VM clusters in the ExaCS compartment.
@@ -201,6 +198,7 @@ The Landing Zone defines four dynamic groups to satisfy common needs of workload
 - **AppDev Functions**: to be used by functions defined in the AppDev compartment. The matching rule includes all functions in the AppDev compartment. An example is a function for processing of application data and writing it to an Object Storage bucket.
 - **Compute Agent**: to be used by Compute's management agent in the AppDev compartment.
 - **Database KMS**: to be used by databases in the Database compartment to access keys in the Vault service.
+- **Fortigate Network Appliance**: to be used by Fortigate network appliances to read resources.
 
 ### Policies
 
@@ -216,15 +214,17 @@ The Landing Zone now provides the ability to integrate groups and dynamic groups
 
 ## <a name="network-configuration"></a>3.2 Network Configuration
 
-The Landing Zone supports a variety of networking models:
+The Landing Zone supports a variety of networking types:
 
-- **Standard Three-Tier Web Application VCN**: three subnets are provisioned, one to host load balancers and bastion hosts, one for application servers (middle-tiers) and one for database servers. The load balancer subnet can be made either public or private. The application servers' and database servers' are always created private. Route rules and network security rules are configured based on provided connectivity settings.
+- **Standard Three-Tier Web Application VCN**: up to four subnets are provisioned, one to host load balancers, one for application servers (middle-tiers) and one for database servers. Optionally, a subnet (either public or private) for jump hosts is available. The load balancer subnet can be made either public or private. The application servers' and database servers' are always created private. Route rules and network security rules are configured based on provided connectivity settings.
 
 - **Exadata Cloud Service (ExaCS) VCN**: two private subnets are provisioned, according to ExaCS requirements. One subnet for the Exadata client (the database itself) and one for database backups. Route rules and network security rules are configured based on ExaCS requirements and provided connectivity settings.
 
-- **Oracle Kubernetes Engine (OKE) VCN**: two public and three private subnets are provisioned, according to OKE requirements. Public facing are the Services and Management subnets. The other three are Pods, Workers and API subnets which provide the connectivity within the Kubernetes cluster. Route rules and network security rules are configured based on OKE requirements and provided connectivity settings.
+- **Oracle Kubernetes Engine (OKE) VCN**: one public and up to four private subnets are provisioned, according to OKE requirements. Public facing is the Services subnet, where service like load balancers are expected to be deployed. The others are Workers, API, Management and Pods (available for Native Pod Networking CNI) subnets. Route rules and network security rules are configured based on OKE requirements and provided connectivity settings.
 
-Regardless the networking model, VCNs can be deployed standalone or all connected via OCI DRG V2 service in a Hub & Spoke topology. When deploying Hub & Spoke, either a Hub VCN can be provisioned or the DRG itself used as the hub. The Hub VCN can be configured for firewall deployments and OCI security partners have developed [Landing Zone ready Terraform configurations](https://blogs.oracle.com/cloud-infrastructure/post/adding-our-security-partners-to-a-cis-oci-landing-zone).
+The Landing Zone supports up to three VCNs of each type.
+
+Regardless the networking types, these VCNs can be deployed standalone or all connected via OCI DRG V2 service in a Hub & Spoke topology. When deploying Hub & Spoke, either a Hub VCN (aka DMZ VCN) can be provisioned or the DRG itself used as the hub. The Landing Zone also optionally deploys a network appliance in the Hub VCN to control/secure all inbound and outbound traffic routing in the spoke VCNs. 
 
 The VCNs can also be configured with no Internet connectivity or for on-premises connectivity. Inbound access to the SSH port from 0.0.0.0/0 IP range is strictly prohibited.
 
@@ -272,13 +272,15 @@ In this section we describe the main deployment scenarios for the Landing Zone a
 
 By default, the Landing Zone compartments are deployed in the tenancy root compartment. In such case, all Landing Zone policies are attached to the root compartment. This behavior is changed by the following configuration variables:
 
-- **use\_enclosing\_compartment**: a boolean flag indicating whether or not to provision the Landing Zone within an enclosing compartment other than the root compartment. When provisioning the Landing Zone as a narrower-permissioned user, it must be set to true.
+- **enclosing\_compartment\_options**: determines where the landing zone compartments are deployed: within a new enclosing compartment or within an existing enclosing compartment (that can be the Root compartment). Valid options: 'Yes, deploy new', 'Yes, use existing', 'No'"
 
-- **existing\_enclosing\_compartment\_ocid**: the OCID of a pre-existing enclosing compartment where Landing Zone compartments are to be created. If *use\_enclosing\_compartment* is false, the module creates the Landing Zone compartments in the root compartment as long as the executing user has the required permissions. If *use\_enclosing\_compartment* is true, but *existing\_enclosing\_compartment\_ocid* is not set, a default enclosing compartment is created under the root compartment with the name *\<service_label\>-top-cmp*.
+- **enclosing\_compartment\_parent\_ocid**: the existing compartment where Landing Zone **enclosing** compartment is created. It is required if *enclosing\_compartment\_options* is 'Yes, deploy New'.
+
+- **existing\_enclosing\_compartment\_ocid**: the OCID of a pre-existing enclosing compartment where Landing Zone compartments are created. It is required if *enclosing\_compartment\_options* is 'Yes, use existing'. 
 
 If an enclosing compartment is deployed, Landing Zone policies that are not required to be attached at root compartment are attached to the enclosing compartment. This allows the enclosing compartment to be moved later anywhere in the compartments hierarchy without any policy changes.
 
-### Reusing Existing Groups and Dynamic Groups
+### Reusing Existing Groups and Dynamic Groups in Default Identity Domain
 
 By default, the Landing Zone provisions groups and dynamic groups. These groups are assigned various grants in Landing Zone policies. However, some circumstances may require the reuse of existing groups and dynamic groups, as in:
 
@@ -300,6 +302,8 @@ In these cases, simply provide the existing OCI group names to the appropriate c
 - **existing\_cost\_admin\_group\_name**: the name of an existing group for cost management administrators.
 - **existing\_auditor\_group\_name**: the name of an existing group for auditors.
 - **existing\_announcement\_reader\_group\_name**: the name of an existing group for announcement readers.
+- **existing\_ag\_admin\_group\_name**: the name of an existing group for Access Governance administrators.
+- **existing\_storage\_admin\_group\_name**: the name of an existing group for Storage administrators.
 
 #### Dynamic Groups
 
@@ -307,6 +311,7 @@ In these cases, simply provide the existing OCI group names to the appropriate c
 - **existing\_appdev\_fun\_dyn\_group\_name**: existing dynamic group for calling functions in the AppDev compartment.
 - **existing\_compute\_agent\_dyn\_group\_name**: existing dynamic group for Compute management agent access.
 - **existing\_database\_kms\_dyn\_group\_name**: existing dynamic group for databases to access OCI KMS Keys.
+- **existing\_net\_fw\_app\_dyn\_group\_name**: existing dynamic group name for network appliances to read resources.
 
 ### Custom Group Names
 
@@ -325,8 +330,13 @@ The supported variables are:
 - **custom\_database\_admin\_group\_name**
 - **custom\_exainfra\_admin\_group\_name**
 - **custom\_storage\_admin\_group\_name**
+- **custom\_ag\_admin\_group\_name**
 
-For an example see [Example 4: Using Custom Group Names](#example-4-using-custom-group-names)
+### Deploying with Groups and Dynamic Groups from an Existing Custom Identity Domain
+
+The Landing Zone resources can be managed by user groups and leverage dynamic groups in an existing custom (non-default) Identity Domain. These groups and dynamic groups can be pre-existing or created by the Landing Zone.
+
+See [Groups and Dynamic Groups From a Custom Identity Domains](./templates/custom-identity-domain).
 
 ### Extending Landing Zone to a New Region
 
@@ -339,68 +349,14 @@ Some customers want to extend their Landing Zone to more than one region of choi
 > **_NOTE:_** when extending the Landing Zone, the Terraform code has to be deployed in a new region. Therefore, a distinct set of configuration variables is needed. If using Terraform CLI, use Terraform workspaces. If using OCI Resource Manager, use a separate Stack. Check [Ways to Deploy](#ways-to-deploy) section for more details.
 
 ## <a name="networking-4"></a>4.2 Networking
-### Standard Three-Tier Web Application VCNs
 
-By default, the Landing Zone provisions a single VCN that is suited for the deployment of a Three-Tier web application. The VCN is made of a public subnet and two private subnets. The public subnet ("web") is home for load balancers and bastion hosts. As for the private subnets, one is for middle-tiers ("app") and the other for databases ("db"). The VCN CIDR (Classless Inter-Domain Routing) range defaults to 10.0.0.0/20 and the subnets CIDR ranges are calculated by adding 4 bits to the CIDR's network mask (the number after the "/", a.k.a the CIDR prefix). The web, app and db subnets are thus assigned CIDRs 10.0.0.0/24, 10.0.1.0/24 and 10.0.2.0/24, respectively.
+See deployment scenarios under the [templates](./templates/) folder:
 
-This behavior can be completely overridden through the following variables:
-
-- **vcn\_cidrs**: required, determines the VCNs CIDR ranges, where one CIDR corresponds to one VCN.
-- **subnets\_names**: optional, determines the number and names of subnets in the VCNs defined by **vcn\_cidrs**. Note that the first subnet element is assumed to be public. If that is required to be private, set variable **no\_internet\_access** to true.
-- **subnets\_sizes**: optional, determines the CIDRs of the subnets defined by **subnet\_names**. Each element is the number of bits added to the **vcn\_cidrs** network portion for that subnet. There must be one element to each element in **subnets\_names**, where the *nth* element in **subnets\_sizes** matches the *nth* element in **subnet\_names**.
-
-> **_NOTE:_** by default, Landing Zone creates VCNs with an auto-generated name formed as *service-label*-*index*-vcn, where *service-label* is the value assigned to *service-label* variable and *index* is the CIDR range position within **vcn_cidrs** variable. In order to override these names, use the **vcn_names** variable, where its *nth* element matches the *nth* element of **vcn_cidrs**. For a single VCN, simply provide the desired VCN name to the **vcn_names** variable.
-
-Deploying multiple Three-Tier VCNs is straightforward: simply provide multiple CIDR ranges to **vcn\_cidrs** variable. Each CIDR range defines one VCN. All VCNs are created equal, according to the values given to **subnet\_names** and **subnets\_sizes**. Also note that the VCNs are not peered. For peering the VCNs, have them in a Hub & Spoke topology, as described in *Hub & Spoke Topology*.
-
-### Exadata Cloud Service VCNs
-
-Exadata Cloud Service (ExaCS) has particular networking requirements. As such, Landing Zone manages ExaCS networking separately.
-
-The VCN(s) created for ExaCS are comprised of two regional private subnets, *client* and *backup*. All routing and security rules are configured in tandem with the overall Landing Zone setup. Landing Zone creates all required rules for ICMP, SQLNet, ONS (Oracle Notification Service) and SSH connectivity.
-
-Landing Zone defines the following input variables for ExaCS configuration:
-
-- **exacs\_vcn\_cidrs**: required, list of CIDR ranges to be used when creating the VCNs. Each CIDR range indicates the creation of one VCN. Make sure they do not overlap with 192.168.128.0/20.
-- **exacs\_vcn\_names**: optional, list of VCN names that override the default names. Each name applies to one VCN, the *nth* element corresponding to **exa\_vcn\_cidrs**' *nth* element.
-- **exacs\_client\_subnet\_cidrs** : optional, list of CIDR ranges for the *client* subnets. Each CIDR range applies to one VCN, the *nth* element corresponding to **exa\_vcn\_cidrs**' *nth* element.
-- **exacs\_backup\_subnet\_cidrs**: optional, list of CIDR ranges for the *backup* subnets. Each CIDR range applies to one VCN, the *nth* element corresponding to **exa\_vcn\_cidrs**' *nth* element.
-
-If **exacs\_client\_subnet\_cidrs** and **exacs\_backup\_subnet\_cidrs** are not provided, the Landing Zone calculates the subnets CIDR ranges by adding four bits to the network mask (a.k.a the CIDR prefix) and 1 (one) to populate the net number, representing the bits added to prefix, starting with the client subnet. For a VCN CIDR range of 10.0.0.0/20, the client subnet CIDR range would be 10.0.0.0/24, while the backup subnet CIDR would be 10.0.1.0/24. Landing Zone accomplishes this using the [cidrsubnet built-in Terraform function](https://www.terraform.io/docs/language/functions/cidrsubnet.html).
-
-For deploying multiple ExaCS networks, simply provide multiple CIDR ranges to **exacs\_vcn\_cidrs** variable and optionally assign values to **exacs\_vcn\_names**, **exacs\_client\_subnet\_cidrs** and **exacs\_backup\_subnet\_cidrs**.
-
-For more details, see [How to Deploy OCI Secure Landing Zone for Exadata Cloud Service](https://www.ateam-oracle.com/post/how-to-deploy-oci-secure-landing-zone-for-exadata-cloud-service).
-
-### Hub & Spoke Topology
-
-Landing Zone VCNs can be deployed in a Hub & Spoke topology. Multiple spokes can be connected via a single peering connection to a central Hub VCN. This deployment type is particularly prevalent in organizations that require packet inspection firewall appliances to monitor incoming external traffic (North/South) and/or traffic across the spoke VCNs (East/West). The peering is implemented via DRG (Dynamic Routing Gateway) v2, that can peer VCNs in same or different regions. The DRG can either be provisioned by Landing Zone or an existing DRG can be taken. This is important to customers that have already set connectivity to their on-premises network. The Hub VCN is also referred as the Hub VCN, as it is typically the entry point to the spoke VCNs for requests originating from untrusted perimeters, like the Internet. Note, however, that a Hub VCN is not required in this topology, as the DRG itself can act as the Hub. The Hub & Spoke topology is governed by these input variables:
-
-- **hub\_spoke\_architecture**: when set to true, the spokes VCNs are peered via a DRG, that is either provisioned or reused.
-- **existing\_drg\_id**: the OCID of an existing DRG. If provided, the existing DRG is used to peer the spoke VCNs. Otherwise, a brand new DRG is provisioned. If no **dmz\_vcn\_cidr** is provided, the DRG itself acts as the hub.
-- **dmz\_vcn\_cidr**: if provided, a Hub (DMZ) VCN is provisioned with the given CIDR range and all traffic is routed through this VCN.
-- **dmz\_for\_firewall**: determines if the Hub VCN will be used for deploying 3rd-party firewalls, in which case DRG attachments are not created.
-- **dmz\_number\_of\_subnets**: major firewall appliances have different requirements regarding the number of subnets to deploy. Check the vendor's documentation or OCI reference architecture to determine the number of subnets required.
-- **dmz\_subnet\_size**: the number of bits with which to extend the Hub VCN CIDR prefix. For instance, if **dmz\_vcn\_cidr**'s prefix is 20 (/20) and **dmz\_subnet\_size** is 4, subnets are going to be /24.
-
-### Deploying a Hub VCN for Firewall Appliances
-
-When deploying the Landing Zone with the intent of deploying network firewalls later, DRG attachments are not created for any of the VCNs (Virtual Cloud Network) because this is done by the security partner. Their configuration will create the DRG attachments for the VCNs and route the traffic through the firewall appliance, creating a choke point. The only routing the Landing Zone will do is the spoke VCN routing. This choke point will be used to monitor traffic in and out of OCI as well as between VCN spokes. Each partner requires a different number of subnets in the Hub VCN. Use the below chart to determine how many subnets you will need in your Hub VCN:
-
-Security Partner   | Number of Subnets
--------------------|-------------------
-Check Point        |         2
-Cisco              |         5
-Fortinet           |         4
-Palo Alto Networks |         4
-
-Besides the variables described in the previous section, adding a firewall appliance requires an extra variable:
-
-- **dmz\_for\_firewall**: determines if the Hub VCN will be used for deploying 3rd party firewalls. When set to true, DRG attachments are not created.
-
-### Multiple Three-Tier Web Application VCNs with Multiple Exadata VCNs or Multiple OKE VCNs in Hub & Spoke Topology
-
-These different VCN configurations can be deployed and peered together. This is useful when deploying an application layer that connects to ExaCS databases. You would typically use the "web" and "app" subnets in the Three-Tier VCN for the application tier and the Exadata VCN for the database tier. As for deploying such configuration, enter values for **vcn\_cidrs**, **exacs\_vcn\_cidrs** and set **hub\_spoke\_architecture** to true, as described above. The referred VCNs are peered through a DRG (a new one or existing one depending on **existing\_drg\_id** variable). If a Hub VCN is required to act as the Hub, enter the *dmz* related variables, as described in the previous section. The Hub VCN also gets peered through the DRG, effectively becoming the network hub.
+- [No Networking](./templates/cis-basic/)
+- [Single Three-Tier VCN with default settings](./templates/standalone-three-tier-vcn-defaults/)
+- [Single Three-Tier VCN with custom settings](./templates/standalone-three-tier-vcn-custom/)
+- [Multiple Three-Tier VCNs peered through DRG](./templates/hub-spoke-with-drg-and-three-tier-vcns)
+- [Multiple VCN types peered through a Hub VCN with network appliance](./templates/hub-spoke-with-hub-vcn-net-appliance)
 
 #### Cross-VCN Connectivity Patterns
 
@@ -411,20 +367,6 @@ The diagram below demonstrates Landing Zone *permitted routing* in a mixed VCN d
 * **Exadata** - Client outbound are blue lines.
 
 ![Cross-VCN-traffic-patterns](images/Cross-VCN-traffic-patterns.png)
-
-### Connecting Landing Zone VCNs with an On-Premises Network
-
-Landing Zone can be pre-configured to connect to an on-premises network through a DRG, regardless of its network topology (single, multiple standalone or peered VCNs). Note that the actual connectivity model between OCI and the on-premises network is **not** in Landing Zone scope. In other words, Landing Zone does not provision anything related to FastConnect or IPSec VPN. These must be managed through other means. Landing Zone sets up the access path from the perspective of its VCNs, creating the route and security rules based on these input variables:
-
-- **is\_vcn\_onprem\_connected**: when set to true, either creates or reuses a DRG depending on **existing\_drg\_id** variable.
-- **onprem\_cidrs**: list of on-premises CIDR ranges allowed to make HTTPS inbound connections. When set, these CIDR ranges are the destination of a route rule back to on-premises through DRG and used for granting ingress HTTPS access to Landing Zone Network Security Groups.
-- **onprem\_src\_ssh\_cidrs**: list of on-premises IP ranges allowed to make SSH inbound connections. When set, these CIDR ranges are the destination of a route rule back to on-premises through DRG, and used for granting ingress SSH access to Landing Zone Network Security Groups.
-
-### Blocking Internet Access
-
-By default, Landing Zone's Three-Tier Web Application VCN deploys out a public subnet (the "web" subnet) with routes to the VCN Internet Gateway. That may not be desirable sometimes, as customers may want a fully private setup, where they can deploy private load balancers accessible only to other VCNs on from their data centers. There is a single input variable controlling this behavior:
-
-- **no\_internet\_access**: when set to true, it makes all "web" subnets private and does not attach an Internet Gateway to any of the Three-Tier VCNs. Note the variable does not apply to ExaCS VCNs, as the subnets in that case are already private.
 
 ## <a name="governance-4"></a>4.3 Governance
 ### Operational Monitoring
@@ -460,8 +402,6 @@ Logging is another Landing Zone operational monitoring facet. As mandated by CIS
 Another important log source is OCI Audit log as it records all requests to OCI services control plane APIs. The Audit log is automatically enabled by OCI.
 
 Landing Zone channels VCN flow logs and Audit logs through Service Connector Hub (SCH) to Object Storage (by default), thus providing a consolidated view of logging data and making them more easily consumable by customers' SIEM and SOAR systems. Optionally, SCH's target can be an OCI Streaming topic or an OCI Function. Preserving Landing Zone always free tenet, SCH must be explicitly enabled as costs can be triggered on Object Storage consumption.
-
-Check blog post [Security Log Consolidation in CIS OCI Landing Zone](https://www.ateam-oracle.com/post/security-log-consolidation-in-cis-oci-landing-zone) for details on Landing Zone SCH configuration.
 
 > **_NOTE:_** VCN flow logs and Object Storage write logs are CIS Foundation Benchmark Level 2 requirements. Service Connector Hub is not mandated.
 
@@ -503,7 +443,7 @@ The Security Admin group is granted following additional policies to deploy an O
 allow group <label>-security-admin-group to manage agcs-instance in compartment <label>-security-cmp
 ```
 
-#### Deploying OAG an instance
+#### Deploying an OAG Instance
 As a user in the *\<label\>-security-admin-group* follow the steps in [Set Up Service Instance](https://docs.oracle.com/en/cloud/paas/access-governance/cagsi/).
 
 #### Enabling an OAG an instance to review OCI IAM access in the tenancy
@@ -527,7 +467,7 @@ Landing Zone enables the following OCI security services for a strong security p
 
 Cloud Guard is a key component in OCI secure posture management. It uses detector recipes to monitor a target (compartment hierarchies) for potentially risky configurations and activities. It then emits findings known as problems. These problems can be rectified with responders. Landing Zone enables Cloud Guard only if it's not enabled. When enabling, a target is provisioned for the Root compartment with the out-of-box *Configuration* and *Activity* detector recipes and *Responder* recipe. Once enabled by Landing Zone, it can be later disabled using the following variable:
 
-- **cloud\_guard\_configuration\_status**: determines whether Cloud Guard should be enabled in the tenancy. If set to 'ENABLE', a Cloud Guard target is created for the Root compartment, but only if Cloud Guard is not already enabled.
+- **enable\_cloud\_guard**: determines whether Cloud Guard should be enabled in the tenancy. If set to true, a Cloud Guard target is created for the Root compartment, but only if Cloud Guard is not already enabled.
 
 > **_NOTE:_** Enabling Cloud Guard is a CIS Foundations Benchmark Level 1 requirement.
 
@@ -554,20 +494,6 @@ The input variables for VSS are:
 For more details on VSS in Landing Zone, check blog post [Vulnerability Scanning in CIS OCI Landing Zone](https://www.ateam-oracle.com/post/vulnerability-scanning-in-cis-oci-landing-zone).
 
 > **_NOTE:_** VSS is not mandated by CIS Foundations Benchmark.
-
-### Bastion
-
-OCI Bastion service eliminates the need of deploying jump hosts for accessing resources without public endpoints. The service creates time-bound, IAM-protected managed SSH and SSH port forwarding sessions to designated private target resources, like Compute instances and Database systems placed in private subnets.
-
-By default, Landing Zone provisions a *Bastion* resource in the *Security* compartment for standalone VCNs. In the case of Three-Tier Web Application VCN, the Bastion resource is placed in the *app* subnet. In the case of ExaCS VCN, the Bastion resource is placed in the *client* subnet.
-
-If VCNs are deployed in Hub & Spoke topology with a Hub VCN or connected to an on-premises network, the *Bastion* resource is not provisioned, as the service does not allow cross VCN connections. In the case of Hub & Spoke, it is expected that customers deploy jump hosts in the Hub VCN. In the case of on-premises network, access to Landing Zone VCNs should be provided directly to on-premises hosts.
-
-Landing Zone also requires input variable **public\_src\_bastion\_cidrs** set to create the *Bastion* resource, using it in the Bastion access control list. As mandated by CIS Foundations Benchmark, CIDR range 0.0.0.0/0 is not allowed.
-
-Landing Zone does not create any *Bastion* sessions. As sessions are short-lived (3 hours max), customers are responsible for deploying them on the provisioned *Bastion* resource. Landing Zone admin personas are all entitled to create *Bastion* sessions in their owned compartments.
-
-> **_NOTE:_** Bastion is not mandated by CIS Foundations Benchmark.
 
 ## <a name="deploying-lifecycle-environments"></a>4.5 Deploying Lifecycle Environments
 
@@ -599,15 +525,9 @@ Landing Zone can be deployed on OCI in a few ways. This section describes and ex
 
 ## <a name="deploying-with-terraform-cli"></a>5.1 Deploying with Terraform CLI
 
-Within the root module folder (*config* or *pre-config*), provide variable values in the existing *quickstart-input.tfvars* file.
+Within the root module folder, assign variables in a *terraform.tfvars* file that you create.
 
 Next, execute:
-
-	> terraform init
-	> terraform plan -var-file="quickstart-input.tfvars" -out plan.out
-	> terraform apply plan.out
-
-Alternatively, after providing the variable values in *quickstart-input.tfvars*, rename it to *terraform.tfvars* and execute:
 
 	> terraform init
 	> terraform plan -out plan.out
@@ -615,7 +535,7 @@ Alternatively, after providing the variable values in *quickstart-input.tfvars*,
 
 ### The Executing Identity
 
-Terraform CLI executes under the identity passed to Terraform provider. In Landing Zone, the identity is defined in *quickstart-input.tfvars* (or *terraform.tfvars*) file.
+Terraform CLI executes under the identity passed to Terraform provider. Below are the variables that are typically passed to the provider.
 
     tenancy_ocid         = "<tenancy_ocid>"
     user_ocid            = "<user_ocid>"
@@ -680,20 +600,17 @@ Using OCI Console, navigate to Resource Manager service page and create a stack 
 
 Alternatively, you can simply click the button below to supply the zip file directly from GitHub without downloading it:
 
-[![Deploy_To_OCI](images/DeployToOCI.svg)](https://cloud.oracle.com/resourcemanager/stacks/create?zipUrl=https://github.com/oracle-quickstart/oci-cis-landingzone-quickstart/archive/refs/heads/main.zip)
+[![Deploy_To_OCI](images/DeployToOCI.svg)](https://cloud.oracle.com/resourcemanager/stacks/create?zipUrl=https://github.com/oci-landing-zones/terraform-oci-core-landingzone/archive/refs/heads/main.zip)
 
 *If you are logged in your OCI tenancy, the button will take you directly to OCI Resource Manager where you can proceed to deploy. If you are not logged, the button takes you to Oracle Cloud initial page where you must enter your tenancy name and log in to OCI.*
 
 3. In **Working Directory**, make sure the config folder is selected.
 4. In **Name**, give the stack a name or accept the default.
 5. In **Create in Compartment** dropdown, select the compartment to store the Stack.
-6. In **Terraform Version** dropdown, **make sure to select 0.13.x at least. Lower Terraform versions are not supported**.
 
 ![Folder Stack](images/ZipStack_2.png)
 
-Following the Stack creation wizard, the subsequent step prompts for variables values. Please see the [Config Module Input Variables](VARIABLES.md#config_input_variables) for the variables description.
-
-Some variables, as the one highlighted in the screen capture below, are defaulted in the configuration's variables.tf file and should be reviewed and reassigned values as needed.
+Following the Stack creation wizard, the subsequent step prompts for variables values. Please see the [Variables](./VARIABLES.md) for the variables description.
 
 ![Folder Stack](images/ZipStack_3.png)
 
@@ -920,713 +837,3 @@ Keep running the above command up until *lifecycle-state* changes to *SUCCEEDED*
 
     > oci resource-manager job get --job-id ocid1.ormjob.oc1.iad.aaa...zgfxyq | jq -r '.data["lifecycle-state"]'
     SUCCEEDED
-
-# <a name="custom-lz"></a>6. Customizing the Landing Zone
-
-The Landing Zone will take different forms according to values provided to input variables. See [Deployment Scenarios](#scenarios) section for details.
-
-If code changes are needed, the Terraform configuration has a single root module and individual modules to provision the resources. This modular pattern enables efficient and consistent code reuse. To add resources to the Terraform configuration (for example, compartments), reuse the existing modules and add the necessary module calls, similar to the existing ones in the root module. Most modules accept a map of resource objects and new objects are just a new element in the map. For example, to add a new compartment, define a new object with the compartment information and add it to the existing compartment's map. To add objects to an existing container object (for example, to add a subnet to a VCN), add the subnet resources to the existing subnet's map.
-
-## <a name="using-terraform-overrides"></a>Using Terraform Overrides
-
-Changes on the Landing Zone code should be avoided whenever possible. Once the Landing Zone code is updated, your changes are out of sync and you might not be able to benefit from the new additions.
-
-A good approach is to use [Terraform Override Files](https://www.terraform.io/language/files/override) for customization. Override files are merged with the combined Terraform files and allow to customize the Landing Zone in a very flexible way.
-
-Although most of the Landing Zone modules are designed to allow the customization of most of their parts, the best is to only override the contents of the ```local``` block of each ```.tf``` file.
-
-#### Overrides Restrictions
-
-Although overrides work for mostly every part of the Terraform files, there are some restrictions.
-
-- Only existing values can be used in the override file. If, for example, a new variable should be used, it is required to define it outside of the override file. A good practice is to create a sibling file containing this variable.
-- Resource and data blocks which use ```depends_on``` should not be used within an override file.
-
-### Adding Overrides before deployment
-
-If you need advanced customizations for your Landing Zone implementation Terraform Overrides are an interesting feature.
-
-To use Terraform Overrides, you are able to create override files for each component or just a single file containing all aspects. It is recommended to use a project specific set of files:
-
-- ```<project-name>-input.tfvars``` -- Project-specific settings (a copy of the quickstart-input.tfvars).
-- ```<project-name>_override.tf``` -- Holds all the configuration which override the default settings.
-- ```<project-name>_locals.tf``` -- An optional file which may contain new variables used in ```<project-name>_override.tf```.
-
-where ```<project-name>``` will be your project name. These files need to be in the config directory to be considered by Terraform automatically.
-
-A good practice is to start with creating and modifying these files in a directory at the top-level of the Landing Zone named ```<project-name>```. Following this approach you can group your project specific files in a manageable way and you can have multiple projects in parallel. Your directory structure will look like this:
-
-    oci-cis-landing-zone-quickstart/
-       config/
-       pre-config/
-       <project-name>
-
-When you're about to run the usual Terraform steps of init, plan, and apply, you copy your override files to ```config``` and start with ```terraform init```.
-
-### Example 1: Enabling Compartment Deletion
-
-By default the Landing Zone prohibits the deletion of compartments. This is great for production but bad for testing. We create a small file called ```vision_test_override.tf``` with the following content.
-
-    locals {
-      enable_cmp_delete = true
-    }
-
-After placing this file into the ```config``` directory you are much better prepared for your testing.
-
-### Example 2: Using Freeform Tags
-
-In this example, we use freeform tags.
-
-| Tag name | Tag Value |
-|---|---|
-| CostCenter | BA23490 |
-
-Translating this into a Terraform notation the Landing Zone can use, we get the content below. We can assign the set quite easily to all resources.
-
-The override file ```vision_freeform_override.tf``` is listed below.
-
-    locals {
-      all_cost_management_freeform_tags = {"CostCenter" : "BA23490"}
-      all_compartments_freeform_tags = local.all_cost_management_freeform_tags
-      all_dynamic_groups_freeform_tags = local.all_cost_management_freeform_tags
-    }
-
-Now, copy the ```vision_freeform_override.tf ``` into the ```config```directory and run ```terraform init``` and ```terraform plan```. In the output of ```terraform plan``` you'll find lines like these:
-
-      + freeform_tags = {
-          + "cis-landing-zone" = "vision-quickstart"
-          + "CostCenter" = "BA23490"
-        }
-
-When you're satisfied with the result, run ```terraform apply``` and your freeform tags will be applied to all your components.
-
-### Example 3: Defining and Setting Custom Defined Tags
-
-In this example, we create a custom namespace of defined tags for the Vision project. The Vision project requirements expect the following tags to be defined.
-
-| Tag namespace | Tag name | Cost tracking |
-|---|---|---|
-| vision | CostCenter | Yes |
-| vision | DebitorName | |
-| vision | ProjectName | |
-
-Defining and creating and using defined tags is a two stage process.
-
-1. Define and create the tag namespace and the tags of the namespace.
-2. Apply the defined tags to the resources.
-
-Translating this into a Terraform notation the Landing Zone can use, we create a file called ```vision_stage1_override.tf``` containing the following terraform code.
-
-    locals {
-      tag_namespace_name    = "vision"
-      all_tags = {
-        ("CostCenter") = {
-          tag_description         = "Tag for Cost Center."
-          tag_is_cost_tracking    = true
-          tag_is_retired          = false
-          make_tag_default        = false
-          tag_default_value       = ""
-          tag_default_is_required = false
-          tag_defined_tags        = {}
-          tag_freeform_tags       = {}
-        },
-        ("DebitorName") = {
-          tag_description         = "Tag for debitor name."
-          tag_is_cost_tracking    = false
-          tag_is_retired          = false
-          make_tag_default        = false
-          tag_default_value       = ""
-          tag_default_is_required = false
-          tag_defined_tags        = {}
-          tag_freeform_tags       = {}
-        },
-        ("ProjectName") = {
-          tag_description         = "Tag for project name."
-          tag_is_cost_tracking    = false
-          tag_is_retired          = false
-          make_tag_default        = false
-          tag_default_value       = ""
-          tag_default_is_required = false
-          tag_defined_tags        = {}
-          tag_freeform_tags       = {}
-        }
-      }
-    }
-
-To run stage 1 you have to copy the file ```vision_stage1_override.tf``` to the ```config``` and follow the standard Terraform steps, for example:
-
-    > terraform init
-    > terraform plan -var-file vision-input.tfvars -out vision.plan
-    > terraform apply vision.plan
-
-Now, we need to create a set of defined tags to be used for all resources, but we don't want to repeat the code. The best way is to create an additional file that holds the new local and not overridden variable. The content for a set of defined tags looks like the code below.
-
-    all_alarms_defined_tags = {
-      "vision.CostCenter" = "42",
-      "vision.ProjectName" = "The Project"
-    }
-
-Now we can assign the set quite easily to all resources.
-
-    all_buckets_defined_tags = local.all_alarm_defined_tags
-    all_compartments_defined_tags = local.all_alarm_defined_tags
-    all_cost_management_defined_tags = local.all_alarm_defined_tags
-    all_dmz_defined_tags = local.all_alarm_defined_tags
-    all_dynamic_groups_defined_tags = local.all_alarm_defined_tags
-    all_exacs_vcns_defined_tags = local.all_alarm_defined_tags
-    all_flow_logs_defined_tags = local.all_alarm_defined_tags
-    all_groups_defined_tags = local.all_alarm_defined_tags
-    all_keys_defined_tags = local.all_alarm_defined_tags
-    all_notifications_defined_tags = local.all_alarm_defined_tags
-    all_nsgs_defined_tags = local.all_alarm_defined_tags
-    all_service_connector_defined_tags = local.all_alarm_defined_tags
-    all_service_policy_defined_tags = local.all_alarm_defined_tags
-    all_tags_defined_tags = local.all_alarm_defined_tags
-    all_topics_defined_tags = local.all_alarm_defined_tags
-    all_vcn_defined_tags = local.all_alarm_defined_tags
-    all_vss_defined_tags = local.all_alarm_defined_tags
-
-Combining these two fragments we get a stage 2 override file (```vision_stage2_override.tf```) with this content.
-
-    locals {
-      all_alarms_defined_tags = {
-        "vision.CostCenter" = "42",
-        "vision.ProjectName" = "The Project"
-      }
-      all_buckets_defined_tags = local.all_alarm_defined_tags
-      all_compartments_defined_tags = local.all_alarm_defined_tags
-      all_cost_management_defined_tags = local.all_alarm_defined_tags
-      all_dmz_defined_tags = local.all_alarm_defined_tags
-      all_dynamic_groups_defined_tags = local.all_alarm_defined_tags
-      all_exacs_vcns_defined_tags = local.all_alarm_defined_tags
-      all_flow_logs_defined_tags = local.all_alarm_defined_tags
-      all_groups_defined_tags = local.all_alarm_defined_tags
-      all_keys_defined_tags = local.all_alarm_defined_tags
-      all_notifications_defined_tags = local.all_alarm_defined_tags
-      all_nsgs_defined_tags = local.all_alarm_defined_tags
-      all_service_connector_defined_tags = local.all_alarm_defined_tags
-      all_service_policy_defined_tags = local.all_alarm_defined_tags
-      all_tags_defined_tags = local.all_alarm_defined_tags
-      all_topics_defined_tags = local.all_alarm_defined_tags
-      all_vcn_defined_tags = local.all_alarm_defined_tags
-      all_vss_defined_tags = local.all_alarm_defined_tags
-    }
-
-
-Now, we're placing ```vision_stage2_override.tf``` into the ```config``` directory and run the ```terraform init, plan, apply``` cycle again. Before running ```terraform apply``` have a look at the output of ```terraform plan```. You will notice lines like these:
-
-       + defined_tags = {
-           + "vision.CostCenter" = "42"
-           + "vision.ProjectName" = "The Project"
-         }
-
-When you run ```terraform apply``` the defined tags of your components will be updated accordingly.
-
-### Example 4: Using Custom Group Names
-
-To define group names that follow the company naming convention, create a file `iam_groups_override.tf` containing the following lines:
-
-    locals {
-      custom_iam_admin_group_name = "grp-iam-admins"
-      custom_cred_admin_group_name = "grp-credentials-admins"
-      custom_cost_admin_group_name = "grp-cost-admins"
-      custom_auditor_group_name = "grp-auditors"
-      custom_announcement_reader_group_name = "grp-announcement-readers"
-      custom_network_admin_group_name = "grp-network-admins"
-      custom_security_admin_group_name = "grp-security-admins"
-      custom_appdev_admin_group_name = "grp-application-admins"
-      custom_database_admin_group_name = "grp-database-admins"
-      custom_exainfra_admin_group_name = "grp-exainfra-admins"
-      custom_storage_admin_group_name = "grp-storage-admins"
-    }
-
-When done, move it to the `config` directory and verify it with `terraform plan`.
-
-# <a name="samples"></a>7. Deployment Samples
-
-In this section we give deployment examples of Landing Zone variables input file (*config/quickstart-input.tfvars* or *config/terraform.tfvars*) for common scenarios. The list is not exhaustive.
-
-### Example 1: Simplest Deployment:  No Enclosing Compartment, Single Three-Tier VCN, Locked Down VCN
-
-Note that Landing Zone defaults the Three-Tier VCN with *10.0.0.0/20* CIDR range. It can be changed assigning the desired CIDR range to *vcn\_cidrs* variable.
-
-```
-tenancy_ocid         = "ocid1.tenancy.oc1..aaa...ir7xdq"
-user_ocid            = "ocid1.user.oc1..aaa...yfhyvq"
-fingerprint          = "c1:91:41:...:36:76:54:39"
-private_key_path     = "../private_key.pem"
-private_key_password = ""
-
-service_label = "vision"
-region        = "us-ashburn-1"
-
-vcn_cidrs = ["192.168.0.0/16"]
-
-network_admin_email_endpoints  = ["john.doe@myorg.com"]
-security_admin_email_endpoints = ["john.doe@myorg.com"]
-```
-
-### Example 2: Enclosing Compartment, Single Three-Tier VCN, Access to HTTPS and SSH
-
-```
-tenancy_ocid         = "ocid1.tenancy.oc1..aaa...ir7xdq"
-user_ocid            = "ocid1.user.oc1..aaa...yfhyvq"
-fingerprint          = "c1:91:41:...:36:76:54:39"
-private_key_path     = "../private_key.pem"
-private_key_password = ""
-
-service_label = "vision"
-region        = "us-ashburn-1"
-
-use_enclosing_compartment = true
-existing_enclosing_compartment_ocid = "ocid1.compartment.oc1..aaa...vves2a"
-
-vcn_cidrs = ["192.168.0.0/16"]
-
-public_src_lbr_cidrs     = ["0.0.0.0/0"] # HTTPS
-public_src_bastion_cidrs = ["111.2.33.44/32"] # SSH
-
-network_admin_email_endpoints  = ["john.doe@myorg.com"]
-security_admin_email_endpoints = ["john.doe@myorg.com"]
-```
-
-### Example 3: Enclosing Compartment, Single Three-Tier VCN, Access to HTTPS and SSH, Custom VCN name, subnets names and sizes
-
-```
-tenancy_ocid         = "ocid1.tenancy.oc1..aaa...ir7xdq"
-user_ocid            = "ocid1.user.oc1..aaa...yfhyvq"
-fingerprint          = "c1:91:41:...:36:76:54:39"
-private_key_path     = "../private_key.pem"
-private_key_password = ""
-
-service_label = "vision"
-region        = "us-ashburn-1"
-
-use_enclosing_compartment = true
-existing_enclosing_compartment_ocid = "ocid1.compartment.oc1..aaa...vves2a"
-
-vcn_cidrs = ["192.168.0.0/16"]
-vcn_names = ["myvcn"]
-subnets_names = ["front", "mid", "back"]
-subnets_sizes = ["12","6","10"]
-
-public_src_lbr_cidrs     = ["0.0.0.0/0"] # HTTPS
-public_src_bastion_cidrs = ["111.2.33.44/32"] # SSH
-
-network_admin_email_endpoints  = ["john.doe@myorg.com"]
-security_admin_email_endpoints = ["john.doe@myorg.com"]
-```
-
-### Example 4: Enclosing Compartment, Single Three-Tier VCN, Single ExaCS VCN, ExaCS Compartment, Access to HTTPS and SSH
-
-```
-tenancy_ocid         = "ocid1.tenancy.oc1..aaa...ir7xdq"
-user_ocid            = "ocid1.user.oc1..aaa...yfhyvq"
-fingerprint          = "c1:91:41:...:36:76:54:39"
-private_key_path     = "../private_key.pem"
-private_key_password = ""
-
-service_label = "vision"
-region        = "us-ashburn-1"
-
-use_enclosing_compartment = true
-existing_enclosing_compartment_ocid = "ocid1.compartment.oc1..aaa...vves2a"
-
-vcn_cidrs = ["192.168.0.0/16"]
-
-exacs_vcn_cidrs           = ["10.0.0.0/20"]
-exacs_vcn_names           = ["exavcn-dev"]
-exacs_client_subnet_cidrs = ["10.0.0.0/24"]
-exacs_backup_subnet_cidrs = ["10.0.1.0/28"]
-deploy_exainfra_cmp       = true
-
-public_src_lbr_cidrs     = ["0.0.0.0/0"] # HTTPS
-public_src_bastion_cidrs = ["111.2.33.44/32"] # SSH
-
-network_admin_email_endpoints  = ["john.doe@myorg.com"]
-security_admin_email_endpoints = ["john.doe@myorg.com"]
-```
-
-### Example 5: Enclosing Compartment, Single Three-Tier VCN, Single ExaCS VCN, No ExaCS Compartment, Hub & Spoke Topology, No Hub VCN, Access to HTTPS and SSH
-
-```
-tenancy_ocid         = "ocid1.tenancy.oc1..aaa...ir7xdq"
-user_ocid            = "ocid1.user.oc1..aaa...yfhyvq"
-fingerprint          = "c1:91:41:...:36:76:54:39"
-private_key_path     = "../private_key.pem"
-private_key_password = ""
-
-service_label = "vision"
-region        = "us-ashburn-1"
-
-use_enclosing_compartment = true
-existing_enclosing_compartment_ocid = "ocid1.compartment.oc1..aaa...vves2a"
-
-vcn_cidrs = ["192.168.0.0/16"]
-
-exacs_vcn_cidrs           = ["10.0.0.0/20"]
-exacs_vcn_names           = ["exavcn-dev"]
-exacs_client_subnet_cidrs = ["10.0.0.0/24"]
-exacs_backup_subnet_cidrs = ["10.0.1.0/28"]
-
-hub_spoke_architecture = true
-
-public_src_lbr_cidrs     = ["0.0.0.0/0"] # HTTPS
-public_src_bastion_cidrs = ["111.2.33.44/32"] # SSH
-
-network_admin_email_endpoints  = ["john.doe@myorg.com"]
-security_admin_email_endpoints = ["john.doe@myorg.com"]
-```
-
-### Example 6: Enclosing Compartment, Single Three-Tier VCN, Single ExaCS VCN, No ExaCS Compartment, Hub & Spoke Topology, Hub VCN, Access to HTTPS and SSH
-
-```
-tenancy_ocid         = "ocid1.tenancy.oc1..aaa...ir7xdq"
-user_ocid            = "ocid1.user.oc1..aaa...yfhyvq"
-fingerprint          = "c1:91:41:...:36:76:54:39"
-private_key_path     = "../private_key.pem"
-private_key_password = ""
-
-service_label = "vision"
-region        = "us-ashburn-1"
-
-use_enclosing_compartment = true
-existing_enclosing_compartment_ocid = "ocid1.compartment.oc1..aaa...vves2a"
-
-vcn_cidrs = ["192.168.0.0/16"]
-
-exacs_vcn_cidrs           = ["10.0.0.0/20"]
-exacs_vcn_names           = ["exavcn-dev"]
-exacs_client_subnet_cidrs = ["10.0.0.0/24"]
-exacs_backup_subnet_cidrs = ["10.0.1.0/28"]
-
-hub_spoke_architecture = true
-
-dmz_vcn_cidr = "172.16.0.0/24"
-dmz_number_of_subnets = 3
-
-public_src_lbr_cidrs     = ["0.0.0.0/0"] # HTTPS
-public_src_bastion_cidrs = ["111.2.33.44/32"] # SSH
-
-network_admin_email_endpoints  = ["john.doe@myorg.com"]
-security_admin_email_endpoints = ["john.doe@myorg.com"]
-```
-
-### Example 7: Enclosing Compartment, Single Three-Tier VCN, Single ExaCS VCN, No ExaCS Compartment, Hub & Spoke Topology, Hub VCN for Firewall, Access to HTTPS and SSH
-
-```
-tenancy_ocid         = "ocid1.tenancy.oc1..aaa...ir7xdq"
-user_ocid            = "ocid1.user.oc1..aaa...yfhyvq"
-fingerprint          = "c1:91:41:...:36:76:54:39"
-private_key_path     = "../private_key.pem"
-private_key_password = ""
-
-service_label = "vision"
-region        = "us-ashburn-1"
-
-use_enclosing_compartment = true
-existing_enclosing_compartment_ocid = "ocid1.compartment.oc1..aaa...vves2a"
-
-vcn_cidrs = ["192.168.0.0/16"]
-
-exacs_vcn_cidrs           = ["10.0.0.0/20"]
-exacs_vcn_names           = ["exavcn-dev"]
-exacs_client_subnet_cidrs = ["10.0.1.0/24"]
-exacs_backup_subnet_cidrs = ["10.0.2.0/28"]
-
-hub_spoke_architecture = true
-
-dmz_vcn_cidr = "172.16.0.0/24"
-dmz_number_of_subnets = 3
-dmz_for_firewall = true
-
-public_src_lbr_cidrs     = ["0.0.0.0/0"] # HTTPS
-public_src_bastion_cidrs = ["111.2.33.44/32"] # SSH
-
-network_admin_email_endpoints  = ["john.doe@myorg.com"]
-security_admin_email_endpoints = ["john.doe@myorg.com"]
-```
-
-### Example 8: Enclosing Compartment, Single Three-Tier VCN, Multiple ExaCS VCN, ExaCS Compartment, ExaCS Notifications, Hub & Spoke Topology, Hub VCN for Firewall, Access to HTTPS and SSH
-
-```
-tenancy_ocid         = "ocid1.tenancy.oc1..aaa...ir7xdq"
-user_ocid            = "ocid1.user.oc1..aaa...yfhyvq"
-fingerprint          = "c1:91:41:...:36:76:54:39"
-private_key_path     = "../private_key.pem"
-private_key_password = ""
-
-service_label = "vision"
-region        = "us-ashburn-1"
-
-use_enclosing_compartment = true
-existing_enclosing_compartment_ocid = "ocid1.compartment.oc1..aaa...vves2a"
-
-vcn_cidrs = ["192.168.0.0/16"]
-
-exacs_vcn_cidrs           = ["10.0.0.0/20" , "10.1.0.0/20"]
-exacs_vcn_names           = ["exavcn-dev"  , "exavcn-prd" ]
-exacs_client_subnet_cidrs = ["10.0.0.0/24" , "10.1.0.0/24"]
-exacs_backup_subnet_cidrs = ["10.0.1.0/28" , "10.1.1.0/28"]
-deploy_exainfra_cmp       = true
-
-hub_spoke_architecture = true
-
-dmz_vcn_cidr = "172.16.0.0/24"
-dmz_number_of_subnets = 3
-dmz_for_firewall = true
-
-public_src_lbr_cidrs     = ["0.0.0.0/0"] # HTTPS
-public_src_bastion_cidrs = ["111.2.33.44/32"] # SSH
-
-network_admin_email_endpoints  = ["john.doe@myorg.com"]
-security_admin_email_endpoints = ["john.doe@myorg.com"]
-exainfra_admin_email_endpoints = ["john.doe@myorg.com"]
-```
-
-### Example 9: Enclosing Compartment, Single Three-Tier VCN, Multiple ExaCS VCN, ExaCS Compartment, ExaCS Notifications, Hub & Spoke Topology, Existing DRG, Hub VCN for Firewall, Access to HTTPS and SSH
-
-```
-tenancy_ocid         = "ocid1.tenancy.oc1..aaa...ir7xdq"
-user_ocid            = "ocid1.user.oc1..aaa...yfhyvq"
-fingerprint          = "c1:91:41:...:36:76:54:39"
-private_key_path     = "../private_key.pem"
-private_key_password = ""
-
-service_label = "vision"
-region        = "us-ashburn-1"
-
-use_enclosing_compartment = true
-existing_enclosing_compartment_ocid = "ocid1.compartment.oc1..aaa...vves2a"
-
-vcn_cidrs = ["192.168.0.0/16"]
-
-exacs_vcn_cidrs           = ["10.0.0.0/20" , "10.1.0.0/20"]
-exacs_vcn_names           = ["exavcn-dev"  , "exavcn-prd" ]
-exacs_client_subnet_cidrs = ["10.0.0.0/24" , "10.1.0.0/24"]
-exacs_backup_subnet_cidrs = ["10.0.1.0/28" , "10.1.1.0/28"]
-deploy_exainfra_cmp       = true
-
-hub_spoke_architecture = true
-
-existing_drg_id = ocid1.drg.oc1.iad.aaa...7rv6xa
-
-dmz_vcn_cidr = "172.16.0.0/24"
-dmz_number_of_subnets = 3
-dmz_for_firewall = true
-
-public_src_lbr_cidrs     = ["0.0.0.0/0"] # HTTPS
-public_src_bastion_cidrs = ["111.2.33.44/32"] # SSH
-
-network_admin_email_endpoints  = ["john.doe@myorg.com"]
-security_admin_email_endpoints = ["john.doe@myorg.com"]
-exainfra_admin_email_endpoints = ["john.doe@myorg.com"]
-```
-
-### Example 10: Enabling all Events and Monitoring Alarms
-
-```
-tenancy_ocid         = "ocid1.tenancy.oc1..aaa...ir7xdq"
-user_ocid            = "ocid1.user.oc1..aaa...yfhyvq"
-fingerprint          = "c1:91:41:...:36:76:54:39"
-private_key_path     = "../private_key.pem"
-private_key_password = ""
-
-service_label = "vision"
-region        = "us-ashburn-1"
-
-# (...) Variable assignments according to your particular network topology requirements. See previous examples.
-
-network_admin_email_endpoints  = ["john.doe@myorg.com"]
-security_admin_email_endpoints = ["john.doe@myorg.com"]
-storage_admin_email_endpoints  = ["john.doe@myorg.com"]
-compute_admin_email_endpoints  = ["john.doe@myorg.com"]
-budget_admin_email_endpoints   = ["john.doe@myorg.com"]
-database_admin_email_endpoints = ["john.doe@myorg.com"]
-exainfra_admin_email_endpoints = ["john.doe@myorg.com"]
-create_alarms_as_enabled = true
-create_events_as_enabled = true
-```
-
-### Example 11: Enabling Service Connector Hub with Object Storage Bucket as Target
-
-```
-tenancy_ocid         = "ocid1.tenancy.oc1..aaa...ir7xdq"
-user_ocid            = "ocid1.user.oc1..aaa...yfhyvq"
-fingerprint          = "c1:91:41:...:36:76:54:39"
-private_key_path     = "../private_key.pem"
-private_key_password = ""
-
-service_label = "vision"
-region        = "us-ashburn-1"
-
-# (...) Variable assignments according to your particular network topology requirements. See previous examples.
-
-# (...) Endpoint notifications assignments. See example above.
-
-create_service_connector_audit = true
-service_connector_audit_state = "ACTIVE"
-create_service_connector_vcnFlowLogs = true
-service_connector_vcnFlowLogs_state = "ACTIVE"
-```
-
-### Example 12: Enabling Service Connector Hub with OCI Stream as Target
-
-Note the Stream must have been created previously.
-
-```
-tenancy_ocid         = "ocid1.tenancy.oc1..aaa...ir7xdq"
-user_ocid            = "ocid1.user.oc1..aaa...yfhyvq"
-fingerprint          = "c1:91:41:...:36:76:54:39"
-private_key_path     = "../private_key.pem"
-private_key_password = ""
-
-service_label = "vision"
-region        = "us-ashburn-1"
-
-# (...) Variable assignments according to your particular network topology requirements. See previous examples.
-
-# (...) Endpoint notifications assignments. See example above.
-
-create_service_connector_audit = true
-service_connector_audit_state = "ACTIVE"
-service_connector_audit_target = "streaming"
-service_connector_audit_target_OCID = "ocid1.stream.oc1.phx.ama...qkb5ya"
-create_service_connector_vcnFlowLogs = true
-service_connector_vcnFlowLogs_state = "ACTIVE"
-service_connector_vcnFlowLogs_target = "streaming"
-service_connector_vcnFlowLogs_target_OCID = "ocid1.stream.oc1.phx.ama...qkb5ya"
-```
-
-### Example 13: Changing Scanning Frequency
-
-By default, Landing Zone enables OCI Vulnerability Scanning Service to run every Sunday. This can be easily changed to run on daily basis, as shown:
-
-```
-tenancy_ocid         = "ocid1.tenancy.oc1..aaa...ir7xdq"
-user_ocid            = "ocid1.user.oc1..aaa...yfhyvq"
-fingerprint          = "c1:91:41:...:36:76:54:39"
-private_key_path     = "../private_key.pem"
-private_key_password = ""
-
-service_label = "vision"
-region        = "us-ashburn-1"
-
-# (...) Variable assignments according to your particular network topology requirements. See previous examples.
-
-# (...) Endpoint notifications assignments. See example above.
-
-vss_scan_schedule = "DAILY"
-```
-
-### Example 14: Extending Landing Zone to a New Region With Single Three-Tier VCN (Custom Name, Subnets Names and Sizes), Single ExaCS VCN
-
-```
-tenancy_ocid         = "ocid1.tenancy.oc1..aaa...ir7xdq"
-user_ocid            = "ocid1.user.oc1..aaa...yfhyvq"
-fingerprint          = "c1:91:41:...:36:76:54:39"
-private_key_path     = "../private_key.pem"
-private_key_password = ""
-
-service_label = "vision"
-region        = "us-phoenix-1"
-
-use_enclosing_compartment = true
-existing_enclosing_compartment_ocid = "ocid1.compartment.oc1..aaa...vves2a"
-
-extend_landing_zone_to_new_region = true
-
-vcn_cidrs = ["10.0.0.0/25"]
-vcn_names = ["myvcn-dr"]
-subnets_names = ["front","mid","back"]
-subnets_sizes = ["4","3","3"]
-
-exacs_vcn_cidrs           = ["10.2.0.0/20"]
-exacs_vcn_names           = ["exavcn-dr"]
-exacs_client_subnet_cidrs = ["10.2.0.0/24"]
-exacs_backup_subnet_cidrs = ["10.2.1.0/28"]
-
-network_admin_email_endpoints  = ["john.doe@myorg.com"]
-security_admin_email_endpoints = ["john.doe@myorg.com"]
-exainfra_admin_email_endpoints = ["john.doe@myorg.com"]
-```
-
-### Example 15: Provisioning Landing Zone as a Non Admin
-
-This is done in two parts. First the tenancy admin runs the pre-config module to create IAM resources and policies at the Root compartment. Among these IAM resources there are special provisioning groups to which users have to be assigned. These users are the ones who execute the config module within an enclosing compartment to deploy Landing Zone resources.
-
-#### 15.1: Running the Pre-Config Module (as tenancy admin)
-
-The Pre-Config Module can create one or multiple enclosing compartments, where Landing Zone environments are further deployed by non admins.
-
-##### A: Single Default Enclosing Compartment
-
-A single enclosing compartment (name defaulted to *cislz-top-cmp*) is created in the root compartment.
-
-```
-tenancy_ocid         = "ocid1.tenancy.oc1..aaa...ir7xdq"
-user_ocid            = "ocid1.user.oc1..aaa...yfhyvq"
-fingerprint          = "c1:91:41:...:36:76:54:39"
-private_key_path     = "../private_key.pem"
-private_key_password = ""
-
-unique_prefix = "vision"
-home_region   = "us-ashburn-1"
-
-enclosing_compartment_names = ["cis_landing_zone"]
-```
-
-##### B: Multiple Enclosing Compartments
-
-Two enclosing compartments are created under a designated compartment.
-
-```
-tenancy_ocid         = "ocid1.tenancy.oc1..aaa...ir7xdq"
-user_ocid            = "ocid1.user.oc1..aaa...yfhyvq"
-fingerprint          = "c1:91:41:...:36:76:54:39"
-private_key_path     = "../private_key.pem"
-private_key_password = ""
-
-unique_prefix = "vision"
-home_region   = "us-ashburn-1"
-
-enclosing_compartment_names = ["cis_lz_dev","cis_lz_prd"]
-existing_enclosing_compartments_parent_ocid = "ocid1.compartment.oc1..aaa...vves2a"
-```
-
-#### 15.2: Running the Config Module (as non admin)
-
-In this example, the Landing Zone environment is deployed within *cis\_lz\_dev* enclosing compartment (as indicated by *existing\_enclosing\_compartment\_ocid* variable) created in the previous example.
-
-```
-tenancy_ocid         = "ocid1.tenancy.oc1..aaa...ir7xdq"
-user_ocid            = "ocid1.user.oc1..aaa...kxyuif"
-fingerprint          = "g1:77:53:...:12:23:45:18"
-private_key_path     = "../private_key.pem"
-private_key_password = ""
-
-service_label = "vision"
-region        = "us-ashburn-1"
-
-use_enclosing_compartment = true
-existing_enclosing_compartment_ocid = "ocid1.compartment.oc1..aaa...xxft3b" # cis_lz_dev compartment OCID
-policies_in_root_compartment = "USE"
-existing_iam_admin_group_name      = "vision-iam-admin-group"
-existing_cred_admin_group_name     = "vision-cred-admin-group"
-existing_security_admin_group_name = "vision-security-admin-group"
-existing_network_admin_group_name  = "vision-network-admin-group"
-existing_appdev_admin_group_name   = "vision-appdev-admin-group"
-existing_database_admin_group_name = "vision-database-admin-group"
-existing_exinfra_admin_group_name  = "vision-exainfra-admin-group"
-existing_auditor_group_name        = "vision-auditor-group"
-existing_announcement_reader_group_name = "vision-announcement-reader-group"
-
-# (...) Variable assignments according to your particular network topology requirements. See previous examples.
-
-# (...) Other variable assignments
-```
-
-For more details about deploying Landing Zone as non admin, see these two blog posts:
-
-- [Tenancy Pre Configuration For Deploying CIS OCI Landing Zone as a non-Administrator](https://www.ateam-oracle.com/post/tenancy-pre-configuration-for-deploying-cis-oci-landing-zone-as-a-non-administrator)
-- [Deployment Modes for CIS OCI Landing Zone](https://www.ateam-oracle.com/post/deployment-modes-for-cis-oci-landing-zone)
