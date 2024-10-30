@@ -1,7 +1,7 @@
 locals {
   exa_generic_zpr_policy = var.add_exa_vcn1 || var.add_exa_vcn2 || var.add_exa_vcn3 ? [
   // Allow endpoints in Client subnet of Exadata VCN to communicate with other endpoints in the Client subnet using SSH, SQLNet, and Fast Application Notifications (FAN).
-  "in ${var.zpr_security_attributes_namespace}.net:exa-vcn VCN allow corelz-zpr.db-client:${local.zpr_label} endpoints to connect to ${var.zpr_security_attributes_namespace}.db-server:${local.zpr_label} endpoints with protocol='tcp/22,1521-1522,6200'",
+  "in ${var.zpr_security_attributes_namespace}.net:exa-vcn VCN allow ${var.zpr_security_attributes_namespace}.db-client:${local.zpr_label} endpoints to connect to ${var.zpr_security_attributes_namespace}.db-server:${local.zpr_label} endpoints with protocol='tcp/22,1521-1522,6200'",
   // Allow HTTPS connections to Oracle Services Network (OSN) from all endpoints in the Exadata VCN.
   "in ${var.zpr_security_attributes_namespace}.net:exa-vcn VCN allow all-endpoints to connect to ’osn-services-ip-addresses’ with protocol='tcp/443'"] : []
 
