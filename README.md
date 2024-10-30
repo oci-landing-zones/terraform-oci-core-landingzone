@@ -26,7 +26,7 @@
 </details>
 <br>
 
-# OCI Core Landing Zone (Early Preview)
+# OCI Core Landing Zone
 
 ![OCI Core Landing Zone](./images/landing_zone_300.png)
 
