@@ -17,11 +17,11 @@
     1. [Security Services](#security-services)
     1. [Deploying Lifecycle Environments](#deploying-lifecycle-environments)
     1. [Deploying without Full Permissions](#deploying-without-full-permissions)
-1. [Ways to Deploy](#ways_to_deploy)
+1. [Ways to Deploy](#ways-to-deploy)
     1. [Deploying with Terraform CLI](#deploying-with-terraform-cli)
     1. [Deploying with OCI Resource Manager UI](#deploying-with-orm-ui)
     1. [Deploying with OCI Resource Manager CLI](#deploying-with-orm-cli)
-1. [Customizing the Landing Zone](#custom_lz)
+1. [Customizing the Landing Zone](#custom-lz)
     1. [Using Terraform Overrides](#using-terraform-overrides)
 1. [Deployment Samples](#samples)
 
@@ -51,7 +51,7 @@ By default, Landing Zone requires tenancy administrator permissions in the tenan
 
 ## <a name="green-field-and-brown-field-deployments"></a>2.2 Green Field and Brown Field Deployments
 
-The Landing Zone can be used in new OCI tenancies (Green Field) and existing OCI tenancies (Brown Field). To avoid name clashing, the Landing Zone has a configuration variable called *service_label* that is prefixed to the name for all provisioned resources.
+The Landing Zone can be used in new OCI tenancies (Green Field) and existing OCI tenancies (Brown Field). To avoid name clashing, the Landing Zone has a configuration variable called *service\_label* that is prefixed to the name for all provisioned resources.
 
 For a Green Field OCI tenancy deploying becomes a matter of provisioning the Landing Zone and then adding any other resources on top of it. This is the simplest deployment scenario.
 
@@ -59,10 +59,9 @@ One option for Brown Field OCI tenancy is to deploy the Landing Zone and then ex
 
 As we will see in the next section, the Landing Zone can provision different network topologies. However, some customers may want to bring in their own VCN (Virtual Cloud Network) and this may disrupt Landing Zone network architecture principles, as best practices may have not been followed. These pre-existing VCNs can be moved to Landing Zone Network compartment. In this case, a thorough review of routing and security rules is required for ensuring connectivity paths are properly secured.
 
-An existing DRG can be brought into Landing Zone just by supplying its OCID to *existing_drg_id* configuration variable. This is useful for customers who already have setup connectivity to their on-premises network via FastConnect or Site-to-Site IPSec VPN.
+An existing DRG can be brought into Landing Zone just by supplying its OCID to *existing\_drg\_id* configuration variable. This is useful for customers who already have setup connectivity to their on-premises network via FastConnect or Site-to-Site IPSec VPN.
 
-Routing rules or network security rules required by specific workloads are handled by customizing the Landing Zone configuration 
-(net\_three\_tier\_vcn\_1.tf, net\_three\_tier\_vcn\_2.tf, net\_three\_tier\_vcn\_3.tf, net\_exacs\_vcn\_1.tf, net\_exacs\_vcn\_2.tf, net\_exacs\_vcn\_3.tf, net\_oke\_vcn\_1.tf, net\_oke\_vcn\_2.tf, net\_oke\_vcn\_3.tf and net\_hub\_vcn.tf).
+Routing rules or network security rules required by specific workloads are handled by customizing the Landing Zone configuration in *net\_three\_tier\_vcn\_1.tf*, *net\_three\_tier\_vcn\_2.tf*, *net\_three\_tier\_vcn\_3.tf*, *net\_exacs\_vcn\_1.tf*, *net\_exacs\_vcn\_2.tf*, *net\_exacs\_vcn\_3.tf*, *net\_oke\_vcn\_1.tf*, *net\_oke\_vcn\_2.tf*, *net\_oke\_vcn\_3.tf* and *net\_hub\_vcn.tf*).
 
 ## <a name="networking-2"></a>2.3 Networking
 
@@ -75,24 +74,26 @@ The Landing Zone can provision a variety of network topologies to meet the needs
 1. Connectivity to the organization's corporate network
 
 ### Type of Workload
-The Landing Zone supports three workload types: a Three-Tier Web Application, Exadata Cloud Service (ExaCS) and Oracle Kubernetes Engine (OKE).
+The Landing Zone supports three workload types: a Three-Tier application, Exadata Cloud Service (ExaCS) and Oracle Kubernetes Engine (OKE).
 
 #### **Three-Tier Application**
 <img src="images/Consideration_3_Tier_Network.png" alt="Three-Tier drawing" width="300"/>
 
-A Three-Tier application is a type of multitier application. The three tiers are commonly defined as the presentation tier, the application processing tier and the data management tier. Each of the tiers is segmented into a network subnet to isolate them from one another. In the Landing Zone, the three subnets are as follows: the presentation tier is the `Web Subnet`, the application presentation tier is the `App subnet` and the data management tier is the `DB Subnet`.
+A Three-Tier application uses a multi-tier networking model. The three tiers are commonly defined as the presentation tier, the application processing tier and the data management tier. A function-specific network subnet isolates each tier from the others. In the Landing Zone, the three subnets are as follows: the presentation tier is the public *Web* subnet, the application presentation tier is the *App* subnet and the data management tier is the *DB* subnet.
 
 #### **Exadata Cloud Service**
 <img src="images/Consideration_ExaCS_Network.png" alt="ExaCS drawing" width="300"/>
 
-Exadata Cloud Service allows you to leverage the power of Exadata in the cloud. Exadata Cloud Service systems integrate Oracle's Exadata Database Machine hardware with the networking resources needed to securely connect to your organization’s on-premise network and to other services in the Oracle cloud.
+Exadata Cloud Service allows you to leverage the power of Exadata in the cloud. Exadata Cloud Service systems integrate Oracle's Exadata Database Machine hardware with the networking resources needed to securely connect to your organizations on-premise network and to other services in the Oracle cloud.
 
 Exadata Cloud Service instances require a VCN with at least two subnets in the VCN. The two subnets required are the *Client* subnet and the *Backup* subnet.
 
 #### **Oracle Kubernetes Engine**
 <img src="images/Consideration_OKE_Network.png" alt="OKE drawing" width="300"/>
 
-TBD
+Oracle Container Engine for Kubernetes (OKE) is a fully managed, scalable, and highly available Kubernetes service based on the open-source Kubernetes system. OKE provides auto-scaling support, automatic Kubernetes cluster upgrades, and self-healing cluster nodes.
+
+An OKE cluster requires a VCN with at least five subnets in the VCN. The required subnets are the public *Services*, *Management* and the private *API*, *Workers* and *Pods* subnets.
 
 ## <a name="managing-state"></a>2.4 Managing State
 When working with Terraform, a key consideration is how to manage state. Terraform works by reconciling differences between the desired state of the infrastructure with the actual state of infrastructure. The desired state is expressed in the configuration files (the *.tf* files), while the actual state is managed by Terraform, typically expressed in *terraform.tfstate* file.
@@ -136,7 +137,7 @@ The diagrams below shows Landing Zone overall architecture:
 
 **With Simple Networking**
 
-![Architecture_Simple](images/Architecture-Simple.png)
+![Architecture_Simple](images/arch_simple.png)
 
 **With Hub & Spoke Networking**
 
@@ -148,12 +149,14 @@ The Landing Zone’s IAM model seeks to enforce segregation of duties and the le
 
 ### Identity Domains
 
-#### Default
-TBD
-#### New
-TBD
-#### Pre-existing
-TBD
+#### Default Domain
+Each tenancy includes a Default identity domain created in the root compartment that contains the initial tenant administrator user and group and a default Policy that allows administrators to manage any resource in the tenancy. The Default identity domain lives with the life cycle of the tenancy and can't be deleted.
+
+#### Custom Domain
+Landing Zone allows for creation of additional identity domains within the enclosing compartment. A bespoke identity domain is useful when you need a separate environment for a cloud service or application (for example, one environment for development and one for production). For added security, you can configure each identity domain to have its own credentials (for example, Password and Sign-On policies).
+
+Landing Zone uses policies, groups and dynamic groups in a custom identity domain for security based segregation of roles and workload administration.
+
 ### Compartments
 
 At least four compartments are provisioned:
@@ -179,7 +182,7 @@ By default, the Landing Zone defines the following personas that account for mos
 - **IAM Administrators**: manage IAM services and resources including compartments, groups, dynamic groups, policies, identity providers, authentication policies, network sources, tag defaults. However, this group is not allowed to manage the out-of-box *Administrators* and *Credential Administrators* groups. It's also not allowed to touch the out-of-box *Tenancy Admin Policy* policy.
 - **Credential Administrators**: manage users capabilities and users credentials in general, including API keys, authentication tokens and secret keys.
 - **Cost Administrators**: manage budgets and usage reports.
-- **Auditors**: entitled with read-only access across the tenancy and the ability to use cloud-shell to run the *cis_reports.py* script.
+- **Auditors**: entitled with read-only access across the tenancy and the ability to use cloud-shell to run the *cis\_reports.py* script.
 - **Announcement Readers**: for reading announcements displayed in OCI Console.
 - **Security Administrators**: manage security services and resources including Vaults, Keys, Logging, Vulnerability Scanning, Web Application Firewall, Bastion, Service Connector Hub.
 - **Network Administrators**: manage OCI network family, including VCNs, Load Balancers, DRGs, VNICs, IP addresses.
@@ -187,7 +190,7 @@ By default, the Landing Zone defines the following personas that account for mos
 - **Database Administrators**: manage database services, including Oracle VMDB (Virtual Machine), BMDB (Bare Metal), ADB (Autonomous databases), Exadata databases, MySQL, NoSQL, etc.
 - **ExaCS Administrators** (only created when ExaCS compartment is created): manage Exadata infrastructure and VM clusters in the ExaCS compartment.
 - **Storage Administrators**: the only group allowed to delete storage resources, including buckets, volumes and files. Used as a protection measure against inadvertent deletion of storage resources.
-- **Access Governance**: The group used by the Access Governance instance to query OCI services in the tenancy.
+- **Access Governance**: the group used by the Access Governance instance to query OCI services in the tenancy.
 
 > **_NOTE:_** following least privilege principle, groups are only entitled to manage, use, read or inspect the necessary resources to fulfill their duties.
 
@@ -199,19 +202,18 @@ The Landing Zone defines four dynamic groups to satisfy common needs of workload
 - **AppDev Functions**: to be used by functions defined in the AppDev compartment. The matching rule includes all functions in the AppDev compartment. An example is a function for processing of application data and writing it to an Object Storage bucket.
 - **Compute Agent**: to be used by Compute's management agent in the AppDev compartment.
 - **Database KMS**: to be used by databases in the Database compartment to access keys in the Vault service.
-- **Access Governance**: TBD
 
 ### Policies
 
-The Landing Zone policies implement segregation of duties and follow least privilege across the different personas (groups). Segregation of duties is implemented by granting specific permissions to a single target group on a single target compartment. For example, only *Network Administrators* can manage the network family, and this is done only in the *Network* compartment. Only *Database Administrators* can manage databases, and this is done only in the *Database* compartment. Least privilege is followed when deploying a database, *Database Administrators* are entitled to use the network managed by *Network Administrators* in the *Network* compartment. Some policies are common to all groups, like the ability to use Cloud Shell in tenancy and to manage Resource Manager stacks in their specific compartments. The policy list is extensive, comprehensive, and human-readable. We recommend reviewing *config/iam_policies.tf* for additional details.
+The Landing Zone policies implement segregation of duties and follow least privilege across the different personas (groups). Segregation of duties is implemented by granting specific permissions to a single target group on a single target compartment. For example, only *Network Administrators* can manage the network family, and this is done only in the *Network* compartment. Only *Database Administrators* can manage databases, and this is done only in the *Database* compartment. Least privilege is followed when deploying a database, *Database Administrators* are entitled to use the network managed by *Network Administrators* in the *Network* compartment. Some policies are common to all groups, like the ability to use Cloud Shell in tenancy and to manage Resource Manager stacks in their specific compartments. The policy list is extensive, comprehensive, and human-readable. We recommend reviewing *config/iam\_policies.tf* for additional details.
 
 Policies are attached at different compartments depending on the presence of an enclosing compartment. If Landing Zone compartments are deployed directly under the Root compartment (thus no enclosing compartment), all policies are attached to the Root compartment. If Landing Zone compartments are deployed within an enclosing compartment, some policies are attached to the Root compartment, while some are attached to the enclosing compartment itself. This is to allow for free movement of Landing Zone compartments without the need to change policy statements. The policies at Root compartment are applied to resources at the tenancy level.
 
-In OCI, services also need to be explicitly granted. The Landing Zone provisions policies authorizing Cloud Guard, Vulnerability Scanning Service and OS Management Service the necessary actions for their functioning. We recommend reviewing *config/iam_service_policies.tf* for additional details.
+In OCI, services also need to be explicitly granted. The Landing Zone provisions policies authorizing Cloud Guard, Vulnerability Scanning Service and OS Management Service the necessary actions for their functioning. We recommend reviewing *config/iam\_service\_policies.tf* for additional details.
 
 ### Integration with Pre-existing Identity Domains
 
-TBD
+The Landing Zone now provides the ability to integrate groups and dynamic groups from an existing identity domain as the grantees of IAM policies.
 
 ## <a name="network-configuration"></a>3.2 Network Configuration
 
@@ -237,7 +239,7 @@ The strong governance framework established by Landing Zone IAM foundation is co
 
 ### Monitoring
 
-CIS OCI Foundations Benchmark strongly focuses on monitoring. It's very important to start with a strong monitoring foundation and make appropriate personel aware of changes in the infrastructure. The Landing Zone implements the Benchmark recommendations through a notifications framework that sends notifications to email endpoints upon infrastructure changes. This framework is 100% enabled by OCI Events and Notifications services. When an event happens (like an update to a policy), a message is sent to a topic and topic subscribers receive a notification. In Landing Zone, subscribers are email endpoints, that must be provided for IAM and network events, as mandated by CIS Benchmark. IAM events are always monitored in the home region and at the Root compartment level. Network events are regional and monitored at the Root compartment level.
+CIS OCI Foundations Benchmark strongly focuses on monitoring. It's very important to start with a strong monitoring foundation and make appropriate personnel aware of changes in the infrastructure. The Landing Zone implements the Benchmark recommendations through a notifications framework that sends notifications to email endpoints upon infrastructure changes. This framework is 100% enabled by OCI Events and Notifications services. When an event happens (like an update to a policy), a message is sent to a topic and topic subscribers receive a notification. In Landing Zone, subscribers are email endpoints, that must be provided for IAM and network events, as mandated by CIS Benchmark. IAM events are always monitored in the home region and at the Root compartment level. Network events are regional and monitored at the Root compartment level.
 
 Landing Zone extends events monitoring with operational metrics and alarms provided by OCI Monitoring service. Landing Zone queries specific metrics and sends alarms to a topic if the query condition is satisfied. Topic subscribers receive a notification. This model allows for capturing resource level occurrences like excessive CPU/memory/storage consumption, FastConnect channel down/up events, Exadata infrastructure events, and others.
 
@@ -259,7 +261,7 @@ Landing Zone implements three facets of resources tagging:
 
 - **Tag Defaults**: Landing Zone provisions *CreatedBy* (who) and *CreatedOn* (when) tag defaults in a brand new tag namespace if the *Oracle-Tags* namespace is not available in the tenancy. Tag defaults allow for automatic tagging on any subsequently deployed resources. This is mandated by CIS Foundations Benchmark and it is extremely useful for identifying who created a particular resource and when.
 - **Landing Zone tag**: Landing Zone uses a freeform tag to tag all provisioned resources with the simple objective of identifying them as Landing Zone resources.
-- **Customer-defined tags**: Customers can also tag Landing Zone resources as they wish, either via defined tags or freeform tags. Defined tags imply the creation of a tag namespace, while freeform tags do not. This is the approach that customers take when aiming for tag-based policies and cost tracking. As Landing Zone cannot predict namespaces and tag names, custom tags are considered a customization. Check [Customizing Landing Zone](#custom_lz) section for a complete example.
+- **Customer-defined tags**: Customers can also tag Landing Zone resources as they wish, either via defined tags or freeform tags. Defined tags imply the creation of a tag namespace, while freeform tags do not. This is the approach that customers take when aiming for tag-based policies and cost tracking. As Landing Zone cannot predict namespaces and tag names, custom tags are considered a customization. Check [Customizing Landing Zone](#custom-lz) section for a complete example.
 
 # <a name="scenarios"></a>4. Deployment Scenarios
 
@@ -271,9 +273,9 @@ In this section we describe the main deployment scenarios for the Landing Zone a
 
 By default, the Landing Zone compartments are deployed in the tenancy root compartment. In such case, all Landing Zone policies are attached to the root compartment. This behavior is changed by the following configuration variables:
 
-- **use_enclosing_compartment**: a boolean flag indicating whether or not to provision the Landing Zone within an enclosing compartment other than the root compartment. When provisioning the Landing Zone as a narrower-permissioned user, it must be set to true.
+- **use\_enclosing\_compartment**: a boolean flag indicating whether or not to provision the Landing Zone within an enclosing compartment other than the root compartment. When provisioning the Landing Zone as a narrower-permissioned user, it must be set to true.
 
-- **existing_enclosing_compartment_ocid**: The OCID of a pre-existing enclosing compartment where Landing Zone compartments are to be created. If *use_enclosing_compartment* is false, the module creates the Landing Zone compartments in the root compartment as long as the executing user has the required permissions. If *use_enclosing_compartment* is true, but *existing_enclosing_compartment_ocid* is not set, a default enclosing compartment is created under the root compartment with the name *<service_label>-top-cmp*.
+- **existing\_enclosing\_compartment\_ocid**: The OCID of a pre-existing enclosing compartment where Landing Zone compartments are to be created. If *use\_enclosing\_compartment* is false, the module creates the Landing Zone compartments in the root compartment as long as the executing user has the required permissions. If *use\_enclosing\_compartment* is true, but *existing\_enclosing\_compartment\_ocid* is not set, a default enclosing compartment is created under the root compartment with the name *\<service_label\>-top-cmp*.
 
 If an enclosing compartment is deployed, Landing Zone policies that are not required to be attached at root compartment are attached to the enclosing compartment. This allows the enclosing compartment to be later moved anywhere in the compartments hierarchy without any policy changes.
 
@@ -289,39 +291,40 @@ In these cases, simply provide the existing OCI group names to the appropriate c
 
 #### Groups
 
-- **existing_iam_admin_group_name**: the name of an existing group for IAM administrators.
-- **existing_cred_admin_group_name**: the name of an existing group for credential administrators.
-- **existing_security_admin_group_name**: the name of an existing group for security administrators.
-- **existing_network_admin_group_name**: the name of an existing group for network administrators.
-- **existing_appdev_admin_group_name**: the name of an existing group for application development administrators.
-- **existing_database_admin_group_name**: the name of an existing group for database administrators.
-- **existing_cost_admin_group_name**: the name of an existing group for cost management administrators.
-- **existing_auditor_group_name**: the name of an existing group for auditors.
-- **existing_announcement_reader_group_name**: the name of an existing group for announcement readers.
+- **existing\_iam\_admin\_group\_name**: the name of an existing group for IAM administrators.
+- **existing\_cred\_admin\_group\_name**: the name of an existing group for credential administrators.
+- **existing\_security\_admin\_group\_name**: the name of an existing group for security administrators.
+- **existing\_network\_admin\_group\_name**: the name of an existing group for network administrators.
+- **existing\_appdev\_admin\_group\_name**: the name of an existing group for application development administrators.
+- **existing\_database\_admin\_group\_name**: the name of an existing group for database administrators.
+- **existing\_cost\_admin\_group\_name**: the name of an existing group for cost management administrators.
+- **existing\_auditor\_group\_name**: the name of an existing group for auditors.
+- **existing\_announcement\_reader\_group\_name**: the name of an existing group for announcement readers.
 
 #### Dynamic Groups
 
-- **existing_security_fun_dyn_group_name**: existing dynamic group for calling functions in the Security compartment.
-- **existing_appdev_fun_dyn_group_name**: existing dynamic group for calling functions in the AppDev compartment.
-- **existing_compute_agent_dyn_group_name**: existing dynamic group for Compute management agent access.
-- **existing_database_kms_dyn_group_name**: existing dynamic group for databases to access OCI KMS Keys.
+- **existing\_security\_fun\_dyn\_group\_name**: existing dynamic group for calling functions in the Security compartment.
+- **existing\_appdev\_fun\_dyn\_group\_name**: existing dynamic group for calling functions in the AppDev compartment.
+- **existing\_compute\_agent\_dyn\_group\_name**: existing dynamic group for Compute management agent access.
+- **existing\_database\_kms\_dyn\_group\_name**: existing dynamic group for databases to access OCI KMS Keys.
 
 ### Custom Group Names
 
 By default, the group names are following the convention `${var.service_label}-group_name` using the `service-label` defined in the `tfvars` file. When a different naming convention should be used, for example, to match an established naming convention, these names can be customized using the Terraform Override technique.
 
 The supported variables are:
-- **custom_iam_admin_group_name**
-- **custom_cred_admin_group_name**
-- **custom_cost_admin_group_name**
-- **custom_auditor_group_name**
-- **custom_announcement_reader_group_name**
-- **custom_network_admin_group_name**
-- **custom_security_admin_group_name**
-- **custom_appdev_admin_group_name**
-- **custom_database_admin_group_name**
-- **custom_exainfra_admin_group_name**
-- **custom_storage_admin_group_name**
+
+- **custom\_iam\_admin\_group\_name**
+- **custom\_cred\_admin\_group\_name**
+- **custom\_cost\_admin\_group\_name**
+- **custom\_auditor\_group\_name**
+- **custom\_announcement\_reader\_group\_name**
+- **custom\_network\_admin\_group\_name**
+- **custom\_security\_admin\_group\_name**
+- **custom\_appdev\_admin\_group\_name**
+- **custom\_database\_admin\_group\_name**
+- **custom\_exainfra\_admin\_group\_name**
+- **custom\_storage\_admin\_group\_name**
 
 For an example see [Example 4: Using Custom Group Names](#example-4-using-custom-group-names)
 
@@ -331,24 +334,24 @@ When you run Landing Zone's Terraform, some resources are created in the home re
 
 Some customers want to extend their Landing Zone to more than one region of choice, while reusing the home region resources. One typical use case is setting up a second region of choice for disaster recovery, reusing the same home region Landing Zone resources. A more broad use case is implementing a single global Landing Zone across all subscribed regions. The configuration variable controlling this Landing Zone behavior is self explanatory:
 
-- **extend_landing_zone_to_new_region**: whether Landing Zone is being extended to a new region. When set to true, compartments, groups, dynamic groups, policies and resources pertaining to home region are not provisioned.
+- **extend\_landing\_zone\_to\_new\_region**: whether Landing Zone is being extended to a new region. When set to true, compartments, groups, dynamic groups, policies and resources pertaining to home region are not provisioned.
 
-> **_NOTE:_** when extending the Landing Zone, the Terraform code has to be deployed in a new region. Therefore, a distinct set of configuration variables is needed. If using Terraform CLI, use Terraform workspaces. If using OCI Resource Manager, use a separate Stack. Check [Ways to Deploy](#ways_to_deploy) section for more details.
+> **_NOTE:_** when extending the Landing Zone, the Terraform code has to be deployed in a new region. Therefore, a distinct set of configuration variables is needed. If using Terraform CLI, use Terraform workspaces. If using OCI Resource Manager, use a separate Stack. Check [Ways to Deploy](#ways-to-deploy) section for more details.
 
 ## <a name="networking-4"></a>4.2 Networking
 ### Standard Three-Tier Web Application VCNs
 
 By default, the Landing Zone provisions a single VCN that is suited for the deployment of a Three-Tier web application. The VCN is made of a public subnet and two private subnets. The public subnet ("web") is home for load balancers and bastion hosts. As for the private subnets, one is for middle-tiers ("app") and the other for databases ("db"). The VCN CIDR (Classless Inter-Domain Routing) range defaults to 10.0.0.0/20 and the subnets CIDR ranges are calculated by adding 4 bits to the CIDR's network mask (the number after the "/", a.k.a the CIDR prefix). The web, app and db subnets are thus assigned CIDRs 10.0.0.0/24, 10.0.1.0/24 and 10.0.2.0/24, respectively.
 
-This behavior can be completely overriden through the following variables:
+This behavior can be completely overridden through the following variables:
 
-- **vcn_cidrs**: required, determines the VCNs CIDR ranges, where one CIDR corresponds to one VCN. If multiple CIDRs per VCN are needed, skip to [Customizing Landing Zone Networking](#network_customization).
-- **subnets_names**: optional, determines the number and names of subnets in the VCNs defined by **vcn_cidrs**. Note that the first subnet element is assumed to be public. If that is required to be private, set variable **no_internet_access** to true.
-- **subnets_sizes**: optional, determines the CIDRs of the subnets defined by **subnet_names**. Each element is the number of bits added to the **vcn_cidrs** network portion for that subnet. There must be one element to each element in **subnets_names**, where the *nth* element in **subnets_sizes** matches the *nth* element in **subnet_names**.
+- **vcn\_cidrs**: required, determines the VCNs CIDR ranges, where one CIDR corresponds to one VCN.
+- **subnets\_names**: optional, determines the number and names of subnets in the VCNs defined by **vcn\_cidrs**. Note that the first subnet element is assumed to be public. If that is required to be private, set variable **no\_internet\_access** to true.
+- **subnets\_sizes**: optional, determines the CIDRs of the subnets defined by **subnet\_names**. Each element is the number of bits added to the **vcn\_cidrs** network portion for that subnet. There must be one element to each element in **subnets\_names**, where the *nth* element in **subnets\_sizes** matches the *nth* element in **subnet\_names**.
 
-> **_NOTE:_** by default, Landing Zone creates VCNs with an auto-generated name formed as *service-label*-*index*-vcn, where *service-label* is the value assigned to *service-label* variable and *index* is the CIDR range position within **vcn-cidrs** variable. In order to override these names, use the **vcn_names** variable, where its *nth* element matches the *nth* element of **vcn_cidrs**. For a single VCN, simply provide the desired VCN name to the **vcn_names** variable.
+> **_NOTE:_** by default, Landing Zone creates VCNs with an auto-generated name formed as *service-label*-*index*-vcn, where *service-label* is the value assigned to *service-label* variable and *index* is the CIDR range position within **vcn_cidrs** variable. In order to override these names, use the **vcn_names** variable, where its *nth* element matches the *nth* element of **vcn_cidrs**. For a single VCN, simply provide the desired VCN name to the **vcn_names** variable.
 
-Deploying multiple Three-Tier VCNs is straighforward: simply provide multiple CIDR ranges to **vcn_cidrs** variable. Each CIDR range defines one VCN. All VCNs are created equal, according to the values given to **subnet_names** and **subnets_sizes**. Also note that the VCNs are not peered. For peering the VCNs, have them in a Hub & Spoke topology, as described in *Hub & Spoke Topology*.
+Deploying multiple Three-Tier VCNs is straightforward: simply provide multiple CIDR ranges to **vcn\_cidrs** variable. Each CIDR range defines one VCN. All VCNs are created equal, according to the values given to **subnet\_names** and **subnets\_sizes**. Also note that the VCNs are not peered. For peering the VCNs, have them in a Hub & Spoke topology, as described in *Hub & Spoke Topology*.
 
 ### Exadata Cloud Service VCNs
 
@@ -358,27 +361,27 @@ The VCN(s) created for ExaCS are comprised of two regional private subnets, *cli
 
 Landing Zone defines the following input variables for ExaCS configuration:
 
-- **exacs_vcn_cidrs**: required, list of CIDR ranges to be used when creating the VCNs. Each CIDR range indicates the creation of one VCN. Make sure they do not overlap with 192.168.128.0/20.
-- **exacs_vcn_names**: optional, list of VCN names that override the default names. Each name applies to one VCN, the *nth* element corresponding to **exa_vcn_cidrs**' *nth* element.
-- **exacs_client_subnet_cidrs** : optional, list of CIDR ranges for the *client* subnets. Each CIDR range applies to one VCN, the *nth* element corresponding to **exa_vcn_cidrs**' *nth* element.
-- **exacs_backup_subnet_cidrs**: optional, list of CIDR ranges for the *backup* subnets. Each CIDR range applies to one VCN, the *nth* element corresponding to **exa_vcn_cidrs**' *nth* element.
+- **exacs\_vcn\_cidrs**: required, list of CIDR ranges to be used when creating the VCNs. Each CIDR range indicates the creation of one VCN. Make sure they do not overlap with 192.168.128.0/20.
+- **exacs\_vcn\_names**: optional, list of VCN names that override the default names. Each name applies to one VCN, the *nth* element corresponding to **exa\_vcn\_cidrs**' *nth* element.
+- **exacs\_client\_subnet\_cidrs** : optional, list of CIDR ranges for the *client* subnets. Each CIDR range applies to one VCN, the *nth* element corresponding to **exa\_vcn\_cidrs**' *nth* element.
+- **exacs\_backup\_subnet\_cidrs**: optional, list of CIDR ranges for the *backup* subnets. Each CIDR range applies to one VCN, the *nth* element corresponding to **exa\_vcn\_cidrs**' *nth* element.
 
-If **exacs_client_subnet_cidrs** and **exacs_backup_subnet_cidrs** are not provided, the Landing Zone calculates the subnets CIDR ranges by adding four bits to the network mask (a.k.a the CIDR prefix) and 1 (one) to populate the net number, representing the bits added to prefix, starting with the client subnet. For a VCN CIDR range of 10.0.0.0/20, the client subnet CIDR range would be 10.0.0.0/24, while the backup subnet CIDR would be 10.0.1.0/24. Landing Zone accomplishes this using the [cidrsubnet built-in Terraform function](https://www.terraform.io/docs/language/functions/cidrsubnet.html).
+If **exacs\_client\_subnet\_cidrs** and **exacs\_backup\_subnet\_cidrs** are not provided, the Landing Zone calculates the subnets CIDR ranges by adding four bits to the network mask (a.k.a the CIDR prefix) and 1 (one) to populate the net number, representing the bits added to prefix, starting with the client subnet. For a VCN CIDR range of 10.0.0.0/20, the client subnet CIDR range would be 10.0.0.0/24, while the backup subnet CIDR would be 10.0.1.0/24. Landing Zone accomplishes this using the [cidrsubnet built-in Terraform function](https://www.terraform.io/docs/language/functions/cidrsubnet.html).
 
-For deploying multiple ExaCS networks, simply provide multiple CIDR ranges to **exacs_vcn_cidrs** variable and optionally assign values to **exacs_vcn_names**, **exacs_client_subnet_cidrs** and **exacs_backup_subnet_cidrs**.
+For deploying multiple ExaCS networks, simply provide multiple CIDR ranges to **exacs\_vcn\_cidrs** variable and optionally assign values to **exacs\_vcn\_names**, **exacs\_client\_subnet\_cidrs** and **exacs\_backup\_subnet\_cidrs**.
 
 For more details, see [How to Deploy OCI Secure Landing Zone for Exadata Cloud Service](https://www.ateam-oracle.com/post/how-to-deploy-oci-secure-landing-zone-for-exadata-cloud-service).
 
 ### Hub & Spoke Topology
 
-Landing Zone VCNs can be deployed in a Hub & Spoke topology. Multiple spokes can be connected via a single peering connection to a central Hub VCN. This deployment type is particularly prevalent in organizations that require packet inspection firewall appliances to monitor incoming external traffic (North/South) and/or traffic across the spoke VCNs (East/West). The peering is implemented via DRG (Dynamic Routing Gateway) v2, that can peer VCNs in same or different regions. The DRG can either be provisioned by Landing Zone or an existing DRG can be taken. This is important to customers that have already set connectivitity to their on-premises network. The Hub VCN is also referred as the Hub VCN, as it is typically the entry point to the spoke VCNs for requests originating from untrusted perimeters, like the Internet. Note, however, that a Hub VCN is not required in this topology, as the DRG itself can act as the Hub. The Hub & Spoke topology is governed by these input variables:
+Landing Zone VCNs can be deployed in a Hub & Spoke topology. Multiple spokes can be connected via a single peering connection to a central Hub VCN. This deployment type is particularly prevalent in organizations that require packet inspection firewall appliances to monitor incoming external traffic (North/South) and/or traffic across the spoke VCNs (East/West). The peering is implemented via DRG (Dynamic Routing Gateway) v2, that can peer VCNs in same or different regions. The DRG can either be provisioned by Landing Zone or an existing DRG can be taken. This is important to customers that have already set connectivity to their on-premises network. The Hub VCN is also referred as the Hub VCN, as it is typically the entry point to the spoke VCNs for requests originating from untrusted perimeters, like the Internet. Note, however, that a Hub VCN is not required in this topology, as the DRG itself can act as the Hub. The Hub & Spoke topology is governed by these input variables:
 
-- **hub_spoke_architecture**: when set to true, the spokes VCNs are peered via a DRG, that is either provisioned or reused.
-- **existing_drg_id**: the OCID of an existing DRG. If provided, the existing DRG is used to peer the spoke VCNs. Otherwise, a brand new DRG is provisioned. If no **dmz_vcn_cidr** is provided, the DRG itself acts as the hub.
-- **dmz_vcn_cidr**: if provided, a Hub (DMZ) VCN is provisioned with the given CIDR range and all traffic is routed through this VCN.
-- **dmz_for_firewall**: determines if the Hub VCN will be used for deploying 3rd-party firewalls, in which case DRG attachments are not created.
-- **dmz_number_of_subnets**: major firewall appliances have different requirements regarding the number of subnets to deploy. Check the vendor's documentation or OCI reference architecture to determine the number of subnets required.
-- **dmz_subnet_size**: the number of bits with which to extend the Hub VCN CIDR prefix. For instance, if **dmz_vcn_cidr**'s prefix is 20 (/20) and **dmz_subnet_size** is 4, subnets are going to be /24.
+- **hub\_spoke\_architecture**: when set to true, the spokes VCNs are peered via a DRG, that is either provisioned or reused.
+- **existing\_drg\_id**: the OCID of an existing DRG. If provided, the existing DRG is used to peer the spoke VCNs. Otherwise, a brand new DRG is provisioned. If no **dmz\_vcn\_cidr** is provided, the DRG itself acts as the hub.
+- **dmz\_vcn\_cidr**: if provided, a Hub (DMZ) VCN is provisioned with the given CIDR range and all traffic is routed through this VCN.
+- **dmz\_for\_firewall**: determines if the Hub VCN will be used for deploying 3rd-party firewalls, in which case DRG attachments are not created.
+- **dmz\_number\_of\_subnets**: major firewall appliances have different requirements regarding the number of subnets to deploy. Check the vendor's documentation or OCI reference architecture to determine the number of subnets required.
+- **dmz\_subnet\_size**: the number of bits with which to extend the Hub VCN CIDR prefix. For instance, if **dmz\_vcn\_cidr**'s prefix is 20 (/20) and **dmz\_subnet\_size** is 4, subnets are going to be /24.
 
 ### Deploying a Hub VCN for Firewall Appliances
 
@@ -393,11 +396,11 @@ Palo Alto Networks |         4
 
 Besides the variables described in the previous section, adding a firewall appliance requires an extra variable:
 
-- **dmz_for_firewall**: determines if the Hub VCN will be used for deploying 3rd party firewalls. When set to true, DRG attachments are not created.
+- **dmz\_for\_firewall**: determines if the Hub VCN will be used for deploying 3rd party firewalls. When set to true, DRG attachments are not created.
 
 ### Multiple Three-Tier Web Application VCNs with Multiple Exadata VCNs or Multiple OKE VCNs in Hub & Spoke Topology
 
-These different VCN configurations can be deployed and peered together. This is useful when deploying an application layer that connects to ExaCS databases. You would typically use the "web" and "app" subnets in the Three-Tier VCN for the application tier and the Exadata VCN for the database tier. As for deploying such configuration, enter values for **vcn_cidrs**, **exacs_vcn_cidrs** and set **hub_spoke_architecture** to true, as described above. The referred VCNs are peered through a DRG (a new one or existing one depending on **existing_drg_id** variable). If a Hub VCN is required to act as the Hub, enter the *dmz* related variables, as described in the previous section. The Hub VCN also gets peered through the DRG, effectively becoming the network hub.
+These different VCN configurations can be deployed and peered together. This is useful when deploying an application layer that connects to ExaCS databases. You would typically use the "web" and "app" subnets in the Three-Tier VCN for the application tier and the Exadata VCN for the database tier. As for deploying such configuration, enter values for **vcn\_cidrs**, **exacs\_vcn\_cidrs** and set **hub\_spoke\_architecture** to true, as described above. The referred VCNs are peered through a DRG (a new one or existing one depending on **existing\_drg\_id** variable). If a Hub VCN is required to act as the Hub, enter the *dmz* related variables, as described in the previous section. The Hub VCN also gets peered through the DRG, effectively becoming the network hub.
 
 #### Cross-VCN Connectivity Patterns
 
@@ -413,41 +416,41 @@ The diagram below demonstrates Landing Zone *permitted routing* in a mixed VCN d
 
 Landing Zone can be pre-configured to connect to an on-premises network through a DRG, regardless of its network topology (single, multiple standalone or peered VCNs). Note that the actual connectivity model between OCI and the on-premises network is **not** in Landing Zone scope. In other words, Landing Zone does not provision anything related to FastConnect or IPSec VPN. These must be managed through other means. Landing Zone sets up the access path from the perspective of its VCNs, creating the route and security rules based on these input variables:
 
-- **is_vcn_onprem_connected**: when set to true, either creates or reuses a DRG depending on **existing_drg_id** variable.
-- **onprem_cidrs**: list of on-premises CIDR ranges allowed to make HTTPS inbound connections. When set, these CIDR ranges are the destination of a route rule back to on-premises through DRG and used for granting ingress HTTPS access to Landing Zone Network Security Groups.
-- **onprem_src_ssh_cidrs**: list of on-premises IP ranges allowed to make SSH inbound connections. When set, these CIDR ranges are the destination of a route rule back to on-premises through DRG, and used for granting ingress SSH access to Landing Zone Network Security Groups.
+- **is\_vcn\_onprem\_connected**: when set to true, either creates or reuses a DRG depending on **existing\_drg\_id** variable.
+- **onprem\_cidrs**: list of on-premises CIDR ranges allowed to make HTTPS inbound connections. When set, these CIDR ranges are the destination of a route rule back to on-premises through DRG and used for granting ingress HTTPS access to Landing Zone Network Security Groups.
+- **onprem\_src\_ssh\_cidrs**: list of on-premises IP ranges allowed to make SSH inbound connections. When set, these CIDR ranges are the destination of a route rule back to on-premises through DRG, and used for granting ingress SSH access to Landing Zone Network Security Groups.
 
 ### Blocking Internet Access
 
 By default, Landing Zone's Three-Tier Web Application VCN deploys out a public subnet (the "web" subnet) with routes to the VCN Internet Gateway. That may not be desirable sometimes, as customers may want a fully private setup, where they can deploy private load balancers accessible only to other VCNs on from their data centers. There is a single input variable controlling this behavior:
 
-- **no_internet_access**: when set to true, it makes all "web" subnets private and does not attach an Internet Gateway to any of the Three-Tier VCNs. Note the variable does not apply to ExaCS VCNs, as the subnets in that case are already private.
+- **no\_internet\_access**: when set to true, it makes all "web" subnets private and does not attach an Internet Gateway to any of the Three-Tier VCNs. Note the variable does not apply to ExaCS VCNs, as the subnets in that case are already private.
 
 ## <a name="governance-4"></a>4.3 Governance
 ### Operational Monitoring
 #### Alerting
 The Landing Zone deploys a notification framework to alert administrators about infrastructure changes. By default, only IAM and networking events are enabled, as mandated by CIS Foundations Benchmark. Events for other resources can be enabled by Landing Zone users. OCI Events service monitors OCI resources for changes and posts a notification to a topic. Topic subscribers are then notified about such changes. This framework is deployed in each compartment including the Root compartment where IAM events are configured. Examples of such events are updates to a policy or the creation of a new VCN.
 
-Landing Zone also gives insights into the health of infrastructure resources used by cloud applications through metrics and alarms in OCI Monitoring service. Classic examples are raising an alarm to Compute administrators if an instance's CPU/memory comsumption goes over 80% and raising an alarm to network administrators if FastConnect or VPN is down. Check blog post [How to Operationalize the Core Landing Zone with Alarms and Events](https://www.ateam-oracle.com/post/operational-monitoring-and-alerting-in-the-cis-landing-zone) for a list of metric conditions and events that can raise an alarm in Landing Zone.
+Landing Zone also gives insights into the health of infrastructure resources used by cloud applications through metrics and alarms in OCI Monitoring service. Classic examples are raising an alarm to Compute administrators if an instance's CPU/memory consumption goes over 80% and raising an alarm to network administrators if FastConnect or VPN is down. Check blog post [How to Operationalize the Core Landing Zone with Alarms and Events](https://www.ateam-oracle.com/post/operational-monitoring-and-alerting-in-the-cis-landing-zone) for a list of metric conditions and events that can raise an alarm in Landing Zone.
 
 Landing Zone exposes this functionality through variables with a list of email addresses to notify:
 
-- **security_admin_email_endpoints**: required, a list of email addresses to receive notifications for security (including IAM) related events. IAM events and topic are always created in the home region at the Root compartment.
-- **network_admin_email_endpoints**: required, a list of email addresses to receive notifications for network related events. Network events and topic are regional and created at the Root compartment.
-- **storage_admin_email_endpoints**: optional, a list of email addresses for all storage related notifications. If no email addresses are provided, then the topic, events and alarms associated with storage are not created.
-- **compute_admin_email_endpoints**: optional, a list of email addresses for all compute related notifications. If no email addresses are provided, then the topic, events and alarms associated with compute are not created.
-- **budget_admin_email_endpoints**: optional, a list of email addresses for all budget related notifications. If no email addresses are provided, then the topic, events and alarms associated with governance are not created.
-- **database_admin_email_endpoints**: optional, a list of email addresses for all database related notifications. If no email addresses are provided, then the topic, events and alarms associated with database are not created.
-- **exainfra_admin_email_endpoints**: optional, a list of email addresses for all Exadata infrastructure related notifications. If no email addresses are provided, then the topic, and alarms associated with Exadata infrastructure are not created. If a compartment for Exadata is not created, then Exadata events are created in the database compartment and sent to the database topic.
+- **security\_admin\_email\_endpoints**: required, a list of email addresses to receive notifications for security (including IAM) related events. IAM events and topic are always created in the home region at the Root compartment.
+- **network\_admin\_email\_endpoints**: required, a list of email addresses to receive notifications for network related events. Network events and topic are regional and created at the Root compartment.
+- **storage\_admin\_email\_endpoints**: optional, a list of email addresses for all storage related notifications. If no email addresses are provided, then the topic, events and alarms associated with storage are not created.
+- **compute\_admin\_email\_endpoints**: optional, a list of email addresses for all compute related notifications. If no email addresses are provided, then the topic, events and alarms associated with compute are not created.
+- **budget\_admin\_email\_endpoints**: optional, a list of email addresses for all budget related notifications. If no email addresses are provided, then the topic, events and alarms associated with governance are not created.
+- **database\_admin\_email\_endpoints**: optional, a list of email addresses for all database related notifications. If no email addresses are provided, then the topic, events and alarms associated with database are not created.
+- **exainfra\_admin\_email\_endpoints**: optional, a list of email addresses for all Exadata infrastructure related notifications. If no email addresses are provided, then the topic, and alarms associated with Exadata infrastructure are not created. If a compartment for Exadata is not created, then Exadata events are created in the database compartment and sent to the database topic.
 
-With the exception of notifications for security and network, the other categories also depend on the user explitly asking for enabling events and alarms:
+With the exception of notifications for security and network, the other categories also depend on the user explicitly asking for enabling events and alarms:
 
-- **create_events_as_enabled**: when set to true, events rules are created and enabled. If left as false, events rules are created but will not emit notifications.
-- **create_alarms_as_enabled**: when set to true, alarms are created and enabled. If left as false, alarms are created but will not emit notifications.
+- **create\_events\_as\_enabled**: when set to true, events rules are created and enabled. If left as false, events rules are created but will not emit notifications.
+- **create\_alarms\_as\_enabled**: when set to true, alarms are created and enabled. If left as false, alarms are created but will not emit notifications.
 
 An extra variable allows Landing Zone users to determine how OCI should format the alarms messages:
 
-- **alarm_message_format**: default is *PRETTY_JSON* (after all everybody seeks beauty in things). Other possible values are *ONS_OPTIMIZED* (optimized for Oracle Notification Service) and *RAW*.
+- **alarm\_message\_format**: default is *PRETTY_JSON* (after all everybody seeks beauty in things). Other possible values are *ONS_OPTIMIZED* (optimized for Oracle Notification Service) and *RAW*.
 
 > **_NOTE:_** Monitoring IAM and network events are a CIS Foundations Benchmark Level 1 requirement.
 
@@ -468,14 +471,14 @@ Landing Zone deploys a pair of tag defaults if the *Oracle-Tags* namespace is no
 
 > **_NOTE:_** *CreatedBy* and *CreatedOn* tags are a CIS Foundations Benchmark Level 1 requirement, but not from a cost tracking perspective.
 
-Landing Zone also allows for the definition of custom tags, that can be created as cost tracking tags. Custom tags is implemented as a customization and a complete example is provided in [Customizing the Landing Zone](#custom_lz) section.
+Landing Zone also allows for the definition of custom tags, that can be created as cost tracking tags. Custom tags is implemented as a customization and a complete example is provided in [Customizing the Landing Zone](#custom-lz) section.
 
 A foundational budget can be deployed to alert customers on their OCI spending. The input variables controlling this behavior are:
 
-- **create_budget**: if checked, a budget is created at the Root or enclosing compartment and based on forecast spending.
-- **budget_alert_threshold**: the threshold for triggering the alert expressed as a percentage of the monthly forecast spending.
-- **budget_amount**: the amount of the budget expressed as a whole number in the customer rate card's currency.
-- **budget_alert_email_endpoints**: list of email addresses for budget alerts.
+- **create\_budget**: if checked, a budget is created at the Root or enclosing compartment and based on forecast spending.
+- **budget\_alert\_threshold**: the threshold for triggering the alert expressed as a percentage of the monthly forecast spending.
+- **budget\_amount**: the amount of the budget expressed as a whole number in the customer rate card's currency.
+- **budget\_alert\_email\_endpoints**: list of email addresses for budget alerts.
 
 > **_NOTE:_** Budgeting is not mandated by CIS Foundations Benchmark.
 
@@ -489,9 +492,9 @@ Landing Zone may optionally deploy the OCI IAM policies for deploying an [Oracle
 The policies granted to the Access Governance Group which are used for the OAG Instance to query OCI services in the tenancy are read only. This allows for OAG to review access in the OCI tenancy and align to the CIS OCI Foundations Benchmark. The policy statements are below:
 
 ```
-allow group <label>-access-gorvernance-group to inspect all-resources in tenancy
-allow group <label>-access-gorvernance-group to read policies in tenancy
-allow group <label>-access-gorvernance-group to read domains in tenancy
+allow group <label>-access-governance-group to inspect all-resources in tenancy
+allow group <label>-access-governance-group to read policies in tenancy
+allow group <label>-access-governance-group to read domains in tenancy
 ```
 
 The Security Admin group is granted following additional policies to deploy an Oracle Access Governance instance in the Security compartment:
@@ -501,20 +504,20 @@ allow group <label>-security-admin-group to manage agcs-instance in compartment 
 ```
 
 #### Deploying OAG an instance
-As a user in the <labal>-security-admin-group follow the steps in [Set Up Service Instance](https://docs.oracle.com/en/cloud/paas/access-governance/cagsi/).
+As a user in the *\<label\>-security-admin-group* follow the steps in [Set Up Service Instance](https://docs.oracle.com/en/cloud/paas/access-governance/cagsi/).
 
 #### Enabling an OAG an instance to review OCI IAM access in the tenancy
 After the OAG instance is provisioned follow steps from the [Integrate with Oracle Cloud Infrastructure (OCI) Identity and Access Management (IAM) ](https://docs.oracle.com/en/cloud/paas/access-governance/tjrtj/index.html#GUID-29D81CB5-08BB-45CB-8911-416F6FFDB0C9) to configure the OAG Instance to review the OCI IAM policies.
 
-1. As a user in the <label>-iam-admin-group or the Administrator group go to the **Set up Identity Resources Manually** section and preform the below steps:
+1. As a user in the *\<label\>-iam-admin-group* or the Administrator group go to the **Set up Identity Resources Manually** section and preform the below steps:
     1. Follow the these steps and the links provided to set up identity resources in your cloud tenancy.
-        1. [Create an identity user](https://docs.oracle.com/en-us/iaas/Content/Identity/Tasks/managingusers.htm#three), agcs_user, in the Default domain for Oracle Access Governance access.
+        1. [Create an identity user](https://docs.oracle.com/en-us/iaas/Content/Identity/Tasks/managingusers.htm#three), agcs\_user, in the Default domain for Oracle Access Governance access.
         1. [Provision the user](https://docs.oracle.com/en-us/iaas/Content/Identity/access/managing-user-credentials.htm) with the following capabilities:
             - API keys: Select the check box for API authentication.
-        1. [Assign the identity user](https://docs.oracle.com/en-us/iaas/Content/Identity/Tasks/managinggroups.htm#three) (agcs_user) to the identity group (<label>-access_governance-group)
-1. As a user in the <label>-cred-admin-group or the Administrator group go to the **Generate API Keys and Oracle Cloud Identifier (OCID) to configure your Cloud Environment in the Oracle Access Governance Console** section and complete all steps in this section.
+        1. [Assign the identity user](https://docs.oracle.com/en-us/iaas/Content/Identity/Tasks/managinggroups.htm#three) (agcs\_user) to the identity group (\<label\>-access\_governance-group)
+1. As a user in the *\<label\>-cred-admin-group* or the Administrator group go to the **Generate API Keys and Oracle Cloud Identifier (OCID) to configure your Cloud Environment in the Oracle Access Governance Console** section and complete all steps in this section.
 
-1. As a user in the <label>-security-admin-group go to the **Establish Connection by Adding a New Connected System - OCI IAM** and complete all steps in this section.
+1. As a user in the *\<label\>-security-admin-group* go to the **Establish Connection by Adding a New Connected System - OCI IAM** and complete all steps in this section.
 
 ## <a name="security-services"></a>4.4 Security Services
 
@@ -524,7 +527,7 @@ Landing Zone enables the following OCI security services for a strong security p
 
 Cloud Guard is a key component in OCI secure posture management. It uses detector recipes to monitor a target (compartment hierarchies) for potentially risky configurations and activities. It then emits findings known as problems. These problems can be rectified with responders. Landing Zone enables Cloud Guard only if it's not enabled. When enabling, a target is provisioned for the Root compartment with the out-of-box *Configuration* and *Activity* detector recipes and *Responder* recipe. Once enabled by Landing Zone, it can be later disabled using the following variable:
 
-- **cloud_guard_configuration_status**: determines whether Cloud Guard should be enabled in the tenancy. If set to 'ENABLE', a Cloud Guard target is created for the Root compartment, but only if Cloud Guard is not already enabled.
+- **cloud\_guard\_configuration\_status**: determines whether Cloud Guard should be enabled in the tenancy. If set to 'ENABLE', a Cloud Guard target is created for the Root compartment, but only if Cloud Guard is not already enabled.
 
 > **_NOTE:_** Enabling Cloud Guard is a CIS Foundations Benchmark Level 1 requirement.
 
@@ -544,9 +547,9 @@ With such target settings, any hosts deployed in the Landing Zone compartments a
 
 The input variables for VSS are:
 
-- **vss_create**: whether Vulnerability Scanning Service recipes and targets are to be created in the Landing Zone. Default is true.
-- **vss_scan_schedule**: the scan schedule for the Vulnerability Scanning Service recipe, if enabled. Valid values are WEEKLY or DAILY. Default is WEEKLY.
-- **vss_scan_day**: the weekday for the Vulnerability Scanning Service recipe, if enabled. It only applies if vss_scan_schedule is WEEKLY. Default is SUNDAY.
+- **vss\_create**: whether Vulnerability Scanning Service recipes and targets are to be created in the Landing Zone. Default is true.
+- **vss\_scan\_schedule**: the scan schedule for the Vulnerability Scanning Service recipe, if enabled. Valid values are WEEKLY or DAILY. Default is WEEKLY.
+- **vss\_scan\_day**: the weekday for the Vulnerability Scanning Service recipe, if enabled. It only applies if vss\_scan\_schedule is WEEKLY. Default is SUNDAY.
 
 For more details on VSS in Landing Zone, check blog post [Vulnerability Scanning in CIS OCI Landing Zone](https://www.ateam-oracle.com/post/vulnerability-scanning-in-cis-oci-landing-zone).
 
@@ -560,7 +563,7 @@ By default, Landing Zone provisions a *Bastion* resource in the *Security* compa
 
 If VCNs are deployed in Hub & Spoke topology with a Hub VCN or connected to an on-premises network, the *Bastion* resource is not provisioned, as the service does not allow cross VCN connections. In the case of Hub & Spoke, it is expected that customers deploy jump hosts in the Hub VCN. In the case of on-premises network, access to Landing Zone VCNs should be provided directly to on-premises hosts.
 
-Landing Zone also requires input variable **public_src_bastion_cidrs** set to create the *Bastion* resource, using it in the Bastion access control list. As mandated by CIS Foundations Benchmark, CIDR range 0.0.0.0/0 is not allowed.
+Landing Zone also requires input variable **public\_src\_bastion\_cidrs** set to create the *Bastion* resource, using it in the Bastion access control list. As mandated by CIS Foundations Benchmark, CIDR range 0.0.0.0/0 is not allowed.
 
 Landing Zone does not create any *Bastion* sessions. As sessions are short-lived (3 hours max), customers are responsible for deploying them on the provisioned *Bastion* resource. Landing Zone admin personas are all entitled to create *Bastion* sessions in their owned compartments.
 
@@ -568,9 +571,9 @@ Landing Zone does not create any *Bastion* sessions. As sessions are short-lived
 
 ## <a name="deploying-lifecycle-environments"></a>4.5 Deploying Lifecycle Environments
 
-Lifecycle environments refer to the different stages a workload goes through in the course of its life. Typically, development, test and production. Or simply dev, test, prod.
+Lifecycle environments refer to the different stages a workload goes through in the course of availability: typically, development, test and production or simply dev, test, prod.
 
-These environments can take different forms based on customer requirements, ranging from full isolation to no isolation (or full sharing). Some organizations may require completely segregated, where resources are deployed in separate compartments, managed by different groups in different regions (full isolation). Others may want to share a few Landing Zone resources, like networking and security services (middle ground). Others may need to share all Landing Zone resources and segregate environments based on the resources (instances, clusters, functions, databases, storage) where workloads are executed (no isolation). As a best practice we do not recommend no isolation mode, as changes in lower stages may affect production workloads. Say for instance you need to make changes to routing and security rules. A small distraction may get your production service innacessible. No isolation is a bad choice for blast radius reasons and it limits customers ability to innovate.
+These environments can take different forms based on customer requirements, ranging from full isolation to no isolation (or full sharing). Some organizations may require completely segregated, where resources are deployed in separate compartments, managed by different groups in different regions (full isolation). Others may want to share a few Landing Zone resources, like networking and security services (middle ground). Others may need to share all Landing Zone resources and segregate environments based on the resources (instances, clusters, functions, databases, storage) where workloads are executed (no isolation). As a best practice we do not recommend no isolation mode, as changes in lower stages may affect production workloads. Say for instance you need to make changes to routing and security rules. A small distraction may get your production service inaccessible. No isolation is a bad choice for blast radius reasons and it limits customers ability to innovate.
 
 Full isolation is a much superior option and is straightforward to implement, thanks to **service_label** input variable. The value assigned to this variable is used as prefix to all provisioned resources. Therefore, for creating a dev environment, you can assign it "dev". For a test environment, "test", and so on. For more isolation, **service_label** can be paired together with the **region** variable, and you get Landing Zone environments in a different regions.
 
@@ -579,17 +582,18 @@ A development environment in Phoenix:
 region = "us-phoenix-1"
 service_label = "dev"
 ```
+
 A production environment in Ashburn:
 ```
 region = "us-ashburn-1"
 service_label = "prod"
 ```
 
-Fully isolated environments require distinct Terraform configurations, therefore distinct variable sets and distinct Terraform state files. With Terraform CLI, create a separate Workspace to each environment. With OCI Resource Manager, create a separate Stack to each environment. Check [Ways to Deploy](#ways_to_deploy) section for more details.
+Fully isolated environments require distinct Terraform configurations, therefore distinct variable sets and distinct Terraform state files. With Terraform CLI, create a separate Workspace to each environment. With OCI Resource Manager, create a separate Stack to each environment. Check [Ways to Deploy](#ways-to-deploy) section for more details.
 
 The middle ground approach is typically used by organizations that see network and security as shared services and want to provide separate environments for application and database resources. This is coming soon in the Landing Zone.
 
-# <a name="ways_to_deploy"></a>5. Ways to Deploy
+# <a name="ways-to-deploy"></a>5. Ways to Deploy
 
 Landing Zone can be deployed on OCI in a few ways. This section describes and examines them, providing guidance when to use each one.
 
@@ -619,7 +623,7 @@ Terraform CLI executes under the identity passed to Terraform provider. In Landi
     private_key_path     = "<path_to_user_private_key_file>"
     private_key_password = ""
 
-The *fingerprint* and private key pair are obtained in OCI Console when an API key is created for the user. Save the private key file locally and provide its path (absolute or relative) to the *private_key_path* variable.
+The *fingerprint* and private key pair are obtained in OCI Console when an API key is created for the user. Save the private key file locally and provide its path (absolute or relative) to the *private\_key\_path* variable.
 
 ### When to Use This Method
 
@@ -627,9 +631,9 @@ By default, Terraform CLI manages state locally and does not provide state locki
 
 ### Managing Multiple Landing Zones with the Same Config Files
 
-Sometimes you may want to manage multiple Landing Zones in same or different regions without managing multiple copies of the Terraform configuration files. All you need to do is making sure the state files do not get overwriten across subsequent runs. When working with Terraform CLI, use Terraform workspaces along with distinct .tfvars file, one to each Landing Zone. Terraform workspaces keep Terraform state files separate from each other. You only need to make sure to switch between workspaces and the respective .tfvars file.
+Sometimes you may want to manage multiple Landing Zones in same or different regions without managing multiple copies of the Terraform configuration files. All you need to do is making sure the state files do not get overwritten across subsequent runs. When working with Terraform CLI, use Terraform workspaces along with distinct .tfvars file, one to each Landing Zone. Terraform workspaces keep Terraform state files separate from each other. You only need to make sure to switch between workspaces and the respective .tfvars file.
 
-For instance, let's say you want to provision a production Landing Zone in Ashburn and a development Landing Zone in Phoenix. To deal with this, create two workspaces, say prd-ash and dev-phx. Also prepare two .tfvars file with proper variables assignments, terraform_ash.tfvars and terraform_phx.tfvars. Then you can execute plan and apply safely. Here's how it looks like using Terraform CLI commands:
+For instance, let's say you want to provision a production Landing Zone in Ashburn and a development Landing Zone in Phoenix. To deal with this, create two workspaces, say *prd-ash* and *dev-phx*. Also prepare two .tfvars file with proper variables assignments, terraform\_ash.tfvars and terraform\_phx.tfvars. Then you can execute plan and apply safely. Here's how it looks like using Terraform CLI commands:
 
     > terraform workspace new prd-ash (creates workspace and switches to it)
     > terraform workspace new dev-phx (creates workspace and switches to it)
@@ -648,11 +652,12 @@ There are a few different ways to run Terraform code using OCI Resource Manager 
 - creating an ORM stack by uploading a zip file to ORM;
 - creating an ORM stack by integrating with GitLab.
 
-A stack is the ORM term for a Terraform configuration and provide an isolated scope for Terraform state. A Stack manages one and only Terraform configuration. Therefore, for managing multiple Landing Zone configurations, use multiple stacks, one for each configuration.
+A stack is the ORM term for a Terraform configuration and provides an isolated scope for Terraform state. A Stack manages one and only Terraform configuration. Therefore, for managing multiple Landing Zone configurations, use multiple stacks, one for each configuration.
 
-Regardless of the chosen method (zip file or GitLab) **an ORM Stack must not contain any state file or *.terraform* folder in Terraform working folder.
+Regardless of the chosen method (zip file or GitLab) an ORM Stack must not contain any state file or *.terraform* folder in Terraform working folder.
 
-For more ORM information, please see https://docs.cloud.oracle.com/en-us/iaas/Content/ResourceManager/Concepts/resourcemanager.htm.
+For more ORM information, please see
+[Overview of Resource Manager](https://docs.cloud.oracle.com/en-us/iaas/Content/ResourceManager/Concepts/resourcemanager.htm).
 
 ### The Executing Identity
 
@@ -737,7 +742,7 @@ ORM CLI is part of OCI CLI. As such, they execute under the identity configured 
 
 ### The Basic CLI Commands
 
-The sequence below is equivalent to the typical Terraform CLI plan/apply cycle and are the bare minimum to deploy the Landing Zone. For a list of all available ORM CLI commands, check https://docs.oracle.com/en-us/iaas/tools/oci-cli/3.4.2/oci_cli_docs/cmdref/resource-manager.html.
+The sequence below is equivalent to the typical Terraform CLI plan/apply cycle and is the bare minimum to deploy the Landing Zone. For a list of all available ORM CLI commands, check https://docs.oracle.com/en-us/iaas/tools/oci-cli/3.4.2/oci\_cli\_docs/cmdref/resource-manager.html.
 
 #### Create Stack
     > oci resource-manager stack create --display-name "<stack-name>" --description "<description>" --compartment-id <compartment-id> --config-source <config-zip-file> --working-directory <dir-path-to-run-terraform-from> --terraform-version <terraform-version>
@@ -756,7 +761,7 @@ The sequence below is equivalent to the typical Terraform CLI plan/apply cycle a
 #### Run Apply Job (Terraform Apply)
     > oci resource-manager job create-apply-job --stack-id <stack-ocid> --execution-plan-strategy FROM_PLAN_JOB_ID --execution-plan-job-id <plan-job-ocid> --display-name "<apply-job-name>"
 
-### An example with ORM CLI
+### An Example with ORM CLI
 
 In this section we show above commands applied with actual values and their corresponding outputs. Use this as the basis for automating your deployments.
 
@@ -878,7 +883,7 @@ After checking the plan output is according to your expectations, run an apply j
         "etag": "63c...95c932"
     }
 
-After submitting the apply job, note *lifecycle-state* value is *ACCEPTED*. You can check the job progress at any time using the apply job *id*. See below *lifecycle-state* chenges to *IN_PROGRESS*.
+After submitting the apply job, note *lifecycle-state* value is *ACCEPTED*. You can check the job progress at any time using the apply job *id*. See below *lifecycle-state* changes to *IN_PROGRESS*.
 
     > $ oci resource-manager job get --job-id ocid1.ormjob.oc1.iad.aaa...zgfxyq
     {
@@ -911,12 +916,12 @@ After submitting the apply job, note *lifecycle-state* value is *ACCEPTED*. You 
         "etag": "5ef...eb88f8--gzip"
     }
 
-Keep running the above command up until *lifecycle-state* changes to *SUCCEEDED* or *FAILED*. You can grab the *lifecyle-state* value alone by piping the ORM CLI command to *jq* tool.
+Keep running the above command up until *lifecycle-state* changes to *SUCCEEDED* or *FAILED*. You can grab the *lifecycle-state* value alone by piping the ORM CLI command to *jq* tool.
 
     > oci resource-manager job get --job-id ocid1.ormjob.oc1.iad.aaa...zgfxyq | jq -r '.data["lifecycle-state"]'
-    SUCEEDED
+    SUCCEEDED
 
-# <a name="custom_lz"></a>6. Customizing the Landing Zone
+# <a name="custom-lz"></a>6. Customizing the Landing Zone
 
 The Landing Zone will take different forms according to values provided to input variables. See [Deployment Scenarios](#scenarios) section for details.
 
@@ -924,7 +929,7 @@ If code changes are needed, the Terraform configuration has a single root module
 
 ## <a name="using-terraform-overrides"></a>Using Terraform Overrides
 
-Changes on the Landing Zone code should be avoided when ever possible. Once the Landing Zone code is updated, your changes are out of sync and you might not be able to benefit from the new additions.
+Changes on the Landing Zone code should be avoided whenever possible. Once the Landing Zone code is updated, your changes are out of sync and you might not be able to benefit from the new additions.
 
 A good approach is to use [Terraform Override Files](https://www.terraform.io/language/files/override) for customization. Override files are merged with the combined Terraform files and allow to customize the Landing Zone in a very flexible way.
 
@@ -1143,7 +1148,7 @@ In this section we give deployment examples of Landing Zone variables input file
 
 ### Example 1: Simplest Deployment:  No Enclosing Compartment, Single Three-Tier VCN, Locked Down VCN
 
-Note that Landing Zone defaults the Three-Tier VCN with *10.0.0.0/20* CIDR range. It can be changed assigning the desired CIDR range to *vcn_cidrs* variable.
+Note that Landing Zone defaults the Three-Tier VCN with *10.0.0.0/20* CIDR range. It can be changed assigning the desired CIDR range to *vcn\_cidrs* variable.
 
 ```
 tenancy_ocid         = "ocid1.tenancy.oc1..aaa...ir7xdq"
@@ -1556,7 +1561,7 @@ The Pre-Config Module can create one or multiple enclosing compartments, where L
 
 ##### A: Single Default Enclosing Compartment
 
-A single enclosing compartment (name defaulted to *cislz-top-cmp*) is created in the Root compartment.
+A single enclosing compartment (name defaulted to *cislz-top-cmp*) is created in the root compartment.
 
 ```
 tenancy_ocid         = "ocid1.tenancy.oc1..aaa...ir7xdq"
@@ -1591,7 +1596,7 @@ existing_enclosing_compartments_parent_ocid = "ocid1.compartment.oc1..aaa...vves
 
 #### 15.2: Running the Config Module (as non admin)
 
-In this example, the Landing Zone environment is deployed within *cis_lz_dev* enclosing compartment (as indicated by *existing_enclosing_compartment_ocid* variable) created in the previous example.
+In this example, the Landing Zone environment is deployed within *cis\_lz\_dev* enclosing compartment (as indicated by *existing\_enclosing\_compartment\_ocid* variable) created in the previous example.
 
 ```
 tenancy_ocid         = "ocid1.tenancy.oc1..aaa...ir7xdq"
