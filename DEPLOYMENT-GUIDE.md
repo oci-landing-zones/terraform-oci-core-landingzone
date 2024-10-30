@@ -152,7 +152,7 @@ The Landing Zone’s IAM model seeks to enforce segregation of duties and the le
 Each tenancy includes a Default identity domain created in the root compartment that contains the initial tenant administrator user and group and a default Policy that allows administrators to manage any resource in the tenancy. The Default identity domain lives with the life cycle of the tenancy and can't be deleted.
 
 #### Custom Domain
-Landing Zone allows for the usage of custom identity domains groups and dynamic groups to manage/access its managed resources. A bespoke identity domain is useful when you need a separate environment for a cloud service or application (for example, one environment for development and one for production). For added security, you can configure each identity domain to have its own credentials (for example, Password and Sign-On policies).
+Landing Zone allows for creation of additional identity domains within the enclosing compartment. A bespoke identity domain is useful when you need a separate environment for a cloud service or application (for example, one environment for development and one for production). For added security, you can configure each identity domain to have its own credentials (for example, Password and Sign-On policies).
 
 Landing Zone uses policies, groups and dynamic groups in a custom identity domain for security based segregation of roles and workload administration.
 
@@ -183,8 +183,8 @@ By default, the Landing Zone defines the following personas that account for mos
 - **Cost Administrators**: manage budgets and usage reports.
 - **Auditors**: entitled with read-only access across the tenancy and the ability to use cloud-shell to run the *cis\_reports.py* script.
 - **Announcement Readers**: for reading announcements displayed in OCI Console.
-- **Security Administrators**: manage security services and resources including Vaults, Keys, Logging, Vulnerability Scanning, Web Application Firewall, Bastion, Service Connector Hub, ZPR.
-- **Network Administrators**: manage OCI network family, including VCNs, Load Balancers, DRGs, VNICs, IP addresses, OCI Network Firewall.
+- **Security Administrators**: manage security services and resources including Vaults, Keys, Logging, Vulnerability Scanning, Web Application Firewall, Bastion, Service Connector Hub.
+- **Network Administrators**: manage OCI network family, including VCNs, Load Balancers, DRGs, VNICs, IP addresses.
 - **Application Administrators**: manage application related resources including Compute images, OCI Functions, Kubernetes clusters, Streams, Object Storage, Block Storage, File Storage.
 - **Database Administrators**: manage database services, including Oracle VMDB (Virtual Machine), BMDB (Bare Metal), ADB (Autonomous databases), Exadata databases, MySQL, NoSQL, etc.
 - **ExaCS Administrators** (only created when ExaCS compartment is created): manage Exadata infrastructure and VM clusters in the ExaCS compartment.
@@ -201,7 +201,6 @@ The Landing Zone defines four dynamic groups to satisfy common needs of workload
 - **AppDev Functions**: to be used by functions defined in the AppDev compartment. The matching rule includes all functions in the AppDev compartment. An example is a function for processing of application data and writing it to an Object Storage bucket.
 - **Compute Agent**: to be used by Compute's management agent in the AppDev compartment.
 - **Database KMS**: to be used by databases in the Database compartment to access keys in the Vault service.
-- **Fortigate Network Appliance**: to be used by Fortigate network appliances to read resources.
 
 ### Policies
 
@@ -217,17 +216,15 @@ The Landing Zone now provides the ability to integrate groups and dynamic groups
 
 ## <a name="network-configuration"></a>3.2 Network Configuration
 
-The Landing Zone supports a variety of networking types:
+The Landing Zone supports a variety of networking models:
 
-- **Standard Three-Tier Web Application VCN**: up to four subnets are provisioned, one to host load balancers, one for application servers (middle-tiers) and one for database servers. Optionally, a subnet (either public or private) for jump hosts is available. The load balancer subnet can be made either public or private. The application servers' and database servers' are always created private. Route rules and network security rules are configured based on provided connectivity settings.
+- **Standard Three-Tier Web Application VCN**: three subnets are provisioned, one to host load balancers and bastion hosts, one for application servers (middle-tiers) and one for database servers. The load balancer subnet can be made either public or private. The application servers' and database servers' are always created private. Route rules and network security rules are configured based on provided connectivity settings.
 
 - **Exadata Cloud Service (ExaCS) VCN**: two private subnets are provisioned, according to ExaCS requirements. One subnet for the Exadata client (the database itself) and one for database backups. Route rules and network security rules are configured based on ExaCS requirements and provided connectivity settings.
 
-- **Oracle Kubernetes Engine (OKE) VCN**: one public and up to four private subnets are provisioned, according to OKE requirements. Public facing is the Services subnet, where service like load balancers are expected to be deployed. The others are Workers, API, Management and Pods (available for Native Pod Networking CNI) subnets. Route rules and network security rules are configured based on OKE requirements and provided connectivity settings.
+- **Oracle Kubernetes Engine (OKE) VCN**: two public and three private subnets are provisioned, according to OKE requirements. Public facing are the Services and Management subnets. The other three are Pods, Workers and API subnets which provide the connectivity within the Kubernetes cluster. Route rules and network security rules are configured based on OKE requirements and provided connectivity settings.
 
-The Landing Zone supports up to three VCNs of each type.
-
-Regardless the networking types, these VCNs can be deployed standalone or all connected via OCI DRG V2 service in a Hub & Spoke topology. When deploying Hub & Spoke, either a Hub VCN (aka DMZ VCN) can be provisioned or the DRG itself used as the hub. The Landing Zone also optionally deploys a network appliance in the Hub VCN to control/secure all inbound and outbound traffic routing in the spoke VCNs. 
+Regardless the networking model, VCNs can be deployed standalone or all connected via OCI DRG V2 service in a Hub & Spoke topology. When deploying Hub & Spoke, either a Hub VCN can be provisioned or the DRG itself used as the hub. The Hub VCN can be configured for firewall deployments and OCI security partners have developed [Landing Zone ready Terraform configurations](https://blogs.oracle.com/cloud-infrastructure/post/adding-our-security-partners-to-a-cis-oci-landing-zone).
 
 The VCNs can also be configured with no Internet connectivity or for on-premises connectivity. Inbound access to the SSH port from 0.0.0.0/0 IP range is strictly prohibited.
 
@@ -277,17 +274,18 @@ By default, the Landing Zone compartments are deployed in the tenancy root compa
 
 - **use\_enclosing\_compartment**: a boolean flag indicating whether or not to provision the Landing Zone within an enclosing compartment other than the root compartment. When provisioning the Landing Zone as a narrower-permissioned user, it must be set to true.
 
-- **existing\_enclosing\_compartment\_ocid**: The OCID of a pre-existing enclosing compartment where Landing Zone compartments are to be created. If *use\_enclosing\_compartment* is false, the module creates the Landing Zone compartments in the root compartment as long as the executing user has the required permissions. If *use\_enclosing\_compartment* is true, but *existing\_enclosing\_compartment\_ocid* is not set, a default enclosing compartment is created under the root compartment with the name *\<service_label\>-top-cmp*.
+- **existing\_enclosing\_compartment\_ocid**: the OCID of a pre-existing enclosing compartment where Landing Zone compartments are to be created. If *use\_enclosing\_compartment* is false, the module creates the Landing Zone compartments in the root compartment as long as the executing user has the required permissions. If *use\_enclosing\_compartment* is true, but *existing\_enclosing\_compartment\_ocid* is not set, a default enclosing compartment is created under the root compartment with the name *\<service_label\>-top-cmp*.
 
-If an enclosing compartment is deployed, Landing Zone policies that are not required to be attached at root compartment are attached to the enclosing compartment. This allows the enclosing compartment to be later moved anywhere in the compartments hierarchy without any policy changes.
+If an enclosing compartment is deployed, Landing Zone policies that are not required to be attached at root compartment are attached to the enclosing compartment. This allows the enclosing compartment to be moved later anywhere in the compartments hierarchy without any policy changes.
 
 ### Reusing Existing Groups and Dynamic Groups
 
 By default, the Landing Zone provisions groups and dynamic groups. These groups are assigned various grants in Landing Zone policies. However, some circumstances may require the reuse of existing groups and dynamic groups, as in:
+
 - customers who already have defined their groups;
 - customers who work with federated groups;
 - when Landing Zone deployers do not have permissions to create groups;
-- when granting multiple Landing Zone compartments ownership to the same group: this is especially useful when creating distinct Landing Zones for multiple lifecycle compartments (Dev/Test/Prod), but requiring the same groups to manage them. In this case, you provision the Landing Zone three times, one for each environment. In the first run, all groups are created. In the next two, groups are reused and granted the appropriate permissions over the environment compartments. If a different set of groups is required for each environment, simply do not reuse existing groups, letting new groups to be provisioned.
+- when granting multiple Landing Zone compartments ownership to the same group: this is especially useful when creating distinct Landing Zones for multiple lifecycle compartments (Dev/Test/Prod), but requiring the same groups to manage them. In this case, you provision the Landing Zone three times, once for each environment. In the first run, all groups are created. In the next two, groups are reused and granted the appropriate permissions over the environment compartments. If a different set of groups is required for each environment, simply do not reuse existing groups, letting new groups to be provisioned.
 
 In these cases, simply provide the existing OCI group names to the appropriate configuration variables and they are reused in Landing Zone policies. Here are the variable names:
 
