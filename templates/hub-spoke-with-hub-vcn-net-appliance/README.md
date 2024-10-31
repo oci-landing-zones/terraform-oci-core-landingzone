@@ -2,6 +2,12 @@
 
 This template shows how to deploy a CIS compliant landing zone using [OCI Core Landing Zone](../../) configuration with a Hub/Spoke networking topology including either Fortinet's Fortigate Firewall or Palo Alto Networks Firewall. Both configurations are mostly the same, except for the network appliance option (_hub\_vcn\_deploy\_net\_appliance\_option_) and their respective settings (_net\_appliance\__ variables).
 
+Deploying a network firewall appliance requires the same Terraform configuration executed twice. The first time it creates all the networking resources, except the required routing to the network load balancers that front end the network appliances (that are also created in the first run). So the second time execution is to update the configuration with that routing.
+
+The variables to update for the second time execution are **hub_vcn_north_south_entry_point_ocid** and **hub_vcn_east_west_entry_point_ocid**. And their values are available in the **nlb_private_ip_addresses** output. 
+- **hub_vcn_north_south_entry_point_ocid** takes the OCID value in **nlb_private_ip_addresses.OUTDOOR-NLB**
+- **hub_vcn_east_west_entry_point_ocid** takes the OCID value in **nlb_private_ip_addresses.INDOOR_NLB**.
+
 ## Deployment Scenario 1: Fortinet Firewall
 
 It deploys Fortinet Firewall, Hub VCN, Exa VCN and OKE VCN which are peered through the DRG. The DRG is configured to route traffic across all VCNs.
@@ -35,6 +41,8 @@ This template has the following parameters set:
 | oke_vcn1_cni_type | OKE CNI Type | "Native" |
 | oke_vcn1_cidrs | OKE VCN 1 CIDR Block. | ["10.3.0.0/16"]|
 | oke_vcn1_attach_to_drg | Attach this VCN to DRG (Dynamic Routing Gateway) | true |
+| hub_vcn_north_south_entry_point_ocid | The OCID of a private address the Hub VCN routes traffic to for inbound external traffic (North/South). It must be updated for the second execution of the configuration. | Initially null. For the second time execution, it is the OCID of the outdoor network load balancer's private IP address. This is available in the output nlb_private_ip_addresses.OUTDOOR-NLB. |
+| hub_vcn_east_west_entry_point_ocid | The OCID of a private address the Hub VCN routes traffic to for inbound internal cross-vcn traffic (East/West). It must be updated for the second execution of the configuration. | Initially null. For the second time execution, it is the OCID of the indoor network load balancer's private IP address. This is available in the output nlb_private_ip_addresses.INDOOR_NLB. |
 | network_admin_email_endpoints | List of email addresses that receive notifications for networking related events. | ["email.address@example.com"] |
 | security_admin_email_endpoints | List of email addresses that receive notifications for security related events. | ["email.address@example.com"] |
 | enable_cloud_guard | When true, OCI Cloud Guard Service is enabled. Set to false if it's been already enabled through other means. | true |
@@ -61,6 +69,19 @@ You are required to review/adjust the following variable settings:
 
 With the stack created, perform a Plan, followed by an Apply using RMS UI.
 
+Once the Apply finishes, RMS displays the stack output under the **Application information** tab. Under Networking, there is an output named **Network Load Balancers (NLB) Private IP Addresses**, whose value looks like:
+```
+{"INDOOR_NLB":{"id":"ocid1.privateip.oc1.phx.abyhql...goq"},"OUTDOOR-NLB":{"id":"ocid1.privateip.oc1.phx.abyhql...4ga"}}
+```
+
+Edit the RMS stack variables to update the routings to the network appliance using the values above. 
+- Enter the id value in OUTDOOR-NLB ("ocid1.privateip.oc1.phx.abyhql...4ga") to update **Hub VCN North/South Traffic Destination OCID** field.
+- Enter the id value in INDOOR_NLB ("ocid1.privateip.oc1.phx.abyhql...goq") to update **Hub VCN East/West Traffic Destination OCID** field.
+
+![panf_deploy_update](../../images/panf_deploy_update.png)
+
+Perform a new Plan, followed by an Apply.
+
 ### Terraform CLI Deployment
 
 1. Rename file *main.tf.fortinet.template* to *main.tf*. 
@@ -69,7 +90,11 @@ With the stack created, perform a Plan, followed by an Apply using RMS UI.
     - $ terraform init
     - $ terraform plan
     - $ terraform apply
-
+4. Take note of the values in the output **nlb_private_ip_addresses**.
+5. Uncomment and update the variables **hub_vcn_north_south_entry_point_ocid** and **hub_vcn_north_south_entry_point_ocid** as instructed in *main.tf.fortinet.template*.
+6. In this folder, execute Terraform plan and apply again:
+    - $ terraform plan
+    - $ terraform apply
 
 ## Deployment Scenario 2: Palo Alto Firewall
 
@@ -104,6 +129,8 @@ This template has the following parameters set:
 | oke_vcn1_cni_type | OKE CNI Type | "Native" |
 | oke_vcn1_cidrs | OKE VCN 1 CIDR Block. | ["10.3.0.0/16"]|
 | oke_vcn1_attach_to_drg | Attach this VCN to DRG (Dynamic Routing Gateway) | true |
+| hub_vcn_north_south_entry_point_ocid | The OCID of a private address the Hub VCN routes traffic to for inbound external traffic (North/South). It must be updated for the second execution of the configuration. | Initially null. For the second time execution, it is the OCID of the outdoor network load balancer's private IP address. This is available in the output nlb_private_ip_addresses.OUTDOOR-NLB. |
+| hub_vcn_east_west_entry_point_ocid | The OCID of a private address the Hub VCN routes traffic to for inbound internal cross-vcn traffic (East/West). It must be updated for the second execution of the configuration. | Initially null. For the second time execution, it is the OCID of the indoor network load balancer's private IP address. This is available in the output nlb_private_ip_addresses.INDOOR_NLB. |
 | network_admin_email_endpoints | List of email addresses that receive notifications for networking related events. | ["email.address@example.com"] |
 | security_admin_email_endpoints | List of email addresses that receive notifications for security related events. | ["email.address@example.com"] |
 | enable_cloud_guard | When true, OCI Cloud Guard Service is enabled. Set to false if it's been already enabled through other means. | true |
@@ -130,6 +157,19 @@ You are required to review/adjust the following variable settings:
 
 With the stack created, perform a Plan, followed by an Apply using RMS UI.
 
+Once the Apply finishes, RMS displays the stack output under the **Application information** tab. Under Networking, there is an output named **Network Load Balancers (NLB) Private IP Addresses**, whose value looks like:
+```
+{"INDOOR_NLB":{"id":"ocid1.privateip.oc1.phx.abyhql...goq"},"OUTDOOR-NLB":{"id":"ocid1.privateip.oc1.phx.abyhql...4ga"}}
+```
+
+Edit the RMS stack variables to update the routings to the network appliance using the values above. 
+- Enter the id value in OUTDOOR-NLB ("ocid1.privateip.oc1.phx.abyhql...4ga") to update **Hub VCN North/South Traffic Destination OCID** field.
+- Enter the id value in INDOOR_NLB ("ocid1.privateip.oc1.phx.abyhql...goq") to update **Hub VCN East/West Traffic Destination OCID** field.
+
+![fortigate_deploy_update](../../images/fortigate_deploy_update.png)
+
+Perform a new Plan, followed by an Apply.
+
 ### Terraform CLI Deployment
 
 1. Rename file *main.tf.paloalto.template* to *main.tf*. 
@@ -138,4 +178,9 @@ With the stack created, perform a Plan, followed by an Apply using RMS UI.
     - $ terraform init
     - $ terraform plan
     - $ terraform apply
+4. Take note of the values in the output **nlb_private_ip_addresses**.
+5. Uncomment and update the variables **hub_vcn_north_south_entry_point_ocid** and **hub_vcn_north_south_entry_point_ocid** as instructed in *main.tf.paloalto.template*.
+6. In this folder, execute Terraform plan and apply again:
+    - $ terraform plan
+    - $ terraform apply    
 

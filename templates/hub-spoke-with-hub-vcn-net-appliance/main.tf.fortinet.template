@@ -39,7 +39,6 @@ module "core_lz_fortinet" {
     hub_vcn_cidrs         = ["192.168.0.0/24"]
 
     # --- Firewall deployment option.
-
     hub_vcn_deploy_net_appliance_option = "Fortinet FortiGate Firewall"
     net_fortigate_version               = "7.2.9_(_X_64)"
     net_appliance_flex_shape_memory     = 56
@@ -54,7 +53,6 @@ module "core_lz_fortinet" {
     tt_vcn1_attach_to_drg         = true
     
     # --- ExaData VCN:
-
     add_exa_vcn1                   = true
     exa_vcn1_cidrs                 = ["192.168.0.0/24"]
     exa_vcn1_attach_to_drg         = true
@@ -64,8 +62,10 @@ module "core_lz_fortinet" {
     oke_vcn1_cidrs                 = ["192.168.0.0/24"]
     oke_vcn1_attach_to_drg         = true
 
-    
-
+    # --- Routing to Firewall. Uncomment and update the two variables below for the second time execution.
+    # hub_vcn_north_south_entry_point_ocid = "replace with the OCID value in the output of nlb_private_ip_addresses.OUTDOOR-NLB"
+    # hub_vcn_east_west_entry_point_ocid   = "replace with the OCID value in the output of nlb_private_ip_addresses.INDOOR_NLB"
+  
     # ------------------------------------------------------
     # ----- Notifications
     # ------------------------------------------------------
