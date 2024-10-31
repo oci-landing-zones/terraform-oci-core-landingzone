@@ -96,7 +96,7 @@ When working with Terraform, a key consideration is how to manage state. Terrafo
 
 There are a few crucial aspects to consider when managing state:
 
-- **Terraform state must be protected against unintentional changes**: as stated in [https://learn.hashicorp.com/tutorials/terraform/refresh]( https://learn.hashicorp.com/tutorials/terraform/refresh), *"Terraform relies on the contents of your workspace's state file to generate an execution plan to make changes to your resources. To ensure the accuracy of the proposed changes, your state file must be up to date."* Terraform state is readable text. Unless you have 100% confidence in what you are doing, do not update state manually. Let Terraform manage it or use [Terraform CLI state management commands](https://www.terraform.io/cli/commands/state) if you absolutely need to make a manual change.
+- **Terraform state must be protected against unintentional changes**: as stated in [Use refresh-only mode to sync Terraform state](https://developer.hashicorp.com/terraform/tutorials/state/refresh), *"Terraform relies on the contents of your workspace's state file to generate an execution plan to make changes to your resources. To ensure the accuracy of the proposed changes, your state file must be up to date."* Terraform state is readable text. Unless you have 100% confidence in what you are doing, do not update state manually. Let Terraform manage it or use [Terraform CLI state command](https://developer.hashicorp.com/terraform/cli/commands/state) if you absolutely need to make a manual change.
 
     Terraform automatically backs up the state file in *terraform.tfstate.backup* in the same folder as *terraform.tfstate*. Use that in case you cannot recover from a corrupted or lost *terraform.tfstate*.
 
@@ -423,7 +423,7 @@ A foundational budget can be deployed to alert customers on their OCI spending. 
 ### Oracle Access Governance
 
 #### Overview
-Landing Zone may optionally deploy the OCI IAM policies for deploying an [Oracle Access Governance]() instance. To do this select **Enable Oracle Access Governance groups and policies** in your Oracle Resource Manager stack deployment in OCI or set `enable_oag_prerequisite_policies` to `true`. When enabled the Landing Zone will provide a new or existing group with the policies required for the Oracle Access Governance instance's service account and add policies to the Security Administrator to be able to create and Oracle Access Governance (OAG) instance in the security compartment.
+Landing Zone may optionally deploy the OCI IAM policies for deploying an Oracle Access Governance instance. To do this select **Enable Oracle Access Governance groups and policies** in your Oracle Resource Manager stack deployment in OCI or set `enable_oag_prerequisite_policies` to `true`. When enabled the Landing Zone will provide a new or existing group with the policies required for the Oracle Access Governance instance's service account and add policies to the Security Administrator to be able to create and Oracle Access Governance (OAG) instance in the security compartment.
 
 #### Policies
 
@@ -445,7 +445,7 @@ allow group <label>-security-admin-group to manage agcs-instance in compartment 
 As a user in the *\<label\>-security-admin-group* follow the steps in [Set Up Service Instance](https://docs.oracle.com/en/cloud/paas/access-governance/cagsi/).
 
 #### Enabling an OAG an instance to review OCI IAM access in the tenancy
-After the OAG instance is provisioned follow steps from the [Integrate with Oracle Cloud Infrastructure (OCI) Identity and Access Management (IAM) ](https://docs.oracle.com/en/cloud/paas/access-governance/tjrtj/index.html#GUID-29D81CB5-08BB-45CB-8911-416F6FFDB0C9) to configure the OAG Instance to review the OCI IAM policies.
+After the OAG instance is provisioned follow steps from [Set Up Identity Resources on OCI to Connect to Oracle Access Governance](https://docs.oracle.com/en/cloud/paas/access-governance/tjrtj/index.html#GUID-29D81CB5-08BB-45CB-8911-416F6FFDB0C9) to configure the OAG Instance to review the OCI IAM policies.
 
 1. As a user in the *\<label\>-iam-admin-group* or the Administrator group go to the **Set up Identity Resources Manually** section and preform the below steps:
     1. Follow the these steps and the links provided to set up identity resources in your cloud tenancy.
@@ -657,7 +657,8 @@ ORM CLI is part of OCI CLI. As such, they execute under the identity configured 
 
 ### The Basic CLI Commands
 
-The sequence below is equivalent to the typical Terraform CLI plan/apply cycle and is the bare minimum to deploy the Landing Zone. For a list of all available ORM CLI commands, check https://docs.oracle.com/en-us/iaas/tools/oci-cli/3.4.2/oci\_cli\_docs/cmdref/resource-manager.html.
+The sequence below is equivalent to the typical Terraform CLI plan/apply cycle and is the bare minimum to deploy the Landing Zone. For a list of all available ORM CLI commands, check
+[Resource Manager CLI](https://docs.oracle.com/en-us/iaas/tools/oci-cli/3.49.4/oci_cli_docs/cmdref/resource-manager.html)
 
 #### Create Stack
     > oci resource-manager stack create --display-name "<stack-name>" --description "<description>" --compartment-id <compartment-id> --config-source <config-zip-file> --working-directory <dir-path-to-run-terraform-from> --terraform-version <terraform-version>
