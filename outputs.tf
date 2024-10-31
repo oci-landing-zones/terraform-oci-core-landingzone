@@ -48,70 +48,71 @@ output "dynamic_routing_gateways" {
 
 output "nlb_private_ip_addresses" {
   description = "The deployed private IP addresses OCIDs."
-  value       = var.display_output && length(module.lz_nlb) > 0 ? merge({ for k, v in module.lz_nlb[0].nlbs_primary_private_ips : k => { id : v.id } }, { for k, v in module.lz_nlb[0].nlbs_public_ips : k => { id : v.private_ip_id } }) : null
+  value       = var.display_output && length(module.lz_nlb) > 0 ? { for k, v in module.lz_nlb[0].nlbs_primary_private_ips : k => { id : v.private_ips[0].id } } : null
 }
 
-## Budget outputs
-output "created_budgets" {
-  description = "Budgets created by Landing Zone."
-  value       = var.display_output && var.extend_landing_zone_to_new_region == false && var.create_budget ? module.lz_budgets[0].budgets : null
-}
 
-output "created_budget_alert_rules" {
-  description = "Budget alert rules created by Landing Zone."
-  value       = var.display_output && var.extend_landing_zone_to_new_region == false && var.create_budget ? module.lz_budgets[0].budget_alert_rules : null
-}
+# ## Budget outputs
+# output "created_budgets" {
+#   description = "Budgets created by Landing Zone."
+#   value       = var.display_output && var.extend_landing_zone_to_new_region == false && var.create_budget ? module.lz_budgets[0].budgets : null
+# }
 
-## Cloud guard outputs
-output "created_cloud_guard_targets" {
-  description = "Cloud guard targets created by Landing Zone."
-  value       = var.display_output && var.enable_cloud_guard ? module.lz_cloud_guard[0].targets : null
-}
+# output "created_budget_alert_rules" {
+#   description = "Budget alert rules created by Landing Zone."
+#   value       = var.display_output && var.extend_landing_zone_to_new_region == false && var.create_budget ? module.lz_budgets[0].budget_alert_rules : null
+# }
 
-## Events and alarms outputs
-output "created_alarms" {
-  description = "Alarms created by Landing Zone."
-  value       = var.display_output ? module.lz_alarms.alarms : null
-}
+# ## Cloud guard outputs
+# output "created_cloud_guard_targets" {
+#   description = "Cloud guard targets created by Landing Zone."
+#   value       = var.display_output && var.enable_cloud_guard ? module.lz_cloud_guard[0].targets : null
+# }
 
-output "created_events" {
-  description = "Events created by Landing Zone."
-  value       = var.display_output ? module.lz_notifications.events : null
-}
+# ## Events and alarms outputs
+# output "created_alarms" {
+#   description = "Alarms created by Landing Zone."
+#   value       = var.display_output ? module.lz_alarms.alarms : null
+# }
 
-output "created_home_region_events" {
-  description = "Events created by Landing Zone."
-  value       = var.display_output && var.extend_landing_zone_to_new_region == false ? module.lz_home_region_notifications[0].events : null
-}
+# output "created_events" {
+#   description = "Events created by Landing Zone."
+#   value       = var.display_output ? module.lz_notifications.events : null
+# }
 
-output "created_topics" {
-  description = "Events created by Landing Zone."
-  value       = var.display_output ? module.lz_regional_topics.topics : null
-}
+# output "created_home_region_events" {
+#   description = "Events created by Landing Zone."
+#   value       = var.display_output && var.extend_landing_zone_to_new_region == false ? module.lz_home_region_notifications[0].events : null
+# }
 
-output "created_home_region_topics" {
-  description = "Events created by Landing Zone."
-  value       = var.display_output && var.extend_landing_zone_to_new_region == false ? module.lz_home_region_topics[0].topics : null
-}
+# output "created_topics" {
+#   description = "Events created by Landing Zone."
+#   value       = var.display_output ? module.lz_regional_topics.topics : null
+# }
 
-## Vault outputs
-output "created_vaults" {
-  description = "Vaults created by Landing Zone."
-  value       = var.display_output && local.enable_vault ? module.lz_vault[0].vaults : null
-}
+# output "created_home_region_topics" {
+#   description = "Events created by Landing Zone."
+#   value       = var.display_output && var.extend_landing_zone_to_new_region == false ? module.lz_home_region_topics[0].topics : null
+# }
 
-output "created_keys" {
-  description = "Keys created by Landing Zone."
-  value       = var.display_output && local.enable_vault ? module.lz_vault[0].keys : null
-}
+# ## Vault outputs
+# output "created_vaults" {
+#   description = "Vaults created by Landing Zone."
+#   value       = var.display_output && local.enable_vault ? module.lz_vault[0].vaults : null
+# }
 
-## VSS outputs
-output "created_scanning_host_targets" {
-  description = "The VSS host targets created."
-  value       = var.display_output && var.vss_create ? module.lz_scanning[0].scanning_host_targets : null
-}
+# output "created_keys" {
+#   description = "Keys created by Landing Zone."
+#   value       = var.display_output && local.enable_vault ? module.lz_vault[0].keys : null
+# }
 
-output "created_scanning_host_recipes" {
-  description = "The VSS host targets created."
-  value       = var.display_output && var.vss_create ? module.lz_scanning[0].scanning_host_recipes : null
-}
+# ## VSS outputs
+# output "created_scanning_host_targets" {
+#   description = "The VSS host targets created."
+#   value       = var.display_output && var.vss_create ? module.lz_scanning[0].scanning_host_targets : null
+# }
+
+# output "created_scanning_host_recipes" {
+#   description = "The VSS host targets created."
+#   value       = var.display_output && var.vss_create ? module.lz_scanning[0].scanning_host_recipes : null
+# }
