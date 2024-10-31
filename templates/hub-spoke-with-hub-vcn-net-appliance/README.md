@@ -1,6 +1,6 @@
 # CIS Landing Zone With Hub/Spoke DRG with Network Firewall Topology Template
 
-This template shows how to deploy a CIS compliant landing zone using [OCI Core Landing Zone](../../) configuration. 
+This template shows how to deploy a CIS compliant landing zone using [OCI Core Landing Zone](../../) configuration with a Hub/Spoke networking topology including either Fortinet's Fortigate Firewall or Palo Alto Networks Firewall. Both configurations are mostly the same, except for the network appliance option (_hub\_vcn\_deploy\_net\_appliance\_option_) and their respective settings (_net\_appliance\__ variables).
 
 ## Deployment Scenario 1: Fortinet Firewall
 
@@ -52,7 +52,7 @@ This template can be deployed using OCI Resource Manager Service (RMS) or Terraf
 
 By clicking the button below, you are redirected to an OCI RMS Stack with variables pre-assigned for deployment. 
 
-[![Deploy_To_OCI](../../images/DeployToOCI.svg)](https://cloud.oracle.com/resourcemanager/stacks/create?zipUrl=https://github.com/oci-landing-zones/terraform-oci-core-landingzone/archive/refs/heads/main.zip&zipUrlVariables={"service_label":"abcde","define_net":true,"hub_deployment_option":"VCN%20or%20on-premises%20connectivity%20routing%20via%20DRG%20(DRG%20will%20be%20created)","hub_vcn_cidrs":["192.168.0.0/26"],"hub_vcn_deploy_net_appliance_option":"Fortinet%20FortiGate%20Firewall","net_fortigate_version":"7.2.9%20(X64)%20","net_appliance_flex_shape_memory":"56","net_appliance_flex_shape_cpu":"2","net_appliance_boot_volume_size":"60","net_appliance_public_rsa_key":"Enter%20Public%20SSH%20Key","net_appliance_shape":"VM.Standard.E4.Flex","add_tt_vcn1":true,"tt_vcn1_cidrs":["10.0.0.0/20"],"tt_vcn1_attach_to_drg":true,"add_exa_vcn1":true,"exa_vcn1_cidrs":["172.16.0.0/20"],"exa_vcn1_attach_to_drg":true,"add_oke_vcn1":true,"oke_vcn1_cni_type":"Native","oke_vcn1_cidrs":["10.3.0.0/16"],"oke_vcn1_attach_to_drg":true,"network_admin_email_endpoints":["email.address@example.com"],"security_admin_email_endpoints":["email.address@example.com"],"enable_cloud_guard":true,"create_budget":true,"budget_alert_threshold":"100","budget_amount":"1000","budget_alert_email_endpoints":["email.address@example.com"]})
+[![Deploy_To_OCI](../../images/DeployToOCI.svg)](https://cloud.oracle.com/resourcemanager/stacks/create?zipUrl=https://github.com/oci-landing-zones/terraform-oci-core-landingzone/archive/refs/heads/main.zip&zipUrlVariables={"service_label":"fortinet","define_net":true,"hub_deployment_option":"VCN%20or%20on-premises%20connectivity%20routing%20via%20DRG%20(DRG%20will%20be%20created)","hub_vcn_cidrs":["192.168.0.0/26"],"hub_vcn_deploy_net_appliance_option":"Fortinet%20FortiGate%20Firewall","net_fortigate_version":"7.2.9%20(X64)%20","net_appliance_flex_shape_memory":"56","net_appliance_flex_shape_cpu":"2","net_appliance_boot_volume_size":"60","net_appliance_public_rsa_key":"Enter%20Public%20SSH%20Key","net_appliance_shape":"VM.Standard.E4.Flex","add_tt_vcn1":true,"tt_vcn1_cidrs":["10.0.0.0/20"],"tt_vcn1_attach_to_drg":true,"add_exa_vcn1":true,"exa_vcn1_cidrs":["172.16.0.0/20"],"exa_vcn1_attach_to_drg":true,"add_oke_vcn1":true,"oke_vcn1_cni_type":"Native","oke_vcn1_cidrs":["10.3.0.0/16"],"oke_vcn1_attach_to_drg":true,"network_admin_email_endpoints":["email.address@example.com"],"security_admin_email_endpoints":["email.address@example.com"],"enable_cloud_guard":true,"create_budget":true,"budget_alert_threshold":"100","budget_amount":"1000","budget_alert_email_endpoints":["email.address@example.com"]})
 
 You are required to review/adjust the following variable settings:
  - Make sure to pick an OCI region for deployment.
@@ -63,7 +63,7 @@ With the stack created, perform a Plan, followed by an Apply using RMS UI.
 
 ### Terraform CLI Deployment
 
-1. Rename file *main.tf.template* to *main.tf*. 
+1. Rename file *main.tf.fortinet.template* to *main.tf*. 
 2. Provide/review the variable assignments in *main.tf*.
 3. In this folder, execute the typical Terraform workflow:
     - $ terraform init
@@ -121,7 +121,7 @@ This template can be deployed using OCI Resource Manager Service (RMS) or Terraf
 
 By clicking the button below, you are redirected to an OCI RMS Stack with variables pre-assigned for deployment. 
 
-[![Deploy_To_OCI](../../images/DeployToOCI.svg)](https://cloud.oracle.com/resourcemanager/stacks/create?zipUrl=https://github.com/oci-landing-zones/terraform-oci-core-landingzone/archive/refs/heads/main.zip&zipUrlVariables={"service_label":"abcde","define_net":true,"hub_deployment_option":"VCN%20or%20on-premises%20connectivity%20routing%20via%20DRG%20(DRG%20will%20be%20created)","hub_vcn_cidrs":["192.168.0.0/26"],"hub_vcn_deploy_net_appliance_option":"Palo%20Alto%20Networks%20VM-Series%20Firewall","net_palo_alto_version":"11.1.3%20","net_appliance_flex_shape_memory":"56","net_appliance_flex_shape_cpu":"2","net_appliance_boot_volume_size":"60","net_appliance_public_rsa_key":"Enter%20Public%20SSH%20Key","net_appliance_shape":"VM.Standard2.4","add_tt_vcn1":true,"tt_vcn1_cidrs":["10.0.0.0/20"],"tt_vcn1_attach_to_drg":true,"add_exa_vcn1":true,"exa_vcn1_cidrs":["172.16.0.0/20"],"exa_vcn1_attach_to_drg":true,"add_oke_vcn1":true,"oke_vcn1_cni_type":"Native","oke_vcn1_cidrs":["10.3.0.0/16"],"oke_vcn1_attach_to_drg":true,"network_admin_email_endpoints":["email.address@example.com"],"security_admin_email_endpoints":["email.address@example.com"],"enable_cloud_guard":true,"create_budget":true,"budget_alert_threshold":"100","budget_amount":"1000","budget_alert_email_endpoints":["email.address@example.com"]})
+[![Deploy_To_OCI](../../images/DeployToOCI.svg)](https://cloud.oracle.com/resourcemanager/stacks/create?zipUrl=https://github.com/oci-landing-zones/terraform-oci-core-landingzone/archive/refs/heads/main.zip&zipUrlVariables={"service_label":"paloalto","define_net":true,"hub_deployment_option":"VCN%20or%20on-premises%20connectivity%20routing%20via%20DRG%20(DRG%20will%20be%20created)","hub_vcn_cidrs":["192.168.0.0/26"],"hub_vcn_deploy_net_appliance_option":"Palo%20Alto%20Networks%20VM-Series%20Firewall","net_palo_alto_version":"11.1.3%20","net_appliance_flex_shape_memory":"56","net_appliance_flex_shape_cpu":"2","net_appliance_boot_volume_size":"60","net_appliance_public_rsa_key":"Enter%20Public%20SSH%20Key","net_appliance_shape":"VM.Standard2.4","add_tt_vcn1":true,"tt_vcn1_cidrs":["10.0.0.0/20"],"tt_vcn1_attach_to_drg":true,"add_exa_vcn1":true,"exa_vcn1_cidrs":["172.16.0.0/20"],"exa_vcn1_attach_to_drg":true,"add_oke_vcn1":true,"oke_vcn1_cni_type":"Native","oke_vcn1_cidrs":["10.3.0.0/16"],"oke_vcn1_attach_to_drg":true,"network_admin_email_endpoints":["email.address@example.com"],"security_admin_email_endpoints":["email.address@example.com"],"enable_cloud_guard":true,"create_budget":true,"budget_alert_threshold":"100","budget_amount":"1000","budget_alert_email_endpoints":["email.address@example.com"]})
 
 You are required to review/adjust the following variable settings:
  - Make sure to pick an OCI region for deployment.
@@ -132,7 +132,7 @@ With the stack created, perform a Plan, followed by an Apply using RMS UI.
 
 ### Terraform CLI Deployment
 
-1. Rename file *main.tf.template* to *main.tf*. 
+1. Rename file *main.tf.paloalto.template* to *main.tf*. 
 2. Provide/review the variable assignments in *main.tf*.
 3. In this folder, execute the typical Terraform workflow:
     - $ terraform init
