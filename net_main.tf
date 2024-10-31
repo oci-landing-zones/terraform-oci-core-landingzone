@@ -14,9 +14,9 @@ locals {
 }
 
 module "lz_network" {
-  source                = "github.com/oci-landing-zones/terraform-oci-modules-networking?ref=v0.6.9"
+  source                = "github.com/oci-landing-zones/terraform-oci-modules-networking?ref=v0.7.0"
   network_configuration = local.lz_network_configuration
-  network_dependency    = (local.hub_options[var.hub_deployment_option] == 2 || local.hub_options[var.hub_deployment_option] == 4) ? {
+  network_dependency    = (local.chosen_hub_option == 2 || local.chosen_hub_option == 4) ? {
     "dynamic_routing_gateways" = {
       "HUB-DRG" = {"id" : trimspace(var.existing_drg_ocid)}
     }

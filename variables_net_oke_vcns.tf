@@ -29,12 +29,6 @@ variable "oke_vcn1_cidrs" {
   description = "The list of CIDR blocks for the VCN."
 }
 
-variable "oke_vcn1_dns" {
-  type    = string
-  default = null
-  description = "The VCN DNS name. Use only letters and numbers, no special characters."
-}
-
 variable "oke_vcn1_attach_to_drg" {
   type    = bool
   default = false
@@ -59,12 +53,6 @@ variable "oke_vcn1_api_subnet_name" {
   description = "The API subnet name."
 }
 
-variable "oke_vcn1_api_subnet_dns" {
-  type    = string
-  default = null
-  description = "The API subnet DNS name. Use only letters and numbers, no special characters."
-}
-
 variable "oke_vcn1_workers_subnet_cidr" {
   type    = string
   default = null
@@ -77,12 +65,6 @@ variable "oke_vcn1_workers_subnet_name" {
   description = "The Workers subnet name."
 }
 
-variable "oke_vcn1_workers_subnet_dns" {
-  type    = string
-  default = null
-  description = "The Workers subnet DNS name. Use only letters and numbers, no special characters."
-}
-
 variable "oke_vcn1_services_subnet_cidr" {
   type    = string
   default = null
@@ -93,12 +75,6 @@ variable "oke_vcn1_services_subnet_name" {
   type    = string
   default = null
   description = "The Services subnet name."
-}
-
-variable "oke_vcn1_services_subnet_dns" {
-  type    = string
-  default = null
-  description = "The Services subnet DNS name. Use only letters and numbers, no special characters."
 }
 
 variable "add_oke_vcn1_mgmt_subnet" {
@@ -119,21 +95,10 @@ variable "oke_vcn1_mgmt_subnet_name" {
   description = "The Management subnet name."
 }
 
-variable "oke_vcn1_mgmt_subnet_dns" {
-  type    = string
-  default = null
-  description = "The Management subnet DNS name. Use only letters and numbers, no special characters."
-}
-
 variable "oke_vcn1_pods_subnet_name" {
   type    = string
   default = null
   description = "The Pods subnet name. A private subnet for pods deployment is automatically added if oke_vcn1_cni_type value is 'Native'."
-}
-variable "oke_vcn1_pods_subnet_dns" {
-  type    = string
-  default = null
-  description = "The Pods subnet DNS name. Use only letters and numbers, no special characters."
 }
 
 variable "oke_vcn1_pods_subnet_cidr" {
@@ -169,12 +134,6 @@ variable "oke_vcn2_cidrs" {
   description = "The list of CIDR blocks for the VCN."
 }
 
-variable "oke_vcn2_dns" {
-  type    = string
-  default = null
-  description = "The VCN DNS name. Use only letters and numbers, no special characters."
-}
-
 variable "oke_vcn2_attach_to_drg" {
   type    = bool
   default = false
@@ -199,12 +158,6 @@ variable "oke_vcn2_api_subnet_name" {
   description = "The API subnet name."
 }
 
-variable "oke_vcn2_api_subnet_dns" {
-  type    = string
-  default = null
-  description = "The API subnet DNS name. Use only letters and numbers, no special characters."
-}
-
 variable "oke_vcn2_workers_subnet_cidr" {
   type    = string
   default = null
@@ -217,12 +170,6 @@ variable "oke_vcn2_workers_subnet_name" {
   description = "The Workers subnet name."
 }
 
-variable "oke_vcn2_workers_subnet_dns" {
-  type    = string
-  default = null
-  description = "The Workers subnet DNS name. Use only letters and numbers, no special characters."
-}
-
 variable "oke_vcn2_services_subnet_cidr" {
   type    = string
   default = null
@@ -233,12 +180,6 @@ variable "oke_vcn2_services_subnet_name" {
   type    = string
   default = null
   description = "The Services subnet name."
-}
-
-variable "oke_vcn2_services_subnet_dns" {
-  type    = string
-  default = null
-  description = "The Services subnet DNS name. Use only letters and numbers, no special characters."
 }
 
 variable "add_oke_vcn2_mgmt_subnet" {
@@ -259,21 +200,10 @@ variable "oke_vcn2_mgmt_subnet_name" {
   description = "The Management subnet name."
 }
 
-variable "oke_vcn2_mgmt_subnet_dns" {
-  type    = string
-  default = null
-  description = "The Management subnet DNS name. Use only letters and numbers, no special characters."
-}
-
 variable "oke_vcn2_pods_subnet_name" {
   type    = string
   default = null
   description = "The pods subnet name. A private subnet for pods deployment is automatically added if oke_vcn2_cni_type value is 'Native'."
-}
-variable "oke_vcn2_pods_subnet_dns" {
-  type    = string
-  default = null
-  description = "The Pods subnet DNS name. Use only letters and numbers, no special characters."
 }
 
 variable "oke_vcn2_pods_subnet_cidr" {
@@ -311,12 +241,6 @@ variable "oke_vcn3_cidrs" {
   description = "The list of CIDR blocks for the VCN."
 }
 
-variable "oke_vcn3_dns" {
-  type    = string
-  default = null
-  description = "The VCN DNS name. Use only letters and numbers, no special characters."
-}
-
 variable "oke_vcn3_attach_to_drg" {
   type    = bool
   default = false
@@ -341,12 +265,6 @@ variable "oke_vcn3_api_subnet_name" {
   description = "The API subnet name."
 }
 
-variable "oke_vcn3_api_subnet_dns" {
-  type    = string
-  default = null
-  description = "The API subnet DNS name. Use only letters and numbers, no special characters."
-}
-
 variable "oke_vcn3_workers_subnet_cidr" {
   type    = string
   default = null
@@ -359,12 +277,6 @@ variable "oke_vcn3_workers_subnet_name" {
   description = "The Workers subnet name."
 }
 
-variable "oke_vcn3_workers_subnet_dns" {
-  type    = string
-  default = null
-  description = "The Workers subnet DNS name. Use only letters and numbers, no special characters."
-}
-
 variable "oke_vcn3_services_subnet_cidr" {
   type    = string
   default = null
@@ -375,12 +287,6 @@ variable "oke_vcn3_services_subnet_name" {
   type    = string
   default = null
   description = "The Services subnet name."
-}
-
-variable "oke_vcn3_services_subnet_dns" {
-  type    = string
-  default = null
-  description = "The Services subnet DNS name. Use only letters and numbers, no special characters."
 }
 
 variable "add_oke_vcn3_mgmt_subnet" {
@@ -401,21 +307,10 @@ variable "oke_vcn3_mgmt_subnet_name" {
   description = "The Management subnet name."
 }
 
-variable "oke_vcn3_mgmt_subnet_dns" {
-  type    = string
-  default = null
-  description = "The Management subnet DNS name. Use only letters and numbers, no special characters."
-}
-
 variable "oke_vcn3_pods_subnet_name" {
   type    = string
   default = null
   description = "The Pods subnet name. A private subnet for pods deployment is automatically added if oke_vcn3_cni_type value is 'Native'."
-}
-variable "oke_vcn3_pods_subnet_dns" {
-  type    = string
-  default = null
-  description = "The Pods subnet DNS name. Use only letters and numbers, no special characters."
 }
 
 variable "oke_vcn3_pods_subnet_cidr" {

@@ -25,10 +25,18 @@ locals {
 }
 
 module "lz_groups" {
-  source               = "github.com/oci-landing-zones/terraform-oci-modules-iam//groups?ref=v0.2.3"
+  source               = "github.com/oci-landing-zones/terraform-oci-modules-iam//groups?ref=v0.2.4"
   providers            = { oci = oci.home }
   tenancy_ocid         = var.tenancy_ocid
   groups_configuration = var.extend_landing_zone_to_new_region == false && var.use_custom_id_domain == false ? local.groups_configuration : local.empty_groups_configuration
+}
+
+module "lz_custom_domain_groups" {
+  source                               = "github.com/oci-landing-zones/terraform-oci-modules-iam//identity-domains?ref=v0.2.4"
+  count                                = var.deploy_custom_domain_groups ? 1 : 0
+  providers                            = { oci = oci.home }
+  tenancy_ocid                         = var.tenancy_ocid
+  identity_domain_groups_configuration = var.extend_landing_zone_to_new_region == false && var.use_custom_id_domain == true ? local.custom_domain_groups_configuration : local.empty_groups_configuration
 }
 
 locals {
@@ -46,13 +54,17 @@ locals {
   groups_freeform_tags = local.custom_groups_freeform_tags != null ? merge(local.custom_groups_freeform_tags, local.default_groups_freeform_tags) : local.default_groups_freeform_tags
 
   #--------------------------------------------------------------------
+  #-- IAM Identity Domain
+  #--------------------------------------------------------------------
+  custom_id_domain_name = var.use_custom_id_domain == true ? data.oci_identity_domain.existing_identity_domain[0].display_name : null
+
+  #--------------------------------------------------------------------
   #-- IAM Admin
   #--------------------------------------------------------------------
   iam_admin_group_key           = "IAM-ADMIN-GROUP"
   default_iam_admin_group_name  = "iam-admin-group"
   provided_iam_admin_group_name = coalesce(local.custom_iam_admin_group_name, "${var.service_label}-${local.default_iam_admin_group_name}")
 
-  #iam_admin_group = length(trimspace(var.existing_iam_admin_group_name)) == 0 ? {
   iam_admin_group = length(var.existing_iam_admin_group_name) == 0 && length(trimspace(var.rm_existing_iam_admin_group_name)) == 0 ? {
     (local.iam_admin_group_key) = {
       name          = local.provided_iam_admin_group_name
@@ -60,6 +72,17 @@ locals {
       members       = []
       defined_tags  = local.groups_defined_tags
       freeform_tags = local.groups_freeform_tags
+    }
+  } : {}
+
+  custom_domain_iam_admin_group = var.deploy_custom_domain_groups ? {
+    (local.iam_admin_group_key) = {
+      identity_domain_id = trimspace(var.custom_id_domain_ocid)
+      name               = local.provided_iam_admin_group_name
+      description        = "Landing Zone group for managing IAM resources in the tenancy."
+      members            = []
+      defined_tags       = local.groups_defined_tags
+      freeform_tags      = local.groups_freeform_tags
     }
   } : {}
 
@@ -80,6 +103,17 @@ locals {
     }
   } : {}
 
+  custom_domain_cred_admin_group = var.deploy_custom_domain_groups ? {
+    (local.cred_admin_group_key) = {
+      identity_domain_id = trimspace(var.custom_id_domain_ocid)
+      name               = local.provided_cred_admin_group_name
+      description        = "Landing Zone group for managing users credentials in the tenancy."
+      members            = []
+      defined_tags       = local.groups_defined_tags
+      freeform_tags      = local.groups_freeform_tags
+    }
+  } : {}
+
   #--------------------------------------------------------------------
   #-- Cost Admin
   #--------------------------------------------------------------------
@@ -94,6 +128,17 @@ locals {
       members       = []
       defined_tags  = local.groups_defined_tags
       freeform_tags = local.groups_freeform_tags
+    }
+  } : {}
+
+  custom_domain_cost_admin_group = var.deploy_custom_domain_groups ? {
+    (local.cost_admin_group_key) = {
+      identity_domain_id = trimspace(var.custom_id_domain_ocid)
+      name               = local.provided_cost_admin_group_name
+      description        = "Landing Zone group for Cost management."
+      members            = []
+      defined_tags       = local.groups_defined_tags
+      freeform_tags      = local.groups_freeform_tags
     }
   } : {}
 
@@ -114,6 +159,17 @@ locals {
     }
   } : {}
 
+  custom_domain_network_admin_group = var.deploy_custom_domain_groups ? {
+    (local.network_admin_group_key) = {
+      identity_domain_id = trimspace(var.custom_id_domain_ocid)
+      name               = local.provided_network_admin_group_name
+      description        = "Landing Zone group for network management."
+      members            = []
+      defined_tags       = local.groups_defined_tags
+      freeform_tags      = local.groups_freeform_tags
+    }
+  } : {}
+
   #--------------------------------------------------------------------
   #-- Security Admin
   #--------------------------------------------------------------------
@@ -128,6 +184,17 @@ locals {
       members       = []
       defined_tags  = local.groups_defined_tags
       freeform_tags = local.groups_freeform_tags
+    }
+  } : {}
+
+  custom_domain_security_admin_group = var.deploy_custom_domain_groups ? {
+    (local.security_admin_group_key) = {
+      identity_domain_id = trimspace(var.custom_id_domain_ocid)
+      name               = local.provided_security_admin_group_name
+      description        = "Landing Zone group for security services management."
+      members            = []
+      defined_tags       = local.groups_defined_tags
+      freeform_tags      = local.groups_freeform_tags
     }
   } : {}
 
@@ -148,6 +215,17 @@ locals {
     }
   } : {}
 
+  custom_domain_appdev_admin_group = var.deploy_custom_domain_groups ? {
+    (local.appdev_admin_group_key) = {
+      identity_domain_id = trimspace(var.custom_id_domain_ocid)
+      name               = local.provided_appdev_admin_group_name
+      description        = "Landing Zone group for managing app development related services."
+      members            = []
+      defined_tags       = local.groups_defined_tags
+      freeform_tags      = local.groups_freeform_tags
+    }
+  } : {}
+
   #--------------------------------------------------------------------
   #-- Database Admin
   #--------------------------------------------------------------------
@@ -162,6 +240,17 @@ locals {
       members       = []
       defined_tags  = local.groups_defined_tags
       freeform_tags = local.groups_freeform_tags
+    }
+  } : {}
+
+  custom_domain_database_admin_group = var.deploy_custom_domain_groups ? {
+    (local.database_admin_group_key) = {
+      identity_domain_id = trimspace(var.custom_id_domain_ocid)
+      name               = local.provided_database_admin_group_name
+      description        = "Landing Zone group for managing databases."
+      members            = []
+      defined_tags       = local.groups_defined_tags
+      freeform_tags      = local.groups_freeform_tags
     }
   } : {}
 
@@ -182,6 +271,17 @@ locals {
     }
   } : {}
 
+  custom_domain_exainfra_admin_group = var.deploy_exainfra_cmp == true && var.deploy_custom_domain_groups ? {
+    (local.exainfra_admin_group_key) = {
+      identity_domain_id = trimspace(var.custom_id_domain_ocid)
+      name               = local.provided_exainfra_admin_group_name
+      description        = "Landing Zone group for managing Exadata Cloud Service infrastructure."
+      members            = []
+      defined_tags       = local.groups_defined_tags
+      freeform_tags      = local.groups_freeform_tags
+    }
+  } : {}
+
   #------------------------------------------------------------------------
   #-- Storage admin
   #------------------------------------------------------------------------
@@ -196,6 +296,17 @@ locals {
       members       = []
       defined_tags  = local.groups_defined_tags
       freeform_tags = local.groups_freeform_tags
+    }
+  } : {}
+
+  custom_domain_storage_admin_group = var.deploy_custom_domain_groups ? {
+    (local.storage_admin_group_key) = {
+      identity_domain_id = trimspace(var.custom_id_domain_ocid)
+      name               = local.provided_storage_admin_group_name
+      description        = "Landing Zone group for storage services management."
+      members            = []
+      defined_tags       = local.groups_defined_tags
+      freeform_tags      = local.groups_freeform_tags
     }
   } : {}
 
@@ -216,6 +327,17 @@ locals {
     }
   } : {}
 
+  custom_domain_auditor_group = var.deploy_custom_domain_groups ? {
+    (local.auditor_group_key) = {
+      identity_domain_id = trimspace(var.custom_id_domain_ocid)
+      name               = local.provided_auditor_group_name
+      description        = "Landing Zone group for auditing the tenancy."
+      members            = []
+      defined_tags       = local.groups_defined_tags
+      freeform_tags      = local.groups_freeform_tags
+    }
+  } : {}
+
   #------------------------------------------------------------------------
   #-- Announcement readers
   #------------------------------------------------------------------------
@@ -230,6 +352,17 @@ locals {
       members       = []
       defined_tags  = local.groups_defined_tags
       freeform_tags = local.groups_freeform_tags
+    }
+  } : {}
+
+  custom_domain_announcement_reader_group = var.deploy_custom_domain_groups ? {
+    (local.announcement_reader_group_key) = {
+      identity_domain_id = trimspace(var.custom_id_domain_ocid)
+      name               = local.provided_announcement_reader_group_name
+      description        = "Landing Zone group for reading Console announcements."
+      members            = []
+      defined_tags       = local.groups_defined_tags
+      freeform_tags      = local.groups_freeform_tags
     }
   } : {}
 
@@ -249,6 +382,18 @@ locals {
       freeform_tags = local.groups_freeform_tags
     }
   } : {}
+
+  custom_domain_ag_admin_group = var.deploy_custom_domain_groups ? {
+    (local.ag_admin_group_key) = {
+      identity_domain_id = trimspace(var.custom_id_domain_ocid)
+      name               = local.provided_ag_admin_group_name
+      description        = "Landing Zone group for managing Access Governance resources in the tenancy."
+      members            = []
+      defined_tags       = local.groups_defined_tags
+      freeform_tags      = local.groups_freeform_tags
+    }
+  } : {}
+
   #------------------------------------------------------------------------
   #----- Groups configuration definition. Input to module.
   #------------------------------------------------------------------------  
@@ -257,7 +402,15 @@ locals {
       local.network_admin_group, local.security_admin_group,
       local.appdev_admin_group, local.database_admin_group, local.exainfra_admin_group,
       local.storage_admin_group, local.auditor_group, local.announcement_reader_group,
-      local.ag_admin_group)
+    local.ag_admin_group)
+  }
+
+  custom_domain_groups_configuration = {
+    groups : merge(local.custom_domain_iam_admin_group, local.custom_domain_cred_admin_group, local.custom_domain_cost_admin_group,
+      local.custom_domain_network_admin_group, local.custom_domain_security_admin_group,
+      local.custom_domain_appdev_admin_group, local.custom_domain_database_admin_group, local.custom_domain_exainfra_admin_group,
+      local.custom_domain_storage_admin_group, local.custom_domain_auditor_group, local.custom_domain_announcement_reader_group,
+    local.custom_domain_ag_admin_group)
   }
 
   empty_groups_configuration = {
@@ -267,16 +420,16 @@ locals {
   #----------------------------------------------------------------------------------
   #----- Processed group names, ready to be used in policies.
   #----------------------------------------------------------------------------------
-  iam_admin_group_name           = !var.extend_landing_zone_to_new_region ? (var.use_custom_id_domain == false ? ((length(var.existing_iam_admin_group_name) == 0 && length(trimspace(var.rm_existing_iam_admin_group_name)) == 0 ? [module.lz_groups.groups[local.iam_admin_group_key].name] : (length(regexall("^ocid1.group.oc.*$", var.rm_existing_iam_admin_group_name)) > 0 ? ["'${data.oci_identity_group.existing_iam_admin_group[var.rm_existing_iam_admin_group_name].name}'"] : [for i, v in var.existing_iam_admin_group_name : (length(regexall("^ocid1.group.oc.*$", var.existing_iam_admin_group_name[i])) > 0 ? "'${data.oci_identity_group.existing_iam_admin_group[v].name}'" : "'${v}'")]))) : [for v in var.rm_existing_id_domain_iam_admin_group_name : "'${var.custom_id_domain_name}'/'${trimspace(v)}'"]) : []
-  cred_admin_group_name          = !var.extend_landing_zone_to_new_region ? (var.use_custom_id_domain == false ? ((length(var.existing_cred_admin_group_name) == 0 && length(trimspace(var.rm_existing_cred_admin_group_name)) == 0 ? [module.lz_groups.groups[local.cred_admin_group_key].name] : (length(regexall("^ocid1.group.oc.*$", var.rm_existing_cred_admin_group_name)) > 0 ? ["'${data.oci_identity_group.existing_cred_admin_group[var.rm_existing_cred_admin_group_name].name}'"] : [for i, v in var.existing_cred_admin_group_name : (length(regexall("^ocid1.group.oc.*$", var.existing_cred_admin_group_name[i])) > 0 ? "'${data.oci_identity_group.existing_cred_admin_group[v].name}'" : "'${v}'")]))) : [for v in var.rm_existing_id_domain_cred_admin_group_name : "'${var.custom_id_domain_name}'/'${trimspace(v)}'"]) : []
-  security_admin_group_name      = !var.extend_landing_zone_to_new_region ? (var.use_custom_id_domain == false ? ((length(var.existing_security_admin_group_name) == 0 && length(trimspace(var.rm_existing_security_admin_group_name)) == 0 ? [module.lz_groups.groups[local.security_admin_group_key].name] : (length(regexall("^ocid1.group.oc.*$", var.rm_existing_security_admin_group_name)) > 0 ? ["'${data.oci_identity_group.existing_security_admin_group[var.rm_existing_security_admin_group_name].name}'"] : [for i, v in var.existing_security_admin_group_name : (length(regexall("^ocid1.group.oc.*$", var.existing_security_admin_group_name[i])) > 0 ? "'${data.oci_identity_group.existing_security_admin_group[v].name}'" : "'${v}'")]))) : [for v in var.rm_existing_id_domain_security_admin_group_name : "'${var.custom_id_domain_name}'/'${trimspace(v)}'"]) : []
-  network_admin_group_name       = !var.extend_landing_zone_to_new_region ? (var.use_custom_id_domain == false ? ((length(var.existing_network_admin_group_name) == 0 && length(trimspace(var.rm_existing_network_admin_group_name)) == 0 ? [module.lz_groups.groups[local.network_admin_group_key].name] : (length(regexall("^ocid1.group.oc.*$", var.rm_existing_network_admin_group_name)) > 0 ? ["'${data.oci_identity_group.existing_network_admin_group[var.rm_existing_network_admin_group_name].name}'"] : [for i, v in var.existing_network_admin_group_name : (length(regexall("^ocid1.group.oc.*$", var.existing_network_admin_group_name[i])) > 0 ? "'${data.oci_identity_group.existing_network_admin_group[v].name}'" : "'${v}'")]))) : [for v in var.rm_existing_id_domain_network_admin_group_name : "'${var.custom_id_domain_name}'/'${trimspace(v)}'"]) : []
-  database_admin_group_name      = !var.extend_landing_zone_to_new_region ? (var.use_custom_id_domain == false ? ((length(var.existing_database_admin_group_name) == 0 && length(trimspace(var.rm_existing_database_admin_group_name)) == 0 ? [module.lz_groups.groups[local.database_admin_group_key].name] : (length(regexall("^ocid1.group.oc.*$", var.rm_existing_database_admin_group_name)) > 0 ? ["'${data.oci_identity_group.existing_database_admin_group[var.rm_existing_database_admin_group_name].name}'"] : [for i, v in var.existing_database_admin_group_name : (length(regexall("^ocid1.group.oc.*$", var.existing_database_admin_group_name[i])) > 0 ? "'${data.oci_identity_group.existing_database_admin_group[v].name}'" : "'${v}'")]))) : [for v in var.rm_existing_id_domain_database_admin_group_name : "'${var.custom_id_domain_name}'/'${trimspace(v)}'"]) : []
-  appdev_admin_group_name        = !var.extend_landing_zone_to_new_region ? (var.use_custom_id_domain == false ? ((length(var.existing_appdev_admin_group_name) == 0 && length(trimspace(var.rm_existing_appdev_admin_group_name)) == 0 ? [module.lz_groups.groups[local.appdev_admin_group_key].name] : (length(regexall("^ocid1.group.oc.*$", var.rm_existing_appdev_admin_group_name)) > 0 ? ["'${data.oci_identity_group.existing_appdev_admin_group[var.rm_existing_appdev_admin_group_name].name}'"] : [for i, v in var.existing_appdev_admin_group_name : (length(regexall("^ocid1.group.oc.*$", var.existing_appdev_admin_group_name[i])) > 0 ? "'${data.oci_identity_group.existing_appdev_admin_group[v].name}'" : "'${v}'")]))) : [for v in var.rm_existing_id_domain_database_admin_group_name : "'${var.custom_id_domain_name}'/'${trimspace(v)}'"]) : []
-  auditor_group_name             = !var.extend_landing_zone_to_new_region ? (var.use_custom_id_domain == false ? ((length(var.existing_auditor_group_name) == 0 && length(trimspace(var.rm_existing_auditor_group_name)) == 0 ? [module.lz_groups.groups[local.auditor_group_key].name] : (length(regexall("^ocid1.group.oc.*$", var.rm_existing_auditor_group_name)) > 0 ? ["'${data.oci_identity_group.existing_auditor_group[var.rm_existing_auditor_group_name].name}'"] : [for i, v in var.existing_auditor_group_name : (length(regexall("^ocid1.group.oc.*$", var.existing_auditor_group_name[i])) > 0 ? "'${data.oci_identity_group.existing_auditor_group[v].name}'" : "'${v}'")]))) : [for v in var.rm_existing_id_domain_auditor_group_name : "'${var.custom_id_domain_name}'/'${trimspace(v)}'"]) : []
-  announcement_reader_group_name = !var.extend_landing_zone_to_new_region ? (var.use_custom_id_domain == false ? ((length(var.existing_announcement_reader_group_name) == 0 && length(trimspace(var.rm_existing_announcement_reader_group_name)) == 0 ? [module.lz_groups.groups[local.announcement_reader_group_key].name] : (length(regexall("^ocid1.group.oc.*$", var.rm_existing_announcement_reader_group_name)) > 0 ? ["'${data.oci_identity_group.existing_announcement_reader_group[var.rm_existing_announcement_reader_group_name].name}'"] : [for i, v in var.existing_announcement_reader_group_name : (length(regexall("^ocid1.group.oc.*$", var.existing_announcement_reader_group_name[i])) > 0 ? "'${data.oci_identity_group.existing_announcement_reader_group[v].name}'" : "'${v}'")]))) : [for v in var.rm_existing_id_domain_announcement_reader_group_name : "'${var.custom_id_domain_name}'/'${trimspace(v)}'"]) : []
-  cost_admin_group_name          = !var.extend_landing_zone_to_new_region ? (var.use_custom_id_domain == false ? ((length(var.existing_cost_admin_group_name) == 0 && length(trimspace(var.rm_existing_cost_admin_group_name)) == 0 ? [module.lz_groups.groups[local.cost_admin_group_key].name] : (length(regexall("^ocid1.group.oc.*$", var.rm_existing_cost_admin_group_name)) > 0 ? ["'${data.oci_identity_group.existing_cost_admin_group[var.rm_existing_cost_admin_group_name].name}'"] : [for i, v in var.existing_cost_admin_group_name : (length(regexall("^ocid1.group.oc.*$", var.existing_cost_admin_group_name[i])) > 0 ? "'${data.oci_identity_group.existing_cost_admin_group[v].name}'" : "'${v}'")]))) : [for v in var.rm_existing_id_domain_cost_admin_group_name : "'${var.custom_id_domain_name}'/'${trimspace(v)}'"]) : []
-  storage_admin_group_name       = !var.extend_landing_zone_to_new_region ? (var.use_custom_id_domain == false ? ((length(var.existing_storage_admin_group_name) == 0 && length(trimspace(var.rm_existing_storage_admin_group_name)) == 0 ? [module.lz_groups.groups[local.storage_admin_group_key].name] : (length(regexall("^ocid1.group.oc.*$", var.rm_existing_storage_admin_group_name)) > 0 ? ["'${data.oci_identity_group.existing_storage_admin_group[var.rm_existing_storage_admin_group_name].name}'"] : [for i, v in var.existing_storage_admin_group_name : (length(regexall("^ocid1.group.oc.*$", var.existing_storage_admin_group_name[i])) > 0 ? "'${data.oci_identity_group.existing_storage_admin_group[v].name}'" : "'${v}'")]))) : [for v in var.rm_existing_id_domain_storage_admin_group_name : "'${var.custom_id_domain_name}'/'${trimspace(v)}'"]) : []
-  exainfra_admin_group_name      = !var.extend_landing_zone_to_new_region ? (var.use_custom_id_domain == false ? ((var.deploy_exainfra_cmp ? (length(var.existing_exainfra_admin_group_name) == 0 && length(trimspace(var.rm_existing_exainfra_admin_group_name)) == 0 ? [module.lz_groups.groups[local.exainfra_admin_group_key].name] : (length(regexall("^ocid1.group.oc.*$", var.rm_existing_exainfra_admin_group_name)) > 0 ? ["'${data.oci_identity_group.existing_exainfra_admin_group[var.rm_existing_exainfra_admin_group_name].name}'"] : [for i, v in var.existing_exainfra_admin_group_name : (length(regexall("^ocid1.group.oc.*$", var.existing_exainfra_admin_group_name[i])) > 0 ? "'${data.oci_identity_group.existing_exainfra_admin_group[v].name}'" : "'${v}'")])) : [for grp in var.existing_exainfra_admin_group_name : "'${grp}'"])) : [for v in var.rm_existing_id_domain_exainfra_admin_group_name : "'${var.custom_id_domain_name}'/'${trimspace(v)}'"]) : []
-  ag_admin_group_name            = !var.extend_landing_zone_to_new_region ? (var.use_custom_id_domain == false ? ((length(var.existing_ag_admin_group_name) == 0 && length(trimspace(var.rm_existing_ag_admin_group_name)) == 0 ? [module.lz_groups.groups[local.ag_admin_group_key].name] : (length(regexall("^ocid1.group.oc.*$", var.rm_existing_ag_admin_group_name)) > 0 ? ["'${data.oci_identity_group.existing_ag_admin_group[var.rm_existing_ag_admin_group_name].name}'"] : [for i, v in var.existing_ag_admin_group_name : (length(regexall("^ocid1.group.oc.*$", var.existing_ag_admin_group_name[i])) > 0 ? "'${data.oci_identity_group.existing_ag_admin_group[v].name}'" : "'${v}'")]))) : [for v in var.rm_existing_id_domain_ag_admin_group_name : "'${var.custom_id_domain_name}'/'${trimspace(v)}'"]) : []
+  iam_admin_group_name           = !var.extend_landing_zone_to_new_region ? (var.use_custom_id_domain == false ? ((length(var.existing_iam_admin_group_name) == 0 && length(trimspace(var.rm_existing_iam_admin_group_name)) == 0 ? [module.lz_groups.groups[local.iam_admin_group_key].name] : (length(regexall("^ocid1.group.oc.*$", var.rm_existing_iam_admin_group_name)) > 0 ? ["'${data.oci_identity_group.existing_iam_admin_group[var.rm_existing_iam_admin_group_name].name}'"] : [for i, v in var.existing_iam_admin_group_name : (length(regexall("^ocid1.group.oc.*$", var.existing_iam_admin_group_name[i])) > 0 ? "'${data.oci_identity_group.existing_iam_admin_group[v].name}'" : "'${v}'")]))) : var.deploy_custom_domain_groups == true ? ["'${local.custom_id_domain_name}'/'${local.provided_iam_admin_group_name}'"] : [for v in var.rm_existing_id_domain_iam_admin_group_name : "'${local.custom_id_domain_name}'/'${trimspace(v)}'"]) : []
+  cred_admin_group_name          = !var.extend_landing_zone_to_new_region ? (var.use_custom_id_domain == false ? ((length(var.existing_cred_admin_group_name) == 0 && length(trimspace(var.rm_existing_cred_admin_group_name)) == 0 ? [module.lz_groups.groups[local.cred_admin_group_key].name] : (length(regexall("^ocid1.group.oc.*$", var.rm_existing_cred_admin_group_name)) > 0 ? ["'${data.oci_identity_group.existing_cred_admin_group[var.rm_existing_cred_admin_group_name].name}'"] : [for i, v in var.existing_cred_admin_group_name : (length(regexall("^ocid1.group.oc.*$", var.existing_cred_admin_group_name[i])) > 0 ? "'${data.oci_identity_group.existing_cred_admin_group[v].name}'" : "'${v}'")]))) : var.deploy_custom_domain_groups == true ? ["'${local.custom_id_domain_name}'/'${local.provided_cred_admin_group_name}'"] : [for v in var.rm_existing_id_domain_cred_admin_group_name : "'${local.custom_id_domain_name}'/'${trimspace(v)}'"]) : []
+  security_admin_group_name      = !var.extend_landing_zone_to_new_region ? (var.use_custom_id_domain == false ? ((length(var.existing_security_admin_group_name) == 0 && length(trimspace(var.rm_existing_security_admin_group_name)) == 0 ? [module.lz_groups.groups[local.security_admin_group_key].name] : (length(regexall("^ocid1.group.oc.*$", var.rm_existing_security_admin_group_name)) > 0 ? ["'${data.oci_identity_group.existing_security_admin_group[var.rm_existing_security_admin_group_name].name}'"] : [for i, v in var.existing_security_admin_group_name : (length(regexall("^ocid1.group.oc.*$", var.existing_security_admin_group_name[i])) > 0 ? "'${data.oci_identity_group.existing_security_admin_group[v].name}'" : "'${v}'")]))) : var.deploy_custom_domain_groups == true ? ["'${local.custom_id_domain_name}'/'${local.provided_security_admin_group_name}'"] : [for v in var.rm_existing_id_domain_security_admin_group_name : "'${local.custom_id_domain_name}'/'${trimspace(v)}'"]) : []
+  network_admin_group_name       = !var.extend_landing_zone_to_new_region ? (var.use_custom_id_domain == false ? ((length(var.existing_network_admin_group_name) == 0 && length(trimspace(var.rm_existing_network_admin_group_name)) == 0 ? [module.lz_groups.groups[local.network_admin_group_key].name] : (length(regexall("^ocid1.group.oc.*$", var.rm_existing_network_admin_group_name)) > 0 ? ["'${data.oci_identity_group.existing_network_admin_group[var.rm_existing_network_admin_group_name].name}'"] : [for i, v in var.existing_network_admin_group_name : (length(regexall("^ocid1.group.oc.*$", var.existing_network_admin_group_name[i])) > 0 ? "'${data.oci_identity_group.existing_network_admin_group[v].name}'" : "'${v}'")]))) : var.deploy_custom_domain_groups == true ? ["'${local.custom_id_domain_name}'/'${local.provided_network_admin_group_name}'"] : [for v in var.rm_existing_id_domain_network_admin_group_name : "'${local.custom_id_domain_name}'/'${trimspace(v)}'"]) : []
+  database_admin_group_name      = !var.extend_landing_zone_to_new_region ? (var.use_custom_id_domain == false ? ((length(var.existing_database_admin_group_name) == 0 && length(trimspace(var.rm_existing_database_admin_group_name)) == 0 ? [module.lz_groups.groups[local.database_admin_group_key].name] : (length(regexall("^ocid1.group.oc.*$", var.rm_existing_database_admin_group_name)) > 0 ? ["'${data.oci_identity_group.existing_database_admin_group[var.rm_existing_database_admin_group_name].name}'"] : [for i, v in var.existing_database_admin_group_name : (length(regexall("^ocid1.group.oc.*$", var.existing_database_admin_group_name[i])) > 0 ? "'${data.oci_identity_group.existing_database_admin_group[v].name}'" : "'${v}'")]))) : var.deploy_custom_domain_groups == true ? ["'${local.custom_id_domain_name}'/'${local.provided_database_admin_group_name}'"] : [for v in var.rm_existing_id_domain_database_admin_group_name : "'${local.custom_id_domain_name}'/'${trimspace(v)}'"]) : []
+  appdev_admin_group_name        = !var.extend_landing_zone_to_new_region ? (var.use_custom_id_domain == false ? ((length(var.existing_appdev_admin_group_name) == 0 && length(trimspace(var.rm_existing_appdev_admin_group_name)) == 0 ? [module.lz_groups.groups[local.appdev_admin_group_key].name] : (length(regexall("^ocid1.group.oc.*$", var.rm_existing_appdev_admin_group_name)) > 0 ? ["'${data.oci_identity_group.existing_appdev_admin_group[var.rm_existing_appdev_admin_group_name].name}'"] : [for i, v in var.existing_appdev_admin_group_name : (length(regexall("^ocid1.group.oc.*$", var.existing_appdev_admin_group_name[i])) > 0 ? "'${data.oci_identity_group.existing_appdev_admin_group[v].name}'" : "'${v}'")]))) : var.deploy_custom_domain_groups == true ? ["'${local.custom_id_domain_name}'/'${local.provided_appdev_admin_group_name}'"] : [for v in var.rm_existing_id_domain_appdev_admin_group_name : "'${local.custom_id_domain_name}'/'${trimspace(v)}'"]) : []
+  auditor_group_name             = !var.extend_landing_zone_to_new_region ? (var.use_custom_id_domain == false ? ((length(var.existing_auditor_group_name) == 0 && length(trimspace(var.rm_existing_auditor_group_name)) == 0 ? [module.lz_groups.groups[local.auditor_group_key].name] : (length(regexall("^ocid1.group.oc.*$", var.rm_existing_auditor_group_name)) > 0 ? ["'${data.oci_identity_group.existing_auditor_group[var.rm_existing_auditor_group_name].name}'"] : [for i, v in var.existing_auditor_group_name : (length(regexall("^ocid1.group.oc.*$", var.existing_auditor_group_name[i])) > 0 ? "'${data.oci_identity_group.existing_auditor_group[v].name}'" : "'${v}'")]))) : var.deploy_custom_domain_groups == true ? ["'${local.custom_id_domain_name}'/'${local.provided_auditor_group_name}'"] :  [for v in var.rm_existing_id_domain_auditor_group_name : "'${local.custom_id_domain_name}'/'${trimspace(v)}'"]) : []
+  announcement_reader_group_name = !var.extend_landing_zone_to_new_region ? (var.use_custom_id_domain == false ? ((length(var.existing_announcement_reader_group_name) == 0 && length(trimspace(var.rm_existing_announcement_reader_group_name)) == 0 ? [module.lz_groups.groups[local.announcement_reader_group_key].name] : (length(regexall("^ocid1.group.oc.*$", var.rm_existing_announcement_reader_group_name)) > 0 ? ["'${data.oci_identity_group.existing_announcement_reader_group[var.rm_existing_announcement_reader_group_name].name}'"] : [for i, v in var.existing_announcement_reader_group_name : (length(regexall("^ocid1.group.oc.*$", var.existing_announcement_reader_group_name[i])) > 0 ? "'${data.oci_identity_group.existing_announcement_reader_group[v].name}'" : "'${v}'")]))) : var.deploy_custom_domain_groups == true ? ["'${local.custom_id_domain_name}'/'${local.provided_announcement_reader_group_name}'"] : [for v in var.rm_existing_id_domain_announcement_reader_group_name : "'${local.custom_id_domain_name}'/'${trimspace(v)}'"]) : []
+  cost_admin_group_name          = !var.extend_landing_zone_to_new_region ? (var.use_custom_id_domain == false ? ((length(var.existing_cost_admin_group_name) == 0 && length(trimspace(var.rm_existing_cost_admin_group_name)) == 0 ? [module.lz_groups.groups[local.cost_admin_group_key].name] : (length(regexall("^ocid1.group.oc.*$", var.rm_existing_cost_admin_group_name)) > 0 ? ["'${data.oci_identity_group.existing_cost_admin_group[var.rm_existing_cost_admin_group_name].name}'"] : [for i, v in var.existing_cost_admin_group_name : (length(regexall("^ocid1.group.oc.*$", var.existing_cost_admin_group_name[i])) > 0 ? "'${data.oci_identity_group.existing_cost_admin_group[v].name}'" : "'${v}'")]))) : var.deploy_custom_domain_groups == true ? ["'${local.custom_id_domain_name}'/'${local.provided_cost_admin_group_name}'"] : [for v in var.rm_existing_id_domain_cost_admin_group_name : "'${local.custom_id_domain_name}'/'${trimspace(v)}'"]) : []
+  storage_admin_group_name       = !var.extend_landing_zone_to_new_region ? (var.use_custom_id_domain == false ? ((length(var.existing_storage_admin_group_name) == 0 && length(trimspace(var.rm_existing_storage_admin_group_name)) == 0 ? [module.lz_groups.groups[local.storage_admin_group_key].name] : (length(regexall("^ocid1.group.oc.*$", var.rm_existing_storage_admin_group_name)) > 0 ? ["'${data.oci_identity_group.existing_storage_admin_group[var.rm_existing_storage_admin_group_name].name}'"] : [for i, v in var.existing_storage_admin_group_name : (length(regexall("^ocid1.group.oc.*$", var.existing_storage_admin_group_name[i])) > 0 ? "'${data.oci_identity_group.existing_storage_admin_group[v].name}'" : "'${v}'")]))) : var.deploy_custom_domain_groups == true ? ["'${local.custom_id_domain_name}'/'${local.provided_storage_admin_group_name}'"] : [for v in var.rm_existing_id_domain_storage_admin_group_name : "'${local.custom_id_domain_name}'/'${trimspace(v)}'"]) : []
+  exainfra_admin_group_name      = !var.extend_landing_zone_to_new_region ? (var.use_custom_id_domain == false ? ((var.deploy_exainfra_cmp ? (length(var.existing_exainfra_admin_group_name) == 0 && length(trimspace(var.rm_existing_exainfra_admin_group_name)) == 0 ? [module.lz_groups.groups[local.exainfra_admin_group_key].name] : (length(regexall("^ocid1.group.oc.*$", var.rm_existing_exainfra_admin_group_name)) > 0 ? ["'${data.oci_identity_group.existing_exainfra_admin_group[var.rm_existing_exainfra_admin_group_name].name}'"] : [for i, v in var.existing_exainfra_admin_group_name : (length(regexall("^ocid1.group.oc.*$", var.existing_exainfra_admin_group_name[i])) > 0 ? "'${data.oci_identity_group.existing_exainfra_admin_group[v].name}'" : "'${v}'")])) : [for grp in var.existing_exainfra_admin_group_name : "'${grp}'"])) : var.deploy_custom_domain_groups == true ? ["'${local.custom_id_domain_name}'/'${local.provided_exainfra_admin_group_name}'"] : [for v in var.rm_existing_id_domain_exainfra_admin_group_name : "'${local.custom_id_domain_name}'/'${trimspace(v)}'"]) : []
+  ag_admin_group_name            = !var.extend_landing_zone_to_new_region ? (var.use_custom_id_domain == false ? ((length(var.existing_ag_admin_group_name) == 0 && length(trimspace(var.rm_existing_ag_admin_group_name)) == 0 ? [module.lz_groups.groups[local.ag_admin_group_key].name] : (length(regexall("^ocid1.group.oc.*$", var.rm_existing_ag_admin_group_name)) > 0 ? ["'${data.oci_identity_group.existing_ag_admin_group[var.rm_existing_ag_admin_group_name].name}'"] : [for i, v in var.existing_ag_admin_group_name : (length(regexall("^ocid1.group.oc.*$", var.existing_ag_admin_group_name[i])) > 0 ? "'${data.oci_identity_group.existing_ag_admin_group[v].name}'" : "'${v}'")]))) : var.deploy_custom_domain_groups == true ? ["'${local.custom_id_domain_name}'/'${local.provided_ag_admin_group_name}'"] : [for v in var.rm_existing_id_domain_ag_admin_group_name : "'${local.custom_id_domain_name}'/'${trimspace(v)}'"]) : []
 }

@@ -15,6 +15,17 @@ data "oci_identity_compartment" "existing_enclosing_compartment" {
   id = coalesce(var.existing_enclosing_compartment_ocid, var.tenancy_ocid)
 }
 
+data "oci_identity_domain" "existing_identity_domain" {
+    count = var.use_custom_id_domain == true ? 1 : 0
+    domain_id = trimspace(var.custom_id_domain_ocid)
+    lifecycle {
+      precondition {
+        condition     = var.custom_id_domain_ocid != null
+        error_message = "Existing domain id must be provided when using an existing domain."
+      }
+    }
+}
+
 data "oci_identity_group" "existing_iam_admin_group" {
   for_each = length(trimspace(var.rm_existing_iam_admin_group_name)) > 0 ? toset([var.rm_existing_iam_admin_group_name]) : toset(var.existing_iam_admin_group_name)
   group_id = length(trimspace(each.value)) > 0 ? each.value : "nogroup"
@@ -121,7 +132,8 @@ data "oci_objectstorage_namespace" "this" {
 }
 
 data "oci_identity_compartments" "network" {
-  compartment_id = local.enclosing_compartment_id
+  compartment_id            = local.enclosing_compartment_id
+  compartment_id_in_subtree = local.enclosing_compartment_id == var.tenancy_ocid ? true : false
   filter {
     name   = "name"
     values = [local.provided_network_compartment_name]
@@ -133,7 +145,8 @@ data "oci_identity_compartments" "network" {
 }
 
 data "oci_identity_compartments" "security" {
-  compartment_id = local.enclosing_compartment_id
+  compartment_id            = local.enclosing_compartment_id
+  compartment_id_in_subtree = local.enclosing_compartment_id == var.tenancy_ocid ? true : false
   filter {
     name   = "name"
     values = [local.provided_security_compartment_name]
@@ -145,7 +158,8 @@ data "oci_identity_compartments" "security" {
 }
 
 data "oci_identity_compartments" "app" {
-  compartment_id = local.enclosing_compartment_id
+  compartment_id            = local.enclosing_compartment_id
+  compartment_id_in_subtree = local.enclosing_compartment_id == var.tenancy_ocid ? true : false
   filter {
     name   = "name"
     values = [local.provided_app_compartment_name]
@@ -157,7 +171,8 @@ data "oci_identity_compartments" "app" {
 }
 
 data "oci_identity_compartments" "database" {
-  compartment_id = local.enclosing_compartment_id
+  compartment_id            = local.enclosing_compartment_id
+  compartment_id_in_subtree = local.enclosing_compartment_id == var.tenancy_ocid ? true : false
   filter {
     name   = "name"
     values = [local.provided_database_compartment_name]
@@ -169,7 +184,8 @@ data "oci_identity_compartments" "database" {
 }
 
 data "oci_identity_compartments" "exainfra" {
-  compartment_id = local.enclosing_compartment_id
+  compartment_id            = local.enclosing_compartment_id
+  compartment_id_in_subtree = local.enclosing_compartment_id == var.tenancy_ocid ? true : false
   filter {
     name   = "name"
     values = [local.provided_exainfra_compartment_name]

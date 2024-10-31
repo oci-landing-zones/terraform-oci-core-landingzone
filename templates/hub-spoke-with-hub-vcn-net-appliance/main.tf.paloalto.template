@@ -1,0 +1,88 @@
+# Copyright (c) 2023 Oracle and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+
+# ----------------------------------------------------------------------------------------
+# -- This configuration deploys a CIS compliant landing zone with custom VCN settings.
+# -- See other templates for other CIS compliant landing zones with alternative settings.
+# -- 1. Rename this file to main.tf. 
+# -- 2. Provide/review the variable assignments below.
+# -- 3. In this folder, execute the typical Terraform workflow:
+# ----- $ terraform init
+# ----- $ terraform plan
+# ----- $ terraform apply
+# ----------------------------------------------------------------------------------------
+
+# ----------------------------------------------------------------------------------------
+# Palo Alto Firewall
+# ----------------------------------------------------------------------------------------
+
+module "core_lz_palo_alto" {
+    source = "../../"
+    # ------------------------------------------------------
+    # ----- Environment
+    # ------------------------------------------------------
+    tenancy_ocid         = "ocid1.tenancy.oc1..aaaaaaaa...3jb"               # Replace with your tenancy OCID.
+    user_ocid            = "ocid1.user.oc1..aaaaaaaa...xsb"                  # Replace with your user OCID.
+    fingerprint          = "19:42:xx:92:yy:b3:zz:2f:aa:ea:bb:59:cc:be:dd:ba" # Replace with user fingerprint.
+    private_key_path     = "path-to-pem-file-with-private-key"               # Replace with user private key local path.
+    private_key_password = ""                                                # Replace with private key password, if any.
+    region               = "us-phoenix-1" # Replace with region name.
+    service_label        = "paloalto"     # Prefix prepended to deployed resource names. 
+
+    # ------------------------------------------------------
+    # ----- Networking
+    # ------------------------------------------------------
+    define_net  = true # enables network resources provisioning
+
+    # --- Hub deployment option: a DRG is deployed.
+    hub_deployment_option = "VCN or on-premises connectivity routing via DRG (DRG will be created)"
+    hub_vcn_cidrs         = ["192.168.0.0/24"]
+
+    # --- Firewall deployment option.
+    hub_vcn_deploy_net_appliance_option = "Palo Alto Networks VM-Series Firewall"
+    net_fortigate_version               = "11.1.3"
+    net_appliance_flex_shape_memory     = 56
+    net_appliance_flex_shape_cpu        = 2
+    net_appliance_boot_volume_size      = 60
+    net_appliance_public_rsa_key        = #Enter the Public RSA Key
+    net_appliance_shape                 = VM.Standard2.4 
+
+    # --- Spoke VCN: three-tier VCN 1
+    add_tt_vcn1                   = true
+    tt_vcn1_cidrs                 = ["192.168.0.0/24"]
+    tt_vcn1_attach_to_drg         = true
+    
+    # --- ExaData VCN:
+    add_exa_vcn1                   = true
+    exa_vcn1_cidrs                 = ["192.168.0.0/24"]
+    exa_vcn1_attach_to_drg         = true
+
+    add_oke_vcn1                   = true
+    oke_vcn1_cni_type              = native
+    oke_vcn1_cidrs                 = ["192.168.0.0/24"]
+    oke_vcn1_attach_to_drg         = true
+
+     # --- Routing to Firewall. Uncomment and update the two variables below for the second time execution.
+    # hub_vcn_north_south_entry_point_ocid = "replace with the OCID value in the output of nlb_private_ip_addresses.OUTDOOR-NLB"
+    # hub_vcn_east_west_entry_point_ocid   = "replace with the OCID value in the output of nlb_private_ip_addresses.INDOOR_NLB"
+
+    # ------------------------------------------------------
+    # ----- Notifications
+    # ------------------------------------------------------
+    network_admin_email_endpoints  = ["email.address@example.com"] # for network-related events. Replace with a real email address.
+    security_admin_email_endpoints = ["email.address@example.com"] # for security-related events. Replace with a real email address.
+
+    # ------------------------------------------------------
+    # ----- Security
+    # ------------------------------------------------------
+    enable_cloud_guard = true # Set to false if Cloud Guard has already been enabled.
+
+    # ------------------------------------------------------
+    # ----- Budget 
+    # ------------------------------------------------------
+
+    create_budget                 = true
+    budget_alert_threshold        = 100
+    budget_amount                 = 1000
+    budget_alert_email_endpoints  = ["email.address@example.com"] # for Budget-related Alerts. Replace with a real email address.
+}
