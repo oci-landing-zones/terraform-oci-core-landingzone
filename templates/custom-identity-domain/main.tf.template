@@ -24,7 +24,7 @@ module "core_lz" {
     private_key_path     = "path-to-pem-file-with-private-key"               # Replace with user private key local path.
     private_key_password = ""                                                # Replace with private key password, if any.
     region               = "us-phoenix-1" # Replace with region name.
-    service_label        = "cisbasic"     # Prefix prepended to deployed resource names. 
+    service_label        = "existingID"     # Prefix prepended to deployed resource names. 
 
     # ------------------------------------------------------
     # ----- Notifications
