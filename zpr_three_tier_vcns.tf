@@ -61,27 +61,27 @@ locals {
         description = "ZPR policies for Three-tier VCN 1"
         name = "zpr-policy-three-tier-1"
         statements = [
-          "in ${var.zpr_security_attributes_namespace}.net:tt-vcn-1 VCN allow ${var.zpr_security_attributes_namespace}.app:${local.zpr_label} endpoints to connect to ${var.zpr_security_attributes_namespace}.db-server:${local.zpr_label} endpoints with protocol='tcp/1521-1522'",
-          "in ${var.zpr_security_attributes_namespace}.net:tt-vcn-1 VCN allow ${var.zpr_security_attributes_namespace}.bastion:${local.zpr_label} endpoints to connect to ${var.zpr_security_attributes_namespace}.db-server:${local.zpr_label} endpoints with protocol='tcp/22'",
-          "in ${var.zpr_security_attributes_namespace}.net:tt-vcn-1 VCN allow ${var.zpr_security_attributes_namespace}.db-server:${local.zpr_label} endpoints to connect to 'osn-services-ip-addresses' with protocol='tcp/443'"
+          "in ${var.zpr_security_attributes_namespace}.net:tt-vcn-1-${local.zpr_label} VCN allow ${var.zpr_security_attributes_namespace}.app:${local.zpr_label} endpoints to connect to ${var.zpr_security_attributes_namespace}.db-server:${local.zpr_label} endpoints with protocol='tcp/1521-1522'",
+          "in ${var.zpr_security_attributes_namespace}.net:tt-vcn-1-${local.zpr_label} VCN allow ${var.zpr_security_attributes_namespace}.bastion:${local.zpr_label} endpoints to connect to ${var.zpr_security_attributes_namespace}.db-server:${local.zpr_label} endpoints with protocol='tcp/22'",
+          "in ${var.zpr_security_attributes_namespace}.net:tt-vcn-1-${local.zpr_label} VCN allow ${var.zpr_security_attributes_namespace}.db-server:${local.zpr_label} endpoints to connect to 'osn-services-ip-addresses' with protocol='tcp/443'"
         ]
       } : {}
       ZPR-POLICY-TT-2 = var.add_tt_vcn2 == true ? {
         description = "ZPR policies for VCN 2"
         name = "zpr-policy-three-tier-2"
         statements = [
-          "in ${var.zpr_security_attributes_namespace}.net:tt-vcn-2 VCN allow ${var.zpr_security_attributes_namespace}.app:${local.zpr_label} endpoints to connect to ${var.zpr_security_attributes_namespace}.db-server:${local.zpr_label} endpoints with protocol='tcp/1521-1522'",
-          "in ${var.zpr_security_attributes_namespace}.net:tt-vcn-2 VCN allow ${var.zpr_security_attributes_namespace}.bastion:${local.zpr_label} endpoints to connect to ${var.zpr_security_attributes_namespace}.db-server:${local.zpr_label} endpoints with protocol='tcp/22'",
-          "in ${var.zpr_security_attributes_namespace}.net:tt-vcn-2 VCN allow ${var.zpr_security_attributes_namespace}.db-server:${local.zpr_label} endpoints to connect to 'osn-services-ip-addresses' with protocol='tcp/443'",
+          "in ${var.zpr_security_attributes_namespace}.net:tt-vcn-2-${local.zpr_label} VCN allow ${var.zpr_security_attributes_namespace}.app:${local.zpr_label} endpoints to connect to ${var.zpr_security_attributes_namespace}.db-server:${local.zpr_label} endpoints with protocol='tcp/1521-1522'",
+          "in ${var.zpr_security_attributes_namespace}.net:tt-vcn-2-${local.zpr_label} VCN allow ${var.zpr_security_attributes_namespace}.bastion:${local.zpr_label} endpoints to connect to ${var.zpr_security_attributes_namespace}.db-server:${local.zpr_label} endpoints with protocol='tcp/22'",
+          "in ${var.zpr_security_attributes_namespace}.net:tt-vcn-2-${local.zpr_label} VCN allow ${var.zpr_security_attributes_namespace}.db-server:${local.zpr_label} endpoints to connect to 'osn-services-ip-addresses' with protocol='tcp/443'",
         ]
       } : {}
       ZPR-POLICY-TT-3 = var.add_tt_vcn3 == true ? {
         description = "ZPR policies for VCN 2"
         name = "zpr-policy-three-tier-2"
         statements = [
-          "in ${var.zpr_security_attributes_namespace}.net:tt-vcn-3 VCN allow ${var.zpr_security_attributes_namespace}.app:${local.zpr_label} endpoints to connect to ${var.zpr_security_attributes_namespace}.db-server:${local.zpr_label} endpoints with protocol='tcp/1521-1522'",
-          "in ${var.zpr_security_attributes_namespace}.net:tt-vcn-3 VCN allow ${var.zpr_security_attributes_namespace}.bastion:${local.zpr_label} endpoints to connect to ${var.zpr_security_attributes_namespace}.db-server:${local.zpr_label} endpoints with protocol='tcp/22'",
-          "in ${var.zpr_security_attributes_namespace}.net:tt-vcn-3 VCN allow ${var.zpr_security_attributes_namespace}.db-server:${local.zpr_label} endpoints to connect to 'osn-services-ip-addresses' with protocol='tcp/443'",
+          "in ${var.zpr_security_attributes_namespace}.net:tt-vcn-3-${local.zpr_label} VCN allow ${var.zpr_security_attributes_namespace}.app:${local.zpr_label} endpoints to connect to ${var.zpr_security_attributes_namespace}.db-server:${local.zpr_label} endpoints with protocol='tcp/1521-1522'",
+          "in ${var.zpr_security_attributes_namespace}.net:tt-vcn-3-${local.zpr_label} VCN allow ${var.zpr_security_attributes_namespace}.bastion:${local.zpr_label} endpoints to connect to ${var.zpr_security_attributes_namespace}.db-server:${local.zpr_label} endpoints with protocol='tcp/22'",
+          "in ${var.zpr_security_attributes_namespace}.net:tt-vcn-3-${local.zpr_label} VCN allow ${var.zpr_security_attributes_namespace}.db-server:${local.zpr_label} endpoints to connect to 'osn-services-ip-addresses' with protocol='tcp/443'",
           ""
         ]
       } : {}
@@ -89,86 +89,75 @@ locals {
         description = "ZPR policies for cross VCN communication bewteen TT VCN 1 and TT VCN 2"
         name = "zpr-policy-cross-tt1-tt2"
         statements = [
-          "in ${var.zpr_security_attributes_namespace}.net:tt-vcn-1 VCN allow ${var.tt_vcn2_app_subnet_cidr} endpoints to connect to ${var.zpr_security_attributes_namespace}.db-server:${local.zpr_label} with protocol='tcp/1521-1522'",
-          "in ${var.zpr_security_attributes_namespace}.net:tt-vcn-1 VCN allow ${var.tt_vcn2_db_subnet_cidr} endpoints to connect to ${var.zpr_security_attributes_namespace}.db-server:${local.zpr_label} with protocol='tcp/1521-1522'",
-          "in ${var.zpr_security_attributes_namespace}.net:tt-vcn-2 VCN allow ${var.tt_vcn1_app_subnet_cidr} endpoints to connect to ${var.zpr_security_attributes_namespace}.db-server:${local.zpr_label} with protocol='tcp/1521-1522'",
-          "in ${var.zpr_security_attributes_namespace}.net:tt-vcn-2 VCN allow ${var.tt_vcn1_db_subnet_cidr} endpoints to connect to ${var.zpr_security_attributes_namespace}.db-server:${local.zpr_label} with protocol='tcp/1521-1522'",
-          "in ${var.zpr_security_attributes_namespace}.net:tt-vcn-1 VCN allow ${var.zpr_security_attributes_namespace}.db-server:${local.zpr_label} endpoints to connect to ${var.tt_vcn2_app_subnet_cidr} with protocol='tcp/80'",
-          "in ${var.zpr_security_attributes_namespace}.net:tt-vcn-1 VCN allow ${var.zpr_security_attributes_namespace}.db-server:${local.zpr_label} endpoints to connect to ${var.tt_vcn2_web_subnet_cidr} with protocol='tcp/443'",
-          "in ${var.zpr_security_attributes_namespace}.net:tt-vcn-1 VCN allow ${var.zpr_security_attributes_namespace}.db-server:${local.zpr_label} endpoints to connect to ${var.tt_vcn2_db_subnet_cidr} with protocol='tcp/1521-1522'",
-          "in ${var.zpr_security_attributes_namespace}.net:tt-vcn-2 VCN allow ${var.zpr_security_attributes_namespace}.db-server:${local.zpr_label} endpoints to connect to ${var.tt_vcn1_app_subnet_cidr} with protocol='tcp/80'",
-          "in ${var.zpr_security_attributes_namespace}.net:tt-vcn-2 VCN allow ${var.zpr_security_attributes_namespace}.db-server:${local.zpr_label} endpoints to connect to ${var.tt_vcn1_web_subnet_cidr} with protocol='tcp/443'",
-          "in ${var.zpr_security_attributes_namespace}.net:tt-vcn-2 VCN allow ${var.zpr_security_attributes_namespace}.db-server:${local.zpr_label} endpoints to connect to ${var.tt_vcn1_db_subnet_cidr} with protocol='tcp/1521-1522'",
+          "in ${var.zpr_security_attributes_namespace}.net:tt-vcn-1-${local.zpr_label} VCN allow ${var.tt_vcn2_app_subnet_cidr} endpoints to connect to ${var.zpr_security_attributes_namespace}.db-server:${local.zpr_label} with protocol='tcp/1521-1522'",
+          "in ${var.zpr_security_attributes_namespace}.net:tt-vcn-1-${local.zpr_label} VCN allow ${var.tt_vcn2_db_subnet_cidr} endpoints to connect to ${var.zpr_security_attributes_namespace}.db-server:${local.zpr_label} with protocol='tcp/1521-1522'",
+          "in ${var.zpr_security_attributes_namespace}.net:tt-vcn-2-${local.zpr_label} VCN allow ${var.tt_vcn1_app_subnet_cidr} endpoints to connect to ${var.zpr_security_attributes_namespace}.db-server:${local.zpr_label} with protocol='tcp/1521-1522'",
+          "in ${var.zpr_security_attributes_namespace}.net:tt-vcn-2-${local.zpr_label} VCN allow ${var.tt_vcn1_db_subnet_cidr} endpoints to connect to ${var.zpr_security_attributes_namespace}.db-server:${local.zpr_label} with protocol='tcp/1521-1522'",
+          "in ${var.zpr_security_attributes_namespace}.net:tt-vcn-1-${local.zpr_label} VCN allow ${var.zpr_security_attributes_namespace}.db-server:${local.zpr_label} endpoints to connect to ${var.tt_vcn2_db_subnet_cidr} with protocol='tcp/1521-1522'",
+          "in ${var.zpr_security_attributes_namespace}.net:tt-vcn-2-${local.zpr_label} VCN allow ${var.zpr_security_attributes_namespace}.db-server:${local.zpr_label} endpoints to connect to ${var.tt_vcn1_db_subnet_cidr} with protocol='tcp/1521-1522'",
         ]
       } : {}
       ZPR-POLICY-CROSS-TT1-TT3 = var.add_tt_vcn1 == true && var.add_tt_vcn3 == true ? {
         description = "ZPR policies for cross VCN communication bewteen TT VCN 1 and TT VCN 3"
         name = "zpr-policy-cross-tt1-tt3"
         statements = [
-          "in ${var.zpr_security_attributes_namespace}.net:tt-vcn-1 VCN allow ${var.tt_vcn3_app_subnet_cidr} endpoints to connect to ${var.zpr_security_attributes_namespace}.db-server:${local.zpr_label} with protocol='tcp/1521-1522'",
-          "in ${var.zpr_security_attributes_namespace}.net:tt-vcn-1 VCN allow ${var.tt_vcn3_db_subnet_cidr} endpoints to connect to ${var.zpr_security_attributes_namespace}.db-server:${local.zpr_label} with protocol='tcp/1521-1522'",
-          "in ${var.zpr_security_attributes_namespace}.net:tt-vcn-3 VCN allow ${var.tt_vcn1_app_subnet_cidr} endpoints to connect to ${var.zpr_security_attributes_namespace}.db-server:${local.zpr_label} with protocol='tcp/1521-1522'",
-          "in ${var.zpr_security_attributes_namespace}.net:tt-vcn-3 VCN allow ${var.tt_vcn1_db_subnet_cidr} endpoints to connect to ${var.zpr_security_attributes_namespace}.db-server:${local.zpr_label} with protocol='tcp/1521-1522'",
-          "in ${var.zpr_security_attributes_namespace}.net:tt-vcn-1 VCN allow ${var.zpr_security_attributes_namespace}.db-server:${local.zpr_label} endpoints to connect to ${var.tt_vcn3_app_subnet_cidr} with protocol='tcp/80'",
-          "in ${var.zpr_security_attributes_namespace}.net:tt-vcn-1 VCN allow ${var.zpr_security_attributes_namespace}.db-server:${local.zpr_label} endpoints to connect to ${var.tt_vcn3_web_subnet_cidr} with protocol='tcp/443'",
-          "in ${var.zpr_security_attributes_namespace}.net:tt-vcn-1 VCN allow ${var.zpr_security_attributes_namespace}.db-server:${local.zpr_label} endpoints to connect to ${var.tt_vcn3_db_subnet_cidr} with protocol='tcp/1521-1522'",
-          "in ${var.zpr_security_attributes_namespace}.net:tt-vcn-3 VCN allow ${var.zpr_security_attributes_namespace}.db-server:${local.zpr_label} endpoints to connect to ${var.tt_vcn1_app_subnet_cidr} with protocol='tcp/80'",
-          "in ${var.zpr_security_attributes_namespace}.net:tt-vcn-3 VCN allow ${var.zpr_security_attributes_namespace}.db-server:${local.zpr_label} endpoints to connect to ${var.tt_vcn1_web_subnet_cidr} with protocol='tcp/443'",
-          "in ${var.zpr_security_attributes_namespace}.net:tt-vcn-3 VCN allow ${var.zpr_security_attributes_namespace}.db-server:${local.zpr_label} endpoints to connect to ${var.tt_vcn1_db_subnet_cidr} with protocol='tcp/1521-1522'",
+          "in ${var.zpr_security_attributes_namespace}.net:tt-vcn-1-${local.zpr_label} VCN allow ${var.tt_vcn3_app_subnet_cidr} endpoints to connect to ${var.zpr_security_attributes_namespace}.db-server:${local.zpr_label} with protocol='tcp/1521-1522'",
+          "in ${var.zpr_security_attributes_namespace}.net:tt-vcn-1-${local.zpr_label} VCN allow ${var.tt_vcn3_db_subnet_cidr} endpoints to connect to ${var.zpr_security_attributes_namespace}.db-server:${local.zpr_label} with protocol='tcp/1521-1522'",
+          "in ${var.zpr_security_attributes_namespace}.net:tt-vcn-3-${local.zpr_label} VCN allow ${var.tt_vcn1_app_subnet_cidr} endpoints to connect to ${var.zpr_security_attributes_namespace}.db-server:${local.zpr_label} with protocol='tcp/1521-1522'",
+          "in ${var.zpr_security_attributes_namespace}.net:tt-vcn-3-${local.zpr_label} VCN allow ${var.tt_vcn1_db_subnet_cidr} endpoints to connect to ${var.zpr_security_attributes_namespace}.db-server:${local.zpr_label} with protocol='tcp/1521-1522'",
+          "in ${var.zpr_security_attributes_namespace}.net:tt-vcn-1-${local.zpr_label} VCN allow ${var.zpr_security_attributes_namespace}.db-server:${local.zpr_label} endpoints to connect to ${var.tt_vcn3_db_subnet_cidr} with protocol='tcp/1521-1522'",
+          "in ${var.zpr_security_attributes_namespace}.net:tt-vcn-3-${local.zpr_label} VCN allow ${var.zpr_security_attributes_namespace}.db-server:${local.zpr_label} endpoints to connect to ${var.tt_vcn1_db_subnet_cidr} with protocol='tcp/1521-1522'",
         ]
       } : {}
       ZPR-POLICY-CROSS-TT1-TT3 = var.add_tt_vcn2 == true && var.add_tt_vcn3 == true ? {
         description = "ZPR policies for cross VCN communication bewteen TT VCN 1 and TT VCN 3"
         name = "zpr-policy-cross-tt2-tt3"
         statements = [
-          "in ${var.zpr_security_attributes_namespace}.net:tt-vcn-2 VCN allow ${var.tt_vcn3_app_subnet_cidr} endpoints to connect to ${var.zpr_security_attributes_namespace}.db-server:${local.zpr_label} with protocol='tcp/1521-1522'",
-          "in ${var.zpr_security_attributes_namespace}.net:tt-vcn-2 VCN allow ${var.tt_vcn3_db_subnet_cidr} endpoints to connect to ${var.zpr_security_attributes_namespace}.db-server:${local.zpr_label} with protocol='tcp/1521-1522'",
-          "in ${var.zpr_security_attributes_namespace}.net:tt-vcn-3 VCN allow ${var.tt_vcn2_app_subnet_cidr} endpoints to connect to ${var.zpr_security_attributes_namespace}.db-server:${local.zpr_label} with protocol='tcp/1521-1522'",
-          "in ${var.zpr_security_attributes_namespace}.net:tt-vcn-3 VCN allow ${var.tt_vcn2_db_subnet_cidr} endpoints to connect to ${var.zpr_security_attributes_namespace}.db-server:${local.zpr_label} with protocol='tcp/1521-1522'",
-          "in ${var.zpr_security_attributes_namespace}.net:tt-vcn-2 VCN allow ${var.zpr_security_attributes_namespace}.db-server:${local.zpr_label} endpoints to connect to ${var.tt_vcn3_app_subnet_cidr} with protocol='tcp/80'",
-          "in ${var.zpr_security_attributes_namespace}.net:tt-vcn-2 VCN allow ${var.zpr_security_attributes_namespace}.db-server:${local.zpr_label} endpoints to connect to ${var.tt_vcn3_web_subnet_cidr} with protocol='tcp/443'",
-          "in ${var.zpr_security_attributes_namespace}.net:tt-vcn-2 VCN allow ${var.zpr_security_attributes_namespace}.db-server:${local.zpr_label} endpoints to connect to ${var.tt_vcn3_db_subnet_cidr} with protocol='tcp/1521-1522'",
-          "in ${var.zpr_security_attributes_namespace}.net:tt-vcn-3 VCN allow ${var.zpr_security_attributes_namespace}.db-server:${local.zpr_label} endpoints to connect to ${var.tt_vcn2_app_subnet_cidr} with protocol='tcp/80'",
-          "in ${var.zpr_security_attributes_namespace}.net:tt-vcn-3 VCN allow ${var.zpr_security_attributes_namespace}.db-server:${local.zpr_label} endpoints to connect to ${var.tt_vcn2_web_subnet_cidr} with protocol='tcp/443'",
-          "in ${var.zpr_security_attributes_namespace}.net:tt-vcn-3 VCN allow ${var.zpr_security_attributes_namespace}.db-server:${local.zpr_label} endpoints to connect to ${var.tt_vcn2_db_subnet_cidr} with protocol='tcp/1521-1522'",
+          "in ${var.zpr_security_attributes_namespace}.net:tt-vcn-2-${local.zpr_label} VCN allow ${var.tt_vcn3_app_subnet_cidr} endpoints to connect to ${var.zpr_security_attributes_namespace}.db-server:${local.zpr_label} with protocol='tcp/1521-1522'",
+          "in ${var.zpr_security_attributes_namespace}.net:tt-vcn-2-${local.zpr_label} VCN allow ${var.tt_vcn3_db_subnet_cidr} endpoints to connect to ${var.zpr_security_attributes_namespace}.db-server:${local.zpr_label} with protocol='tcp/1521-1522'",
+          "in ${var.zpr_security_attributes_namespace}.net:tt-vcn-3-${local.zpr_label} VCN allow ${var.tt_vcn2_app_subnet_cidr} endpoints to connect to ${var.zpr_security_attributes_namespace}.db-server:${local.zpr_label} with protocol='tcp/1521-1522'",
+          "in ${var.zpr_security_attributes_namespace}.net:tt-vcn-3-${local.zpr_label} VCN allow ${var.tt_vcn2_db_subnet_cidr} endpoints to connect to ${var.zpr_security_attributes_namespace}.db-server:${local.zpr_label} with protocol='tcp/1521-1522'",
+          "in ${var.zpr_security_attributes_namespace}.net:tt-vcn-2-${local.zpr_label} VCN allow ${var.zpr_security_attributes_namespace}.db-server:${local.zpr_label} endpoints to connect to ${var.tt_vcn3_db_subnet_cidr} with protocol='tcp/1521-1522'",
+          "in ${var.zpr_security_attributes_namespace}.net:tt-vcn-3-${local.zpr_label} VCN allow ${var.zpr_security_attributes_namespace}.db-server:${local.zpr_label} endpoints to connect to ${var.tt_vcn2_db_subnet_cidr} with protocol='tcp/1521-1522'",
         ]
       } : {}
       ZPR-POLICY-CROSS-TT1-EXA1 = var.add_tt_vcn1 == true && var.add_exa_vcn1 == true ? {
         description = "ZPR policies for cross VCN communication bewteen TT VCN 1 and Exadata VCN 1"
         name = "zpr-policy-cross-tt1-exa1"
         statements = [
-          "in ${var.zpr_security_attributes_namespace}.net:tt-vcn-1 VCN allow ${var.zpr_security_attributes_namespace}.app:${local.zpr_label} endpoints to connect to ${var.exa_vcn1_client_subnet_cidr} with protocol='tcp/1521-1522'",
-          "in ${var.zpr_security_attributes_namespace}.net:tt-vcn-1 VCN allow ${var.zpr_security_attributes_namespace}.db-server:${local.zpr_label} endpoints to connect to ${var.exa_vcn1_client_subnet_cidr} with protocol='tcp/1521-1522'",
-          "in ${var.zpr_security_attributes_namespace}.net:tt-vcn-1 VCN allow ${var.exa_vcn1_client_subnet_cidr} endpoints to connect to ${var.tt_vcn1_app_subnet_cidr} with protocol='tcp/80'",
-          "in ${var.zpr_security_attributes_namespace}.net:tt-vcn-1 VCN allow ${var.exa_vcn1_client_subnet_cidr} endpoints to connect to ${var.tt_vcn1_web_subnet_cidr} with protocol='tcp/443'",
-          "in ${var.zpr_security_attributes_namespace}.net:tt-vcn-1 VCN allow ${var.exa_vcn1_client_subnet_cidr} endpoints to connect to ${var.tt_vcn1_db_subnet_cidr} with protocol='tcp/1521-1522'",
-          "in ${var.zpr_security_attributes_namespace}.net:exa-vcn-1 VCN allow ${var.zpr_security_attributes_namespace}.db-client:${local.zpr_label} endpoints to connect to ${var.tt_vcn1_web_subnet_cidr} with protocol='tcp/443'",
-          "in ${var.zpr_security_attributes_namespace}.net:exa-vcn-1 VCN allow ${var.zpr_security_attributes_namespace}.db-client:${local.zpr_label} endpoints to connect to ${var.tt_vcn1_app_subnet_cidr} with protocol='tcp/80'",
-          "in ${var.zpr_security_attributes_namespace}.net:exa-vcn-1 VCN allow ${var.zpr_security_attributes_namespace}.db-client:${local.zpr_label} endpoints to connect to ${var.tt_vcn1_db_subnet_cidr} with protocol='tcp/1521-1522'",
-          "in ${var.zpr_security_attributes_namespace}.net:exa-vcn-1 VCN allow ${var.zpr_security_attributes_namespace}.db-server:${local.zpr_label} endpoints to connect to ${var.tt_vcn1_web_subnet_cidr} with protocol='tcp/443'",
-          "in ${var.zpr_security_attributes_namespace}.net:exa-vcn-1 VCN allow ${var.zpr_security_attributes_namespace}.db-server:${local.zpr_label} endpoints to connect to ${var.tt_vcn1_app_subnet_cidr} with protocol='tcp/80'",
-          "in ${var.zpr_security_attributes_namespace}.net:exa-vcn-1 VCN allow ${var.zpr_security_attributes_namespace}.db-server:${local.zpr_label} endpoints to connect to ${var.tt_vcn1_db_subnet_cidr} with protocol='tcp/1521-1522'",
-          "in ${var.zpr_security_attributes_namespace}.net:exa-vcn-1 VCN allow ${var.tt_vcn1_app_subnet_cidr} endpoints to connect to ${var.zpr_security_attributes_namespace}.db-client:${var.service_label} with protocol='tcp/1521-1522'",
-          "in ${var.zpr_security_attributes_namespace}.net:exa-vcn-1 VCN allow ${var.tt_vcn1_db_subnet_cidr} endpoints to connect to ${var.zpr_security_attributes_namespace}.db-client:${var.service_label} with protocol='tcp/1521-1522'"
+          "in ${var.zpr_security_attributes_namespace}.net:tt-vcn-1-${local.zpr_label} VCN allow ${var.zpr_security_attributes_namespace}.app:${local.zpr_label} endpoints to connect to ${var.exa_vcn1_client_subnet_cidr} with protocol='tcp/1521-1522'",
+          "in ${var.zpr_security_attributes_namespace}.net:tt-vcn-1-${local.zpr_label} VCN allow ${var.zpr_security_attributes_namespace}.db-server:${local.zpr_label} endpoints to connect to ${var.exa_vcn1_client_subnet_cidr} with protocol='tcp/1521-1522'",
+          "in ${var.zpr_security_attributes_namespace}.net:tt-vcn-1-${local.zpr_label} VCN allow ${var.exa_vcn1_client_subnet_cidr} endpoints to connect to ${var.tt_vcn1_db_subnet_cidr} with protocol='tcp/1521-1522'",
+          "in ${var.zpr_security_attributes_namespace}.net:exa-vcn-1-${local.zpr_label} VCN allow ${var.zpr_security_attributes_namespace}.db-client:${local.zpr_label} endpoints to connect to ${var.tt_vcn1_db_subnet_cidr} with protocol='tcp/1521-1522'",
+          "in ${var.zpr_security_attributes_namespace}.net:exa-vcn-1-${local.zpr_label} VCN allow ${var.zpr_security_attributes_namespace}.db-server:${local.zpr_label} endpoints to connect to ${var.tt_vcn1_db_subnet_cidr} with protocol='tcp/1521-1522'",
+          "in ${var.zpr_security_attributes_namespace}.net:exa-vcn-1-${local.zpr_label} VCN allow ${var.tt_vcn1_app_subnet_cidr} endpoints to connect to ${var.zpr_security_attributes_namespace}.db-client:${var.service_label} with protocol='tcp/1521-1522'",
+          "in ${var.zpr_security_attributes_namespace}.net:exa-vcn-1-${local.zpr_label} VCN allow ${var.tt_vcn1_db_subnet_cidr} endpoints to connect to ${var.zpr_security_attributes_namespace}.db-client:${var.service_label} with protocol='tcp/1521-1522'"
         ]
       } : {}
       ZPR-POLICY-CROSS-TT1-EXA2 = var.add_tt_vcn1 == true && var.add_exa_vcn2 == true ? {
         description = "ZPR policies for cross VCN communication bewteen TT VCN 1 and Exadata VCN 2"
         name = "zpr-policy-cross-tt1-exa2"
         statements = [
-          "in ${var.zpr_security_attributes_namespace}.net:tt-vcn-2 VCN allow ${var.zpr_security_attributes_namespace}.app:${local.zpr_label} endpoints to connect to ${var.exa_vcn1_client_subnet_cidr} with protocol='tcp/1521-1522'",
-          "in ${var.zpr_security_attributes_namespace}.net:tt-vcn-2 VCN allow ${var.zpr_security_attributes_namespace}.db-server:${local.zpr_label} endpoints to connect to ${var.exa_vcn1_client_subnet_cidr} with protocol='tcp/1521-1522'",
-          "in ${var.zpr_security_attributes_namespace}.net:tt-vcn-2 VCN allow ${var.exa_vcn1_client_subnet_cidr} endpoints to connect to ${var.tt_vcn2_app_subnet_cidr} with protocol='tcp/80'",
-          "in ${var.zpr_security_attributes_namespace}.net:tt-vcn-2 VCN allow ${var.exa_vcn1_client_subnet_cidr} endpoints to connect to ${var.tt_vcn2_web_subnet_cidr} with protocol='tcp/443'",
-          "in ${var.zpr_security_attributes_namespace}.net:tt-vcn-2 VCN allow ${var.exa_vcn1_client_subnet_cidr} endpoints to connect to ${var.tt_vcn2_db_subnet_cidr} with protocol='tcp/1521-1522'",
-          "in ${var.zpr_security_attributes_namespace}.net:exa-vcn-1 VCN allow ${var.zpr_security_attributes_namespace}.db-client:${local.zpr_label} endpoints to connect to ${var.tt_vcn2_web_subnet_cidr} with protocol='tcp/443'",
-          "in ${var.zpr_security_attributes_namespace}.net:exa-vcn-1 VCN allow ${var.zpr_security_attributes_namespace}.db-client:${local.zpr_label} endpoints to connect to ${var.tt_vcn2_app_subnet_cidr} with protocol='tcp/80'",
-          "in ${var.zpr_security_attributes_namespace}.net:exa-vcn-1 VCN allow ${var.zpr_security_attributes_namespace}.db-client:${local.zpr_label} endpoints to connect to ${var.tt_vcn2_db_subnet_cidr} with protocol='tcp/1521-1522'",
-          "in ${var.zpr_security_attributes_namespace}.net:exa-vcn-1 VCN allow ${var.zpr_security_attributes_namespace}.db-server:${local.zpr_label} endpoints to connect to ${var.tt_vcn2_web_subnet_cidr} with protocol='tcp/443'",
-          "in ${var.zpr_security_attributes_namespace}.net:exa-vcn-1 VCN allow ${var.zpr_security_attributes_namespace}.db-server:${local.zpr_label} endpoints to connect to ${var.tt_vcn2_app_subnet_cidr} with protocol='tcp/80'",
-          "in ${var.zpr_security_attributes_namespace}.net:exa-vcn-1 VCN allow ${var.zpr_security_attributes_namespace}.db-server:${local.zpr_label} endpoints to connect to ${var.tt_vcn2_db_subnet_cidr} with protocol='tcp/1521-1522'",
-          "in ${var.zpr_security_attributes_namespace}.net:exa-vcn-1 VCN allow ${var.tt_vcn2_app_subnet_cidr} endpoints to connect to ${var.zpr_security_attributes_namespace}.db-client:${var.service_label} with protocol='tcp/1521-1522'",
-          "in ${var.zpr_security_attributes_namespace}.net:exa-vcn-1 VCN allow ${var.tt_vcn2_db_subnet_cidr} endpoints to connect to ${var.zpr_security_attributes_namespace}.db-client:${var.service_label} with protocol='tcp/1521-1522'"
+          "in ${var.zpr_security_attributes_namespace}.net:tt-vcn-1-${local.zpr_label} VCN allow ${var.zpr_security_attributes_namespace}.app:${local.zpr_label} endpoints to connect to ${var.exa_vcn2_client_subnet_cidr} with protocol='tcp/1521-1522'",
+          "in ${var.zpr_security_attributes_namespace}.net:tt-vcn-1-${local.zpr_label} VCN allow ${var.zpr_security_attributes_namespace}.db-server:${local.zpr_label} endpoints to connect to ${var.exa_vcn2_client_subnet_cidr} with protocol='tcp/1521-1522'",
+          "in ${var.zpr_security_attributes_namespace}.net:tt-vcn-1-${local.zpr_label} VCN allow ${var.exa_vcn2_client_subnet_cidr} endpoints to connect to ${var.tt_vcn1_db_subnet_cidr} with protocol='tcp/1521-1522'",
+          "in ${var.zpr_security_attributes_namespace}.net:exa-vcn-2-${local.zpr_label} VCN allow ${var.zpr_security_attributes_namespace}.db-client:${local.zpr_label} endpoints to connect to ${var.tt_vcn1_db_subnet_cidr} with protocol='tcp/1521-1522'",
+          "in ${var.zpr_security_attributes_namespace}.net:exa-vcn-2-${local.zpr_label} VCN allow ${var.zpr_security_attributes_namespace}.db-server:${local.zpr_label} endpoints to connect to ${var.tt_vcn1_db_subnet_cidr} with protocol='tcp/1521-1522'",
+          "in ${var.zpr_security_attributes_namespace}.net:exa-vcn-2-${local.zpr_label} VCN allow ${var.tt_vcn1_app_subnet_cidr} endpoints to connect to ${var.zpr_security_attributes_namespace}.db-client:${var.service_label} with protocol='tcp/1521-1522'",
+          "in ${var.zpr_security_attributes_namespace}.net:exa-vcn-2-${local.zpr_label} VCN allow ${var.tt_vcn1_db_subnet_cidr} endpoints to connect to ${var.zpr_security_attributes_namespace}.db-client:${var.service_label} with protocol='tcp/1521-1522'"
+        ]
+      } : {}
+      ZPR-POLICY-CROSS-TT1-EXA3 = var.add_tt_vcn1 == true && var.add_exa_vcn3 == true ? {
+        description = "ZPR policies for cross VCN communication bewteen TT VCN 1 and Exadata VCN 3"
+        name = "zpr-policy-cross-tt1-exa3"
+        statements = [
+          "in ${var.zpr_security_attributes_namespace}.net:tt-vcn-1-${local.zpr_label} VCN allow ${var.zpr_security_attributes_namespace}.app:${local.zpr_label} endpoints to connect to ${var.exa_vcn3_client_subnet_cidr} with protocol='tcp/1521-1522'",
+          "in ${var.zpr_security_attributes_namespace}.net:tt-vcn-1-${local.zpr_label} VCN allow ${var.zpr_security_attributes_namespace}.db-server:${local.zpr_label} endpoints to connect to ${var.exa_vcn3_client_subnet_cidr} with protocol='tcp/1521-1522'",
+          "in ${var.zpr_security_attributes_namespace}.net:tt-vcn-1-${local.zpr_label} VCN allow ${var.exa_vcn3_client_subnet_cidr} endpoints to connect to ${var.tt_vcn1_db_subnet_cidr} with protocol='tcp/1521-1522'",
+          "in ${var.zpr_security_attributes_namespace}.net:exa-vcn-3-${local.zpr_label} VCN allow ${var.zpr_security_attributes_namespace}.db-client:${local.zpr_label} endpoints to connect to ${var.tt_vcn1_db_subnet_cidr} with protocol='tcp/1521-1522'",
+          "in ${var.zpr_security_attributes_namespace}.net:exa-vcn-3-${local.zpr_label} VCN allow ${var.zpr_security_attributes_namespace}.db-server:${local.zpr_label} endpoints to connect to ${var.tt_vcn1_db_subnet_cidr} with protocol='tcp/1521-1522'",
+          "in ${var.zpr_security_attributes_namespace}.net:exa-vcn-3-${local.zpr_label} VCN allow ${var.tt_vcn1_app_subnet_cidr} endpoints to connect to ${var.zpr_security_attributes_namespace}.db-client:${var.service_label} with protocol='tcp/1521-1522'",
+          "in ${var.zpr_security_attributes_namespace}.net:exa-vcn-3-${local.zpr_label} VCN allow ${var.tt_vcn1_db_subnet_cidr} endpoints to connect to ${var.zpr_security_attributes_namespace}.db-client:${var.service_label} with protocol='tcp/1521-1522'"
         ]
       } : {}
     }
