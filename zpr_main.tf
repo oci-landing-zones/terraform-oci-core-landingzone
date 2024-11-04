@@ -4,15 +4,11 @@ locals {
 
   // for each exa vcn that is added, add its name to the list of validator values
   exa_vcn_validator_values = [for index, exa_vcn_added in tolist([var.add_exa_vcn1, var.add_exa_vcn2, var.add_exa_vcn3]): "exa-vcn-${index}" if exa_vcn_added == true]
-  // if any exa vcns have been added, then merge that list with the generic "exa vcn" tag. if length is 0, then no exa vcns have been added
-  exa_validator_values = length(local.exa_vcn_validator_values) > 0 ? flatten(local.exa_vcn_validator_values, ["exa-vcn"]) : []
 
   // for each tt vcn that is added, add its name to the list of validator values
   tt_vcn_validator_values = [for index, tt_vcn_added in tolist([var.add_tt_vcn1, var.add_tt_vcn2, var.add_tt_vcn3]): "tt-vcn-${index}" if tt_vcn_added == true]
-  // if any tt vcns have been added, then merge that list with the generic "tt vcn" tag. if length is 0, then no tt vcns have been added
-  tt_validator_values = length(local.tt_vcn_validator_values) > 0 ? flatten(local.tt_vcn_validator_values, ["tt-vcn"]) : []
 
-  zpr_configuration = {
+  lz_zpr_configuration = {
     default_defined_tags = null
     default_freeform_tags = null
 
@@ -53,12 +49,12 @@ locals {
         validator_type   = "ENUM"
         validator_values = [local.zpr_label]
       },
-      NET = length(local.exa_validator_values) > 0 || length(local.tt_validator_values) > 0 ? {
+      NET = length(local.exa_vcn_validator_values) > 0 || length(local.tt_vcn_validator_values) > 0 ? {
         description      = "Security attribute for VCNs"
         name             = "net"
         namespace_id     = "ZPR-CORE-LZ-NAMESPACE"
         validator_type   = "ENUM"
-        validator_values = concat(local.exa_validator_values, local.tt_validator_values)
+        validator_values = concat(local.exa_vcn_validator_values, local.tt_vcn_validator_values)
       } : {}
     }
     zpr_policies = local.exa_zpr_policies
@@ -70,6 +66,6 @@ module "lz_zpr" {
   count = var.enable_zpr ? 1 : 0
   source = "github.com/oci-landing-zones/terraform-oci-modules-security//zpr?ref=release-0.1.9" // need to update this when release branch gets merged into main branch
   tenancy_ocid = var.tenancy_ocid
-  zpr_configuration = local.zpr_configuration
+  zpr_configuration = local.lz_zpr_configuration
   compartments_dependency = module.lz_compartments[0].compartments
 }
