@@ -26,13 +26,12 @@
 </details>
 <br>
 
-# OCI Core Landing Zone (Early Preview)
+# OCI Core Landing Zone
 
 ![OCI Core Landing Zone](./images/landing_zone_300.png)
 
 ## Table of Contents
 
-1. [Early Preview Disclaimer](#early-preview)
 1. [Overview](#overview)
 1. [Architecture](#arch)
     1. [IAM](#arch-iam)
@@ -46,19 +45,9 @@
 1. [License](#license)
 1. [Known Issues](#known-issues)
 
-## <a name="early-preview">Early Preview Disclaimer</a>
-
-This is an early preview version. It is still under development, with on-going testing and validation. As such, it may contain bugs, incomplete features, and unexpected behavior. This is NOT intended for production use. 
-
-This preview enables early access for OCI customers to explore the revamped, standardized Landing Zone framework and new templates, including the Core landing Zone for base tenancy provisioning and Zero Trust landing zone which is built on the Core.
-
-The modules that comprise the new landing zone framework are an evolution of landing zone modules previously published under the [Oracle Quick Start](https://github.com/oracle-quickstart) GitHub organization. We invite you to explore the framework and submit any feature requests, comments or questions via GitHub comments. You can subscribe to be notified once the framework is released in general availability at which point it would be supported by Oracle.
-
 ## <a name="overview">Overview</a>
 
 The OCI Core Landing Zone unifies the OCI landing zone initiatives that follow a centralized deployment paradigm for provisioning the base tenancy, including [CIS Landing Zone](https://github.com/oci-landing-zones/oci-cis-landingzone-quickstart) and [Oracle Enterprise Landing Zone](https://github.com/oci-landing-zones/oracle-enterprise-landingzone). For deploying landing zones in multiple stacks, see [The OCI Operating Entities Landing Zone](https://github.com/oci-landing-zones/oci-landing-zone-operating-entities).
-
-Both CIS Landing Zone and Oracle Enterprise Landing Zone will enter maintenance mode once OCI Core Landing Zone becomes generally available. New features will be added to OCI Core Landing Zone only.
 
 The OCI Core Landing Zone deploys a standardized environment in an Oracle Cloud Infrastructure (OCI) tenancy that helps organizations to comply with the [CIS OCI Foundations Benchmark v2.0](https://www.cisecurity.org/benchmark/oracle_cloud/).    
 
@@ -141,7 +130,7 @@ Some architecture scenarios enabled by the Hub VCN are:
 
 The diagram below shows services and resources that are deployed along with a single three-tier VCN deployment:
 
-![arch_simple](./images/Architecture-Simple.png)
+![arch_simple](./images/arch_simple.png)
 
 [Get the diagram in SVG format.](./images/arch_simple.svg)
 
@@ -164,9 +153,12 @@ This module requires Terraform binary version 1.3.0 or greater, as its underlyin
 
 Some deployment scenarios are available under the [templates](./templates/) folder:
 
-- [CIS Basic no Networking](./templates/cis-basic/)
-- [CIS Basic with Single Default Three-Tier VCN](./templates/standalone-three-tier-vcn-defaults/)
-- [CIS Basic with Single Custom Three-Tier VCN](./templates/standalone-three-tier-vcn-custom/)
+- [Groups and Dynamic Groups From a Custom Identity Domains](./templates/custom-identity-domain)
+- [No Networking](./templates/cis-basic/)
+- [Single Three-Tier VCN with default settings](./templates/standalone-three-tier-vcn-defaults/)
+- [Single Three-Tier VCN with custom settings](./templates/standalone-three-tier-vcn-custom/)
+- [Multiple Three-Tier VCNs peered through DRG](./templates/hub-spoke-with-drg-and-three-tier-vcns)
+- [Multiple VCN types peered through a Hub VCN with network appliance](./templates/hub-spoke-with-hub-vcn-net-appliance)
 
 Another key deployment scenario of OCI Core Landing Zone is [Zero Trust Landing Zone](https://github.com/oci-landing-zones/terraform-oci-zero-trust-landingzone).
 
@@ -193,14 +185,20 @@ See [CONTRIBUTING.md](./CONTRIBUTING.md).
 
 ## <a name="license">License</a>
 
-Copyright (c) 2023, Oracle and/or its affiliates.
+Copyright (c) 2024, Oracle and/or its affiliates.
 
 Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 
-See [LICENSE](./LICENSE) for more details.
+See [LICENSE](./LICENSE.txt) for more details.
 
 
 ## <a name="known-issues">Known Issues</a>
+
+* **Oracle Access Governance (OAG) Availability**    
+    * OAG is not currently available in all regions or outside of OCI commercial realms. For more details, see [What's New for Oracle Access Governance](https://docs.oracle.com/en/cloud/paas/access-governance/wsaje/). At the time of this Landing Zone release, OAG cannot deploy in any realm other than OC1.
+
+* **OCI Marketplace 3rd Party Firewall Availability**    
+    * New with this release of Landing Zone is an optional selection of Palo Alto Networks VM-Series Next Genration Firewall or FortiGate Next-Gen Firewall (BYOL).  These offerings are provided through the OCI Marketplace, which will vary by region and realm.  Not all versions are released to all realms at the same time.
 
 * **Terraform Apply Failure 404-NotAuthorizedorNotFound**    
     * Terraform CLI or Resource Manager fails to apply with a message similar as this:
@@ -225,4 +223,4 @@ See [LICENSE](./LICENSE) for more details.
     * By design, OCI vaults and keys are not deleted immediately upon *terraform destroy*, but scheduled for deletion. Both have a default 30 day grace period. For shortening that period, use OCI Console to first cancel the scheduled deletion and then set the earliest possible deletion date (7 days from current date) when deleting.
 
 * **Support for free tier tenancies**
-    * Deploying in a free tier tenancy is not supported at this time as there are some services that are not available. If you want to try the Landing Zone please upgrade your account to a pay-go account.
+    * Deploying in a free tier tenancy is not supported at this time as there are some services that are not available. If you want to try the Landing Zone please upgrade your account to a Pay As You Go (PAYG) account.
