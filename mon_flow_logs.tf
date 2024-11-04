@@ -28,7 +28,7 @@ locals {
   #----- Flow Logs configuration definition. Input to module.
   #------------------------------------------------------------------------
   logging_configuration = {
-    default_compartment_id = local.security_compartment_key
+    default_compartment_id = local.security_compartment_id
     default_defined_tags   = local.flow_logs_defined_tags
     default_freeform_tags  = local.flow_logs_freeform_tags
 
@@ -52,9 +52,8 @@ locals {
 }
 
 module "lz_flow_logs" {
-  depends_on              = [module.lz_network, module.lz_compartments]
-  source                  = "github.com/oci-landing-zones/terraform-oci-modules-observability//logging?ref=v0.1.8"
-  logging_configuration   = local.logging_configuration
-  compartments_dependency = module.lz_compartments[0].compartments
-  tenancy_ocid            = var.tenancy_ocid
+  depends_on            = [module.lz_network, module.lz_compartments]
+  source                = "github.com/oci-landing-zones/terraform-oci-modules-observability//logging?ref=v0.1.8"
+  logging_configuration = local.logging_configuration
+  tenancy_ocid          = var.tenancy_ocid
 }

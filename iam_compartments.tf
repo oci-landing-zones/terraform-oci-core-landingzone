@@ -11,7 +11,7 @@ locals {
 
 module "lz_top_compartment" {
   count                      = var.extend_landing_zone_to_new_region == false && local.deploy_enclosing_compartment ? 1 : 0
-  source                     = "github.com/oci-landing-zones/terraform-oci-modules-iam//compartments?ref=v0.2.3"
+  source                     = "github.com/oci-landing-zones/terraform-oci-modules-iam//compartments?ref=v0.2.4"
   providers                  = { oci = oci.home }
   tenancy_ocid               = var.tenancy_ocid
   compartments_configuration = local.enclosing_compartment_configuration
@@ -19,7 +19,7 @@ module "lz_top_compartment" {
 
 module "lz_compartments" {
   count                      = var.extend_landing_zone_to_new_region == false ? 1 : 0
-  source                     = "github.com/oci-landing-zones/terraform-oci-modules-iam//compartments?ref=v0.2.3"
+  source                     = "github.com/oci-landing-zones/terraform-oci-modules-iam//compartments?ref=v0.2.4"
   providers                  = { oci = oci.home }
   tenancy_ocid               = var.tenancy_ocid
   compartments_configuration = local.enclosed_compartments_configuration
@@ -158,8 +158,8 @@ locals {
   #----- Variables with compartment names and OCIDs per compartments module output
   #---------------------------------------------------------------------------------------
   #enclosing_compartment_name = local.use_enclosing_compartment == true ? (var.existing_enclosing_compartment_ocid != null ? data.oci_identity_compartment.existing_enclosing_compartment.name : local.provided_enclosing_compartment_name) : "tenancy"
-  enclosing_compartment_name = local.deploy_enclosing_compartment ? module.lz_top_compartment[0].compartments[local.enclosing_compartment_key].name : local.use_enclosing_compartment ? data.oci_identity_compartment.existing_enclosing_compartment.name : "tenancy"
-  enclosing_compartment_id   = local.deploy_enclosing_compartment ? module.lz_top_compartment[0].compartments[local.enclosing_compartment_key].id : local.use_enclosing_compartment ? var.existing_enclosing_compartment_ocid : var.tenancy_ocid
+  enclosing_compartment_name = var.extend_landing_zone_to_new_region == false && local.deploy_enclosing_compartment ? module.lz_top_compartment[0].compartments[local.enclosing_compartment_key].name : local.use_enclosing_compartment ? data.oci_identity_compartment.existing_enclosing_compartment.name : "tenancy"
+  enclosing_compartment_id   = var.extend_landing_zone_to_new_region == false && local.deploy_enclosing_compartment ? module.lz_top_compartment[0].compartments[local.enclosing_compartment_key].id : local.use_enclosing_compartment ? var.existing_enclosing_compartment_ocid : var.tenancy_ocid
 
   network_compartment_name = var.extend_landing_zone_to_new_region == false && local.enable_network_compartment == true ? module.lz_compartments[0].compartments[local.network_compartment_key].name : local.provided_network_compartment_name
   network_compartment_id   = var.extend_landing_zone_to_new_region == false && local.enable_network_compartment == true ? module.lz_compartments[0].compartments[local.network_compartment_key].id : length(data.oci_identity_compartments.network.compartments) > 0 ? data.oci_identity_compartments.network.compartments[0].id : null

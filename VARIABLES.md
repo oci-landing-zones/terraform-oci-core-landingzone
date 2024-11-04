@@ -17,7 +17,7 @@
 | service_label | A unique label that gets prepended to all resources deployed by the Landing Zone. Max length: 15 characters. | `any` |  | yes |
 | cis_level | Determines CIS OCI Benchmark Level to apply on Landing Zone managed resources. Level 1 is be practical and prudent. Level 2 is intended for environments where security is more critical than manageability and usability. Level 2 drives the creation of an OCI Vault, buckets encryption with a customer managed key, write logs for buckets and the usage of specific policies in Security Zones. | `string` | 1 | no |
 | customize_iam | Whether Landing Zone IAM settings are to be customized. Customizable options are identity domains, groups, dynamic groups and policies. | `bool` | `false` | no |
-| customize_net | Whether networking is defined as part of this Landing Zone. By default, no networking resources are created. | `bool` | `false` | no |
+| define_net | Whether networking is defined as part of this Landing Zone. By default, no networking resources are created. | `bool` | `false` | no |
 | display_output | Whether to display a concise set of select resource outputs with their OCIDs and names. | `bool` | `true` | no |
 | extend_landing_zone_to_new_region | Whether Landing Zone is being extended to another region. When set to true, compartments, groups, policies and resources at the home region are not provisioned. Use this when you want to provision a Landing Zone in a new region, but reuse existing Landing Zone resources in the home region. | `bool` | `false` | no |
 | lz_provenant_prefix | The provenant landing zone prefix or code that identifies the client of this Landing Zone. This information goes into a freeform tag applied to all deployed resources. | `string` | `core` | no |
@@ -28,7 +28,7 @@
 
 | Variable Name | Description | Type | Default | Required |
 |---------------|-------------|------|---------|----------|
-| custom_id_domain_name | The existing identity domain name. | `string` | `null` | no |
+| custom_id_domain_ocid | The existing identity domain OCID. | `string` | `null` | no |
 | deploy_exainfra_cmp | Whether a separate compartment for Exadata Cloud Service Infrastructure is deployed. | `bool` | `false` | no |
 | dyn_groups_options | IAM - Dynamic Groups | `string` | `Yes` | no |
 | enclosing_compartment_parent_ocid | The existing compartment where Landing Zone enclosing compartment is created. | `string` | `null` | no |
@@ -298,16 +298,18 @@
 | Variable Name | Description | Type | Default | Required |
 |---------------|-------------|------|---------|----------|
 | customize_hub_vcn_subnets | Whether to customize default subnets settings of the Hub VCN. Only applicable to RMS deployments. | `bool` | `false` | no |
-| existing_drg_ocid | The OCID of an existing DRG that you want to reuse for hub deployment. Only applicable if hub\_deployment\_option is 'Yes, existing DRG as hub' or 'Yes, new VCN as hub with existing DRG'. | `string` | `null` | no |
-| fw_instance_boot_volume_size | The boot volume size (in GB) for the firewall instances. | `number` | `60` | no |
-| fw_instance_flex_shape_cpu | The number of OCPUs for the selected flex shape. Applicable to flexible shapes only. | `number` | `2` | no |
-| fw_instance_flex_shape_memory | The amount of memory (in GB) for the selected flex shape. Applicable to flexible shapes only. | `number` | `56` | no |
-| fw_instance_name_prefix | Common prefix to firewall name. To this common prefix, numbers 1 and 2 are appended to the corresponding instance. | `string` | `firewall-instance` | no |
-| fw_instance_public_rsa_key | The SSH public key to login to firewall Compute instance. | `string` | `null` | no |
-| fw_instance_shape | The instance shape for the firewall nodes. | `string` | `VM.Optimized3.Flex` | no |
-| hub_deployment_option | The available options for hub deployment. Valid values: 'No', 'Yes, new DRG as hub', 'Yes, existing DRG as hub', 'Yes, new VCN as hub with new DRG', 'Yes, new VCN as hub with existing DRG'. All the VCNs that attach to the DRG join the topology as spokes. | `string` | `No` | no |
+| existing_drg_ocid | The OCID of an existing DRG that you want to reuse for hub deployment. Only applicable if hub\_deployment\_option is 'VCN or on-premises connectivity routing via DRG (existing DRG)' or 'VCN or on-premises connectivity routed through DMZ VCN with Network Virtual Appliance existing DRG (DMZ VCN will be created and DRG ID required)'. | `string` | `null` | no |
+| net_appliance_boot_volume_size | The boot volume size (in GB) for the network appliances. | `number` | `60` | no |
+| net_appliance_flex_shape_cpu | The number of OCPUs for the selected flex shape. Applicable to flexible shapes only. | `number` | `2` | no |
+| net_appliance_flex_shape_memory | The amount of memory (in GB) for the selected flex shape. Applicable to flexible shapes only. | `number` | `56` | no |
+| net_appliance_image_ocid | The custom image ocid of the user-provided virtual network appliance. | `string` | `null` | no 
+| net_appliance_name_prefix | Common prefix to network appliance name. To this common prefix, numbers 1 and 2 are appended to the corresponding instance. | `string` | `net-appliance-instance` | no |
+| net_appliance_public_rsa_key | The SSH public key to login to Network Appliance Compute instance. | `string` | `null` | no |
+| net_appliance_shape | The instance shape for the network appliance nodes. | `string` | `VM.Optimized3.Flex` | no |
+| hub_deployment_option | The available options for hub deployment. Valid values: 'No cross-VCN or on-premises connectivity', 'VCN or on-premises connectivity routing via DRG (DRG will be created)', 'VCN or on-premises connectivity routing via DRG (existing DRG)', 'VCN or on-premises connectivity routing through DMZ VCN with Network Virtual Appliance (DRG and DMZ VCN will be created)', 'VCN or on-premises connectivity routed through DMZ VCN with Network Virtual Appliance existing DRG (DMZ VCN will be created and DRG ID required)'. All the VCNs that attach to the DRG join the topology as spokes. | `string` | `No cross-VCN or on-premises connectivity` | no |
+| hub_deployment | The available options for hub deployment as an integer. 'No cross-VCN or on-premises connectivity' = 0, 'VCN or on-premises connectivity routing via DRG (DRG will be created)' = 1, 'VCN or on-premises connectivity routing via DRG (existing DRG)' = 2, 'VCN or on-premises connectivity routing through DMZ VCN with Network Virtual Appliance (DRG and DMZ VCN will be created)' = 3, 'VCN or on-premises connectivity routed through DMZ VCN with Network Virtual Appliance existing DRG (DMZ VCN will be created and DRG ID required)' = 4| `number` | `0`| no || hub_vcn_cidrs | List of CIDR blocks for the Hub VCN. | `list(string)` | `[192.168.0.0/26]`                                | no |
 | hub_vcn_cidrs | List of CIDR blocks for the Hub VCN. | `list(string)` |  `[192.168.0.0/26]` | no |
-| hub_vcn_deploy_firewall_option | The firewall option for deploying in the Hub VCN. Valid values: 'No' (default), 'Palo Alto Networks VM-Series Firewall', 'Fortinet FortiGate Firewall'. Costs are incurred. | `string` | `No` | no |
+| hub_vcn_deploy_net_appliance_option | The network appliance option for deploying in the Hub VCN. Valid values: 'Don't deploy any network appliance at this time' (default), 'Palo Alto Networks VM-Series Firewall', 'Fortinet FortiGate Firewall'. Costs are incurred. | `string` | `Don't deploy any network appliance at this time` | no |
 | hub_vcn_dns | The Hub VCN DNS name. | `string` | `null` | no |
 | hub_vcn_east_west_entry_point_ocid | The OCID of a private address the Hub VCN routes traffic to for inbound internal cross-vcn traffic (East/West). This variable is to be assigned with the OCID of the indoor network load balancer's private IP address. | `string` | `null` | no |
 | hub_vcn_indoor_subnet_cidr | The Hub VCN Indoor subnet CIDR block. It must be within the VCN CIDR blocks. | `string` | `null` | no |
@@ -328,6 +330,7 @@
 | hub_vcn_web_subnet_is_private | Whether the Web subnet private. It is public by default. | `bool` | `false` | no |
 | hub_vcn_web_subnet_jump_host_allowed_cidrs | List of CIDRs allowed to SSH into the Web subnet via a jump host eventually deployed in the Web subnet. Leave empty for no access. | `list(string)` | `[]` | no |
 | hub_vcn_web_subnet_name | The Hub VCN Web subnet name. | `string` | `null` | no |
+| onprem_cidrs | List of on-premises CIDR blocks allowed to connect to the Landing Zone network via a DRG. | `list(string)` | `[]` | no 
 
 ### Monitoring
 
