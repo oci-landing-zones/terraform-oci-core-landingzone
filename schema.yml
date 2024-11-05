@@ -20,7 +20,10 @@ variableGroups:
       - "extend_landing_zone_to_new_region"
       - "customize_iam"
       - "define_net"
+      - "enable_zpr"
+      - "zpr_security_attributes_namespace"
       - "display_output"
+
 
   - title: "Compartments"
     variables:
@@ -40,10 +43,8 @@ variableGroups:
   - title: "Identity Domains"
     variables:
       - "use_custom_id_domain"
-      # - "custom_id_domain_name"
       - "custom_id_domain_ocid"
       - "deploy_custom_domain_groups"
-      # - "id_domain_type" 
     visible:
       and:
         - eq:
@@ -416,12 +417,6 @@ variableGroups:
        - "budget_amount"
        - "budget_alert_email_endpoints"
 
-  - title: "Zero Trust Packet Routing (ZPR)"
-    variables:
-      - "enable_zpr"
-      - "zpr_security_attributes_namespace"
-
-
   - title: "Hidden Variables"
     visible: false
     variables:
@@ -493,7 +488,27 @@ variables:
     title: "Define Networking?"
     description: "Check to define networking resources. By default, the Landing Zone does NOT deploy any networks."
     default: false
-    visible: true  
+    visible: true
+
+  # Zero Trust Packet Routing (ZPR)
+  enable_zpr:
+    type: boolean
+    title: "Enable ZPR?"
+    description: "If checked, a ZPR security attribute namespace, security attributes, and ZPR policies will be created in the enclosing compartment. For details, please see <a href=\"https://docs.oracle.com/en-us/iaas/Content/zero-trust-packet-routing/overview.htm\">ZPR Overview</a>"
+    default: false
+    required: false
+    visible: define_net
+
+  zpr_security_attributes_namespace:
+    type: string
+    title: "Name of ZPR Security Attribute Namespace"
+    description: "The name of the created ZPR Security Attributes Namespace. By default, it is corelz-zpr."
+    default: "corelz-zpr"
+    required: false
+    visible:
+      and:
+      - enable_zpr
+      - define_net
 
   display_output:
     type: boolean
@@ -3837,22 +3852,6 @@ variables:
     required: false
     visible: create_budget
     description: "List of email addresses for budget alerts. (Type an email address and hit enter to enter multiple values)"
-
-  # Zero Trust Packet Routing (ZPR)
-  enable_zpr:
-    type: boolean
-    title: "Enable ZPR?"
-    description: "If checked, a ZPR security attribute namespace, security attributes, and ZPR policies will be created in the enclosing compartment. For details, please see <a href=\"https://docs.oracle.com/en-us/iaas/Content/zero-trust-packet-routing/overview.htm\">ZPR Overview</a>"
-    default: false
-    required: false
-
-  zpr_security_attributes_namespace:
-    type: string
-    title: "Name of ZPR Security Attribute Namespace"
-    description: "The name of the created ZPR Security Attributes Namespace. By default, it is corelz-zpr."
-    default: "corelz-zpr"
-    required: false
-    visible: enable_zpr
 
 outputs:
   release:
