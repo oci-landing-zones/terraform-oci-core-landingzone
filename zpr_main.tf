@@ -2,7 +2,16 @@ locals {
 
   zpr_label = var.service_label # pre-check if service label is valid
 
-  zpr_configuration = {
+  // for each exa vcn that is added, add its name to the list of validator values
+  exa_vcn_validator_values = [for index, exa_vcn_added in tolist([var.add_exa_vcn1, var.add_exa_vcn2, var.add_exa_vcn3]): "exa-vcn-${index}" if exa_vcn_added == true]
+
+  // for each tt vcn that is added, add its name to the list of validator values
+  tt_vcn_validator_values = [for index, tt_vcn_added in tolist([var.add_tt_vcn1, var.add_tt_vcn2, var.add_tt_vcn3]): "tt-vcn-${index}" if tt_vcn_added == true]
+
+  lz_zpr_configuration = {
+    default_defined_tags = null
+    default_freeform_tags = null
+
     namespaces = {
       ZPR-CORE-LZ-NAMESPACE = {
         compartment_id = "TOP-CMP"
@@ -13,56 +22,50 @@ locals {
 
     security_attributes = {
       APP = {
-        description      = "Security attribute for App in Three Tier VCN"
+        description      = "Security attribute for App"
         name             = "app"
         namespace_id     = "ZPR-CORE-LZ-NAMESPACE"
         validator_type   = "ENUM"
         validator_values = [local.zpr_label]
-      }
+      },
       BASTION = {
-        description      = "Security attribute for Bastion in Three Tier VCN"
+        description      = "Security attribute for Bastion"
         name             = "bastion"
         namespace_id     = "ZPR-CORE-LZ-NAMESPACE"
         validator_type   = "ENUM"
         validator_values = [local.zpr_label]
-      }
+      },
       DB-SERVER = {
-        description      = "Security attribute for DB Server in Three Tier VCN"
+        description      = "Security attribute for DB Server"
         name             = "db-server"
         namespace_id     = "ZPR-CORE-LZ-NAMESPACE"
         validator_type   = "ENUM"
         validator_values = [local.zpr_label]
-      }
-      DB-CLIENT-EXA = {
-        description      = "Security attribute for DB Client in Exadata VCN"
+      },
+      DB-CLIENT = {
+        description      = "Security attribute for DB Client"
         name             = "db-client"
         namespace_id     = "ZPR-CORE-LZ-NAMESPACE"
         validator_type   = "ENUM"
         validator_values = [local.zpr_label]
-      }
-      NET-TT = {
-        description      = "Security attribute for VCN in Three Tier VCN"
+      },
+      NET = length(local.exa_vcn_validator_values) > 0 || length(local.tt_vcn_validator_values) > 0 ? {
+        description      = "Security attribute for VCNs"
         name             = "net"
         namespace_id     = "ZPR-CORE-LZ-NAMESPACE"
         validator_type   = "ENUM"
-        validator_values = ["tt-vcn-1", "tt-vcn-2", "tt-vcn-3"]
-      }
-      NET-EXA = {
-        description      = "Security attribute for VCN in Exadata VCN"
-        name             = "net"
-        namespace_id     = "ZPR-CORE-LZ-NAMESPACE"
-        validator_type   = "ENUM"
-        validator_values = ["exa-vcn-1", "exa-vcn-2", "exa-vcn-3"]
-      }
+        validator_values = concat(local.exa_vcn_validator_values, local.tt_vcn_validator_values)
+      } : {}
     }
-    zpr_policies = merge(local.exa_zpr_policies)
+    zpr_policies = local.exa_zpr_policies
   }
 }
 
 
-module "zpr" {
+module "lz_zpr" {
   count = var.enable_zpr ? 1 : 0
   source = "github.com/oci-landing-zones/terraform-oci-modules-security//zpr?ref=release-0.1.9" // need to update this when release branch gets merged into main branch
   tenancy_ocid = var.tenancy_ocid
-  zpr_configuration = local.zpr_configuration
+  zpr_configuration = local.lz_zpr_configuration
+  compartments_dependency = module.lz_compartments[0].compartments
 }
