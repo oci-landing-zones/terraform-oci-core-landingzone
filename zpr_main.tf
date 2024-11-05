@@ -1,6 +1,6 @@
 locals {
 
-  zpr_label = var.service_label # pre-check if service label is valid
+  zpr_label = var.service_label
 
   // for each exa vcn that is added, add its name to the list of validator values
   exa_vcn_validator_values = [for index, exa_vcn_added in tolist([var.add_exa_vcn1, var.add_exa_vcn2, var.add_exa_vcn3]) : "exa-vcn-${index + 1}" if exa_vcn_added == true]
@@ -50,7 +50,7 @@ locals {
         validator_values = concat(local.exa_vcn_validator_values, local.tt_vcn_validator_values)
       }
     }
-    zpr_policies = local.exa_zpr_policies
+    zpr_policies = merge(local.exa_vcn_1_zpr_policies, local.exa_vcn_2_zpr_policies, local.exa_vcn_3_zpr_policies)
   }
 }
 
