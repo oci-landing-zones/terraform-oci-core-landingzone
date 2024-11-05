@@ -67,24 +67,4 @@ locals {
       }
     } : {}
   )
-
-  zpr_configuration = {
-
-
-
-
-    zpr_policies = {
-
-
-      ZPR-POLICY-CROSS-TT1-EXA3 = var.add_tt_vcn1 == true && var.add_exa_vcn3 == true ? {
-        description = "ZPR policies for cross VCN communication bewteen TT VCN 1 and Exadata VCN 3"
-        name = "zpr-policy-cross-tt1-exa3"
-        statements = [
-        ]
-      } : {}
-    }
-
-
-  }
-
 }
