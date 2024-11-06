@@ -55,7 +55,7 @@ locals {
           // Allow DB Server to communicate with other endpoints in the TT VCNs
           "in ${var.zpr_security_attributes_namespace}.net:exa-vcn-2-${local.zpr_label} VCN allow ${var.zpr_security_attributes_namespace}.database:${local.zpr_label} endpoints to connect to '${coalesce(var.tt_vcn1_db_subnet_cidr, cidrsubnet(var.tt_vcn1_cidrs[0], 4, 2))}' with protocol='tcp/1521-1522'",
           // Allow DB Subnet endpoints in Three Tier VCNs connect to DB Subnet in Exadata / Ingress
-          "in ${var.zpr_security_attributes_namespace}.net:exa-vcn-2-${local.zpr_label} VCN allow '${coalesce(var.tt_vcn1_db_subnet_cidr, cidrsubnet(var.tt_vcn1_cidrs[0], 4, 2))}' endpoints to connect to ${var.zpr_security_attributes_namespace}.database:${local.zpr_label} with protocol='tcp/1521-1522'"
+          "in ${var.zpr_security_attributes_namespace}.net:exa-vcn-2-${local.zpr_label} VCN allow '${coalesce(var.tt_vcn1_db_subnet_cidr, cidrsubnet(var.tt_vcn1_cidrs[0], 4, 2))}' to connect to ${var.zpr_security_attributes_namespace}.database:${local.zpr_label} endpoints with protocol='tcp/1521-1522'"
         ]
       }
     } : {},
@@ -67,7 +67,7 @@ locals {
           // Allow DB Server to communicate with other endpoints in the TT VCNs
           "in ${var.zpr_security_attributes_namespace}.net:exa-vcn-2-${local.zpr_label} VCN allow ${var.zpr_security_attributes_namespace}.database:${local.zpr_label} endpoints to connect to '${coalesce(var.tt_vcn2_db_subnet_cidr, cidrsubnet(var.tt_vcn2_cidrs[0], 4, 2))}' with protocol='tcp/1521-1522'",
           // Allow DB Subnet endpoints in Three Tier VCNs connect to DB Subnet in Exadata / Ingress
-          "in ${var.zpr_security_attributes_namespace}.net:exa-vcn-2-${local.zpr_label} VCN allow '${coalesce(var.tt_vcn2_db_subnet_cidr, cidrsubnet(var.tt_vcn2_cidrs[0], 4, 2))}' endpoints to connect to ${var.zpr_security_attributes_namespace}.database:${local.zpr_label} with protocol='tcp/1521-1522'"
+          "in ${var.zpr_security_attributes_namespace}.net:exa-vcn-2-${local.zpr_label} VCN allow '${coalesce(var.tt_vcn2_db_subnet_cidr, cidrsubnet(var.tt_vcn2_cidrs[0], 4, 2))}' to connect to ${var.zpr_security_attributes_namespace}.database:${local.zpr_label} endpoints with protocol='tcp/1521-1522'"
         ]
       }
     } : {},
@@ -79,7 +79,7 @@ locals {
           // Allow DB Server to communicate with other endpoints in the TT VCNs
           "in ${var.zpr_security_attributes_namespace}.net:exa-vcn-2-${local.zpr_label} VCN allow ${var.zpr_security_attributes_namespace}.database:${local.zpr_label} endpoints to connect to '${coalesce(var.tt_vcn3_db_subnet_cidr, cidrsubnet(var.tt_vcn3_cidrs[0], 4, 2))}' with protocol='tcp/1521-1522'",
           // Allow DB Subnet endpoints in Three Tier VCNs connect to DB Subnet in Exadata / Ingress
-          "in ${var.zpr_security_attributes_namespace}.net:exa-vcn-2-${local.zpr_label} VCN allow '${coalesce(var.tt_vcn3_db_subnet_cidr, cidrsubnet(var.tt_vcn3_cidrs[0], 4, 2))}' endpoints to connect to ${var.zpr_security_attributes_namespace}.database:${local.zpr_label} with protocol='tcp/1521-1522'"
+          "in ${var.zpr_security_attributes_namespace}.net:exa-vcn-2-${local.zpr_label} VCN allow '${coalesce(var.tt_vcn3_db_subnet_cidr, cidrsubnet(var.tt_vcn3_cidrs[0], 4, 2))}' to connect to ${var.zpr_security_attributes_namespace}.database:${local.zpr_label} endpoints with protocol='tcp/1521-1522'"
         ]
       }
     } : {}
