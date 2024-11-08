@@ -153,9 +153,12 @@ This module requires Terraform binary version 1.3.0 or greater, as its underlyin
 
 Some deployment scenarios are available under the [templates](./templates/) folder:
 
-- [CIS Basic no Networking](./templates/cis-basic/)
-- [CIS Basic with Single Default Three-Tier VCN](./templates/standalone-three-tier-vcn-defaults/)
-- [CIS Basic with Single Custom Three-Tier VCN](./templates/standalone-three-tier-vcn-custom/)
+- [Groups and Dynamic Groups From a Custom Identity Domains](./templates/custom-identity-domain)
+- [No Networking](./templates/cis-basic/)
+- [Single Three-Tier VCN with default settings](./templates/standalone-three-tier-vcn-defaults/)
+- [Single Three-Tier VCN with custom settings](./templates/standalone-three-tier-vcn-custom/)
+- [Multiple Three-Tier VCNs peered through DRG](./templates/hub-spoke-with-drg-and-three-tier-vcns)
+- [Multiple VCN types peered through a Hub VCN with network appliance](./templates/hub-spoke-with-hub-vcn-net-appliance)
 
 Another key deployment scenario of OCI Core Landing Zone is [Zero Trust Landing Zone](https://github.com/oci-landing-zones/terraform-oci-zero-trust-landingzone).
 

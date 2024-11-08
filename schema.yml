@@ -1083,6 +1083,7 @@ variables:
 
   tt_vcn1_routable_vcns:
     type: enum
+    default: null
     title: "Routable VCNs"
     description: "Select the VCN labels that this VCN can send traffic to. Only applicable for Hub/Spoke topology where a DRG is deployed as the hub."
     additionalProps:
@@ -1323,6 +1324,7 @@ variables:
 
   tt_vcn2_routable_vcns:
     type: enum
+    default: null
     title: "Routable VCNs"
     description: "Select the VCN labels that this VCN can send traffic to. Only applicable for Hub/Spoke topology where a DRG is deployed as the hub."
     additionalProps:
@@ -1555,6 +1557,7 @@ variables:
 
   tt_vcn3_routable_vcns:
     type: enum
+    default: null
     title: "Routable VCNs"
     description: "Select the VCN labels that this VCN can send traffic to. Only applicable for Hub/Spoke topology where a DRG is deployed as the hub."
     additionalProps:
@@ -1787,6 +1790,7 @@ variables:
 
   exa_vcn1_routable_vcns:
     type: enum
+    default: null
     title: "Routable VCNs"
     description: "Select the VCN labels that this VCN can send traffic to. Only applicable for Hub/Spoke topology where a DRG is deployed as the hub."
     additionalProps:
@@ -1915,6 +1919,7 @@ variables:
 
   exa_vcn2_routable_vcns:
     type: enum
+    default: null
     title: "Routable VCNs"
     description: "Select the VCN labels that this VCN can send traffic to. Only applicable for Hub/Spoke topology where a DRG is deployed as the hub."
     additionalProps:
@@ -2043,6 +2048,7 @@ variables:
 
   exa_vcn3_routable_vcns:
     type: enum
+    default: null
     title: "Routable VCNs"
     description: "Select the VCN labels that this VCN can send traffic to. Only applicable for Hub/Spoke topology where a DRG is deployed as the hub."
     additionalProps:
@@ -2185,6 +2191,7 @@ variables:
 
   oke_vcn1_routable_vcns:
     type: enum
+    default: null
     title: "Routable VCNs"
     description: "Select the VCN labels that this VCN can send traffic to. Only applicable for Hub/Spoke topology where a DRG is deployed as the hub."
     additionalProps:
@@ -2410,6 +2417,7 @@ variables:
 
   oke_vcn2_routable_vcns:
     type: enum
+    default: null
     title: "Routable VCNs"
     description: "Select the VCN labels that this VCN can send traffic to. Only applicable for Hub/Spoke topology where a DRG is deployed as the hub."
     additionalProps:
@@ -2635,6 +2643,7 @@ variables:
 
   oke_vcn3_routable_vcns:
     type: enum
+    default: null
     title: "Routable VCNs"
     description: "Select the VCN labels that this VCN can send traffic to. Only applicable for Hub/Spoke topology where a DRG is deployed as the hub."
     additionalProps:
@@ -3012,7 +3021,7 @@ variables:
     title: "Network Appliance Name Common Prefix"
     description: "Enter a common prefix to network appliance name. To this common prefix, numbers 1 and 2 are appended the corresponding instance."
     required: false
-    visible: 
+    visible:
       and:
         - define_net
         - or:
@@ -3022,7 +3031,7 @@ variables:
           - eq:
             - ${hub_deployment_option}
             - "VCN or on-premises connectivity routed through DMZ VCN with Network Virtual Appliance existing DRG (DMZ VCN will be created and DRG ID required)"
-        - not: 
+        - not:
           - eq:
             - ${hub_vcn_deploy_net_appliance_option}
             - "Don't deploy any network appliance at this time"
@@ -3034,7 +3043,7 @@ variables:
     title: "Network Appliance Instance Shape"
     description: "Select the instance shape for the network appliance."
     required: false
-    visible: 
+    visible:
       and:
         - define_net
         - or:
@@ -3059,7 +3068,7 @@ variables:
     title: "Network Appliance Amount of Memory for the Selected Flex Shape"
     description: "Enter the amount of memory (in GB) for the selected flex shape. Applicable to flexible shapes only."
     required: false
-    visible: 
+    visible:
       and:
         - define_net
         - or:
@@ -3084,7 +3093,7 @@ variables:
     title: "Network Appliance Number of OCPUs for the Selected Flex Shape"
     description: "Enter the number of OCPUs for the selected flex shape. Applicable to flexible shapes only."
     required: false
-    visible: 
+    visible:
       and:
         - define_net
         - or:
@@ -3109,7 +3118,7 @@ variables:
     title: "Network Appliance Boot Volume Size"
     description: "Enter the boot volume size (in GB) for the network appliance instances."
     required: false
-    visible: 
+    visible:
       and:
         - define_net
         - or:
@@ -3134,7 +3143,7 @@ variables:
     title: "Network Appliance Instance public SSH Key"
     description: "Enter a Public SSH Key to Login to Compute Instance."
     required: false
-    visible: 
+    visible:
       and:
         - define_net
         - or:
@@ -3154,7 +3163,7 @@ variables:
     title: "Hub VCN North/South Traffic Destination OCID"
     description: "Enter the private OCID of the Outdoor Network Load Balancer, where all inbound Internet (North/South) traffic is sent to in the Hub VCN."
     required: false
-    visible: 
+    visible:
       and:
         - define_net
         - or:
@@ -3175,7 +3184,7 @@ variables:
     title: "Hub VCN East/West Traffic Destination OCID"
     description: "Enter the private OCID of the Indoor Network Load Balancer, where all inter-VCN (East/West) traffic is sent to in the Hub VCN."
     required: false
-    visible: 
+    visible:
       and:
         - define_net
         - or:
