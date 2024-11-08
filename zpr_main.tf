@@ -50,9 +50,9 @@ locals {
         validator_values = concat(local.exa_vcn_validator_values, local.tt_vcn_validator_values)
       }
     }
-    zpr_policies = merge(local.exa_vcn_1_zpr_policies,
-      local.exa_vcn_2_zpr_policies,
-      local.exa_vcn_3_zpr_policies,
+    zpr_policies = merge(local.exa_1_zpr_policies,
+      local.exa_2_zpr_policies,
+      local.exa_3_zpr_policies,
       local.tt_1_zpr_policies,
       local.tt_2_zpr_policies,
       local.tt_3_zpr_policies

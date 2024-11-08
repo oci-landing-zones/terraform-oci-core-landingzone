@@ -37,9 +37,9 @@ locals {
     "in ${var.zpr_security_attributes_namespace}.net:exa-vcn-2-${local.zpr_label} VCN allow '${coalesce(var.tt_vcn3_db_subnet_cidr, cidrsubnet(var.tt_vcn3_cidrs[0], 4, 2))}' to connect to ${var.zpr_security_attributes_namespace}.database:${local.zpr_label} endpoints with protocol='tcp/1521-1522'"
   ] : []
 
-  exa_vcn_2_zpr_policies = var.add_exa_vcn2 ? {
-    ZPR-POLICY-EXA-VCN-2 = {
-      description = "zpr policy for exa vcn 2"
+  exa_2_zpr_policies = var.add_exa_vcn2 ? {
+    ZPR-POLICY-EXA-2 = {
+      description = "ZPR policies for Exadata VCN 2"
       name        = "zpr-policy-exa-vcn-2-${local.zpr_label}"
       statements  = concat(local.exa_2_policies, local.exa_2_to_exa_1_policies, local.exa_2_to_exa_3_policies,
         local.exa_2_to_tt_1_policies, local.exa_2_to_tt_2_policies, local.exa_2_to_tt_3_policies)
