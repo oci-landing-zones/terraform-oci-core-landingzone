@@ -31,7 +31,7 @@ locals {
   ] : []
 
   tt_3_zpr_policies = var.add_tt_vcn3 ? {
-    ZPR-POLICY-TT-1 = {
+    ZPR-POLICY-TT-3 = {
       description = "ZPR policies for TT VCN 3"
       name        = "zpr-policy-tt-vcn-3-${local.zpr_label}"
       statements = concat(
