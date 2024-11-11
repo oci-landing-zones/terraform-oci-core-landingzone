@@ -1,33 +1,33 @@
 locals {
   tt_3_zpr_grants = local.add_tt_vcn3 ? [
-    "in ${var.zpr_security_attributes_namespace}.net:tt-vcn-3-${local.zpr_label} VCN allow ${var.zpr_security_attributes_namespace}.app:${local.zpr_label} endpoints to connect to ${var.zpr_security_attributes_namespace}.database:${local.zpr_label} endpoints with protocol='tcp/1521-1522'",
-    "in ${var.zpr_security_attributes_namespace}.net:tt-vcn-3-${local.zpr_label} VCN allow ${var.zpr_security_attributes_namespace}.bastion:${local.zpr_label} endpoints to connect to ${var.zpr_security_attributes_namespace}.database:${local.zpr_label} endpoints with protocol='tcp/22'",
-    "in ${var.zpr_security_attributes_namespace}.net:tt-vcn-3-${local.zpr_label} VCN allow ${var.zpr_security_attributes_namespace}.database:${local.zpr_label} endpoints to connect to 'osn-services-ip-addresses' with protocol='tcp/443'"
+    "in ${var.zpr_label}-zpr.net:tt-vcn-3-${local.zpr_label} VCN allow ${var.zpr_label}-zpr.app:${local.zpr_label} endpoints to connect to ${var.zpr_label}-zpr.database:${local.zpr_label} endpoints with protocol='tcp/1521-1522'",
+    "in ${var.zpr_label}-zpr.net:tt-vcn-3-${local.zpr_label} VCN allow ${var.zpr_label}-zpr.bastion:${local.zpr_label} endpoints to connect to ${var.zpr_label}-zpr.database:${local.zpr_label} endpoints with protocol='tcp/22'",
+    "in ${var.zpr_label}-zpr.net:tt-vcn-3-${local.zpr_label} VCN allow ${var.zpr_label}-zpr.database:${local.zpr_label} endpoints to connect to 'osn-services-ip-addresses' with protocol='tcp/443'"
   ] : []
 
   tt_3_to_tt_1_zpr_grants = (local.add_tt_vcn3 && local.add_tt_vcn1 && var.tt_vcn3_attach_to_drg && var.tt_vcn1_attach_to_drg) && (local.hub_with_drg_only == true && (length(var.tt_vcn3_routable_vcns) == 0 || contains(var.tt_vcn3_routable_vcns,"TT-VCN-1"))) ? [
-    "in ${var.zpr_security_attributes_namespace}.net:tt-vcn-3-${local.zpr_label} VCN allow '${coalesce(var.tt_vcn1_db_subnet_cidr, cidrsubnet(var.tt_vcn1_cidrs[0], 4, 2))}' to connect to ${var.zpr_security_attributes_namespace}.database:${local.zpr_label} endpoints with protocol='tcp/1521-1522'",
-    "in ${var.zpr_security_attributes_namespace}.net:tt-vcn-3-${local.zpr_label} VCN allow ${var.zpr_security_attributes_namespace}.database:${local.zpr_label} endpoints to connect to '${coalesce(var.tt_vcn1_db_subnet_cidr, cidrsubnet(var.tt_vcn1_cidrs[0], 4, 2))}' with protocol='tcp/1521-1522'"
+    "in ${var.zpr_label}-zpr.net:tt-vcn-3-${local.zpr_label} VCN allow '${coalesce(var.tt_vcn1_db_subnet_cidr, cidrsubnet(var.tt_vcn1_cidrs[0], 4, 2))}' to connect to ${var.zpr_label}-zpr.database:${local.zpr_label} endpoints with protocol='tcp/1521-1522'",
+    "in ${var.zpr_label}-zpr.net:tt-vcn-3-${local.zpr_label} VCN allow ${var.zpr_label}-zpr.database:${local.zpr_label} endpoints to connect to '${coalesce(var.tt_vcn1_db_subnet_cidr, cidrsubnet(var.tt_vcn1_cidrs[0], 4, 2))}' with protocol='tcp/1521-1522'"
   ] : []
 
   tt_3_to_tt_2_zpr_grants = (local.add_tt_vcn3 && local.add_tt_vcn2 && var.tt_vcn3_attach_to_drg && var.tt_vcn2_attach_to_drg) && (local.hub_with_drg_only == true && (length(var.tt_vcn3_routable_vcns) == 0 || contains(var.tt_vcn3_routable_vcns,"TT-VCN-2"))) ? [
-    "in ${var.zpr_security_attributes_namespace}.net:tt-vcn-3-${local.zpr_label} VCN allow '${coalesce(var.tt_vcn2_db_subnet_cidr, cidrsubnet(var.tt_vcn2_cidrs[0], 4, 2))}' to connect to ${var.zpr_security_attributes_namespace}.database:${local.zpr_label} endpoints with protocol='tcp/1521-1522'",
-    "in ${var.zpr_security_attributes_namespace}.net:tt-vcn-3-${local.zpr_label} VCN allow ${var.zpr_security_attributes_namespace}.database:${local.zpr_label} endpoints to connect to '${coalesce(var.tt_vcn2_db_subnet_cidr, cidrsubnet(var.tt_vcn2_cidrs[0], 4, 2))}' with protocol='tcp/1521-1522'"
+    "in ${var.zpr_label}-zpr.net:tt-vcn-3-${local.zpr_label} VCN allow '${coalesce(var.tt_vcn2_db_subnet_cidr, cidrsubnet(var.tt_vcn2_cidrs[0], 4, 2))}' to connect to ${var.zpr_label}-zpr.database:${local.zpr_label} endpoints with protocol='tcp/1521-1522'",
+    "in ${var.zpr_label}-zpr.net:tt-vcn-3-${local.zpr_label} VCN allow ${var.zpr_label}-zpr.database:${local.zpr_label} endpoints to connect to '${coalesce(var.tt_vcn2_db_subnet_cidr, cidrsubnet(var.tt_vcn2_cidrs[0], 4, 2))}' with protocol='tcp/1521-1522'"
   ] : []
 
   tt_3_to_exa_1_zpr_grants = (local.add_tt_vcn3 && local.add_exa_vcn1 && var.tt_vcn3_attach_to_drg && var.exa_vcn1_attach_to_drg) && (local.hub_with_drg_only == true && (length(var.tt_vcn3_routable_vcns) == 0 || contains(var.tt_vcn3_routable_vcns,"EXA-VCN-1"))) ? [
-    "in ${var.zpr_security_attributes_namespace}.net:tt-vcn-3-${local.zpr_label} VCN allow ${var.zpr_security_attributes_namespace}.database:${local.zpr_label} endpoints to connect to '${coalesce(var.exa_vcn1_client_subnet_cidr, cidrsubnet(var.exa_vcn1_cidrs[0], 4, 2))}' with protocol='tcp/1521-1522'",
-    "in ${var.zpr_security_attributes_namespace}.net:tt-vcn-3-${local.zpr_label} VCN allow '${coalesce(var.exa_vcn1_client_subnet_cidr, cidrsubnet(var.exa_vcn1_cidrs[0], 4, 2))}' to connect to ${var.zpr_security_attributes_namespace}.database:${local.zpr_label} with protocol='tcp/1521-1522'"
+    "in ${var.zpr_label}-zpr.net:tt-vcn-3-${local.zpr_label} VCN allow ${var.zpr_label}-zpr.database:${local.zpr_label} endpoints to connect to '${coalesce(var.exa_vcn1_client_subnet_cidr, cidrsubnet(var.exa_vcn1_cidrs[0], 4, 2))}' with protocol='tcp/1521-1522'",
+    "in ${var.zpr_label}-zpr.net:tt-vcn-3-${local.zpr_label} VCN allow '${coalesce(var.exa_vcn1_client_subnet_cidr, cidrsubnet(var.exa_vcn1_cidrs[0], 4, 2))}' to connect to ${var.zpr_label}-zpr.database:${local.zpr_label} with protocol='tcp/1521-1522'"
   ] : []
 
   tt_3_to_exa_2_zpr_grants = (local.add_tt_vcn3 && local.add_exa_vcn2 && var.tt_vcn3_attach_to_drg && var.exa_vcn2_attach_to_drg) && (local.hub_with_drg_only == true && (length(var.tt_vcn3_routable_vcns) == 0 || contains(var.tt_vcn3_routable_vcns,"EXA-VCN-2"))) ? [
-    "in ${var.zpr_security_attributes_namespace}.net:tt-vcn-3-${local.zpr_label} VCN allow ${var.zpr_security_attributes_namespace}.database:${local.zpr_label} endpoints to connect to '${coalesce(var.exa_vcn2_client_subnet_cidr, cidrsubnet(var.exa_vcn2_cidrs[0], 4, 2))}' with protocol='tcp/1521-1522'",
-    "in ${var.zpr_security_attributes_namespace}.net:tt-vcn-3-${local.zpr_label} VCN allow '${coalesce(var.exa_vcn2_client_subnet_cidr, cidrsubnet(var.exa_vcn2_cidrs[0], 4, 2))}' to connect to ${var.zpr_security_attributes_namespace}.database:${local.zpr_label} with protocol='tcp/1521-1522'"
+    "in ${var.zpr_label}-zpr.net:tt-vcn-3-${local.zpr_label} VCN allow ${var.zpr_label}-zpr.database:${local.zpr_label} endpoints to connect to '${coalesce(var.exa_vcn2_client_subnet_cidr, cidrsubnet(var.exa_vcn2_cidrs[0], 4, 2))}' with protocol='tcp/1521-1522'",
+    "in ${var.zpr_label}-zpr.net:tt-vcn-3-${local.zpr_label} VCN allow '${coalesce(var.exa_vcn2_client_subnet_cidr, cidrsubnet(var.exa_vcn2_cidrs[0], 4, 2))}' to connect to ${var.zpr_label}-zpr.database:${local.zpr_label} with protocol='tcp/1521-1522'"
   ] : []
 
   tt_3_to_exa_3_zpr_grants = (local.add_tt_vcn3 && local.add_exa_vcn3 && var.tt_vcn3_attach_to_drg && var.exa_vcn3_attach_to_drg) && (local.hub_with_drg_only == true && (length(var.tt_vcn3_routable_vcns) == 0 || contains(var.tt_vcn3_routable_vcns,"EXA-VCN-3"))) ? [
-    "in ${var.zpr_security_attributes_namespace}.net:tt-vcn-3-${local.zpr_label} VCN allow ${var.zpr_security_attributes_namespace}.database:${local.zpr_label} endpoints to connect to '${coalesce(var.exa_vcn3_client_subnet_cidr, cidrsubnet(var.exa_vcn3_cidrs[0], 4, 2))}' with protocol='tcp/1521-1522'",
-    "in ${var.zpr_security_attributes_namespace}.net:tt-vcn-3-${local.zpr_label} VCN allow '${coalesce(var.exa_vcn3_client_subnet_cidr, cidrsubnet(var.exa_vcn3_cidrs[0], 4, 2))}' to connect to ${var.zpr_security_attributes_namespace}.database:${local.zpr_label} with protocol='tcp/1521-1522'"
+    "in ${var.zpr_label}-zpr.net:tt-vcn-3-${local.zpr_label} VCN allow ${var.zpr_label}-zpr.database:${local.zpr_label} endpoints to connect to '${coalesce(var.exa_vcn3_client_subnet_cidr, cidrsubnet(var.exa_vcn3_cidrs[0], 4, 2))}' with protocol='tcp/1521-1522'",
+    "in ${var.zpr_label}-zpr.net:tt-vcn-3-${local.zpr_label} VCN allow '${coalesce(var.exa_vcn3_client_subnet_cidr, cidrsubnet(var.exa_vcn3_cidrs[0], 4, 2))}' to connect to ${var.zpr_label}-zpr.database:${local.zpr_label} with protocol='tcp/1521-1522'"
   ] : []
 
   tt_3_zpr_policy = local.add_tt_vcn3 ? {
