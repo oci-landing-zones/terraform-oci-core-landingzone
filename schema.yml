@@ -21,7 +21,7 @@ variableGroups:
       - "customize_iam"
       - "define_net"
       - "enable_zpr"
-      - "zpr_security_attributes_namespace"
+      - "zpr_namespace_name"
       - "display_output"
 
 
