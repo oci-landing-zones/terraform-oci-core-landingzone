@@ -52,7 +52,7 @@ locals {
       }
     }
     zpr_policies = merge(local.exa_1_zpr_policy, local.exa_2_zpr_policy, local.exa_3_zpr_policy, local.tt_1_zpr_policy, local.tt_2_zpr_policy, local.tt_3_zpr_policy)
-  } : {}
+  } : null
 }
 
 module "lz_zpr" {
