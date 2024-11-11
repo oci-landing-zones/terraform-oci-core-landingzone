@@ -499,10 +499,10 @@ variables:
     required: false
     visible: define_net
 
-  zpr_security_attributes_namespace:
+  zpr_namespace_name:
     type: string
     title: "Name of ZPR Namespace"
-    description: "Enter the name of ZPR namespace. By default, it is corelz-zpr."
+    description: "Enter the name of ZPR namespace. By default, it is set to <service-label>-zpr."
     required: false
     visible:
       and:

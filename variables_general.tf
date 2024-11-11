@@ -53,10 +53,10 @@ variable "enable_zpr" {
   description = "Whether to enable ZPR service."
   type        = bool
 }
-variable "zpr_security_attributes_namespace" {
-  default     = "corelz-zpr"
+variable "zpr_namespace_name" {
   description = "ZPR namespace name."
   type        = string
+  default     = null
 }
 variable "display_output" {
   description = "Whether to display a concise set of select resource outputs with their OCIDs and names." 

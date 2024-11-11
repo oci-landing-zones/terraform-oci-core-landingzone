@@ -2,6 +2,7 @@ locals {
 
   enable_zpr = var.define_net && var.enable_zpr
   zpr_label  = var.service_label
+  zpr_namespace_name = coalesce(var.zpr_namespace_name,"${local.zpr_label}-zpr")
   
   // for each exa vcn that is added, add its name to the list of validator values
   exa_vcn_validator_values = [for index, exa_vcn_added in tolist([local.add_exa_vcn1, local.add_exa_vcn2, local.add_exa_vcn3]) : "exa-vcn-${index + 1}-${local.zpr_label}" if exa_vcn_added == true]
@@ -17,7 +18,7 @@ locals {
       ZPR-CORE-LZ-NAMESPACE = {
         compartment_id = local.enclosing_compartment_id
         description    = "Core Landing Zone ZPR Namespace."
-        name           = "${var.zpr_label}-zpr"
+        name           = local.zpr_namespace_name
       }
     }
 
