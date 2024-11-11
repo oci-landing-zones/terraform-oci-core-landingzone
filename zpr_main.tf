@@ -17,7 +17,7 @@ locals {
       ZPR-CORE-LZ-NAMESPACE = {
         compartment_id = local.enclosing_compartment_id
         description    = "Core Landing Zone ZPR Namespace."
-        name           = var.zpr_security_attributes_namespace
+        name           = "${var.zpr_label}-zpr"
       }
     }
 
