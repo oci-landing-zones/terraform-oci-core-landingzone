@@ -48,6 +48,16 @@ variable "define_net" {
   type        = bool
   default     = false
 }
+variable "enable_zpr" {
+  default     = false
+  description = "Whether to enable ZPR service."
+  type        = bool
+}
+variable "zpr_namespace_name" {
+  description = "ZPR namespace name."
+  type        = string
+  default     = null
+}
 variable "display_output" {
   description = "Whether to display a concise set of select resource outputs with their OCIDs and names." 
   type        = bool
