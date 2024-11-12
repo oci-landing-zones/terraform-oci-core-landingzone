@@ -502,7 +502,7 @@ variables:
   zpr_namespace_name:
     type: string
     title: "Name of ZPR Namespace"
-    description: "Enter the name of ZPR namespace. By default, it is set to <service-label>-zpr."
+    description: "Enter the name of ZPR namespace. By default, it is set to the value given to \"Service Label\" field, concatenated with the \"-zpr\" suffix."
     required: false
     visible:
       and:
