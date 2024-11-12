@@ -1,7 +1,7 @@
 locals {
 
   tt_3_jump_host_ingress_zpr_grants = var.tt_vcn3_bastion_is_access_via_public_endpoint ? [
-    for cidr in var.tt_vcn3_bastion_subnet_allowed_cidrs : "in ${local.zpr_namespace_name}.net:tt-vcn-3-${local.zpr_label} VCN allow ${cidr} to connect to ${local.zpr_namespace_name}.bastion:${local.zpr_label} endpoints with protocol='tcp/22'"
+    for cidr in var.tt_vcn3_bastion_subnet_allowed_cidrs : "in ${local.zpr_namespace_name}.net:tt-vcn-3-${local.zpr_label} VCN allow '${cidr}' to connect to ${local.zpr_namespace_name}.bastion:${local.zpr_label} endpoints with protocol='tcp/22'"
   ] : []
 
   tt_3_zpr_grants = local.add_tt_vcn3 ? concat([
