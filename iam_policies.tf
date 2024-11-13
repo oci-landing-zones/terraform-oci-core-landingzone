@@ -202,7 +202,12 @@ locals {
   ## Database admin grants on Database compartment
   database_admin_grants_on_database_cmp = local.enable_database_compartment ? [
     "allow group ${join(",", local.database_admin_group_name)} to read all-resources in compartment ${local.database_compartment_name}",
-    "allow group ${join(",", local.database_admin_group_name)} to manage database-family in compartment ${local.database_compartment_name}",
+    "allow group ${join(",", local.database_admin_group_name)} to manage db-systems in compartment ${local.database_compartment_name}",
+    "allow group ${join(",", local.database_admin_group_name)} to manage db-nodes in compartment ${local.database_compartment_name}",
+    "allow group ${join(",", local.database_admin_group_name)} to manage db-homes in compartment ${local.database_compartment_name}",
+    "allow group ${join(",", local.database_admin_group_name)} to manage databases in compartment ${local.database_compartment_name}",
+    "allow group ${join(",", local.database_admin_group_name)} to manage pluggable databases in compartment ${local.database_compartment_name}",
+    "allow group ${join(",", local.database_admin_group_name)} to manage db-backups in compartment ${local.database_compartment_name}",
     "allow group ${join(",", local.database_admin_group_name)} to manage autonomous-database-family in compartment ${local.database_compartment_name}",
     "allow group ${join(",", local.database_admin_group_name)} to manage alarms in compartment ${local.database_compartment_name}",
     "allow group ${join(",", local.database_admin_group_name)} to manage metrics in compartment ${local.database_compartment_name}",
@@ -252,6 +257,7 @@ locals {
     "allow group ${join(",", local.database_admin_group_name)} to manage db-nodes in compartment ${local.exainfra_compartment_name}",
     "allow group ${join(",", local.database_admin_group_name)} to manage db-homes in compartment ${local.exainfra_compartment_name}",
     "allow group ${join(",", local.database_admin_group_name)} to manage databases in compartment ${local.exainfra_compartment_name}",
+    "allow group ${join(",", local.database_admin_group_name)} to manage pluggable databases in compartment ${local.exainfra_compartment_name}",
     "allow group ${join(",", local.database_admin_group_name)} to manage db-backups in compartment ${local.exainfra_compartment_name}",
     "allow group ${join(",", local.database_admin_group_name)} to manage data-safe-family in compartment ${local.exainfra_compartment_name}"] : []
 

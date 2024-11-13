@@ -494,15 +494,15 @@ variables:
   enable_zpr:
     type: boolean
     title: "Enable Zero Trust Packet Routing (ZPR)?"
-    description: "If checked, a ZPR security attribute namespace, security attributes, and ZPR policies will be created in the enclosing compartment. For details, please see <a href=\"https://docs.oracle.com/en-us/iaas/Content/zero-trust-packet-routing/overview.htm\">ZPR Overview</a>."
+    description: "If checked, a ZPR namespace, security attributes, and ZPR policies are created. ZPR namespace along with security attributes are created in the enclosing compartment. ZPR policies are created in the Root compartment. For details, please see <a href=\"https://docs.oracle.com/en-us/iaas/Content/zero-trust-packet-routing/overview.htm\">ZPR Overview</a>."
     default: false
     required: false
     visible: define_net
 
   zpr_namespace_name:
     type: string
-    title: "Name of ZPR Security Attribute Namespace"
-    description: "The name of the created ZPR security attribute namespace. By default, it is <service-label>-zpr."
+    title: "Name of ZPR Namespace"
+    description: "Enter the name of ZPR namespace. By default, it is set to the value given to \"Service Label\" field, concatenated with the \"-zpr\" suffix."
     required: false
     visible:
       and:
