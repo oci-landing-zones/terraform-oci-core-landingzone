@@ -15,7 +15,7 @@ locals {
     default_freeform_tags = null
 
     namespaces = {
-      ZPR-CORE-LZ-NAMESPACE = {
+      ZPR-LZ-NAMESPACE = {
         compartment_id = local.enclosing_compartment_id
         description    = "Core Landing Zone ZPR Namespace."
         name           = local.zpr_namespace_name
@@ -26,28 +26,28 @@ locals {
       APP = {
         description      = "Security attribute for App Server instances."
         name             = "app"
-        namespace_id     = "ZPR-CORE-LZ-NAMESPACE"
+        namespace_id     = "ZPR-LZ-NAMESPACE"
         validator_type   = "ENUM"
         validator_values = [local.zpr_label]
       },
       BASTION = {
         description      = "Security attribute for Bastion Compute instances."
         name             = "bastion"
-        namespace_id     = "ZPR-CORE-LZ-NAMESPACE"
+        namespace_id     = "ZPR-LZ-NAMESPACE"
         validator_type   = "ENUM"
         validator_values = [local.zpr_label]
       },
       DATABASE = {
         description      = "Security attribute for Databases."
         name             = "database"
-        namespace_id     = "ZPR-CORE-LZ-NAMESPACE"
+        namespace_id     = "ZPR-LZ-NAMESPACE"
         validator_type   = "ENUM"
         validator_values = [local.zpr_label]
       },
       NET = {
         description      = "Security attribute for VCNs."
         name             = "net"
-        namespace_id     = "ZPR-CORE-LZ-NAMESPACE"
+        namespace_id     = "ZPR-LZ-NAMESPACE"
         validator_type   = "ENUM"
         validator_values = concat(local.exa_vcn_validator_values, local.tt_vcn_validator_values)
       }
