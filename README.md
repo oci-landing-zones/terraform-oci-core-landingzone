@@ -145,9 +145,9 @@ You can create up to three (3) three-tier VCNs, three (3) Exadata VCNs,and 3 Ora
 
 ## <a name="requirements">Requirements</a>
 
-### Terraform Version >= 1.3.0
+### Terraform Version >= 1.5.0
 
-This module requires Terraform binary version 1.3.0 or greater, as its underlying modules rely on Optional Object Type Attributes feature. The feature shortens the amount of input values in complex object types, by having Terraform automatically inserting a default value for any missing optional attributes.
+This module requires Terraform binary version 1.5.0 or greater, as its underlying modules rely on Optional Object Type Attributes feature. The feature shortens the amount of input values in complex object types, by having Terraform automatically inserting a default value for any missing optional attributes.
 
 ## <a name="deployment-scenarios">Deployment Scenarios</a>
 
@@ -156,6 +156,7 @@ Some deployment scenarios are available under the [templates](./templates/) fold
 - [Groups and Dynamic Groups From a Custom Identity Domains](./templates/custom-identity-domain)
 - [No Networking](./templates/cis-basic/)
 - [Single Three-Tier VCN with default settings](./templates/standalone-three-tier-vcn-defaults/)
+- [Single Three-Tier VCN with ZPR enabled](./templates/standalone-three-tier-vcn-zpr/)
 - [Single Three-Tier VCN with custom settings](./templates/standalone-three-tier-vcn-custom/)
 - [Multiple Three-Tier VCNs peered through DRG](./templates/hub-spoke-with-drg-and-three-tier-vcns)
 - [Multiple VCN types peered through a Hub VCN with network appliance](./templates/hub-spoke-with-hub-vcn-net-appliance)

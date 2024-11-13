@@ -1,4 +1,4 @@
-# CIS Landing Zone With Hub/Spoke DRG with Network Firewall Topology Template
+# Core Landing Zone With Hub/Spoke DRG with Network Firewall Topology Template
 
 This template shows how to deploy a CIS compliant landing zone using [OCI Core Landing Zone](../../) configuration with a Hub/Spoke networking topology including either Fortinet's Fortigate Firewall or Palo Alto Networks Firewall. Both configurations are mostly the same, except for the network appliance option (_hub\_vcn\_deploy\_net\_appliance\_option_) and their respective settings (_net\_appliance\__ variables).
 
