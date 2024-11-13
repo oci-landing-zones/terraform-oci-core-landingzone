@@ -526,13 +526,14 @@ With this release, OCI Core Landing Zone supports Zero Trust Packet Routing (ZPR
 To use ZPR, it must be [enabled at the tenancy level](https://docs.oracle.com/en-us/iaas/Content/zero-trust-packet-routing/enable-zpr.htm). Note that once it is enabled, tenancy users and administrators cannot disable it. ZPR also requires a security attribute namespace. Core Landing Zone facilitates both the tenancy ZPR enablement and security attribute namespace creation with values assigned to two variables:
 
 - **enable\_zpr**: Whether ZPR is enabled as part of this Landing Zone. By default, no ZPR resources are created.
-- **zpr\_security\_attributes\_namespace**: The name of ZPR security attribute namespace, if created. 
+- **zpr\_namespace\_name**: The name of ZPR security attribute namespace, if created. 
 
-To enable ZPR during deployment using OCI Resource Manager UI, select _"Define Networking?"_ in the General section, then check _"Enable Zero Trust Packet Routing (ZPR)?"_.  Best practice is to change the default name of the security attribute namespace to avoid conflicts with multiple Landing Zone deployments in the same tenancy.
+To enable ZPR during deployment using OCI Resource Manager UI, select _"Define Networking?"_ in the General section, then check _"Enable Zero Trust Packet Routing (ZPR)?"_. The default ZPR namespace name is the value of "Service Label" variable concatenated with the '-zpr' suffix, which can be overridden by any name of choice using 'Name of ZPR Namespace'.
 
 <img src="images/ZPR_enable.png" alt="ZPR enable" width="800"/>
 
-After Landing Zone deployment, you can create security attributes within the namespace and write policies using those attributes to control access to resources.  See [Resources That Can Be Assigned Security Attributes](https://docs.oracle.com/en-us/iaas/Content/zero-trust-packet-routing/overview.htm#resources-assigned-security-attributes) for a list of resource types that support ZPR security attributes. 
+Core Landing Zone creates ZPR policies as an extra layer of protection. But for ZPR policies to take effect, you should apply ZPR security attributes to supported resources, like compute instances and databases.
+See [Resources That Can Be Assigned Security Attributes](https://docs.oracle.com/en-us/iaas/Content/zero-trust-packet-routing/overview.htm#resources-assigned-security-attributes) for a list of resource types that support ZPR security attributes. 
 
 # <a name="ways-to-deploy"></a>5. Ways to Deploy
 

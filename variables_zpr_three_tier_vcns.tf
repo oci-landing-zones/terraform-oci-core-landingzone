@@ -1,6 +1,6 @@
 variable "zpr_security_attributes_namespace" {
-  default     = "corelz-zpr"
-  description = "the name of namespace of zpr security attributes"
+  default     = "<service-label>-zpr"
+  description = "the name of ZPR security attribute namespace"
   type        = string
 }
 

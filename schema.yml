@@ -21,7 +21,7 @@ variableGroups:
       - "customize_iam"
       - "define_net"
       - "enable_zpr"
-      - "zpr_security_attributes_namespace"
+      - "zpr_namespace_name"
       - "display_output"
 
 
@@ -499,11 +499,11 @@ variables:
     required: false
     visible: define_net
 
-  zpr_security_attributes_namespace:
+  zpr_namespace_name:
     type: string
     title: "Name of ZPR Security Attribute Namespace"
-    description: "The name of the created ZPR Security Attributes Namespace. By default, it is corelz-zpr."
-    default: "corelz-zpr"
+    description: "The name of the created ZPR security attribute namespace. By default, it is <service-label>-zpr."
+    default: "<service-label>-zpr"
     required: false
     visible:
       and:
