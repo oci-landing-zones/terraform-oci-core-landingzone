@@ -13,6 +13,7 @@ locals {
       cidr_blocks                      = var.exa_vcn1_cidrs,
       dns_label                        = substr(replace(coalesce(var.exa_vcn1_name,"exadata-vcn-1"),"/[^\\w]/",""),0,14)
       block_nat_traffic                = false
+      security                         = local.enable_zpr == true ? {zpr_attributes = [{namespace:"${local.zpr_namespace_name}",attr_name:"net", attr_value:"exa-vcn-1-${local.zpr_label}"}]} : null
 
       subnets = {
         "EXA-VCN-1-CLIENT-SUBNET" = {

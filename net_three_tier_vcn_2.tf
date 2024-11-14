@@ -13,6 +13,7 @@ locals {
             cidr_blocks                      = var.tt_vcn2_cidrs,
             dns_label                        = substr(replace(coalesce(var.tt_vcn2_name,"three-tier-vcn-2"),"/[^\\w]/",""),0,14)
             block_nat_traffic                = false
+            security                         = local.enable_zpr == true ? {zpr_attributes = [{namespace:"${local.zpr_namespace_name}",attr_name:"net", attr_value:"tt-vcn-2-${local.zpr_label}"}]} : null
 
             subnets = merge(
                 {
