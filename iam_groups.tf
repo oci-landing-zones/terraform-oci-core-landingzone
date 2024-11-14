@@ -68,7 +68,7 @@ locals {
   iam_admin_group = length(var.existing_iam_admin_group_name) == 0 && length(trimspace(var.rm_existing_iam_admin_group_name)) == 0 ? {
     (local.iam_admin_group_key) = {
       name          = local.provided_iam_admin_group_name
-      description   = "Landing Zone group for managing IAM resources in the tenancy."
+      description   = "Core Landing Zone dynamic group for managing IAM resources in the tenancy."
       members       = []
       defined_tags  = local.groups_defined_tags
       freeform_tags = local.groups_freeform_tags
@@ -79,7 +79,7 @@ locals {
     (local.iam_admin_group_key) = {
       identity_domain_id = trimspace(var.custom_id_domain_ocid)
       name               = local.provided_iam_admin_group_name
-      description        = "Landing Zone group for managing IAM resources in the tenancy."
+      description        = "Core Landing Zone dynamic group for managing IAM resources in the tenancy."
       members            = []
       defined_tags       = local.groups_defined_tags
       freeform_tags      = local.groups_freeform_tags
@@ -96,7 +96,7 @@ locals {
   cred_admin_group = length(var.existing_cred_admin_group_name) == 0 && length(trimspace(var.rm_existing_cred_admin_group_name)) == 0 ? {
     (local.cred_admin_group_key) = {
       name          = local.provided_cred_admin_group_name
-      description   = "Landing Zone group for managing users credentials in the tenancy."
+      description   = "Core Landing Zone dynamic group for managing users credentials in the tenancy."
       members       = []
       defined_tags  = local.groups_defined_tags
       freeform_tags = local.groups_freeform_tags
@@ -107,7 +107,7 @@ locals {
     (local.cred_admin_group_key) = {
       identity_domain_id = trimspace(var.custom_id_domain_ocid)
       name               = local.provided_cred_admin_group_name
-      description        = "Landing Zone group for managing users credentials in the tenancy."
+      description        = "Core Landing Zone dynamic group for managing users credentials in the tenancy."
       members            = []
       defined_tags       = local.groups_defined_tags
       freeform_tags      = local.groups_freeform_tags
@@ -124,7 +124,7 @@ locals {
   cost_admin_group = length(var.existing_cost_admin_group_name) == 0 && length(trimspace(var.rm_existing_cost_admin_group_name)) == 0 ? {
     (local.cost_admin_group_key) = {
       name          = local.provided_cost_admin_group_name
-      description   = "Landing Zone group for Cost management."
+      description   = "Core Landing Zone dynamic group for Cost management."
       members       = []
       defined_tags  = local.groups_defined_tags
       freeform_tags = local.groups_freeform_tags
@@ -135,7 +135,7 @@ locals {
     (local.cost_admin_group_key) = {
       identity_domain_id = trimspace(var.custom_id_domain_ocid)
       name               = local.provided_cost_admin_group_name
-      description        = "Landing Zone group for Cost management."
+      description        = "Core Landing Zone dynamic group for Cost management."
       members            = []
       defined_tags       = local.groups_defined_tags
       freeform_tags      = local.groups_freeform_tags
@@ -152,7 +152,7 @@ locals {
   network_admin_group = length(var.existing_network_admin_group_name) == 0 && length(trimspace(var.rm_existing_network_admin_group_name)) == 0 ? {
     (local.network_admin_group_key) = {
       name          = local.provided_network_admin_group_name
-      description   = "Landing Zone group for network management."
+      description   = "Core Landing Zone dynamic group for network management."
       members       = []
       defined_tags  = local.groups_defined_tags
       freeform_tags = local.groups_freeform_tags
@@ -163,7 +163,7 @@ locals {
     (local.network_admin_group_key) = {
       identity_domain_id = trimspace(var.custom_id_domain_ocid)
       name               = local.provided_network_admin_group_name
-      description        = "Landing Zone group for network management."
+      description        = "Core Landing Zone dynamic group for network management."
       members            = []
       defined_tags       = local.groups_defined_tags
       freeform_tags      = local.groups_freeform_tags
@@ -180,7 +180,7 @@ locals {
   security_admin_group = length(var.existing_security_admin_group_name) == 0 && length(trimspace(var.rm_existing_security_admin_group_name)) == 0 ? {
     (local.security_admin_group_key) = {
       name          = local.provided_security_admin_group_name
-      description   = "Landing Zone group for security services management."
+      description   = "Core Landing Zone dynamic group for security services management."
       members       = []
       defined_tags  = local.groups_defined_tags
       freeform_tags = local.groups_freeform_tags
@@ -191,7 +191,7 @@ locals {
     (local.security_admin_group_key) = {
       identity_domain_id = trimspace(var.custom_id_domain_ocid)
       name               = local.provided_security_admin_group_name
-      description        = "Landing Zone group for security services management."
+      description        = "Core Landing Zone dynamic group for security services management."
       members            = []
       defined_tags       = local.groups_defined_tags
       freeform_tags      = local.groups_freeform_tags
@@ -208,7 +208,7 @@ locals {
   appdev_admin_group = length(var.existing_appdev_admin_group_name) == 0 && length(trimspace(var.rm_existing_appdev_admin_group_name)) == 0 ? {
     (local.appdev_admin_group_key) = {
       name          = local.provided_appdev_admin_group_name
-      description   = "Landing Zone group for managing app development related services."
+      description   = "Core Landing Zone dynamic group for managing app development related services."
       members       = []
       defined_tags  = local.groups_defined_tags
       freeform_tags = local.groups_freeform_tags
@@ -219,7 +219,7 @@ locals {
     (local.appdev_admin_group_key) = {
       identity_domain_id = trimspace(var.custom_id_domain_ocid)
       name               = local.provided_appdev_admin_group_name
-      description        = "Landing Zone group for managing app development related services."
+      description        = "Core Landing Zone dynamic group for managing app development related services."
       members            = []
       defined_tags       = local.groups_defined_tags
       freeform_tags      = local.groups_freeform_tags
@@ -236,7 +236,7 @@ locals {
   database_admin_group = length(var.existing_database_admin_group_name) == 0 && length(trimspace(var.rm_existing_database_admin_group_name)) == 0 ? {
     (local.database_admin_group_key) = {
       name          = local.provided_database_admin_group_name
-      description   = "Landing Zone group for managing databases."
+      description   = "Core Landing Zone dynamic group for managing databases."
       members       = []
       defined_tags  = local.groups_defined_tags
       freeform_tags = local.groups_freeform_tags
@@ -247,7 +247,7 @@ locals {
     (local.database_admin_group_key) = {
       identity_domain_id = trimspace(var.custom_id_domain_ocid)
       name               = local.provided_database_admin_group_name
-      description        = "Landing Zone group for managing databases."
+      description        = "Core Landing Zone dynamic group for managing databases."
       members            = []
       defined_tags       = local.groups_defined_tags
       freeform_tags      = local.groups_freeform_tags
@@ -264,7 +264,7 @@ locals {
   exainfra_admin_group = var.deploy_exainfra_cmp == true && length(var.existing_exainfra_admin_group_name) == 0 && length(trimspace(var.rm_existing_exainfra_admin_group_name)) == 0 ? {
     (local.exainfra_admin_group_key) = {
       name          = local.provided_exainfra_admin_group_name
-      description   = "Landing Zone group for managing Exadata Cloud Service infrastructure."
+      description   = "Core Landing Zone dynamic group for managing Exadata Cloud Service infrastructure."
       members       = []
       defined_tags  = local.groups_defined_tags
       freeform_tags = local.groups_freeform_tags
@@ -275,7 +275,7 @@ locals {
     (local.exainfra_admin_group_key) = {
       identity_domain_id = trimspace(var.custom_id_domain_ocid)
       name               = local.provided_exainfra_admin_group_name
-      description        = "Landing Zone group for managing Exadata Cloud Service infrastructure."
+      description        = "Core Landing Zone dynamic group for managing Exadata Cloud Service infrastructure."
       members            = []
       defined_tags       = local.groups_defined_tags
       freeform_tags      = local.groups_freeform_tags
@@ -292,7 +292,7 @@ locals {
   storage_admin_group = length(var.existing_storage_admin_group_name) == 0 && length(trimspace(var.rm_existing_storage_admin_group_name)) == 0 ? {
     (local.storage_admin_group_key) = {
       name          = local.provided_storage_admin_group_name
-      description   = "Landing Zone group for storage services management."
+      description   = "Core Landing Zone dynamic group for storage services management."
       members       = []
       defined_tags  = local.groups_defined_tags
       freeform_tags = local.groups_freeform_tags
@@ -303,7 +303,7 @@ locals {
     (local.storage_admin_group_key) = {
       identity_domain_id = trimspace(var.custom_id_domain_ocid)
       name               = local.provided_storage_admin_group_name
-      description        = "Landing Zone group for storage services management."
+      description        = "Core Landing Zone dynamic group for storage services management."
       members            = []
       defined_tags       = local.groups_defined_tags
       freeform_tags      = local.groups_freeform_tags
@@ -320,7 +320,7 @@ locals {
   auditor_group = length(var.existing_auditor_group_name) == 0 && length(trimspace(var.rm_existing_auditor_group_name)) == 0 ? {
     (local.auditor_group_key) = {
       name          = local.provided_auditor_group_name
-      description   = "Landing Zone group for auditing the tenancy."
+      description   = "Core Landing Zone dynamic group for auditing the tenancy."
       members       = []
       defined_tags  = local.groups_defined_tags
       freeform_tags = local.groups_freeform_tags
@@ -331,7 +331,7 @@ locals {
     (local.auditor_group_key) = {
       identity_domain_id = trimspace(var.custom_id_domain_ocid)
       name               = local.provided_auditor_group_name
-      description        = "Landing Zone group for auditing the tenancy."
+      description        = "Core Landing Zone dynamic group for auditing the tenancy."
       members            = []
       defined_tags       = local.groups_defined_tags
       freeform_tags      = local.groups_freeform_tags
@@ -348,7 +348,7 @@ locals {
   announcement_reader_group = length(var.existing_announcement_reader_group_name) == 0 && length(trimspace(var.rm_existing_announcement_reader_group_name)) == 0 ? {
     (local.announcement_reader_group_key) = {
       name          = local.provided_announcement_reader_group_name
-      description   = "Landing Zone group for reading Console announcements."
+      description   = "Core Landing Zone dynamic group for reading Console announcements."
       members       = []
       defined_tags  = local.groups_defined_tags
       freeform_tags = local.groups_freeform_tags
@@ -359,7 +359,7 @@ locals {
     (local.announcement_reader_group_key) = {
       identity_domain_id = trimspace(var.custom_id_domain_ocid)
       name               = local.provided_announcement_reader_group_name
-      description        = "Landing Zone group for reading Console announcements."
+      description        = "Core Landing Zone dynamic group for reading Console announcements."
       members            = []
       defined_tags       = local.groups_defined_tags
       freeform_tags      = local.groups_freeform_tags
@@ -376,7 +376,7 @@ locals {
   ag_admin_group = length(var.existing_ag_admin_group_name) == 0 && length(trimspace(var.rm_existing_ag_admin_group_name)) == 0 ? {
     (local.ag_admin_group_key) = {
       name          = local.provided_ag_admin_group_name
-      description   = "Landing Zone group for managing Access Governance resources in the tenancy."
+      description   = "Core Landing Zone dynamic group for managing Access Governance resources in the tenancy."
       members       = []
       defined_tags  = local.groups_defined_tags
       freeform_tags = local.groups_freeform_tags
@@ -387,7 +387,7 @@ locals {
     (local.ag_admin_group_key) = {
       identity_domain_id = trimspace(var.custom_id_domain_ocid)
       name               = local.provided_ag_admin_group_name
-      description        = "Landing Zone group for managing Access Governance resources in the tenancy."
+      description        = "Core Landing Zone dynamic group for managing Access Governance resources in the tenancy."
       members            = []
       defined_tags       = local.groups_defined_tags
       freeform_tags      = local.groups_freeform_tags
