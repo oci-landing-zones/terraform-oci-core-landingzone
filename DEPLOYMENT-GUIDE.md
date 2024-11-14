@@ -316,7 +316,7 @@ In these cases, simply provide the existing OCI group names to the appropriate c
 
 ### Custom Group Names
 
-By default, the group names are following the convention `${var.service_label}-group_name` using the `service-label` defined in the `tfvars` file. When a different naming convention should be used, for example, to match an established naming convention, these names can be customized using the Terraform Override technique.
+By default, the group names are following the convention `${var.service_label}-group_name` using the `service_label` defined in the `tfvars` file. When a different naming convention should be used, for example, to match an established naming convention, these names can be customized using the Terraform Override technique.
 
 The supported variables are:
 
@@ -526,7 +526,7 @@ With this release, OCI Core Landing Zone supports Zero Trust Packet Routing (ZPR
 To use ZPR, it must be [enabled at the tenancy level](https://docs.oracle.com/en-us/iaas/Content/zero-trust-packet-routing/enable-zpr.htm). Note that once it is enabled, tenancy users and administrators cannot disable it. ZPR also requires a security attribute namespace. Core Landing Zone facilitates both the tenancy ZPR enablement and security attribute namespace creation with values assigned to two variables:
 
 - **enable\_zpr**: Whether ZPR is enabled as part of this Landing Zone. By default, no ZPR resources are created.
-- **zpr\_namespace\_name**: The name of ZPR security attribute namespace, if created. 
+- **zpr\_namespace\_name**: The name of ZPR security attribute namespace.
 
 To enable ZPR during deployment using OCI Resource Manager UI, select _"Define Networking?"_ in the General section, then check _"Enable Zero Trust Packet Routing (ZPR)?"_. The default ZPR namespace name is the value of "Service Label" variable concatenated with the '-zpr' suffix, which can be overridden by any name of choice using 'Name of ZPR Namespace'.
 

@@ -1,6 +1,6 @@
 # November 14, 2024 Release Notes - 1.1.0
 ## New
-1. Ability to enable OCI Zero Trust Packet Routing (ZPR) service in Three-Tier VCN and Exadata VCN for database use case.
+1. Ability to enable OCI Zero Trust Packet Routing (ZPR) service in Three-Tier VCNs and Exadata VCNs for use cases involving access to databases.
 
 # October 31, 2024 Release Notes - 1.0.0
 1. Ability to deploy groups and dynamic groups in an existing identity domain.

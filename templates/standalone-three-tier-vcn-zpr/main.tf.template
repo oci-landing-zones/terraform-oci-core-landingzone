@@ -30,7 +30,6 @@ module "core_lz" {
     # ------------------------------------------------------
     define_net  = true # enables network resources provisioning
     enable_zpr  = true # enables Zero Trust Packet Routing at the tenancy level
-    zpr_namespace_name = "" # provide name of ZPR security attributes namespace, if not provided, the name will go with <service-label>-zpr.
     add_tt_vcn1 = true # This deploys one three-tier VCN with default settings, like default name, CIDR, DNS name, subnet names, subnet CIDRs, subnet DNS names.
 
     # ------------------------------------------------------

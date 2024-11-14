@@ -145,9 +145,9 @@ You can create up to three (3) three-tier VCNs, three (3) Exadata VCNs,and 3 Ora
 
 ## <a name="requirements">Requirements</a>
 
-### Terraform Version >= 1.5.0
+### Terraform Version >= 1.3.0
 
-This module requires Terraform binary version 1.5.0 or greater, as its underlying modules rely on Optional Object Type Attributes feature. The feature shortens the amount of input values in complex object types, by having Terraform automatically inserting a default value for any missing optional attributes.
+This module requires Terraform binary version 1.3.0 or greater, as its underlying modules rely on Optional Object Type Attributes feature. The feature shortens the amount of input values in complex object types, by having Terraform automatically inserting a default value for any missing optional attributes.
 
 ## <a name="deployment-scenarios">Deployment Scenarios</a>
 

@@ -23,7 +23,7 @@
 | lz_provenant_prefix | The provenant landing zone prefix or code that identifies the client of this Landing Zone. This information goes into a freeform tag applied to all deployed resources. | `string` | `core` | no |
 | lz_provenant_version | The provenant landing zone version. This information goes into a freeform tag applied to all deployed resources. | `string` | `null` | no |
 | enable_zpr | Whether ZPR is enabled as part of this Landing Zone. By default, no ZPR resources are created. | `bool` | `false` | no |
-| zpr_namespace_name | The name of ZPR security attribute namespace is created. | `string` | `<service-label>-zpr` | no |
+| zpr_namespace_name | The name of ZPR security attribute namespace. | `string` | `<service_label>-zpr` | no |
 
 ### Identity
 
