@@ -15,6 +15,7 @@ locals {
 
 module "lz_network" {
   source                = "github.com/oci-landing-zones/terraform-oci-modules-networking?ref=v0.7.1"
+  depends_on            = [ module.lz_zpr ]
   network_configuration = local.lz_network_configuration
   network_dependency    = (local.chosen_hub_option == 2 || local.chosen_hub_option == 4) ? {
     "dynamic_routing_gateways" = {
