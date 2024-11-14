@@ -22,4 +22,5 @@ module "lz_network" {
       "HUB-DRG" = {"id" : trimspace(var.existing_drg_ocid)}
     }
   } : null
+  tenancy_ocid = var.tenancy_ocid
 }

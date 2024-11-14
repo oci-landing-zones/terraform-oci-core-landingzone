@@ -225,5 +225,6 @@ module "lz_nlb" {
   source            = "github.com/oci-landing-zones/terraform-oci-modules-networking//modules/nlb?ref=v0.7.1"
   depends_on        = [ module.lz_zpr ]
   nlb_configuration = local.nlb_configuration
+  tenancy_ocid      = var.tenancy_ocid
 }
 
