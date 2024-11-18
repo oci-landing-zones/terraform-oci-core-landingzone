@@ -1,4 +1,4 @@
-# CIS Landing Zone Custom Identity Domain Template
+# Core Landing Zone Custom Identity Domain Template
 
 This template deploys a landing zone for a pre-existing non-Default identity domain using [OCI Core Landing Zone](../../) configuration. The landing zone also deploys the groups and dynamic groups for the existing domain in this template.
 
