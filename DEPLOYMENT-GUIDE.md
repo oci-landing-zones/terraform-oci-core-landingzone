@@ -527,7 +527,7 @@ ZPR (version 1) functions as a layer on top of existing Network Security Groups 
 To use ZPR, it must be [enabled at the tenancy level](https://docs.oracle.com/en-us/iaas/Content/zero-trust-packet-routing/enable-zpr.htm). Note that once it is enabled, tenancy users and administrators cannot disable it. ZPR also requires a security attribute namespace. Core Landing Zone facilitates both the tenancy ZPR enablement and security attribute namespace creation with values assigned to two variables:
 
 - **enable\_zpr**: Whether ZPR is enabled as part of this Landing Zone. By default, no ZPR resources are created.
-- **zpr\_namespace\_name**: The name of ZPR security attribute namespace.
+- **zpr\_namespace\_name**: The name of ZPR security attribute namespace. The assigned value is <service_label>-zpr.
 
 To enable ZPR during deployment using OCI Resource Manager UI, select _"Define Networking?"_ in the General section, then check _"Enable Zero Trust Packet Routing (ZPR)?"_. The default ZPR namespace name is the value of *service\_label* variable concatenated with the '-zpr' suffix, which can be overridden by any name of choice using the optional input field.
 
@@ -604,7 +604,7 @@ in <ZPR namespace>.net:exa-vcn-1 VCN allow '10.1.2.0/24' to connect to <ZPR name
 **_NOTE:_** A special case to consider is if you use the OCI Bastion Service to deploy a bastion in a Exadata VCN, it should be deployed in the client subnet and attached to the client NSG. In addition, ZPR policy for the Exadata VCN needs to be updated to allow the Bastion Service CIDR to reach a ZPR tagged resource; an additional policy statement like the following example is needed:
 
 ```
-in <ZPR Namespace>.net:exa-vcn-1 VCN allow '<bastion service CIDR>/32' to connect to <ZPR Namespace>.bastion:<service_label> endpoints with protocol='tcp/22'
+in <ZPR namespace>.net:exa-vcn-1 VCN allow '<bastion service CIDR>/32' to connect to <ZPR namespace>.bastion:<service_label> endpoints with protocol='tcp/22'
 ```
 
 # <a name="ways-to-deploy"></a>5. Ways to Deploy
