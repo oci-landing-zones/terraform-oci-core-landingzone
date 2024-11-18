@@ -5,10 +5,10 @@ locals {
   zpr_namespace_name = coalesce(var.zpr_namespace_name,"${local.zpr_label}-zpr")
   
   // for each exa vcn that is added, add its name to the list of validator values
-  exa_vcn_validator_values = [for index, exa_vcn_added in tolist([local.add_exa_vcn1, local.add_exa_vcn2, local.add_exa_vcn3]) : "exa-vcn-${index + 1}-${local.zpr_label}" if exa_vcn_added == true]
+  exa_vcn_validator_values = [for index, exa_vcn_added in tolist([local.add_exa_vcn1, local.add_exa_vcn2, local.add_exa_vcn3]) : "exa-vcn-${index + 1}" if exa_vcn_added == true]
 
   // for each tt vcn that is added, add its name to the list of validator values
-  tt_vcn_validator_values = [for index, tt_vcn_added in tolist([local.add_tt_vcn1, local.add_tt_vcn2, local.add_tt_vcn3]) : "tt-vcn-${index + 1}-${local.zpr_label}" if tt_vcn_added == true]
+  tt_vcn_validator_values = [for index, tt_vcn_added in tolist([local.add_tt_vcn1, local.add_tt_vcn2, local.add_tt_vcn3]) : "tt-vcn-${index + 1}" if tt_vcn_added == true]
 
   lz_zpr_configuration = local.enable_zpr ? {
     default_defined_tags  = null
