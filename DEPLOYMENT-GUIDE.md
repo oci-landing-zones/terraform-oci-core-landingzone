@@ -474,7 +474,7 @@ Cloud Guard is a key component in OCI secure posture management. It uses detecto
 
 Some customers want more control over the lifecycle of encryption keys. By default, Landing Zone provisions a *Vault* with a *Key* that is used to encrypt a sample Object Storage bucket. While this key could be used by other clients, we recommend creating different keys for security and lifecycle reasons. Currently, Landing Zone does not expose any variables to control the provisioning of vaults and keys.
 
-**_NOTE:_** Encrypting with customer-managed keys is a CIS Foundations Benchmark Level 2 requirement.
+> **_NOTE:_** Encrypting with customer-managed keys is a CIS Foundations Benchmark Level 2 requirement.
 
 ### Vulnerability Scanning
 
@@ -601,7 +601,7 @@ in *Exadata* VCN-1 allow *Three-Tier DB CIDRs* endpoints to connect to *database
 in <zpr_namespace_name>.net:exa-vcn-1 VCN allow '10.1.2.0/24' to connect to <zpr_namespace_name>.database:<service_label> endpoints with protocol='tcp/1521-1522'
 ```
 
-**_NOTE:_** A special case to consider is if you use the OCI Bastion Service to deploy a bastion in a Exadata VCN, it should be deployed in the client subnet and attached to the client NSG. In addition, ZPR policy for the Exadata VCN needs to be updated to allow the Bastion Service CIDR to reach a ZPR tagged resource; an additional policy statement like the following example is needed:
+> **_NOTE:_** A special case to consider is if you use the OCI Bastion Service to deploy a bastion in a Exadata VCN, it should be deployed in the client subnet and attached to the client NSG. In addition, ZPR policy for the Exadata VCN needs to be updated to allow the Bastion Service CIDR to reach a ZPR tagged resource; an additional policy statement like the following example is needed:
 
 ```
 in <zpr_namespace_name>.net:exa-vcn-1 VCN allow '<bastion service CIDR>/32' to connect to <zpr_namespace_name>.bastion:<service_label> endpoints with protocol='tcp/22'
