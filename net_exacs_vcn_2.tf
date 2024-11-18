@@ -24,6 +24,7 @@ locals {
           ipv6cidr_blocks            = []
           prohibit_internet_ingress  = true
           route_table_key            = "EXA-VCN-2-CLIENT-SUBNET-ROUTE-TABLE"
+          security_list_keys         = ["EXA-VCN-2-CLIENT-SUBNET-SL"]
         }
         "EXA-VCN-2-BACKUP-SUBNET" = {
           cidr_block                 = coalesce(var.exa_vcn2_backup_subnet_cidr, cidrsubnet(var.exa_vcn2_cidrs[0], 4, 1))
@@ -88,7 +89,7 @@ locals {
               description  = "Allows SSH connections from hosts in Exadata client subnet."
               stateless    = false
               protocol     = "TCP"
-              src          = coalesce(var.exa_vcn2_client_subnet_cidr, cidrsubnet(var.exa_vcn2_cidrs[0], 9, 96))
+              src          = coalesce(var.exa_vcn2_client_subnet_cidr, cidrsubnet(var.exa_vcn2_cidrs[0], 4, 0))
               src_type     = "CIDR_BLOCK"
               dst_port_min = 22
               dst_port_max = 22
@@ -99,7 +100,7 @@ locals {
               description  = "Allows SSH connections to hosts in Exadata client subnet."
               stateless    = false
               protocol     = "TCP"
-              dst          = coalesce(var.exa_vcn2_client_subnet_cidr, cidrsubnet(var.exa_vcn2_cidrs[0], 9, 96))
+              dst          = coalesce(var.exa_vcn2_client_subnet_cidr, cidrsubnet(var.exa_vcn2_cidrs[0], 4, 0))
               dst_type     = "CIDR_BLOCK"
               dst_port_min = 22
               dst_port_max = 22
@@ -108,7 +109,7 @@ locals {
               description = "Allows the initiation of ICMP connections to hosts in Exadata VCN."
               stateless   = false
               protocol    = "UDP"
-              dst         = coalesce(var.exa_vcn2_client_subnet_cidr, cidrsubnet(var.exa_vcn2_cidrs[0], 9, 96))
+              dst         = coalesce(var.exa_vcn2_client_subnet_cidr, cidrsubnet(var.exa_vcn2_cidrs[0], 4, 0))
               dst_type    = "CIDR_BLOCK"
               icmp_type   = 3
               icmp_code   = 4
