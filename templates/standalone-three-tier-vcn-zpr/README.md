@@ -20,7 +20,6 @@ This template has the following parameters set:
 | service_label                  | A unique identifier to prefix the resources | defvcn                        |
 | define_net                     | Check to define networking resources. By default, the Landing Zone does NOT deploy any networks. | true                          |
 | enable_zpr                     | Whether ZPR is enabled as part of this Landing Zone. By default, no ZPR resources are created. | true                          |
-| zpr_namespace_name             | The name of ZPR security attribute namespace. | <service_label>-zpr           |
 | add_tt_vcn1                    | Click to add a three-tier VCN, with three subnets: web (public by default), application (private) and database (private). An optional subnet (private by default) for bastion deployment is also available. | true                          |
 | network_admin_email_endpoints  | List of email addresses that receive notifications for networking related events. | ["email.address@example.com"] |
 | security_admin_email_endpoints | List of email addresses that receive notifications for security related events. | ["email.address@example.com"] |

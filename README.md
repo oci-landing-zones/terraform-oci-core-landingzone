@@ -195,6 +195,9 @@ See [LICENSE](./LICENSE.txt) for more details.
 
 ## <a name="known-issues">Known Issues</a>
 
+* **OCI ZPR Security Attribute Namespace Blocks Terraform Destroy**
+    * If you use Zero Trust Packet Routing (ZPR), an active Security Attribute Namespace will block any Terraform destroy operation.  This issue will be corrected, but for a workaround in the short-term, see [Retiring a Security Attribute Namespace](https://docs.oracle.com/en-us/iaas/Content/zero-trust-packet-routing/retire-security-attribute-namespace.htm).  The Security Attribute Namespace, including all associated security attributes, can be retired manually via OCI console, CLI or API ***prior*** to running Terraform destroy.
+
 * **Oracle Access Governance (OAG) Availability**    
     * OAG is not currently available in all regions or outside of OCI commercial realms. For more details, see [What's New for Oracle Access Governance](https://docs.oracle.com/en/cloud/paas/access-governance/wsaje/). At the time of this Landing Zone release, OAG cannot deploy in any realm other than OC1.
 
