@@ -535,76 +535,76 @@ To enable ZPR during deployment using OCI Resource Manager UI, select _"Define N
 
 With a ZPR namespace established, the next step is to create security attributes based on resource types.  See [Resources That Can Be Assigned Security Attributes](https://docs.oracle.com/en-us/iaas/Content/zero-trust-packet-routing/overview.htm#resources-assigned-security-attributes) for a list of resource types that support ZPR security attributes.
 
-The last step is to create ZPR policies.  Core Landing Zone creates network ZPR policies as a base layer of protection. But for ZPR policies to take effect, you should apply ZPR security attributes to supported resources, like compute instances and databases.
+The last step is to create ZPR policies.  Core Landing Zone creates some ZPR policies for VCNs (details shown below) as a base layer of protection, but for ZPR to take full effect, you must apply ZPR security attributes and policies to other supported resources you deploy, like compute instances and databases.
 
 #### Three-Tier VCN ZPR Policies
 
-in *Three-Tier* VCN allow *application* endpoints to connect to *database* endpoints with protocol=*SQLNet*
+in *Three-Tier* VCN #1 allow *application* endpoints to connect to *database* endpoints with protocol=*SQLNet*
 ```
-in <ZPR namespace>.net:tt-vcn-1-<service_label> VCN allow <ZPR namespace>.app:<service_label> endpoints to connect to <ZPR namespace>.database:<service_label> endpoints with protocol='tcp/1521-1522'
-```
-
-in *Three-Tier* VCN allow *bastion* endpoints to connect to *database* endpoints with protocol=*SSH*
-```
-in <ZPR namespace>.net:tt-vcn-1-<service_label> VCN allow <ZPR namespace>.bastion:<service_label> endpoints to connect to <ZPR namespace>.database:<service_label> endpoints with protocol='tcp/22'
+in <ZPR namespace>.net:tt-vcn-1 VCN allow <ZPR namespace>.app:<service_label> endpoints to connect to <ZPR namespace>.database:<service_label> endpoints with protocol='tcp/1521-1522'
 ```
 
-in *Three-Tier* VCN allow *database* endpoints to connect to *Oracle Services Network (OSN)* with protocol=*HTTPS*
+in *Three-Tier* VCN #1 allow *bastion* endpoints to connect to *database* endpoints with protocol=*SSH*
 ```
-in <ZPR namespace>.net:tt-vcn-1-<service_label> VCN allow <ZPR namespace>.database:<service_label> endpoints to connect to 'osn-services-ip-addresses' with protocol='tcp/443'
-```
-
-in *Three-Tier* VCN allow *other Three-Tier DB CIDRs* to connect to *database* endpoints with protocol=*SQLNet*
-```
-in <ZPR namespace>.net:tt-vcn-1-<service_label> VCN allow '10.1.2.0/24' to connect to <ZPR namespace>.database:<service_label> endpoints with protocol='tcp/1521-1522'
+in <ZPR namespace>.net:tt-vcn-1 VCN allow <ZPR namespace>.bastion:<service_label> endpoints to connect to <ZPR namespace>.database:<service_label> endpoints with protocol='tcp/22'
 ```
 
-in *Three-Tier* VCN allow *database* endpoints to connect to *other Three-Tier DB CIDRs* with protocol=*SQLNet*
+in *Three-Tier* VCN #1 allow *database* endpoints to connect to *Oracle Services Network (OSN)* with protocol=*HTTPS*
 ```
-in <ZPR namespace>.net:tt-vcn-1-<service_label> VCN allow <ZPR namespace>.database:<service_label> endpoints to connect to '10.1.2.0/24' with protocol='tcp/1521-1522'
-```
-
-in *Three-Tier* VCN allow *database* endpoints to connect to *Exadata Client Subnet CIDRs* with protocol=*SQLNet*
-```
-in <ZPR namespace>.net:tt-vcn-1-<service_label> VCN allow <ZPR namespace>.database:<service_label> endpoints to connect to '172.16.2.0/24' with protocol='tcp/1521-1522'
+in <ZPR namespace>.net:tt-vcn-1 VCN allow <ZPR namespace>.database:<service_label> endpoints to connect to 'osn-services-ip-addresses' with protocol='tcp/443'
 ```
 
-in *Three-Tier* VCN allow *Exadata Client Subnet CIDRs* to connect to *database* endpoints with protocol=*SQLNet*
+in *Three-Tier* VCN #1 allow *other Three-Tier DB CIDRs* to connect to *database* endpoints with protocol=*SQLNet*
 ```
-in <ZPR namespace>.net:tt-vcn-1-<service_label> VCN allow '172.16.2.0/24' to connect to <ZPR namespace>.database:<service_label> endpoints with protocol='tcp/1521-1522'
+in <ZPR namespace>.net:tt-vcn-1 VCN allow '10.1.2.0/24' to connect to <ZPR namespace>.database:<service_label> endpoints with protocol='tcp/1521-1522'
+```
+
+in *Three-Tier* VCN #1 allow *database* endpoints to connect to *other Three-Tier DB CIDRs* with protocol=*SQLNet*
+```
+in <ZPR namespace>.net:tt-vcn-1 VCN allow <ZPR namespace>.database:<service_label> endpoints to connect to '10.1.2.0/24' with protocol='tcp/1521-1522'
+```
+
+in *Three-Tier* VCN #1 allow *database* endpoints to connect to *Exadata Client Subnet CIDRs* with protocol=*SQLNet*
+```
+in <ZPR namespace>.net:tt-vcn-1 VCN allow <ZPR namespace>.database:<service_label> endpoints to connect to '172.16.2.0/24' with protocol='tcp/1521-1522'
+```
+
+in *Three-Tier* VCN #1 allow *Exadata Client Subnet CIDRs* to connect to *database* endpoints with protocol=*SQLNet*
+```
+in <ZPR namespace>.net:tt-vcn-1 VCN allow '172.16.2.0/24' to connect to <ZPR namespace>.database:<service_label> endpoints with protocol='tcp/1521-1522'
 ```
 
 #### Exadata VCN ZPR Policies
 
-in *Exadata* VCN allow *bastion* endpoints to connect to *database* endpoints with protocol=*SSH*
+in *Exadata* VCN #1 allow *bastion* endpoints to connect to *database* endpoints with protocol=*SSH*
 ```
-in <ZPR namespace>.net:exa-vcn-1-<service_label> VCN allow <ZPR namespace>.bastion:<service_label> endpoints to connect to <ZPR namespace>.database:<service_label> endpoints with protocol='tcp/22'
-```
-
-in *Exadata* VCN allow *database* endpoints to connect to *database* endpoints with protocol=*SQLNet*
-```
-in <ZPR namespace>.net:exa-vcn-1-<service_label> VCN allow <ZPR namespace>.database:<service_label> endpoints to connect to <ZPR namespace>.database:<service_label> endpoints with protocol='tcp/1521-1522'
+in <ZPR namespace>.net:exa-vcn-1 VCN allow <ZPR namespace>.bastion:<service_label> endpoints to connect to <ZPR namespace>.database:<service_label> endpoints with protocol='tcp/22'
 ```
 
-in *Exadata* VCN allow *database* endpoints to connect to *database* endpoints with protocol=*Fast Application Notifications (FAN)*
+in *Exadata* VCN #1 allow *database* endpoints to connect to *database* endpoints with protocol=*SQLNet*
 ```
-in <ZPR namespace>.net:exa-vcn-1-<service_label> VCN allow <ZPR namespace>.database:<service_label> endpoints to connect to <ZPR namespace>.database:<service_label> endpoints with protocol='tcp/6200'
-```
-
-in *Exadata* VCN allow *database* endpoints to connect to *Three-Tier DB CIDRs* with protocol=*SQLNet*
-```
-in <ZPR namespace>.net:exa-vcn-1-<service_label> VCN allow <ZPR namespace>.database:<service_label> endpoints to connect to '10.x.2.0/24' with protocol='tcp/1521-1522'
+in <ZPR namespace>.net:exa-vcn-1 VCN allow <ZPR namespace>.database:<service_label> endpoints to connect to <ZPR namespace>.database:<service_label> endpoints with protocol='tcp/1521-1522'
 ```
 
-in *Exadata* VCN allow *Three-Tier DB CIDRs* endpoints to connect to *database* endpoints with protocol=*SQLNet*
+in *Exadata* VCN #1 allow *database* endpoints to connect to *database* endpoints with protocol=*Fast Application Notifications (FAN)*
 ```
-in <ZPR namespace>.net:exa-vcn-1-<service_label> VCN allow '10.x.2.0/24' to connect to <ZPR namespace>.database:<service_label> endpoints with protocol='tcp/1521-1522'
+in <ZPR namespace>.net:exa-vcn-1 VCN allow <ZPR namespace>.database:<service_label> endpoints to connect to <ZPR namespace>.database:<service_label> endpoints with protocol='tcp/6200'
 ```
 
-**_NOTE:_** A special case to consider is if you use the OCI Bastion Service to deploy a bastion in a Exadata VCN, it should be deployed in the client subnet and attached to the client NSG. In addition, ZPR policy for the Exadata VCN needs to be updated to allow the Bastion Service CIDR to reach a ZPR tagged resource; an additional policy statement like the following example needs to be added:
+in *Exadata* VCN #1 allow *database* endpoints to connect to *Three-Tier DB CIDRs* with protocol=*SQLNet*
+```
+in <ZPR namespace>.net:exa-vcn-1 VCN allow <ZPR namespace>.database:<service_label> endpoints to connect to '10.1.2.0/24' with protocol='tcp/1521-1522'
+```
+
+in *Exadata* VCN #1 allow *Three-Tier DB CIDRs* endpoints to connect to *database* endpoints with protocol=*SQLNet*
+```
+in <ZPR namespace>.net:exa-vcn-1 VCN allow '10.1.2.0/24' to connect to <ZPR namespace>.database:<service_label> endpoints with protocol='tcp/1521-1522'
+```
+
+**_NOTE:_** A special case to consider is if you use the OCI Bastion Service to deploy a bastion in a Exadata VCN, it should be deployed in the client subnet and attached to the client NSG. In addition, ZPR policy for the Exadata VCN needs to be updated to allow the Bastion Service CIDR to reach a ZPR tagged resource; an additional policy statement like the following example is needed:
 
 ```
-in <ZPR Namespace>.net:exa-vcn-1-<service_label> VCN allow '<bastion service CIDR>/32' to connect to <ZPR Namespace>.bastion:<service_label> endpoints with protocol='tcp/22'
+in <ZPR Namespace>.net:exa-vcn-1 VCN allow '<bastion service CIDR>/32' to connect to <ZPR Namespace>.bastion:<service_label> endpoints with protocol='tcp/22'
 ```
 
 # <a name="ways-to-deploy"></a>5. Ways to Deploy
