@@ -39,8 +39,8 @@ locals {
 
   exa_3_zpr_policy = local.add_exa_vcn3 ? {
     ZPR-POLICY-EXA-3 = {
-      description = "Core Landing Zone ZPR policy for ${coalesce(var.exa_vcn3_name, "${var.service_label}-exadata-vcn-3")}."
-      nname        = "${coalesce(var.exa_vcn3_name, "${var.service_label}-exa-vcn-3")}-zpr-policy"
+      description = "Core Landing Zone ZPR policy for ${var.exa_vcn3_name != null ? "${var.service_label}-${var.exa_vcn3_name}-zpr-policy" : "${var.service_label}-exa-vcn-3-zpr-policy"}."
+      name        = var.exa_vcn3_name != null ? "${var.service_label}-${var.exa_vcn3_name}-zpr-policy" : "${var.service_label}-exa-vcn-3-zpr-policy"
       statements  = concat(local.exa_3_zpr_grants, local.exa_3_to_exa_1_zpr_grants, local.exa_3_to_exa_2_zpr_grants, local.exa_3_to_tt_1_zpr_grants, local.exa_3_to_tt_2_zpr_grants, local.exa_3_to_tt_3_zpr_grants)
     }
   } : {}
