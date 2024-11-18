@@ -7,8 +7,7 @@ locals {
 
   exa_vcn_3 = local.add_exa_vcn3 == true ? {
     "EXA-VCN-3" = {
-      display_name                     = var.exa_vcn3_name != null ? "${var.service_label}-${var.exa_vcn3_name}-exadata-vcn-3" : "${var.service_label}-exadata-vcn-3"
-      //coalesce(var.exa_vcn3_name, "${var.service_label}-exadata-vcn-3")
+      display_name                     = coalesce(var.exa_vcn3_name, "${var.service_label}-exadata-vcn-3")
       is_ipv6enabled                   = false
       is_oracle_gua_allocation_enabled = false
       cidr_blocks                      = var.exa_vcn3_cidrs,
