@@ -3,7 +3,7 @@
 This template shows how to deploy a CIS compliant landing zone with Zero Trust Packet Routing enabled using [OCI Core Landing Zone](../../) configuration. 
 
 In this template, a single default three-tier VCN is deployed. Additionally, the following services are enabled:
-  - [Zero Trust Packet Routing](https://docs.oracle.com/en-us/iaas/Content/zero-trust-packet-routing/overview.htm) is enabled with an associated security attribute namespace at the tenancy root compartment level.
+  - [Zero Trust Packet Routing](https://docs.oracle.com/en-us/iaas/Content/zero-trust-packet-routing/overview.htm) is enabled with the creation of a ZPR namespace with security attributes and the associated policies.
   - [Connector Hub](https://docs.oracle.com/en-us/iaas/Content/connector-hub/overview.htm), for logging consolidation. Collected logs are sent to an OCI stream.
   - A [Security Zone](https://docs.oracle.com/en-us/iaas/security-zone/using/security-zones.htm) is created for the deployment. The Security Zone target is the landing zone top (enclosing) compartment.
   - [Vulnerability Scanning Service](https://docs.oracle.com/en-us/iaas/scanning/using/overview.htm#scanning_overview) is configured to scan Compute instances that are eventually deployed in the landing zone.
@@ -19,7 +19,7 @@ This template has the following parameters set:
 |--------------------------------|-------------|-------------------------------|
 | service_label                  | A unique identifier to prefix the resources | defvcn                        |
 | define_net                     | Check to define networking resources. By default, the Landing Zone does NOT deploy any networks. | true                          |
-| enable_zpr                     | Whether ZPR is enabled as part of this Landing Zone. By default, no ZPR resources are created. | true                          |
+| enable_zpr                     | Whether ZPR is enabled as part of this Landing Zone deployment. Besides enabling the service, Core Landing Zone creates a ZPR namespace with security attributes and associated policies for deployed VCNs. | true                          |
 | add_tt_vcn1                    | Click to add a three-tier VCN, with three subnets: web (public by default), application (private) and database (private). An optional subnet (private by default) for bastion deployment is also available. | true                          |
 | network_admin_email_endpoints  | List of email addresses that receive notifications for networking related events. | ["email.address@example.com"] |
 | security_admin_email_endpoints | List of email addresses that receive notifications for security related events. | ["email.address@example.com"] |
