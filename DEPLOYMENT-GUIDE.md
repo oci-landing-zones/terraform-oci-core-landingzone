@@ -183,8 +183,8 @@ By default, the Landing Zone defines the following personas that account for mos
 - **Security Administrators**: manage security services and resources including Vaults, Keys, Logging, Vulnerability Scanning, Web Application Firewall, Bastion, Service Connector Hub, ZPR.
 - **Network Administrators**: manage OCI network family, including VCNs, Load Balancers, DRGs, VNICs, IP addresses, OCI Network Firewall.
 - **Application Administrators**: manage application related resources including Compute images, OCI Functions, Kubernetes clusters, Streams, Object Storage, Block Storage, File Storage.
-- **Database Administrators**: manage database services, including Oracle VMDB (Virtual Machine), BMDB (Bare Metal), ADB (Autonomous databases), Exadata databases, MySQL, NoSQL, etc.
-- **ExaCS Administrators** (only created when ExaCS compartment is created): manage Exadata infrastructure and VM clusters in the ExaCS compartment.
+- **Database Administrators**: manage database services, including Oracle VMDB (Virtual Machine), BMDB (Bare Metal), ADB (Autonomous databases), and ExaCS databases in Database compartment (and optionally at ExaCS compartment).
+- **ExaCS (Exadata Cloud Service) Administrators** (only created when ExaCS compartment is created): manage ExaCS infrastructure and VM clusters in the ExaCS compartment.
 - **Storage Administrators**: the only group allowed to delete storage resources, including buckets, volumes and files. Used as a protection measure against inadvertent deletion of storage resources.
 - **Access Governance**: the group used by the Access Governance instance to query OCI services in the tenancy.
 
