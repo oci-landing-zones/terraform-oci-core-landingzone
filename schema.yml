@@ -20,7 +20,10 @@ variableGroups:
       - "extend_landing_zone_to_new_region"
       - "customize_iam"
       - "define_net"
+      - "enable_zpr"
+      - "zpr_namespace_name"
       - "display_output"
+
 
   - title: "Compartments"
     variables:
@@ -40,10 +43,8 @@ variableGroups:
   - title: "Identity Domains"
     variables:
       - "use_custom_id_domain"
-      # - "custom_id_domain_name"
       - "custom_id_domain_ocid"
       - "deploy_custom_domain_groups"
-      # - "id_domain_type" 
     visible:
       and:
         - eq:
@@ -415,7 +416,6 @@ variableGroups:
        - "budget_alert_threshold"
        - "budget_amount"
        - "budget_alert_email_endpoints"
-  
 
   - title: "Hidden Variables"
     visible: false
@@ -488,7 +488,26 @@ variables:
     title: "Define Networking?"
     description: "Check to define networking resources. By default, the Landing Zone does NOT deploy any networks."
     default: false
-    visible: true  
+    visible: true
+
+  # Zero Trust Packet Routing (ZPR)
+  enable_zpr:
+    type: boolean
+    title: "Enable Zero Trust Packet Routing (ZPR)?"
+    description: "If checked, a ZPR namespace, security attributes, and ZPR policies are created. ZPR namespace along with security attributes are created in the enclosing compartment. ZPR policies are created in the Root compartment. For details, please see <a href=\"https://docs.oracle.com/en-us/iaas/Content/zero-trust-packet-routing/overview.htm\">ZPR Overview</a>."
+    default: false
+    required: false
+    visible: define_net
+
+  zpr_namespace_name:
+    type: string
+    title: "Name of ZPR Namespace"
+    description: "Enter the name of ZPR namespace. By default, it is set to the value given to \"Service Label\" field, concatenated with the \"-zpr\" suffix."
+    required: false
+    visible:
+      and:
+      - enable_zpr
+      - define_net
 
   display_output:
     type: boolean
@@ -3001,7 +3020,7 @@ variables:
     title: "Network Appliance Name Common Prefix"
     description: "Enter a common prefix to network appliance name. To this common prefix, numbers 1 and 2 are appended the corresponding instance."
     required: false
-    visible: 
+    visible:
       and:
         - define_net
         - or:
@@ -3011,7 +3030,7 @@ variables:
           - eq:
             - ${hub_deployment_option}
             - "VCN or on-premises connectivity routed through DMZ VCN with Network Virtual Appliance existing DRG (DMZ VCN will be created and DRG ID required)"
-        - not: 
+        - not:
           - eq:
             - ${hub_vcn_deploy_net_appliance_option}
             - "Don't deploy any network appliance at this time"
@@ -3023,7 +3042,7 @@ variables:
     title: "Network Appliance Instance Shape"
     description: "Select the instance shape for the network appliance."
     required: false
-    visible: 
+    visible:
       and:
         - define_net
         - or:
@@ -3048,7 +3067,7 @@ variables:
     title: "Network Appliance Amount of Memory for the Selected Flex Shape"
     description: "Enter the amount of memory (in GB) for the selected flex shape. Applicable to flexible shapes only."
     required: false
-    visible: 
+    visible:
       and:
         - define_net
         - or:
@@ -3073,7 +3092,7 @@ variables:
     title: "Network Appliance Number of OCPUs for the Selected Flex Shape"
     description: "Enter the number of OCPUs for the selected flex shape. Applicable to flexible shapes only."
     required: false
-    visible: 
+    visible:
       and:
         - define_net
         - or:
@@ -3098,7 +3117,7 @@ variables:
     title: "Network Appliance Boot Volume Size"
     description: "Enter the boot volume size (in GB) for the network appliance instances."
     required: false
-    visible: 
+    visible:
       and:
         - define_net
         - or:
@@ -3123,7 +3142,7 @@ variables:
     title: "Network Appliance Instance public SSH Key"
     description: "Enter a Public SSH Key to Login to Compute Instance."
     required: false
-    visible: 
+    visible:
       and:
         - define_net
         - or:
@@ -3143,7 +3162,7 @@ variables:
     title: "Hub VCN North/South Traffic Destination OCID"
     description: "Enter the private OCID of the Outdoor Network Load Balancer, where all inbound Internet (North/South) traffic is sent to in the Hub VCN."
     required: false
-    visible: 
+    visible:
       and:
         - define_net
         - or:
@@ -3164,7 +3183,7 @@ variables:
     title: "Hub VCN East/West Traffic Destination OCID"
     description: "Enter the private OCID of the Indoor Network Load Balancer, where all inter-VCN (East/West) traffic is sent to in the Hub VCN."
     required: false
-    visible: 
+    visible:
       and:
         - define_net
         - or:

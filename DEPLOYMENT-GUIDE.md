@@ -16,6 +16,7 @@
     1. [Governance](#governance-4)
     1. [Security Services](#security-services)
     1. [Deploying Lifecycle Environments](#deploying-lifecycle-environments)
+    1. [Zero Trust Packet Routing (ZPR)](#zpr-use)
 1. [Ways to Deploy](#ways-to-deploy)
     1. [Deploying with Terraform CLI](#deploying-with-terraform-cli)
     1. [Deploying with OCI Resource Manager UI](#deploying-with-orm-ui)
@@ -107,7 +108,6 @@ There are a few crucial aspects to consider when managing state:
     - via Terraform CLI, use [Terraform workspaces](https://www.terraform.io/language/state/workspaces).
     - via OCI Resource Manager, create a separate Stack for each Landing Zone environment.
 
-
 - **Terraform may overwrite changes made via other means to its managed resources**: when you provision infrastructure resources with Terraform, it is expected that those resources are going to be managed via Terraform. However, there are situations where quick changes are made outside Terraform, like via the OCI Console. If you resume using Terraform later, those changes will be detected and Terraform will inform you that those changes will be overwritten. You can either accept that or import those resource changes into the state file. Terraform can import existing resources into the state, but it does not generate configuration. Therefore, before importing existing resources, it is necessary to manually add the imported resources into the configuration files. This approach is recommended for advanced users only and is out of the scope of this document.
 
 > **_NOTE:_** one common pattern is using the Landing Zone template to get a tenancy bootstrapped securely and subsequently use different means to manage the resources. This pattern is prevalent in organizations who are still maturing their Infrastructure as Code practices or in proof-of-concept scenarios.
@@ -183,8 +183,8 @@ By default, the Landing Zone defines the following personas that account for mos
 - **Security Administrators**: manage security services and resources including Vaults, Keys, Logging, Vulnerability Scanning, Web Application Firewall, Bastion, Service Connector Hub, ZPR.
 - **Network Administrators**: manage OCI network family, including VCNs, Load Balancers, DRGs, VNICs, IP addresses, OCI Network Firewall.
 - **Application Administrators**: manage application related resources including Compute images, OCI Functions, Kubernetes clusters, Streams, Object Storage, Block Storage, File Storage.
-- **Database Administrators**: manage database services, including Oracle VMDB (Virtual Machine), BMDB (Bare Metal), ADB (Autonomous databases), Exadata databases, MySQL, NoSQL, etc.
-- **ExaCS Administrators** (only created when ExaCS compartment is created): manage Exadata infrastructure and VM clusters in the ExaCS compartment.
+- **Database Administrators**: manage database services, including Oracle VMDB (Virtual Machine), BMDB (Bare Metal), ADB (Autonomous databases), and ExaCS databases in Database compartment (and optionally at ExaCS compartment).
+- **ExaCS (Exadata Cloud Service) Administrators** (only created when ExaCS compartment is created): manage ExaCS infrastructure and VM clusters in the ExaCS compartment.
 - **Storage Administrators**: the only group allowed to delete storage resources, including buckets, volumes and files. Used as a protection measure against inadvertent deletion of storage resources.
 - **Access Governance**: the group used by the Access Governance instance to query OCI services in the tenancy.
 
@@ -315,7 +315,7 @@ In these cases, simply provide the existing OCI group names to the appropriate c
 
 ### Custom Group Names
 
-By default, the group names are following the convention `${var.service_label}-group_name` using the `service-label` defined in the `tfvars` file. When a different naming convention should be used, for example, to match an established naming convention, these names can be customized using the Terraform Override technique.
+By default, the group names are following the convention `${var.service_label}-group_name` using the `service_label` defined in the `tfvars` file. When a different naming convention should be used, for example, to match an established naming convention, these names can be customized using the Terraform Override technique.
 
 The supported variables are:
 
@@ -354,6 +354,7 @@ See deployment scenarios under the [templates](./templates/) folder:
 
 - [No Networking](./templates/cis-basic/)
 - [Single Three-Tier VCN with default settings](./templates/standalone-three-tier-vcn-defaults/)
+- [Single Three-Tier VCN with ZPR enabled](./templates/standalone-three-tier-vcn-zpr/)
 - [Single Three-Tier VCN with custom settings](./templates/standalone-three-tier-vcn-custom/)
 - [Multiple Three-Tier VCNs peered through DRG](./templates/hub-spoke-with-drg-and-three-tier-vcns)
 - [Multiple VCN types peered through a Hub VCN with network appliance](./templates/hub-spoke-with-hub-vcn-net-appliance)
@@ -473,7 +474,7 @@ Cloud Guard is a key component in OCI secure posture management. It uses detecto
 
 Some customers want more control over the lifecycle of encryption keys. By default, Landing Zone provisions a *Vault* with a *Key* that is used to encrypt a sample Object Storage bucket. While this key could be used by other clients, we recommend creating different keys for security and lifecycle reasons. Currently, Landing Zone does not expose any variables to control the provisioning of vaults and keys.
 
-**Note**: Encrypting with customer-managed keys is a CIS Foundations Benchmark Level 2 requirement.
+> **_NOTE:_** Encrypting with customer-managed keys is a CIS Foundations Benchmark Level 2 requirement.
 
 ### Vulnerability Scanning
 
@@ -499,7 +500,7 @@ Lifecycle environments refer to the different stages a workload goes through in 
 
 These environments can take different forms based on customer requirements, ranging from full isolation to no isolation (or full sharing). Some organizations may require completely segregated, where resources are deployed in separate compartments, managed by different groups in different regions (full isolation). Others may want to share a few Landing Zone resources, like networking and security services (middle ground). Others may need to share all Landing Zone resources and segregate environments based on the resources (instances, clusters, functions, databases, storage) where workloads are executed (no isolation). As a best practice we do not recommend no isolation mode, as changes in lower stages may affect production workloads. Say for instance you need to make changes to routing and security rules. A small distraction may get your production service inaccessible. No isolation is a bad choice for blast radius reasons and it limits customers ability to innovate.
 
-Full isolation is a much superior option and is straightforward to implement, thanks to **service_label** input variable. The value assigned to this variable is used as prefix to all provisioned resources. Therefore, for creating a dev environment, you can assign it "dev". For a test environment, "test", and so on. For more isolation, **service_label** can be paired together with the **region** variable, and you get Landing Zone environments in a different regions.
+Full isolation is a much superior option and is straightforward to implement, thanks to *service_label* input variable. The value assigned to this variable is used as prefix to all provisioned resources. Therefore, for creating a dev environment, you can assign it "dev". For a test environment, "test", and so on. For more isolation, **service_label** can be paired together with the *region* variable, and you get Landing Zone environments in a different regions.
 
 A development environment in Phoenix:
 ```
@@ -516,6 +517,95 @@ service_label = "prod"
 Fully isolated environments require distinct Terraform configurations, therefore distinct variable sets and distinct Terraform state files. With Terraform CLI, create a separate Workspace to each environment. With OCI Resource Manager, create a separate Stack to each environment. Check [Ways to Deploy](#ways-to-deploy) section for more details.
 
 The middle ground approach is typically used by organizations that see network and security as shared services and want to provide separate environments for application and database resources. This is coming soon in the Landing Zone.
+
+## <a name="zpr-use"></a>4.6 Zero Trust Packet Routing (ZPR)
+
+OCI Core Landing Zone supports Zero Trust Packet Routing (ZPR). ZPR prevents unauthorized access with intent-based security policies that you write for OCI resources and assign security attributes to. Security attributes are labels that ZPR uses to identify and organize OCI resources. ZPR enforces policy at the network level each time access is requested, regardless of potential network architecture changes or misconfigurations.
+
+ZPR (version 1) functions as a layer on top of existing Network Security Groups or Security Lists or both.  For resources without ZPR tags, traffic is only allowed in or out if *existing* NSG and/or security lists allow the traffic.  Once a resource receives a ZPR tag, traffic must be approved by *all* existing filters: ZPR policy, NSGs and security lists.
+
+To use ZPR, it must be [enabled at the tenancy level](https://docs.oracle.com/en-us/iaas/Content/zero-trust-packet-routing/enable-zpr.htm). Note that once it is enabled, tenancy users and administrators cannot disable it. ZPR also requires a security attribute namespace. Core Landing Zone facilitates both the tenancy ZPR enablement and security attribute namespace creation with values assigned to two variables:
+
+- **enable\_zpr**: Whether ZPR is enabled as part of this Landing Zone. By default, no ZPR resources are created.
+- **zpr\_namespace\_name**: The name of ZPR security attribute namespace. The assigned value is <service_label>-zpr.
+
+To enable ZPR during deployment using OCI Resource Manager UI, select _"Define Networking?"_ in the General section, then check _"Enable Zero Trust Packet Routing (ZPR)?"_. The default ZPR namespace name is the value of *service\_label* variable concatenated with the '-zpr' suffix, which can be overridden by any name of choice using the optional input field.
+
+<img src="images/ZPR_enable.png" alt="ZPR enable" width="800"/>
+
+With a ZPR namespace established, the next step is to create security attributes based on resource types.  See [Resources That Can Be Assigned Security Attributes](https://docs.oracle.com/en-us/iaas/Content/zero-trust-packet-routing/overview.htm#resources-assigned-security-attributes) for a list of resource types that support ZPR security attributes.
+
+The last step is to create ZPR policies.  Core Landing Zone creates some ZPR policies for VCNs (details shown below) as a base layer of protection, but for ZPR to take full effect, you must apply ZPR security attributes and policies to other supported resources you deploy, like compute instances and databases.
+
+#### Three-Tier VCN ZPR Policies
+
+in *Three-Tier* VCN-1 allow *application* endpoints to connect to *database* endpoints with protocol=*SQLNet*
+```
+in <zpr_namespace_name>.net:tt-vcn-1 VCN allow <zpr_namespace_name>.app:<service_label> endpoints to connect to <zpr_namespace_name>.database:<service_label> endpoints with protocol='tcp/1521-1522'
+```
+
+in *Three-Tier* VCN-1 allow *bastion* endpoints to connect to *database* endpoints with protocol=*SSH*
+```
+in <zpr_namespace_name>.net:tt-vcn-1 VCN allow <zpr_namespace_name>.bastion:<service_label> endpoints to connect to <zpr_namespace_name>.database:<service_label> endpoints with protocol='tcp/22'
+```
+
+in *Three-Tier* VCN-1 allow *database* endpoints to connect to *Oracle Services Network (OSN)* with protocol=*HTTPS*
+```
+in <zpr_namespace_name>.net:tt-vcn-1 VCN allow <zpr_namespace_name>.database:<service_label> endpoints to connect to 'osn-services-ip-addresses' with protocol='tcp/443'
+```
+
+in *Three-Tier* VCN-1 allow *other Three-Tier DB CIDRs* to connect to *database* endpoints with protocol=*SQLNet*
+```
+in <zpr_namespace_name>.net:tt-vcn-1 VCN allow '10.1.2.0/24' to connect to <zpr_namespace_name>.database:<service_label> endpoints with protocol='tcp/1521-1522'
+```
+
+in *Three-Tier* VCN-1 allow *database* endpoints to connect to *other Three-Tier DB CIDRs* with protocol=*SQLNet*
+```
+in <zpr_namespace_name>.net:tt-vcn-1 VCN allow <zpr_namespace_name>.database:<service_label> endpoints to connect to '10.1.2.0/24' with protocol='tcp/1521-1522'
+```
+
+in *Three-Tier* VCN-1 allow *database* endpoints to connect to *Exadata Client Subnet CIDRs* with protocol=*SQLNet*
+```
+in <zpr_namespace_name>.net:tt-vcn-1 VCN allow <zpr_namespace_name>.database:<service_label> endpoints to connect to '172.16.2.0/24' with protocol='tcp/1521-1522'
+```
+
+in *Three-Tier* VCN-1 allow *Exadata Client Subnet CIDRs* to connect to *database* endpoints with protocol=*SQLNet*
+```
+in <zpr_namespace_name>.net:tt-vcn-1 VCN allow '172.16.2.0/24' to connect to <zpr_namespace_name>.database:<service_label> endpoints with protocol='tcp/1521-1522'
+```
+
+#### Exadata VCN ZPR Policies
+
+in *Exadata* VCN-1 allow *bastion* endpoints to connect to *database* endpoints with protocol=*SSH*
+```
+in <zpr_namespace_name>.net:exa-vcn-1 VCN allow <zpr_namespace_name>.bastion:<service_label> endpoints to connect to <zpr_namespace_name>.database:<service_label> endpoints with protocol='tcp/22'
+```
+
+in *Exadata* VCN-1 allow *database* endpoints to connect to *database* endpoints with protocol=*SQLNet*
+```
+in <zpr_namespace_name>.net:exa-vcn-1 VCN allow <zpr_namespace_name>.database:<service_label> endpoints to connect to <zpr_namespace_name>.database:<service_label> endpoints with protocol='tcp/1521-1522'
+```
+
+in *Exadata* VCN-1 allow *database* endpoints to connect to *database* endpoints with protocol=*Fast Application Notifications (FAN)*
+```
+in <zpr_namespace_name>.net:exa-vcn-1 VCN allow <zpr_namespace_name>.database:<service_label> endpoints to connect to <zpr_namespace_name>.database:<service_label> endpoints with protocol='tcp/6200'
+```
+
+in *Exadata* VCN-1 allow *database* endpoints to connect to *Three-Tier DB CIDRs* with protocol=*SQLNet*
+```
+in <zpr_namespace_name>.net:exa-vcn-1 VCN allow <zpr_namespace_name>.database:<service_label> endpoints to connect to '10.1.2.0/24' with protocol='tcp/1521-1522'
+```
+
+in *Exadata* VCN-1 allow *Three-Tier DB CIDRs* endpoints to connect to *database* endpoints with protocol=*SQLNet*
+```
+in <zpr_namespace_name>.net:exa-vcn-1 VCN allow '10.1.2.0/24' to connect to <zpr_namespace_name>.database:<service_label> endpoints with protocol='tcp/1521-1522'
+```
+
+> **_NOTE:_** A special case to consider is if you use the OCI Bastion Service to deploy a bastion in a Exadata VCN, it should be deployed in the client subnet and attached to the client NSG. In addition, ZPR policy for the Exadata VCN needs to be updated to allow the Bastion Service CIDR to reach a ZPR tagged resource; an additional policy statement like the following example is needed:
+
+```
+in <zpr_namespace_name>.net:exa-vcn-1 VCN allow '<bastion service CIDR>/32' to connect to <zpr_namespace_name>.bastion:<service_label> endpoints with protocol='tcp/22'
+```
 
 # <a name="ways-to-deploy"></a>5. Ways to Deploy
 

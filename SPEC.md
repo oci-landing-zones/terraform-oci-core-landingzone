@@ -18,7 +18,7 @@
 | <a name="module_lz_alarms"></a> [lz\_alarms](#module\_lz\_alarms) | github.com/oci-landing-zones/terraform-oci-modules-observability//alarms | v0.1.8 |
 | <a name="module_lz_budgets"></a> [lz\_budgets](#module\_lz\_budgets) | github.com/oci-landing-zones/terraform-oci-modules-governance//budgets | v0.1.4 |
 | <a name="module_lz_cloud_guard"></a> [lz\_cloud\_guard](#module\_lz\_cloud\_guard) | github.com/oci-landing-zones/terraform-oci-modules-security//cloud-guard | v0.1.7 |
-| <a name="module_lz_compartments"></a> [lz\_compartments](#module\_lz\_compartments) | github.com/oci-landing-zones/terraform-oci-modules-iam//compartments | v0.2.3 |
+| <a name="module_lz_compartments"></a> [lz\_compartments](#module\_lz\_compartments) | github.com/oci-landing-zones/terraform-oci-modules-iam//compartments | v0.2.4 |
 | <a name="module_lz_custom_domain_dynamic_groups"></a> [lz\_custom\_domain\_dynamic\_groups](#module\_lz\_custom\_domain\_dynamic\_groups) | github.com/oci-landing-zones/terraform-oci-modules-iam//identity-domains | v0.2.4 |
 | <a name="module_lz_custom_domain_groups"></a> [lz\_custom\_domain\_groups](#module\_lz\_custom\_domain\_groups) | github.com/oci-landing-zones/terraform-oci-modules-iam//identity-domains | v0.2.4 |
 | <a name="module_lz_dynamic_groups"></a> [lz\_dynamic\_groups](#module\_lz\_dynamic\_groups) | github.com/oci-landing-zones/terraform-oci-modules-iam//dynamic-groups | v0.2.4 |
@@ -28,18 +28,21 @@
 | <a name="module_lz_home_region_notifications"></a> [lz\_home\_region\_notifications](#module\_lz\_home\_region\_notifications) | github.com/oci-landing-zones/terraform-oci-modules-observability//events | v0.1.8 |
 | <a name="module_lz_home_region_topics"></a> [lz\_home\_region\_topics](#module\_lz\_home\_region\_topics) | github.com/oci-landing-zones/terraform-oci-modules-observability//notifications | v0.1.8 |
 | <a name="module_lz_logging_analytics"></a> [lz\_logging\_analytics](#module\_lz\_logging\_analytics) | github.com/oci-landing-zones/terraform-oci-modules-observability//logging | v0.1.8 |
-| <a name="module_lz_network"></a> [lz\_network](#module\_lz\_network) | github.com/oci-landing-zones/terraform-oci-modules-networking | v0.7.0 |
-| <a name="module_lz_nlb"></a> [lz\_nlb](#module\_lz\_nlb) | github.com/oci-landing-zones/terraform-oci-modules-networking//modules/nlb | v0.7.0 |
+| <a name="module_lz_network"></a> [lz\_network](#module\_lz\_network) | github.com/oci-landing-zones/terraform-oci-modules-networking | v0.7.1 |
+| <a name="module_lz_nlb"></a> [lz\_nlb](#module\_lz\_nlb) | github.com/oci-landing-zones/terraform-oci-modules-networking//modules/nlb | v0.7.1 |
 | <a name="module_lz_notifications"></a> [lz\_notifications](#module\_lz\_notifications) | github.com/oci-landing-zones/terraform-oci-modules-observability//events | v0.1.8 |
-| <a name="module_lz_policies"></a> [lz\_policies](#module\_lz\_policies) | github.com/oci-landing-zones/terraform-oci-modules-iam//policies | v0.2.3 |
+| <a name="module_lz_oke_clusters_policy"></a> [lz\_oke\_clusters\_policy](#module\_lz\_oke\_clusters\_policy) | github.com/oci-landing-zones/terraform-oci-modules-iam//policies | v0.2.4 |
+| <a name="module_lz_policies"></a> [lz\_policies](#module\_lz\_policies) | github.com/oci-landing-zones/terraform-oci-modules-iam//policies | v0.2.4 |
 | <a name="module_lz_regional_topics"></a> [lz\_regional\_topics](#module\_lz\_regional\_topics) | github.com/oci-landing-zones/terraform-oci-modules-observability//notifications | v0.1.8 |
-| <a name="module_lz_root_policies"></a> [lz\_root\_policies](#module\_lz\_root\_policies) | github.com/oci-landing-zones/terraform-oci-modules-iam//policies | v0.2.3 |
+| <a name="module_lz_root_policies"></a> [lz\_root\_policies](#module\_lz\_root\_policies) | github.com/oci-landing-zones/terraform-oci-modules-iam//policies | v0.2.4 |
 | <a name="module_lz_scanning"></a> [lz\_scanning](#module\_lz\_scanning) | github.com/oci-landing-zones/terraform-oci-modules-security//vss | v0.1.7 |
 | <a name="module_lz_security_zones"></a> [lz\_security\_zones](#module\_lz\_security\_zones) | github.com/oci-landing-zones/terraform-oci-modules-security//security-zones | v0.1.7 |
 | <a name="module_lz_service_connector_hub"></a> [lz\_service\_connector\_hub](#module\_lz\_service\_connector\_hub) | github.com/oci-landing-zones/terraform-oci-modules-observability//service-connectors | v0.1.8 |
+| <a name="module_lz_services_policy"></a> [lz\_services\_policy](#module\_lz\_services\_policy) | github.com/oci-landing-zones/terraform-oci-modules-iam//policies | v0.2.4 |
 | <a name="module_lz_tags"></a> [lz\_tags](#module\_lz\_tags) | github.com/oci-landing-zones/terraform-oci-modules-governance//tags | v0.1.4 |
-| <a name="module_lz_top_compartment"></a> [lz\_top\_compartment](#module\_lz\_top\_compartment) | github.com/oci-landing-zones/terraform-oci-modules-iam//compartments | v0.2.3 |
+| <a name="module_lz_top_compartment"></a> [lz\_top\_compartment](#module\_lz\_top\_compartment) | github.com/oci-landing-zones/terraform-oci-modules-iam//compartments | v0.2.4 |
 | <a name="module_lz_vault"></a> [lz\_vault](#module\_lz\_vault) | github.com/oci-landing-zones/terraform-oci-modules-security//vaults | v0.1.7 |
+| <a name="module_lz_zpr"></a> [lz\_zpr](#module\_lz\_zpr) | github.com/oci-landing-zones/terraform-oci-modules-security//zpr | v0.1.9 |
 
 ## Resources
 
@@ -123,6 +126,7 @@
 | <a name="input_enable_cloud_guard_cloned_recipes"></a> [enable\_cloud\_guard\_cloned\_recipes](#input\_enable\_cloud\_guard\_cloned\_recipes) | Whether cloned recipes are attached to the managed Cloud Guard target. If false, Oracle managed recipes are attached. | `bool` | `true` | no |
 | <a name="input_enable_security_zones"></a> [enable\_security\_zones](#input\_enable\_security\_zones) | Determines if Security Zones are enabled in Landing Zone. When set to true, the Security Zone is enabled for the enclosing compartment. If no enclosing compartment is used, then the Security Zone is not enabled. | `bool` | `false` | no |
 | <a name="input_enable_service_connector"></a> [enable\_service\_connector](#input\_enable\_service\_connector) | Whether Service Connector should be enabled. If true, a single Service Connector is managed for all services log sources and the designated target specified in 'Service Connector Target Kind'. The Service Connector resource is created in INACTIVE state. To activate, check 'Activate Service Connector?' (costs may incur). | `bool` | `false` | no |
+| <a name="input_enable_zpr"></a> [enable\_zpr](#input\_enable\_zpr) | Whether to enable ZPR service. | `bool` | `false` | no |
 | <a name="input_enclosing_compartment_options"></a> [enclosing\_compartment\_options](#input\_enclosing\_compartment\_options) | Determines where the landing zone compartments are deployed: within a new enclosing compartment or within an existing select enclosing compartment (that can be the Root compartment). Valid options: 'Yes, deploy new', 'Yes, use existing', 'No' | `string` | `"Yes, deploy new"` | no |
 | <a name="input_enclosing_compartment_parent_ocid"></a> [enclosing\_compartment\_parent\_ocid](#input\_enclosing\_compartment\_parent\_ocid) | The existing compartment where Landing Zone enclosing compartment is created. | `string` | `null` | no |
 | <a name="input_exa_vcn1_attach_to_drg"></a> [exa\_vcn1\_attach\_to\_drg](#input\_exa\_vcn1\_attach\_to\_drg) | If true, the VCN is attached to a DRG, enabling cross-vcn traffic routing. | `bool` | `false` | no |
@@ -182,7 +186,8 @@
 | <a name="input_extend_landing_zone_to_new_region"></a> [extend\_landing\_zone\_to\_new\_region](#input\_extend\_landing\_zone\_to\_new\_region) | Whether Landing Zone is being extended to another region. When set to true, compartments, groups, policies and resources at the home region are not provisioned. Use this when you want to provision a Landing Zone in a new region, but reuse existing Landing Zone resources in the home region. | `bool` | `false` | no |
 | <a name="input_fingerprint"></a> [fingerprint](#input\_fingerprint) | n/a | `string` | `""` | no |
 | <a name="input_groups_options"></a> [groups\_options](#input\_groups\_options) | Whether to deploy new groups or use existing groups. | `string` | `"Yes"` | no |
-| <a name="input_hub_deployment_option"></a> [hub\_deployment\_option](#input\_hub\_deployment\_option) | The available options for hub deployment. Valid values: 'No cross-VCN or on-premises connectivity', 'VCN or on-premises connectivity routing via DRG (DRG will be created)', 'VCN or on-premises connectivity routing via DRG (existing DRG)', 'VCN or on-premises connectivity routing through DMZ VCN with Network Virtual Appliance (DRG and DMZ VCN will be created)', 'VCN or on-premises connectivity routed through DMZ VCN with Network Virtual Appliance existing DRG (DMZ VCN will be created and DRG ID required)'. All the VCNs that attach to the DRG join the topology as spokes. | `string` | `"No cross-VCN or on-premises connectivity"` | no |
+| <a name="input_hub_deployment"></a> [hub\_deployment](#input\_hub\_deployment) | The available options for hub deployment as an integer. 'No cross-VCN or on-premises connectivity' = 0, 'VCN or on-premises connectivity routing via DRG (DRG will be created)' = 1, 'VCN or on-premises connectivity routing via DRG (existing DRG)' = 2, 'VCN or on-premises connectivity routing through DMZ VCN with Network Virtual Appliance (DRG and DMZ VCN will be created)' = 3, 'VCN or on-premises connectivity routed through DMZ VCN with Network Virtual Appliance existing DRG (DMZ VCN will be created and DRG ID required)' = 4 | `number` | `0` | no |
+| <a name="input_hub_deployment_option"></a> [hub\_deployment\_option](#input\_hub\_deployment\_option) | The available options for hub deployment. Valid values: 'No cross-VCN or on-premises connectivity', 'VCN or on-premises connectivity routing via DRG (DRG will be created)', 'VCN or on-premises connectivity routing via DRG (existing DRG)', 'VCN or on-premises connectivity routing through DMZ VCN with Network Virtual Appliance (DRG and DMZ VCN will be created)', 'VCN or on-premises connectivity routed through DMZ VCN with Network Virtual Appliance existing DRG (DMZ VCN will be created and DRG ID required)'. All the VCNs that attach to the DRG join the topology as spokes. | `string` | `""` | no |
 | <a name="input_hub_vcn_cidrs"></a> [hub\_vcn\_cidrs](#input\_hub\_vcn\_cidrs) | List of CIDR blocks for the Hub VCN. | `list(string)` | <pre>[<br>  "192.168.0.0/26"<br>]</pre> | no |
 | <a name="input_hub_vcn_deploy_net_appliance_option"></a> [hub\_vcn\_deploy\_net\_appliance\_option](#input\_hub\_vcn\_deploy\_net\_appliance\_option) | The network appliance option for deploying in the Hub VCN. Valid values: 'Don't deploy any network appliance at this time' (default), 'Palo Alto Networks VM-Series Firewall', 'Fortinet FortiGate Firewall'. Costs are incurred. | `string` | `"Don't deploy any network appliance at this time"` | no |
 | <a name="input_hub_vcn_east_west_entry_point_ocid"></a> [hub\_vcn\_east\_west\_entry\_point\_ocid](#input\_hub\_vcn\_east\_west\_entry\_point\_ocid) | The OCID of a private address the Hub VCN routes traffic to for inbound internal cross-vcn traffic (East/West). This variable is to be assigned with the OCID of the indoor network load balancer's private IP address. | `string` | `null` | no |
@@ -209,6 +214,8 @@
 | <a name="input_net_appliance_name_prefix"></a> [net\_appliance\_name\_prefix](#input\_net\_appliance\_name\_prefix) | Common prefix to network appliance name. To this common prefix, numbers 1 and 2 are appended to the corresponding instance. | `string` | `"net-appliance-instance"` | no |
 | <a name="input_net_appliance_public_rsa_key"></a> [net\_appliance\_public\_rsa\_key](#input\_net\_appliance\_public\_rsa\_key) | The SSH public key to login to Network Appliance Compute instance. | `string` | `null` | no |
 | <a name="input_net_appliance_shape"></a> [net\_appliance\_shape](#input\_net\_appliance\_shape) | The instance shape for the network appliance nodes. | `string` | `"VM.Optimized3.Flex"` | no |
+| <a name="input_net_fortigate_version"></a> [net\_fortigate\_version](#input\_net\_fortigate\_version) | Fortinet Fortigate Firewall Version. | `string` | `"7.2.9_(_X64_)"` | no |
+| <a name="input_net_palo_alto_version"></a> [net\_palo\_alto\_version](#input\_net\_palo\_alto\_version) | Palo Alto Firewall Version. | `string` | `"11.1.3"` | no |
 | <a name="input_network_admin_email_endpoints"></a> [network\_admin\_email\_endpoints](#input\_network\_admin\_email\_endpoints) | List of email addresses for all network related notifications. (Type an email address and hit enter to enter multiple values) | `list(string)` | `[]` | no |
 | <a name="input_notifications_advanced_options"></a> [notifications\_advanced\_options](#input\_notifications\_advanced\_options) | n/a | `bool` | `false` | no |
 | <a name="input_oke_vcn1_api_subnet_cidr"></a> [oke\_vcn1\_api\_subnet\_cidr](#input\_oke\_vcn1\_api\_subnet\_cidr) | The API subnet CIDR block. It must be within the VCN CIDR blocks. | `string` | `null` | no |
@@ -348,6 +355,7 @@
 | <a name="input_vss_port_scan_level"></a> [vss\_port\_scan\_level](#input\_vss\_port\_scan\_level) | Valid values: STANDARD, LIGHT, NONE. STANDARD checks the 1000 most common port numbers, LIGHT checks the 100 most common port numbers, NONE does not check for open ports. | `string` | `"STANDARD"` | no |
 | <a name="input_vss_scan_day"></a> [vss\_scan\_day](#input\_vss\_scan\_day) | The week day for the Vulnerability Scanning Service recipe, if enabled. Only applies if vss\_scan\_schedule is WEEKLY (case insensitive). | `string` | `"SUNDAY"` | no |
 | <a name="input_vss_scan_schedule"></a> [vss\_scan\_schedule](#input\_vss\_scan\_schedule) | The scan schedule for the Vulnerability Scanning Service recipe, if enabled. Valid values are WEEKLY or DAILY (case insensitive). | `string` | `"WEEKLY"` | no |
+| <a name="input_zpr_namespace_name"></a> [zpr\_namespace\_name](#input\_zpr\_namespace\_name) | ZPR namespace name. | `string` | `null` | no |
 
 ## Outputs
 
@@ -355,18 +363,6 @@
 |------|-------------|
 | <a name="output_cis_level"></a> [cis\_level](#output\_cis\_level) | The CIS profile level. |
 | <a name="output_compartments"></a> [compartments](#output\_compartments) | The deployed compartments. |
-| <a name="output_created_alarms"></a> [created\_alarms](#output\_created\_alarms) | Alarms created by Landing Zone. |
-| <a name="output_created_budget_alert_rules"></a> [created\_budget\_alert\_rules](#output\_created\_budget\_alert\_rules) | Budget alert rules created by Landing Zone. |
-| <a name="output_created_budgets"></a> [created\_budgets](#output\_created\_budgets) | Budgets created by Landing Zone. |
-| <a name="output_created_cloud_guard_targets"></a> [created\_cloud\_guard\_targets](#output\_created\_cloud\_guard\_targets) | Cloud guard targets created by Landing Zone. |
-| <a name="output_created_events"></a> [created\_events](#output\_created\_events) | Events created by Landing Zone. |
-| <a name="output_created_home_region_events"></a> [created\_home\_region\_events](#output\_created\_home\_region\_events) | Events created by Landing Zone. |
-| <a name="output_created_home_region_topics"></a> [created\_home\_region\_topics](#output\_created\_home\_region\_topics) | Events created by Landing Zone. |
-| <a name="output_created_keys"></a> [created\_keys](#output\_created\_keys) | Keys created by Landing Zone. |
-| <a name="output_created_scanning_host_recipes"></a> [created\_scanning\_host\_recipes](#output\_created\_scanning\_host\_recipes) | The VSS host targets created. |
-| <a name="output_created_scanning_host_targets"></a> [created\_scanning\_host\_targets](#output\_created\_scanning\_host\_targets) | The VSS host targets created. |
-| <a name="output_created_topics"></a> [created\_topics](#output\_created\_topics) | Events created by Landing Zone. |
-| <a name="output_created_vaults"></a> [created\_vaults](#output\_created\_vaults) | Vaults created by Landing Zone. |
 | <a name="output_dynamic_routing_gateways"></a> [dynamic\_routing\_gateways](#output\_dynamic\_routing\_gateways) | The deployed dynamic routing gateway. |
 | <a name="output_network_security_groups"></a> [network\_security\_groups](#output\_network\_security\_groups) | The deployed network security groups. |
 | <a name="output_nlb_private_ip_addresses"></a> [nlb\_private\_ip\_addresses](#output\_nlb\_private\_ip\_addresses) | The deployed private IP addresses OCIDs. |
