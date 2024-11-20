@@ -181,6 +181,8 @@ variableGroups:
       - "hub_vcn_north_south_entry_point_ocid"
       - "hub_vcn_east_west_entry_point_ocid"
       - "customize_hub_vcn_subnets"
+      - "native_firewall_threat_log"
+      - "native_firewall_traffic_log"
       - "hub_vcn_web_subnet_name"
       - "hub_vcn_web_subnet_cidr"
       - "hub_vcn_web_subnet_dns"
@@ -2908,6 +2910,7 @@ variables:
       #- "Cisco Secure Firewall"
       #- "OCI Firewall Service"
       - "User-Provided Virtual Network Appliance"
+      - "OCI Native Firewall"
     visible: 
       and:
         - define_net
@@ -2918,7 +2921,7 @@ variables:
           - eq:
             - ${hub_deployment_option}
             - "VCN or on-premises connectivity routed through DMZ VCN with Network Virtual Appliance existing DRG (DMZ VCN will be created and DRG ID required)"
-    default: "Don't deploy any network appliance at this time"
+    default: "Don't deploy any network appliance at this time"      
 
   # net_appliance_image_compartment_ocid:
   #   type: oci:identity:compartment:id
@@ -3213,6 +3216,46 @@ variables:
           - eq:
             - ${hub_deployment_option}
             - "VCN or on-premises connectivity routed through DMZ VCN with Network Virtual Appliance existing DRG (DMZ VCN will be created and DRG ID required)"
+  
+  native_firewall_threat_log:
+    type: boolean
+    title: "Enable Network Threat Log?"
+    description: "Check to allow Network Threat logs."
+    default: false 
+    visible:
+      and:
+        - define_net
+        - or:
+          - eq: 
+            - ${hub_deployment_option}
+            - "VCN or on-premises connectivity routing through DMZ VCN with Network Virtual Appliance (DRG and DMZ VCN will be created)"
+          - eq:
+            - ${hub_deployment_option}
+            - "VCN or on-premises connectivity routed through DMZ VCN with Network Virtual Appliance existing DRG (DMZ VCN will be created and DRG ID required)" 
+        - and:
+          - eq:
+            - ${hub_vcn_deploy_net_appliance_option}
+            - "OCI Native Firewall"
+
+  native_firewall_traffic_log:
+    type: boolean
+    title: "Enable Network Traffic Log?"
+    description: "Check to allow Network Traffic logs."
+    default: false 
+    visible:
+      and:
+        - define_net
+        - or:
+          - eq: 
+            - ${hub_deployment_option}
+            - "VCN or on-premises connectivity routing through DMZ VCN with Network Virtual Appliance (DRG and DMZ VCN will be created)"
+          - eq:
+            - ${hub_deployment_option}
+            - "VCN or on-premises connectivity routed through DMZ VCN with Network Virtual Appliance existing DRG (DMZ VCN will be created and DRG ID required)" 
+        - and:
+          - eq:
+            - ${hub_vcn_deploy_net_appliance_option}
+            - "OCI Native Firewall"
 
 # -------------------------------------------
 # ----- Networking - Hub Web Subnet
