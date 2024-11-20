@@ -54,7 +54,7 @@ locals {
   security_functions_dynamic_group = length(trimspace(var.existing_security_fun_dyn_group_name)) == 0 ? {
     (local.security_functions_dynamic_group_key) = {
       name          = local.provided_security_functions_dynamic_group_name
-      description   = "Landing Zone dynamic group for security functions execution."
+      description   = "Core Landing Zone dynamic group for security functions execution."
       matching_rule = "ALL {resource.type = 'fnfunc',resource.compartment.id = '${local.security_compartment_id}'}"
       defined_tags  = local.dynamic_groups_defined_tags
       freeform_tags = local.dynamic_groups_freeform_tags
@@ -65,7 +65,7 @@ locals {
     (local.security_functions_dynamic_group_key) = {
       identity_domain_id = trimspace(var.custom_id_domain_ocid)
       name               = local.provided_security_functions_dynamic_group_name
-      description        = "Landing Zone dynamic group for security functions execution."
+      description        = "Core Landing Zone dynamic group for security functions execution."
       matching_rule      = "ALL {resource.type = 'fnfunc',resource.compartment.id = '${local.security_compartment_id}'}"
       defined_tags       = local.dynamic_groups_defined_tags
       freeform_tags      = local.dynamic_groups_freeform_tags
@@ -82,7 +82,7 @@ locals {
   appdev_functions_dynamic_group = length(trimspace(var.existing_appdev_fun_dyn_group_name)) == 0 ? {
     (local.appdev_functions_dynamic_group_key) = {
       name          = local.provided_appdev_functions_dynamic_group_name
-      description   = "Landing Zone dynamic group for application functions execution."
+      description   = "Core Landing Zone dynamic group for application functions execution."
       matching_rule = "ALL {resource.type = 'fnfunc',resource.compartment.id = '${local.app_compartment_id}'}"
       defined_tags  = local.dynamic_groups_defined_tags
       freeform_tags = local.dynamic_groups_freeform_tags
@@ -93,7 +93,7 @@ locals {
     (local.appdev_functions_dynamic_group_key) = {
       identity_domain_id = trimspace(var.custom_id_domain_ocid)
       name               = local.provided_appdev_functions_dynamic_group_name
-      description        = "Landing Zone dynamic group for application functions execution."
+      description        = "Core Landing Zone dynamic group for application functions execution."
       matching_rule      = "ALL {resource.type = 'fnfunc',resource.compartment.id = '${local.app_compartment_id}'}"
       defined_tags       = local.dynamic_groups_defined_tags
       freeform_tags      = local.dynamic_groups_freeform_tags
@@ -110,7 +110,7 @@ locals {
   appdev_computeagent_dynamic_group = length(trimspace(var.existing_compute_agent_dyn_group_name)) == 0 ? {
     (local.appdev_computeagent_dynamic_group_key) = {
       name          = local.provided_appdev_computeagent_dynamic_group_name
-      description   = "Landing Zone dynamic group for Compute Agent plugin execution."
+      description   = "Core Landing Zone dynamic group for Compute Agent plugin execution."
       matching_rule = "ALL {resource.type = 'managementagent',resource.compartment.id = '${local.app_compartment_id}'}"
       defined_tags  = local.dynamic_groups_defined_tags
       freeform_tags = local.dynamic_groups_freeform_tags
@@ -121,7 +121,7 @@ locals {
     (local.appdev_computeagent_dynamic_group_key) = {
       identity_domain_id = trimspace(var.custom_id_domain_ocid)
       name               = local.provided_appdev_computeagent_dynamic_group_name
-      description        = "Landing Zone dynamic group for Compute Agent plugin execution."
+      description        = "Core Landing Zone dynamic group for Compute Agent plugin execution."
       matching_rule      = "ALL {resource.type = 'managementagent',resource.compartment.id = '${local.app_compartment_id}'}"
       defined_tags       = local.dynamic_groups_defined_tags
       freeform_tags      = local.dynamic_groups_freeform_tags
@@ -138,7 +138,7 @@ locals {
   database_kms_dynamic_group = length(trimspace(var.existing_database_kms_dyn_group_name)) == 0 ? {
     (local.database_kms_dynamic_group_key) = {
       name          = local.provided_database_kms_dynamic_group_name
-      description   = "Landing Zone dynamic group for databases accessing Key Management service (aka Vault service)."
+      description   = "Core Landing Zone dynamic group for databases accessing Key Management service (aka Vault service)."
       matching_rule = "ALL {resource.compartment.id = '${local.database_compartment_id}'}"
       defined_tags  = local.dynamic_groups_defined_tags
       freeform_tags = local.dynamic_groups_freeform_tags
@@ -149,7 +149,7 @@ locals {
     (local.database_kms_dynamic_group_key) = {
       identity_domain_id = trimspace(var.custom_id_domain_ocid)
       name               = local.provided_database_kms_dynamic_group_name
-      description        = "Landing Zone dynamic group for databases accessing Key Management service (aka Vault service)."
+      description        = "Core Landing Zone dynamic group for databases accessing Key Management service (aka Vault service)."
       matching_rule      = "ALL {resource.compartment.id = '${local.database_compartment_id}'}"
       defined_tags       = local.dynamic_groups_defined_tags
       freeform_tags      = local.dynamic_groups_freeform_tags
@@ -166,7 +166,7 @@ locals {
   net_fw_app_dynamic_group = length(trimspace(var.existing_net_fw_app_dyn_group_name)) == 0 && local.firewall_options[var.hub_vcn_deploy_net_appliance_option] == "FORTINET" ? {
     (local.net_fw_app_dynamic_group_key) = {
       name          = local.provided_net_fw_app_dynamic_group_name
-      description   = "Landing Zone dynamic group for network firewall appliances."
+      description   = "Core Landing Zone dynamic group for network firewall appliances."
       matching_rule = "ALL {resource.compartment.id = '${local.network_compartment_id}'}"
       defined_tags  = local.dynamic_groups_defined_tags
       freeform_tags = local.dynamic_groups_freeform_tags
@@ -177,7 +177,7 @@ locals {
     (local.net_fw_app_dynamic_group_key) = {
       identity_domain_id = trimspace(var.custom_id_domain_ocid)
       name               = local.provided_net_fw_app_dynamic_group_name
-      description        = "Landing Zone dynamic group for network firewall appliances."
+      description        = "Core Landing Zone dynamic group for network firewall appliances."
       matching_rule      = "ALL {resource.compartment.id = '${local.network_compartment_id}'}"
       defined_tags       = local.dynamic_groups_defined_tags
       freeform_tags      = local.dynamic_groups_freeform_tags

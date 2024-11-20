@@ -1,4 +1,4 @@
-# CIS Landing Zone With Standalone Custom VCN Template
+# Core Landing Zone With Standalone Custom VCN Template
 
 This template shows how to deploy a CIS compliant landing zone using [OCI Core Landing Zone](../../) configuration. 
 
