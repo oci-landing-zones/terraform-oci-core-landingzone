@@ -79,6 +79,7 @@ output "nlb_private_ip_addresses" {
 #   description = "Events created by Landing Zone."
 #   value       = var.display_output ? module.lz_notifications.events : null
 # }
+
 # output "created_home_region_events" {
 #   description = "Events created by Landing Zone."
 #   value       = var.display_output && var.extend_landing_zone_to_new_region == false ? module.lz_home_region_notifications[0].events : null
