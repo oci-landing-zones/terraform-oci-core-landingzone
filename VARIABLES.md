@@ -13,8 +13,8 @@
 ### General
 
 | Variable Name | Description | Type | Default | Required |
-|---------------|-------------|------|---------|----------|
-| service_label | A unique label that gets prepended to all resources deployed by the Landing Zone. Max length: 15 characters. | `any` |  | yes |
+|---------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|----------|----|----------|
+| service_label | A unique label that gets prepended to all resources deployed by the Landing Zone. Max length: 15 characters. | `any` | | yes |
 | cis_level | Determines CIS OCI Benchmark Level to apply on Landing Zone managed resources. Level 1 is be practical and prudent. Level 2 is intended for environments where security is more critical than manageability and usability. Level 2 drives the creation of an OCI Vault, buckets encryption with a customer managed key, write logs for buckets and the usage of specific policies in Security Zones. | `string` | 1 | no |
 | customize_iam | Whether Landing Zone IAM settings are to be customized. Customizable options are identity domains, groups, dynamic groups and policies. | `bool` | `false` | no |
 | define_net | Whether networking is defined as part of this Landing Zone. By default, no networking resources are created. | `bool` | `false` | no |
@@ -22,7 +22,8 @@
 | extend_landing_zone_to_new_region | Whether Landing Zone is being extended to another region. When set to true, compartments, groups, policies and resources at the home region are not provisioned. Use this when you want to provision a Landing Zone in a new region, but reuse existing Landing Zone resources in the home region. | `bool` | `false` | no |
 | lz_provenant_prefix | The provenant landing zone prefix or code that identifies the client of this Landing Zone. This information goes into a freeform tag applied to all deployed resources. | `string` | `core` | no |
 | lz_provenant_version | The provenant landing zone version. This information goes into a freeform tag applied to all deployed resources. | `string` | `null` | no |
-
+| enable_zpr | Whether ZPR is enabled as part of this Landing Zone. By default, no ZPR resources are created. | `bool` | `false` | no |
+| zpr_namespace_name | The name of ZPR security attribute namespace. | `string` | `<service_label>-zpr` | no |
 
 ### Identity
 
@@ -93,13 +94,13 @@
 | enable_cloud_guard | Determines whether the Cloud Guard service should be enabled. If true, Cloud Guard is enabled and the Root compartment is configured with a Cloud Guard target, as long as there is no pre-existing Cloud Guard target for the Root compartment (or target creation will fail). Keep in mind that once you set this to true, Cloud Guard target is managed by Landing Zone. If later on you switch this to false, the managed target is deleted and all (open, resolved and dismissed) problems associated with the deleted target are being moved to 'deleted' state. This operation happens in the background and would take some time to complete. Deleted problems can be viewed from the problems page using the 'deleted' status filter. For more details on Cloud Guard problems lifecycle, see https://docs.oracle.com/en-us/iaas/cloud-guard/using/problems-page.htm#problems-page__sect_prob_lifecycle. If Cloud Guard is already enabled and a target exists for the Root compartment, set this variable to false. | `bool` | `true` | no |
 | enable_cloud_guard_cloned_recipes | Whether cloned recipes are attached to the managed Cloud Guard target. If false, Oracle managed recipes are attached. | `bool` | `true` | no |
 | enable_security_zones | Determines if Security Zones are enabled in Landing Zone. When set to true, the Security Zone is enabled for the enclosing compartment. If no enclosing compartment is used, then the Security Zone is not enabled. | `bool` | `false` | no |
-| security_zones_reporting_region | The reporting region of security zones. It defaults to tenancy home region if undefined. | `string` |  `` | no |
-| sz_security_policies | Additional Security Zones Policy OCIDs to add to security zone recipe (The default policies are added based on CIS level). To get a Security Zone policy OCID use the oci cli:  oci cloud-guard security-policy-collection list-security-policies --compartment-id <tenancy-ocid>. | `list(string)` | `[]` | no |
+| security_zones_reporting_region | The reporting region of security zones. It defaults to tenancy home region if undefined. | `string` | `` | no |
+| sz_security_policies | Additional Security Zones Policy OCIDs to add to security zone recipe (The default policies are added based on CIS level). To get a Security Zone policy OCID use the oci cli: oci cloud-guard security-policy-collection list-security-policies --compartment-id <tenancy-ocid>. | `list(string)` | `[]` | no |
 | vss_agent_cis_benchmark_settings_scan_level | Valid values: STRICT, MEDIUM, LIGHTWEIGHT, NONE. STRICT: If more than 20% of the CIS benchmarks fail, then the target is assigned a risk level of Critical. MEDIUM: If more than 40% of the CIS benchmarks fail, then the target is assigned a risk level of High. LIGHTWEIGHT: If more than 80% of the CIS benchmarks fail, then the target is assigned a risk level of High. NONE: disables cis benchmark scanning. | `string` | `MEDIUM` | no |
 | vss_agent_scan_level | Valid values: STANDARD, NONE. STANDARD enables agent-based scanning. NONE disables agent-based scanning and moots any agent related attributes. | `string` | `STANDARD` | no |
 | vss_create | Whether Vulnerability Scanning Service recipes and targets are enabled in the Landing Zone. | `bool` | `false` | no |
 | vss_enable_file_scan | Whether file scanning is enabled. | `bool` | `false` | no |
-| vss_folders_to_scan | A list of folders to scan. Only applies if vss\_enable\_file\_scan is true. Currently, the Scanning service checks for vulnerabilities only in log4j and spring4shell. | `list(string)` |  `[/]` | no |
+| vss_folders_to_scan | A list of folders to scan. Only applies if vss\_enable\_file\_scan is true. Currently, the Scanning service checks for vulnerabilities only in log4j and spring4shell. | `list(string)` | `[/]` | no |
 | vss_port_scan_level | Valid values: STANDARD, LIGHT, NONE. STANDARD checks the 1000 most common port numbers, LIGHT checks the 100 most common port numbers, NONE does not check for open ports. | `string` | `STANDARD` | no |
 | vss_scan_day | The week day for the Vulnerability Scanning Service recipe, if enabled. Only applies if vss\_scan\_schedule is WEEKLY (case insensitive). | `string` | `SUNDAY` | no |
 | vss_scan_schedule | The scan schedule for the Vulnerability Scanning Service recipe, if enabled. Valid values are WEEKLY or DAILY (case insensitive). | `string` | `WEEKLY` | no |
@@ -126,7 +127,7 @@
 | tt_vcn1_bastion_subnet_cidr | The Bastion subnet CIDR block. A /29 block is usually enough, unless you plan on deploying a large number of jump hosts. It must be within the VCN CIDR blocks. | `string` | `null` | no |
 | tt_vcn1_bastion_subnet_dns | The Bastion subnet DNS name. Use only letters and numbers, no special characters. | `string` | `null` | no |
 | tt_vcn1_bastion_subnet_name | The Bastion subnet name. | `string` | `null` | no |
-| tt_vcn1_cidrs | The list of CIDR blocks for the VCN. | `list(string)` |  `[10.0.0.0/20]` | no |
+| tt_vcn1_cidrs | The list of CIDR blocks for the VCN. | `list(string)` | `[10.0.0.0/20]` | no |
 | tt_vcn1_db_subnet_cidr | The Database subnet CIDR block. It must be within the VCN CIDR blocks. | `string` | `null` | no |
 | tt_vcn1_db_subnet_dns | The Database subnet DNS name. Use only letters and numbers, no special characters. | `string` | `null` | no |
 | tt_vcn1_db_subnet_name | The Database subnet name. | `string` | `null` | no |
@@ -146,7 +147,7 @@
 | tt_vcn2_bastion_subnet_cidr | The Bastion subnet CIDR block. A /29 block is usually enough, unless you plan on deploying a large number of jump hosts. It must be within the VCN CIDR blocks. | `string` | `null` | no |
 | tt_vcn2_bastion_subnet_dns | The Bastion subnet DNS name. Use only letters and numbers, no special characters. | `string` | `null` | no |
 | tt_vcn2_bastion_subnet_name | The Bastion subnet name. | `string` | `null` | no |
-| tt_vcn2_cidrs | The list of CIDR blocks for the VCN. | `list(string)` |  `[10.1.0.0/20]` | no |
+| tt_vcn2_cidrs | The list of CIDR blocks for the VCN. | `list(string)` | `[10.1.0.0/20]` | no |
 | tt_vcn2_db_subnet_cidr | The Database subnet CIDR block. It must be within the VCN CIDR blocks. | `string` | `null` | no |
 | tt_vcn2_db_subnet_dns | The Database subnet DNS name. Use only letters and numbers, no special characters. | `string` | `null` | no |
 | tt_vcn2_db_subnet_name | The Database subnet name. | `string` | `null` | no |
@@ -166,7 +167,7 @@
 | tt_vcn3_bastion_subnet_cidr | The Bastion subnet CIDR block. A /29 block is usually enough, unless you plan on deploying a large number of jump hosts. It must be within the VCN CIDR blocks. | `string` | `null` | no |
 | tt_vcn3_bastion_subnet_dns | The Bastion subnet DNS name. Use only letters and numbers, no special characters. | `string` | `null` | no |
 | tt_vcn3_bastion_subnet_name | The Bastion subnet name. | `string` | `null` | no |
-| tt_vcn3_cidrs | The list of CIDR blocks for the VCN. | `list(string)` |  `[10.2.0.0/20]` | no |
+| tt_vcn3_cidrs | The list of CIDR blocks for the VCN. | `list(string)` | `[10.2.0.0/20]` | no |
 | tt_vcn3_db_subnet_cidr | The Database subnet CIDR block. It must be within the VCN CIDR blocks. | `string` | `null` | no |
 | tt_vcn3_db_subnet_dns | The Database subnet DNS name. Use only letters and numbers, no special characters. | `string` | `null` | no |
 | tt_vcn3_db_subnet_name | The Database subnet name. | `string` | `null` | no |
@@ -189,7 +190,7 @@
 | exa_vcn1_backup_subnet_cidr | The Backup subnet CIDR block. It must be within the VCN CIDR blocks. | `string` | `null` | no |
 | exa_vcn1_backup_subnet_dns | The Backup subnet DNS name. Use only letters and numbers, no special characters. | `string` | `null` | no |
 | exa_vcn1_backup_subnet_name | The Backup subnet name. | `string` | `null` | no |
-| exa_vcn1_cidrs | The list of CIDR blocks for the VCN. | `list(string)` |  `[172.16.0.0/20] ` | no |
+| exa_vcn1_cidrs | The list of CIDR blocks for the VCN. | `list(string)` | `[172.16.0.0/20] ` | no |
 | exa_vcn1_client_subnet_cidr | The Client subnet CIDR block. It must be within the VCN CIDR blocks. | `string` | `null` | no |
 | exa_vcn1_client_subnet_dns | The Client subnet DNS name. Use only letters and numbers, no special characters. | `string` | `null` | no |
 | exa_vcn1_client_subnet_name | The Client subnet name. | `string` | `null` | no |
@@ -204,19 +205,19 @@
 | exa_vcn2_client_subnet_cidr | The Client subnet CIDR block. It must be within the VCN CIDR blocks. | `string` | `null` | no |
 | exa_vcn2_client_subnet_dns | The Client subnet DNS name. Use only letters and numbers, no special characters. | `string` | `null` | no |
 | exa_vcn2_client_subnet_name | The Client subnet name. | `string` | `null` | no |
-| exa_vcn2_dns | The VCN DNS name. | `string` |  `` | no |
-| exa_vcn2_name | The VCN name. If unassigned, a default name is provided. VCN label: EXA-VCN-2 | `string` |  `` | no |
+| exa_vcn2_dns | The VCN DNS name. | `string` | `` | no |
+| exa_vcn2_name | The VCN name. If unassigned, a default name is provided. VCN label: EXA-VCN-2 | `string` | `` | no |
 | exa_vcn2_routable_vcns | The VCN labels that this VCN can send traffic to. Leave unassigned for sending traffic to all VCNs. Only applicable for Hub/Spoke topology where a DRG is deployed as the hub. Valid values: TT-VCN-1, TT-VCN-2, TT-VCN-3, EXA-VCN-1, EXA-VCN3, OKE-VCN-1, OKE-VCN-2, OKE-VCN-3. | `list(string)` | `[]` | no |
 | exa_vcn3_attach_to_drg | If true, the VCN is attached to a DRG, enabling cross-vcn traffic routing. | `bool` | `false` | no |
 | exa_vcn3_backup_subnet_cidr | The Backup subnet CIDR block. It must be within the VCN CIDR blocks. | `string` | `null` | no |
 | exa_vcn3_backup_subnet_dns | The Backup subnet DNS name. Use only letters and numbers, no special characters. | `string` | `null` | no |
 | exa_vcn3_backup_subnet_name | The Backup subnet name. | `string` | `null` | no |
-| exa_vcn3_cidrs | The list of CIDR blocks for the VCN. | `list(string)` |  `[172.18.0.0/20]` | no |
+| exa_vcn3_cidrs | The list of CIDR blocks for the VCN. | `list(string)` | `[172.18.0.0/20]` | no |
 | exa_vcn3_client_subnet_cidr | The Client subnet CIDR block. It must be within the VCN CIDR blocks. | `string` | `null` | no |
 | exa_vcn3_client_subnet_dns | The Client subnet DNS name. Use only letters and numbers, no special characters. | `string` | `null` | no |
 | exa_vcn3_client_subnet_name | The Client subnet name. | `string` | `null` | no |
-| exa_vcn3_dns | The VCN DNS name. | `string` |  `` | no |
-| exa_vcn3_name | The VCN name. If unassigned, a default name is provided. Label: EXA-VCN-3. | `string` |  `` | no |
+| exa_vcn3_dns | The VCN DNS name. | `string` | `` | no |
+| exa_vcn3_name | The VCN name. If unassigned, a default name is provided. Label: EXA-VCN-3. | `string` | `` | no |
 | exa_vcn3_routable_vcns | The VCN labels that this VCN can send traffic to. Leave unassigned for sending traffic to all VCNs. Only applicable for Hub/Spoke topology where a DRG is deployed as the hub. Valid values: TT-VCN-1, TT-VCN-2, TT-VCN-3, EXA-VCN-1, EXA-VCN2, OKE-VCN-1, OKE-VCN-2, OKE-VCN-3. | `list(string)` | `[]` | no |
 
 ### OKE Networking
@@ -233,7 +234,7 @@
 | oke_vcn1_api_subnet_dns | The API subnet DNS name. Use only letters and numbers, no special characters. | `string` | `null` | no |
 | oke_vcn1_api_subnet_name | The API subnet name. | `string` | `null` | no |
 | oke_vcn1_attach_to_drg | If true, the VCN is attached to a DRG, enabling cross-vcn traffic routing. | `bool` | `false` | no |
-| oke_vcn1_cidrs | The list of CIDR blocks for the VCN. | `list(string)` |  `[10.3.0.0/16]` | no |
+| oke_vcn1_cidrs | The list of CIDR blocks for the VCN. | `list(string)` | `[10.3.0.0/16]` | no |
 | oke_vcn1_cni_type | The CNI type for the OKE cluster. Valid values: 'Flannel' (default), 'Native'. If 'Native', a private subnet for pods deployment is created. | `string` | `Flannel` | no |
 | oke_vcn1_dns | The VCN DNS name. Use only letters and numbers, no special characters. | `string` | `null` | no |
 | oke_vcn1_mgmt_subnet_cidr | The Management subnet CIDR block. It must be within the VCN CIDR blocks. | `string` | `null` | no |
@@ -254,7 +255,7 @@
 | oke_vcn2_api_subnet_dns | The API subnet DNS name. Use only letters and numbers, no special characters. | `string` | `null` | no |
 | oke_vcn2_api_subnet_name | The API subnet name. | `string` | `null` | no |
 | oke_vcn2_attach_to_drg | If true, the VCN is attached to a DRG, enabling cross-vcn traffic routing. | `bool` | `false` | no |
-| oke_vcn2_cidrs | The list of CIDR blocks for the VCN. | `list(string)` |  `[10.4.0.0/16]` | no |
+| oke_vcn2_cidrs | The list of CIDR blocks for the VCN. | `list(string)` | `[10.4.0.0/16]` | no |
 | oke_vcn2_cni_type | The CNI type for the OKE cluster. Valid values: 'Flannel' (default), 'Native'. If 'Native', a private subnet for pods deployment is created. | `string` | `Flannel` | no |
 | oke_vcn2_dns | The VCN DNS name. Use only letters and numbers, no special characters. | `string` | `null` | no |
 | oke_vcn2_mgmt_subnet_cidr | The Management subnet CIDR block. It must be within the VCN CIDR blocks. | `string` | `null` | no |
@@ -275,7 +276,7 @@
 | oke_vcn3_api_subnet_dns | The API subnet DNS name. Use only letters and numbers, no special characters. | `string` | `null` | no |
 | oke_vcn3_api_subnet_name | The API subnet name. | `string` | `null` | no |
 | oke_vcn3_attach_to_drg | If true, the VCN is attached to a DRG, enabling cross-vcn traffic routing. | `bool` | `false` | no |
-| oke_vcn3_cidrs | The list of CIDR blocks for the VCN. | `list(string)` |  `[10.5.0.0/16]` | no |
+| oke_vcn3_cidrs | The list of CIDR blocks for the VCN. | `list(string)` | `[10.5.0.0/16]` | no |
 | oke_vcn3_cni_type | The CNI type for the OKE cluster. Valid values: 'Flannel' (default), 'Native'. If 'Native', a private subnet for pods deployment is created. | `string` | `Flannel` | no |
 | oke_vcn3_dns | The VCN DNS name. Use only letters and numbers, no special characters. | `string` | `null` | no |
 | oke_vcn3_mgmt_subnet_cidr | The Management subnet CIDR block. It must be within the VCN CIDR blocks. | `string` | `null` | no |
@@ -302,13 +303,13 @@
 | net_appliance_boot_volume_size | The boot volume size (in GB) for the network appliances. | `number` | `60` | no |
 | net_appliance_flex_shape_cpu | The number of OCPUs for the selected flex shape. Applicable to flexible shapes only. | `number` | `2` | no |
 | net_appliance_flex_shape_memory | The amount of memory (in GB) for the selected flex shape. Applicable to flexible shapes only. | `number` | `56` | no |
-| net_appliance_image_ocid | The custom image ocid of the user-provided virtual network appliance. | `string` | `null` | no 
+| net_appliance_image_ocid | The custom image ocid of the user-provided virtual network appliance. | `string` | `null` | no
 | net_appliance_name_prefix | Common prefix to network appliance name. To this common prefix, numbers 1 and 2 are appended to the corresponding instance. | `string` | `net-appliance-instance` | no |
 | net_appliance_public_rsa_key | The SSH public key to login to Network Appliance Compute instance. | `string` | `null` | no |
 | net_appliance_shape | The instance shape for the network appliance nodes. | `string` | `VM.Optimized3.Flex` | no |
 | hub_deployment_option | The available options for hub deployment. Valid values: 'No cross-VCN or on-premises connectivity', 'VCN or on-premises connectivity routing via DRG (DRG will be created)', 'VCN or on-premises connectivity routing via DRG (existing DRG)', 'VCN or on-premises connectivity routing through DMZ VCN with Network Virtual Appliance (DRG and DMZ VCN will be created)', 'VCN or on-premises connectivity routed through DMZ VCN with Network Virtual Appliance existing DRG (DMZ VCN will be created and DRG ID required)'. All the VCNs that attach to the DRG join the topology as spokes. | `string` | `No cross-VCN or on-premises connectivity` | no |
-| hub_deployment | The available options for hub deployment as an integer. 'No cross-VCN or on-premises connectivity' = 0, 'VCN or on-premises connectivity routing via DRG (DRG will be created)' = 1, 'VCN or on-premises connectivity routing via DRG (existing DRG)' = 2, 'VCN or on-premises connectivity routing through DMZ VCN with Network Virtual Appliance (DRG and DMZ VCN will be created)' = 3, 'VCN or on-premises connectivity routed through DMZ VCN with Network Virtual Appliance existing DRG (DMZ VCN will be created and DRG ID required)' = 4| `number` | `0`| no || hub_vcn_cidrs | List of CIDR blocks for the Hub VCN. | `list(string)` | `[192.168.0.0/26]`                                | no |
-| hub_vcn_cidrs | List of CIDR blocks for the Hub VCN. | `list(string)` |  `[192.168.0.0/26]` | no |
+| hub_deployment | The available options for hub deployment as an integer. 'No cross-VCN or on-premises connectivity' = 0, 'VCN or on-premises connectivity routing via DRG (DRG will be created)' = 1, 'VCN or on-premises connectivity routing via DRG (existing DRG)' = 2, 'VCN or on-premises connectivity routing through DMZ VCN with Network Virtual Appliance (DRG and DMZ VCN will be created)' = 3, 'VCN or on-premises connectivity routed through DMZ VCN with Network Virtual Appliance existing DRG (DMZ VCN will be created and DRG ID required)' = 4| `number` | `0`| no || hub_vcn_cidrs | List of CIDR blocks for the Hub VCN. | `list(string)` | `[192.168.0.0/26]` | no |
+| hub_vcn_cidrs | List of CIDR blocks for the Hub VCN. | `list(string)` | `[192.168.0.0/26]` | no |
 | hub_vcn_deploy_net_appliance_option | The network appliance option for deploying in the Hub VCN. Valid values: 'Don't deploy any network appliance at this time' (default), 'Palo Alto Networks VM-Series Firewall', 'Fortinet FortiGate Firewall'. Costs are incurred. | `string` | `Don't deploy any network appliance at this time` | no |
 | hub_vcn_dns | The Hub VCN DNS name. | `string` | `null` | no |
 | hub_vcn_east_west_entry_point_ocid | The OCID of a private address the Hub VCN routes traffic to for inbound internal cross-vcn traffic (East/West). This variable is to be assigned with the OCID of the indoor network load balancer's private IP address. | `string` | `null` | no |
@@ -330,7 +331,7 @@
 | hub_vcn_web_subnet_is_private | Whether the Web subnet private. It is public by default. | `bool` | `false` | no |
 | hub_vcn_web_subnet_jump_host_allowed_cidrs | List of CIDRs allowed to SSH into the Web subnet via a jump host eventually deployed in the Web subnet. Leave empty for no access. | `list(string)` | `[]` | no |
 | hub_vcn_web_subnet_name | The Hub VCN Web subnet name. | `string` | `null` | no |
-| onprem_cidrs | List of on-premises CIDR blocks allowed to connect to the Landing Zone network via a DRG. | `list(string)` | `[]` | no 
+| onprem_cidrs | List of on-premises CIDR blocks allowed to connect to the Landing Zone network via a DRG. | `list(string)` | `[]` | no
 
 ### Monitoring
 

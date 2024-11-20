@@ -20,7 +20,10 @@ variableGroups:
       - "extend_landing_zone_to_new_region"
       - "customize_iam"
       - "define_net"
+      - "enable_zpr"
+      - "zpr_namespace_name"
       - "display_output"
+
 
   - title: "Compartments"
     variables:
@@ -40,10 +43,8 @@ variableGroups:
   - title: "Identity Domains"
     variables:
       - "use_custom_id_domain"
-      # - "custom_id_domain_name"
       - "custom_id_domain_ocid"
       - "deploy_custom_domain_groups"
-      # - "id_domain_type" 
     visible:
       and:
         - eq:
@@ -415,7 +416,6 @@ variableGroups:
        - "budget_alert_threshold"
        - "budget_amount"
        - "budget_alert_email_endpoints"
-  
 
   - title: "Hidden Variables"
     visible: false
@@ -488,7 +488,26 @@ variables:
     title: "Define Networking?"
     description: "Check to define networking resources. By default, the Landing Zone does NOT deploy any networks."
     default: false
-    visible: true  
+    visible: true
+
+  # Zero Trust Packet Routing (ZPR)
+  enable_zpr:
+    type: boolean
+    title: "Enable Zero Trust Packet Routing (ZPR)?"
+    description: "If checked, a ZPR namespace, security attributes, and ZPR policies are created. ZPR namespace along with security attributes are created in the enclosing compartment. ZPR policies are created in the Root compartment. For details, please see <a href=\"https://docs.oracle.com/en-us/iaas/Content/zero-trust-packet-routing/overview.htm\">ZPR Overview</a>."
+    default: false
+    required: false
+    visible: define_net
+
+  zpr_namespace_name:
+    type: string
+    title: "Name of ZPR Namespace"
+    description: "Enter the name of ZPR namespace. By default, it is set to the value given to \"Service Label\" field, concatenated with the \"-zpr\" suffix."
+    required: false
+    visible:
+      and:
+      - enable_zpr
+      - define_net
 
   display_output:
     type: boolean
@@ -3011,7 +3030,7 @@ variables:
           - eq:
             - ${hub_deployment_option}
             - "VCN or on-premises connectivity routed through DMZ VCN with Network Virtual Appliance existing DRG (DMZ VCN will be created and DRG ID required)"
-        - not: 
+        - not:
           - eq:
             - ${hub_vcn_deploy_net_appliance_option}
             - "Don't deploy any network appliance at this time"

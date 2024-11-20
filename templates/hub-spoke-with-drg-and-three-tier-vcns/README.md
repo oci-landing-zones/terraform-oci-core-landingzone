@@ -1,4 +1,4 @@
-# CIS Landing Zone With Hub/Spoke DRG-Only Topology Template
+# Core Landing Zone With Hub/Spoke DRG-Only Topology Template
 
 This template shows how to deploy a CIS compliant landing zone using [OCI Core Landing Zone](../../) configuration. 
 
