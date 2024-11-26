@@ -9,8 +9,8 @@ locals {
     "Fortinet FortiGate Firewall"                     = "FORTINET",
     "Check Point CloudGuard Firewall"                 = "CHECKPOINT", # Not available
     "Cisco Secure Firewall"                           = "CISCO",      # Not available
-    "OCI Firewall Service"                            = "OCI"         # Not Available
-    "User-Provided Virtual Network Appliance"         = "CUSTOM"
+    "User-Provided Virtual Network Appliance"         = "CUSTOM",
+    "OCI Native Firewall"                             = "OCINFW",
   }
 
   image_name_database = {
@@ -51,13 +51,13 @@ locals {
       ocid = var.net_appliance_image_ocid
     }
   } : {
-    "marketplace_image" = local.chosen_firewall_option != "NO" ? {
+    "marketplace_image" = local.chosen_firewall_option != "NO" && local.chosen_firewall_option != "OCINFW" ? {
       name    = local.image_name_database[local.chosen_firewall_option][0]
       version = local.image_name_database[local.chosen_firewall_option][1]
     } : {}
   }
   
-  instances_configuration = local.chosen_firewall_option != "NO" ? {
+  instances_configuration = local.chosen_firewall_option != "NO"? {
     default_compartment_id      = local.network_compartment_id
     default_ssh_public_key_path = var.net_appliance_public_rsa_key
     instances = {
@@ -149,7 +149,7 @@ locals {
       }
     }
   } : null
-  nlb_configuration = local.chosen_firewall_option != "NO" ? {
+  nlb_configuration = local.chosen_firewall_option != "NO" && local.chosen_firewall_option != "OCINFW" ? {
     default_compartment_id = local.network_compartment_id
     nlbs = {
       INDOOR_NLB = {
@@ -208,10 +208,104 @@ locals {
       }
     }
   } : null
+  network_configuration = {
+  default_compartment_id           = local.network_compartment_id
+  network_configuration_categories = {
+    FIREWALL = {
+      vcns = {
+        FIREWALL-VCN = {
+          display_name                     = "OCI_NATIVE_FIREWALL"
+          is_ipv6enabled                   = false
+          is_oracle_gua_allocation_enabled = false
+          cidr_blocks                      = ["192.168.0.0/24"],
+          dns_label                        = "firewallvcn"
+          is_create_igw                    = false
+          is_attach_drg                    = false
+          block_nat_traffic                = false
+          subnet_id                        = module.lz_network.provisioned_networking_resources.subnets["MGMT-SUBNET"].id
+        }
+      }
+      non_vcn_specific_gateways = {
+        network_firewalls_configuration = {
+          network_firewalls = {
+            NFW = {
+              display_name                = "nfw"
+              subnet_id                   = module.lz_network.provisioned_networking_resources.subnets["MGMT-SUBNET"].id
+              ipv4address                 = coalesce(var.hub_vcn_mgmt_subnet_cidr, cidrsubnet(var.hub_vcn_cidrs[0], 4, 2))
+              network_firewall_policy_key = "NFW-POLICY"
+            }
+          }
+          network_firewall_policies = {
+            NFW-POLICY = {
+              display_name = "nfw-policy"
+              applications = {
+                ICMP = {
+                  name      = "ICMP"
+                  type      = "ICMP"
+                  icmp_type = 8
+                  icmp_code = 0
+                }
+              }
+              application_lists = {
+                ICMP-LIST = {
+                  name         = "ICMP-Application-List"
+                  applications = ["ICMP"]
+                }
+              }
+              application_lists = {
+                ICMP-LIST = {
+                  name         = "ICMP-Application-List"
+                  applications = ["ICMP"]
+                }
+              }
+              services = {
+                SSH = {
+                  name         = "SSH"
+                  type         = "TCP_SERVICE"
+                  minimum_port = 22
+                  maximum_port = 22
+                }
+              }
+              service_lists = {
+                SSH-LIST = {
+                  name     = "SSH-Service-List"
+                  services = ["SSH"]
+                }
+              }
+              security_rules = {
+                ICMP-PERMIT-RULE = {
+                  action                    = "ALLOW"
+                  name                      = "ICMP-Permit"
+                  application_lists         = ["ICMP-LIST"]
+                  source_address_lists      = []
+                  destination_address_lists = []
+                }
+                SSH-PERMIT-RULE = {
+                  action                    = "ALLOW"
+                  name                      = "SSH-Permit"
+                  servicen_lists            = ["SSH-LIST"]
+                  source_address_lists      = []
+                  destination_address_lists = []
+                }
+                DENY-RULE = {
+                  action                    = "DROP"
+                  name                      = "Deny"
+                  application_lists     = []
+                  source_address_lists   = []
+                  destination_address_lists = []
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
 }
 
 module "lz_firewall_appliance" {
-  count                   = local.chosen_firewall_option != "NO" ? 1 : 0
+  count                   = local.chosen_firewall_option != "NO" && local.chosen_firewall_option != "OCINFW" ? 1 : 0
   source                  = "github.com/oci-landing-zones/terraform-oci-modules-workloads//cis-compute-storage?ref=v0.1.7"
   instances_configuration = local.instances_configuration
   providers = {
@@ -221,8 +315,13 @@ module "lz_firewall_appliance" {
 }
 
 module "lz_nlb" {
-  count             = local.chosen_firewall_option != "NO" ? 1 : 0
+  count             = local.chosen_firewall_option != "NO" && local.chosen_firewall_option != "OCINFW" ? 1 : 0
   source            = "github.com/oci-landing-zones/terraform-oci-modules-networking//modules/nlb?ref=v0.7.1"
   nlb_configuration = local.nlb_configuration
 }
 
+module "terraform_oci_networking" {
+  count                 = local.chosen_firewall_option == "OCINFW" ? 1 : 0
+  source                = "github.com/oci-landing-zones/terraform-oci-modules-networking?ref=v0.7.1"
+  network_configuration = local.network_configuration
+}
