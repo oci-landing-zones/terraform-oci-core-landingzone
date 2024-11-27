@@ -169,6 +169,8 @@ variableGroups:
       - "hub_vcn_dns"
       - "hub_vcn_deploy_net_appliance_option"
       # - "net_appliance_image_compartment_ocid"
+      - "enable_native_firewall_threat_log"
+      - "enable_native_firewall_traffic_log"
       - "net_appliance_image_ocid"
       - "net_palo_alto_version"
       - "net_fortigate_version"
@@ -180,8 +182,6 @@ variableGroups:
       - "net_appliance_public_rsa_key"
       - "hub_vcn_north_south_entry_point_ocid"
       - "hub_vcn_east_west_entry_point_ocid"
-      - "native_firewall_threat_log"
-      - "native_firewall_traffic_log"
       - "customize_hub_vcn_subnets"
       - "hub_vcn_web_subnet_name"
       - "hub_vcn_web_subnet_cidr"
@@ -442,6 +442,14 @@ variableGroups:
       - "lz_provenant_prefix"
       - "lz_provenant_version"
       - "hub_deployment"
+      - "firewall_threat_log_name"
+      - "firewall_threat_log_type"
+      - "firewall_threat_log_category"
+      - "firewall_threat_log_service"
+      - "firewall_traffic_log_name"
+      - "firewall_traffic_log_type"
+      - "firewall_traffic_log_category"
+      - "firewall_traffic_log_service"
 
 variables:
   region:
@@ -2908,7 +2916,7 @@ variables:
       - "Fortinet FortiGate Firewall"
       #- "Check Point CloudGuard Firewall"
       #- "Cisco Secure Firewall"
-      - "OCI Firewall Service"
+      #- "OCI Firewall Service"
       - "User-Provided Virtual Network Appliance"
       - "OCI Native Firewall"
     visible: 
@@ -2921,7 +2929,69 @@ variables:
           - eq:
             - ${hub_deployment_option}
             - "VCN or on-premises connectivity routed through DMZ VCN with Network Virtual Appliance existing DRG (DMZ VCN will be created and DRG ID required)"
-    default: "Don't deploy any network appliance at this time"      
+    default: "Don't deploy any network appliance at this time"
+
+  enable_native_firewall_threat_log:
+    type: boolean
+    title: "Enable OCI Native Firewall Threat Log."
+    description: "Enable OCI Native Firewall Threat Log."
+    visible: 
+      and:
+        - define_net
+        - or:
+          - eq:
+            - ${hub_deployment_option}
+            - "VCN or on-premises connectivity routing through DMZ VCN with Network Virtual Appliance (DRG and DMZ VCN will be created)"
+          - eq:
+            - ${hub_deployment_option}
+            - "VCN or on-premises connectivity routed through DMZ VCN with Network Virtual Appliance existing DRG (DMZ VCN will be created and DRG ID required)"     
+        - and:
+          - eq:
+            - ${hub_vcn_deploy_net_appliance_option}
+            - "OCI Native Firewall"
+          - not:    
+            - eq:
+              - ${hub_vcn_deploy_net_appliance_option}
+              - "Fortinet FortiGate Firewall"
+          - not:    
+            - eq:
+              - ${hub_vcn_deploy_net_appliance_option}
+              - "Palo Alto Networks VM-Series Firewall"
+          - not:    
+            - eq:
+              - ${hub_vcn_deploy_net_appliance_option}
+              - "User-Provided Virtual Network Appliance"
+
+  enable_native_firewall_traffic_log:
+    type: boolean
+    title: "Enable OCI Native Firewall Traffic Log."
+    description: "Enable OCI Native Firewall Traffic Log."
+    visible: 
+      and:
+        - define_net
+        - or:
+          - eq:
+            - ${hub_deployment_option}
+            - "VCN or on-premises connectivity routing through DMZ VCN with Network Virtual Appliance (DRG and DMZ VCN will be created)"
+          - eq:
+            - ${hub_deployment_option}
+            - "VCN or on-premises connectivity routed through DMZ VCN with Network Virtual Appliance existing DRG (DMZ VCN will be created and DRG ID required)"    
+        - and:
+          - eq:
+            - ${hub_vcn_deploy_net_appliance_option}
+            - "OCI Native Firewall"
+          - not:    
+            - eq:
+              - ${hub_vcn_deploy_net_appliance_option}
+              - "Fortinet FortiGate Firewall"
+          - not:    
+            - eq:
+              - ${hub_vcn_deploy_net_appliance_option}
+              - "Palo Alto Networks VM-Series Firewall"
+          - not:    
+            - eq:
+              - ${hub_vcn_deploy_net_appliance_option}
+              - "User-Provided Virtual Network Appliance"
 
   # net_appliance_image_compartment_ocid:
   #   type: oci:identity:compartment:id
@@ -2971,6 +3041,10 @@ variables:
           - eq:
             - ${hub_vcn_deploy_net_appliance_option}
             - "User-Provided Virtual Network Appliance"
+          - not:    
+            - eq:
+              - ${hub_vcn_deploy_net_appliance_option}
+              - "OCI Native Firewall"
   
   net_palo_alto_version:
     type: enum
@@ -2994,6 +3068,10 @@ variables:
           - eq:
             - ${hub_vcn_deploy_net_appliance_option}
             - "Palo Alto Networks VM-Series Firewall"
+          - not:    
+            - eq:
+              - ${hub_vcn_deploy_net_appliance_option}
+              - "OCI Native Firewall"
 
   net_fortigate_version:
     type: enum
@@ -3017,6 +3095,10 @@ variables:
           - eq:
             - ${hub_vcn_deploy_net_appliance_option}
             - "Fortinet FortiGate Firewall"
+          - not:    
+            - eq:
+              - ${hub_vcn_deploy_net_appliance_option}
+              - "OCI Native Firewall"
 
   net_appliance_name_prefix:
     type: string
@@ -3037,6 +3119,10 @@ variables:
           - eq:
             - ${hub_vcn_deploy_net_appliance_option}
             - "Don't deploy any network appliance at this time"
+        - not:    
+            - eq:
+              - ${hub_vcn_deploy_net_appliance_option}
+              - "OCI Native Firewall"
       
   net_appliance_shape:
     type: oci:core:instanceshape:name
@@ -3064,6 +3150,10 @@ variables:
             - eq:
               - ${hub_vcn_deploy_net_appliance_option}
               - "OCI Firewall Service"
+          - not:    
+            - eq:
+              - ${hub_vcn_deploy_net_appliance_option}
+              - "OCI Native Firewall"
 
   net_appliance_flex_shape_memory:
     type: string
@@ -3089,6 +3179,10 @@ variables:
             - eq:
               - ${hub_vcn_deploy_net_appliance_option}
               - "OCI Firewall Service"
+          - not:    
+            - eq:
+              - ${hub_vcn_deploy_net_appliance_option}
+              - "OCI Native Firewall"
 
   net_appliance_flex_shape_cpu:
     type: string
@@ -3113,7 +3207,11 @@ variables:
           - not:
             - eq:
               - ${hub_vcn_deploy_net_appliance_option}
-              - "OCI Firewall Service"          
+              - "OCI Firewall Service" 
+          - not:    
+            - eq:
+              - ${hub_vcn_deploy_net_appliance_option}
+              - "OCI Native Firewall"         
 
   net_appliance_boot_volume_size:
     type: string
@@ -3139,6 +3237,10 @@ variables:
             - eq:
               - ${hub_vcn_deploy_net_appliance_option}
               - "OCI Firewall Service"
+          - not:    
+            - eq:
+              - ${hub_vcn_deploy_net_appliance_option}
+              - "OCI Native Firewall"
 
   net_appliance_public_rsa_key:
     type: string
@@ -3159,6 +3261,10 @@ variables:
           - eq:
             - ${hub_vcn_deploy_net_appliance_option}
             - "Don't deploy any network appliance at this time"
+        - not:    
+            - eq:
+              - ${hub_vcn_deploy_net_appliance_option}
+              - "OCI Native Firewall"
 
   hub_vcn_north_south_entry_point_ocid:
     type: string
@@ -3180,6 +3286,10 @@ variables:
             - eq: 
               - ${hub_vcn_deploy_net_appliance_option}
               - "Don't deploy any network appliance at this time"
+          - not:    
+            - eq:
+              - ${hub_vcn_deploy_net_appliance_option}
+              - "OCI Native Firewall"
 
   hub_vcn_east_west_entry_point_ocid:
     type: string
@@ -3201,6 +3311,10 @@ variables:
             - eq: 
               - ${hub_vcn_deploy_net_appliance_option}
               - "Don't deploy any network appliance at this time"
+          - not:    
+            - eq:
+              - ${hub_vcn_deploy_net_appliance_option}
+              - "OCI Native Firewall"
 
   customize_hub_vcn_subnets:
     type: boolean
@@ -3216,46 +3330,6 @@ variables:
           - eq:
             - ${hub_deployment_option}
             - "VCN or on-premises connectivity routed through DMZ VCN with Network Virtual Appliance existing DRG (DMZ VCN will be created and DRG ID required)"
-  
-  native_firewall_threat_log:
-    type: boolean
-    title: "Enable Network Threat Log?"
-    description: "Check to allow Network Threat logs."
-    default: false 
-    visible:
-      and:
-        - define_net
-        - or:
-          - eq: 
-            - ${hub_deployment_option}
-            - "VCN or on-premises connectivity routing through DMZ VCN with Network Virtual Appliance (DRG and DMZ VCN will be created)"
-          - eq:
-            - ${hub_deployment_option}
-            - "VCN or on-premises connectivity routed through DMZ VCN with Network Virtual Appliance existing DRG (DMZ VCN will be created and DRG ID required)" 
-        - and:
-          - eq:
-            - ${hub_vcn_deploy_net_appliance_option}
-            - "OCI Native Firewall"
-
-  native_firewall_traffic_log:
-    type: boolean
-    title: "Enable Network Traffic Log?"
-    description: "Check to allow Network Traffic logs."
-    default: false 
-    visible:
-      and:
-        - define_net
-        - or:
-          - eq: 
-            - ${hub_deployment_option}
-            - "VCN or on-premises connectivity routing through DMZ VCN with Network Virtual Appliance (DRG and DMZ VCN will be created)"
-          - eq:
-            - ${hub_deployment_option}
-            - "VCN or on-premises connectivity routed through DMZ VCN with Network Virtual Appliance existing DRG (DMZ VCN will be created and DRG ID required)" 
-        - and:
-          - eq:
-            - ${hub_vcn_deploy_net_appliance_option}
-            - "OCI Native Firewall"
 
 # -------------------------------------------
 # ----- Networking - Hub Web Subnet

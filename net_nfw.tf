@@ -320,8 +320,11 @@ module "lz_nlb" {
   nlb_configuration = local.nlb_configuration
 }
 
-module "terraform_oci_networking" {
+module "native_oci_firewall" {
   count                 = local.chosen_firewall_option == "OCINFW" ? 1 : 0
   source                = "github.com/oci-landing-zones/terraform-oci-modules-networking?ref=v0.7.1"
   network_configuration = local.network_configuration
 }
+
+  # module.terraform_oci_networking[0].provisioned_networking_resources.oci_network_firewall_network_firewalls["FIREWALL-VCN"].id
+  # module.native_oci_firewall[0].provisioned_networking_resources.oci_network_firewall_network_firewalls["FIREWALL-VCN"].id

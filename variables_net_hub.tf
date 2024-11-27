@@ -124,6 +124,19 @@ variable "customize_hub_vcn_subnets" {
   description = "Whether to customize default subnets settings of the Hub VCN. Only applicable to RMS deployments."
 }
 
+variable "enable_native_firewall_threat_log" {
+  type = bool
+  default = false
+  description = "Check to allow Network Threat logs."
+}
+
+variable "enable_native_firewall_traffic_log" {
+  type = bool
+  default = false
+  description = "Check to allow Network Traffic logs."
+}
+      
+
 # -------------------------------------------
 # ----- Networking - Hub Web Subnet
 #--------------------------------------------
