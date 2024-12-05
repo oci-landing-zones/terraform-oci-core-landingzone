@@ -169,6 +169,7 @@ variableGroups:
       - "hub_vcn_dns"
       - "hub_vcn_deploy_net_appliance_option"
       # - "net_appliance_image_compartment_ocid"
+      - "oci_nfw_ip_ocid"
       - "enable_native_firewall_threat_log"
       - "enable_native_firewall_traffic_log"
       - "net_appliance_image_ocid"
@@ -2930,6 +2931,37 @@ variables:
             - ${hub_deployment_option}
             - "VCN or on-premises connectivity routed through DMZ VCN with Network Virtual Appliance existing DRG (DMZ VCN will be created and DRG ID required)"
     default: "Don't deploy any network appliance at this time"
+
+  oci_nfw_ip_ocid:
+    type: string
+    title: "OCI Network Firewall Forwarding IP OCID"
+    description: "Enter the OCI Network Firewall Forwarding IP OCID on Second Run."
+    visible:
+      and:
+        - define_net
+        - or:
+          - eq:
+            - ${hub_deployment_option}
+            - "VCN or on-premises connectivity routing through DMZ VCN with Network Virtual Appliance (DRG and DMZ VCN will be created)"
+          - eq:
+            - ${hub_deployment_option}
+            - "VCN or on-premises connectivity routed through DMZ VCN with Network Virtual Appliance existing DRG (DMZ VCN will be created and DRG ID required)"    
+        - and:
+          - eq:
+            - ${hub_vcn_deploy_net_appliance_option}
+            - "OCI Native Firewall"
+          - not:   
+            - eq:
+              - ${hub_vcn_deploy_net_appliance_option}
+              - "Fortinet FortiGate Firewall"
+          - not:   
+            - eq:
+              - ${hub_vcn_deploy_net_appliance_option}
+              - "Palo Alto Networks VM-Series Firewall"
+          - not:   
+            - eq:
+              - ${hub_vcn_deploy_net_appliance_option}
+              - "User-Provided Virtual Network Appliance"
 
   enable_native_firewall_threat_log:
     type: boolean

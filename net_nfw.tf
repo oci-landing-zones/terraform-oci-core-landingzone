@@ -19,6 +19,7 @@ locals {
   }
 
   chosen_firewall_option = local.firewall_options[var.hub_vcn_deploy_net_appliance_option]
+  
   health_checkers = {
     "FORTINET" = {
       protocol = "HTTP"
@@ -45,7 +46,7 @@ locals {
   # current_image_name     = local.image_name_database[local.chosen_firewall_option][0]
   # current_publisher_name = local.image_name_database[local.chosen_firewall_option][1]
 
-  image_source = local.chosen_firewall_option == "CUSTOM" ? "custom_image" : "marketplace_image"
+  image_source  = local.chosen_firewall_option == "CUSTOM" ? "custom_image" : "marketplace_image"
   image_options = local.chosen_firewall_option == "CUSTOM" ? {
     "custom_image" = {
       ocid = var.net_appliance_image_ocid
@@ -57,7 +58,7 @@ locals {
     } : {}
   }
   
-  instances_configuration = local.chosen_firewall_option != "NO"? {
+  instances_configuration = local.chosen_firewall_option != "NO" && local.chosen_firewall_option != "OCINFW" ? {
     default_compartment_id      = local.network_compartment_id
     default_ssh_public_key_path = var.net_appliance_public_rsa_key
     instances = {
@@ -217,81 +218,34 @@ locals {
           display_name                     = "OCI_NATIVE_FIREWALL"
           is_ipv6enabled                   = false
           is_oracle_gua_allocation_enabled = false
-          cidr_blocks                      = ["192.168.0.0/24"],
           dns_label                        = "firewallvcn"
           is_create_igw                    = false
           is_attach_drg                    = false
           block_nat_traffic                = false
-          subnet_id                        = module.lz_network.provisioned_networking_resources.subnets["MGMT-SUBNET"].id
+          subnet_id                        = module.lz_network.provisioned_networking_resources.subnets["WEB-SUBNET"].id
         }
       }
+
+
       non_vcn_specific_gateways = {
         network_firewalls_configuration = {
           network_firewalls = {
             NFW = {
               display_name                = "nfw"
-              subnet_id                   = module.lz_network.provisioned_networking_resources.subnets["MGMT-SUBNET"].id
-              ipv4address                 = coalesce(var.hub_vcn_mgmt_subnet_cidr, cidrsubnet(var.hub_vcn_cidrs[0], 4, 2))
+              subnet_id                   = module.lz_network.provisioned_networking_resources.subnets["WEB-SUBNET"].id
+              ipv4address                 = coalesce(var.hub_vcn_web_subnet_cidr, cidrsubnet(var.hub_vcn_cidrs[0], 4, 2))
               network_firewall_policy_key = "NFW-POLICY"
             }
           }
           network_firewall_policies = {
             NFW-POLICY = {
-              display_name = "nfw-policy"
-              applications = {
-                ICMP = {
-                  name      = "ICMP"
-                  type      = "ICMP"
-                  icmp_type = 8
-                  icmp_code = 0
-                }
-              }
-              application_lists = {
-                ICMP-LIST = {
-                  name         = "ICMP-Application-List"
-                  applications = ["ICMP"]
-                }
-              }
-              application_lists = {
-                ICMP-LIST = {
-                  name         = "ICMP-Application-List"
-                  applications = ["ICMP"]
-                }
-              }
-              services = {
-                SSH = {
-                  name         = "SSH"
-                  type         = "TCP_SERVICE"
-                  minimum_port = 22
-                  maximum_port = 22
-                }
-              }
-              service_lists = {
-                SSH-LIST = {
-                  name     = "SSH-Service-List"
-                  services = ["SSH"]
-                }
-              }
+              display_name = "nfw-policy" 
               security_rules = {
-                ICMP-PERMIT-RULE = {
-                  action                    = "ALLOW"
-                  name                      = "ICMP-Permit"
-                  application_lists         = ["ICMP-LIST"]
-                  source_address_lists      = []
-                  destination_address_lists = []
-                }
-                SSH-PERMIT-RULE = {
-                  action                    = "ALLOW"
-                  name                      = "SSH-Permit"
-                  servicen_lists            = ["SSH-LIST"]
-                  source_address_lists      = []
-                  destination_address_lists = []
-                }
                 DENY-RULE = {
                   action                    = "DROP"
                   name                      = "Deny"
-                  application_lists     = []
-                  source_address_lists   = []
+                  application_lists         = []
+                  source_address_lists      = []
                   destination_address_lists = []
                 }
               }
@@ -325,6 +279,3 @@ module "native_oci_firewall" {
   source                = "github.com/oci-landing-zones/terraform-oci-modules-networking?ref=v0.7.1"
   network_configuration = local.network_configuration
 }
-
-  # module.terraform_oci_networking[0].provisioned_networking_resources.oci_network_firewall_network_firewalls["FIREWALL-VCN"].id
-  # module.native_oci_firewall[0].provisioned_networking_resources.oci_network_firewall_network_firewalls["FIREWALL-VCN"].id

@@ -2,8 +2,7 @@
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 
 locals {
-
-  hub_vcn = local.hub_with_vcn == true ? { # local variable hub_with_vcn is defined in net_hub_drg.tf.
+    hub_vcn_no_nfw = local.hub_with_vcn == true && local.chosen_firewall_option != "OCINFW" ? { # local variable hub_with_vcn is defined in net_hub_drg.tf.
     "HUB-VCN" = {
       display_name                     = coalesce(var.hub_vcn_name, "${var.service_label}-hub-vcn")
       is_ipv6enabled                   = false
@@ -409,5 +408,192 @@ locals {
         }
       }
     }
-  } : null
+    } : null
+    
+    hub_vcn_nfw = local.hub_with_vcn == true && local.chosen_firewall_option == "OCINFW" ? { # local variable hub_with_vcn is defined in net_hub_drg.tf.
+        "HUB-VCN" = {
+            display_name                     = coalesce(var.hub_vcn_name, "${var.service_label}-hub-vcn")
+            is_ipv6enabled                   = false
+            is_oracle_gua_allocation_enabled = false
+            cidr_blocks                      = var.hub_vcn_cidrs
+            dns_label                        = substr(replace(coalesce(var.hub_vcn_name,"hub-vcn"),"/[^\\w]/",""),0,14)
+            block_nat_traffic                = false
+
+            subnets = {
+                "WEB-SUBNET" = {
+                  cidr_block                 = coalesce(var.hub_vcn_web_subnet_cidr, cidrsubnet(var.hub_vcn_cidrs[0], 2, 0))
+                  dhcp_options_key           = "default_dhcp_options"
+                  display_name               = coalesce(var.hub_vcn_web_subnet_name, "${var.service_label}-hub-vcn-web-subnet")
+                  dns_label                  = substr(replace(coalesce(var.hub_vcn_web_subnet_name,"web-subnet"),"/[^\\w]/",""),0,14)
+                  ipv6cidr_blocks            = []
+                  prohibit_internet_ingress  = false
+                  route_table_key            = "WEB-SUBNET-ROUTE-TABLE"
+                  security_list_keys         = ["HUB-VCN-SL"]
+                }
+                "INDOOR-SUBNET" = {
+                  cidr_block                 = coalesce(var.hub_vcn_indoor_subnet_cidr, cidrsubnet(var.hub_vcn_cidrs[0], 2, 2))
+                  dhcp_options_key           = "default_dhcp_options"
+                  display_name               = coalesce(var.hub_vcn_indoor_subnet_name, "${var.service_label}-hub-vcn-indoor-subnet")
+                  dns_label                  = substr(replace(coalesce(var.hub_vcn_indoor_subnet_name,"indoor-subnet"),"/[^\\w]/",""),0,14)
+                  ipv6cidr_blocks            = []
+                  prohibit_internet_ingress  = true
+                  route_table_key            = "INDOOR-SUBNET-ROUTE-TABLE"
+                  security_list_keys         = ["HUB-VCN-SL"]
+                }
+            }
+
+            security_lists = {
+                "HUB-VCN-SL" = {
+                    display_name = "basic-security-list"
+                    ingress_rules = [
+                        {
+                            description = "Ingress on UDP type 3 code 4."
+                            stateless   = false
+                            protocol    = "UDP"
+                            src         = "0.0.0.0/0"
+                            src_type    = "CIDR_BLOCK"
+                            icmp_type   = 3
+                            icmp_code   = 4
+                        }
+                    ]
+                    egress_rules = []
+                }
+            }
+
+            route_tables = merge(
+                {
+                    "WEB-SUBNET-ROUTE-TABLE" = {
+                        display_name = "web-subnet-route-table"
+                        route_rules = {
+                            "INTERNET-RULE" = {
+                                network_entity_key = "HUB-VCN-INTERNET-GATEWAY"
+                                description        = "To Internet."
+                                destination        = "0.0.0.0/0"
+                                destination_type   = "CIDR_BLOCK"
+                            }
+                        }
+                    }
+                },
+                {
+                    "INDOOR-SUBNET-ROUTE-TABLE" = {
+                        display_name = "indoor-subnet-route-table"
+                        route_rules = {
+                            "OSN-RULE" = {
+                                network_entity_key = "HUB-VCN-SERVICE-GATEWAY"
+                                description        = "To Oracle Services Network."
+                                destination        = "all-services"
+                                destination_type   = "SERVICE_CIDR_BLOCK"
+                            }
+                        }
+                    }
+                },
+    
+                # Route table for East/West traffic is attached to HUB VCN DRG attachment.
+                (var.hub_vcn_east_west_entry_point_ocid != null) ? {
+                    "HUB-VCN-INGRESS-ROUTE-TABLE" = {
+                        display_name = "hub-vcn-ingress-route-table"
+                        route_rules = {
+                            "ANYWHERE-RULE" = {
+                                description       = "All traffic goes to ${var.hub_vcn_east_west_entry_point_ocid}."
+                                destination       = "0.0.0.0/0"
+                                destination_type  = "CIDR_BLOCK"
+                                network_entity_id = var.hub_vcn_east_west_entry_point_ocid
+                            }
+                        }
+                    }
+                } : {},
+            
+                # Route table for North/South traffic is attached to HUB VCN Internet Gateway.
+                (var.oci_nfw_ip_ocid != null) ? {
+                    "HUB-VCN-INTERNET-GATEWAY-ROUTE-TABLE" = {
+                        display_name = "hub-vcn-internet-gateway-route-table"
+                        route_rules = {
+                            "ANYWHERE-RULE" = {
+                                description       = "All traffic will go to OCI Native Firewall forwarding IP."
+                                destination       = "0.0.0.0/0"
+                                destination_type  = "CIDR_BLOCK"
+                                network_entity_id = var.oci_nfw_ip_ocid
+                            }
+                        }
+                    }
+                } : {}
+            ) # closing merge function
+
+            network_security_groups = {
+                "HUB-VCN-INDOOR-NLB-NSG" = {
+                    display_name = "indoor-nlb-nsg"
+                    ingress_rules = {
+                        "INGRESS-FROM-ANYWHERE-RULE" = {
+                            description  = "Ingress from anywhere over TCP"
+                            stateless    = false
+                            protocol     = "TCP"
+                            src          = "0.0.0.0/0"
+                            src_type     = "CIDR_BLOCK"
+                            dst_port_min = 80
+                            dst_port_max = 80
+                        }
+                    },
+                    egress_rules = {
+                        "EGRESS-TO-INDOOR-FW-NSG-RULE" = {
+                            description = "Egress to Indoor Firewall NSG"
+                            stateless   = false
+                            protocol    = "TCP"
+                            dst         = "HUB-VCN-INDOOR-FW-NSG"
+                            dst_type    = "NETWORK_SECURITY_GROUP"
+                        }
+                    }
+                }
+
+                "HUB-VCN-INDOOR-FW-NSG" = {
+                    display_name = "indoor-fw-nsg"
+                    ingress_rules = {
+                        "INGRESS-FROM-NLB-NSG-RULE" = {
+                            description  = "Ingress from Indoor NLB NSG"
+                            stateless    = false
+                            protocol     = "TCP"
+                            src          = "HUB-VCN-INDOOR-NLB-NSG"
+                            src_type     = "NETWORK_SECURITY_GROUP"
+                            dst_port_min = 80
+                            dst_port_max = 80
+                        }
+                    },
+                    egress_rules = {
+                        "EGRESS-TO-ANYWHERE-RULE" = {
+                            description = "Egress to anywhere over TCP"
+                            stateless   = false
+                            protocol    = "TCP"
+                            dst         = "0.0.0.0/0"
+                            dst_type    = "CIDR_BLOCK"
+                        }
+                    }
+                }
+
+            }
+
+            vcn_specific_gateways = {
+                internet_gateways = {
+                    "HUB-VCN-INTERNET-GATEWAY" = {
+                        enabled         = true
+                        display_name    = "internet-gateway"
+                        route_table_key = var.hub_vcn_north_south_entry_point_ocid != null ? "HUB-VCN-INTERNET-GATEWAY-ROUTE-TABLE" : null
+                    }
+                }
+                nat_gateways = {
+                    "HUB-VCN-NAT-GATEWAY" = {
+                        block_traffic = false
+                        display_name  = "nat-gateway"
+                    }
+                }
+                service_gateways = {
+                    "HUB-VCN-SERVICE-GATEWAY" = {
+                        display_name = "service-gateway"
+                        services     = "all-services"
+                    }
+                }
+            }
+        }
+    } : null
+
+    hub_vcn = merge(local.hub_vcn_nfw, local.hub_vcn_no_nfw)
 }
+  
