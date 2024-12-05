@@ -1,14 +1,16 @@
 locals {
 
-  enable_zpr = var.define_net && var.enable_zpr
-  zpr_label  = var.service_label
-  zpr_namespace_name = coalesce(var.zpr_namespace_name,"${local.zpr_label}-zpr")
-  
+  enable_zpr         = var.define_net && var.enable_zpr
+  zpr_label          = var.service_label
+  zpr_namespace_name = coalesce(var.zpr_namespace_name, "${local.zpr_label}-zpr")
+
   // for each exa vcn that is added, add its name to the list of validator values
   exa_vcn_validator_values = [for index, exa_vcn_added in tolist([local.add_exa_vcn1, local.add_exa_vcn2, local.add_exa_vcn3]) : "exa-vcn-${index + 1}" if exa_vcn_added == true]
 
   // for each tt vcn that is added, add its name to the list of validator values
   tt_vcn_validator_values = [for index, tt_vcn_added in tolist([local.add_tt_vcn1, local.add_tt_vcn2, local.add_tt_vcn3]) : "tt-vcn-${index + 1}" if tt_vcn_added == true]
+
+  hub_vcn_validator_values = local.hub_with_vcn ? ["hub-vcn"] : []
 
   lz_zpr_configuration = local.enable_zpr ? {
     default_defined_tags  = null
@@ -49,10 +51,10 @@ locals {
         name             = "net"
         namespace_id     = "ZPR-LZ-NAMESPACE"
         validator_type   = "ENUM"
-        validator_values = concat(local.exa_vcn_validator_values, local.tt_vcn_validator_values)
+        validator_values = concat(local.hub_vcn_validator_values, local.exa_vcn_validator_values, local.tt_vcn_validator_values)
       }
     }
-    zpr_policies = merge(local.exa_1_zpr_policy, local.exa_2_zpr_policy, local.exa_3_zpr_policy, local.tt_1_zpr_policy, local.tt_2_zpr_policy, local.tt_3_zpr_policy)
+    zpr_policies = merge(local.hub_zpr_policy, local.exa_1_zpr_policy, local.exa_2_zpr_policy, local.exa_3_zpr_policy, local.tt_1_zpr_policy, local.tt_2_zpr_policy, local.tt_3_zpr_policy)
   } : null
 }
 
