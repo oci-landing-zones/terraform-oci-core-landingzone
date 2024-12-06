@@ -124,3 +124,56 @@ variable "vss_folders_to_scan" {
   type        = list(string)
   default     = ["/"]
 }
+
+# ------------------------------------------------------
+# ----- Bastion / Bastion Jump Host
+# ------------------------------------------------------
+variable "bastion_jump_host_instance_name" {
+  type = string
+  default = "bastion-jump-host-instance"
+  description = "The display name of the bastion jump host instance."
+}
+
+variable "bastion_jump_host_ssh_public_key_path" {
+  type    = string
+  default = null
+  description = "The SSH public key to login to bastion jump host instance."
+}
+
+
+variable "bastion_jump_host_instance_shape" {
+  type    = string
+  default = "VM.Optimized3.Flex"
+  description = "The instance shape for the bastion jump host instance."
+}
+
+variable "bastion_jump_host_boot_volume_size" {
+  type    = number
+  default = 60
+  description = "The boot volume size (in GB) for the bastion jump host instance."
+}
+
+variable "bastion_jump_host_flex_shape_memory" {
+  type    = number
+  default = 56
+  description = "The amount of memory (in GB) for the selected flex shape. Applicable to flexible shapes only."
+}
+
+variable "bastion_jump_host_flex_shape_cpu" {
+  type    = number
+  default = 2
+  description = "The number of OCPUs for the selected flex shape. Applicable to flexible shapes only."
+}
+
+variable "bastion_jump_host_platform_image_name" {
+  type = string
+  default = "Oracle-Linux-8.10-2024.08.29-0"
+  description = "The default platform image name for the bastion jump host instance, Oracle-Linux-8.10-2024.08.29-0."
+}
+
+variable "bastion_jump_host_custom_image_ocid" {
+  type = string
+  default = null
+  description = "The custom image ocid of the user-provided bastion jump host instance."
+}
+
