@@ -197,7 +197,38 @@ variableGroups:
       - "hub_vcn_indoor_subnet_name"
       - "hub_vcn_indoor_subnet_cidr"
       - "hub_vcn_indoor_subnet_dns"
+      - "deploy_bastion_jump_host"
+      - "jump_host_access_option"
+      - "bastion_onprem_ssh_allowed_cidrs"
+      - "bastion_service_allowed_cidrs"
+      - "customize_bastion_service"
+      - "bastion_service_name"
+      - "enable_bastion_proxy_status"
     visible: define_net
+
+  - title: "Bastion Jump Host"
+    variables:
+      - "bastion_jump_host_custom_image_ocid"
+      - "bastion_jump_host_platform_image_name"
+      - "bastion_jump_host_public_rsa_key"
+      - "customize_jump_host"
+      - "bastion_jump_host_name"
+      - "bastion_jump_host_shape"
+      - "bastion_jump_host_flex_shape_memory"
+      - "bastion_jump_host_flex_shape_cpu"
+      - "bastion_jump_host_boot_volume_size"
+
+    visible:
+      and:
+        - define_net
+        - or:
+          - eq:
+            - ${hub_deployment_option}
+            - "VCN or on-premises connectivity routing through DMZ VCN with Network Virtual Appliance (DRG and DMZ VCN will be created)"
+          - eq:
+            - ${hub_deployment_option}
+            - "VCN or on-premises connectivity routed through DMZ VCN with Network Virtual Appliance existing DRG (DMZ VCN will be created and DRG ID required)"
+        - deploy_bastion_jump_host
 
   - title: "Networking - Three Tier VCNs"
     variables:
@@ -3860,6 +3891,168 @@ variables:
     required: false
     visible: create_budget
     description: "List of email addresses for budget alerts. (Type an email address and hit enter to enter multiple values)"
+# Bastion Service
+  deploy_bastion_jump_host:
+    type: boolean
+    title: "Deploy a Jump Host for SSH access?"
+    description: "If checked, a jump host compute instance will be deployed in the Mgmt Subnet of the DMZ VCN"
+    default: false
+    required: false
+    visible:
+      and:
+        - define_net
+        - or:
+          - eq:
+            - ${hub_deployment_option}
+            - "VCN or on-premises connectivity routing through DMZ VCN with Network Virtual Appliance (DRG and DMZ VCN will be created)"
+          - eq:
+            - ${hub_deployment_option}
+            - "VCN or on-premises connectivity routed through DMZ VCN with Network Virtual Appliance existing DRG (DMZ VCN will be created and DRG ID required)"
+
+  jump_host_access_option:
+    type: enum
+    title: "How will the Jump Host be accessed?"
+    description: "Choose one of the available options as the access point to the jump host. This will determine if SSH connections are directly from On-Prem hosts through existing Fast Connect; or alternatively, through a Bastion Service that will be created in Mgmt Subnet of the DMZ VCN for access through the internet."
+    visible: deploy_bastion_jump_host
+    enum:
+      - "On-Premises Through Fast-Connect"
+      - "Bastion Service"
+    required: true
+
+  bastion_onprem_ssh_allowed_cidrs:
+    type: array
+    items:
+      type: string
+    uniqueItems: true
+    title: "Enter On-Premises SSH CIDR Blocks"
+    required: true
+    description: "List of on-prem CIDRs allowed to connect to Landing Zone networks over SSH. They must be a subset of the On-Prem Network CIDRs"
+    visible:
+      and:
+        - deploy_bastion_jump_host
+        - eq:
+          - ${jump_host_access_option}
+          - "On-Premises Through Fast-Connect"
+
+  bastion_service_allowed_cidrs:
+    type: array
+    items:
+      type: string
+    uniqueItems: true
+    title: "Enter SSH CIDR Blocks"
+    required: true
+    description: "List of CIDR blocks allowed to connect to the Bastion Service"
+    visible:
+      and:
+        - deploy_bastion_jump_host
+        - eq:
+          - ${jump_host_access_option}
+          - "Bastion Service"
+
+  customize_bastion_service:
+    type: boolean
+    title: "Customize Bastion Service?"
+    description: "If checked, provide custom options for Bastion Service."
+    visible:
+      and:
+        - deploy_bastion_jump_host
+        - eq:
+          - ${jump_host_access_option}
+          - "Bastion Service"
+
+  bastion_service_name:
+    type: string
+    title: "Bastion Service Name"
+    required: falseq
+    description: "Custom name to give to the Bastion Service"
+    visible:
+      and:
+        - customize_bastion_service
+        - deploy_bastion_jump_host
+        - eq:
+          - ${jump_host_access_option}
+          - "Bastion Service"
+
+  enable_bastion_proxy_status:
+    type: boolean
+    title: "Enable FQDN Support and SOCKS5?"
+    description: "If checked, support for SOCKS5 proxy will be ENABLED on the Bastion Service"
+    default: false
+    visible:
+      and:
+        - customize_bastion_service
+        - deploy_bastion_jump_host
+        - eq:
+          - ${jump_host_access_option}
+          - "Bastion Service"
+
+  # bastion_jump_host_platform_image:
+  #   type: oci:core:image:id
+  #   dependsOn:
+  #     compartmentId: ${var.tenancy_ocid}
+  #   title: "Platform Image"
+  #   description: "Select the Platform Image for Jump Host."
+  #   required: true
+  #   visible: deploy_bastion_jump_host
+
+  bastion_jump_host_custom_image_ocid:
+    type: string
+    title: "Jump Host Custom Image OCID"
+    description: "Enter the Custom Image OCID for the Jump Host. If no custom image is provided, a default platform image will be deployed instead."
+    required: false
+    visible: deploy_bastion_jump_host
+
+  bastion_jump_host_public_rsa_key:
+    type: string
+    title: "Enter the public SSH Key for the Jump Host"
+    required: false
+    visible: deploy_bastion_jump_host
+    descirption: "The public ssh key of the Jump Host Compute Instance"
+
+  customize_jump_host:
+    type: boolean
+    title: "Customize Jump Host?"
+    required: false
+    default: false
+    description: "If checked, provide custom options for Jump Host Instance"
+    visible: deploy_bastion_jump_host
+
+  bastion_jump_host_name:
+    type: string
+    title: "Jump Host Name"
+    required: false
+    visible: customize_jump_host
+    description: "The name of the jump host. This will be appended to the service label."
+
+  bastion_jump_host_shape:
+      type: oci:core:instanceshape:name
+      dependsOn:
+        compartmentId: ${tenancy_ocid}
+      title: "Jump Host Instance Shape"
+      description: "Select the instance shape for the Compute Instance."
+      required: false
+      visible: customize_jump_host
+
+  bastion_jump_host_flex_shape_memory:
+      type: integer
+      title: "Jump Host Amount of Memory for the Selected Flex Shape"
+      description: "Enter the amount of memory (in GB) for the selected flex shape. Applicable to flexible shapes only."
+      required: false
+      visible: customize_jump_host
+
+  bastion_jump_host_flex_shape_cpu:
+    type: integer
+    title: "Jump Host Number of OCPUs for the Selected Flex Shape"
+    description: "Enter the number of OCPUs for the selected flex shape. Applicable to flexible shapes only."
+    required: false
+    visible: customize_jump_host
+
+  bastion_jump_host_boot_volume_size:
+    type: integer
+    title: "Jump Host Boot Volume Size"
+    description: "Enter the boot volume size (in GB) for the Jump Host Compute Instance."
+    required: false
+    visible: customize_jump_host
 
 outputs:
   release:
