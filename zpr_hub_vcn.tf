@@ -12,19 +12,19 @@ locals {
 
   hub_bastion_zpr_grants = local.hub_with_vcn && local.bastion_options[var.jump_host_access_option] == 1 ? [
     "in ${local.zpr_namespace_name}.net:hub-vcn VCN allow '${coalesce(var.hub_vcn_mgmt_subnet_cidr, cidrsubnet(var.hub_vcn_cidrs[0], 2, 3))}' to connect to ${local.zpr_namespace_name}.bastion:${local.zpr_label} endpoints with protocol='tcp/22'",
-    "in ${local.zpr_namespace_name}.net:hub-vcn VCN allow ${local.zpr_namespace_name}.bastion:${local.zpr_label} to connect to 'osn-services-ip-addresses' with protocol='tcp/443'"
+    "in ${local.zpr_namespace_name}.net:hub-vcn VCN allow ${local.zpr_namespace_name}.bastion:${local.zpr_label} endpoints to connect to 'osn-services-ip-addresses' with protocol='tcp/443'"
   ] : []
 
-  hub_to_tt_1_zpr_grants = local.hub_with_vcn && local.add_tt_vcn1 && var.deploy_bastion_jump_host && var.deploy_tt_vcn1_bastion_subnet ? [
-    "in ${local.zpr_namespace_name}.net:hub-vcn VCN allow ${local.zpr_namespace_name}.bastion:${local.zpr_label} endpoints to connect to '${coalesce(var.tt_vcn1_bastion_subnet_cidr, cidrsubnet(var.tt_vcn1_cidrs[0], 9, 96))}' with protocol='tcp/22'"
+  hub_to_tt_1_zpr_grants = local.hub_with_vcn && local.add_tt_vcn1 && var.deploy_bastion_jump_host ? [
+    "in ${local.zpr_namespace_name}.net:hub-vcn VCN allow ${local.zpr_namespace_name}.bastion:${local.zpr_label} endpoints to connect to '${coalesce(var.tt_vcn1_db_subnet_cidr, cidrsubnet(var.tt_vcn1_cidrs[0], 4, 2))}' with protocol='tcp/22'"
   ] : []
 
-  hub_to_tt_2_zpr_grants = local.hub_with_vcn && local.add_tt_vcn2 && var.deploy_bastion_jump_host && var.deploy_tt_vcn2_bastion_subnet ? [
-    "in ${local.zpr_namespace_name}.net:hub-vcn VCN allow ${local.zpr_namespace_name}.bastion:${local.zpr_label} endpoints to connect to '${coalesce(var.tt_vcn2_bastion_subnet_cidr, cidrsubnet(var.tt_vcn2_cidrs[0], 9, 96))}' with protocol='tcp/22'"
+  hub_to_tt_2_zpr_grants = local.hub_with_vcn && local.add_tt_vcn2 && var.deploy_bastion_jump_host ? [
+    "in ${local.zpr_namespace_name}.net:hub-vcn VCN allow ${local.zpr_namespace_name}.bastion:${local.zpr_label} endpoints to connect to '${coalesce(var.tt_vcn2_db_subnet_cidr, cidrsubnet(var.tt_vcn2_cidrs[0], 4, 2))}' with protocol='tcp/22'"
   ] : []
 
-  hub_to_tt_3_zpr_grants = local.hub_with_vcn && local.add_tt_vcn3 && var.deploy_bastion_jump_host && var.deploy_tt_vcn3_bastion_subnet ? [
-    "in ${local.zpr_namespace_name}.net:hub-vcn VCN allow ${local.zpr_namespace_name}.bastion:${local.zpr_label} endpoints to connect to '${coalesce(var.tt_vcn3_bastion_subnet_cidr, cidrsubnet(var.tt_vcn3_cidrs[0], 9, 96))}' with protocol='tcp/22'",
+  hub_to_tt_3_zpr_grants = local.hub_with_vcn && local.add_tt_vcn3 && var.deploy_bastion_jump_host ? [
+    "in ${local.zpr_namespace_name}.net:hub-vcn VCN allow ${local.zpr_namespace_name}.bastion:${local.zpr_label} endpoints to connect to '${coalesce(var.tt_vcn3_db_subnet_cidr, cidrsubnet(var.tt_vcn3_cidrs[0], 4, 2))}' with protocol='tcp/22'"
   ] : []
 
   hub_to_exa_1_zpr_grants = local.hub_with_vcn && local.add_exa_vcn1 && var.deploy_bastion_jump_host ? [
