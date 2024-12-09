@@ -219,14 +219,14 @@ locals {
                         network_firewalls = {
                             OCI-NFW-KEY = {
                                 network_firewall_policy_key      = "OCI-NFW-POLICY-KEY"
-                                display_name                     = "OCI_NATIVE_FIREWALL"
+                                display_name                     = "${var.service_label}-oci-firewall"
                                 compartment_id                   = local.network_compartment_id
-                                subnet_id                        = module.lz_network.provisioned_networking_resources.subnets["WEB-SUBNET"].id
+                                subnet_id                        = module.lz_network.provisioned_networking_resources.subnets["INDOOR-SUBNET"].id
                             }
                         }
                         network_firewall_policies = {
                             OCI-NFW-POLICY-KEY = {
-                                display_name   = "OCI-NFW-POLICY"
+                                display_name   = "${var.service_label}-oci-firewall-initial-policy"
                                 compartment_id = local.network_compartment_id
                                 ip_address_lists = {
                                     ocinfw_ip_list = {
