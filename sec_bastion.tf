@@ -91,7 +91,7 @@ locals {
 }
 
 module "lz_bastion" {
-  source                = "github.com/oci-landing-zones/terraform-oci-modules-security/tree/main/bastion?ref=v0.1.9"
+  source                = "github.com/oci-landing-zones/terraform-oci-modules-security//bastion?ref=v0.1.9"
   bastion_configuration = local.bastion_configuration
   count = local.deploy_bastion_service ? 1 : 0
 }

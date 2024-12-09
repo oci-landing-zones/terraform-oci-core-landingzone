@@ -206,4 +206,3 @@ variable "enable_bastion_proxy_status" {
   default = false
   description = "The option to enable dns proxy."
 }
-
