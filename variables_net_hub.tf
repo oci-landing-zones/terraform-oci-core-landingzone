@@ -58,6 +58,24 @@ variable "hub_vcn_deploy_net_appliance_option" {
   description = "The network appliance option for deploying in the Hub VCN. Valid values: 'Don't deploy any network appliance at this time' (default), 'Palo Alto Networks VM-Series Firewall', 'Fortinet FortiGate Firewall'. Costs are incurred."
 }
 
+variable "enable_native_firewall_threat_log" {
+  type    = bool
+  default = false
+  description = "Whether to customize default subnets settings of the Hub VCN. Only applicable to RMS deployments."
+}
+
+variable "enable_native_firewall_traffic_log" {
+  type    = bool
+  default = false
+  description = "Whether to customize default subnets settings of the Hub VCN. Only applicable to RMS deployments."
+}
+
+variable "oci_nfw_ip_ocid" {
+  type        = string
+  default     = null
+  description = "OCID of the Network Firewall's Private IP"
+}
+
 variable "net_palo_alto_version" {
   type    = string
   description = "Palo Alto Firewall Version."
@@ -90,7 +108,7 @@ variable "net_appliance_flex_shape_memory" {
 
 variable "net_appliance_flex_shape_cpu" {
   type    = number
-  default = 2
+  default = 4
   description = "The number of OCPUs for the selected flex shape. Applicable to flexible shapes only."
 }
 
@@ -112,36 +130,17 @@ variable "net_appliance_image_ocid" {
   description = "The custom image ocid of the user-provided virtual network appliance."
 }
 
-variable "net_appliance_image_compartment_ocid" {
-  type        = string
-  default     = null
-  description = "The compartment ocid of the network appliance image resource."
-}
+# variable "net_appliance_image_compartment_ocid" {
+#   type        = string
+#   default     = null
+#   description = "The compartment ocid of the network appliance image resource."
+# }
 
 variable "customize_hub_vcn_subnets" {
   type    = bool
   default = false
   description = "Whether to customize default subnets settings of the Hub VCN. Only applicable to RMS deployments."
 }
-
-variable "enable_native_firewall_threat_log" {
-  type = bool
-  default = false
-  description = "Check to allow Network Threat logs."
-}
-
-variable "enable_native_firewall_traffic_log" {
-  type = bool
-  default = false
-  description = "Check to allow Network Traffic logs."
-}
-
-variable "oci_nfw_ip_ocid" {
-  type        = string
-  default     = ""
-  description = "OCID of the Network Firewall's Private IP"
-}
-      
 
 # -------------------------------------------
 # ----- Networking - Hub Web Subnet

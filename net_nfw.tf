@@ -10,7 +10,7 @@ locals {
     "Check Point CloudGuard Firewall"                 = "CHECKPOINT", # Not available
     "Cisco Secure Firewall"                           = "CISCO",      # Not available
     "User-Provided Virtual Network Appliance"         = "CUSTOM",
-    "OCI Native Firewall"                             = "OCINFW",
+    "OCI Native Firewall"                             = "OCINFW"
   }
 
   image_name_database = {
@@ -19,7 +19,7 @@ locals {
   }
 
   chosen_firewall_option = local.firewall_options[var.hub_vcn_deploy_net_appliance_option]
-  
+
   health_checkers = {
     "FORTINET" = {
       protocol = "HTTP"
@@ -208,54 +208,54 @@ locals {
         }
       }
     }
-  } : null
-  network_configuration = {
-  default_compartment_id           = local.network_compartment_id
-  network_configuration_categories = {
-    FIREWALL = {
-      vcns = {
-        FIREWALL-VCN = {
-          display_name                     = "OCI_NATIVE_FIREWALL"
-          is_ipv6enabled                   = false
-          is_oracle_gua_allocation_enabled = false
-          dns_label                        = "firewallvcn"
-          is_create_igw                    = false
-          is_attach_drg                    = false
-          block_nat_traffic                = false
-          subnet_id                        = module.lz_network.provisioned_networking_resources.subnets["WEB-SUBNET"].id
-        }
-      }
-
-
-      non_vcn_specific_gateways = {
-        network_firewalls_configuration = {
-          network_firewalls = {
-            NFW = {
-              display_name                = "nfw"
-              subnet_id                   = module.lz_network.provisioned_networking_resources.subnets["WEB-SUBNET"].id
-              ipv4address                 = coalesce(var.hub_vcn_web_subnet_cidr, cidrsubnet(var.hub_vcn_cidrs[0], 4, 2))
-              network_firewall_policy_key = "NFW-POLICY"
-            }
-          }
-          network_firewall_policies = {
-            NFW-POLICY = {
-              display_name = "nfw-policy" 
-              security_rules = {
-                DENY-RULE = {
-                  action                    = "DROP"
-                  name                      = "Deny"
-                  application_lists         = []
-                  source_address_lists      = []
-                  destination_address_lists = []
+    } : null
+    
+    network_firewall_network_configuration = {
+        default_enable_cis_checks = false
+        network_configuration_categories = {
+            native_stack = {
+                non_vcn_specific_gateways = {
+                    network_firewalls_configuration = {
+                        network_firewalls = {
+                            OCI-NFW-KEY = {
+                                network_firewall_policy_key      = "OCI-NFW-POLICY-KEY"
+                                display_name                     = "OCI_NATIVE_FIREWALL"
+                                compartment_id                   = local.network_compartment_id
+                                subnet_id                        = module.lz_network.provisioned_networking_resources.subnets["WEB-SUBNET"].id
+                            }
+                        }
+                        network_firewall_policies = {
+                            OCI-NFW-POLICY-KEY = {
+                                display_name   = "OCI-NFW-POLICY"
+                                compartment_id = local.network_compartment_id
+                                ip_address_lists = {
+                                    ocinfw_ip_list = {
+                                        ip_address_list_name  = "vcn-ips"
+                                        ip_address_list_value = [var.hub_vcn_cidrs]
+                                    }
+                                }
+                                security_rules = {
+                                    OCI-NFW-SECURITY_RULES-1 = {
+                                        action = "REJECT"
+                                        name   = "reject-all-rule"
+                                        conditions = {
+                                            prd_cond1_A = {
+                                                applications = []
+                                                destinations = []
+                                                sources      = []
+                                                urls         = []
+                                            }
+                                        }   
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }
-              }
             }
-          }
         }
-      }
-    }
-  }
-}
+    }        
+    
 }
 
 module "lz_firewall_appliance" {
@@ -275,7 +275,7 @@ module "lz_nlb" {
 }
 
 module "native_oci_firewall" {
-  count                 = local.chosen_firewall_option == "OCINFW" ? 1 : 0
-  source                = "github.com/oci-landing-zones/terraform-oci-modules-networking?ref=v0.7.1"
-  network_configuration = local.network_configuration
+  count                    = local.chosen_firewall_option == "OCINFW" ? 1 : 0
+  source                   = "github.com/oci-landing-zones/terraform-oci-modules-networking?ref=v0.7.1"
+  network_configuration    = local.network_firewall_network_configuration
 }

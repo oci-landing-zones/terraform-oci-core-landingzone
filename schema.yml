@@ -169,9 +169,9 @@ variableGroups:
       - "hub_vcn_dns"
       - "hub_vcn_deploy_net_appliance_option"
       # - "net_appliance_image_compartment_ocid"
-      - "oci_nfw_ip_ocid"
       - "enable_native_firewall_threat_log"
       - "enable_native_firewall_traffic_log"
+      - "oci_nfw_ip_ocid"
       - "net_appliance_image_ocid"
       - "net_palo_alto_version"
       - "net_fortigate_version"
@@ -2945,20 +2945,20 @@ variables:
             - "VCN or on-premises connectivity routing through DMZ VCN with Network Virtual Appliance (DRG and DMZ VCN will be created)"
           - eq:
             - ${hub_deployment_option}
-            - "VCN or on-premises connectivity routed through DMZ VCN with Network Virtual Appliance existing DRG (DMZ VCN will be created and DRG ID required)"    
+            - "VCN or on-premises connectivity routed through DMZ VCN with Network Virtual Appliance existing DRG (DMZ VCN will be created and DRG ID required)"     
         - and:
           - eq:
             - ${hub_vcn_deploy_net_appliance_option}
             - "OCI Native Firewall"
-          - not:   
+          - not:    
             - eq:
               - ${hub_vcn_deploy_net_appliance_option}
               - "Fortinet FortiGate Firewall"
-          - not:   
+          - not:    
             - eq:
               - ${hub_vcn_deploy_net_appliance_option}
               - "Palo Alto Networks VM-Series Firewall"
-          - not:   
+          - not:    
             - eq:
               - ${hub_vcn_deploy_net_appliance_option}
               - "User-Provided Virtual Network Appliance"
@@ -3343,10 +3343,6 @@ variables:
             - eq: 
               - ${hub_vcn_deploy_net_appliance_option}
               - "Don't deploy any network appliance at this time"
-          - not:    
-            - eq:
-              - ${hub_vcn_deploy_net_appliance_option}
-              - "OCI Native Firewall"
 
   customize_hub_vcn_subnets:
     type: boolean

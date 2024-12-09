@@ -509,7 +509,7 @@ locals {
                         display_name = "hub-vcn-internet-gateway-route-table"
                         route_rules = {
                             "ANYWHERE-RULE" = {
-                                description       = "All traffic will go to OCI Native Firewall forwarding IP."
+                                description       = "All traffic goes to ${var.oci_nfw_ip_ocid}."
                                 destination       = "0.0.0.0/0"
                                 destination_type  = "CIDR_BLOCK"
                                 network_entity_id = var.oci_nfw_ip_ocid
@@ -575,7 +575,7 @@ locals {
                     "HUB-VCN-INTERNET-GATEWAY" = {
                         enabled         = true
                         display_name    = "internet-gateway"
-                        route_table_key = var.hub_vcn_north_south_entry_point_ocid != null ? "HUB-VCN-INTERNET-GATEWAY-ROUTE-TABLE" : null
+                        route_table_key = var.oci_nfw_ip_ocid != null ? "HUB-VCN-INTERNET-GATEWAY-ROUTE-TABLE" : null
                     }
                 }
                 nat_gateways = {
