@@ -49,7 +49,7 @@ locals {
   tenancy_ocid = var.tenancy_ocid
 
   jump_host_instances_configuration = {
-    default_compartment_id = locals.security_compartment_id
+    default_compartment_id = local.security_compartment_id
     default_ssh_public_key_path = var.bastion_jump_host_ssh_public_key_path
 
     instances = {

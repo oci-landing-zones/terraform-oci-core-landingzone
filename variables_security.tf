@@ -177,3 +177,33 @@ variable "bastion_jump_host_custom_image_ocid" {
   description = "The custom image ocid of the user-provided bastion jump host instance."
 }
 
+variable "jump_host_access_option" {
+  type = string
+  default = null
+  description = "Options to access the jump host. The options are: 'On-Premises Through Fast-Connect = 0' and 'Bastion Service = 1' "
+}
+
+variable "deploy_bastion_jump_host" {
+  type = bool
+  default = false
+  description = "The option to deploy the bastion jump host."
+}
+
+variable "bastion_service_name" {
+  type = string
+  default = null
+  description = "The bastion service name."
+}
+
+variable "bastion_service_allowed_cidrs" {
+  type = list
+  default = null
+  description = "List of the bastion service allowed cidrs."
+}
+
+variable "enable_bastion_proxy_status" {
+  type = bool
+  default = false
+  description = "The option to enable dns proxy."
+}
+
