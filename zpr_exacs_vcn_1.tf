@@ -7,7 +7,7 @@ locals {
     "in ${local.zpr_namespace_name}.net:exa-vcn-1 VCN allow ${local.zpr_namespace_name}.database:${local.zpr_label} endpoints to connect to ${local.zpr_namespace_name}.database:${local.zpr_label} endpoints with protocol='tcp/6200'"
   ] : []
 
-  exa_1_hub_zpr_grants = ((local.add_exa_vcn1) && (local.hub_with_vcn == true) && (var.exa_vcn1_attach_to_drg == true)) ? [
+  exa_1_hub_zpr_grants = ((local.add_exa_vcn1) && (local.hub_with_vcn == true) && (var.exa_vcn1_attach_to_drg == true) && (var.deploy_bastion_jump_host)) ? [
     "in ${local.zpr_namespace_name}.net:exa-vcn-1 VCN allow '${coalesce(var.hub_vcn_mgmt_subnet_cidr, cidrsubnet(var.hub_vcn_cidrs[0], 2, 3))}' to connect to ${local.zpr_namespace_name}.database:${local.zpr_label} endpoints with protocol='tcp/22'"
   ] : []
 

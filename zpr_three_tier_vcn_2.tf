@@ -4,7 +4,7 @@ locals {
     for cidr in var.tt_vcn2_bastion_subnet_allowed_cidrs : "in ${local.zpr_namespace_name}.net:tt-vcn-2 VCN allow '${cidr}' to connect to ${local.zpr_namespace_name}.bastion:${local.zpr_label} endpoints with protocol='tcp/22'"
   ] : []
 
-  tt_2_hub_zpr_grants = local.add_tt_vcn2 && local.hub_with_vcn && var.tt_vcn2_attach_to_drg ? [
+  tt_2_hub_zpr_grants = local.add_tt_vcn2 && local.hub_with_vcn && var.tt_vcn2_attach_to_drg && var.deploy_bastion_jump_host ? [
     "in ${local.zpr_namespace_name}.net:tt-vcn-2 VCN allow '${coalesce(var.hub_vcn_mgmt_subnet_cidr, cidrsubnet(var.hub_vcn_cidrs[0], 2, 3))}' to connect to ${local.zpr_namespace_name}.database:${local.zpr_label} endpoints with protocol='tcp/22'"
   ] : []
 
