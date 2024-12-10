@@ -179,7 +179,7 @@ variable "bastion_jump_host_custom_image_ocid" {
 
 variable "jump_host_access_option" {
   type = string
-  default = null
+  default = "On-Premises Through Fast-Connect"
   description = "Options to access the jump host. The options are: 'On-Premises Through Fast-Connect = 0' and 'Bastion Service = 1' "
 }
 
@@ -197,7 +197,7 @@ variable "bastion_service_name" {
 
 variable "bastion_service_allowed_cidrs" {
   type = list
-  default = null
+  default = []
   description = "List of the bastion service allowed cidrs."
 }
 
