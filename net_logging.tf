@@ -11,8 +11,8 @@ locals {
 
     default_log_group_name           = "${var.service_label}-oci-firewall-log"
     default_log_group_desc           = "Core Landing Zone OCi Firewall Log group."
-    single_firewall_threat_log_name  = "${var.service_label}-oci-firewall-threat-log"
-    single_firewall_traffic_log_name = "${var.service_label}-oci-firewall-traffic-log"
+    firewall_threat_log_name         = "${var.service_label}-oci-firewall-threat-log"
+    firewall_traffic_log_name        = "${var.service_label}-oci-firewall-traffic-log"
 
     logging_configuration_nfw = {
         default_compartment_id = local.security_compartment_id
@@ -26,7 +26,7 @@ locals {
         service_logs = merge(
             var.enable_native_firewall_threat_log ? {
                 FIREWALL-THREAT-LOG = {
-                    name         = "${var.firewall_threat_log_name}"
+                    name         = "${local.firewall_threat_log_name}"
                     log_group_id = "DEFAULT-LOG-GROUP"
                     log_type     = "${var.firewall_threat_log_type}"
                     category     = "${var.firewall_threat_log_category}"
@@ -36,7 +36,7 @@ locals {
             } : {},
             var.enable_native_firewall_traffic_log ? {       
                 FIREWALL-TRAFFIC-LOG = {
-                    name         = "${var.firewall_traffic_log_name}"
+                    name         = "${local.firewall_traffic_log_name}"
                     log_group_id = "DEFAULT-LOG-GROUP"
                     log_type     = "${var.firewall_traffic_log_type}"
                     category     = "${var.firewall_traffic_log_category}"

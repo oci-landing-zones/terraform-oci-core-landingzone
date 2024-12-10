@@ -7,11 +7,6 @@
 
 #Firewall Threat Log
 
-variable "firewall_threat_log_name" {
-  type        = string
-  description = "Firewall Threat Log"
-  default     = "CORE-LZ-OCI-NATIVE-NFW-THREAT-LOG"
-}
 variable "firewall_threat_log_type" {
   type        = string
   description = "Firewall Threat Log Type"
@@ -30,11 +25,6 @@ variable "firewall_threat_log_service" {
 
 #Firewall Traffic Log
 
-variable "firewall_traffic_log_name" {
-  type        = string
-  description = "Firewall Traffic Log"
-  default     = "CORE-LZ-OCI-NATIVE-NFW-TRAFFIC-LOG"
-}
 variable "firewall_traffic_log_type" {
   type        = string
   description = "Firewall Traffic Log Type"
