@@ -9,10 +9,10 @@
 locals {
     nfw_forwarding_ip_ocid = [try(module.native_oci_firewall[0].provisioned_networking_resources.oci_network_firewall_network_firewalls["OCI-NFW-KEY"].id, ""), ""][local.chosen_firewall_option == "OCINFW" ? 0 : 1]
 
-    default_log_group_name           = "DEFAULT_LOG_GROUP_NAME"
-    default_log_group_desc           = "DEFAULT_LOG_GROUP_DESCRIPATION"
-    single_firewall_threat_log_name  = "LZ-OCI-NATIVE-NFW-THREAT-LOG"
-    single_firewall_traffic_log_name = "LZ-OCI-NATIVE-TRAFFIC-LOG"
+    default_log_group_name           = "${var.service_label}-DEFAULT-LOG-GROUP"
+    default_log_group_desc           = "Core Landing Zone Default Log Group"
+    single_firewall_threat_log_name  = "${var.service_label}-LZ-OCI-NATIVE-NFW-THREAT-LOG"
+    single_firewall_traffic_log_name = "${var.service_label}-LZ-OCI-NATIVE-TRAFFIC-LOG"
 
     logging_configuration_nfw = {
         default_compartment_id = local.security_compartment_id
