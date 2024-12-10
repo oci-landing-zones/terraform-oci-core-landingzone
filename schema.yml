@@ -2981,18 +2981,6 @@ variables:
           - eq:
             - ${hub_vcn_deploy_net_appliance_option}
             - "OCI Native Firewall"
-          - not:    
-            - eq:
-              - ${hub_vcn_deploy_net_appliance_option}
-              - "Fortinet FortiGate Firewall"
-          - not:    
-            - eq:
-              - ${hub_vcn_deploy_net_appliance_option}
-              - "Palo Alto Networks VM-Series Firewall"
-          - not:    
-            - eq:
-              - ${hub_vcn_deploy_net_appliance_option}
-              - "User-Provided Virtual Network Appliance"
 
   enable_native_firewall_traffic_log:
     type: boolean
@@ -3012,18 +3000,6 @@ variables:
           - eq:
             - ${hub_vcn_deploy_net_appliance_option}
             - "OCI Native Firewall"
-          - not:    
-            - eq:
-              - ${hub_vcn_deploy_net_appliance_option}
-              - "Fortinet FortiGate Firewall"
-          - not:    
-            - eq:
-              - ${hub_vcn_deploy_net_appliance_option}
-              - "Palo Alto Networks VM-Series Firewall"
-          - not:    
-            - eq:
-              - ${hub_vcn_deploy_net_appliance_option}
-              - "User-Provided Virtual Network Appliance"
 
   # net_appliance_image_compartment_ocid:
   #   type: oci:identity:compartment:id

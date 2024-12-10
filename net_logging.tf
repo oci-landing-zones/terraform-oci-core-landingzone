@@ -9,92 +9,42 @@
 locals {
     nfw_forwarding_ip_ocid = [try(module.native_oci_firewall[0].provisioned_networking_resources.oci_network_firewall_network_firewalls["OCI-NFW-KEY"].id, ""), ""][local.chosen_firewall_option == "OCINFW" ? 0 : 1]
 
-    default_log_group_name           = "${var.service_label}-DEFAULT-LOG-GROUP"
-    default_log_group_desc           = "Core Landing Zone Default Log Group"
-    single_firewall_threat_log_name  = "${var.service_label}-LZ-OCI-NATIVE-NFW-THREAT-LOG"
-    single_firewall_traffic_log_name = "${var.service_label}-LZ-OCI-NATIVE-TRAFFIC-LOG"
+    default_log_group_name           = "${var.service_label}-oci-firewall-log"
+    default_log_group_desc           = "Core Landing Zone OCi Firewall Log group."
+    single_firewall_threat_log_name  = "${var.service_label}-oci-firewall-threat-log"
+    single_firewall_traffic_log_name = "${var.service_label}-oci-firewall-traffic-log"
 
     logging_configuration_nfw = {
         default_compartment_id = local.security_compartment_id
         log_groups = {
-            DEFAULT_LOG_GROUP = {
+            DEFAULT-LOG-GROUP = {
                 name           = "${local.default_log_group_name}"
                 compartment_id = local.security_compartment_id
                 description    = "${local.default_log_group_desc}"
             }
         }
-        service_logs = {
-            FIREWALL_THREAT_LOG = {
-                name         = "${var.firewall_threat_log_name}"
-                log_group_id = "DEFAULT_LOG_GROUP"
-                log_type     = "${var.firewall_threat_log_type}"
-                category     = "${var.firewall_threat_log_category}"
-                resource_id  = local.nfw_forwarding_ip_ocid
-                service      = "${var.firewall_threat_log_service}"
-            }   
-            FIREWALL_TRAFFIC_LOG = {
-                name         = "${var.firewall_traffic_log_name}"
-                log_group_id = "DEFAULT_LOG_GROUP"
-                log_type     = "${var.firewall_traffic_log_type}"
-                category     = "${var.firewall_traffic_log_category}"
-                resource_id  = local.nfw_forwarding_ip_ocid
-                service      = "${var.firewall_traffic_log_service}"
-            } 
-        }
-    }    
-    logging_configuration_nfw_no_log = {
-        default_compartment_id = local.security_compartment_id
-
-        log_groups = {
-            DEFAULT_LOG_GROUP = {
-                name           = "${local.default_log_group_name}"
-                compartment_id = local.security_compartment_id
-                description    = "${local.default_log_group_desc}"
-            }
-        }
-        service_logs = {}  
-    }
-    logging_configuration_nfw_traffic_log = {
-        default_compartment_id = local.security_compartment_id
-
-        log_groups = {
-            DEFAULT_LOG_GROUP = {
-                name           = "${local.default_log_group_name}"
-                compartment_id = local.security_compartment_id
-                description    = "${local.default_log_group_desc}"
-            }
-        }
-        service_logs = {
-            FIREWALL_TRAFFIC_LOG = {
-                name         = "${var.firewall_traffic_log_name}"
-                log_group_id = "DEFAULT_LOG_GROUP"
-                log_type     = "${var.firewall_traffic_log_type}"
-                category     = "${var.firewall_traffic_log_category}"
-                resource_id  = local.nfw_forwarding_ip_ocid
-                service      = "${var.firewall_traffic_log_service}"
-            }
-        }
-    }
-    logging_configuration_nfw_threat_log = {
-        default_compartment_id = local.security_compartment_id
-
-        log_groups = {
-            DEFAULT_LOG_GROUP = {
-                name           = "${local.default_log_group_name}"
-                compartment_id = local.security_compartment_id
-                description    = "${local.default_log_group_desc}"
-            }
-        }
-        service_logs = {
-            FIREWALL_THREAT_LOG = {
-                name         = "${var.firewall_threat_log_name}"
-                log_group_id = "DEFAULT_LOG_GROUP"
-                log_type     = "${var.firewall_threat_log_type}"
-                category     = "${var.firewall_threat_log_category}"
-                resource_id  = local.nfw_forwarding_ip_ocid
-                service      = "${var.firewall_threat_log_service}"
-            }
-        }
+        service_logs = merge(
+            var.enable_native_firewall_threat_log ? {
+                FIREWALL-THREAT-LOG = {
+                    name         = "${var.firewall_threat_log_name}"
+                    log_group_id = "DEFAULT-LOG-GROUP"
+                    log_type     = "${var.firewall_threat_log_type}"
+                    category     = "${var.firewall_threat_log_category}"
+                    resource_id  = local.nfw_forwarding_ip_ocid
+                    service      = "${var.firewall_threat_log_service}"
+                }
+            } : {},
+            var.enable_native_firewall_traffic_log ? {       
+                FIREWALL-TRAFFIC-LOG = {
+                    name         = "${var.firewall_traffic_log_name}"
+                    log_group_id = "DEFAULT-LOG-GROUP"
+                    log_type     = "${var.firewall_traffic_log_type}"
+                    category     = "${var.firewall_traffic_log_category}"
+                    resource_id  = local.nfw_forwarding_ip_ocid
+                    service      = "${var.firewall_traffic_log_service}"
+                }
+            } : {}
+        )    
     }
 }
 
@@ -102,7 +52,7 @@ module "oci_native_firewall_logs" {
     count  = local.chosen_firewall_option == "OCINFW" ? 1 : 0
     
     source = "github.com/oci-landing-zones/terraform-oci-modules-observability//logging?ref=v0.1.9"
-    logging_configuration = var.enable_native_firewall_threat_log && var.enable_native_firewall_traffic_log ? local.logging_configuration_nfw : var.enable_native_firewall_threat_log ? local.logging_configuration_nfw_threat_log : var.enable_native_firewall_traffic_log ? local.logging_configuration_nfw_traffic_log  : local.logging_configuration_nfw_no_log
+    logging_configuration = local.logging_configuration_nfw
     tenancy_ocid = var.tenancy_ocid
 
     depends_on = [ module.native_oci_firewall[0].provisioned_networking_resources ]

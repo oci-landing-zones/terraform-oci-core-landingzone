@@ -61,13 +61,13 @@ variable "hub_vcn_deploy_net_appliance_option" {
 variable "enable_native_firewall_threat_log" {
   type    = bool
   default = false
-  description = "Whether to customize default subnets settings of the Hub VCN. Only applicable to RMS deployments."
+  description = "Enable OCI Native Firewall Threat Log."
 }
 
 variable "enable_native_firewall_traffic_log" {
   type    = bool
   default = false
-  description = "Whether to customize default subnets settings of the Hub VCN. Only applicable to RMS deployments."
+  description = "Enable OCI Native Firewall Traffic Log."
 }
 
 variable "oci_nfw_ip_ocid" {
