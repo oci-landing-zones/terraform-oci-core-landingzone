@@ -30,7 +30,10 @@ locals {
         freeform_tags = local.vault_freeform_tags
       }
     }
-    keys                = local.managed_sch_bucket_key
+    keys                = {
+      local.sch_key_mapkey = local.managed_sch_bucket_key
+      local.nfw_key_maykey = local.managed_nfw_key
+    }
     existing_key_grants = local.existing_sch_bucket_key_grants
   }
 }
@@ -93,6 +96,7 @@ locals {
   keys_freeform_tags = local.custom_keys_freeform_tags != null ? merge(local.custom_keys_freeform_tags, local.default_keys_freeform_tags) : local.default_keys_freeform_tags
 
   sch_key_mapkey = "SCH-BUCKET-KEY"
+  nfw_key_maykey = "NFW-KEY"
 
   managed_sch_bucket_key = var.existing_service_connector_bucket_key_id == null && var.enable_service_connector && var.service_connector_target_kind == "objectstorage" && var.cis_level == "2" ? {
     (local.sch_key_mapkey) = {
@@ -101,6 +105,17 @@ locals {
       algorithm        = "AES"
       length           = 32
       service_grantees = ["objectstorage-${var.region}"]
+      defined_tags     = local.keys_defined_tags
+      freeform_tags    = local.keys_freeform_tags
+    }
+  } : {}
+
+  managed_nfw_key = var.cis_level == "2" && var.hub_vcn_deploy_net_appliance_option != "Don't deploy any network appliance at this time" ? {
+    (local.nfw_key_maykey) = {
+      vault_key        = local.vault_key
+      name             = "${var.service_label}-nfw-key"
+      algorithm        = "AES"
+      length           = 32
       defined_tags     = local.keys_defined_tags
       freeform_tags    = local.keys_freeform_tags
     }
