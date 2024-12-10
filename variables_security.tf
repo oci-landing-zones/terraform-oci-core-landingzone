@@ -196,9 +196,15 @@ variable "bastion_service_name" {
 }
 
 variable "bastion_service_allowed_cidrs" {
-  type = list
+  type = list(string)
   default = []
   description = "List of the bastion service allowed cidrs."
+}
+
+variable "bastion_onprem_allowed_cidrs" {
+  type = list(string)
+  default = []
+  description = "List of the bastion jump host on-premises allowed cidrs."
 }
 
 variable "enable_bastion_proxy_status" {
