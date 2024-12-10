@@ -143,7 +143,7 @@ variable "bastion_jump_host_ssh_public_key_path" {
 
 variable "bastion_jump_host_instance_shape" {
   type    = string
-  default = "VM.Optimized3.Flex"
+  default = "VM.Standard.E4.Flex"
   description = "The instance shape for the bastion jump host instance."
 }
 

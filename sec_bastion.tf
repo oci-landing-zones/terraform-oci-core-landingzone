@@ -31,22 +31,22 @@ locals {
   bastion_service_defined_tags  = local.custom_bastion_service_defined_tags != null ? merge(local.custom_bastion_service_defined_tags, local.default_bastion_service_defined_tags ): local.default_bastion_service_defined_tags
   bastion_service_freeform_tags = local.custom_bastion_service_freeform_tags != null ? merge(local.custom_vault_freeform_tags, local.default_bastion_service_freeform_tags) : local.default_bastion_service_freeform_tags
 
-  bastion_configuration = {
-    bastion_type          = local.bastion_service_type
-    compartment_id        = local.security_compartment_id
-    subnet_id             = module.lz_network.provisioned_networking_resources.subnets["MGMT-SUBNET"].id
-    defined_tags          = local.bastion_service_defined_tags
-    freeform_tags         = local.bastion_service_freeform_tags
-    cidr_block_allow_list = var.bastion_service_allowed_cidrs
-    enable_dns_proxy      = var.enable_bastion_proxy_status
-    name                  = local.bastion_service_name
+  bastions_configuration = {
+    bastions = {
+      LZ-BASTION = {
+        bastion_type          = local.bastion_service_type
+        compartment_id        = local.security_compartment_id
+        subnet_id             = module.lz_network.provisioned_networking_resources.subnets["MGMT-SUBNET"].id
+        defined_tags          = local.bastion_service_defined_tags
+        freeform_tags         = local.bastion_service_freeform_tags
+        cidr_block_allow_list = var.bastion_service_allowed_cidrs
+        enable_dns_proxy      = var.enable_bastion_proxy_status
+        name                  = local.bastion_service_name
+      }
+    }
   }
-}
 
-
-### Bastion Jump Host
-locals {
-  tenancy_ocid = var.tenancy_ocid
+  ### Bastion Jump Host
 
   jump_host_instances_configuration = {
     default_compartment_id = local.security_compartment_id
@@ -68,13 +68,13 @@ locals {
           ocpus = var.bastion_jump_host_flex_shape_cpu
         }
 
-        custom_image = var.bastion_jump_host_custom_image_ocid ? {
+        custom_image = var.bastion_jump_host_custom_image_ocid != null ? {
           ocid = var.bastion_jump_host_custom_image_ocid
         } : null
 
-        platform_image = var.bastion_jump_host_custom_image_ocid ? null : {
+        platform_image = var.bastion_jump_host_custom_image_ocid == null ? {
           name = var.bastion_jump_host_platform_image_name   # Default platform image Oracle-Linux-8.10-2024.08.29-0
-        }
+        } : null
         
         security = local.enable_zpr == true ? {zpr_attributes = [{namespace:"${local.zpr_namespace_name}",attr_name:"bastion", attr_value:local.zpr_label}]} : null
         
@@ -92,15 +92,14 @@ locals {
 
 module "lz_bastion" {
   source                = "github.com/oci-landing-zones/terraform-oci-modules-security//bastion?ref=v0.1.9"
-  bastion_configuration = local.bastion_configuration
+  bastions_configuration = local.bastions_configuration
   count = local.deploy_bastion_service ? 1 : 0
-
 }
 
 module "lz_bastion_jump_host" {
+  
   source = "github.com/oci-landing-zones/terraform-oci-modules-workloads//cis-compute-storage?ref=v0.1.8"
-  depends_on = [bastion_time_sleep.wait_on_services_policy]
-  count = ( local.hub_with_vcn == true && deploy_bastion_jump_host == true) ? 1 : 0
+  count = ( local.hub_with_vcn == true && var.deploy_bastion_jump_host == true) ? 1 : 0
 
   providers = {
     oci                                  = oci.home
@@ -108,17 +107,5 @@ module "lz_bastion_jump_host" {
   }
   
   instances_configuration = local.jump_host_instances_configuration
+  tenancy_ocid = var.tenancy_ocid
 } 
-
-# ----------------------------------------------------------------------------
-# -- Creating time sleep delays to slow down resource creation
-# ----------------------------------------------------------------------------
-resource "bastion_time_sleep" "wait_on_compartments" {
-  depends_on      = [module.lz_compartments]
-  create_duration = "70s"
-}
-
-resource "bastion_time_sleep" "wait_on_services_policy" {
-  depends_on      = [module.lz_policies]
-  create_duration = "70s"
-}
