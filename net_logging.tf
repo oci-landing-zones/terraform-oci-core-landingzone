@@ -13,6 +13,12 @@ locals {
     default_log_group_desc           = "Core Landing Zone OCi Firewall Log group."
     firewall_threat_log_name         = "${var.service_label}-oci-firewall-threat-log"
     firewall_traffic_log_name        = "${var.service_label}-oci-firewall-traffic-log"
+    firewall_threat_log_type         = "SERVICE"
+    firewall_threat_log_category     = "threatlog"
+    firewall_threat_log_service      = "ocinetworkfirewall"
+    firewall_traffic_log_type        = "SERVICE"
+    firewall_traffic_log_category    = "trafficlog"
+    firewall_traffic_log_service     = "ocinetworkfirewall"
 
     logging_configuration_nfw = {
         default_compartment_id = local.security_compartment_id
@@ -28,20 +34,20 @@ locals {
                 FIREWALL-THREAT-LOG = {
                     name         = "${local.firewall_threat_log_name}"
                     log_group_id = "DEFAULT-LOG-GROUP"
-                    log_type     = "${var.firewall_threat_log_type}"
-                    category     = "${var.firewall_threat_log_category}"
+                    log_type     = "${local.firewall_threat_log_type}"
+                    category     = "${local.firewall_threat_log_category}"
                     resource_id  = local.nfw_forwarding_ip_ocid
-                    service      = "${var.firewall_threat_log_service}"
+                    service      = "${local.firewall_threat_log_service}"
                 }
             } : {},
             var.enable_native_firewall_traffic_log ? {       
                 FIREWALL-TRAFFIC-LOG = {
                     name         = "${local.firewall_traffic_log_name}"
                     log_group_id = "DEFAULT-LOG-GROUP"
-                    log_type     = "${var.firewall_traffic_log_type}"
-                    category     = "${var.firewall_traffic_log_category}"
+                    log_type     = "${local.firewall_traffic_log_type}"
+                    category     = "${local.firewall_traffic_log_category}"
                     resource_id  = local.nfw_forwarding_ip_ocid
-                    service      = "${var.firewall_traffic_log_service}"
+                    service      = "${local.firewall_traffic_log_service}"
                 }
             } : {}
         )    

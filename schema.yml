@@ -2935,7 +2935,7 @@ variables:
   oci_nfw_ip_ocid:
     type: string
     title: "OCI Network Firewall Forwarding IP OCID"
-    description: "Enter the OCI Network Firewall Forwarding IP OCID on Second Run."
+    description: "Enter the OCID of Native Firewall IP address, where all inbound Internet (North/South) traffic and all inter-VCN (East/West) traffic is sent to in the Hub VCN."
     visible:
       and:
         - define_net
