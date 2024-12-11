@@ -313,7 +313,7 @@
 | hub_vcn_deploy_net_appliance_option | The network appliance option for deploying in the Hub VCN. Valid values: 'Don't deploy any network appliance at this time' (default), 'Palo Alto Networks VM-Series Firewall', 'Fortinet FortiGate Firewall'. Costs are incurred., 'OCI Native Firewall' | `string` | `Don't deploy any network appliance at this time` | no |
 | enable_native_firewall_threat_log  | Enable OCI Native Firewall Threat Log.  | `bool` | false | no |
 | enable_native_firewall_traffic_log | Enable OCI Native Firewall Traffic Log. | `bool` | false | no |
-| enable_native_firewall_traffic_log | OCI Native Firewall Forwarding IP OCID, Update Route Rules. | `string` | 'null' | no |
+| oci_nfw_ip_ocid | OCI Native Firewall Forwarding IP OCID, Update Route Rules. | `string` | 'null' | no |
 | hub_vcn_dns | The Hub VCN DNS name. | `string` | `null` | no |
 | hub_vcn_east_west_entry_point_ocid | The OCID of a private address the Hub VCN routes traffic to for inbound internal cross-vcn traffic (East/West). This variable is to be assigned with the OCID of the indoor network load balancer's private IP address. | `string` | `null` | no |
 | hub_vcn_indoor_subnet_cidr | The Hub VCN Indoor subnet CIDR block. It must be within the VCN CIDR blocks. | `string` | `null` | no |
