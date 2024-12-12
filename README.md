@@ -118,13 +118,13 @@ The Hub VCN is a choke point for external traffic that ingresses into the VCNs (
 Third Party firewall appliance option:
 
 - One public subnet for load balancers.
-- Two private subnets: one for inbound north-south traffic (from Internet or on-premises), one for inbound east-west (cross-spoke) traffic.
+- Two private subnets: one for inbound North-South traffic (from Internet or on-premises), one for inbound East-West (cross-spoke) traffic.
 - One private subnet for managing the firewall appliance that is eventually deployed.
 
 OCI Network Firewall option:
 
-- One public subnet for load balancers.
-- One private subnet for firewalled north-south traffic (from Internet or on-premises) and load balanced east-west (cross-spoke) traffic.
+- One public subnet for Internet Gateway (IGW) North-South traffic passed through to the Network Firewall.
+- One private subnet for the Network Firewall and East-West traffic from/to spoke VCNs.
 
 The Hub VCN is coupled with a Dynamic Routing Gateway (DRG), that can be either an existing one or managed by the landing zone.
 
@@ -141,13 +141,13 @@ The diagram below shows services and resources that are deployed along with a si
 
 [Get the diagram in SVG format.](./images/arch_simple.svg)
 
-The diagram below expands the resources in the network compartment for covering the possibilities in a Hub/Spoke topology:
+The diagram below expands the resources in the network compartment for covering the possibilities in a Hub & Spoke topology:
 
 ![arch_advanced](./images/arch-advanced.png)
 
 [Get the diagram in SVG format.](./images/arch-advanced.svg)
 
-The diagram below expands the resources in the network compartment specifically with OCI Network Firewall in a Hub/Spoke topology:
+The diagram below expands the resources in the network compartment specifically with OCI Network Firewall in a Hub & Spoke topology:
 
 ![arch_advanced](./images/arch-adv-oci-nfw.png)
 
@@ -176,7 +176,7 @@ Some deployment scenarios are available under the [templates](./templates/) fold
 
 Another key deployment scenario of OCI Core Landing Zone is [Zero Trust Landing Zone](https://github.com/oci-landing-zones/terraform-oci-zero-trust-landingzone).
 
-OCI Core Landing Zone release 1.2.0 offers **OCI Network Firewall** in a Hub VCN for use with Three Tier, Exadata and/or OKE networking
+OCI Core Landing Zone release 1.2.0 offers **OCI Network Firewall** in a Hub VCN for use with Three Tier, Exadata and/or OKE networking.
 
 
 ## <a name="modules">CIS OCI Foundations Benchmark Modules Collection</a>

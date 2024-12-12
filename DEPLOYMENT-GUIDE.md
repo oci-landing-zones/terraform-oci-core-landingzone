@@ -362,13 +362,16 @@ See deployment scenarios under the [templates](./templates/) folder:
 - [Single Three-Tier VCN with ZPR enabled](./templates/standalone-three-tier-vcn-zpr/)
 - [Single Three-Tier VCN with custom settings](./templates/standalone-three-tier-vcn-custom/)
 - [Multiple Three-Tier VCNs peered through DRG](./templates/hub-spoke-with-drg-and-three-tier-vcns)
-- [Multiple VCN types peered through a Hub VCN with network appliance](./templates/hub-spoke-with-hub-vcn-net-appliance)
+- [Multiple VCN types peered through a Hub VCN with native Network Firewall](./templates/hub-spoke-with-hub-vcn-net-firewall)
+- [Multiple VCN types peered through a Hub VCN with third party network appliance](./templates/hub-spoke-with-hub-vcn-net-appliance)
 
 #### Landing Zone Firewall Options
 
-OCI Network Firewall is a managed next-generation firewall and Intrusion Detection and Prevention Service (IDS/IPS) that is powered by Palo Alto Networks®. It is an OCI cloud-native service, now available with Core Landing Zone. The Landing Zone offers simple setup and deployment of the Network Firewall service, which gives you visibility into traffic entering your cloud environment (North-South) via IGW and traffic between subnets (East-West) via DRG routing. The Core Landing Zone implementation deploys a Hub & Spoke network architecture with a Network Firewall in the hub.
+OCI Network Firewall is a managed next-generation firewall and Intrusion Detection and Prevention Service (IDS/IPS) that is powered by Palo Alto Networks. It is an OCI cloud-native service, available with Core Landing Zone. The Landing Zone offers simple setup and deployment of the Network Firewall service, which gives you visibility into traffic entering your cloud environment (North-South) via IGW and traffic between subnets (East-West) via DRG routing. The Core Landing Zone implementation deploys a Hub & Spoke network architecture with a Network Firewall in the hub.
 
 Alternatively, Core Landing Zone supports use of a third party network appliance using either Palo Alto Networks VM-Series Next Generation Firewall or Fortinet FortiGate Next-Gen Firewall.  Both options leverage compute images available in the [OCI Marktplace](https://cloud.oracle.com/marketplace) with Bring Your Own Licensing (BYOL).
+
+Both firewall options are provided separately in the deployment scenario templates provided above.
 
 #### Cross-VCN Connectivity Patterns
 
