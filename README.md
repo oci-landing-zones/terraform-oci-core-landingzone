@@ -172,7 +172,8 @@ Some deployment scenarios are available under the [templates](./templates/) fold
 - [Single Three-Tier VCN with ZPR enabled](./templates/standalone-three-tier-vcn-zpr/)
 - [Single Three-Tier VCN with custom settings](./templates/standalone-three-tier-vcn-custom/)
 - [Multiple Three-Tier VCNs peered through DRG](./templates/hub-spoke-with-drg-and-three-tier-vcns)
-- [Multiple VCN types peered through a Hub VCN with network appliance](./templates/hub-spoke-with-hub-vcn-net-appliance)
+- [Multiple VCN types peered through a Hub VCN with native Network Firewall](./templates/hub-spoke-with-hub-vcn-net-firewall)
+- [Multiple VCN types peered through a Hub VCN with third party network appliance](./templates/hub-spoke-with-hub-vcn-net-appliance)
 
 Another key deployment scenario of OCI Core Landing Zone is [Zero Trust Landing Zone](https://github.com/oci-landing-zones/terraform-oci-zero-trust-landingzone).
 
