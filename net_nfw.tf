@@ -210,7 +210,7 @@ locals {
     }
     } : null
     
-    network_firewall_network_configuration = {
+    network_firewall_network_configuration =  local.chosen_firewall_option != "NO" && local.chosen_firewall_option == "OCINFW" ? {
         default_enable_cis_checks = false
         network_configuration_categories = {
             native_stack = {
@@ -254,7 +254,7 @@ locals {
                 }
             }
         }
-    }        
+    } : null      
     
 }
 

@@ -3307,6 +3307,10 @@ variables:
             - eq: 
               - ${hub_vcn_deploy_net_appliance_option}
               - "Don't deploy any network appliance at this time"
+          - not:    
+            - eq:
+              - ${hub_vcn_deploy_net_appliance_option}
+              - "OCI Native Firewall"
 
   customize_hub_vcn_subnets:
     type: boolean
