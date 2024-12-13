@@ -172,6 +172,7 @@ variableGroups:
       - "enable_native_firewall_threat_log"
       - "enable_native_firewall_traffic_log"
       - "oci_nfw_ip_ocid"
+      - "oci_nfw_policy_ocid"
       - "net_appliance_image_ocid"
       - "net_palo_alto_version"
       - "net_fortigate_version"
@@ -2936,6 +2937,25 @@ variables:
     type: string
     title: "OCI Network Firewall Forwarding IP OCID"
     description: "Enter the OCID of Native Firewall IP address, where all inbound Internet (North/South) traffic and all inter-VCN (East/West) traffic is sent to in the Hub VCN."
+    visible:
+      and:
+        - define_net
+        - or:
+          - eq:
+            - ${hub_deployment_option}
+            - "VCN or on-premises connectivity routing through DMZ VCN with Network Virtual Appliance (DRG and DMZ VCN will be created)"
+          - eq:
+            - ${hub_deployment_option}
+            - "VCN or on-premises connectivity routed through DMZ VCN with Network Virtual Appliance existing DRG (DMZ VCN will be created and DRG ID required)"     
+        - and:
+          - eq:
+            - ${hub_vcn_deploy_net_appliance_option}
+            - "OCI Native Firewall"
+
+  oci_nfw_policy_ocid:
+    type: string
+    title: "Enter the OCI Network Firewall Policy OCID"
+    description: "Enter the OCI Network Firewall Policy OCID."
     visible:
       and:
         - define_net

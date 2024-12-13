@@ -211,11 +211,21 @@ locals {
     } : null
     
     network_firewall_network_configuration =  local.chosen_firewall_option != "NO" && local.chosen_firewall_option == "OCINFW" ? {
-        default_enable_cis_checks = false
+        #default_enable_cis_checks = false
         network_configuration_categories = {
             native_stack = {
                 non_vcn_specific_gateways = {
-                    network_firewalls_configuration = {
+                    network_firewalls_configuration = (var.oci_nfw_policy_ocid != null) ? {
+                        network_firewalls = {
+                            OCI-NFW-KEY = {
+                                network_firewall_policy_id       = var.oci_nfw_policy_ocid
+                                display_name                     = "${var.service_label}-oci-firewall"
+                                compartment_id                   = local.network_compartment_id
+                                subnet_id                        = module.lz_network.provisioned_networking_resources.subnets["INDOOR-SUBNET"].id
+                            }
+                        }
+                        network_firewall_policies = {}
+                    } : {
                         network_firewalls = {
                             OCI-NFW-KEY = {
                                 network_firewall_policy_key      = "OCI-NFW-POLICY-KEY"
@@ -228,12 +238,12 @@ locals {
                             OCI-NFW-POLICY-KEY = {
                                 display_name   = "${var.service_label}-oci-firewall-initial-policy"
                                 compartment_id = local.network_compartment_id
-                                ip_address_lists = {
-                                    ocinfw_ip_list = {
-                                        ip_address_list_name  = "vcn-ips"
-                                        ip_address_list_value = [var.hub_vcn_cidrs]
-                                    }
-                                }
+                                #ip_address_lists = {
+                                #    ocinfw_ip_list = {
+                                #        ip_address_list_name  = "vcn-ips"
+                                #        ip_address_list_value = [var.hub_vcn_cidrs]
+                                #    }
+                                #}
                                 security_rules = {
                                     OCI-NFW-SECURITY_RULES-1 = {
                                         action = "REJECT"
@@ -254,7 +264,7 @@ locals {
                 }
             }
         }
-    } : null      
+    } : {}      
     
 }
 

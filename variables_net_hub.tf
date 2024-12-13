@@ -73,7 +73,13 @@ variable "enable_native_firewall_traffic_log" {
 variable "oci_nfw_ip_ocid" {
   type        = string
   default     = null
-  description = "OCID of the Network Firewall's Private IP"
+  description = "Enter OCI Network Firewall's Forwarding Private IP OCID."
+}
+
+variable "oci_nfw_policy_ocid" {
+  type        = string
+  default     = null
+  description = "Enter the OCI Network Firewall Policy OCID."
 }
 
 variable "net_palo_alto_version" {
