@@ -365,13 +365,33 @@ See deployment scenarios under the [templates](./templates/) folder:
 - [Multiple VCN types peered through a Hub VCN with native Network Firewall](./templates/hub-spoke-with-hub-vcn-net-firewall)
 - [Multiple VCN types peered through a Hub VCN with third party network appliance](./templates/hub-spoke-with-hub-vcn-net-appliance)
 
-#### Landing Zone Firewall Options
+#### Landing Zone OCI Network Firewall Option
 
-OCI Network Firewall is a managed next-generation firewall and Intrusion Detection and Prevention Service (IDS/IPS) that is powered by Palo Alto Networks. It is an OCI cloud-native service, available with Core Landing Zone. The Landing Zone offers simple setup and deployment of the Network Firewall service, which gives you visibility into traffic entering your cloud environment (North-South) via IGW and traffic between subnets (East-West) via DRG routing. The Core Landing Zone implementation deploys a Hub & Spoke network architecture with a Network Firewall in the hub.
+OCI Network Firewall is a managed next-generation firewall and Intrusion Detection and Prevention Service (IDS/IPS) that is powered by Palo Alto Networks. It is an OCI cloud-native service, available with Core Landing Zone. The Landing Zone offers simple setup and deployment of the Network Firewall service, which gives you visibility into traffic entering your cloud environment (North-South) via IGW and traffic between subnets (East-West) via DRG routing. The Core Landing Zone implementation deploys a Hub & Spoke network topology with a Network Firewall in the Hub VCN.
 
-Alternatively, Core Landing Zone supports use of a third party network appliance using either Palo Alto Networks VM-Series Next Generation Firewall or Fortinet FortiGate Next-Gen Firewall.  Both options leverage compute images available in the [OCI Marktplace](https://cloud.oracle.com/marketplace) with Bring Your Own Licensing (BYOL).
+To use this service with Landing Zone, there must be two consecutive executions of `terraform apply`. The first pass sets up the Network Firewall instance with a single default policy to *reject all traffic*. The second pass configures the Network Firewall with information of OCIDs collected after the first pass, including a *user created network firewall policy* for your specific use case. In more detail:
 
-Both firewall options are provided separately in the deployment scenario templates provided above.
+- Run the first `terraform apply` (either from RMS or CLI).
+- Collect the Network Firewall forwarding IP OCID from the created instance.
+- Create a new firewall policy for your use case to replace the default `reject all` policy.
+- Edit the RMS stack to add the above information or, if using Terraform CLI, change the associated variable values named below.
+- Run the second `terraform apply` incorporating the Network Firewall forwarding IP address for routing rules, and if supplied, your firewall policy as the new default.
+
+This is where the collected information is used in the RMS stack:
+![nfw_deploy_update.png](images/nfw_deploy_update.png)
+For Terraform CLI deployment, use these variables:
+
+- **oci\_firewall\_ip\_ocid**
+- **oci\_nfw\_policy\_ocid**
+
+If updated in the stack this way, the new user policy is baked into the Network Firewall configuration. Core Landing Zone doesn't manage your use case firewall policy - only the association of it with the Network Firewall.
+
+
+#### Landing Zone Third Party Firewall Options
+
+Alternatively, Core Landing Zone supports use of a third party *network appliance* (VM instance) with either Palo Alto Networks VM-Series Next Generation Firewall or Fortinet FortiGate Next-Gen Firewall.  Both options leverage compute images available in the [OCI Marktplace](https://cloud.oracle.com/marketplace) with Bring Your Own Licensing (BYOL).
+
+Both OCI and Third Party firewall options are provided separately in the deployment scenario templates above.
 
 #### Cross-VCN Connectivity Patterns
 

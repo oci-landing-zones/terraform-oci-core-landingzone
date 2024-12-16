@@ -38,7 +38,8 @@ module "core_lz" {
     hub_vcn_deploy_net_appliance_option = "OCI Native Firewall"
     enable_native_firewall_threat_log   = true
     enable_native_firewall_traffic_log  = true
-    # oci_nfw_ip_ocid                   = ["ocid1.privateip.oc1.phx.abyhql...goq"] as determined after the initial Terraform Plan
+    # oci_nfw_ip_ocid                   = ["ocid1.privateip.oc1.phx.abyhql...goq"] as determined after the initial Terraform Apply
+    # oci_nfw_policy_ocid               = ["ocid1.networkfirewallpolicy.oc1.phx.amaaaa...gmm"] from user created network firewall policy
 
     # --- Spoke VCN: three-tier VCN 1
     add_tt_vcn1                    = true

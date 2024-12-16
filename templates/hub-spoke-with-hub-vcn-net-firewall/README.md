@@ -1,12 +1,16 @@
 # Core Landing Zone with Hub & Spoke Topology, Including Native OCI Network Firewall Template
 
-This template shows how to deploy a CIS compliant landing zone using [OCI Core Landing Zone](../../) configured with a Hub & Spoke networking topology including OCI Network Firewall. It deploys Network Firewall in the Hub VCN, a Three Tier VCN, an Exa VCN and an OKE VCN which are peered through the DRG. The DRG is configured to route traffic across all VCNs.
+This template shows how to deploy a CIS compliant landing zone using [OCI Core Landing Zone](../../) configured with a Hub & Spoke networking topology including OCI Network Firewall. It deploys Network Firewall in the Hub VCN, a Three Tier VCN, an Exadata VCN and an OKE VCN which are peered through the DRG. The DRG is configured to route traffic across all VCNs.
 
-Deploying a native OCI Network Firewall requires the Terraform configuration executed twice. The first time it creates all the networking resources, except the required routing to the Network Firewall forwarding IP address created in the first run. The second execution is to update the configuration with that routing.
+Deploying a native OCI Network Firewall requires the Terraform configuration executed twice. With the first pass, it creates all the networking resources, except the required routing to the Network Firewall forwarding IP address created in the first run. The second pass updates the configuration with that routing and optionally, with a new default firewall policy created separately.
 
 The variable to update for the second time execution is *OCI Network Firewall Forwarding IP OCID* and the value is available in the **oci\_firewall\_ip\_ocid** output.
 
-- **oci\_nfw\_ip\_ocid** takes the OCID value in **oci\_firewall\_ip\_ocid**
+- **oci\_nfw\_ip\_ocid** takes the OCID value of **oci\_firewall\_ip\_ocid**
+
+If created between runs, use your own OCI Network Firewall Policy OCID at the same time in the second time execution.
+
+- **oci\_nfw\_policy\_ocid** takes the OCID value as a replacement for the initial policy that rejects all traffic.
 
 Please see other [templates](../../templates/) available for CIS compliant landing zones with custom configurations.
 
@@ -36,8 +40,9 @@ This template has the following parameters set:
 | network\_admin\_email\_endpoints | List of email addresses that receive notifications for networking related events. | ["email.address@example.com"] |
 | security\_admin\_email\_endpoints | List of email addresses that receive notifications for security related events. | ["email.address@example.com"] |
 | enable\_cloud\_guard | When true, OCI Cloud Guard Service is enabled. Set to false if it's been already enabled through other means. | false |
-| | For second Terraform run, use the firewall IP OCID created in the first run. | |
-| oci\_nfw\_ip\_ocid | OCI Native Firewall Forwarding IP OCID, Update Route Rules. | ["ocid1.privateip.oc1.phx.abyhql...goq"]
+| *Used during second `terraform apply`:* | | |
+| oci\_nfw\_ip\_ocid | OCI Native Firewall Forwarding IP OCID, Update Route Rules. | ["ocid1.privateip.oc1.phx.abuwclj...goq"] |
+| oci\_nfw\_policy\_ocid | User created OCI Network Firewall Policy OCID | ["ocid1.networkfirewallpolicy.oc1.phx.amaaaa...gmm"] |
 
 For a detailed description of all variables that can be used, see the [Variables](../../VARIABLES.md) documentation.
 
@@ -67,6 +72,7 @@ Oci Firewall Ip Ocid:ocid1.privateip.oc1.phx.abyhql...goq
 Edit the RMS stack to update the "OCI Network Firewall Forwarding IP OCID" using the determined value.
 
 - Enter the forwarding IP OCID value ("ocid1.privateip.oc1.phx.abyhql...goq") to update **OCI Network Firewall Forwarding IP OCID** field.
+- If created beforehand, provide an "OCI Network Firewall Policy OCID" to replace the initial default policy that rejects all traffic.
 
 ![nfw_deploy_update](../../images/nfw_deploy_update.png)
 
@@ -82,7 +88,8 @@ Perform a new Plan, followed by an Apply.
     - $ terraform apply
 4. Take note of the value in the output **oci\_firewall\_ip\_ocid**.
 5. Uncomment and update the variable **oci\_nfw\_ip\_ocid** as instructed in *main.tf.template*.
-6. In this folder, execute Terraform plan and apply again:
+6. Optionally, provide a separately created policy OCID for **oci\_nfw\_policy\_ocid**
+7. In this folder, execute Terraform plan and apply again:
     - $ terraform plan
     - $ terraform apply
 
