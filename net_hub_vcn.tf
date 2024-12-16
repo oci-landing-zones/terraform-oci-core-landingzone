@@ -227,10 +227,10 @@ locals {
                     }
                 } : {},
 
-                # Route table for North/South traffic is attached to HUB VCN Internet Gateway.
+                # Route table for spoke VCNs outbound traffic, attached to HUB VCN DRG attachment.
                 (var.oci_nfw_ip_ocid != null) ? {
-                    "HUB-VCN-INTERNET-GATEWAY-ROUTE-TABLE" = {
-                        display_name = "hub-vcn-internet-gateway-route-table"
+                    "HUB-VCN-INGRESS-ROUTE-TABLE" = {
+                        display_name = "hub-vcn-ingress-route-table"
                         route_rules = {
                             "ANYWHERE-RULE" = {
                                 description       = "All traffic goes to ${var.oci_nfw_ip_ocid}."
