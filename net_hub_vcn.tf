@@ -488,24 +488,24 @@ locals {
                     "HUB-VCN-INDOOR-FW-NSG" = {
                         display_name = "indoor-fw-nsg"
                             ingress_rules = {
-                                "INGRESS-FROM-NLB-NSG-RULE" = {
+                              "INGRESS-FROM-NLB-NSG-RULE" = {
                                 description  = "Ingress from Indoor NLB NSG"
                                 stateless    = false
                                 protocol     = "TCP"
                                 src          = "HUB-VCN-INDOOR-NLB-NSG"
                                 src_type     = "NETWORK_SECURITY_GROUP"
-                                    dst_port_min = 80
-                                    dst_port_max = 80
-                                }
+                                dst_port_min = 80
+                                dst_port_max = 80
+                              }
                             },
                             egress_rules = {
-                                "EGRESS-TO-ANYWHERE-RULE" = {
-                                    description = "Egress to anywhere over TCP"
-                                    stateless   = false
-                                    protocol    = "TCP"
-                                    dst         = "0.0.0.0/0"
-                                    dst_type    = "CIDR_BLOCK"
-                                }
+                              "EGRESS-TO-ANYWHERE-RULE" = {
+                                description = "Egress to anywhere over TCP"
+                                stateless   = false
+                                protocol    = "TCP"
+                                dst         = "0.0.0.0/0"
+                                dst_type    = "CIDR_BLOCK"
+                              }
                             }
                         }
                 },
@@ -585,7 +585,96 @@ locals {
                             }
                         }
                     }
-                } : {}
+                } : {},
+                local.chosen_firewall_option == "OCINFW" ? {     
+                    "HUB-VCN-OCI-FIREWALL-NSG" = {
+                        display_name = "oci-firewall-nsg"
+                        ingress_rules = {
+                            "INGRESS-FROM-NLB-NSG-RULE" = {
+                                description  = "Ingress from Application Load Balancer"
+                                stateless    = false
+                                protocol     = "TCP"
+                                src          = "HUB-VCN-APP-LOAD-BALANCER"
+                                src_type     = "NETWORK_SECURITY_GROUP"
+                            }
+                        }
+                        egress_rules = merge(
+                          {
+                            local.add_tt_vcn1 == true && var.tt_vcn1_attach_to_drg == true ? {for cidr in var.tt_vcn1_cidrs : "EGRESS-TO-TT-VCN-1-${replace(replace(cidr,".",""),"/","")}}-RULE" => {
+                                description = "Egress to ${coalesce(var.tt_vcn1_name,"${var.service_label}-three-tier-vcn-1")}."
+                                stateless   = false
+                                protocol    = "TCP"
+                                dst         = "${cidr}"
+                                dst_type    = "CIDR_BLOCK"
+                              }
+                            } : {},
+                            local.add_tt_vcn2 == true && var.tt_vcn2_attach_to_drg == true ? {for cidr in var.tt_vcn2_cidrs : "EGRESS-TO-TT-VCN-2-${replace(replace(cidr,".",""),"/","")}}-RULE" => {
+                                description = "Egress to ${coalesce(var.tt_vcn2_name,"${var.service_label}-three-tier-vcn-2")}."
+                                stateless   = false
+                                protocol    = "TCP"
+                                dst         = "${cidr}"
+                                dst_type    = "CIDR_BLOCK"
+                              }
+                            } : {},
+                            local.add_tt_vcn3 == true && var.tt_vcn3_attach_to_drg == true ? {for cidr in var.tt_vcn3_cidrs : "EGRESS-TO-TT-VCN-3-${replace(replace(cidr,".",""),"/","")}}-RULE" => {
+                                description = "Egress to ${coalesce(var.tt_vcn3_name,"${var.service_label}-three-tier-vcn-3")}."
+                                stateless   = false
+                                protocol    = "TCP"
+                                dst         = "${cidr}"
+                                dst_type    = "CIDR_BLOCK"
+                              }
+                            } : {},
+                            local.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true ? {for cidr in var.oke_vcn1_cidrs : "EGRESS-TO-OKE-VCN-1-${replace(replace(cidr,".",""),"/","")}}-RULE" => {
+                                description = "Egress to ${coalesce(var.oke_vcn1_name,"${var.service_label}-oke-vcn-1")}."
+                                stateless   = false
+                                protocol    = "TCP"
+                                dst         = "${cidr}"
+                                dst_type    = "CIDR_BLOCK"
+                              }
+                            } : {},
+                            local.add_oke_vcn2 == true && var.oke_vcn2_attach_to_drg == true ? {for cidr in var.oke_vcn2_cidrs : "EGRESS-TO-OKE-VCN-2-${replace(replace(cidr,".",""),"/","")}}-RULE" => {
+                                description = "Egress to ${coalesce(var.oke_vcn2_name,"${var.service_label}-oke-vcn-2")}."
+                                stateless   = false
+                                protocol    = "TCP"
+                                dst         = "${cidr}"
+                                dst_type    = "CIDR_BLOCK"
+                              }
+                            } : {},
+                            local.add_oke_vcn3 == true && var.oke_vcn3_attach_to_drg == true ? {for cidr in var.oke_vcn3_cidrs : "EGRESS-TO-OKE-VCN-3-${replace(replace(cidr,".",""),"/","")}}-RULE" => {
+                                description = "Egress to ${coalesce(var.oke_vcn3_name,"${var.service_label}-oke-vcn-3")}."
+                                stateless   = false
+                                protocol    = "TCP"
+                                dst         = "${cidr}"
+                                dst_type    = "CIDR_BLOCK"
+                              }
+                            } : {},
+                          }
+                        )  
+                    }
+                } : {},
+                local.chosen_firewall_option == "OCINFW" ? {     
+                    "HUB-VCN-APP-LOAD-BALANCER" = {
+                        display_name = "app-load-balancer-nsg"
+                        ingress_rules = {
+                            "INGRESS-FROM-INTERNET-RULE" = {
+                                description  = "Ingress from Internet"
+                                stateless    = false
+                                protocol     = "TCP"
+                                src          = "0.0.0.0/0"
+                                src_type     = "CIDR_BLOCK"
+                            }
+                        }
+                        egress_rules = {
+                            "EGRESS-TO-OCI-FIREWALL-NSG-RULE" = {
+                                description  = "Ingress from Internet"
+                                stateless    = false
+                                protocol     = "TCP"
+                                src          = "HUB-VCN-OCI-FIREWALL-NSG"
+                                src_type     = "NETWORK_SECURITY_GROUP"
+                            }
+                        }
+                    }
+                } : {}        
             )  # closing NSG merge function  
             
             vcn_specific_gateways = {
