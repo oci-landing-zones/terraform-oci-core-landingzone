@@ -293,7 +293,7 @@ locals {
                     }
                 } : {},
                 
-                # Route table for East/West traffic is attached to HUB VCN DRG attachment.
+                # 3rd-party Firewall case: Route table for East/West traffic is attached to HUB VCN DRG attachment.
                 (coalesce(var.hub_vcn_east_west_entry_point_ocid,local.void) != local.void) ? {
                     "HUB-VCN-INGRESS-ROUTE-TABLE" = {
                         display_name = "hub-vcn-ingress-route-table"
@@ -303,15 +303,21 @@ locals {
                                 destination       = "0.0.0.0/0"
                                 destination_type  = "CIDR_BLOCK"
                                 network_entity_id = var.hub_vcn_east_west_entry_point_ocid
+                            },
+                            "OSN-RULE" = {
+                                network_entity_key = "HUB-VCN-SERVICE-GATEWAY"
+                                description        = "To Oracle Services Network."
+                                destination        = "all-services"
+                                destination_type   = "SERVICE_CIDR_BLOCK"
                             }
                         }
                     }
                 } : {},
                 
-                # Route table for North/South traffic is attached to HUB VCN Internet Gateway.
+                # 3rd-party Firewall case: Route table for North/South traffic is attached to HUB VCN Internet Gateway.
                 (var.hub_vcn_north_south_entry_point_ocid != null) ? {
                     "HUB-VCN-INTERNET-GATEWAY-ROUTE-TABLE" = {
-                        display_name = "hub-vcn-internet-gateway-route-table"
+                        display_name = "internet-gateway-route-table"
                         route_rules = {
                             "ANYWHERE-RULE" = {
                                 description       = "All traffic goes to ${var.hub_vcn_north_south_entry_point_ocid}."
@@ -323,7 +329,7 @@ locals {
                     }
                 } : {},
 
-                # Route table for spoke VCNs outbound traffic, attached to HUB VCN DRG attachment.
+                # OCI Firewall case: Route table for spoke VCNs outbound traffic, attached to HUB VCN DRG attachment.
                 (coalesce(var.oci_nfw_ip_ocid,local.void) != local.void) ? {
                     "HUB-VCN-INGRESS-ROUTE-TABLE" = {
                         display_name = "hub-vcn-ingress-route-table"
@@ -333,13 +339,19 @@ locals {
                                 destination       = "0.0.0.0/0"
                                 destination_type  = "CIDR_BLOCK"
                                 network_entity_id = var.oci_nfw_ip_ocid
+                            },
+                            "OSN-RULE" = {
+                                network_entity_key = "HUB-VCN-SERVICE-GATEWAY"
+                                description        = "To Oracle Services Network."
+                                destination        = "all-services"
+                                destination_type   = "SERVICE_CIDR_BLOCK"
                             }
                         }
                     }
                 } : {},
                 (coalesce(var.oci_nfw_ip_ocid,local.void) != local.void) ? {
                   "HUB-VCN-NAT-GATEWAY-ROUTE-TABLE" = {
-                    display_name = "hub-vcn-nat-gateway-route-table"
+                    display_name = "nat-gateway-route-table"
                     route_rules = merge(
                       local.add_tt_vcn1 == true && var.tt_vcn1_attach_to_drg == true ? {for cidr in var.tt_vcn1_cidrs : "TT-VCN-1-${replace(replace(cidr,".",""),"/","")}-RULE" => {
                         network_entity_id = var.oci_nfw_ip_ocid
@@ -397,7 +409,68 @@ locals {
                       }} : {}
                     )
                   }
-                } : {}
+                } : {},
+                {
+                  "HUB-VCN-SERVICE-GATEWAY-ROUTE-TABLE" = {
+                    display_name = "service-gateway-route-table"
+                    route_rules = merge(
+                      local.add_tt_vcn1 == true && var.tt_vcn1_attach_to_drg == true ? {for cidr in var.tt_vcn1_cidrs : "TT-VCN-1-${replace(replace(cidr,".",""),"/","")}-RULE" => {
+                        network_entity_key = "HUB-DRG"
+                        description        = "Traffic destined to ${coalesce(var.tt_vcn1_name,"${var.service_label}-three-tier-vcn-1")} CIDR ${cidr} goes to DRG."
+                        destination        = "${cidr}"
+                        destination_type   = "CIDR_BLOCK"
+                      }} : {},
+                      local.add_tt_vcn2 == true && var.tt_vcn2_attach_to_drg == true ? {for cidr in var.tt_vcn2_cidrs : "TT-VCN-2-${replace(replace(cidr,".",""),"/","")}-RULE" => {
+                        network_entity_key = "HUB-DRG"
+                        description       = "Traffic destined to ${coalesce(var.tt_vcn2_name,"${var.service_label}-three-tier-vcn-2")} CIDR ${cidr} goes to DRG."
+                        destination       = "${cidr}"
+                        destination_type  = "CIDR_BLOCK"
+                      }} : {},
+                      local.add_tt_vcn3 == true && var.tt_vcn3_attach_to_drg == true ? {for cidr in var.tt_vcn3_cidrs : "TT-VCN-3-${replace(replace(cidr,".",""),"/","")}-RULE" => {
+                        network_entity_key = "HUB-DRG"
+                        description       = "Traffic destined to ${coalesce(var.tt_vcn3_name,"${var.service_label}-three-tier-vcn-3")} CIDR ${cidr} goes to DRG."
+                        destination       = "${cidr}"
+                        destination_type  = "CIDR_BLOCK"
+                      }} : {},
+                      local.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true ? {for cidr in var.oke_vcn1_cidrs : "OKE-VCN-1-${replace(replace(cidr,".",""),"/","")}}-RULE" => {
+                        network_entity_key = "HUB-DRG"
+                        description       = "Traffic destined to ${coalesce(var.oke_vcn1_name,"${var.service_label}-oke-vcn-1")} CIDR ${cidr} goes to DRG."
+                        destination       = "${cidr}"
+                        destination_type  = "CIDR_BLOCK"
+                      }} : {},
+                      local.add_oke_vcn2 == true && var.oke_vcn2_attach_to_drg == true ? {for cidr in var.oke_vcn2_cidrs : "OKE-VCN-2-${replace(replace(cidr,".",""),"/","")}}-RULE" => {
+                        network_entity_key = "HUB-DRG"
+                        description       = "Traffic destined to ${coalesce(var.oke_vcn2_name,"${var.service_label}-oke-vcn-2")} CIDR ${cidr} goes to DRG."
+                        destination       = "${cidr}"
+                        destination_type  = "CIDR_BLOCK"
+                      }} : {}, 
+                      local.add_oke_vcn3 == true && var.oke_vcn3_attach_to_drg == true ? {for cidr in var.oke_vcn3_cidrs : "OKE-VCN-3-${replace(replace(cidr,".",""),"/","")}}-RULE" => {
+                        network_entity_key = "HUB-DRG"
+                        description       = "Traffic destined to ${coalesce(var.oke_vcn3_name,"${var.service_label}-oke-vcn-3")} CIDR ${cidr} goes to DRG."
+                        destination       = "${cidr}"
+                        destination_type  = "CIDR_BLOCK"
+                      }} : {},
+                      local.add_exa_vcn1 == true && var.exa_vcn1_attach_to_drg == true ? {for cidr in var.exa_vcn1_cidrs : "EXA-VCN-1-${replace(replace(cidr,".",""),"/","")}}-RULE" => {
+                        network_entity_key = "HUB-DRG"
+                        description       = "Traffic destined to ${coalesce(var.exa_vcn1_name,"${var.service_label}-exa-vcn-1")} CIDR ${cidr} goes to DRG."
+                        destination       = "${cidr}"
+                        destination_type  = "CIDR_BLOCK"
+                      }} : {},
+                      local.add_exa_vcn2 == true && var.exa_vcn2_attach_to_drg == true ? {for cidr in var.exa_vcn2_cidrs : "EXA-VCN-2-${replace(replace(cidr,".",""),"/","")}}-RULE" => {
+                        network_entity_key = "HUB-DRG"
+                        description       = "Traffic destined to ${coalesce(var.exa_vcn2_name,"${var.service_label}-exa-vcn-2")} CIDR ${cidr} goes to DRG."
+                        destination       = "${cidr}"
+                        destination_type  = "CIDR_BLOCK"
+                      }} : {}, 
+                      local.add_exa_vcn3 == true && var.exa_vcn3_attach_to_drg == true ? {for cidr in var.exa_vcn3_cidrs : "EXA-VCN-3-${replace(replace(cidr,".",""),"/","")}}-RULE" => {
+                        network_entity_key = "HUB-DRG"
+                        description       = "Traffic destined to ${coalesce(var.exa_vcn3_name,"${var.service_label}-exa-vcn-3")} CIDR ${cidr} goes to DRG."
+                        destination       = "${cidr}"
+                        destination_type  = "CIDR_BLOCK"
+                      }} : {}
+                    )
+                  }
+                }
             ) # closing Route Table merge function
 
             network_security_groups = merge( 
@@ -679,15 +752,16 @@ locals {
                 }
                 nat_gateways = {
                     "HUB-VCN-NAT-GATEWAY" = {
-                        block_traffic = false
-                        display_name  = "nat-gateway"
-                        #route_table_key = "HUB-VCN-NAT-GATEWAY-ROUTE-TABLE"
+                        block_traffic   = false
+                        display_name    = "nat-gateway"
+                        route_table_key = "HUB-VCN-NAT-GATEWAY-ROUTE-TABLE"
                     }
                 }
                 service_gateways = {
                     "HUB-VCN-SERVICE-GATEWAY" = {
-                        display_name = "service-gateway"
-                        services     = "all-services"
+                        display_name    = "service-gateway"
+                        services        = "all-services"
+                        route_table_key = "HUB-VCN-SERVICE-GATEWAY-ROUTE-TABLE"
                     }
                 
                 }
