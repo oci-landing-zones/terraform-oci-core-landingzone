@@ -4,7 +4,6 @@
 locals {
     hub_vcn = local.hub_with_vcn == true ? { # local variable hub_with_vcn is defined in net_hub_drg.tf.
         "HUB-VCN" = {
-            default_enable_cis_checks        = false
             display_name                     = coalesce(var.hub_vcn_name, "${var.service_label}-hub-vcn")
             is_ipv6enabled                   = false
             is_oracle_gua_allocation_enabled = false
@@ -742,14 +741,14 @@ locals {
                     "HUB-VCN-INTERNET-GATEWAY" = {
                         enabled         = true
                         display_name    = "internet-gateway"
-                        route_table_key = var.hub_vcn_north_south_entry_point_ocid != null ? "HUB-VCN-INTERNET-GATEWAY-ROUTE-TABLE" : null
+                        route_table_key = coalesce(var.hub_vcn_north_south_entry_point_ocid,local.void) != local.void ? "HUB-VCN-INTERNET-GATEWAY-ROUTE-TABLE" : null
                     }
                 }
                 nat_gateways = {
                     "HUB-VCN-NAT-GATEWAY" = {
                         block_traffic   = false
                         display_name    = "nat-gateway"
-                        route_table_key = "HUB-VCN-NAT-GATEWAY-ROUTE-TABLE"
+                        route_table_key = coalesce(var.oci_nfw_ip_ocid,local.void) != local.void ? "HUB-VCN-NAT-GATEWAY-ROUTE-TABLE" : null
                     }
                 }
                 service_gateways = {
