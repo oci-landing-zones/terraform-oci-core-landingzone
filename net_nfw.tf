@@ -223,7 +223,7 @@ locals {
                                 display_name                     = "${var.service_label}-oci-firewall"
                                 compartment_id                   = local.network_compartment_id
                                 subnet_id                        = module.lz_network.provisioned_networking_resources.subnets["INDOOR-SUBNET"].id
-                                network_security_groups          = [module.lz_network.provisioned_networking_resources.network_security_groups["HUB-VCN-OCI-FIREWALL-NSG"].id]
+                                network_security_group_ids       = [module.lz_network.provisioned_networking_resources.network_security_groups["HUB-VCN-OCI-FIREWALL-NSG"].id]
                             }
                         }
                         network_firewall_policies = var.oci_nfw_policy_ocid == null ? {
