@@ -254,99 +254,107 @@ locals {
   ## 2) If there's no Hub VCN (1 or 2), the route to DRG is enabled by default or if explicitly configured via the 'exa_vcn3_routable_vcns' attribute.
   ## Explicitly setting 'exa_vcn3_routable_vcns' constrains routing to provided VCNs only.
   exa_vcn_3_drg_routing = merge(
-    (local.add_exa_vcn3 == true && var.exa_vcn3_attach_to_drg == true && var.add_exa_vcn1 == true && var.exa_vcn1_attach_to_drg == true) &&
-    (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.exa_vcn3_routable_vcns) == 0 || contains(var.exa_vcn3_routable_vcns, "EXA-VCN-1")))) ? {
-      for cidr in var.exa_vcn1_cidrs : "EXA-VCN-1-${replace(replace(cidr, ".", ""), "/", "")}-RULE" => {
+    (local.add_exa_vcn3 == true && var.exa_vcn3_attach_to_drg == true && local.chosen_hub_option != 0) ? { 
+      "DRG-RULE" = {
         network_entity_key = "HUB-DRG"
         description        = "To DRG."
-        destination        = cidr
+        destination        = "0.0.0.0/0"
         destination_type   = "CIDR_BLOCK"
       }
     } : {},
+    # (local.add_exa_vcn3 == true && var.exa_vcn3_attach_to_drg == true && var.add_exa_vcn1 == true && var.exa_vcn1_attach_to_drg == true) &&
+    # (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.exa_vcn3_routable_vcns) == 0 || contains(var.exa_vcn3_routable_vcns, "EXA-VCN-1")))) ? {
+    #   for cidr in var.exa_vcn1_cidrs : "EXA-VCN-1-${replace(replace(cidr, ".", ""), "/", "")}-RULE" => {
+    #     network_entity_key = "HUB-DRG"
+    #     description        = "To DRG."
+    #     destination        = cidr
+    #     destination_type   = "CIDR_BLOCK"
+    #   }
+    # } : {},
 
-    (local.add_exa_vcn3 == true && var.exa_vcn3_attach_to_drg == true && var.add_exa_vcn2 == true && var.exa_vcn2_attach_to_drg == true) &&
-    (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.exa_vcn3_routable_vcns) == 0 || contains(var.exa_vcn3_routable_vcns, "EXA-VCN-2")))) ? {
-      for cidr in var.exa_vcn2_cidrs : "EXA-VCN-2-${replace(replace(cidr, ".", ""), "/", "")}-RULE" => {
-        network_entity_key = "HUB-DRG"
-        description        = "To DRG."
-        destination        = cidr
-        destination_type   = "CIDR_BLOCK"
-      }
-    } : {},
+    # (local.add_exa_vcn3 == true && var.exa_vcn3_attach_to_drg == true && var.add_exa_vcn2 == true && var.exa_vcn2_attach_to_drg == true) &&
+    # (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.exa_vcn3_routable_vcns) == 0 || contains(var.exa_vcn3_routable_vcns, "EXA-VCN-2")))) ? {
+    #   for cidr in var.exa_vcn2_cidrs : "EXA-VCN-2-${replace(replace(cidr, ".", ""), "/", "")}-RULE" => {
+    #     network_entity_key = "HUB-DRG"
+    #     description        = "To DRG."
+    #     destination        = cidr
+    #     destination_type   = "CIDR_BLOCK"
+    #   }
+    # } : {},
 
-    ## EXA-VCN-3 to TT-VCNs
-    (local.add_exa_vcn3 == true && var.exa_vcn3_attach_to_drg == true && var.add_tt_vcn1 == true && var.tt_vcn1_attach_to_drg == true) &&
-    (local.hub_with_vcn == true ||
-      (local.hub_with_drg_only == true && (length(var.exa_vcn3_routable_vcns) == 0 || contains(var.exa_vcn3_routable_vcns, "TT-VCN-1")))) ? {
-      for cidr in var.tt_vcn1_cidrs : "TT-VCN-1-${replace(replace(cidr, ".", ""), "/", "")}-RULE" => {
-        network_entity_key = "HUB-DRG"
-        description        = "To DRG."
-        destination        = cidr
-        destination_type   = "CIDR_BLOCK"
-      }
-    } : {},
+    # ## EXA-VCN-3 to TT-VCNs
+    # (local.add_exa_vcn3 == true && var.exa_vcn3_attach_to_drg == true && var.add_tt_vcn1 == true && var.tt_vcn1_attach_to_drg == true) &&
+    # (local.hub_with_vcn == true ||
+    #   (local.hub_with_drg_only == true && (length(var.exa_vcn3_routable_vcns) == 0 || contains(var.exa_vcn3_routable_vcns, "TT-VCN-1")))) ? {
+    #   for cidr in var.tt_vcn1_cidrs : "TT-VCN-1-${replace(replace(cidr, ".", ""), "/", "")}-RULE" => {
+    #     network_entity_key = "HUB-DRG"
+    #     description        = "To DRG."
+    #     destination        = cidr
+    #     destination_type   = "CIDR_BLOCK"
+    #   }
+    # } : {},
 
-    (local.add_exa_vcn3 == true && var.exa_vcn3_attach_to_drg == true && var.add_tt_vcn2 == true && var.tt_vcn2_attach_to_drg == true) &&
-    (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.exa_vcn3_routable_vcns) == 0 || contains(var.exa_vcn3_routable_vcns, "TT-VCN-2")))) ? {
-      for cidr in var.tt_vcn2_cidrs : "TT-VCN-2-${replace(replace(cidr, ".", ""), "/", "")}-RULE" => {
-        network_entity_key = "HUB-DRG"
-        description        = "To DRG."
-        destination        = cidr
-        destination_type   = "CIDR_BLOCK"
-      }
-    } : {},
+    # (local.add_exa_vcn3 == true && var.exa_vcn3_attach_to_drg == true && var.add_tt_vcn2 == true && var.tt_vcn2_attach_to_drg == true) &&
+    # (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.exa_vcn3_routable_vcns) == 0 || contains(var.exa_vcn3_routable_vcns, "TT-VCN-2")))) ? {
+    #   for cidr in var.tt_vcn2_cidrs : "TT-VCN-2-${replace(replace(cidr, ".", ""), "/", "")}-RULE" => {
+    #     network_entity_key = "HUB-DRG"
+    #     description        = "To DRG."
+    #     destination        = cidr
+    #     destination_type   = "CIDR_BLOCK"
+    #   }
+    # } : {},
 
-    (local.add_exa_vcn3 == true && var.exa_vcn3_attach_to_drg == true && var.add_tt_vcn3 == true && var.tt_vcn3_attach_to_drg == true) &&
-    (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.exa_vcn3_routable_vcns) == 0 || contains(var.exa_vcn3_routable_vcns, "TT-VCN-3")))) ? {
-      for cidr in var.tt_vcn3_cidrs : "TT-VCN-3-${replace(replace(cidr, ".", ""), "/", "")}-RULE" => {
-        network_entity_key = "HUB-DRG"
-        description        = "To DRG."
-        destination        = cidr
-        destination_type   = "CIDR_BLOCK"
-      }
-    } : {},
+    # (local.add_exa_vcn3 == true && var.exa_vcn3_attach_to_drg == true && var.add_tt_vcn3 == true && var.tt_vcn3_attach_to_drg == true) &&
+    # (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.exa_vcn3_routable_vcns) == 0 || contains(var.exa_vcn3_routable_vcns, "TT-VCN-3")))) ? {
+    #   for cidr in var.tt_vcn3_cidrs : "TT-VCN-3-${replace(replace(cidr, ".", ""), "/", "")}-RULE" => {
+    #     network_entity_key = "HUB-DRG"
+    #     description        = "To DRG."
+    #     destination        = cidr
+    #     destination_type   = "CIDR_BLOCK"
+    #   }
+    # } : {},
 
-    ## EXA-VCN-3 to OKE-VCNs
-    (local.add_exa_vcn3 == true && var.exa_vcn3_attach_to_drg == true && var.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true) &&
-    (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.exa_vcn3_routable_vcns) == 0 || contains(var.exa_vcn3_routable_vcns, "OKE-VCN-1")))) ? {
-      for cidr in var.oke_vcn1_cidrs : "OKE-VCN-1-${replace(replace(cidr, ".", ""), "/", "")}-RULE" => {
-        network_entity_key = "HUB-DRG"
-        description        = "To DRG."
-        destination        = cidr
-        destination_type   = "CIDR_BLOCK"
-      }
-    } : {},
+    # ## EXA-VCN-3 to OKE-VCNs
+    # (local.add_exa_vcn3 == true && var.exa_vcn3_attach_to_drg == true && var.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true) &&
+    # (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.exa_vcn3_routable_vcns) == 0 || contains(var.exa_vcn3_routable_vcns, "OKE-VCN-1")))) ? {
+    #   for cidr in var.oke_vcn1_cidrs : "OKE-VCN-1-${replace(replace(cidr, ".", ""), "/", "")}-RULE" => {
+    #     network_entity_key = "HUB-DRG"
+    #     description        = "To DRG."
+    #     destination        = cidr
+    #     destination_type   = "CIDR_BLOCK"
+    #   }
+    # } : {},
 
-    (local.add_exa_vcn3 == true && var.exa_vcn3_attach_to_drg == true && var.add_oke_vcn2 == true && var.oke_vcn2_attach_to_drg == true) &&
-    (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.exa_vcn3_routable_vcns) == 0 || contains(var.exa_vcn3_routable_vcns, "OKE-VCN-2")))) ? {
-      for cidr in var.oke_vcn2_cidrs : "OKE-VCN-2-${replace(replace(cidr, ".", ""), "/", "")}-RULE" => {
-        network_entity_key = "HUB-DRG"
-        description        = "To DRG."
-        destination        = cidr
-        destination_type   = "CIDR_BLOCK"
-      }
-    } : {},
+    # (local.add_exa_vcn3 == true && var.exa_vcn3_attach_to_drg == true && var.add_oke_vcn2 == true && var.oke_vcn2_attach_to_drg == true) &&
+    # (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.exa_vcn3_routable_vcns) == 0 || contains(var.exa_vcn3_routable_vcns, "OKE-VCN-2")))) ? {
+    #   for cidr in var.oke_vcn2_cidrs : "OKE-VCN-2-${replace(replace(cidr, ".", ""), "/", "")}-RULE" => {
+    #     network_entity_key = "HUB-DRG"
+    #     description        = "To DRG."
+    #     destination        = cidr
+    #     destination_type   = "CIDR_BLOCK"
+    #   }
+    # } : {},
 
-    (local.add_exa_vcn3 == true && var.exa_vcn3_attach_to_drg == true && var.add_oke_vcn3 == true && var.oke_vcn3_attach_to_drg == true) &&
-    (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.exa_vcn3_routable_vcns) == 0 || contains(var.exa_vcn3_routable_vcns, "OKE-VCN-3")))) ? {
-      for cidr in var.oke_vcn3_cidrs : "OKE-VCN-3-${replace(replace(cidr, ".", ""), "/", "")}-RULE" => {
-        network_entity_key = "HUB-DRG"
-        description        = "To DRG."
-        destination        = cidr
-        destination_type   = "CIDR_BLOCK"
-      }
-    } : {},
+    # (local.add_exa_vcn3 == true && var.exa_vcn3_attach_to_drg == true && var.add_oke_vcn3 == true && var.oke_vcn3_attach_to_drg == true) &&
+    # (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.exa_vcn3_routable_vcns) == 0 || contains(var.exa_vcn3_routable_vcns, "OKE-VCN-3")))) ? {
+    #   for cidr in var.oke_vcn3_cidrs : "OKE-VCN-3-${replace(replace(cidr, ".", ""), "/", "")}-RULE" => {
+    #     network_entity_key = "HUB-DRG"
+    #     description        = "To DRG."
+    #     destination        = cidr
+    #     destination_type   = "CIDR_BLOCK"
+    #   }
+    # } : {},
 
-    ## Route to on-premises CIDRs
-    (local.add_exa_vcn3 == true && var.exa_vcn3_attach_to_drg == true && length(var.onprem_cidrs) > 0) &&
-    (local.hub_with_vcn == true || local.hub_with_drg_only == true) ? {
-        for cidr in var.onprem_cidrs : "ONPREM-${replace(replace(cidr,".",""),"/","")}-RULE" => {
-            network_entity_key = "HUB-DRG"
-            description        = "Traffic destined to on-premises ${cidr} CIDR range goes to DRG."
-            destination        = cidr
-            destination_type   = "CIDR_BLOCK"
-        }
-    } : {}
+    # ## Route to on-premises CIDRs
+    # (local.add_exa_vcn3 == true && var.exa_vcn3_attach_to_drg == true && length(var.onprem_cidrs) > 0) &&
+    # (local.hub_with_vcn == true || local.hub_with_drg_only == true) ? {
+    #     for cidr in var.onprem_cidrs : "ONPREM-${replace(replace(cidr,".",""),"/","")}-RULE" => {
+    #         network_entity_key = "HUB-DRG"
+    #         description        = "Traffic destined to on-premises ${cidr} CIDR range goes to DRG."
+    #         destination        = cidr
+    #         destination_type   = "CIDR_BLOCK"
+    #     }
+    # } : {}
   )
 
   #### Cross VCN NSG Rules
