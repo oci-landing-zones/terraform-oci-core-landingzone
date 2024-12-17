@@ -459,7 +459,7 @@ locals {
                         } 
                     }
                 } : {},    
-                {
+                local.chosen_firewall_option != "OCINFW" ? {
                     "HUB-VCN-INDOOR-NLB-NSG" = {
                         display_name = "indoor-nlb-nsg"
                         ingress_rules = {
@@ -483,8 +483,8 @@ locals {
                             }
                         }
                     }
-                },
-                {
+                } : {},
+                local.chosen_firewall_option != "OCINFW" ? {
                     "HUB-VCN-INDOOR-FW-NSG" = {
                         display_name = "indoor-fw-nsg"
                             ingress_rules = {
@@ -508,7 +508,7 @@ locals {
                               }
                             }
                         }
-                },
+                } : {},
                 local.chosen_firewall_option != "OCINFW" ? {    
                     "HUB-VCN-MGMT-NSG" = {
                         display_name = "mgmt-nsg"
