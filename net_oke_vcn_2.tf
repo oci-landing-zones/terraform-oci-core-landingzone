@@ -130,7 +130,7 @@ locals {
                   destination_type   = "CIDR_BLOCK"
                 }
               },
-              local.oke_vcn_2_drg_routing
+              #local.oke_vcn_2_drg_routing
             )
           }
         },
@@ -205,7 +205,7 @@ locals {
                   destination_type   = "CIDR_BLOCK"
                 }
               },
-              local.oke_vcn_2_drg_routing
+              #local.oke_vcn_2_drg_routing
             )
           }
         } : {}

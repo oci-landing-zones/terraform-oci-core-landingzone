@@ -56,7 +56,7 @@ locals {
                 destination_type   = "CIDR_BLOCK"
               }
             },
-            local.exa_vcn_2_drg_routing
+            #local.exa_vcn_2_drg_routing
           )
         },
         "EXA-VCN-2-BACKUP-SUBNET-ROUTE-TABLE" = {

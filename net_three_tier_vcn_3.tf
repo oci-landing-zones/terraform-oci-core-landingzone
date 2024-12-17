@@ -119,8 +119,15 @@ locals {
                                     destination        = "objectstorage"
                                     destination_type   = "SERVICE_CIDR_BLOCK"
                                 }
-                            } : {},
-                            local.tt_cross_vcn_3_drg_routing
+                            } : {
+                                "HUB-DRG-RULE" = {
+                                    network_entity_key = "HUB-DRG"
+                                    description        = "Route to HUB DRG"
+                                    destination        = "0.0.0.0/0"
+                                    destination_type   = "CIDR_BLOCK"
+                                }
+                            },
+                            #local.tt_cross_vcn_3_drg_routing
                         )
                     }
                 },
@@ -141,8 +148,15 @@ locals {
                                     destination        = "all-services"
                                     destination_type   = "SERVICE_CIDR_BLOCK"
                                 }
-                            } : {},  
-                            local.tt_cross_vcn_3_drg_routing  
+                            } : {
+                                "HUB-DRG-RULE" = {
+                                    network_entity_key = "HUB-DRG"
+                                    description        = "Route to HUB DRG"
+                                    destination        = "0.0.0.0/0"
+                                    destination_type   = "CIDR_BLOCK"
+                                }
+                            },  
+                            #local.tt_cross_vcn_3_drg_routing  
                         )
                     }
                 },
@@ -163,8 +177,15 @@ locals {
                                     destination        = "all-services"
                                     destination_type   = "SERVICE_CIDR_BLOCK"
                                 }
-                            } : {},  
-                            local.tt_cross_vcn_3_drg_routing   
+                            } : {
+                                "HUB-DRG-RULE" = {
+                                    network_entity_key = "HUB-DRG"
+                                    description        = "Route to HUB DRG"
+                                    destination        = "0.0.0.0/0"
+                                    destination_type   = "CIDR_BLOCK"
+                                }
+                            },  
+                            #local.tt_cross_vcn_3_drg_routing   
                         )
                     }
                 },
@@ -185,8 +206,15 @@ locals {
                                     destination        = var.tt_vcn3_bastion_is_access_via_public_endpoint == false ? "all-services" : "objectstorage"
                                     destination_type   = "SERVICE_CIDR_BLOCK"
                                 }
-                            } : {},
-                            local.tt_cross_vcn_3_drg_routing   
+                            } : {
+                                "HUB-DRG-RULE" = {
+                                    network_entity_key = "HUB-DRG"
+                                    description        = "Route to HUB DRG"
+                                    destination        = "0.0.0.0/0"
+                                    destination_type   = "CIDR_BLOCK"
+                                }
+                            },
+                            #local.tt_cross_vcn_3_drg_routing   
                         )
                     }
                 } : {}    
