@@ -1380,15 +1380,15 @@ locals {
         dst_port_max = 1522
       }
     } : {},
-    ## Ingress from jump host in Hub MGMT Subnet into TT-VCN-1 DB Subnet if hub with vcn is true
+    ## Ingress from jump host in Hub Jumphost Subnet into TT-VCN-1 DB Subnet if hub with vcn is true
     (local.add_tt_vcn1 == true && var.tt_vcn1_attach_to_drg == true) &&
     (local.hub_with_vcn == true && var.deploy_bastion_jump_host) ? merge(
       {
-        "INGRESS-FROM-HUB-MGMT-SUBNET-RULE" = {
-          description  = "Ingress from Hub VCN MGMT Subnet. Required for deploying jump host instance access."
+        "INGRESS-FROM-HUB-JUMPHOST-SUBNET-RULE" = {
+          description  = "Ingress from Hub VCN Jumphost Subnet. Required for deploying jump host instance access."
           stateless    = false
           protocol     = "TCP"
-          src          = coalesce(var.hub_vcn_mgmt_subnet_cidr, cidrsubnet(var.hub_vcn_cidrs[0], 2, 3))
+          src          = coalesce(var.hub_vcn_jumphost_subnet_cidr, cidrsubnet(var.hub_vcn_cidrs[0], 3, 4))
           src_type     = "CIDR_BLOCK"
           dst_port_min = 22
           dst_port_max = 22

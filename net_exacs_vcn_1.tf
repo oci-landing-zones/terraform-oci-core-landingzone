@@ -124,10 +124,10 @@ locals {
           ingress_rules = merge(
             {
               "INGRESS-FROM-SSH-HUB-VCN-RULE" = local.hub_with_vcn == true && var.exa_vcn1_attach_to_drg == true && local.add_exa_vcn1 == true ? {
-                description  = "Allows SSH connections from ${coalesce(var.hub_vcn_mgmt_subnet_cidr, cidrsubnet(var.hub_vcn_cidrs[0], 2, 3))} in Hub VCN MGMT subnet."
+                description  = "Allows SSH connections from ${coalesce(var.hub_vcn_jumphost_subnet_cidr, cidrsubnet(var.hub_vcn_cidrs[0], 3, 4))} in Hub VCN Jumphost subnet."
                 stateless    = false
                 protocol     = "TCP"
-                src          = coalesce(var.hub_vcn_mgmt_subnet_cidr, cidrsubnet(var.hub_vcn_cidrs[0], 2, 3))
+                src          = coalesce(var.hub_vcn_jumphost_subnet_cidr, cidrsubnet(var.hub_vcn_cidrs[0], 3, 4))
                 src_type     = "CIDR_BLOCK"
                 dst_port_min = 22
                 dst_port_max = 22
