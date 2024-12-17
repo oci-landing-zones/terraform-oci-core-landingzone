@@ -4,6 +4,7 @@
 locals {
     hub_vcn = local.hub_with_vcn == true ? { # local variable hub_with_vcn is defined in net_hub_drg.tf.
         "HUB-VCN" = {
+            default_enable_cis_checks        = false
             display_name                     = coalesce(var.hub_vcn_name, "${var.service_label}-hub-vcn")
             is_ipv6enabled                   = false
             is_oracle_gua_allocation_enabled = false
@@ -655,12 +656,12 @@ locals {
                     "HUB-VCN-OCI-FIREWALL-NSG" = {
                         display_name = "oci-firewall-nsg"
                         ingress_rules = {
-                            "INGRESS-FROM-NLB-NSG-RULE" = {
-                                description  = "Ingress from Application Load Balancer"
+                            "INGRESS-FROM-ANYWHERE" = {
+                                description  = "Ingress from anywhere."
                                 stateless    = false
                                 protocol     = "TCP"
-                                src          = "HUB-VCN-APP-LOAD-BALANCER"
-                                src_type     = "NETWORK_SECURITY_GROUP"
+                                src          = "0.0.0.0/0"
+                                src_type     = "CIDR_BLOCK"
                             }
                         }
                         egress_rules = merge(
