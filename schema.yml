@@ -2936,7 +2936,7 @@ variables:
   oci_nfw_ip_ocid:
     type: string
     title: "OCI Network Firewall Forwarding IP OCID"
-    description: "Enter the OCID of Native Firewall IP address, where all inbound Internet (North/South) traffic and all inter-VCN (East/West) traffic is sent to in the Hub VCN."
+    description: "Enter the OCID of Native Firewall IP address, where all outbound traffic from the spoke VCNs is sent to in the Hub VCN."
     visible:
       and:
         - define_net
@@ -4033,7 +4033,11 @@ outputs:
 
   nlb_private_ip_addresses:
     type: json
-    title: Network Load Balancers (NLB) Private IP Addresses     
+    title: Network Load Balancers (NLB) Private IP Addresses  
+
+  oci_firewall_ip_ocid:
+    type: json
+    title: OCI Firewall IP OCID
     
 outputGroups:
   - title: Environment
@@ -4054,3 +4058,4 @@ outputGroups:
       - ${network_security_groups}
       - ${dynamic_routing_gateways}
       - ${nlb_private_ip_addresses}
+      - ${oci_firewall_ip_ocid}
