@@ -730,13 +730,7 @@ locals {
                             }
                         }
                         egress_rules = {
-                            "EGRESS-TO-OCI-FIREWALL-NSG-RULE" = {
-                                description  = "Ingress from Internet"
-                                stateless    = false
-                                protocol     = "TCP"
-                                dst          = "HUB-VCN-OCI-FIREWALL-NSG"
-                                dst_type     = "NETWORK_SECURITY_GROUP"
-                            }
+                            # These are to be added for the various workloads, and should egress to particular backend servers.
                         }
                     }
                 } : {}        
