@@ -657,6 +657,17 @@ locals {
                 dst_port_max = 22
               }
             } : {},
+            (local.hub_with_vcn == true && var.deploy_bastion_jump_host == true) ? {
+              "INGRESS-FROM-HUB-JUMPHOST-SUBNET-RULE" = {
+                description  = "Ingress from Hub VCN Jumphost Subnet. Required for deploying jump host instance access."
+                stateless    = false
+                protocol     = "TCP"
+                src = coalesce(var.hub_vcn_jumphost_subnet_cidr, cidrsubnet(var.hub_vcn_cidrs[0], 3, 4))
+                src_type     = "CIDR_BLOCK"
+                dst_port_min = 22
+                dst_port_max = 22
+              }
+            } : {},
             local.oke_vcn_1_to_workers_subnet_cross_vcn_ingress
           )
         }
