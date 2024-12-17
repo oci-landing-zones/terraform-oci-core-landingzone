@@ -669,8 +669,8 @@ locals {
                                 description  = "Ingress from Internet"
                                 stateless    = false
                                 protocol     = "TCP"
-                                src          = "HUB-VCN-OCI-FIREWALL-NSG"
-                                src_type     = "NETWORK_SECURITY_GROUP"
+                                dst          = "HUB-VCN-OCI-FIREWALL-NSG"
+                                dst_type     = "NETWORK_SECURITY_GROUP"
                             }
                         }
                     }
