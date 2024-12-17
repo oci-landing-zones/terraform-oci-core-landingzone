@@ -215,37 +215,21 @@ locals {
         network_configuration_categories = {
             native_stack = {
                 non_vcn_specific_gateways = {
-                    network_firewalls_configuration = (var.oci_nfw_policy_ocid != null) ? {
+                    network_firewalls_configuration = {
                         network_firewalls = {
                             OCI-NFW-KEY = {
-                                network_firewall_policy_id       = var.oci_nfw_policy_ocid
+                                network_firewall_policy_id       = var.oci_nfw_policy_ocid != null ? var.oci_nfw_policy_ocid : null
+                                network_firewall_policy_key      = var.oci_nfw_policy_ocid == null ? "OCI-NFW-POLICY-KEY" : null
                                 display_name                     = "${var.service_label}-oci-firewall"
                                 compartment_id                   = local.network_compartment_id
                                 subnet_id                        = module.lz_network.provisioned_networking_resources.subnets["INDOOR-SUBNET"].id
                                 network_security_groups          = [module.lz_network.provisioned_networking_resources.network_security_groups["HUB-VCN-OCI-FIREWALL-NSG"].id]
                             }
                         }
-                        network_firewall_policies = {}
-                    } : {
-                        network_firewalls = {
-                            OCI-NFW-KEY = {
-                                network_firewall_policy_key      = "OCI-NFW-POLICY-KEY"
-                                display_name                     = "${var.service_label}-oci-firewall"
-                                compartment_id                   = local.network_compartment_id
-                                subnet_id                        = module.lz_network.provisioned_networking_resources.subnets["INDOOR-SUBNET"].id
-                                network_security_groups          = [module.lz_network.provisioned_networking_resources.network_security_groups["HUB-VCN-OCI-FIREWALL-NSG"].id]
-                            }
-                        }
-                        network_firewall_policies = {
+                        network_firewall_policies = var.oci_nfw_policy_ocid == null ? {
                             OCI-NFW-POLICY-KEY = {
                                 display_name   = "${var.service_label}-oci-firewall-initial-policy"
                                 compartment_id = local.network_compartment_id
-                                #ip_address_lists = {
-                                #    ocinfw_ip_list = {
-                                #        ip_address_list_name  = "vcn-ips"
-                                #        ip_address_list_value = [var.hub_vcn_cidrs]
-                                #    }
-                                #}
                                 security_rules = {
                                     OCI-NFW-SECURITY_RULES-1 = {
                                         action = "REJECT"
@@ -261,7 +245,7 @@ locals {
                                     }
                                 }
                             }
-                        }
+                        } : null
                     }
                 }
             }
