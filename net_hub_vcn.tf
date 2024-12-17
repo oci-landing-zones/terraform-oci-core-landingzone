@@ -341,7 +341,7 @@ locals {
                   "HUB-VCN-NAT-GATEWAY-ROUTE-TABLE" = {
                     display_name = "hub-vcn-nat-gateway-route-table"
                     route_rules = merge(
-                      local.add_tt_vcn1 == true && var.tt_vcn1_attach_to_drg == true ? {"TT-VCN-1-${replace(replace(cidr,".",""),"/","")}-RULE" => {
+                      local.add_tt_vcn1 == true && var.tt_vcn1_attach_to_drg == true ? {for cidr in var.tt_vcn1_cidrs : "TT-VCN-1-${replace(replace(cidr,".",""),"/","")}-RULE" => {
                         network_entity_id = var.oci_nfw_ip_ocid
                         description       = "Traffic destined to ${coalesce(var.tt_vcn1_name,"${var.service_label}-three-tier-vcn-1")} CIDR ${cidr} goes to ${var.oci_nfw_ip_ocid}."
                         destination       = "${cidr}"
