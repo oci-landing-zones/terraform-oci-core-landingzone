@@ -291,7 +291,7 @@ locals {
                             }
                         }
                     }
-                }:{},
+                } : {},
                 
                 # Route table for East/West traffic is attached to HUB VCN DRG attachment.
                 (var.hub_vcn_east_west_entry_point_ocid != null) ? {
@@ -569,7 +569,7 @@ locals {
                                 protocol     = "TCP"
                                 src          = cidr
                                 src_type     = "CIDR_BLOCK"
-                                dst_port_min = 22,
+                                dst_port_min = 22
                                 dst_port_max = 22
                             }
                         },
@@ -599,7 +599,6 @@ locals {
                             }
                         }
                         egress_rules = merge(
-                          {
                             local.add_tt_vcn1 == true && var.tt_vcn1_attach_to_drg == true ? {for cidr in var.tt_vcn1_cidrs : "EGRESS-TO-TT-VCN-1-${replace(replace(cidr,".",""),"/","")}}-RULE" => {
                                 description = "Egress to ${coalesce(var.tt_vcn1_name,"${var.service_label}-three-tier-vcn-1")}."
                                 stateless   = false
@@ -648,7 +647,6 @@ locals {
                                 dst_type    = "CIDR_BLOCK"
                               }
                             } : {},
-                          }
                         )  
                     }
                 } : {},
@@ -662,6 +660,8 @@ locals {
                                 protocol     = "TCP"
                                 src          = "0.0.0.0/0"
                                 src_type     = "CIDR_BLOCK"
+                                dst_port_min = 443
+                                dst_port_max = 443
                             }
                         }
                         egress_rules = {
@@ -689,7 +689,7 @@ locals {
                     "HUB-VCN-NAT-GATEWAY" = {
                         block_traffic = false
                         display_name  = "nat-gateway"
-                        route_table_key = "HUB-VCN-NAT-GATEWAY-ROUTE-TABLE"
+                        #route_table_key = "HUB-VCN-NAT-GATEWAY-ROUTE-TABLE"
                     }
                 }
                 service_gateways = {
