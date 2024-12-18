@@ -16,11 +16,11 @@ variable "security_zones_reporting_region" {
 }
 
 variable "sz_security_policies" {
-  type = list(string)
-  default = []
-  description =  "Additional Security Zones Policy OCIDs to add to security zone recipe (The default policies are added based on CIS level). To get a Security Zone policy OCID use the oci cli:  oci cloud-guard security-policy-collection list-security-policies --compartment-id <tenancy-ocid>."
+  type        = list(string)
+  default     = []
+  description = "Additional Security Zones Policy OCIDs to add to security zone recipe (The default policies are added based on CIS level). To get a Security Zone policy OCID use the oci cli:  oci cloud-guard security-policy-collection list-security-policies --compartment-id <tenancy-ocid>."
   validation {
-    condition = length([for e in var.sz_security_policies : e if length(regexall("ocid1.securityzonessecuritypolicy.*", e)) > 0]) == length(var.sz_security_policies)
+    condition     = length([for e in var.sz_security_policies : e if length(regexall("ocid1.securityzonessecuritypolicy.*", e)) > 0]) == length(var.sz_security_policies)
     error_message = "Validation failed for sz_security_policies must be a valid Security Zone Policy OCID.  To get a Security Zone policy OCID use the oci cli:  oci cloud-guard security-policy-collection list-security-policies --compartment-id <tenancy-ocid>."
   }
 }
@@ -129,86 +129,94 @@ variable "vss_folders_to_scan" {
 # ----- Bastion / Bastion Jump Host
 # ------------------------------------------------------
 variable "bastion_jump_host_instance_name" {
-  type = string
-  default = "bastion-jump-host-instance"
+  type        = string
+  default     = "bastion-jump-host-instance"
   description = "The display name of the bastion jump host instance."
 }
 
 variable "bastion_jump_host_ssh_public_key_path" {
-  type    = string
-  default = null
+  type        = string
+  default     = null
   description = "The SSH public key to login to bastion jump host instance."
 }
 
 
 variable "bastion_jump_host_instance_shape" {
-  type    = string
-  default = "VM.Standard.E4.Flex"
+  type        = string
+  default     = "VM.Standard.E4.Flex"
   description = "The instance shape for the bastion jump host instance."
 }
 
 variable "bastion_jump_host_boot_volume_size" {
-  type    = number
-  default = 60
+  type        = number
+  default     = 60
   description = "The boot volume size (in GB) for the bastion jump host instance."
 }
 
 variable "bastion_jump_host_flex_shape_memory" {
-  type    = number
-  default = 56
+  type        = number
+  default     = 56
   description = "The amount of memory (in GB) for the selected flex shape. Applicable to flexible shapes only."
 }
 
 variable "bastion_jump_host_flex_shape_cpu" {
-  type    = number
-  default = 2
+  type        = number
+  default     = 2
   description = "The number of OCPUs for the selected flex shape. Applicable to flexible shapes only."
 }
 
-variable "bastion_jump_host_platform_image_name" {
-  type = string
-  default = "Oracle-Linux-8.10-2024.08.29-0"
-  description = "The default platform image name for the bastion jump host instance, Oracle-Linux-8.10-2024.08.29-0."
-}
-
 variable "bastion_jump_host_custom_image_ocid" {
-  type = string
-  default = null
-  description = "The custom image ocid of the user-provided bastion jump host instance."
+  type        = string
+  default     = null
+  description = "The custom image ocid of the user-provided bastion jump host instance. The custom image takes precedence over marketplace image."
 }
 
-variable "jump_host_access_option" {
-  type = string
-  default = "On-Premises Through Fast-Connect"
-  description = "Options to access the jump host. The options are: 'On-Premises Through Fast-Connect = 0' and 'Bastion Service = 1' "
+variable "bastion_jump_host_marketplace_image_option" {
+  type        = string
+  default     = null
+  description = "Options to select a jump host marketplace image. Either `STIG Free Image` - Oracle Linux 8 STIG, or `CIS Image` - CIS Hardened Image Level 1 on Oracle Linux 8."
 }
 
 variable "deploy_bastion_jump_host" {
-  type = bool
-  default = false
+  type        = bool
+  default     = false
   description = "The option to deploy the bastion jump host."
 }
 
+variable "deploy_bastion_service" {
+  type        = bool
+  default     = false
+  description = "The option to deploy the bastion service."
+}
+
 variable "bastion_service_name" {
-  type = string
-  default = null
+  type        = string
+  default     = null
   description = "The bastion service name."
 }
 
 variable "bastion_service_allowed_cidrs" {
-  type = list(string)
-  default = []
+  type        = list(string)
+  default     = []
   description = "List of the bastion service allowed cidrs."
-}
-
-variable "bastion_onprem_allowed_cidrs" {
-  type = list(string)
-  default = []
-  description = "List of the bastion jump host on-premises allowed cidrs."
+  validation {
+    condition     = length([for c in var.bastion_service_allowed_cidrs : c if length(regexall("^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/([0-9]|[1-2][0-9]|3[0-2]))?$", c)) > 0]) == length(var.bastion_service_allowed_cidrs)
+    error_message = "Validation failed for bastion_service_allowed_cidrs: values must be in CIDR notation."
+  }
 }
 
 variable "enable_bastion_proxy_status" {
-  type = bool
-  default = false
+  type        = bool
+  default     = false
   description = "The option to enable dns proxy."
+}
+
+variable "bastion_onprem_ssh_allowed_cidrs" {
+  type        = list(string)
+  default     = []
+  description = "List of on-prem CIDR blocks allowed to connect to the jump host through SSH. This should be a subset of onprem_cidrs"
+  validation {
+    condition     = length([for c in var.bastion_onprem_ssh_allowed_cidrs : c if length(regexall("^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/([0-9]|[1-2][0-9]|3[0-2]))?$", c)) > 0]) == length(var.bastion_onprem_ssh_allowed_cidrs)
+    error_message = "Validation failed for bastion_onprem_ssh_allowed_cidrs: values must be in CIDR notation."
+  }
 }

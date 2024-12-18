@@ -1,11 +1,11 @@
 locals {
 
-  tt_1_jump_host_ingress_zpr_grants = var.tt_vcn1_bastion_is_access_via_public_endpoint ? [
+  tt_1_jump_host_ingress_zpr_grants = local.add_tt_vcn1 && local.hub_with_drg_only && var.tt_vcn1_bastion_is_access_via_public_endpoint ? [
     for cidr in var.tt_vcn1_bastion_subnet_allowed_cidrs : "in ${local.zpr_namespace_name}.net:tt-vcn-1 VCN allow '${cidr}' to connect to ${local.zpr_namespace_name}.bastion:${local.zpr_label} endpoints with protocol='tcp/22'"
   ] : []
 
   tt_1_hub_zpr_grants = local.add_tt_vcn1 && local.hub_with_vcn && var.tt_vcn1_attach_to_drg && var.deploy_bastion_jump_host ? [
-    "in ${local.zpr_namespace_name}.net:tt-vcn-1 VCN allow '${coalesce(var.hub_vcn_mgmt_subnet_cidr, cidrsubnet(var.hub_vcn_cidrs[0], 2, 3))}' to connect to ${local.zpr_namespace_name}.database:${local.zpr_label} endpoints with protocol='tcp/22'"
+    "in ${local.zpr_namespace_name}.net:tt-vcn-1 VCN allow '${coalesce(var.hub_vcn_jumphost_subnet_cidr, cidrsubnet(var.hub_vcn_cidrs[0], 3, 4))}' to connect to ${local.zpr_namespace_name}.database:${local.zpr_label} endpoints with protocol='tcp/22'"
   ] : []
 
   tt_1_zpr_grants = local.add_tt_vcn1 ? concat([
