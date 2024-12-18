@@ -64,7 +64,7 @@ locals {
         } : {},
         var.deploy_bastion_jump_host == true ? {
           "JUMPHOST-SUBNET" = {
-            cidr_block                = coalesce(var.hub_vcn_jumphost_subnet_cidr, cidrsubnet(var.hub_vcn_cidrs[0], 5, 16))
+            cidr_block                = coalesce(var.hub_vcn_jumphost_subnet_cidr, cidrsubnet(var.hub_vcn_cidrs[0], 3, 4))
             dhcp_options_key          = "default_dhcp_options"
             display_name              = coalesce(var.hub_vcn_jumphost_subnet_name, "${var.service_label}-hub-vcn-jumphost-subnet")
             dns_label                 = substr(replace(coalesce(var.hub_vcn_jumphost_subnet_name, "jumphost-subnet"), "/[^\\w]/", ""), 0, 14)
@@ -147,7 +147,7 @@ locals {
                 description  = "Ingress from ${coalesce(var.hub_vcn_jumphost_subnet_name, "${var.service_label}-hub-vcn-jumphost-subnet")} on SSH port. Required for connecting Bastion service endpoint to Bastion jump host."
                 stateless    = false
                 protocol     = "TCP"
-                src          = coalesce(var.hub_vcn_jumphost_subnet_cidr, cidrsubnet(var.hub_vcn_cidrs[0], 5, 16))
+                src          = coalesce(var.hub_vcn_jumphost_subnet_cidr, cidrsubnet(var.hub_vcn_cidrs[0], 3, 4))
                 src_type     = "CIDR_BLOCK"
                 dst_port_min = 22
                 dst_port_max = 22
@@ -158,7 +158,7 @@ locals {
                 description  = "Egress to ${coalesce(var.hub_vcn_jumphost_subnet_name, "${var.service_label}-hub-vcn-jumphost-subnet")} on SSH port. Required by Bastion service session."
                 stateless    = false
                 protocol     = "TCP"
-                dst          = coalesce(var.hub_vcn_jumphost_subnet_cidr, cidrsubnet(var.hub_vcn_cidrs[0], 5, 16))
+                dst          = coalesce(var.hub_vcn_jumphost_subnet_cidr, cidrsubnet(var.hub_vcn_cidrs[0], 3, 4))
                 dst_type     = "CIDR_BLOCK"
                 dst_port_min = 22
                 dst_port_max = 22
@@ -487,7 +487,7 @@ locals {
                   description  = "Ingress from ${coalesce(var.hub_vcn_jumphost_subnet_name, "${var.service_label}-hub-vcn-jumphost-subnet")} on SSH port. Required for connecting Bastion service endpoint to Bastion jump host."
                   stateless    = false
                   protocol     = "TCP"
-                  src          = coalesce(var.hub_vcn_jumphost_subnet_cidr, cidrsubnet(var.hub_vcn_cidrs[0], 5, 16))
+                  src          = coalesce(var.hub_vcn_jumphost_subnet_cidr, cidrsubnet(var.hub_vcn_cidrs[0], 3, 4))
                   dst_port_min = 22
                   dst_port_max = 22
                 }

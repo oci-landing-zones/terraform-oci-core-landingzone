@@ -46,7 +46,7 @@ variable "hub_vcn_name" {
 }
 variable "hub_vcn_cidrs" {
   type        = list(string)
-  default     = ["192.168.0.0/25"]
+  default     = ["192.168.0.0/24"]
   description = "List of CIDR blocks for the Hub VCN."
 }
 # ------------------------------------------------------
