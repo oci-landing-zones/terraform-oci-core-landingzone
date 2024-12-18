@@ -1,17 +1,12 @@
 locals {
 
-  bastion_options = {
-    "On-Premises Through Fast-Connect" = 0,
-    "Bastion Service"                  = 1
-  }
-
-  hub_on_prem_zpr_grants = local.hub_with_vcn && local.bastion_options[var.jump_host_access_option] == 0 ? [
+  hub_on_prem_zpr_grants = local.hub_with_vcn && var.deploy_bastion_jump_host && length(var.bastion_onprem_ssh_allowed_cidrs) > 0 ? [
     for cidr in var.bastion_onprem_ssh_allowed_cidrs :
     "in ${local.zpr_namespace_name}.net:hub-vcn VCN allow '${cidr}' to connect to ${local.zpr_namespace_name}.bastion:${local.zpr_label} endpoints with protocol='tcp/22'"
   ] : []
 
-  hub_bastion_zpr_grants = local.hub_with_vcn && local.bastion_options[var.jump_host_access_option] == 1 ? [
-    "in ${local.zpr_namespace_name}.net:hub-vcn VCN allow '${coalesce(var.hub_vcn_mgmt_subnet_cidr, cidrsubnet(var.hub_vcn_cidrs[0], 2, 3))}' to connect to ${local.zpr_namespace_name}.bastion:${local.zpr_label} endpoints with protocol='tcp/22'",
+  hub_bastion_zpr_grants = local.hub_with_vcn && var.deploy_bastion_jump_host && var.deploy_bastion_service == true ? [
+    "in ${local.zpr_namespace_name}.net:hub-vcn VCN allow '${coalesce(var.hub_vcn_jumphost_subnet_cidr, cidrsubnet(var.hub_vcn_cidrs[0], 3, 4))}' to connect to ${local.zpr_namespace_name}.bastion:${local.zpr_label} endpoints with protocol='tcp/22'",
     "in ${local.zpr_namespace_name}.net:hub-vcn VCN allow ${local.zpr_namespace_name}.bastion:${local.zpr_label} endpoints to connect to 'osn-services-ip-addresses' with protocol='tcp/443'"
   ] : []
 

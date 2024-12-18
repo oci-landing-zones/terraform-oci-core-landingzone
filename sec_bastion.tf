@@ -8,19 +8,14 @@ locals {
   custom_bastion_service_freeform_tags  = null
   # custom_bastion_target_compartments = null
 
-  #-- Jump host access options map
-  jump_host_access_options = {
-    "On-Premises Through Fast-Connect" = 0,
-    "Bastion Service"                  = 1
+  ## TODO: FINALIZE
+  jump_host_marketplace_image_map = {
+    "Oracle Linux 8 STIG (Free)" = "Oracle Linux 8 STIG",  # default latest version
+    "CIS Hardened Image Level 1 on Oracle Linux 8 (Paid)" = "CIS Hardened Image Level 1 on Oracle Linux 8"  # default latest version
   }
 
-  chosen_jump_host_option = local.jump_host_access_options[var.jump_host_access_option]
-  deploy_bastion_service  = var.deploy_bastion_jump_host == true && (local.chosen_jump_host_option == 1)
-}
-
-
-### Bastion Service
-locals {
+  ### Bastion Service
+  deploy_bastion_service = var.deploy_bastion_service
   default_bastion_service_name          = "${var.service_label}-bastion-service"
   default_bastion_service_type          = "STANDARD"
   default_bastion_service_defined_tags  = null
@@ -36,7 +31,7 @@ locals {
       LZ-BASTION = {
         bastion_type          = local.bastion_service_type
         compartment_id        = local.security_compartment_id
-        subnet_id             = module.lz_network.provisioned_networking_resources.subnets["MGMT-SUBNET"].id
+        subnet_id             = module.lz_network.provisioned_networking_resources.subnets["JUMPHOST-SUBNET"].id
         defined_tags          = local.bastion_service_defined_tags
         freeform_tags         = local.bastion_service_freeform_tags
         cidr_block_allow_list = var.bastion_service_allowed_cidrs
@@ -53,7 +48,7 @@ locals {
     default_ssh_public_key_path = var.bastion_jump_host_ssh_public_key_path
 
     instances = {
-      JUMP-HOST-MGMT-SUBNET-INSTANCE = {
+      JUMP-HOST-INSTANCE = {
         shape = var.bastion_jump_host_instance_shape
         name  = var.bastion_jump_host_instance_name # default values based off of nfw
 
@@ -72,19 +67,19 @@ locals {
           ocid = var.bastion_jump_host_custom_image_ocid
         } : null
 
-        platform_image = var.bastion_jump_host_custom_image_ocid == null ? {
-          name = var.bastion_jump_host_platform_image_name   # Default platform image Oracle-Linux-8.10-2024.08.29-0
+        marketplace_image = var.bastion_jump_host_custom_image_ocid == null ? {
+          name = local.jump_host_marketplace_image_map[var.bastion_jump_host_marketplace_image_option]
         } : null
-        
-        security = local.enable_zpr == true ? {zpr_attributes = [{namespace:"${local.zpr_namespace_name}",attr_name:"bastion", attr_value:local.zpr_label}]} : null
-        
+
+        security = local.enable_zpr == true ? {zpr_attributes = [{namespace:"${local.zpr_namespace_name}",attr_name:"bastion", attr_value:local.zpr_label}]} : null   ## TODO: NEED TO CHANGE?
+
         networking = {
-          hostname  = "${var.service_label}-bastion-jump-host-mgmt-instance"
-          subnet_id = module.lz_network.provisioned_networking_resources.subnets["MGMT-SUBNET"].id
+          hostname  = "${var.service_label}-jump-host-instance"
+          subnet_id = module.lz_network.provisioned_networking_resources.subnets["JUMPHOST-SUBNET"].id
           network_security_groups = [module.lz_network.flat_map_of_provisioned_networking_resources["HUB-VCN-JUMP-HOST-NSG"].id]
         }
 
-        cloud_agent = local.deploy_bastion_service == true ? {plugins = [{name:"Bastion",enabled:true}]} : null
+        cloud_agent = local.deploy_bastion_service == true ? {plugins = [{name:"Bastion",enabled:true}]} : null   ## TODO: NEED TO CHANGE?      }
       }
     }
   }

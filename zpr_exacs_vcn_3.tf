@@ -8,7 +8,7 @@ locals {
   ] : []
 
   exa_3_hub_zpr_grants = ((local.add_exa_vcn3) && (local.hub_with_vcn == true) && (var.exa_vcn3_attach_to_drg == true) && (var.deploy_bastion_jump_host)) ? [
-    "in ${local.zpr_namespace_name}.net:exa-vcn-3 VCN allow '${coalesce(var.hub_vcn_mgmt_subnet_cidr, cidrsubnet(var.hub_vcn_cidrs[0], 2, 3))}' to connect to ${local.zpr_namespace_name}.database:${local.zpr_label} endpoints with protocol='tcp/22'"
+    "in ${local.zpr_namespace_name}.net:exa-vcn-3 VCN allow '${coalesce(var.hub_vcn_jumphost_subnet_cidr, cidrsubnet(var.hub_vcn_cidrs[0], 3, 4))}' to connect to ${local.zpr_namespace_name}.database:${local.zpr_label} endpoints with protocol='tcp/22'"
   ] : []
 
   exa_3_to_exa_1_zpr_grants = (local.add_exa_vcn3 && local.add_exa_vcn1 && var.exa_vcn3_attach_to_drg && var.exa_vcn1_attach_to_drg) && (local.hub_with_drg_only == true && (length(var.exa_vcn3_routable_vcns) == 0 || contains(var.exa_vcn3_routable_vcns, "EXA-VCN-1"))) ? [
