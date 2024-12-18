@@ -676,14 +676,14 @@ locals {
                     "HUB-VCN-OCI-FIREWALL-NSG" = {
                         display_name = "oci-firewall-nsg"
                         ingress_rules = merge(
-                          {for cidr in var.tt_hub_cidrs : "INGRESS-FROM-HUB-VCN-${replace(replace(cidr,".",""),"/","")}}-RULE" => {
+                          {for cidr in var.hub_vcn_cidrs : "INGRESS-FROM-HUB-VCN-${replace(replace(cidr,".",""),"/","")}}-RULE" => {
                               description  = "Ingress from ${coalesce(var.hub_vcn_name,"${var.service_label}-hub-vcn")}."
                               stateless    = false
                               protocol     = "TCP"
                               src          = "${cidr}"
                               src_type     = "CIDR_BLOCK"
                             }  
-                          } : {},
+                          },
                           local.add_tt_vcn1 == true && var.tt_vcn1_attach_to_drg == true ? {for cidr in var.tt_vcn1_cidrs : "INGRESS-FROM-TT-VCN-1-${replace(replace(cidr,".",""),"/","")}}-RULE" => {
                               description  = "Ingress from ${coalesce(var.tt_vcn1_name,"${var.service_label}-three-tier-vcn-1")}."
                               stateless    = false
@@ -758,7 +758,7 @@ locals {
                           } : {}
                         )  
                         egress_rules = merge(
-                            {for cidr in var.tt_hub_cidrs : "EGRESS-TO-HUB-VCN-${replace(replace(cidr,".",""),"/","")}}-RULE" => {
+                            {for cidr in var.hub_vcn_cidrs : "EGRESS-TO-HUB-VCN-${replace(replace(cidr,".",""),"/","")}}-RULE" => {
                                 description = "Egress to ${coalesce(var.hub_vcn_name,"${var.service_label}-hub-vcn")}."
                                 stateless   = false
                                 protocol    = "TCP"
