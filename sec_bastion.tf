@@ -24,7 +24,7 @@ locals {
   bastion_service_name          = var.bastion_service_name != null ? var.bastion_service_name : local.default_bastion_service_name
   bastion_service_type          = local.custom_bastion_service_type != null ? local.custom_bastion_service_type : local.default_bastion_service_type
   bastion_service_defined_tags  = local.custom_bastion_service_defined_tags != null ? merge(local.custom_bastion_service_defined_tags, local.default_bastion_service_defined_tags ): local.default_bastion_service_defined_tags
-  bastion_service_freeform_tags = local.custom_bastion_service_freeform_tags != null ? merge(local.custom_vault_freeform_tags, local.default_bastion_service_freeform_tags) : local.default_bastion_service_freeform_tags
+  bastion_service_freeform_tags = local.custom_bastion_service_freeform_tags != null ? merge(local.custom_bastion_service_freeform_tags, local.default_bastion_service_freeform_tags) : local.default_bastion_service_freeform_tags
 
   bastions_configuration = {
     bastions = {
