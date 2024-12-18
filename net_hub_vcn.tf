@@ -262,6 +262,27 @@ locals {
                               destination_type   = "CIDR_BLOCK"
                             }
                           } : {},
+                          local.add_exa_vcn1 == true && var.exa_vcn1_attach_to_drg == true ? {for cidr in var.exa_vcn1_cidrs : "EXA-VCN-1-${replace(replace(cidr,".",""),"/","")}}-RULE" => {
+                              network_entity_key = "HUB-DRG"
+                              description       = "Traffic destined to ${coalesce(var.exa_vcn1_name,"${var.service_label}-exa-vcn-1")} CIDR ${cidr} goes to DRG."
+                              destination        = "${cidr}"
+                              destination_type   = "CIDR_BLOCK"
+                            }
+                          } : {},
+                          local.add_exa_vcn2 == true && var.exa_vcn2_attach_to_drg == true ? {for cidr in var.exa_vcn2_cidrs : "EXA-VCN-2-${replace(replace(cidr,".",""),"/","")}}-RULE" => {
+                              network_entity_key = "HUB-DRG"
+                              description       = "Traffic destined to ${coalesce(var.exa_vcn2_name,"${var.service_label}-exa-vcn-2")} CIDR ${cidr} goes to DRG."
+                              destination        = "${cidr}"
+                              destination_type   = "CIDR_BLOCK"
+                            }
+                          } : {}, 
+                          local.add_exa_vcn3 == true && var.exa_vcn3_attach_to_drg == true ? {for cidr in var.exa_vcn3_cidrs : "EXA-VCN-3-${replace(replace(cidr,".",""),"/","")}}-RULE" => {
+                              network_entity_key = "HUB-DRG"
+                              description       = "Traffic destined to ${coalesce(var.exa_vcn3_name,"${var.service_label}-exa-vcn-3")} CIDR ${cidr} goes to DRG."
+                              destination        = "${cidr}"
+                              destination_type   = "CIDR_BLOCK"
+                            }
+                          } : {},
                           {
                             "INTERNET-RULE" = {
                               network_entity_key = "HUB-VCN-NAT-GATEWAY"
@@ -654,16 +675,97 @@ locals {
                 local.chosen_firewall_option == "OCINFW" ? {     
                     "HUB-VCN-OCI-FIREWALL-NSG" = {
                         display_name = "oci-firewall-nsg"
-                        ingress_rules = {
-                            "INGRESS-FROM-ANYWHERE" = {
-                                description  = "Ingress from anywhere."
-                                stateless    = false
-                                protocol     = "TCP"
-                                src          = "0.0.0.0/0"
-                                src_type     = "CIDR_BLOCK"
-                            }
-                        }
+                        ingress_rules = merge(
+                          {for cidr in var.tt_hub_cidrs : "INGRESS-FROM-HUB-VCN-${replace(replace(cidr,".",""),"/","")}}-RULE" => {
+                              description  = "Ingress from ${coalesce(var.hub_vcn_name,"${var.service_label}-hub-vcn")}."
+                              stateless    = false
+                              protocol     = "TCP"
+                              src          = "${cidr}"
+                              src_type     = "CIDR_BLOCK"
+                            }  
+                          } : {},
+                          local.add_tt_vcn1 == true && var.tt_vcn1_attach_to_drg == true ? {for cidr in var.tt_vcn1_cidrs : "INGRESS-FROM-TT-VCN-1-${replace(replace(cidr,".",""),"/","")}}-RULE" => {
+                              description  = "Ingress from ${coalesce(var.tt_vcn1_name,"${var.service_label}-three-tier-vcn-1")}."
+                              stateless    = false
+                              protocol     = "TCP"
+                              src          = "${cidr}"
+                              src_type     = "CIDR_BLOCK"
+                            }  
+                          } : {},
+                          local.add_tt_vcn2 == true && var.tt_vcn2_attach_to_drg == true ? {for cidr in var.tt_vcn2_cidrs : "INGRESS-FROM-TT-VCN-2-${replace(replace(cidr,".",""),"/","")}}-RULE" => {
+                              description  = "Ingress from ${coalesce(var.tt_vcn2_name,"${var.service_label}-three-tier-vcn-2")}."
+                              stateless    = false
+                              protocol     = "TCP"
+                              src          = "${cidr}"
+                              src_type     = "CIDR_BLOCK"
+                            }  
+                          } : {},
+                          local.add_tt_vcn3 == true && var.tt_vcn3_attach_to_drg == true ? {for cidr in var.tt_vcn3_cidrs : "INGRESS-FROM-TT-VCN-3-${replace(replace(cidr,".",""),"/","")}}-RULE" => {
+                              description  = "Ingress from ${coalesce(var.tt_vcn3_name,"${var.service_label}-three-tier-vcn-3")}."
+                              stateless    = false
+                              protocol     = "TCP"
+                              src          = "${cidr}"
+                              src_type     = "CIDR_BLOCK"
+                            }  
+                          } : {},
+                          local.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true ? {for cidr in var.oke_vcn1_cidrs : "INGRESS-FROM-OKE-VCN-1-${replace(replace(cidr,".",""),"/","")}}-RULE" => {
+                              description  = "Ingress from ${coalesce(var.oke_vcn1_name,"${var.service_label}-oke-vcn-1")}."
+                              stateless    = false
+                              protocol     = "TCP"
+                              src          = "${cidr}"
+                              src_type     = "CIDR_BLOCK"
+                            }  
+                          } : {},
+                          local.add_oke_vcn2 == true && var.oke_vcn2_attach_to_drg == true ? {for cidr in var.oke_vcn2_cidrs : "INGRESS-FROM-OKE-VCN-2-${replace(replace(cidr,".",""),"/","")}}-RULE" => {
+                              description  = "Ingress from ${coalesce(var.oke_vcn2_name,"${var.service_label}-oke-vcn-2")}."
+                              stateless    = false
+                              protocol     = "TCP"
+                              src          = "${cidr}"
+                              src_type     = "CIDR_BLOCK"
+                            }  
+                          } : {},
+                          local.add_oke_vcn3 == true && var.oke_vcn3_attach_to_drg == true ? {for cidr in var.oke_vcn3_cidrs : "INGRESS-FROM-OKE-VCN-3-${replace(replace(cidr,".",""),"/","")}}-RULE" => {
+                              description  = "Ingress from ${coalesce(var.oke_vcn3_name,"${var.service_label}-oke-vcn-3")}."
+                              stateless    = false
+                              protocol     = "TCP"
+                              src          = "${cidr}"
+                              src_type     = "CIDR_BLOCK"
+                            }  
+                          } : {},
+                          local.add_exa_vcn1 == true && var.exa_vcn1_attach_to_drg == true ? {for cidr in var.exa_vcn1_cidrs : "INGRESS-FROM-EXA-VCN-1-${replace(replace(cidr,".",""),"/","")}}-RULE" => {
+                              description  = "Ingress from ${coalesce(var.exa_vcn1_name,"${var.service_label}-exa-vcn-1")}."
+                              stateless    = false
+                              protocol     = "TCP"
+                              src          = "${cidr}"
+                              src_type     = "CIDR_BLOCK"
+                            }  
+                          } : {},
+                          local.add_exa_vcn2 == true && var.exa_vcn2_attach_to_drg == true ? {for cidr in var.exa_vcn2_cidrs : "INGRESS-FROM-EXA-VCN-2-${replace(replace(cidr,".",""),"/","")}}-RULE" => {
+                              description  = "Ingress from ${coalesce(var.exa_vcn2_name,"${var.service_label}-exa-vcn-2")}."
+                              stateless    = false
+                              protocol     = "TCP"
+                              src          = "${cidr}"
+                              src_type     = "CIDR_BLOCK"
+                            }  
+                          } : {},
+                          local.add_exa_vcn3 == true && var.exa_vcn3_attach_to_drg == true ? {for cidr in var.exa_vcn3_cidrs : "INGRESS-FROM-EXA-VCN-3-${replace(replace(cidr,".",""),"/","")}}-RULE" => {
+                              description  = "Ingress from ${coalesce(var.exa_vcn3_name,"${var.service_label}-exa-vcn-3")}."
+                              stateless    = false
+                              protocol     = "TCP"
+                              src          = "${cidr}"
+                              src_type     = "CIDR_BLOCK"
+                            }  
+                          } : {}
+                        )  
                         egress_rules = merge(
+                            {for cidr in var.tt_hub_cidrs : "EGRESS-TO-HUB-VCN-${replace(replace(cidr,".",""),"/","")}}-RULE" => {
+                                description = "Egress to ${coalesce(var.hub_vcn_name,"${var.service_label}-hub-vcn")}."
+                                stateless   = false
+                                protocol    = "TCP"
+                                dst         = "${cidr}"
+                                dst_type    = "CIDR_BLOCK"
+                              }
+                            },
                             local.add_tt_vcn1 == true && var.tt_vcn1_attach_to_drg == true ? {for cidr in var.tt_vcn1_cidrs : "EGRESS-TO-TT-VCN-1-${replace(replace(cidr,".",""),"/","")}}-RULE" => {
                                 description = "Egress to ${coalesce(var.tt_vcn1_name,"${var.service_label}-three-tier-vcn-1")}."
                                 stateless   = false
@@ -712,6 +814,30 @@ locals {
                                 dst_type    = "CIDR_BLOCK"
                               }
                             } : {},
+                            local.add_exa_vcn1 == true && var.exa_vcn1_attach_to_drg == true ? {for cidr in var.exa_vcn1_cidrs : "EGRESS-TO-EXA-VCN-1-${replace(replace(cidr,".",""),"/","")}}-RULE" => {
+                                description = "Egress to ${coalesce(var.exa_vcn1_name,"${var.service_label}-exa-vcn-1")}."
+                                stateless   = false
+                                protocol    = "TCP"
+                                dst         = "${cidr}"
+                                dst_type    = "CIDR_BLOCK"
+                              }
+                            } : {},
+                            local.add_exa_vcn2 == true && var.exa_vcn2_attach_to_drg == true ? {for cidr in var.exa_vcn2_cidrs : "EGRESS-TO-EXA-VCN-2-${replace(replace(cidr,".",""),"/","")}}-RULE" => {
+                                description = "Egress to ${coalesce(var.exa_vcn2_name,"${var.service_label}-exa-vcn-2")}."
+                                stateless   = false
+                                protocol    = "TCP"
+                                dst         = "${cidr}"
+                                dst_type    = "CIDR_BLOCK"
+                              }
+                            } : {},
+                            local.add_exa_vcn3 == true && var.exa_vcn3_attach_to_drg == true ? {for cidr in var.exa_vcn3_cidrs : "EGRESS-TO-EXA-VCN-3-${replace(replace(cidr,".",""),"/","")}}-RULE" => {
+                                description = "Egress to ${coalesce(var.exa_vcn3_name,"${var.service_label}-exa-vcn-3")}."
+                                stateless   = false
+                                protocol    = "TCP"
+                                dst         = "${cidr}"
+                                dst_type    = "CIDR_BLOCK"
+                              }
+                            } : {}
                         )  
                     }
                 } : {},

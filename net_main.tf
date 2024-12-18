@@ -4,7 +4,6 @@
 locals {
   lz_network_configuration = {
     default_compartment_id = local.network_compartment_id
-    default_enable_cis_checks = false
     network_configuration_categories = {
       "${var.service_label}-network" = {
         vcns                      = merge(local.tt_vcn_1, local.tt_vcn_2, local.tt_vcn_3, local.exa_vcn_1, local.exa_vcn_2, local.exa_vcn_3, local.oke_vcn_1, local.oke_vcn_2, local.oke_vcn_3, local.hub_vcn)
