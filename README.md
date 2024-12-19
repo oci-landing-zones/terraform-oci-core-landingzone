@@ -121,6 +121,8 @@ Third Party firewall appliance option:
 - One public subnet for load balancers.
 - Two private subnets: one for inbound North-South traffic (from Internet or on-premises), one for inbound East-West (cross-spoke) traffic.
 - One private subnet for managing the firewall appliance that is eventually deployed.
+- One optional private subnet for Jump Host deployment where the Bastion service and on-premises access via FastConnect is supported
+
 
 OCI Network Firewall option:
 
