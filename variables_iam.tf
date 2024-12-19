@@ -133,7 +133,21 @@ variable "existing_id_domain_net_fw_app_dyn_group_name" {
   default     = ""
   description = "The existing dynamic group name in the existing identity domain for running network firewall appliances."
 }
-
+variable "identity_domain_option" {
+  type        = string
+  default     = "Default Domain"
+  description = "Option to use the default identity domain or create a new identity domain. Value to use: Default Domain, New Identity Domain"
+}
+variable "new_identity_domain_name" {
+  type        = string
+  default     = ""
+  description = "the name of the new identity domain if choose create a new identity domain"
+}
+variable "new_identity_domain_license_type" {
+  type        = string
+  default     = "free"
+  description = "the license type of new identity domain. Value to use: "
+}
 # variable "deploy_id_domain" {
 #   type    = bool
 #   default = false
