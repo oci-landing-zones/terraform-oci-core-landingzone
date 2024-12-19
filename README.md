@@ -75,6 +75,7 @@ From a functional perspective, the OCI Core Landing Zone adds the following to C
 3. Ability to deploy VCNs for OKE workload deployments, in addition to three-tier and Exadata Cloud service VCNs.
 4. Ability to deploy a network firewall (OCI native or third party appliance) in the Hub VCN (a.k.a. DMZ VCN).
 5. Ability to route traffic between select spoke VCNs, or in a full mesh model.
+6. Ability to deploy a Bastion service in a Jump Host in the Hub VCN 
 
 
 ## <a name="arch">Architecture</a>
@@ -125,6 +126,7 @@ OCI Network Firewall option:
 
 - One public subnet for Internet Gateway (IGW) North-South traffic passed through to the Network Firewall.
 - One private subnet for the Network Firewall and East-West traffic from/to spoke VCNs.
+- One optional private subnet for Jump Host deployment where the Bastion service and on-premises access via FastConnect is supported
 
 The Hub VCN is coupled with a Dynamic Routing Gateway (DRG), that can be either an existing one or managed by the landing zone.
 
@@ -132,6 +134,7 @@ Some architecture scenarios enabled by the Hub VCN are:
 
 - **Access to multiple VCNs in the same region:** This scenario enables communication between an on-premises network and multiple VCNs in the same region over a single FastConnect private virtual circuit or Site-to-Site VPN using a VCN as the hub.
 - **Access between multiple networks through a single DRG with a firewall between networks:** This scenario connects several VCNs to a single DRG, with all routing configured to send packets through a firewall in a Hub VCN before they can be sent to another VCN.
+- **Access to multiple networks through a Bastion service deployed on a Jump Host:** This scenario allows access to multiple VCNs from a single Jump Host in the Hub VCN using the Bastion service.
 
 ### <a name="arch-diagram">Diagrams</a>
 
@@ -174,6 +177,7 @@ Some deployment scenarios are available under the [templates](./templates/) fold
 - [Multiple Three-Tier VCNs peered through DRG](./templates/hub-spoke-with-drg-and-three-tier-vcns)
 - [Multiple VCN types peered through a Hub VCN with native Network Firewall](./templates/hub-spoke-with-hub-vcn-net-firewall)
 - [Multiple VCN types peered through a Hub VCN with third party network appliance](./templates/hub-spoke-with-hub-vcn-net-appliance)
+- [Multiple VCN types peered through a Hub VCN with a Bastion Service enabled on a Jump Host](./templates/hub-spoke-with-hub-vcn-bastion-jump-host)
 
 Another key deployment scenario of OCI Core Landing Zone is [Zero Trust Landing Zone](https://github.com/oci-landing-zones/terraform-oci-zero-trust-landingzone).
 
