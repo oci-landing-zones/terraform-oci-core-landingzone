@@ -355,9 +355,9 @@ locals {
                     "HUB-VCN-INGRESS-ROUTE-TABLE" = {
                         display_name = "hub-vcn-ingress-route-table"
                         route_rules = {
-                          "HUB-VCN-INDOOR-SUBNET-RULE" = {
-                            description       = "Traffic destined to ${coalesce(var.hub_vcn_indoor_subnet_name, "${var.service_label}-hub-vcn-indoor-subnet")} goes to OCI Firewall (${var.oci_nfw_ip_ocid})."
-                            destination       = coalesce(var.hub_vcn_indoor_subnet_cidr, cidrsubnet(var.hub_vcn_cidrs[0], 2, 2))
+                          "HUB-VCN-WEB-SUBNET-RULE" = {
+                            description       = "Traffic destined to ${coalesce(var.hub_vcn_web_subnet_name, "${var.service_label}-hub-vcn-web-subnet")} goes to OCI Firewall (${var.oci_nfw_ip_ocid})."
+                            destination       = coalesce(var.hub_vcn_web_subnet_cidr, cidrsubnet(var.hub_vcn_cidrs[0], 2, 0))
                             destination_type  = "CIDR_BLOCK"
                             network_entity_id = var.oci_nfw_ip_ocid
                           },
