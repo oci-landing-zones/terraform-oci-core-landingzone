@@ -137,11 +137,11 @@ The diagrams below shows Landing Zone overall architecture:
 
 **With Hub & Spoke Networking**
 
-![Architecture_Advanced](images/arch-advanced.png)
+![Architecture_Advanced](images/arch-advanced-net-appliance.png)
 
 **With Hub & Spoke Networking Using OCI Network Firewall**
 
-![Architecture_OCI_NFW](images/arch-adv-oci-nfw.png)
+![Architecture_OCI_NFW](images/arch-advanced-oci-firewall.png)
 
 
 ## <a name="iam-configuration"></a>3.1 Identity & Access Management (IAM) Configuration
@@ -229,7 +229,7 @@ The Landing Zone supports a variety of networking types:
 
 The Landing Zone supports up to three VCNs of each type.
 
-Regardless the networking types, these VCNs can be deployed standalone or all connected via OCI DRG V2 service in a Hub & Spoke topology. When deploying Hub & Spoke, either a Hub VCN (aka DMZ VCN) can be provisioned or the DRG itself used as the hub. The Landing Zone also optionally deploys a network appliance in the Hub VCN to control/secure all inbound and outbound traffic routing in the spoke VCNs.
+Regardless the networking types, these VCNs can be deployed standalone or all connected via OCI DRG V2 service in a Hub & Spoke topology. When deploying Hub & Spoke, either a Hub VCN (aka DMZ VCN) can be provisioned or the DRG itself used as the hub. The Landing Zone also optionally deploys a network appliance or OCI Native Firewall in the Hub VCN to control/secure all inbound and outbound traffic routing in the spoke VCNs.
 
 The VCNs can also be configured with no Internet connectivity or for on-premises connectivity. Inbound access to the SSH port from 0.0.0.0/0 IP range is strictly prohibited.
 

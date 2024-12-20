@@ -143,15 +143,15 @@ The diagram below shows services and resources that are deployed along with a si
 
 The diagram below expands the resources in the network compartment for covering the possibilities in a Hub & Spoke topology:
 
-![arch_advanced](./images/arch-advanced.png)
+![arch-advanced-net-appliance](./images/arch-advanced-net-appliance.png)
 
-[Get the diagram in SVG format.](./images/arch-advanced.svg)
+[Get the diagram in SVG format.](./images/arch-advanced-net-appliance.svg)
 
 The diagram below expands the resources in the network compartment specifically with OCI Network Firewall in a Hub & Spoke topology:
 
-![arch_advanced](./images/arch-adv-oci-nfw.png)
+![arch-advanced-oci-firewall](./images/arch-advanced-oci-firewall.png)
 
-[Get the diagram in SVG format.](./images/arch-adv-oci-nfw.svg)
+[Get the diagram in SVG format.](./images/arch-advanced-oci-firewall.svg)
 
 You can create up to three (3) three-tier VCNs, three (3) Exadata VCNs,and 3 Oracle Kubernetes Engine (OKE) VCNs in a single landing zone deployment.
 
