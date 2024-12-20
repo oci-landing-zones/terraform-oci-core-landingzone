@@ -300,13 +300,13 @@ locals {
                         route_rules = {
                             "OSN-RULE" = {
                                 network_entity_key = "HUB-VCN-SERVICE-GATEWAY"
-                                description        = "To Oracle Services Network."
+                                description        = "Traffic destined to Oracle Services Network goes to service gateway."
                                 destination        = "all-services"
                                 destination_type   = "SERVICE_CIDR_BLOCK"
                             }
                             "INTERNET-RULE" = {
                                 network_entity_key = "HUB-VCN-NAT-GATEWAY"
-                                description        = "To Internet."
+                                description        = "All remaining traffic goes to Internet."
                                 destination        = "0.0.0.0/0"
                                 destination_type   = "CIDR_BLOCK"
                             }
@@ -319,17 +319,17 @@ locals {
                     "HUB-VCN-INGRESS-ROUTE-TABLE" = {
                         display_name = "hub-vcn-ingress-route-table"
                         route_rules = {
+                            "OSN-RULE" = {
+                                network_entity_key = "HUB-VCN-SERVICE-GATEWAY"
+                                description        = "Traffic destined to Oracle Services Network goes to service gateway."
+                                destination        = "all-services"
+                                destination_type   = "SERVICE_CIDR_BLOCK"
+                            },
                             "ANYWHERE-RULE" = {
-                                description       = "All traffic goes to ${var.hub_vcn_east_west_entry_point_ocid}."
+                                description       = "All remaining traffic goes to ${var.hub_vcn_east_west_entry_point_ocid}."
                                 destination       = "0.0.0.0/0"
                                 destination_type  = "CIDR_BLOCK"
                                 network_entity_id = var.hub_vcn_east_west_entry_point_ocid
-                            },
-                            "OSN-RULE" = {
-                                network_entity_key = "HUB-VCN-SERVICE-GATEWAY"
-                                description        = "To Oracle Services Network."
-                                destination        = "all-services"
-                                destination_type   = "SERVICE_CIDR_BLOCK"
                             }
                         }
                     }
@@ -363,7 +363,7 @@ locals {
                           },
                           "OSN-RULE" = {
                             network_entity_key = "HUB-VCN-SERVICE-GATEWAY"
-                            description        = "To Oracle Services Network."
+                            description        = "Traffic destined to Oracle Services Network goes to service gateway."
                             destination        = "all-services"
                             destination_type   = "SERVICE_CIDR_BLOCK"
                           },
