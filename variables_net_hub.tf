@@ -58,6 +58,30 @@ variable "hub_vcn_deploy_net_appliance_option" {
   description = "The network appliance option for deploying in the Hub VCN. Valid values: 'Don't deploy any network appliance at this time' (default), 'Palo Alto Networks VM-Series Firewall', 'Fortinet FortiGate Firewall'. Costs are incurred."
 }
 
+variable "enable_native_firewall_threat_log" {
+  type    = bool
+  default = false
+  description = "Enable OCI Native Firewall Threat Log."
+}
+
+variable "enable_native_firewall_traffic_log" {
+  type    = bool
+  default = false
+  description = "Enable OCI Native Firewall Traffic Log."
+}
+
+variable "oci_nfw_ip_ocid" {
+  type        = string
+  default     = null
+  description = "Enter OCI Network Firewall's Forwarding Private IP OCID."
+}
+
+variable "oci_nfw_policy_ocid" {
+  type        = string
+  default     = null
+  description = "Enter the OCI Network Firewall Policy OCID."
+}
+
 variable "net_palo_alto_version" {
   type    = string
   description = "Palo Alto Firewall Version."
@@ -90,7 +114,7 @@ variable "net_appliance_flex_shape_memory" {
 
 variable "net_appliance_flex_shape_cpu" {
   type    = number
-  default = 2
+  default = 4
   description = "The number of OCPUs for the selected flex shape. Applicable to flexible shapes only."
 }
 
