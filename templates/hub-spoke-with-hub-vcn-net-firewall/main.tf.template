@@ -1,4 +1,4 @@
-# Copyright (c) 2023 Oracle and/or its affiliates.
+# Copyright (c) 2024 Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 
 # ----------------------------------------------------------------------------------------
@@ -12,11 +12,7 @@
 # ----- $ terraform apply
 # ----------------------------------------------------------------------------------------
 
-# ----------------------------------------------------------------------------------------
-# Fortinet Firewall
-# ----------------------------------------------------------------------------------------
-
-module "core_lz_fortinet" {
+module "core_lz" {
     source = "../../"
     # ------------------------------------------------------
     # ----- Environment
@@ -27,45 +23,40 @@ module "core_lz_fortinet" {
     private_key_path     = "path-to-pem-file-with-private-key"               # Replace with user private key local path.
     private_key_password = ""                                                # Replace with private key password, if any.
     region               = "us-phoenix-1" # Replace with region name.
-    service_label        = "fortinet"     # Prefix prepended to deployed resource names. 
+    service_label        = "ocinetfw"     # Prefix prepended to deployed resource names. 
 
     # ------------------------------------------------------
     # ----- Networking
     # ------------------------------------------------------
-    define_net  = true # enables network resources provisioning
+    define_net            = true # enables network resources provisioning
 
     # --- Hub deployment option: a DRG is deployed.
     hub_deployment_option = "VCN or on-premises connectivity routing through DMZ VCN with Network Virtual Appliance (DRG and DMZ VCN will be created)"
-    hub_vcn_cidrs         = ["192.168.0.0/24"]
+    hub_vcn_cidrs         = ["192.168.0.0/26"]
 
-    # --- Firewall deployment option.
-    hub_vcn_deploy_net_appliance_option = "Fortinet FortiGate Firewall"
-    net_fortigate_version               = "7.2.9_(_X_64)"
-    net_appliance_flex_shape_memory     = 56
-    net_appliance_flex_shape_cpu        = 2
-    net_appliance_boot_volume_size      = 60
-    net_appliance_public_rsa_key        = #Enter the Public RSA Key
-    net_appliance_shape                 = VM.Standard.E4.Flex 
+    # --- Firewall deployment options.
+    hub_vcn_deploy_net_appliance_option = "OCI Native Firewall"
+    enable_native_firewall_threat_log   = true
+    enable_native_firewall_traffic_log  = true
+    # oci_nfw_ip_ocid                   = ["ocid1.privateip.oc1.phx.abyhql...goq"] as determined after the initial Terraform Apply
+    # oci_nfw_policy_ocid               = ["ocid1.networkfirewallpolicy.oc1.phx.amaaaa...gmm"] from user created network firewall policy
 
     # --- Spoke VCN: three-tier VCN 1
-    add_tt_vcn1                   = true
-    tt_vcn1_cidrs                 = ["192.168.0.0/24"]
-    tt_vcn1_attach_to_drg         = true
+    add_tt_vcn1                    = true
+    tt_vcn1_cidrs                  = ["10.0.0.0/20"]
+    tt_vcn1_attach_to_drg          = true
     
-    # --- ExaData VCN:
+    # --- Spoke VCN: Exadata VCN 1
     add_exa_vcn1                   = true
-    exa_vcn1_cidrs                 = ["192.168.0.0/24"]
+    exa_vcn1_cidrs                 = ["172.16.0.0/20"]
     exa_vcn1_attach_to_drg         = true
 
+    # --- Spoke VCN: OKE VCN 1
     add_oke_vcn1                   = true
-    oke_vcn1_cni_type              = native
-    oke_vcn1_cidrs                 = ["192.168.0.0/24"]
+    oke_vcn1_cni_type              = "Native"
+    oke_vcn1_cidrs                 = ["10.3.0.0/16"]
     oke_vcn1_attach_to_drg         = true
 
-    # --- Routing to Firewall. Uncomment and update the two variables below for the second time execution.
-    # hub_vcn_north_south_entry_point_ocid = "replace with the OCID value in the output of nlb_private_ip_addresses.OUTDOOR-NLB"
-    # hub_vcn_east_west_entry_point_ocid   = "replace with the OCID value in the output of nlb_private_ip_addresses.INDOOR_NLB"
-  
     # ------------------------------------------------------
     # ----- Notifications
     # ------------------------------------------------------
@@ -75,14 +66,5 @@ module "core_lz_fortinet" {
     # ------------------------------------------------------
     # ----- Security
     # ------------------------------------------------------
-    enable_cloud_guard = true # Set to false if Cloud Guard has already been enabled.
-
-    # ------------------------------------------------------
-    # ----- Budget 
-    # ------------------------------------------------------
-
-    create_budget                 = true
-    budget_alert_threshold        = 100
-    budget_amount                 = 1000
-    budget_alert_email_endpoints  = ["email.address@example.com"] # for Budget-related Alerts. Replace with a real email address.
+    enable_cloud_guard = false # Set to false if Cloud Guard has already been enabled.
 }
