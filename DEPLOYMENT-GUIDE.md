@@ -17,6 +17,7 @@
     1. [Security Services](#security-services)
     1. [Deploying Lifecycle Environments](#deploying-lifecycle-environments)
     1. [Zero Trust Packet Routing (ZPR)](#zpr-use)
+    1. [Bastion Service](#bastion-use)
 1. [Ways to Deploy](#ways-to-deploy)
     1. [Deploying with Terraform CLI](#deploying-with-terraform-cli)
     1. [Deploying with OCI Resource Manager UI](#deploying-with-orm-ui)
@@ -606,6 +607,39 @@ in <zpr_namespace_name>.net:exa-vcn-1 VCN allow '10.1.2.0/24' to connect to <zpr
 ```
 in <zpr_namespace_name>.net:exa-vcn-1 VCN allow '<bastion service CIDR>/32' to connect to <zpr_namespace_name>.bastion:<service_label> endpoints with protocol='tcp/22'
 ```
+## <a name="bastion-use"></a>4.7 Bastion Service
+
+OCI Core Landing Zone supports Bastions. Bastions provide restricted and time-limited access to target resources that don't have public endpoints.
+Bastions let authorized users connect from specific IP addresses to target resources using Secure Shell (SSH) sessions. When connected, users can interact with the target resource by using any software or protocol supported by SSH. For example, you can use the Remote Desktop Protocol (RDP) to connect to a Windows host, or use Oracle Net Services to connect to a database. Targets can include resources like compute instances , DB systems , and Autonomous Database for Transaction Processing and Mixed Workloads databases. Bastions are essential in tenancies with stricter resource controls. For example, you can use a bastion to access Compute instances in compartments that are associated with a security zone. Instances in a security zone cannot have public endpoints. Integration with Oracle Cloud Infrastructure Identity and Access Management (IAM) lets you control who can access a bastion or a session and what they can do with those resources.
+
+The diagram below shows the OCI Core Landing Zone Bastion Pattern in Hub VCN:
+
+<img src="images/arch_bastion.png" alt="Bastion Architecture" width="800"/>
+
+#### To deploy a bastion service, it must be enabled at the tenancy level.
+
+- **deploy\_bastion\_service**: Whether a bastion service is enabled as part of this Landing Zone. By default, no bastion resources are created.
+- **bastion\_service\_name**: The name of the bastion service. The assigned value is <service_label>-bastion.
+- **bastion\_service\_allowed\_cidrs**: The list of the CIDR block(s) allowed to access the bastion service.
+
+To enable the bastion service during deployment using OCI Resource Manager UI:
+1) Check _"Define Networking?"_ in the General section
+2) Check _"Deploy a Jump Host for SSH access?"_ in the Networking - Hub & Spoke Topology section
+3) Check _"Deploy Bastion Service"_ in the Bastion Jump Host section
+
+The default bastion service name is the value of *service\_label* variable concatenated with the '-bastion-service' suffix, which can be overridden by any name of choice by checking _"Customize Bastion Service?"_ and using the optional input field _"Bastion Service Name"_.
+
+<img src="images/Deploy_Bastion1.png" alt="Deploy Bastion" width="800"/>
+<img src="images/Deploy_Bastion2.png" alt="Deploy Bastion" width="800"/>
+<img src="images/Deploy_Bastion3.png" alt="Deploy Bastion" width="800"/>
+
+#### Dynamic Port Forwarding (SOCKS5) Session
+
+A dynamic port forwarding (SOCKS5) session has the same benefits of an SSH port forwarding session, but allows you to dynamically connect to any target resource in a private subnet. Unlike other session types that you configure to connect to a specific target resource (IP address or DNS name), with a dynamic port forwarding (SOCKS5) session you create a tunnel to a target subnet and the client decides which resource and port to connect to.
+
+To enable a dynamic port forwarding (SOCKS5) session, ensure that the bastion service has been enabled (follow steps above). Select _"Customize Bastion Service"_ then check _"Enable FQDN Support and SOCKS5?"_.
+
+<img src="images/Enable_SOCKS5.png" alt="Enable SOCKS5" width="800"/>
 
 # <a name="ways-to-deploy"></a>5. Ways to Deploy
 
