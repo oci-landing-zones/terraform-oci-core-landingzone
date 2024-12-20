@@ -355,18 +355,24 @@ locals {
                     "HUB-VCN-INGRESS-ROUTE-TABLE" = {
                         display_name = "hub-vcn-ingress-route-table"
                         route_rules = {
-                            "ANYWHERE-RULE" = {
-                                description       = "All traffic goes to ${var.oci_nfw_ip_ocid}."
-                                destination       = "0.0.0.0/0"
-                                destination_type  = "CIDR_BLOCK"
-                                network_entity_id = var.oci_nfw_ip_ocid
-                            },
-                            "OSN-RULE" = {
-                                network_entity_key = "HUB-VCN-SERVICE-GATEWAY"
-                                description        = "To Oracle Services Network."
-                                destination        = "all-services"
-                                destination_type   = "SERVICE_CIDR_BLOCK"
-                            }
+                          "HUB-VCN-INDOOR-SUBNET-RULE" = {
+                            description       = "Traffic destined to ${coalesce(var.hub_vcn_indoor_subnet_name, "${var.service_label}-hub-vcn-indoor-subnet")} goes to OCI Firewall (${var.oci_nfw_ip_ocid})."
+                            destination       = coalesce(var.hub_vcn_indoor_subnet_cidr, cidrsubnet(var.hub_vcn_cidrs[0], 2, 2))
+                            destination_type  = "CIDR_BLOCK"
+                            network_entity_id = var.oci_nfw_ip_ocid
+                          },
+                          "OSN-RULE" = {
+                            network_entity_key = "HUB-VCN-SERVICE-GATEWAY"
+                            description        = "To Oracle Services Network."
+                            destination        = "all-services"
+                            destination_type   = "SERVICE_CIDR_BLOCK"
+                          },
+                          "ANYWHERE-RULE" = {
+                            description       = "All remaining traffic goes to OCI Firewall (${var.oci_nfw_ip_ocid})."
+                            destination       = "0.0.0.0/0"
+                            destination_type  = "CIDR_BLOCK"
+                            network_entity_id = var.oci_nfw_ip_ocid
+                          },
                         }
                     }
                 } : {},
@@ -376,55 +382,55 @@ locals {
                     route_rules = merge(
                       local.add_tt_vcn1 == true && var.tt_vcn1_attach_to_drg == true ? {for cidr in var.tt_vcn1_cidrs : "TT-VCN-1-${replace(replace(cidr,".",""),"/","")}-RULE" => {
                         network_entity_id = var.oci_nfw_ip_ocid
-                        description       = "Traffic destined to ${coalesce(var.tt_vcn1_name,"${var.service_label}-three-tier-vcn-1")} CIDR ${cidr} goes to ${var.oci_nfw_ip_ocid}."
+                        description       = "Traffic destined to ${coalesce(var.tt_vcn1_name,"${var.service_label}-three-tier-vcn-1")} CIDR ${cidr} goes to OCI Firewall (${var.oci_nfw_ip_ocid})."
                         destination       = "${cidr}"
                         destination_type  = "CIDR_BLOCK"
                       }} : {},
                       local.add_tt_vcn2 == true && var.tt_vcn2_attach_to_drg == true ? {for cidr in var.tt_vcn2_cidrs : "TT-VCN-2-${replace(replace(cidr,".",""),"/","")}-RULE" => {
                         network_entity_id = var.oci_nfw_ip_ocid
-                        description       = "Traffic destined to ${coalesce(var.tt_vcn2_name,"${var.service_label}-three-tier-vcn-2")} CIDR ${cidr} goes to ${var.oci_nfw_ip_ocid}."
+                        description       = "Traffic destined to ${coalesce(var.tt_vcn2_name,"${var.service_label}-three-tier-vcn-2")} CIDR ${cidr} goes to OCI Firewall (${var.oci_nfw_ip_ocid})."
                         destination       = "${cidr}"
                         destination_type  = "CIDR_BLOCK"
                       }} : {},
                       local.add_tt_vcn3 == true && var.tt_vcn3_attach_to_drg == true ? {for cidr in var.tt_vcn3_cidrs : "TT-VCN-3-${replace(replace(cidr,".",""),"/","")}-RULE" => {
                         network_entity_id = var.oci_nfw_ip_ocid
-                        description       = "Traffic destined to ${coalesce(var.tt_vcn3_name,"${var.service_label}-three-tier-vcn-3")} CIDR ${cidr} goes to ${var.oci_nfw_ip_ocid}."
+                        description       = "Traffic destined to ${coalesce(var.tt_vcn3_name,"${var.service_label}-three-tier-vcn-3")} CIDR ${cidr} goes to OCI Firewall (${var.oci_nfw_ip_ocid})."
                         destination       = "${cidr}"
                         destination_type  = "CIDR_BLOCK"
                       }} : {},
                       local.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true ? {for cidr in var.oke_vcn1_cidrs : "OKE-VCN-1-${replace(replace(cidr,".",""),"/","")}}-RULE" => {
                         network_entity_id = var.oci_nfw_ip_ocid
-                        description       = "Traffic destined to ${coalesce(var.oke_vcn1_name,"${var.service_label}-oke-vcn-1")} CIDR ${cidr} goes to ${var.oci_nfw_ip_ocid}."
+                        description       = "Traffic destined to ${coalesce(var.oke_vcn1_name,"${var.service_label}-oke-vcn-1")} CIDR ${cidr} goes to OCI Firewall (${var.oci_nfw_ip_ocid})."
                         destination       = "${cidr}"
                         destination_type  = "CIDR_BLOCK"
                       }} : {},
                       local.add_oke_vcn2 == true && var.oke_vcn2_attach_to_drg == true ? {for cidr in var.oke_vcn2_cidrs : "OKE-VCN-2-${replace(replace(cidr,".",""),"/","")}}-RULE" => {
                         network_entity_id = var.oci_nfw_ip_ocid
-                        description       = "Traffic destined to ${coalesce(var.oke_vcn2_name,"${var.service_label}-oke-vcn-2")} CIDR ${cidr} goes to ${var.oci_nfw_ip_ocid}."
+                        description       = "Traffic destined to ${coalesce(var.oke_vcn2_name,"${var.service_label}-oke-vcn-2")} CIDR ${cidr} goes to OCI Firewall (${var.oci_nfw_ip_ocid})."
                         destination       = "${cidr}"
                         destination_type  = "CIDR_BLOCK"
                       }} : {}, 
                       local.add_oke_vcn3 == true && var.oke_vcn3_attach_to_drg == true ? {for cidr in var.oke_vcn3_cidrs : "OKE-VCN-3-${replace(replace(cidr,".",""),"/","")}}-RULE" => {
                         network_entity_id = var.oci_nfw_ip_ocid
-                        description       = "Traffic destined to ${coalesce(var.oke_vcn3_name,"${var.service_label}-oke-vcn-3")} CIDR ${cidr} goes to ${var.oci_nfw_ip_ocid}."
+                        description       = "Traffic destined to ${coalesce(var.oke_vcn3_name,"${var.service_label}-oke-vcn-3")} CIDR ${cidr} goes to OCI Firewall (${var.oci_nfw_ip_ocid})."
                         destination       = "${cidr}"
                         destination_type  = "CIDR_BLOCK"
                       }} : {},
                       local.add_exa_vcn1 == true && var.exa_vcn1_attach_to_drg == true ? {for cidr in var.exa_vcn1_cidrs : "EXA-VCN-1-${replace(replace(cidr,".",""),"/","")}}-RULE" => {
                         network_entity_id = var.oci_nfw_ip_ocid
-                        description       = "Traffic destined to ${coalesce(var.exa_vcn1_name,"${var.service_label}-exa-vcn-1")} CIDR ${cidr} goes to ${var.oci_nfw_ip_ocid}."
+                        description       = "Traffic destined to ${coalesce(var.exa_vcn1_name,"${var.service_label}-exa-vcn-1")} CIDR ${cidr} goes to OCI Firewall (${var.oci_nfw_ip_ocid})."
                         destination       = "${cidr}"
                         destination_type  = "CIDR_BLOCK"
                       }} : {},
                       local.add_exa_vcn2 == true && var.exa_vcn2_attach_to_drg == true ? {for cidr in var.exa_vcn2_cidrs : "EXA-VCN-2-${replace(replace(cidr,".",""),"/","")}}-RULE" => {
                         network_entity_id = var.oci_nfw_ip_ocid
-                        description       = "Traffic destined to ${coalesce(var.exa_vcn2_name,"${var.service_label}-exa-vcn-2")} CIDR ${cidr} goes to ${var.oci_nfw_ip_ocid}."
+                        description       = "Traffic destined to ${coalesce(var.exa_vcn2_name,"${var.service_label}-exa-vcn-2")} CIDR ${cidr} goes to OCI Firewall (${var.oci_nfw_ip_ocid})."
                         destination       = "${cidr}"
                         destination_type  = "CIDR_BLOCK"
                       }} : {}, 
                       local.add_exa_vcn3 == true && var.exa_vcn3_attach_to_drg == true ? {for cidr in var.exa_vcn3_cidrs : "EXA-VCN-3-${replace(replace(cidr,".",""),"/","")}}-RULE" => {
                         network_entity_id = var.oci_nfw_ip_ocid
-                        description       = "Traffic destined to ${coalesce(var.exa_vcn3_name,"${var.service_label}-exa-vcn-3")} CIDR ${cidr} goes to ${var.oci_nfw_ip_ocid}."
+                        description       = "Traffic destined to ${coalesce(var.exa_vcn3_name,"${var.service_label}-exa-vcn-3")} CIDR ${cidr} goes to OCI Firewall (${var.oci_nfw_ip_ocid})."
                         destination       = "${cidr}"
                         destination_type  = "CIDR_BLOCK"
                       }} : {}
