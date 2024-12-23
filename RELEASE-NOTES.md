@@ -1,5 +1,5 @@
 # December 23, 2024 Release Notes - 1.2.0
-# New
+## New
 1. Ability to deploy the OCI Native Network Firewall.
 
 # November 20, 2024 Release Notes - 1.1.0
