@@ -8,8 +8,8 @@
 
 | Name | Version |
 |------|---------|
-| <a name="provider_oci"></a> [oci](#provider\_oci) | 6.13.0 |
-| <a name="provider_time"></a> [time](#provider\_time) | 0.12.1 |
+| <a name="provider_oci"></a> [oci](#provider\_oci) | 5.16.0 |
+| <a name="provider_time"></a> [time](#provider\_time) | 0.12.0 |
 
 ## Modules
 
@@ -43,6 +43,8 @@
 | <a name="module_lz_top_compartment"></a> [lz\_top\_compartment](#module\_lz\_top\_compartment) | github.com/oci-landing-zones/terraform-oci-modules-iam//compartments | v0.2.4 |
 | <a name="module_lz_vault"></a> [lz\_vault](#module\_lz\_vault) | github.com/oci-landing-zones/terraform-oci-modules-security//vaults | v0.1.7 |
 | <a name="module_lz_zpr"></a> [lz\_zpr](#module\_lz\_zpr) | github.com/oci-landing-zones/terraform-oci-modules-security//zpr | v0.1.9 |
+| <a name="module_native_oci_firewall"></a> [native\_oci\_firewall](#module\_native\_oci\_firewall) | github.com/oci-landing-zones/terraform-oci-modules-networking | v0.7.1 |
+| <a name="module_oci_native_firewall_logs"></a> [oci\_native\_firewall\_logs](#module\_oci\_native\_firewall\_logs) | github.com/oci-landing-zones/terraform-oci-modules-observability//logging | v0.1.9 |
 
 ## Resources
 
@@ -124,6 +126,8 @@
 | <a name="input_dyn_groups_options"></a> [dyn\_groups\_options](#input\_dyn\_groups\_options) | ------------------------------------------------------ ----- IAM - Dynamic Groups ------------------------------------------------------- | `string` | `"Yes"` | no |
 | <a name="input_enable_cloud_guard"></a> [enable\_cloud\_guard](#input\_enable\_cloud\_guard) | Determines whether the Cloud Guard service should be enabled. If true, Cloud Guard is enabled and the Root compartment is configured with a Cloud Guard target, as long as there is no pre-existing Cloud Guard target for the Root compartment (or target creation will fail). Keep in mind that once you set this to true, Cloud Guard target is managed by Landing Zone. If later on you switch this to false, the managed target is deleted and all (open, resolved and dismissed) problems associated with the deleted target are being moved to 'deleted' state. This operation happens in the background and would take some time to complete. Deleted problems can be viewed from the problems page using the 'deleted' status filter. For more details on Cloud Guard problems lifecycle, see https://docs.oracle.com/en-us/iaas/cloud-guard/using/problems-page.htm#problems-page__sect_prob_lifecycle. If Cloud Guard is already enabled and a target exists for the Root compartment, set this variable to false. | `bool` | `true` | no |
 | <a name="input_enable_cloud_guard_cloned_recipes"></a> [enable\_cloud\_guard\_cloned\_recipes](#input\_enable\_cloud\_guard\_cloned\_recipes) | Whether cloned recipes are attached to the managed Cloud Guard target. If false, Oracle managed recipes are attached. | `bool` | `true` | no |
+| <a name="input_enable_native_firewall_threat_log"></a> [enable\_native\_firewall\_threat\_log](#input\_enable\_native\_firewall\_threat\_log) | Enable OCI Native Firewall Threat Log. | `bool` | `false` | no |
+| <a name="input_enable_native_firewall_traffic_log"></a> [enable\_native\_firewall\_traffic\_log](#input\_enable\_native\_firewall\_traffic\_log) | Enable OCI Native Firewall Traffic Log. | `bool` | `false` | no |
 | <a name="input_enable_security_zones"></a> [enable\_security\_zones](#input\_enable\_security\_zones) | Determines if Security Zones are enabled in Landing Zone. When set to true, the Security Zone is enabled for the enclosing compartment. If no enclosing compartment is used, then the Security Zone is not enabled. | `bool` | `false` | no |
 | <a name="input_enable_service_connector"></a> [enable\_service\_connector](#input\_enable\_service\_connector) | Whether Service Connector should be enabled. If true, a single Service Connector is managed for all services log sources and the designated target specified in 'Service Connector Target Kind'. The Service Connector resource is created in INACTIVE state. To activate, check 'Activate Service Connector?' (costs may incur). | `bool` | `false` | no |
 | <a name="input_enable_zpr"></a> [enable\_zpr](#input\_enable\_zpr) | Whether to enable ZPR service. | `bool` | `false` | no |
@@ -189,7 +193,7 @@
 | <a name="input_hub_deployment"></a> [hub\_deployment](#input\_hub\_deployment) | The available options for hub deployment as an integer. 'No cross-VCN or on-premises connectivity' = 0, 'VCN or on-premises connectivity routing via DRG (DRG will be created)' = 1, 'VCN or on-premises connectivity routing via DRG (existing DRG)' = 2, 'VCN or on-premises connectivity routing through DMZ VCN with Network Virtual Appliance (DRG and DMZ VCN will be created)' = 3, 'VCN or on-premises connectivity routed through DMZ VCN with Network Virtual Appliance existing DRG (DMZ VCN will be created and DRG ID required)' = 4 | `number` | `0` | no |
 | <a name="input_hub_deployment_option"></a> [hub\_deployment\_option](#input\_hub\_deployment\_option) | The available options for hub deployment. Valid values: 'No cross-VCN or on-premises connectivity', 'VCN or on-premises connectivity routing via DRG (DRG will be created)', 'VCN or on-premises connectivity routing via DRG (existing DRG)', 'VCN or on-premises connectivity routing through DMZ VCN with Network Virtual Appliance (DRG and DMZ VCN will be created)', 'VCN or on-premises connectivity routed through DMZ VCN with Network Virtual Appliance existing DRG (DMZ VCN will be created and DRG ID required)'. All the VCNs that attach to the DRG join the topology as spokes. | `string` | `""` | no |
 | <a name="input_hub_vcn_cidrs"></a> [hub\_vcn\_cidrs](#input\_hub\_vcn\_cidrs) | List of CIDR blocks for the Hub VCN. | `list(string)` | <pre>[<br>  "192.168.0.0/26"<br>]</pre> | no |
-| <a name="input_hub_vcn_deploy_net_appliance_option"></a> [hub\_vcn\_deploy\_net\_appliance\_option](#input\_hub\_vcn\_deploy\_net\_appliance\_option) | The network appliance option for deploying in the Hub VCN. Valid values: 'Don't deploy any network appliance at this time' (default), 'Palo Alto Networks VM-Series Firewall', 'Fortinet FortiGate Firewall'. Costs are incurred. | `string` | `"Don't deploy any network appliance at this time"` | no |
+| <a name="input_hub_vcn_deploy_net_appliance_option"></a> [hub\_vcn\_deploy\_net\_appliance\_option](#input\_hub\_vcn\_deploy\_net\_appliance\_option) | The network appliance option for deploying in the Hub VCN. Valid values: 'Don't deploy any network appliance at this time' (default), 'Palo Alto Networks VM-Series Firewall', 'Fortinet FortiGate Firewall', 'User-Provided Virtual Network Appliance', and 'OCI Native Firewall'. Costs are incurred. | `string` | `"Don't deploy any network appliance at this time"` | no |
 | <a name="input_hub_vcn_east_west_entry_point_ocid"></a> [hub\_vcn\_east\_west\_entry\_point\_ocid](#input\_hub\_vcn\_east\_west\_entry\_point\_ocid) | The OCID of a private address the Hub VCN routes traffic to for inbound internal cross-vcn traffic (East/West). This variable is to be assigned with the OCID of the indoor network load balancer's private IP address. | `string` | `null` | no |
 | <a name="input_hub_vcn_indoor_subnet_cidr"></a> [hub\_vcn\_indoor\_subnet\_cidr](#input\_hub\_vcn\_indoor\_subnet\_cidr) | The Hub VCN Indoor subnet CIDR block. It must be within the VCN CIDR blocks. | `string` | `null` | no |
 | <a name="input_hub_vcn_indoor_subnet_name"></a> [hub\_vcn\_indoor\_subnet\_name](#input\_hub\_vcn\_indoor\_subnet\_name) | The Hub VCN Indoor subnet name. | `string` | `null` | no |
@@ -208,7 +212,7 @@
 | <a name="input_lz_provenant_prefix"></a> [lz\_provenant\_prefix](#input\_lz\_provenant\_prefix) | The provenant landing zone prefix or code that identifies the client of this Landing Zone. This information goes into a freeform tag applied to all deployed resources. | `string` | `"core"` | no |
 | <a name="input_lz_provenant_version"></a> [lz\_provenant\_version](#input\_lz\_provenant\_version) | The provenant landing zone version. This information goes into a freeform tag applied to all deployed resources. | `string` | `null` | no |
 | <a name="input_net_appliance_boot_volume_size"></a> [net\_appliance\_boot\_volume\_size](#input\_net\_appliance\_boot\_volume\_size) | The boot volume size (in GB) for the Network Appliance instances. | `number` | `60` | no |
-| <a name="input_net_appliance_flex_shape_cpu"></a> [net\_appliance\_flex\_shape\_cpu](#input\_net\_appliance\_flex\_shape\_cpu) | The number of OCPUs for the selected flex shape. Applicable to flexible shapes only. | `number` | `2` | no |
+| <a name="input_net_appliance_flex_shape_cpu"></a> [net\_appliance\_flex\_shape\_cpu](#input\_net\_appliance\_flex\_shape\_cpu) | The number of OCPUs for the selected flex shape. Applicable to flexible shapes only. | `number` | `4` | no |
 | <a name="input_net_appliance_flex_shape_memory"></a> [net\_appliance\_flex\_shape\_memory](#input\_net\_appliance\_flex\_shape\_memory) | The amount of memory (in GB) for the selected flex shape. Applicable to flexible shapes only. | `number` | `56` | no |
 | <a name="input_net_appliance_image_ocid"></a> [net\_appliance\_image\_ocid](#input\_net\_appliance\_image\_ocid) | The custom image ocid of the user-provided virtual network appliance. | `string` | `null` | no |
 | <a name="input_net_appliance_name_prefix"></a> [net\_appliance\_name\_prefix](#input\_net\_appliance\_name\_prefix) | Common prefix to network appliance name. To this common prefix, numbers 1 and 2 are appended to the corresponding instance. | `string` | `"net-appliance-instance"` | no |
@@ -218,6 +222,8 @@
 | <a name="input_net_palo_alto_version"></a> [net\_palo\_alto\_version](#input\_net\_palo\_alto\_version) | Palo Alto Firewall Version. | `string` | `"11.1.3"` | no |
 | <a name="input_network_admin_email_endpoints"></a> [network\_admin\_email\_endpoints](#input\_network\_admin\_email\_endpoints) | List of email addresses for all network related notifications. (Type an email address and hit enter to enter multiple values) | `list(string)` | `[]` | no |
 | <a name="input_notifications_advanced_options"></a> [notifications\_advanced\_options](#input\_notifications\_advanced\_options) | n/a | `bool` | `false` | no |
+| <a name="input_oci_nfw_ip_ocid"></a> [oci\_nfw\_ip\_ocid](#input\_oci\_nfw\_ip\_ocid) | Enter OCI Network Firewall's Forwarding Private IP OCID. | `string` | `null` | no |
+| <a name="input_oci_nfw_policy_ocid"></a> [oci\_nfw\_policy\_ocid](#input\_oci\_nfw\_policy\_ocid) | Enter the OCI Network Firewall Policy OCID. | `string` | `null` | no |
 | <a name="input_oke_vcn1_api_subnet_cidr"></a> [oke\_vcn1\_api\_subnet\_cidr](#input\_oke\_vcn1\_api\_subnet\_cidr) | The API subnet CIDR block. It must be within the VCN CIDR blocks. | `string` | `null` | no |
 | <a name="input_oke_vcn1_api_subnet_name"></a> [oke\_vcn1\_api\_subnet\_name](#input\_oke\_vcn1\_api\_subnet\_name) | The API subnet name. | `string` | `null` | no |
 | <a name="input_oke_vcn1_attach_to_drg"></a> [oke\_vcn1\_attach\_to\_drg](#input\_oke\_vcn1\_attach\_to\_drg) | If true, the VCN is attached to a DRG, enabling cross-vcn traffic routing. | `bool` | `false` | no |
@@ -366,6 +372,7 @@
 | <a name="output_dynamic_routing_gateways"></a> [dynamic\_routing\_gateways](#output\_dynamic\_routing\_gateways) | The deployed dynamic routing gateway. |
 | <a name="output_network_security_groups"></a> [network\_security\_groups](#output\_network\_security\_groups) | The deployed network security groups. |
 | <a name="output_nlb_private_ip_addresses"></a> [nlb\_private\_ip\_addresses](#output\_nlb\_private\_ip\_addresses) | The deployed private IP addresses OCIDs. |
+| <a name="output_oci_firewall_ip_ocid"></a> [oci\_firewall\_ip\_ocid](#output\_oci\_firewall\_ip\_ocid) | n/a |
 | <a name="output_region"></a> [region](#output\_region) | The region where resources have been deployed. |
 | <a name="output_release"></a> [release](#output\_release) | The OCI Core Landing Zone release. |
 | <a name="output_service_label"></a> [service\_label](#output\_service\_label) | The prefix to deployed resources. |

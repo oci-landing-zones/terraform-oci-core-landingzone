@@ -123,11 +123,11 @@ The Landing Zone architecture starts with a compartment design for the tenancy a
 
 The Landing Zone can provision one to ten VCNs, either in standalone mode or as constituent parts of a Hub & Spoke architecture. The VCNs can either follow a general-purpose standard N-Tier network topology or oriented towards specific topologies, like supporting Oracle Database Exadata Cloud Service and/or Oracle Kubernetes Engine deployments. VCNs are automatically configured with the necessary routing and with the necessary inbound and outbound interfaces properly secured.
 
-The Landing Zone includes multiple pre-configured security services that can be deployed in tandem with the overall architecture for a stronger security posture. These services are *Oracle Cloud Guard*, *Flow Logs*, *Service Connector Hub*, *Vault*, *Vulnerability Scanning*, and *Bastion*.
+The Landing Zone includes multiple pre-configured security services that can be deployed in tandem with the overall architecture for a stronger security posture. These services are *Oracle Cloud Guard*, *Flow Logs*, *Service Connector Hub*, *Vault*, *Vulnerability Scanning*, *Network Firewall* and *Bastion*.
 
 From a governance perspective, *Notifications* and *Alarms* are setup to use *Topics* and *Events* for alerting administrators about changes and exceeded metric thresholds for deployed resources. The Landing Zone provisions tag defaults to automatically determine resource owner and creation timestamp. Based on user choice, a foundational *Budget* for cost tracking purposes can be created as well.
 
-As an important aspect to governance, logging is also considered by the Landing Zone. Per CIS Oracle Cloud Infrastructure Benchmark, VCN flow logs and Object Storage logging are enabled by default. Landing Zone takes a step forward and, upon user choice, uses Service Connector Hub service to consolidate OCI log sources into a single designated target, which is an Object Storage bucket by default but can also be an OCI Stream or an OCI Function. Such feature makes it easier for making OCI logs available in 3rd-party SIEM solutions, like Splunk.
+As an important aspect to governance, logging is also considered by the Landing Zone. Per CIS Oracle Cloud Infrastructure Benchmark, VCN flow logs and Object Storage logging are enabled by default. Landing Zone takes a step forward and, upon user choice, uses Service Connector Hub service to consolidate OCI log sources into a single designated target, which is an Object Storage bucket by default but can also be an OCI Stream or an OCI Function. Such feature makes it easier for making OCI logs available in third party SIEM solutions, like Splunk.
 
 The diagrams below shows Landing Zone overall architecture:
 
@@ -137,7 +137,12 @@ The diagrams below shows Landing Zone overall architecture:
 
 **With Hub & Spoke Networking**
 
-![Architecture_Advanced](images/arch-advanced.png)
+![Architecture_Advanced](images/arch-advanced-net-appliance.png)
+
+**With Hub & Spoke Networking Using OCI Network Firewall**
+
+![Architecture_OCI_NFW](images/arch-advanced-oci-firewall.png)
+
 
 ## <a name="iam-configuration"></a>3.1 Identity & Access Management (IAM) Configuration
 
@@ -224,7 +229,7 @@ The Landing Zone supports a variety of networking types:
 
 The Landing Zone supports up to three VCNs of each type.
 
-Regardless the networking types, these VCNs can be deployed standalone or all connected via OCI DRG V2 service in a Hub & Spoke topology. When deploying Hub & Spoke, either a Hub VCN (aka DMZ VCN) can be provisioned or the DRG itself used as the hub. The Landing Zone also optionally deploys a network appliance in the Hub VCN to control/secure all inbound and outbound traffic routing in the spoke VCNs. 
+Regardless the networking types, these VCNs can be deployed standalone or all connected via OCI DRG V2 service in a Hub & Spoke topology. When deploying Hub & Spoke, either a Hub VCN (aka DMZ VCN) can be provisioned or the DRG itself used as the hub. The Landing Zone also optionally deploys a network appliance or OCI Native Firewall in the Hub VCN to control/secure all inbound and outbound traffic routing in the spoke VCNs.
 
 The VCNs can also be configured with no Internet connectivity or for on-premises connectivity. Inbound access to the SSH port from 0.0.0.0/0 IP range is strictly prohibited.
 
@@ -244,7 +249,7 @@ Landing Zone extends events monitoring with operational metrics and alarms provi
 
 As mandated by CIS Benchmark, Landing Zone also enables VCN flow logs to all provisioned subnets and Object Storage logging for write operations.
 
-Last, but not least, Landing Zone uses OCI Service Connector Hub to consolidate logs from different sources, including VCN flow logs and Audit logs. This is extremely helpful when making OCI logs available to 3rd-party SIEM (Security Information and Event Management) or SOAR (Security Orchestration and Response) solutions. OCI Service Connector Hub can aggregate OCI logs in Object Storage, send them to an OCI Stream or to an OCI Function. By default, the Landing Zone uses Object Storage as the destination.
+Last, but not least, Landing Zone uses OCI Service Connector Hub to consolidate logs from different sources, including VCN flow logs and Audit logs. This is extremely helpful when making OCI logs available to third party SIEM (Security Information and Event Management) or SOAR (Security Orchestration and Response) solutions. OCI Service Connector Hub can aggregate OCI logs in Object Storage, send them to an OCI Stream or to an OCI Function. By default, the Landing Zone uses Object Storage as the destination.
 
 ### Cost Tracking
 
@@ -260,7 +265,7 @@ Landing Zone implements three facets of resources tagging:
 
 - **Tag Defaults**: Landing Zone provisions *CreatedBy* (who) and *CreatedOn* (when) tag defaults in a brand new tag namespace if the *Oracle-Tags* namespace is not available in the tenancy. Tag defaults allow for automatic tagging on any subsequently deployed resources. This is mandated by CIS Foundations Benchmark and it is extremely useful for identifying who created a particular resource and when.
 - **Landing Zone tag**: Landing Zone uses a freeform tag to tag all provisioned resources with the simple objective of identifying them as Landing Zone resources.
-- **Customer-defined tags**: Customers can also tag Landing Zone resources as they wish, either via defined tags or freeform tags. Defined tags imply the creation of a tag namespace, while freeform tags do not. This is the approach that customers take when aiming for tag-based policies and cost tracking. As Landing Zone cannot predict namespaces and tag names, custom tags are considered a customization. 
+- **Customer-defined tags**: Customers can also tag Landing Zone resources as they wish, either via defined tags or freeform tags. Defined tags imply the creation of a tag namespace, while freeform tags do not. This is the approach that customers take when aiming for tag-based policies and cost tracking. As Landing Zone cannot predict namespaces and tag names, custom tags are considered a customization.
 
 # <a name="scenarios"></a>4. Deployment Scenarios
 
@@ -276,7 +281,7 @@ By default, the Landing Zone compartments are deployed in the tenancy root compa
 
 - **enclosing\_compartment\_parent\_ocid**: the existing compartment where Landing Zone **enclosing** compartment is created. It is required if *enclosing\_compartment\_options* is 'Yes, deploy New'.
 
-- **existing\_enclosing\_compartment\_ocid**: the OCID of a pre-existing enclosing compartment where Landing Zone compartments are created. It is required if *enclosing\_compartment\_options* is 'Yes, use existing'. 
+- **existing\_enclosing\_compartment\_ocid**: the OCID of a pre-existing enclosing compartment where Landing Zone compartments are created. It is required if *enclosing\_compartment\_options* is 'Yes, use existing'.
 
 If an enclosing compartment is deployed, Landing Zone policies that are not required to be attached at root compartment are attached to the enclosing compartment. This allows the enclosing compartment to be moved later anywhere in the compartments hierarchy without any policy changes.
 
@@ -357,7 +362,36 @@ See deployment scenarios under the [templates](./templates/) folder:
 - [Single Three-Tier VCN with ZPR enabled](./templates/standalone-three-tier-vcn-zpr/)
 - [Single Three-Tier VCN with custom settings](./templates/standalone-three-tier-vcn-custom/)
 - [Multiple Three-Tier VCNs peered through DRG](./templates/hub-spoke-with-drg-and-three-tier-vcns)
-- [Multiple VCN types peered through a Hub VCN with network appliance](./templates/hub-spoke-with-hub-vcn-net-appliance)
+- [Multiple VCN types peered through a Hub VCN with native Network Firewall](./templates/hub-spoke-with-hub-vcn-net-firewall)
+- [Multiple VCN types peered through a Hub VCN with third party network appliance](./templates/hub-spoke-with-hub-vcn-net-appliance)
+
+#### Landing Zone OCI Network Firewall Option
+
+OCI Network Firewall is a managed next-generation firewall and Intrusion Detection and Prevention Service (IDS/IPS) that is powered by Palo Alto Networks. It is an OCI cloud-native service, available with Core Landing Zone. The Landing Zone offers simple setup and deployment of the Network Firewall service, which gives you visibility into traffic entering your cloud environment (North-South) via IGW and traffic between subnets (East-West) via DRG routing. The Core Landing Zone implementation deploys a Hub & Spoke network topology with a Network Firewall in the Hub VCN.
+
+To use this service with Landing Zone, there must be two consecutive executions of `terraform apply`. The first pass sets up the Network Firewall instance with a single default policy to *reject all traffic*. The second pass configures the Network Firewall with information of OCIDs collected after the first pass, including a *user created network firewall policy* for your specific use case. In more detail:
+
+- Run the first `terraform apply` (either from RMS or CLI).
+- Collect the Network Firewall forwarding IP OCID from the created instance.
+- Create a new firewall policy for your use case to replace the default `reject all` policy.
+- Edit the RMS stack to add the above information or, if using Terraform CLI, change the associated variable values named below.
+- Run the second `terraform apply` incorporating the Network Firewall forwarding IP address for routing rules, and if supplied, your firewall policy as the new default.
+
+This is where the collected information is used in the RMS stack:
+![nfw_deploy_update.png](images/nfw_deploy_update.png)
+For Terraform CLI deployment, use these variables:
+
+- **oci\_firewall\_ip\_ocid**
+- **oci\_nfw\_policy\_ocid**
+
+If updated in the stack this way, the new user policy is baked into the Network Firewall configuration. Core Landing Zone doesn't manage your use case firewall policy - only the association of it with the Network Firewall.
+
+
+#### Landing Zone Third Party Firewall Options
+
+Alternatively, Core Landing Zone supports use of a third party *network appliance* (VM instance) with either Palo Alto Networks VM-Series Next Generation Firewall or Fortinet FortiGate Next-Gen Firewall.  Both options leverage compute images available in the [OCI Marktplace](https://cloud.oracle.com/marketplace) with Bring Your Own Licensing (BYOL).
+
+Both OCI and Third Party firewall options are provided separately in the deployment scenario templates above.
 
 #### Cross-VCN Connectivity Patterns
 
@@ -522,7 +556,7 @@ The middle ground approach is typically used by organizations that see network a
 
 OCI Core Landing Zone supports Zero Trust Packet Routing (ZPR). ZPR prevents unauthorized access with intent-based security policies that you write for OCI resources and assign security attributes to. Security attributes are labels that ZPR uses to identify and organize OCI resources. ZPR enforces policy at the network level each time access is requested, regardless of potential network architecture changes or misconfigurations.
 
-ZPR (version 1) functions as a layer on top of existing Network Security Groups or Security Lists or both.  For resources without ZPR tags, traffic is only allowed in or out if *existing* NSG and/or security lists allow the traffic.  Once a resource receives a ZPR tag, traffic must be approved by *all* existing filters: ZPR policy, NSGs and security lists.
+ZPR (version 1) functions as a layer on top of existing Network Security Groups or Security Lists or both. For resources without ZPR tags, traffic is only allowed in or out if *existing* NSG and/or security lists allow the traffic. Once a resource receives a ZPR tag, traffic must be approved by *all* existing filters: ZPR policy, NSGs and security lists.
 
 To use ZPR, it must be [enabled at the tenancy level](https://docs.oracle.com/en-us/iaas/Content/zero-trust-packet-routing/enable-zpr.htm). Note that once it is enabled, tenancy users and administrators cannot disable it. ZPR also requires a security attribute namespace. Core Landing Zone facilitates both the tenancy ZPR enablement and security attribute namespace creation with values assigned to two variables:
 
@@ -533,9 +567,9 @@ To enable ZPR during deployment using OCI Resource Manager UI, select _"Define N
 
 <img src="images/ZPR_enable.png" alt="ZPR enable" width="800"/>
 
-With a ZPR namespace established, the next step is to create security attributes based on resource types.  See [Resources That Can Be Assigned Security Attributes](https://docs.oracle.com/en-us/iaas/Content/zero-trust-packet-routing/overview.htm#resources-assigned-security-attributes) for a list of resource types that support ZPR security attributes.
+With a ZPR namespace established, the next step is to create security attributes based on resource types. See [Resources That Can Be Assigned Security Attributes](https://docs.oracle.com/en-us/iaas/Content/zero-trust-packet-routing/overview.htm#resources-assigned-security-attributes) for a list of resource types that support ZPR security attributes.
 
-The last step is to create ZPR policies.  Core Landing Zone creates some ZPR policies for VCNs (details shown below) as a base layer of protection, but for ZPR to take full effect, you must apply ZPR security attributes and policies to other supported resources you deploy, like compute instances and databases.
+The last step is to create ZPR policies. Core Landing Zone creates some ZPR policies for VCNs (details shown below) as a base layer of protection, but for ZPR to take full effect, you must apply ZPR security attributes and policies to other supported resources you deploy, like compute instances and databases.
 
 #### Three-Tier VCN ZPR Policies
 

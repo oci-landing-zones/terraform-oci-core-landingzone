@@ -51,6 +51,9 @@ output "nlb_private_ip_addresses" {
   value       = var.display_output && length(module.lz_nlb) > 0 ? { for k, v in module.lz_nlb[0].nlbs_primary_private_ips : k => { id : v.private_ips[0].id } } : null
 }
 
+output "oci_firewall_ip_ocid" {
+  value = local.chosen_firewall_option == "OCINFW" ? module.native_oci_firewall[0].provisioned_networking_resources.oci_network_firewall_network_firewalls["OCI-NFW-KEY"].ipv4address_ocid : null
+}
 
 # ## Budget outputs
 # output "created_budgets" {
@@ -79,7 +82,6 @@ output "nlb_private_ip_addresses" {
 #   description = "Events created by Landing Zone."
 #   value       = var.display_output ? module.lz_notifications.events : null
 # }
-
 # output "created_home_region_events" {
 #   description = "Events created by Landing Zone."
 #   value       = var.display_output && var.extend_landing_zone_to_new_region == false ? module.lz_home_region_notifications[0].events : null
