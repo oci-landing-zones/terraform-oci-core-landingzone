@@ -207,9 +207,6 @@ variableGroups:
     variables:
       - "bastion_jump_host_custom_image_ocid"
       - "bastion_jump_host_marketplace_image_option"
-      - "bastion_onprem_ssh_allowed_cidrs"
-      - "bastion_jump_host_marketplace_image_option"
-      - "bastion_onprem_ssh_allowed_cidrs"
       - "bastion_jump_host_public_rsa_key"
       - "customize_jump_host"
       - "bastion_jump_host_name"
@@ -225,11 +222,6 @@ variableGroups:
       - "customize_jumphost_subnet"
       - "hub_vcn_jumphost_subnet_name"
       - "hub_vcn_jumphost_subnet_cidr"
-      - "deploy_bastion_service"
-      - "bastion_service_allowed_cidrs"
-      - "customize_bastion_service"
-      - "bastion_service_name"
-      - "enable_bastion_proxy_status"
 
     visible:
       and:
@@ -4074,18 +4066,6 @@ variables:
     enum:
       - "Oracle Linux 8 STIG (Free)"
       - "CIS Hardened Image Level 1 on Oracle Linux 8 (Paid)"
-    visible:
-      and:
-        - deploy_bastion_jump_host
-
-  bastion_onprem_ssh_allowed_cidrs:
-    type: array
-    items:
-      type: string
-    uniqueItems: true
-    title: "Enter On-Premises SSH CIDR Blocks"
-    required: false
-    description: "List of on-prem CIDRs allowed to connect to Landing Zone networks over SSH. They must be a subset of the On-Prem Network CIDRs. This will use either Fast Connect or IPSEC."
     visible:
       and:
         - deploy_bastion_jump_host

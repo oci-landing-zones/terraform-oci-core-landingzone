@@ -117,8 +117,6 @@
 | bastion_service_name | The bastion service name. | `string` | `null` | no |
 | bastion_service_allowed_cidrs | List of the bastion service allowed cidrs. | `list(string)` | `[/]` | no |
 | enable_bastion_proxy_status | The option to enable dns proxy. | `bool` | `false` | no |
-| bastion_onprem_ssh_allowed_cidrs | List of on-prem CIDR blocks allowed to connect to the jump host through SSH. This should be a subset of onprem_cidrs | `list(string)` | `[/]` | no |
-
 
 
 ### Three Tier Networking

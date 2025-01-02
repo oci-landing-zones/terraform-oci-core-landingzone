@@ -209,13 +209,3 @@ variable "enable_bastion_proxy_status" {
   default     = false
   description = "The option to enable dns proxy."
 }
-
-variable "bastion_onprem_ssh_allowed_cidrs" {
-  type        = list(string)
-  default     = []
-  description = "List of on-prem CIDR blocks allowed to connect to the jump host through SSH. This should be a subset of onprem_cidrs."
-  validation {
-    condition     = length([for c in var.bastion_onprem_ssh_allowed_cidrs : c if length(regexall("^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/([0-9]|[1-2][0-9]|3[0-2]))?$", c)) > 0]) == length(var.bastion_onprem_ssh_allowed_cidrs)
-    error_message = "Validation failed for bastion_onprem_ssh_allowed_cidrs: values must be in CIDR notation."
-  }
-}

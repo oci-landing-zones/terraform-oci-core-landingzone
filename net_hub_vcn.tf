@@ -801,7 +801,7 @@ locals {
                     display_name = "jump-host-nsg"
                     ingress_rules = merge(
                       {
-                        for cidr in var.bastion_onprem_ssh_allowed_cidrs : "INGRESS-FROM-${cidr}-RULE" => {
+                        for cidr in var.onprem_cidrs : "INGRESS-FROM-${cidr}-RULE" => {
                           description  = "Ingress from ${cidr} on port 22. Allows inbound SSH access for on-prem IP addresses"
                           stateless    = false
                           protocol     = "TCP"
