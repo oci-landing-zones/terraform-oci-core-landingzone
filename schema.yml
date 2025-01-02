@@ -208,6 +208,8 @@ variableGroups:
       - "bastion_jump_host_custom_image_ocid"
       - "bastion_jump_host_marketplace_image_option"
       - "bastion_onprem_ssh_allowed_cidrs"
+      - "bastion_jump_host_marketplace_image_option"
+      - "bastion_onprem_ssh_allowed_cidrs"
       - "bastion_jump_host_public_rsa_key"
       - "customize_jump_host"
       - "bastion_jump_host_name"
@@ -215,6 +217,14 @@ variableGroups:
       - "bastion_jump_host_flex_shape_memory"
       - "bastion_jump_host_flex_shape_cpu"
       - "bastion_jump_host_boot_volume_size"
+      - "deploy_bastion_service"
+      - "bastion_service_allowed_cidrs"
+      - "customize_bastion_service"
+      - "bastion_service_name"
+      - "enable_bastion_proxy_status"
+      - "customize_jumphost_subnet"
+      - "hub_vcn_jumphost_subnet_name"
+      - "hub_vcn_jumphost_subnet_cidr"
       - "deploy_bastion_service"
       - "bastion_service_allowed_cidrs"
       - "customize_bastion_service"
@@ -486,6 +496,10 @@ variableGroups:
       - "firewall_traffic_log_type"
       - "firewall_traffic_log_category"
       - "firewall_traffic_log_service"
+      - "bastion_jump_host_instance_name"
+      - "bastion_jump_host_instance_shape"
+      - "bastion_jump_host_ssh_public_key_path"
+      - "bastion_jump_host_platform_image_name"
 
 variables:
   region:
@@ -3434,6 +3448,28 @@ variables:
             - ${hub_deployment_option}
             - "VCN or on-premises connectivity routed through DMZ VCN with Network Virtual Appliance existing DRG (DMZ VCN will be created and DRG ID required)"
 
+  hub_vcn_web_subnet_jump_host_allowed_cidrs:
+    type: array
+    items:
+      type: string
+    uniqueItems: true
+    maxItems: 3
+    minItems: 1
+    title: "List of CIDR blocks allowed to SSH into the Web Subnet"
+    description: "These CIDRs are allowed to SSH into the Web subnet via a jump host eventually deployed in the Web subnet. Leave empty for no access."
+    required: false
+    visible:
+      and:
+        - define_net
+        - customize_hub_vcn_subnets
+        - or:
+          - eq:
+            - ${hub_deployment_option}
+            - "VCN or on-premises connectivity routing through DMZ VCN with Network Virtual Appliance (DRG and DMZ VCN will be created)"
+          - eq:
+            - ${hub_deployment_option}
+            - "VCN or on-premises connectivity routed through DMZ VCN with Network Virtual Appliance existing DRG (DMZ VCN will be created and DRG ID required)"
+
 # -------------------------------------------
 # ----- Networking - Hub Mgmt Subnet
 #--------------------------------------------
@@ -4106,6 +4142,15 @@ variables:
         - deploy_bastion_jump_host
         - deploy_bastion_service
 
+  # bastion_jump_host_platform_image:
+  #   type: oci:core:image:id
+  #   dependsOn:
+  #     compartmentId: ${var.tenancy_ocid}
+  #   title: "Platform Image"
+  #   description: "Select the Platform Image for Jump Host."
+  #   required: true
+  #   visible: deploy_bastion_jump_host
+
   bastion_jump_host_public_rsa_key:
     type: string
     title: "Enter the public SSH Key for the Jump Host"
@@ -4157,6 +4202,27 @@ variables:
     description: "Enter the boot volume size (in GB) for the Jump Host Compute Instance."
     required: false
     visible: customize_jump_host
+
+  customize_jumphost_subnet:
+    type: boolean
+    title: "Customize Jumphost Subnet?"
+    description: "Check to customize default jumphost subnet settings."
+    required: false
+    visible: deploy_bastion_jump_host
+
+  hub_vcn_jumphost_subnet_name:
+    type: string
+    title: "Jumphost Subnet Name"
+    description: "Enter Jumphost subnet name"
+    required: false
+    visible: customize_jumphost_subnet
+
+  hub_vcn_jumphost_subnet_cidr:
+    type: string
+    title: "Jumphost Subnet CIDR Block"
+    description: "Enter the Jumphost subnet CIDR block. It must be within the Hub (DMZ) VCN CIDR block."
+    required: false
+    visible: customize_jumphost_subnet
 
 outputs:
   release:

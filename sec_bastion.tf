@@ -8,7 +8,6 @@ locals {
   custom_bastion_service_freeform_tags  = null
   # custom_bastion_target_compartments = null
 
-  ## TODO: FINALIZE
   jump_host_marketplace_image_map = {
     "Oracle Linux 8 STIG (Free)" = "Oracle Linux 8 STIG",  # default latest version
     "CIS Hardened Image Level 1 on Oracle Linux 8 (Paid)" = "CIS Hardened Image Level 1 on Oracle Linux 8"  # default latest version
@@ -79,7 +78,7 @@ locals {
           network_security_groups = [module.lz_network.flat_map_of_provisioned_networking_resources["HUB-VCN-JUMP-HOST-NSG"].id]
         }
 
-        cloud_agent = local.deploy_bastion_service == true ? {plugins = [{name:"Bastion",enabled:true}]} : null   ## TODO: NEED TO CHANGE?      }
+        cloud_agent = local.deploy_bastion_service == true ? {plugins = [{name:"Bastion",enabled:true}]} : null 
       }
     }
   }
