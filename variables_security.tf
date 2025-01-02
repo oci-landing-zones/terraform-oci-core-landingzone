@@ -140,7 +140,6 @@ variable "bastion_jump_host_ssh_public_key_path" {
   description = "The SSH public key to login to bastion jump host instance."
 }
 
-
 variable "bastion_jump_host_instance_shape" {
   type        = string
   default     = "VM.Standard.E4.Flex"
@@ -174,7 +173,7 @@ variable "bastion_jump_host_custom_image_ocid" {
 variable "bastion_jump_host_marketplace_image_option" {
   type        = string
   default     = null
-  description = "Options to select a jump host marketplace image. Either `STIG Free Image` - Oracle Linux 8 STIG, or `CIS Image` - CIS Hardened Image Level 1 on Oracle Linux 8."
+  description = "Options to select a jump host marketplace image. Either `Oracle Linux 8 STIG (Free)`, or `CIS Hardened Image Level 1 on Oracle Linux 8 (Paid)`."
 }
 
 variable "deploy_bastion_jump_host" {
@@ -214,7 +213,7 @@ variable "enable_bastion_proxy_status" {
 variable "bastion_onprem_ssh_allowed_cidrs" {
   type        = list(string)
   default     = []
-  description = "List of on-prem CIDR blocks allowed to connect to the jump host through SSH. This should be a subset of onprem_cidrs"
+  description = "List of on-prem CIDR blocks allowed to connect to the jump host through SSH. This should be a subset of onprem_cidrs."
   validation {
     condition     = length([for c in var.bastion_onprem_ssh_allowed_cidrs : c if length(regexall("^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/([0-9]|[1-2][0-9]|3[0-2]))?$", c)) > 0]) == length(var.bastion_onprem_ssh_allowed_cidrs)
     error_message = "Validation failed for bastion_onprem_ssh_allowed_cidrs: values must be in CIDR notation."

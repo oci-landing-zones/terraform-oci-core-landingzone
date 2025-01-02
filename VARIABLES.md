@@ -104,6 +104,22 @@
 | vss_port_scan_level | Valid values: STANDARD, LIGHT, NONE. STANDARD checks the 1000 most common port numbers, LIGHT checks the 100 most common port numbers, NONE does not check for open ports. | `string` | `STANDARD` | no |
 | vss_scan_day | The week day for the Vulnerability Scanning Service recipe, if enabled. Only applies if vss\_scan\_schedule is WEEKLY (case insensitive). | `string` | `SUNDAY` | no |
 | vss_scan_schedule | The scan schedule for the Vulnerability Scanning Service recipe, if enabled. Valid values are WEEKLY or DAILY (case insensitive). | `string` | `WEEKLY` | no |
+| deploy_bastion_jump_host | The option to deploy the bastion jump host. | `bool` | `false` | no |
+| bastion_jump_host_instance_name | The display name of the bastion jump host instance. | `string` | `bastion-jump-host-instance` | no |
+| bastion_jump_host_instance_shape | The instance shape for the bastion jump host instance. | `string` | `VM.Standard.E4.Flex` | no |
+| bastion_jump_host_ssh_public_key_path | The SSH public key to login to bastion jump host instance. | `string` | `null`| no |
+| bastion_jump_host_boot_volume_size | The boot volume size (in GB) for the bastion jump host instance. | `number` | `60` | no |
+| bastion_jump_host_flex_shape_memory | The amount of memory (in GB) for the selected flex shape. Applicable to flexible shapes only. | `number` | `56`  | no |
+| bastion_jump_host_flex_shape_cpu | The number of OCPUs for the selected flex shape. Applicable to flexible shapes only. | `number` | `2` | no |
+| bastion_jump_host_custom_image_ocid | The custom image ocid of the user-provided bastion jump host instance. The custom image takes precedence over marketplace image. | `string` | `null` | no |
+| bastion_jump_host_marketplace_image_option | Options to select a jump host marketplace image. Either `Oracle Linux 8 STIG (Free)`, or `CIS Hardened Image Level 1 on Oracle Linux 8 (Paid)`. | `string` | `null` | no |
+| deploy_bastion_service | The option to deploy the bastion service. | `bool` | `false` | no |
+| bastion_service_name | The bastion service name. | `string` | `null` | no |
+| bastion_service_allowed_cidrs | List of the bastion service allowed cidrs. | `list(string)` | `[/]` | no |
+| enable_bastion_proxy_status | The option to enable dns proxy. | `bool` | `false` | no |
+| bastion_onprem_ssh_allowed_cidrs | List of on-prem CIDR blocks allowed to connect to the jump host through SSH. This should be a subset of onprem_cidrs | `list(string)` | `[/]` | no |
+
+
 
 ### Three Tier Networking
 
