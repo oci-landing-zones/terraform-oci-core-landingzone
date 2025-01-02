@@ -9,8 +9,8 @@ locals {
     "Fortinet FortiGate Firewall"                     = "FORTINET",
     "Check Point CloudGuard Firewall"                 = "CHECKPOINT", # Not available
     "Cisco Secure Firewall"                           = "CISCO",      # Not available
-    "OCI Firewall Service"                            = "OCI"         # Not Available
-    "User-Provided Virtual Network Appliance"         = "CUSTOM"
+    "User-Provided Virtual Network Appliance"         = "CUSTOM",
+    "OCI Native Firewall"                             = "OCINFW"
   }
 
   image_name_database = {
@@ -19,6 +19,7 @@ locals {
   }
 
   chosen_firewall_option = local.firewall_options[var.hub_vcn_deploy_net_appliance_option]
+
   health_checkers = {
     "FORTINET" = {
       protocol = "HTTP"
@@ -45,19 +46,19 @@ locals {
   # current_image_name     = local.image_name_database[local.chosen_firewall_option][0]
   # current_publisher_name = local.image_name_database[local.chosen_firewall_option][1]
 
-  image_source = local.chosen_firewall_option == "CUSTOM" ? "custom_image" : "marketplace_image"
+  image_source  = local.chosen_firewall_option == "CUSTOM" ? "custom_image" : "marketplace_image"
   image_options = local.chosen_firewall_option == "CUSTOM" ? {
     "custom_image" = {
       ocid = var.net_appliance_image_ocid
     }
   } : {
-    "marketplace_image" = local.chosen_firewall_option != "NO" ? {
+    "marketplace_image" = local.chosen_firewall_option != "NO" && local.chosen_firewall_option != "OCINFW" ? {
       name    = local.image_name_database[local.chosen_firewall_option][0]
       version = local.image_name_database[local.chosen_firewall_option][1]
     } : {}
   }
   
-  instances_configuration = local.chosen_firewall_option != "NO" ? {
+  instances_configuration = local.chosen_firewall_option != "NO" && local.chosen_firewall_option != "OCINFW" ? {
     default_compartment_id      = local.network_compartment_id
     default_ssh_public_key_path = var.net_appliance_public_rsa_key
     instances = {
@@ -149,7 +150,7 @@ locals {
       }
     }
   } : null
-  nlb_configuration = local.chosen_firewall_option != "NO" ? {
+  nlb_configuration = local.chosen_firewall_option != "NO" && local.chosen_firewall_option != "OCINFW" ? {
     default_compartment_id = local.network_compartment_id
     nlbs = {
       INDOOR_NLB = {
@@ -207,11 +208,54 @@ locals {
         }
       }
     }
-  } : null
+    } : null
+    
+    network_firewall_network_configuration = local.chosen_firewall_option == "OCINFW" ? {
+        #default_enable_cis_checks = false
+        network_configuration_categories = {
+            native_stack = {
+                non_vcn_specific_gateways = {
+                    network_firewalls_configuration = {
+                        network_firewalls = {
+                            OCI-NFW-KEY = {
+                                network_firewall_policy_id       = var.oci_nfw_policy_ocid != null ? var.oci_nfw_policy_ocid : null
+                                network_firewall_policy_key      = var.oci_nfw_policy_ocid == null ? "OCI-NFW-POLICY-KEY" : null
+                                display_name                     = "${var.service_label}-oci-firewall"
+                                compartment_id                   = local.network_compartment_id
+                                subnet_id                        = module.lz_network.provisioned_networking_resources.subnets["INDOOR-SUBNET"].id
+                                network_security_group_ids       = [module.lz_network.provisioned_networking_resources.network_security_groups["HUB-VCN-OCI-FIREWALL-NSG"].id]
+                            }
+                        }
+                        network_firewall_policies = var.oci_nfw_policy_ocid == null ? {
+                            OCI-NFW-POLICY-KEY = {
+                                display_name   = "${var.service_label}-oci-firewall-initial-policy"
+                                compartment_id = local.network_compartment_id
+                                security_rules = {
+                                    OCI-NFW-SECURITY_RULES-1 = {
+                                        action = "REJECT"
+                                        name   = "reject-all-rule"
+                                        conditions = {
+                                            prd_cond1_A = {
+                                                applications = []
+                                                destinations = []
+                                                sources      = []
+                                                urls         = []
+                                            }
+                                        }   
+                                    }
+                                }
+                            }
+                        } : null
+                    }
+                }
+            }
+        }
+    } : {}      
+    
 }
 
 module "lz_firewall_appliance" {
-  count                   = local.chosen_firewall_option != "NO" ? 1 : 0
+  count                   = local.chosen_firewall_option != "NO" && local.chosen_firewall_option != "OCINFW" ? 1 : 0
   source                  = "github.com/oci-landing-zones/terraform-oci-modules-workloads//cis-compute-storage?ref=v0.1.7"
   instances_configuration = local.instances_configuration
   providers = {
@@ -221,8 +265,13 @@ module "lz_firewall_appliance" {
 }
 
 module "lz_nlb" {
-  count             = local.chosen_firewall_option != "NO" ? 1 : 0
+  count             = local.chosen_firewall_option != "NO" && local.chosen_firewall_option != "OCINFW" ? 1 : 0
   source            = "github.com/oci-landing-zones/terraform-oci-modules-networking//modules/nlb?ref=v0.7.1"
   nlb_configuration = local.nlb_configuration
 }
 
+module "native_oci_firewall" {
+  count                    = local.chosen_firewall_option == "OCINFW" ? 1 : 0
+  source                   = "github.com/oci-landing-zones/terraform-oci-modules-networking?ref=v0.7.1"
+  network_configuration    = local.network_firewall_network_configuration
+}
