@@ -179,16 +179,6 @@ variable "hub_vcn_mgmt_subnet_cidr" {
   default     = null
   description = "The Hub VCN Management subnet CIDR block. It must be within the VCN CIDR blocks."
 }
-variable "hub_vcn_jumphost_subnet_name" {
-  type        = string
-  default     = null
-  description = "The Hub VCN Jump Host subnet Name."
-}
-variable "hub_vcn_jumphost_subnet_cidr" {
-  type        = string
-  default     = null
-  description = "The Hub VCN Jump Host subnet CIDR block. It must be within the VCN CIDR blocks."
-}
 variable "hub_vcn_mgmt_subnet_external_allowed_cidrs_for_http" {
   type        = list(string)
   default     = []

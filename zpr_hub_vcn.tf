@@ -1,7 +1,7 @@
 locals {
 
-  hub_on_prem_zpr_grants = local.hub_with_vcn && var.deploy_bastion_jump_host && length(var.bastion_onprem_ssh_allowed_cidrs) > 0 ? [
-    for cidr in var.bastion_onprem_ssh_allowed_cidrs :
+  hub_on_prem_zpr_grants = local.hub_with_vcn && var.deploy_bastion_jump_host && length(var.onprem_cidrs) > 0 ? [
+    for cidr in var.onprem_cidrs :
     "in ${local.zpr_namespace_name}.net:hub-vcn VCN allow '${cidr}' to connect to ${local.zpr_namespace_name}.bastion:${local.zpr_label} endpoints with protocol='tcp/22'"
   ] : []
 
