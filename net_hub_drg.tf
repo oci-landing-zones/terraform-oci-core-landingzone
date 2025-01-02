@@ -17,16 +17,6 @@ locals {
   hub_with_drg_only = var.define_net == true && (local.chosen_hub_option == 1 || local.chosen_hub_option == 2)
   hub_with_vcn      = var.define_net == true && (local.chosen_hub_option == 3 || local.chosen_hub_option == 4)
 
-  # enable_hub_vcn_route = ((local.add_tt_vcn1 == true && var.tt_vcn1_attach_to_drg == true && length(var.tt_vcn1_routable_vcns) > 0) ||
-  #                         (local.add_tt_vcn2 == true && var.tt_vcn2_attach_to_drg == true && length(var.tt_vcn2_routable_vcns) > 0) ||
-  #                         (local.add_tt_vcn3 == true && var.tt_vcn3_attach_to_drg == true && length(var.tt_vcn3_routable_vcns) > 0) ||
-  #                         (local.add_exa_vcn1 == true && var.exa_vcn1_attach_to_drg == true && length(var.exa_vcn1_routable_vcns) > 0) ||
-  #                         (local.add_exa_vcn2 == true && var.exa_vcn2_attach_to_drg == true && length(var.exa_vcn2_routable_vcns) > 0) ||
-  #                         (local.add_exa_vcn3 == true && var.exa_vcn3_attach_to_drg == true && length(var.exa_vcn3_routable_vcns) > 0) ||
-  #                         (local.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true && length(var.oke_vcn1_routable_vcns) > 0) ||
-  #                         (local.add_oke_vcn2 == true && var.oke_vcn2_attach_to_drg == true && length(var.oke_vcn2_routable_vcns) > 0) ||
-  #                         (local.add_oke_vcn3 == true && var.oke_vcn3_attach_to_drg == true && length(var.oke_vcn3_routable_vcns) > 0))
-
   drg = (local.chosen_hub_option != 0) ? {
     # "dynamic_routing_gateways" is for creating a new DRG.
     # "inject_into_existing_drgs" is for reusing an existing DRG.
@@ -45,7 +35,7 @@ locals {
                 attached_resource_key = "HUB-VCN"
                 type                  = "VCN"
                 # HuB VCN ingress route table for the DRG. It defines how traffic that leaves the DRG is routed within the VCN.
-                route_table_key = (var.hub_vcn_east_west_entry_point_ocid != null) ? "HUB-VCN-INGRESS-ROUTE-TABLE" : null
+                route_table_key = (coalesce(var.hub_vcn_east_west_entry_point_ocid,local.void) != local.void || coalesce(var.oci_nfw_ip_ocid,local.void) != local.void) ? "HUB-VCN-INGRESS-ROUTE-TABLE" : null
               }
             }
           } : {},
@@ -222,107 +212,15 @@ locals {
             "HUB-VCN-DRG-IMPORT-ROUTE-DISTRIBUTION" = {
               display_name      = "${coalesce(var.hub_vcn_name, "${var.service_label}-hub-vcn")}-drg-import-route-distribution" # TBD
               distribution_type = "IMPORT"
-              statements = merge(
-                local.add_tt_vcn1 == true && var.tt_vcn1_attach_to_drg == true ? {
-                  "HUB-TO-TT-VCN-1-STMT" = {
-                    action   = "ACCEPT",
-                    priority = 1,
-                    match_criteria = {
-                      match_type         = "DRG_ATTACHMENT_ID",
-                      attachment_type    = "VCN",
-                      drg_attachment_key = "TT-VCN-1-ATTACHMENT"
-                    }
-                  }
-                } : {},
-                local.add_tt_vcn2 == true && var.tt_vcn2_attach_to_drg == true ? {
-                  "HUB-TO-TT-VCN-2-STMT" = {
-                    action   = "ACCEPT",
-                    priority = 2,
-                    match_criteria = {
-                      match_type         = "DRG_ATTACHMENT_ID",
-                      attachment_type    = "VCN",
-                      drg_attachment_key = "TT-VCN-2-ATTACHMENT"
-                    }
-                  }
-                } : {},
-                local.add_tt_vcn3 == true && var.tt_vcn3_attach_to_drg == true ? {
-                  "HUB-TO-TT-VCN-3-STMT" = {
-                    action   = "ACCEPT",
-                    priority = 3,
-                    match_criteria = {
-                      match_type         = "DRG_ATTACHMENT_ID",
-                      attachment_type    = "VCN",
-                      drg_attachment_key = "TT-VCN-3-ATTACHMENT"
-                    }
-                  }
-                } : {},
-                local.add_exa_vcn1 == true && var.exa_vcn1_attach_to_drg == true ? {
-                  "HUB-TO-EXA-VCN-1-STMT" = {
-                    action   = "ACCEPT",
-                    priority = 4,
-                    match_criteria = {
-                      match_type         = "DRG_ATTACHMENT_ID",
-                      attachment_type    = "VCN",
-                      drg_attachment_key = "EXA-VCN-1-ATTACHMENT"
-                    }
-                  }
-                } : {},
-                local.add_exa_vcn2 == true && var.exa_vcn2_attach_to_drg == true ? {
-                  "HUB-TO-EXA-VCN-2-STMT" = {
-                    action   = "ACCEPT",
-                    priority = 5,
-                    match_criteria = {
-                      match_type         = "DRG_ATTACHMENT_ID",
-                      attachment_type    = "VCN",
-                      drg_attachment_key = "EXA-VCN-2-ATTACHMENT"
-                    }
-                  }
-                } : {},
-                local.add_exa_vcn3 == true && var.exa_vcn3_attach_to_drg == true ? {
-                  "HUB-TO-EXA-VCN-3-STMT" = {
-                    action   = "ACCEPT",
-                    priority = 6,
-                    match_criteria = {
-                      match_type         = "DRG_ATTACHMENT_ID",
-                      attachment_type    = "VCN",
-                      drg_attachment_key = "EXA-VCN-3-ATTACHMENT"
-                    }
-                  }
-                } : {},
-                local.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true ? {
-                  "HUB-TO-OKE-VCN-1-STMT" = {
-                    action   = "ACCEPT",
-                    priority = 7,
-                    match_criteria = {
-                      match_type         = "DRG_ATTACHMENT_ID",
-                      attachment_type    = "VCN",
-                      drg_attachment_key = "OKE-VCN-1-ATTACHMENT"
-                    }
-                  }
-                } : {},
-                local.add_oke_vcn2 == true && var.oke_vcn2_attach_to_drg == true ? {
-                  "HUB-TO-OKE-VCN-2-STMT" = {
-                    action   = "ACCEPT",
-                    priority = 8,
-                    match_criteria = {
-                      match_type         = "DRG_ATTACHMENT_ID",
-                      attachment_type    = "VCN",
-                      drg_attachment_key = "OKE-VCN-2-ATTACHMENT"
-                    }
-                  }
-                } : {},
-                local.add_oke_vcn3 == true && var.oke_vcn3_attach_to_drg == true ? {
-                  "HUB-TO-OKE-VCN-3-STMT" = {
-                    action   = "ACCEPT",
-                    priority = 9,
-                    match_criteria = {
-                      match_type         = "DRG_ATTACHMENT_ID",
-                      attachment_type    = "VCN",
-                      drg_attachment_key = "OKE-VCN-3-ATTACHMENT"
-                    }
-                  }
-                } : {}
-              )
+              statements = {
+                "MATCH-ALL-STMT" = {
+                  action = "ACCEPT",
+                     priority = 1,
+                     match_criteria = {
+                       match_type         = "MATCH_ALL"
+                     }
+                   }
+                }
             }
           } : {},
           (local.add_tt_vcn1 == true && var.tt_vcn1_attach_to_drg == true) ? {
@@ -343,7 +241,7 @@ locals {
                     }
                   }
                 } : {},
-                (length(var.tt_vcn1_routable_vcns) == 0 || contains(var.tt_vcn1_routable_vcns, "TT-VCN-2")) && var.tt_vcn2_attach_to_drg == true ? {
+                (length(var.tt_vcn1_routable_vcns) == 0 || contains(var.tt_vcn1_routable_vcns, "TT-VCN-2")) && var.tt_vcn2_attach_to_drg == true && local.hub_with_drg_only == true ? {
                   "TT-VCN-1-TO-TT-VCN-2-STMT" = {
                     action   = "ACCEPT",
                     priority = 2,
@@ -354,7 +252,7 @@ locals {
                     }
                   }
                 } : {},
-                (length(var.tt_vcn1_routable_vcns) == 0 || contains(var.tt_vcn1_routable_vcns, "TT-VCN-3")) && var.tt_vcn3_attach_to_drg == true ? {
+                (length(var.tt_vcn1_routable_vcns) == 0 || contains(var.tt_vcn1_routable_vcns, "TT-VCN-3")) && var.tt_vcn3_attach_to_drg == true && local.hub_with_drg_only == true ? {
                   "TT-VCN-1-TO-TT-VCN-3-STMT" = {
                     action   = "ACCEPT",
                     priority = 3,
@@ -365,7 +263,7 @@ locals {
                     }
                   }
                 } : {},
-                (length(var.tt_vcn1_routable_vcns) == 0 || contains(var.tt_vcn1_routable_vcns, "EXA-VCN-1")) && var.exa_vcn1_attach_to_drg == true ? {
+                (length(var.tt_vcn1_routable_vcns) == 0 || contains(var.tt_vcn1_routable_vcns, "EXA-VCN-1")) && var.exa_vcn1_attach_to_drg == true && local.hub_with_drg_only == true ? {
                   "TT-VCN-1-TO-EXA-VCN-1-STMT" = {
                     action   = "ACCEPT",
                     priority = 4,
@@ -376,7 +274,7 @@ locals {
                     }
                   }
                 } : {},
-                (length(var.tt_vcn1_routable_vcns) == 0 || contains(var.tt_vcn1_routable_vcns, "EXA-VCN-2")) && var.exa_vcn2_attach_to_drg == true ? {
+                (length(var.tt_vcn1_routable_vcns) == 0 || contains(var.tt_vcn1_routable_vcns, "EXA-VCN-2")) && var.exa_vcn2_attach_to_drg == true && local.hub_with_drg_only == true ? {
                   "TT-VCN-1-TO-EXA-VCN-2-STMT" = {
                     action   = "ACCEPT",
                     priority = 5,
@@ -387,7 +285,7 @@ locals {
                     }
                   }
                 } : {},
-                (length(var.tt_vcn1_routable_vcns) == 0 || contains(var.tt_vcn1_routable_vcns, "EXA-VCN-3")) && var.exa_vcn3_attach_to_drg == true ? {
+                (length(var.tt_vcn1_routable_vcns) == 0 || contains(var.tt_vcn1_routable_vcns, "EXA-VCN-3")) && var.exa_vcn3_attach_to_drg == true && local.hub_with_drg_only == true ? {
                   "TT-VCN-1-TO-EXA-VCN-3-STMT" = {
                     action   = "ACCEPT",
                     priority = 6,
@@ -398,7 +296,7 @@ locals {
                     }
                   }
                 } : {},
-                (length(var.tt_vcn1_routable_vcns) == 0 || contains(var.tt_vcn1_routable_vcns, "OKE-VCN-1")) && var.oke_vcn1_attach_to_drg == true ? {
+                (length(var.tt_vcn1_routable_vcns) == 0 || contains(var.tt_vcn1_routable_vcns, "OKE-VCN-1")) && var.oke_vcn1_attach_to_drg == true && local.hub_with_drg_only == true ? {
                   "TT-VCN-1-TO-OKE-VCN-1-STMT" = {
                     action   = "ACCEPT",
                     priority = 7,
@@ -409,7 +307,7 @@ locals {
                     }
                   }
                 } : {},
-                (length(var.tt_vcn1_routable_vcns) == 0 || contains(var.tt_vcn1_routable_vcns, "OKE-VCN-2")) && var.oke_vcn2_attach_to_drg == true ? {
+                (length(var.tt_vcn1_routable_vcns) == 0 || contains(var.tt_vcn1_routable_vcns, "OKE-VCN-2")) && var.oke_vcn2_attach_to_drg == true && local.hub_with_drg_only == true ? {
                   "TT-VCN-1-TO-OKE-VCN-2-STMT" = {
                     action   = "ACCEPT",
                     priority = 8,
@@ -420,7 +318,7 @@ locals {
                     }
                   }
                 } : {},
-                (length(var.tt_vcn1_routable_vcns) == 0 || contains(var.tt_vcn1_routable_vcns, "OKE-VCN-3")) && var.oke_vcn3_attach_to_drg == true ? {
+                (length(var.tt_vcn1_routable_vcns) == 0 || contains(var.tt_vcn1_routable_vcns, "OKE-VCN-3")) && var.oke_vcn3_attach_to_drg == true && local.hub_with_drg_only == true ? {
                   "TT-VCN-1-TO-OKE-VCN-3-STMT" = {
                     action   = "ACCEPT",
                     priority = 9,
@@ -452,7 +350,7 @@ locals {
                     }
                   }
                 } : {},
-                (length(var.tt_vcn2_routable_vcns) == 0 || contains(var.tt_vcn2_routable_vcns, "TT-VCN-1")) && var.tt_vcn2_attach_to_drg == true ? {
+                (length(var.tt_vcn2_routable_vcns) == 0 || contains(var.tt_vcn2_routable_vcns, "TT-VCN-1")) && var.tt_vcn2_attach_to_drg == true && local.hub_with_drg_only == true ? {
                   "TT-VCN-2-TO-TT-VCN-1-STMT" = {
                     action   = "ACCEPT",
                     priority = 2,
@@ -463,7 +361,7 @@ locals {
                     }
                   }
                 } : {},
-                (length(var.tt_vcn2_routable_vcns) == 0 || contains(var.tt_vcn2_routable_vcns, "TT-VCN-3")) && var.tt_vcn3_attach_to_drg == true ? {
+                (length(var.tt_vcn2_routable_vcns) == 0 || contains(var.tt_vcn2_routable_vcns, "TT-VCN-3")) && var.tt_vcn3_attach_to_drg == true && local.hub_with_drg_only == true ? {
                   "TT-VCN-2-TO-TT-VCN-3-STMT" = {
                     action   = "ACCEPT",
                     priority = 3,
@@ -474,7 +372,7 @@ locals {
                     }
                   }
                 } : {},
-                (length(var.tt_vcn2_routable_vcns) == 0 || contains(var.tt_vcn2_routable_vcns, "EXA-VCN-1")) && var.exa_vcn1_attach_to_drg == true ? {
+                (length(var.tt_vcn2_routable_vcns) == 0 || contains(var.tt_vcn2_routable_vcns, "EXA-VCN-1")) && var.exa_vcn1_attach_to_drg == true && local.hub_with_drg_only == true ? {
                   "TT-VCN-2-TO-EXA-VCN-1-STMT" = {
                     action   = "ACCEPT",
                     priority = 4,
@@ -485,7 +383,7 @@ locals {
                     }
                   }
                 } : {},
-                (length(var.tt_vcn2_routable_vcns) == 0 || contains(var.tt_vcn2_routable_vcns, "EXA-VCN-2")) && var.exa_vcn2_attach_to_drg == true  ? {
+                (length(var.tt_vcn2_routable_vcns) == 0 || contains(var.tt_vcn2_routable_vcns, "EXA-VCN-2")) && var.exa_vcn2_attach_to_drg == true && local.hub_with_drg_only == true ? {
                   "TT-VCN-2-TO-EXA-VCN-2-STMT" = {
                     action   = "ACCEPT",
                     priority = 5,
@@ -496,7 +394,7 @@ locals {
                     }
                   }
                 } : {},
-                (length(var.tt_vcn2_routable_vcns) == 0 || contains(var.tt_vcn2_routable_vcns, "EXA-VCN-3")) && var.exa_vcn3_attach_to_drg == true ? {
+                (length(var.tt_vcn2_routable_vcns) == 0 || contains(var.tt_vcn2_routable_vcns, "EXA-VCN-3")) && var.exa_vcn3_attach_to_drg == true && local.hub_with_drg_only == true ? {
                   "TT-VCN-2-TO-EXA-VCN-3-STMT" = {
                     action   = "ACCEPT",
                     priority = 6,
@@ -507,7 +405,7 @@ locals {
                     }
                   }
                 } : {},
-                (length(var.tt_vcn2_routable_vcns) == 0 || contains(var.tt_vcn2_routable_vcns, "OKE-VCN-1")) && var.oke_vcn1_attach_to_drg == true  ? {
+                (length(var.tt_vcn2_routable_vcns) == 0 || contains(var.tt_vcn2_routable_vcns, "OKE-VCN-1")) && var.oke_vcn1_attach_to_drg == true && local.hub_with_drg_only == true ? {
                   "TT-VCN-2-TO-OKE-VCN-1-STMT" = {
                     action   = "ACCEPT",
                     priority = 7,
@@ -518,7 +416,7 @@ locals {
                     }
                   }
                 } : {},
-                (length(var.tt_vcn2_routable_vcns) == 0 || contains(var.tt_vcn2_routable_vcns, "OKE-VCN-2")) && var.oke_vcn2_attach_to_drg == true  ? {
+                (length(var.tt_vcn2_routable_vcns) == 0 || contains(var.tt_vcn2_routable_vcns, "OKE-VCN-2")) && var.oke_vcn2_attach_to_drg == true && local.hub_with_drg_only == true ? {
                   "TT-VCN-2-TO-OKE-VCN-2-STMT" = {
                     action   = "ACCEPT",
                     priority = 8,
@@ -529,7 +427,7 @@ locals {
                     }
                   }
                 } : {},
-                (length(var.tt_vcn2_routable_vcns) == 0 || contains(var.tt_vcn2_routable_vcns, "OKE-VCN-3")) && var.oke_vcn3_attach_to_drg == true  ? {
+                (length(var.tt_vcn2_routable_vcns) == 0 || contains(var.tt_vcn2_routable_vcns, "OKE-VCN-3")) && var.oke_vcn3_attach_to_drg == true && local.hub_with_drg_only == true ? {
                   "TT-VCN-2-TO-OKE-VCN-3-STMT" = {
                     action   = "ACCEPT",
                     priority = 9,
@@ -561,7 +459,7 @@ locals {
                     }
                   }
                 } : {},
-                (length(var.tt_vcn3_routable_vcns) == 0 || contains(var.tt_vcn3_routable_vcns, "TT-VCN-1")) && var.tt_vcn1_attach_to_drg == true ? {
+                (length(var.tt_vcn3_routable_vcns) == 0 || contains(var.tt_vcn3_routable_vcns, "TT-VCN-1")) && var.tt_vcn1_attach_to_drg == true && local.hub_with_drg_only == true ? {
                   "TT-VCN-3-TO-TT-VCN-1-STMT" = {
                     action   = "ACCEPT",
                     priority = 2,
@@ -572,7 +470,7 @@ locals {
                     }
                   }
                 } : {},
-                (length(var.tt_vcn3_routable_vcns) == 0 || contains(var.tt_vcn3_routable_vcns, "TT-VCN-2")) && var.tt_vcn2_attach_to_drg == true ? {
+                (length(var.tt_vcn3_routable_vcns) == 0 || contains(var.tt_vcn3_routable_vcns, "TT-VCN-2")) && var.tt_vcn2_attach_to_drg == true && local.hub_with_drg_only == true ? {
                   "TT-VCN-3-TO-TT-VCN-2-STMT" = {
                     action   = "ACCEPT",
                     priority = 3,
@@ -583,7 +481,7 @@ locals {
                     }
                   }
                 } : {},
-                (length(var.tt_vcn3_routable_vcns) == 0 || contains(var.tt_vcn3_routable_vcns, "EXA-VCN-1")) && var.exa_vcn1_attach_to_drg == true ? {
+                (length(var.tt_vcn3_routable_vcns) == 0 || contains(var.tt_vcn3_routable_vcns, "EXA-VCN-1")) && var.exa_vcn1_attach_to_drg == true && local.hub_with_drg_only == true ? {
                   "TT-VCN-3-TO-EXA-VCN-1-STMT" = {
                     action   = "ACCEPT",
                     priority = 4,
@@ -594,7 +492,7 @@ locals {
                     }
                   }
                 } : {},
-                (length(var.tt_vcn3_routable_vcns) == 0 || contains(var.tt_vcn3_routable_vcns, "EXA-VCN-2")) && var.exa_vcn2_attach_to_drg == true ? {
+                (length(var.tt_vcn3_routable_vcns) == 0 || contains(var.tt_vcn3_routable_vcns, "EXA-VCN-2")) && var.exa_vcn2_attach_to_drg == true && local.hub_with_drg_only == true ? {
                   "TT-VCN-3-TO-EXA-VCN-2-STMT" = {
                     action   = "ACCEPT",
                     priority = 5,
@@ -605,7 +503,7 @@ locals {
                     }
                   }
                 } : {},
-                (length(var.tt_vcn3_routable_vcns) == 0 || contains(var.tt_vcn3_routable_vcns, "EXA-VCN-3")) && var.exa_vcn3_attach_to_drg == true ? {
+                (length(var.tt_vcn3_routable_vcns) == 0 || contains(var.tt_vcn3_routable_vcns, "EXA-VCN-3")) && var.exa_vcn3_attach_to_drg == true && local.hub_with_drg_only == true ? {
                   "TT-VCN-3-TO-EXA-VCN-3-STMT" = {
                     action   = "ACCEPT",
                     priority = 6,
@@ -616,7 +514,7 @@ locals {
                     }
                   }
                 } : {},
-                (length(var.tt_vcn3_routable_vcns) == 0 || contains(var.tt_vcn3_routable_vcns, "OKE-VCN-1")) && var.oke_vcn1_attach_to_drg == true ? {
+                (length(var.tt_vcn3_routable_vcns) == 0 || contains(var.tt_vcn3_routable_vcns, "OKE-VCN-1")) && var.oke_vcn1_attach_to_drg == true && local.hub_with_drg_only == true ? {
                   "TT-VCN-3-TO-OKE-VCN-1-STMT" = {
                     action   = "ACCEPT",
                     priority = 7,
@@ -627,7 +525,7 @@ locals {
                     }
                   }
                 } : {},
-                (length(var.tt_vcn3_routable_vcns) == 0 || contains(var.tt_vcn3_routable_vcns, "OKE-VCN-2")) && var.oke_vcn2_attach_to_drg == true ? {
+                (length(var.tt_vcn3_routable_vcns) == 0 || contains(var.tt_vcn3_routable_vcns, "OKE-VCN-2")) && var.oke_vcn2_attach_to_drg == true && local.hub_with_drg_only == true ? {
                   "TT-VCN-3-TO-OKE-VCN-2-STMT" = {
                     action   = "ACCEPT",
                     priority = 8,
@@ -638,7 +536,7 @@ locals {
                     }
                   }
                 } : {},
-                (length(var.tt_vcn3_routable_vcns) == 0 || contains(var.tt_vcn3_routable_vcns, "OKE-VCN-3")) && var.oke_vcn3_attach_to_drg == true ? {
+                (length(var.tt_vcn3_routable_vcns) == 0 || contains(var.tt_vcn3_routable_vcns, "OKE-VCN-3")) && var.oke_vcn3_attach_to_drg == true && local.hub_with_drg_only == true ? {
                   "TT-VCN-3-TO-OKE-VCN-3-STMT" = {
                     action   = "ACCEPT",
                     priority = 9,
@@ -670,7 +568,7 @@ locals {
                     }
                   }
                 } : {},
-                (length(var.exa_vcn1_routable_vcns) == 0 || contains(var.exa_vcn1_routable_vcns, "EXA-VCN-2")) && var.exa_vcn2_attach_to_drg == true ? {
+                (length(var.exa_vcn1_routable_vcns) == 0 || contains(var.exa_vcn1_routable_vcns, "EXA-VCN-2")) && var.exa_vcn2_attach_to_drg == true && local.hub_with_drg_only == true ? {
                   "EXA-VCN-1-TO-EXA-VCN-2-STMT" = {
                     action   = "ACCEPT",
                     priority = 2,
@@ -681,7 +579,7 @@ locals {
                     }
                   }
                 } : {},
-                (length(var.exa_vcn1_routable_vcns) == 0 || contains(var.exa_vcn1_routable_vcns, "EXA-VCN-3")) && var.exa_vcn3_attach_to_drg == true ? {
+                (length(var.exa_vcn1_routable_vcns) == 0 || contains(var.exa_vcn1_routable_vcns, "EXA-VCN-3")) && var.exa_vcn3_attach_to_drg == true && local.hub_with_drg_only == true ? {
                   "EXA-VCN-1-TO-EXA-VCN-3-STMT" = {
                     action   = "ACCEPT",
                     priority = 3,
@@ -692,7 +590,7 @@ locals {
                     }
                   }
                 } : {},
-                (length(var.exa_vcn1_routable_vcns) == 0 || contains(var.exa_vcn1_routable_vcns, "TT-VCN-1")) && var.tt_vcn1_attach_to_drg == true ? {
+                (length(var.exa_vcn1_routable_vcns) == 0 || contains(var.exa_vcn1_routable_vcns, "TT-VCN-1")) && var.tt_vcn1_attach_to_drg == true && local.hub_with_drg_only == true ? {
                   "EXA-VCN-1-TO-TT-VCN-1-STMT" = {
                     action   = "ACCEPT",
                     priority = 4,
@@ -703,7 +601,7 @@ locals {
                     }
                   }
                 } : {},
-                (length(var.exa_vcn1_routable_vcns) == 0 || contains(var.exa_vcn1_routable_vcns, "TT-VCN-2")) && var.tt_vcn2_attach_to_drg == true ? {
+                (length(var.exa_vcn1_routable_vcns) == 0 || contains(var.exa_vcn1_routable_vcns, "TT-VCN-2")) && var.tt_vcn2_attach_to_drg == true && local.hub_with_drg_only == true ? {
                   "EXA-VCN-1-TO-TT-VCN-2-STMT" = {
                     action   = "ACCEPT",
                     priority = 5,
@@ -714,7 +612,7 @@ locals {
                     }
                   }
                 } : {},
-                (length(var.exa_vcn1_routable_vcns) == 0 || contains(var.exa_vcn1_routable_vcns, "TT-VCN-3")) && var.tt_vcn3_attach_to_drg == true ? {
+                (length(var.exa_vcn1_routable_vcns) == 0 || contains(var.exa_vcn1_routable_vcns, "TT-VCN-3")) && var.tt_vcn3_attach_to_drg == true && local.hub_with_drg_only == true ? {
                   "EXA-VCN-1-TO-TT-VCN-3-STMT" = {
                     action   = "ACCEPT",
                     priority = 6,
@@ -725,7 +623,7 @@ locals {
                     }
                   }
                 } : {},
-                (length(var.exa_vcn1_routable_vcns) == 0 || contains(var.exa_vcn1_routable_vcns, "OKE-VCN-1")) && var.oke_vcn1_attach_to_drg == true ? {
+                (length(var.exa_vcn1_routable_vcns) == 0 || contains(var.exa_vcn1_routable_vcns, "OKE-VCN-1")) && var.oke_vcn1_attach_to_drg == true && local.hub_with_drg_only == true ? {
                   "EXA-VCN-1-TO-OKE-VCN-1-STMT" = {
                     action   = "ACCEPT",
                     priority = 7,
@@ -736,7 +634,7 @@ locals {
                     }
                   }
                 } : {},
-                (length(var.exa_vcn1_routable_vcns) == 0 || contains(var.exa_vcn1_routable_vcns, "OKE-VCN-2")) && var.oke_vcn2_attach_to_drg == true ? {
+                (length(var.exa_vcn1_routable_vcns) == 0 || contains(var.exa_vcn1_routable_vcns, "OKE-VCN-2")) && var.oke_vcn2_attach_to_drg == true && local.hub_with_drg_only == true ? {
                   "EXA-VCN-1-TO-OKE-VCN-2-STMT" = {
                     action   = "ACCEPT",
                     priority = 8,
@@ -747,7 +645,7 @@ locals {
                     }
                   }
                 } : {},
-                (length(var.exa_vcn1_routable_vcns) == 0 || contains(var.exa_vcn1_routable_vcns, "OKE-VCN-3")) && var.oke_vcn3_attach_to_drg == true ? {
+                (length(var.exa_vcn1_routable_vcns) == 0 || contains(var.exa_vcn1_routable_vcns, "OKE-VCN-3")) && var.oke_vcn3_attach_to_drg == true && local.hub_with_drg_only == true ? {
                   "EXA-VCN-1-TO-OKE-VCN-3-STMT" = {
                     action   = "ACCEPT",
                     priority = 9,
@@ -779,7 +677,7 @@ locals {
                     }
                   }
                 } : {},
-                (length(var.exa_vcn2_routable_vcns) == 0 || contains(var.exa_vcn2_routable_vcns, "EXA-VCN-1")) && var.exa_vcn1_attach_to_drg == true ? {
+                (length(var.exa_vcn2_routable_vcns) == 0 || contains(var.exa_vcn2_routable_vcns, "EXA-VCN-1")) && var.exa_vcn1_attach_to_drg == true && local.hub_with_drg_only == true ? {
                   "EXA-VCN-2-TO-EXA-VCN-1-STMT" = {
                     action   = "ACCEPT",
                     priority = 2,
@@ -790,7 +688,7 @@ locals {
                     }
                   }
                 } : {},
-                (length(var.exa_vcn2_routable_vcns) == 0 || contains(var.exa_vcn2_routable_vcns, "EXA-VCN-3")) && var.exa_vcn3_attach_to_drg == true ? {
+                (length(var.exa_vcn2_routable_vcns) == 0 || contains(var.exa_vcn2_routable_vcns, "EXA-VCN-3")) && var.exa_vcn3_attach_to_drg == true && local.hub_with_drg_only == true ? {
                   "EXA-VCN-2-TO-EXA-VCN-3-STMT" = {
                     action   = "ACCEPT",
                     priority = 3,
@@ -801,7 +699,7 @@ locals {
                     }
                   }
                 } : {},
-                (length(var.exa_vcn2_routable_vcns) == 0 || contains(var.exa_vcn2_routable_vcns, "TT-VCN-1")) && var.tt_vcn1_attach_to_drg == true ? {
+                (length(var.exa_vcn2_routable_vcns) == 0 || contains(var.exa_vcn2_routable_vcns, "TT-VCN-1")) && var.tt_vcn1_attach_to_drg == true && local.hub_with_drg_only == true ? {
                   "EXA-VCN-2-TO-TT-VCN-1-STMT" = {
                     action   = "ACCEPT",
                     priority = 4,
@@ -812,7 +710,7 @@ locals {
                     }
                   }
                 } : {},
-                (length(var.exa_vcn2_routable_vcns) == 0 || contains(var.exa_vcn2_routable_vcns, "TT-VCN-2")) && var.tt_vcn2_attach_to_drg == true ? {
+                (length(var.exa_vcn2_routable_vcns) == 0 || contains(var.exa_vcn2_routable_vcns, "TT-VCN-2")) && var.tt_vcn2_attach_to_drg == true && local.hub_with_drg_only == true ? {
                   "EXA-VCN-2-TO-TT-VCN-2-STMT" = {
                     action   = "ACCEPT",
                     priority = 5,
@@ -823,7 +721,7 @@ locals {
                     }
                   }
                 } : {},
-                (length(var.exa_vcn2_routable_vcns) == 0 || contains(var.exa_vcn2_routable_vcns, "TT-VCN-3")) && var.tt_vcn3_attach_to_drg == true ? {
+                (length(var.exa_vcn2_routable_vcns) == 0 || contains(var.exa_vcn2_routable_vcns, "TT-VCN-3")) && var.tt_vcn3_attach_to_drg == true && local.hub_with_drg_only == true ? {
                   "EXA-VCN-2-TO-TT-VCN-3-STMT" = {
                     action   = "ACCEPT",
                     priority = 6,
@@ -834,7 +732,7 @@ locals {
                     }
                   }
                 } : {},
-                (length(var.exa_vcn2_routable_vcns) == 0 || contains(var.exa_vcn2_routable_vcns, "OKE-VCN-1")) && var.oke_vcn1_attach_to_drg == true ? {
+                (length(var.exa_vcn2_routable_vcns) == 0 || contains(var.exa_vcn2_routable_vcns, "OKE-VCN-1")) && var.oke_vcn1_attach_to_drg == true && local.hub_with_drg_only == true ? {
                   "EXA-VCN-2-TO-OKE-VCN-1-STMT" = {
                     action   = "ACCEPT",
                     priority = 7,
@@ -845,7 +743,7 @@ locals {
                     }
                   }
                 } : {},
-                (length(var.exa_vcn2_routable_vcns) == 0 || contains(var.exa_vcn2_routable_vcns, "OKE-VCN-2")) && var.oke_vcn2_attach_to_drg == true ? {
+                (length(var.exa_vcn2_routable_vcns) == 0 || contains(var.exa_vcn2_routable_vcns, "OKE-VCN-2")) && var.oke_vcn2_attach_to_drg == true && local.hub_with_drg_only == true ? {
                   "EXA-VCN-2-TO-OKE-VCN-2-STMT" = {
                     action   = "ACCEPT",
                     priority = 8,
@@ -856,7 +754,7 @@ locals {
                     }
                   }
                 } : {},
-                (length(var.exa_vcn2_routable_vcns) == 0 || contains(var.exa_vcn2_routable_vcns, "OKE-VCN-3")) && var.oke_vcn3_attach_to_drg == true ? {
+                (length(var.exa_vcn2_routable_vcns) == 0 || contains(var.exa_vcn2_routable_vcns, "OKE-VCN-3")) && var.oke_vcn3_attach_to_drg == true && local.hub_with_drg_only == true ? {
                   "EXA-VCN-2-TO-OKE-VCN-3-STMT" = {
                     action   = "ACCEPT",
                     priority = 9,
@@ -888,7 +786,7 @@ locals {
                     }
                   }
                 } : {},
-                (length(var.exa_vcn3_routable_vcns) == 0 || contains(var.exa_vcn3_routable_vcns, "EXA-VCN-1")) && var.exa_vcn1_attach_to_drg == true ? {
+                (length(var.exa_vcn3_routable_vcns) == 0 || contains(var.exa_vcn3_routable_vcns, "EXA-VCN-1")) && var.exa_vcn1_attach_to_drg == true && local.hub_with_drg_only == true ? {
                   "EXA-VCN-3-TO-EXA-VCN-1-STMT" = {
                     action   = "ACCEPT",
                     priority = 2,
@@ -899,7 +797,7 @@ locals {
                     }
                   }
                 } : {},
-                (length(var.exa_vcn3_routable_vcns) == 0 || contains(var.exa_vcn3_routable_vcns, "EXA-VCN-2")) && var.exa_vcn2_attach_to_drg == true ? {
+                (length(var.exa_vcn3_routable_vcns) == 0 || contains(var.exa_vcn3_routable_vcns, "EXA-VCN-2")) && var.exa_vcn2_attach_to_drg == true && local.hub_with_drg_only == true ? {
                   "EXA-VCN-3-TO-EXA-VCN-2-STMT" = {
                     action   = "ACCEPT",
                     priority = 3,
@@ -910,7 +808,7 @@ locals {
                     }
                   }
                 } : {},
-                (length(var.exa_vcn3_routable_vcns) == 0 || contains(var.exa_vcn3_routable_vcns, "TT-VCN-1")) && var.tt_vcn1_attach_to_drg == true ? {
+                (length(var.exa_vcn3_routable_vcns) == 0 || contains(var.exa_vcn3_routable_vcns, "TT-VCN-1")) && var.tt_vcn1_attach_to_drg == true && local.hub_with_drg_only == true ? {
                   "EXA-VCN-3-TO-TT-VCN-1-STMT" = {
                     action   = "ACCEPT",
                     priority = 4,
@@ -921,7 +819,7 @@ locals {
                     }
                   }
                 } : {},
-                (length(var.exa_vcn3_routable_vcns) == 0 || contains(var.exa_vcn3_routable_vcns, "TT-VCN-2")) && var.tt_vcn2_attach_to_drg == true ? {
+                (length(var.exa_vcn3_routable_vcns) == 0 || contains(var.exa_vcn3_routable_vcns, "TT-VCN-2")) && var.tt_vcn2_attach_to_drg == true && local.hub_with_drg_only == true ? {
                   "EXA-VCN-3-TO-TT-VCN-2-STMT" = {
                     action   = "ACCEPT",
                     priority = 5,
@@ -932,7 +830,7 @@ locals {
                     }
                   }
                 } : {},
-                (length(var.exa_vcn3_routable_vcns) == 0 || contains(var.exa_vcn3_routable_vcns, "TT-VCN-3")) && var.tt_vcn3_attach_to_drg == true ? {
+                (length(var.exa_vcn3_routable_vcns) == 0 || contains(var.exa_vcn3_routable_vcns, "TT-VCN-3")) && var.tt_vcn3_attach_to_drg == true && local.hub_with_drg_only == true ? {
                   "EXA-VCN-3-TO-TT-VCN-3-STMT" = {
                     action   = "ACCEPT",
                     priority = 6,
@@ -943,7 +841,7 @@ locals {
                     }
                   }
                 } : {},
-                (length(var.exa_vcn3_routable_vcns) == 0 || contains(var.exa_vcn3_routable_vcns, "OKE-VCN-1")) && var.oke_vcn1_attach_to_drg == true ? {
+                (length(var.exa_vcn3_routable_vcns) == 0 || contains(var.exa_vcn3_routable_vcns, "OKE-VCN-1")) && var.oke_vcn1_attach_to_drg == true && local.hub_with_drg_only == true ? {
                   "EXA-VCN-3-TO-OKE-VCN-1-STMT" = {
                     action   = "ACCEPT",
                     priority = 7,
@@ -954,7 +852,7 @@ locals {
                     }
                   }
                 } : {},
-                (length(var.exa_vcn3_routable_vcns) == 0 || contains(var.exa_vcn3_routable_vcns, "OKE-VCN-2")) && var.oke_vcn2_attach_to_drg == true ? {
+                (length(var.exa_vcn3_routable_vcns) == 0 || contains(var.exa_vcn3_routable_vcns, "OKE-VCN-2")) && var.oke_vcn2_attach_to_drg == true && local.hub_with_drg_only == true ? {
                   "EXA-VCN-3-TO-OKE-VCN-2-STMT" = {
                     action   = "ACCEPT",
                     priority = 8,
@@ -965,7 +863,7 @@ locals {
                     }
                   }
                 } : {},
-                (length(var.exa_vcn3_routable_vcns) == 0 || contains(var.exa_vcn3_routable_vcns, "OKE-VCN-3")) && var.oke_vcn3_attach_to_drg == true ? {
+                (length(var.exa_vcn3_routable_vcns) == 0 || contains(var.exa_vcn3_routable_vcns, "OKE-VCN-3")) && var.oke_vcn3_attach_to_drg == true && local.hub_with_drg_only == true ? {
                   "EXA-VCN-3-TO-OKE-VCN-3-STMT" = {
                     action   = "ACCEPT",
                     priority = 9,
@@ -997,7 +895,7 @@ locals {
                     }
                   }
                 } : {},
-                (length(var.oke_vcn1_routable_vcns) == 0 || contains(var.oke_vcn1_routable_vcns, "OKE-VCN-2")) && var.oke_vcn2_attach_to_drg == true ? {
+                (length(var.oke_vcn1_routable_vcns) == 0 || contains(var.oke_vcn1_routable_vcns, "OKE-VCN-2")) && var.oke_vcn2_attach_to_drg == true && local.hub_with_drg_only == true ? {
                   "OKE-VCN-1-TO-OKE-VCN-2-STMT" = {
                     action   = "ACCEPT",
                     priority = 2,
@@ -1008,7 +906,7 @@ locals {
                     }
                   }
                 } : {},
-                (length(var.oke_vcn1_routable_vcns) == 0 || contains(var.oke_vcn1_routable_vcns, "OKE-VCN-3")) && var.oke_vcn3_attach_to_drg == true ? {
+                (length(var.oke_vcn1_routable_vcns) == 0 || contains(var.oke_vcn1_routable_vcns, "OKE-VCN-3")) && var.oke_vcn3_attach_to_drg == true && local.hub_with_drg_only == true ? {
                   "OKE-VCN-1-TO-OKE-VCN-3-STMT" = {
                     action   = "ACCEPT",
                     priority = 3,
@@ -1019,7 +917,7 @@ locals {
                     }
                   }
                 } : {},
-                (length(var.oke_vcn1_routable_vcns) == 0 || contains(var.oke_vcn1_routable_vcns, "EXA-VCN-1")) && var.exa_vcn1_attach_to_drg == true ? {
+                (length(var.oke_vcn1_routable_vcns) == 0 || contains(var.oke_vcn1_routable_vcns, "EXA-VCN-1")) && var.exa_vcn1_attach_to_drg == true && local.hub_with_drg_only == true ? {
                   "OKE-VCN-1-TO-EXA-VCN-1-STMT" = {
                     action   = "ACCEPT",
                     priority = 4,
@@ -1030,7 +928,7 @@ locals {
                     }
                   }
                 } : {},
-                (length(var.oke_vcn1_routable_vcns) == 0 || contains(var.oke_vcn1_routable_vcns, "EXA-VCN-2")) && var.exa_vcn2_attach_to_drg == true ? {
+                (length(var.oke_vcn1_routable_vcns) == 0 || contains(var.oke_vcn1_routable_vcns, "EXA-VCN-2")) && var.exa_vcn2_attach_to_drg == true && local.hub_with_drg_only == true ? {
                   "OKE-VCN-1-TO-EXA-VCN-2-STMT" = {
                     action   = "ACCEPT",
                     priority = 5,
@@ -1041,7 +939,7 @@ locals {
                     }
                   }
                 } : {},
-                (length(var.oke_vcn1_routable_vcns) == 0 || contains(var.oke_vcn1_routable_vcns, "EXA-VCN-3")) && var.exa_vcn3_attach_to_drg == true ? {
+                (length(var.oke_vcn1_routable_vcns) == 0 || contains(var.oke_vcn1_routable_vcns, "EXA-VCN-3")) && var.exa_vcn3_attach_to_drg == true && local.hub_with_drg_only == true ? {
                   "OKE-VCN-1-TO-EXA-VCN-3-STMT" = {
                     action   = "ACCEPT",
                     priority = 6,
@@ -1052,7 +950,7 @@ locals {
                     }
                   }
                 } : {},
-                (length(var.oke_vcn1_routable_vcns) == 0 || contains(var.oke_vcn1_routable_vcns, "TT-VCN-1")) && var.tt_vcn1_attach_to_drg == true ? {
+                (length(var.oke_vcn1_routable_vcns) == 0 || contains(var.oke_vcn1_routable_vcns, "TT-VCN-1")) && var.tt_vcn1_attach_to_drg == true && local.hub_with_drg_only == true ? {
                   "OKE-VCN-1-TO-TT-VCN-1-STMT" = {
                     action   = "ACCEPT",
                     priority = 7,
@@ -1063,7 +961,7 @@ locals {
                     }
                   }
                 } : {},
-                (length(var.oke_vcn1_routable_vcns) == 0 || contains(var.oke_vcn1_routable_vcns, "TT-VCN-2")) && var.tt_vcn2_attach_to_drg == true ? {
+                (length(var.oke_vcn1_routable_vcns) == 0 || contains(var.oke_vcn1_routable_vcns, "TT-VCN-2")) && var.tt_vcn2_attach_to_drg == true && local.hub_with_drg_only == true ? {
                   "OKE-VCN-1-TO-TT-VCN-2-STMT" = {
                     action   = "ACCEPT",
                     priority = 8,
@@ -1074,7 +972,7 @@ locals {
                     }
                   }
                 } : {},
-                (length(var.oke_vcn1_routable_vcns) == 0 || contains(var.oke_vcn1_routable_vcns, "TT-VCN-3")) && var.tt_vcn3_attach_to_drg == true ? {
+                (length(var.oke_vcn1_routable_vcns) == 0 || contains(var.oke_vcn1_routable_vcns, "TT-VCN-3")) && var.tt_vcn3_attach_to_drg == true && local.hub_with_drg_only == true ? {
                   "OKE-VCN-1-TO-TT-VCN-3-STMT" = {
                     action   = "ACCEPT",
                     priority = 9,
@@ -1106,7 +1004,7 @@ locals {
                     }
                   }
                 } : {},
-                (length(var.oke_vcn2_routable_vcns) == 0 || contains(var.oke_vcn2_routable_vcns, "OKE-VCN-1")) && var.oke_vcn1_attach_to_drg == true ? {
+                (length(var.oke_vcn2_routable_vcns) == 0 || contains(var.oke_vcn2_routable_vcns, "OKE-VCN-1")) && var.oke_vcn1_attach_to_drg == true && local.hub_with_drg_only == true ? {
                   "OKE-VCN-2-TO-OKE-VCN-1-STMT" = {
                     action   = "ACCEPT",
                     priority = 2,
@@ -1117,7 +1015,7 @@ locals {
                     }
                   }
                 } : {},
-                (length(var.oke_vcn2_routable_vcns) == 0 || contains(var.oke_vcn2_routable_vcns, "OKE-VCN-3")) && var.oke_vcn3_attach_to_drg == true ? {
+                (length(var.oke_vcn2_routable_vcns) == 0 || contains(var.oke_vcn2_routable_vcns, "OKE-VCN-3")) && var.oke_vcn3_attach_to_drg == true && local.hub_with_drg_only == true ? {
                   "OKE-VCN-2-TO-OKE-VCN-3-STMT" = {
                     action   = "ACCEPT",
                     priority = 3,
@@ -1128,7 +1026,7 @@ locals {
                     }
                   }
                 } : {},
-                (length(var.oke_vcn2_routable_vcns) == 0 || contains(var.oke_vcn2_routable_vcns, "EXA-VCN-1")) && var.exa_vcn1_attach_to_drg == true ? {
+                (length(var.oke_vcn2_routable_vcns) == 0 || contains(var.oke_vcn2_routable_vcns, "EXA-VCN-1")) && var.exa_vcn1_attach_to_drg == true && local.hub_with_drg_only == true ? {
                   "OKE-VCN-2-TO-EXA-VCN-1-STMT" = {
                     action   = "ACCEPT",
                     priority = 4,
@@ -1139,7 +1037,7 @@ locals {
                     }
                   }
                 } : {},
-                (length(var.oke_vcn2_routable_vcns) == 0 || contains(var.oke_vcn2_routable_vcns, "EXA-VCN-2")) && var.exa_vcn2_attach_to_drg == true ? {
+                (length(var.oke_vcn2_routable_vcns) == 0 || contains(var.oke_vcn2_routable_vcns, "EXA-VCN-2")) && var.exa_vcn2_attach_to_drg == true && local.hub_with_drg_only == true ? {
                   "OKE-VCN-2-TO-EXA-VCN-2-STMT" = {
                     action   = "ACCEPT",
                     priority = 5,
@@ -1150,7 +1048,7 @@ locals {
                     }
                   }
                 } : {},
-                (length(var.oke_vcn2_routable_vcns) == 0 || contains(var.oke_vcn2_routable_vcns, "EXA-VCN-3")) && var.exa_vcn3_attach_to_drg == true ? {
+                (length(var.oke_vcn2_routable_vcns) == 0 || contains(var.oke_vcn2_routable_vcns, "EXA-VCN-3")) && var.exa_vcn3_attach_to_drg == true && local.hub_with_drg_only == true ? {
                   "OKE-VCN-2-TO-EXA-VCN-3-STMT" = {
                     action   = "ACCEPT",
                     priority = 6,
@@ -1161,7 +1059,7 @@ locals {
                     }
                   }
                 } : {},
-                (length(var.oke_vcn2_routable_vcns) == 0 || contains(var.oke_vcn2_routable_vcns, "TT-VCN-1")) && var.tt_vcn1_attach_to_drg == true ? {
+                (length(var.oke_vcn2_routable_vcns) == 0 || contains(var.oke_vcn2_routable_vcns, "TT-VCN-1")) && var.tt_vcn1_attach_to_drg == true && local.hub_with_drg_only == true ? {
                   "OKE-VCN-2-TO-TT-VCN-1-STMT" = {
                     action   = "ACCEPT",
                     priority = 7,
@@ -1172,7 +1070,7 @@ locals {
                     }
                   }
                 } : {},
-                (length(var.oke_vcn2_routable_vcns) == 0 || contains(var.oke_vcn2_routable_vcns, "TT-VCN-2")) && var.tt_vcn2_attach_to_drg == true ? {
+                (length(var.oke_vcn2_routable_vcns) == 0 || contains(var.oke_vcn2_routable_vcns, "TT-VCN-2")) && var.tt_vcn2_attach_to_drg == true && local.hub_with_drg_only == true ? {
                   "OKE-VCN-2-TO-TT-VCN-2-STMT" = {
                     action   = "ACCEPT",
                     priority = 8,
@@ -1183,7 +1081,7 @@ locals {
                     }
                   }
                 } : {},
-                (length(var.oke_vcn2_routable_vcns) == 0 || contains(var.oke_vcn2_routable_vcns, "TT-VCN-3")) && var.tt_vcn3_attach_to_drg == true ? {
+                (length(var.oke_vcn2_routable_vcns) == 0 || contains(var.oke_vcn2_routable_vcns, "TT-VCN-3")) && var.tt_vcn3_attach_to_drg == true && local.hub_with_drg_only == true ? {
                   "OKE-VCN-2-TO-TT-VCN-3-STMT" = {
                     action   = "ACCEPT",
                     priority = 9,
@@ -1215,7 +1113,7 @@ locals {
                     }
                   }
                 } : {},
-                (length(var.oke_vcn3_routable_vcns) == 0 || contains(var.oke_vcn3_routable_vcns, "OKE-VCN-1")) && var.oke_vcn1_attach_to_drg == true ? {
+                (length(var.oke_vcn3_routable_vcns) == 0 || contains(var.oke_vcn3_routable_vcns, "OKE-VCN-1")) && var.oke_vcn1_attach_to_drg == true && local.hub_with_drg_only == true ? {
                   "OKE-VCN-3-TO-OKE-VCN-1-STMT" = {
                     action   = "ACCEPT",
                     priority = 2,
@@ -1226,7 +1124,7 @@ locals {
                     }
                   }
                 } : {},
-                (length(var.oke_vcn3_routable_vcns) == 0 || contains(var.oke_vcn3_routable_vcns, "OKE-VCN-2")) && var.oke_vcn2_attach_to_drg == true ? {
+                (length(var.oke_vcn3_routable_vcns) == 0 || contains(var.oke_vcn3_routable_vcns, "OKE-VCN-2")) && var.oke_vcn2_attach_to_drg == true && local.hub_with_drg_only == true ? {
                   "OKE-VCN-3-TO-OKE-VCN-2-STMT" = {
                     action   = "ACCEPT",
                     priority = 3,
@@ -1237,7 +1135,7 @@ locals {
                     }
                   }
                 } : {},
-                (length(var.oke_vcn3_routable_vcns) == 0 || contains(var.oke_vcn3_routable_vcns, "EXA-VCN-1")) && var.exa_vcn1_attach_to_drg == true ? {
+                (length(var.oke_vcn3_routable_vcns) == 0 || contains(var.oke_vcn3_routable_vcns, "EXA-VCN-1")) && var.exa_vcn1_attach_to_drg == true && local.hub_with_drg_only == true ? {
                   "OKE-VCN-3-TO-EXA-VCN-1-STMT" = {
                     action   = "ACCEPT",
                     priority = 4,
@@ -1248,7 +1146,7 @@ locals {
                     }
                   }
                 } : {},
-                (length(var.oke_vcn3_routable_vcns) == 0 || contains(var.oke_vcn3_routable_vcns, "EXA-VCN-2")) && var.exa_vcn2_attach_to_drg == true ? {
+                (length(var.oke_vcn3_routable_vcns) == 0 || contains(var.oke_vcn3_routable_vcns, "EXA-VCN-2")) && var.exa_vcn2_attach_to_drg == true && local.hub_with_drg_only == true ? {
                   "OKE-VCN-3-TO-EXA-VCN-2-STMT" = {
                     action   = "ACCEPT",
                     priority = 5,
@@ -1259,7 +1157,7 @@ locals {
                     }
                   }
                 } : {},
-                (length(var.oke_vcn3_routable_vcns) == 0 || contains(var.oke_vcn3_routable_vcns, "EXA-VCN-3")) && var.exa_vcn3_attach_to_drg == true ? {
+                (length(var.oke_vcn3_routable_vcns) == 0 || contains(var.oke_vcn3_routable_vcns, "EXA-VCN-3")) && var.exa_vcn3_attach_to_drg == true && local.hub_with_drg_only == true ? {
                   "OKE-VCN-3-TO-EXA-VCN-3-STMT" = {
                     action   = "ACCEPT",
                     priority = 6,
@@ -1270,7 +1168,7 @@ locals {
                     }
                   }
                 } : {},
-                (length(var.oke_vcn3_routable_vcns) == 0 || contains(var.oke_vcn3_routable_vcns, "TT-VCN-1")) && var.tt_vcn1_attach_to_drg == true ? {
+                (length(var.oke_vcn3_routable_vcns) == 0 || contains(var.oke_vcn3_routable_vcns, "TT-VCN-1")) && var.tt_vcn1_attach_to_drg == true && local.hub_with_drg_only == true ? {
                   "OKE-VCN-3-TO-TT-VCN-1-STMT" = {
                     action   = "ACCEPT",
                     priority = 7,
@@ -1281,7 +1179,7 @@ locals {
                     }
                   }
                 } : {},
-                (length(var.oke_vcn3_routable_vcns) == 0 || contains(var.oke_vcn3_routable_vcns, "TT-VCN-2")) && var.tt_vcn2_attach_to_drg == true ? {
+                (length(var.oke_vcn3_routable_vcns) == 0 || contains(var.oke_vcn3_routable_vcns, "TT-VCN-2")) && var.tt_vcn2_attach_to_drg == true && local.hub_with_drg_only == true ? {
                   "OKE-VCN-3-TO-TT-VCN-2-STMT" = {
                     action   = "ACCEPT",
                     priority = 8,
@@ -1292,7 +1190,7 @@ locals {
                     }
                   }
                 } : {},
-                (length(var.oke_vcn3_routable_vcns) == 0 || contains(var.oke_vcn3_routable_vcns, "TT-VCN-3")) && var.tt_vcn3_attach_to_drg == true ? {
+                (length(var.oke_vcn3_routable_vcns) == 0 || contains(var.oke_vcn3_routable_vcns, "TT-VCN-3")) && var.tt_vcn3_attach_to_drg == true && local.hub_with_drg_only == true ? {
                   "OKE-VCN-3-TO-TT-VCN-3-STMT" = {
                     action   = "ACCEPT",
                     priority = 9,
