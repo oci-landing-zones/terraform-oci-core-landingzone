@@ -481,10 +481,10 @@ locals {
         }
     } : {}
 
-  #### Cross VCN NSG Rules
-  ### TT-VCN-2:
-  ## Egress Rules
-  ## These rules are subject to the same conditions as the routing for TT-VCN-2, also expressed in tt_vcn_2_drg_routing variable.
+    #### Cross VCN NSG Rules
+    ### TT-VCN-2:
+    ## Egress Rules
+    ## These rules are subject to the same conditions as the routing for TT-VCN-2, also expressed in tt_vcn_2_drg_routing variable.
 
     ## Egress to Hub-VCN indoor subnet
     vcn_2_to_hub_indoor_subnet_cross_vcn_egress = merge(

@@ -14,7 +14,6 @@ locals {
   }
 
   ### Bastion Service
-  deploy_bastion_service = var.deploy_bastion_service
   default_bastion_service_name          = "${var.service_label}-bastion-service"
   default_bastion_service_type          = "STANDARD"
   default_bastion_service_defined_tags  = null
@@ -25,7 +24,7 @@ locals {
   bastion_service_defined_tags  = local.custom_bastion_service_defined_tags != null ? merge(local.custom_bastion_service_defined_tags, local.default_bastion_service_defined_tags ): local.default_bastion_service_defined_tags
   bastion_service_freeform_tags = local.custom_bastion_service_freeform_tags != null ? merge(local.custom_bastion_service_freeform_tags, local.default_bastion_service_freeform_tags) : local.default_bastion_service_freeform_tags
 
-  bastions_configuration = {
+  bastions_configuration = var.deploy_bastion_jump_host == true && var.deploy_bastion_service ? {
     bastions = {
       LZ-BASTION = {
         bastion_type          = local.bastion_service_type
@@ -38,11 +37,11 @@ locals {
         name                  = local.bastion_service_name
       }
     }
-  }
+  } : {}
 
   ### Bastion Jump Host
 
-  jump_host_instances_configuration = {
+  jump_host_instances_configuration = var.deploy_bastion_jump_host == true ? {
     default_compartment_id = local.security_compartment_id
     default_ssh_public_key_path = var.bastion_jump_host_ssh_public_key_path
 
@@ -70,7 +69,7 @@ locals {
           name = local.jump_host_marketplace_image_map[var.bastion_jump_host_marketplace_image_option]
         } : null
 
-        security = local.enable_zpr == true ? {zpr_attributes = [{namespace:"${local.zpr_namespace_name}",attr_name:"bastion", attr_value:local.zpr_label}]} : null   ## TODO: NEED TO CHANGE?
+        security = local.enable_zpr == true ? {zpr_attributes = [{namespace:"${local.zpr_namespace_name}",attr_name:"bastion", attr_value:local.zpr_label}]} : null
 
         networking = {
           hostname  = "${var.service_label}-jump-host-instance"
@@ -78,16 +77,16 @@ locals {
           network_security_groups = [module.lz_network.flat_map_of_provisioned_networking_resources["HUB-VCN-JUMP-HOST-NSG"].id]
         }
 
-        cloud_agent = local.deploy_bastion_service == true ? {plugins = [{name:"Bastion",enabled:true}]} : null 
+        cloud_agent = var.deploy_bastion_service == true ? {plugins = [{name:"Bastion",enabled:true}]} : null
       }
     }
-  }
+  } : {}
 }
 
 module "lz_bastion" {
   source                = "github.com/oci-landing-zones/terraform-oci-modules-security//bastion?ref=v0.1.9"
   bastions_configuration = local.bastions_configuration
-  count = local.deploy_bastion_service ? 1 : 0
+  count = var.deploy_bastion_service ? 1 : 0
 }
 
 module "lz_bastion_jump_host" {

@@ -49,7 +49,6 @@ locals {
                     }
                 },
                 local.chosen_firewall_option != "OCINFW" ? {
-            
                     "MGMT-SUBNET" = {
                         cidr_block                 = coalesce(var.hub_vcn_mgmt_subnet_cidr, cidrsubnet(var.hub_vcn_cidrs[0], 3, 3))
                         dhcp_options_key           = "default_dhcp_options"
@@ -493,7 +492,6 @@ locals {
                         }
                     }
                 } : {},
-
                 # OCI Firewall case: Route table for spoke VCNs outbound traffic, attached to HUB VCN DRG attachment.
                 (coalesce(var.oci_nfw_ip_ocid,local.void) != local.void) ? {
                     "HUB-VCN-INGRESS-ROUTE-TABLE" = {
