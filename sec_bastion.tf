@@ -80,7 +80,7 @@ locals {
         cloud_agent = var.deploy_bastion_service == true ? {plugins = [{name:"Bastion",enabled:true}]} : null
       }
     }
-  } : {}
+  } : null
 }
 
 module "lz_bastion" {
