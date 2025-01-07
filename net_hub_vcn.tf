@@ -825,6 +825,16 @@ locals {
             egress_rules = merge(
               local.chosen_firewall_option == "OCINFW" ?
               {
+                "EGRESS-TO-OCI-FIREWALL-NSG-SSH-RULE" = {
+                  description  = "Egress to OCI Firewall NSG"
+                  stateless    = false
+                  protocol     = "TCP"
+                  dst          = "HUB-VCN-OCI-FIREWALL-NSG"
+                  dst_type     = "NETWORK_SECURITY_GROUP"
+                  dst_port_min = 22
+                  dst_port_max = 22
+                }
+              } : local.chosen_firewall_option != "NO" ? {
                 "EGRESS-TO-INDOOR-FW-NSG-SSH-RULE" = {
                   description  = "Egress to Indoor FW NSG"
                   stateless    = false
@@ -988,7 +998,7 @@ locals {
           "HUB-VCN-OCI-FIREWALL-NSG" = {
             display_name = "oci-firewall-nsg"
             ingress_rules = merge(
-              { for cidr in var.hub_vcn_cidrs : "INGRESS-FROM-HUB-VCN-${replace(replace(cidr, ".", ""), "/", "")}}-RULE" => {
+              { for cidr in var.hub_vcn_cidrs : "INGRESS-FROM-HUB-VCN-${replace(replace(cidr, ".", ""), "/", "")}-RULE" => {
                 description = "Ingress from ${coalesce(var.hub_vcn_name, "${var.service_label}-hub-vcn")}."
                 stateless   = false
                 protocol    = "TCP"
@@ -996,7 +1006,7 @@ locals {
                 src_type    = "CIDR_BLOCK"
                 }
               },
-              local.add_tt_vcn1 == true && var.tt_vcn1_attach_to_drg == true ? { for cidr in var.tt_vcn1_cidrs : "INGRESS-FROM-TT-VCN-1-${replace(replace(cidr, ".", ""), "/", "")}}-RULE" => {
+              local.add_tt_vcn1 == true && var.tt_vcn1_attach_to_drg == true ? { for cidr in var.tt_vcn1_cidrs : "INGRESS-FROM-TT-VCN-1-${replace(replace(cidr, ".", ""), "/", "")}-RULE" => {
                 description = "Ingress from ${coalesce(var.tt_vcn1_name, "${var.service_label}-three-tier-vcn-1")}."
                 stateless   = false
                 protocol    = "TCP"
@@ -1004,7 +1014,7 @@ locals {
                 src_type    = "CIDR_BLOCK"
                 }
               } : {},
-              local.add_tt_vcn2 == true && var.tt_vcn2_attach_to_drg == true ? { for cidr in var.tt_vcn2_cidrs : "INGRESS-FROM-TT-VCN-2-${replace(replace(cidr, ".", ""), "/", "")}}-RULE" => {
+              local.add_tt_vcn2 == true && var.tt_vcn2_attach_to_drg == true ? { for cidr in var.tt_vcn2_cidrs : "INGRESS-FROM-TT-VCN-2-${replace(replace(cidr, ".", ""), "/", "")}-RULE" => {
                 description = "Ingress from ${coalesce(var.tt_vcn2_name, "${var.service_label}-three-tier-vcn-2")}."
                 stateless   = false
                 protocol    = "TCP"
@@ -1012,7 +1022,7 @@ locals {
                 src_type    = "CIDR_BLOCK"
                 }
               } : {},
-              local.add_tt_vcn3 == true && var.tt_vcn3_attach_to_drg == true ? { for cidr in var.tt_vcn3_cidrs : "INGRESS-FROM-TT-VCN-3-${replace(replace(cidr, ".", ""), "/", "")}}-RULE" => {
+              local.add_tt_vcn3 == true && var.tt_vcn3_attach_to_drg == true ? { for cidr in var.tt_vcn3_cidrs : "INGRESS-FROM-TT-VCN-3-${replace(replace(cidr, ".", ""), "/", "")}-RULE" => {
                 description = "Ingress from ${coalesce(var.tt_vcn3_name, "${var.service_label}-three-tier-vcn-3")}."
                 stateless   = false
                 protocol    = "TCP"
@@ -1020,7 +1030,7 @@ locals {
                 src_type    = "CIDR_BLOCK"
                 }
               } : {},
-              local.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true ? { for cidr in var.oke_vcn1_cidrs : "INGRESS-FROM-OKE-VCN-1-${replace(replace(cidr, ".", ""), "/", "")}}-RULE" => {
+              local.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true ? { for cidr in var.oke_vcn1_cidrs : "INGRESS-FROM-OKE-VCN-1-${replace(replace(cidr, ".", ""), "/", "")}-RULE" => {
                 description = "Ingress from ${coalesce(var.oke_vcn1_name, "${var.service_label}-oke-vcn-1")}."
                 stateless   = false
                 protocol    = "TCP"
@@ -1028,7 +1038,7 @@ locals {
                 src_type    = "CIDR_BLOCK"
                 }
               } : {},
-              local.add_oke_vcn2 == true && var.oke_vcn2_attach_to_drg == true ? { for cidr in var.oke_vcn2_cidrs : "INGRESS-FROM-OKE-VCN-2-${replace(replace(cidr, ".", ""), "/", "")}}-RULE" => {
+              local.add_oke_vcn2 == true && var.oke_vcn2_attach_to_drg == true ? { for cidr in var.oke_vcn2_cidrs : "INGRESS-FROM-OKE-VCN-2-${replace(replace(cidr, ".", ""), "/", "")}-RULE" => {
                 description = "Ingress from ${coalesce(var.oke_vcn2_name, "${var.service_label}-oke-vcn-2")}."
                 stateless   = false
                 protocol    = "TCP"
@@ -1036,7 +1046,7 @@ locals {
                 src_type    = "CIDR_BLOCK"
                 }
               } : {},
-              local.add_oke_vcn3 == true && var.oke_vcn3_attach_to_drg == true ? { for cidr in var.oke_vcn3_cidrs : "INGRESS-FROM-OKE-VCN-3-${replace(replace(cidr, ".", ""), "/", "")}}-RULE" => {
+              local.add_oke_vcn3 == true && var.oke_vcn3_attach_to_drg == true ? { for cidr in var.oke_vcn3_cidrs : "INGRESS-FROM-OKE-VCN-3-${replace(replace(cidr, ".", ""), "/", "")}-RULE" => {
                 description = "Ingress from ${coalesce(var.oke_vcn3_name, "${var.service_label}-oke-vcn-3")}."
                 stateless   = false
                 protocol    = "TCP"
@@ -1044,7 +1054,7 @@ locals {
                 src_type    = "CIDR_BLOCK"
                 }
               } : {},
-              local.add_exa_vcn1 == true && var.exa_vcn1_attach_to_drg == true ? { for cidr in var.exa_vcn1_cidrs : "INGRESS-FROM-EXA-VCN-1-${replace(replace(cidr, ".", ""), "/", "")}}-RULE" => {
+              local.add_exa_vcn1 == true && var.exa_vcn1_attach_to_drg == true ? { for cidr in var.exa_vcn1_cidrs : "INGRESS-FROM-EXA-VCN-1-${replace(replace(cidr, ".", ""), "/", "")}-RULE" => {
                 description = "Ingress from ${coalesce(var.exa_vcn1_name, "${var.service_label}-exa-vcn-1")}."
                 stateless   = false
                 protocol    = "TCP"
@@ -1052,7 +1062,7 @@ locals {
                 src_type    = "CIDR_BLOCK"
                 }
               } : {},
-              local.add_exa_vcn2 == true && var.exa_vcn2_attach_to_drg == true ? { for cidr in var.exa_vcn2_cidrs : "INGRESS-FROM-EXA-VCN-2-${replace(replace(cidr, ".", ""), "/", "")}}-RULE" => {
+              local.add_exa_vcn2 == true && var.exa_vcn2_attach_to_drg == true ? { for cidr in var.exa_vcn2_cidrs : "INGRESS-FROM-EXA-VCN-2-${replace(replace(cidr, ".", ""), "/", "")}-RULE" => {
                 description = "Ingress from ${coalesce(var.exa_vcn2_name, "${var.service_label}-exa-vcn-2")}."
                 stateless   = false
                 protocol    = "TCP"
@@ -1060,7 +1070,7 @@ locals {
                 src_type    = "CIDR_BLOCK"
                 }
               } : {},
-              local.add_exa_vcn3 == true && var.exa_vcn3_attach_to_drg == true ? { for cidr in var.exa_vcn3_cidrs : "INGRESS-FROM-EXA-VCN-3-${replace(replace(cidr, ".", ""), "/", "")}}-RULE" => {
+              local.add_exa_vcn3 == true && var.exa_vcn3_attach_to_drg == true ? { for cidr in var.exa_vcn3_cidrs : "INGRESS-FROM-EXA-VCN-3-${replace(replace(cidr, ".", ""), "/", "")}-RULE" => {
                 description = "Ingress from ${coalesce(var.exa_vcn3_name, "${var.service_label}-exa-vcn-3")}."
                 stateless   = false
                 protocol    = "TCP"
@@ -1070,7 +1080,7 @@ locals {
               } : {}
             )
             egress_rules = merge(
-              { for cidr in var.hub_vcn_cidrs : "EGRESS-TO-HUB-VCN-${replace(replace(cidr, ".", ""), "/", "")}}-RULE" => {
+              { for cidr in var.hub_vcn_cidrs : "EGRESS-TO-HUB-VCN-${replace(replace(cidr, ".", ""), "/", "")}-RULE" => {
                 description = "Egress to ${coalesce(var.hub_vcn_name, "${var.service_label}-hub-vcn")}."
                 stateless   = false
                 protocol    = "TCP"
@@ -1078,7 +1088,7 @@ locals {
                 dst_type    = "CIDR_BLOCK"
                 }
               },
-              local.add_tt_vcn1 == true && var.tt_vcn1_attach_to_drg == true ? { for cidr in var.tt_vcn1_cidrs : "EGRESS-TO-TT-VCN-1-${replace(replace(cidr, ".", ""), "/", "")}}-RULE" => {
+              local.add_tt_vcn1 == true && var.tt_vcn1_attach_to_drg == true ? { for cidr in var.tt_vcn1_cidrs : "EGRESS-TO-TT-VCN-1-${replace(replace(cidr, ".", ""), "/", "")}-RULE" => {
                 description = "Egress to ${coalesce(var.tt_vcn1_name, "${var.service_label}-three-tier-vcn-1")}."
                 stateless   = false
                 protocol    = "TCP"
@@ -1086,7 +1096,7 @@ locals {
                 dst_type    = "CIDR_BLOCK"
                 }
               } : {},
-              local.add_tt_vcn2 == true && var.tt_vcn2_attach_to_drg == true ? { for cidr in var.tt_vcn2_cidrs : "EGRESS-TO-TT-VCN-2-${replace(replace(cidr, ".", ""), "/", "")}}-RULE" => {
+              local.add_tt_vcn2 == true && var.tt_vcn2_attach_to_drg == true ? { for cidr in var.tt_vcn2_cidrs : "EGRESS-TO-TT-VCN-2-${replace(replace(cidr, ".", ""), "/", "")}-RULE" => {
                 description = "Egress to ${coalesce(var.tt_vcn2_name, "${var.service_label}-three-tier-vcn-2")}."
                 stateless   = false
                 protocol    = "TCP"
@@ -1094,7 +1104,7 @@ locals {
                 dst_type    = "CIDR_BLOCK"
                 }
               } : {},
-              local.add_tt_vcn3 == true && var.tt_vcn3_attach_to_drg == true ? { for cidr in var.tt_vcn3_cidrs : "EGRESS-TO-TT-VCN-3-${replace(replace(cidr, ".", ""), "/", "")}}-RULE" => {
+              local.add_tt_vcn3 == true && var.tt_vcn3_attach_to_drg == true ? { for cidr in var.tt_vcn3_cidrs : "EGRESS-TO-TT-VCN-3-${replace(replace(cidr, ".", ""), "/", "")}-RULE" => {
                 description = "Egress to ${coalesce(var.tt_vcn3_name, "${var.service_label}-three-tier-vcn-3")}."
                 stateless   = false
                 protocol    = "TCP"
@@ -1102,7 +1112,7 @@ locals {
                 dst_type    = "CIDR_BLOCK"
                 }
               } : {},
-              local.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true ? { for cidr in var.oke_vcn1_cidrs : "EGRESS-TO-OKE-VCN-1-${replace(replace(cidr, ".", ""), "/", "")}}-RULE" => {
+              local.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true ? { for cidr in var.oke_vcn1_cidrs : "EGRESS-TO-OKE-VCN-1-${replace(replace(cidr, ".", ""), "/", "")}-RULE" => {
                 description = "Egress to ${coalesce(var.oke_vcn1_name, "${var.service_label}-oke-vcn-1")}."
                 stateless   = false
                 protocol    = "TCP"
@@ -1110,7 +1120,7 @@ locals {
                 dst_type    = "CIDR_BLOCK"
                 }
               } : {},
-              local.add_oke_vcn2 == true && var.oke_vcn2_attach_to_drg == true ? { for cidr in var.oke_vcn2_cidrs : "EGRESS-TO-OKE-VCN-2-${replace(replace(cidr, ".", ""), "/", "")}}-RULE" => {
+              local.add_oke_vcn2 == true && var.oke_vcn2_attach_to_drg == true ? { for cidr in var.oke_vcn2_cidrs : "EGRESS-TO-OKE-VCN-2-${replace(replace(cidr, ".", ""), "/", "")}-RULE" => {
                 description = "Egress to ${coalesce(var.oke_vcn2_name, "${var.service_label}-oke-vcn-2")}."
                 stateless   = false
                 protocol    = "TCP"
@@ -1118,7 +1128,7 @@ locals {
                 dst_type    = "CIDR_BLOCK"
                 }
               } : {},
-              local.add_oke_vcn3 == true && var.oke_vcn3_attach_to_drg == true ? { for cidr in var.oke_vcn3_cidrs : "EGRESS-TO-OKE-VCN-3-${replace(replace(cidr, ".", ""), "/", "")}}-RULE" => {
+              local.add_oke_vcn3 == true && var.oke_vcn3_attach_to_drg == true ? { for cidr in var.oke_vcn3_cidrs : "EGRESS-TO-OKE-VCN-3-${replace(replace(cidr, ".", ""), "/", "")}-RULE" => {
                 description = "Egress to ${coalesce(var.oke_vcn3_name, "${var.service_label}-oke-vcn-3")}."
                 stateless   = false
                 protocol    = "TCP"
@@ -1126,7 +1136,7 @@ locals {
                 dst_type    = "CIDR_BLOCK"
                 }
               } : {},
-              local.add_exa_vcn1 == true && var.exa_vcn1_attach_to_drg == true ? { for cidr in var.exa_vcn1_cidrs : "EGRESS-TO-EXA-VCN-1-${replace(replace(cidr, ".", ""), "/", "")}}-RULE" => {
+              local.add_exa_vcn1 == true && var.exa_vcn1_attach_to_drg == true ? { for cidr in var.exa_vcn1_cidrs : "EGRESS-TO-EXA-VCN-1-${replace(replace(cidr, ".", ""), "/", "")}-RULE" => {
                 description = "Egress to ${coalesce(var.exa_vcn1_name, "${var.service_label}-exa-vcn-1")}."
                 stateless   = false
                 protocol    = "TCP"
@@ -1134,7 +1144,7 @@ locals {
                 dst_type    = "CIDR_BLOCK"
                 }
               } : {},
-              local.add_exa_vcn2 == true && var.exa_vcn2_attach_to_drg == true ? { for cidr in var.exa_vcn2_cidrs : "EGRESS-TO-EXA-VCN-2-${replace(replace(cidr, ".", ""), "/", "")}}-RULE" => {
+              local.add_exa_vcn2 == true && var.exa_vcn2_attach_to_drg == true ? { for cidr in var.exa_vcn2_cidrs : "EGRESS-TO-EXA-VCN-2-${replace(replace(cidr, ".", ""), "/", "")}-RULE" => {
                 description = "Egress to ${coalesce(var.exa_vcn2_name, "${var.service_label}-exa-vcn-2")}."
                 stateless   = false
                 protocol    = "TCP"
@@ -1142,7 +1152,7 @@ locals {
                 dst_type    = "CIDR_BLOCK"
                 }
               } : {},
-              local.add_exa_vcn3 == true && var.exa_vcn3_attach_to_drg == true ? { for cidr in var.exa_vcn3_cidrs : "EGRESS-TO-EXA-VCN-3-${replace(replace(cidr, ".", ""), "/", "")}}-RULE" => {
+              local.add_exa_vcn3 == true && var.exa_vcn3_attach_to_drg == true ? { for cidr in var.exa_vcn3_cidrs : "EGRESS-TO-EXA-VCN-3-${replace(replace(cidr, ".", ""), "/", "")}-RULE" => {
                 description = "Egress to ${coalesce(var.exa_vcn3_name, "${var.service_label}-exa-vcn-3")}."
                 stateless   = false
                 protocol    = "TCP"
