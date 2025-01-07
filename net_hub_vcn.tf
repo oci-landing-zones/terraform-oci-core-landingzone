@@ -766,7 +766,8 @@ locals {
                 dst_port_min = 22
                 dst_port_max = 22
               } },
-              { "INGRESS-FROM-JUMP-HOST-NSG-SSH-RULE" = {
+              var.deploy_bastion_jump_host ? {
+                "INGRESS-FROM-JUMP-HOST-NSG-SSH-RULE" = {
                 description  = "Ingress from Jump Host NSG to SSH port. Required by hosts deployed in the Jump Host NSG."
                 stateless    = false
                 protocol     = "TCP"
@@ -774,7 +775,7 @@ locals {
                 src_type     = "NETWORK_SECURITY_GROUP"
                 dst_port_min = 22
                 dst_port_max = 22
-              } },
+              } } : {},
               { "INGRESS-FROM-MGMT-SUBNET-SSH-RULE" = {
                 description  = "Ingress from Mgmt subnet to SSH port. Required by OCI Bastion Service port forwarding session."
                 stateless    = false
