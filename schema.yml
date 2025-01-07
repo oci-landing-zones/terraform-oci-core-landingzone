@@ -42,6 +42,9 @@ variableGroups:
 
   - title: "Identity Domains"
     variables:
+      - "identity_domain_option"
+      - "new_identity_domain_name"
+      - "new_identity_domain_license_type"
       - "use_custom_id_domain"
       - "custom_id_domain_ocid"
       - "deploy_custom_domain_groups"
@@ -124,7 +127,10 @@ variableGroups:
           - true
         - eq:
           - ${use_custom_id_domain}
-          - false    
+          - false
+        - eq:
+          - ${identity_domain_option}
+          - "Default Domain"
 
   - title: "Dynamic Groups (Default Identity Domain)"
     variables:
@@ -145,6 +151,9 @@ variableGroups:
         - eq:
           - ${use_custom_id_domain}
           - false      
+        - eq:
+          - ${identity_domain_option}
+          - "Default Domain"
 
   - title: "Policies"   
     variables:
@@ -551,12 +560,49 @@ variables:
     title: "Deploy ExaCS Infra Compartment?"
     description: "Whether a separate compartment for Exadata Cloud Service Infrastructure is deployed."
     default: false
-  
+
+  identity_domain_option:
+    type: enum
+    title: "Identity Domain Option"
+    description: "Option to create a new identity domain or use the default domain"
+    required: true
+    enum:
+      - "New Identity Domain"
+      - "Default Domain"
+    default: "Default Domain"
+
+  new_identity_domain_name:
+    type: string
+    title: "New Identity Domain Name"
+    description: "The name of new identity domain"
+    required: false
+    visible:
+      eq:
+        - ${identity_domain_option}
+        - "New Identity Domain"
+
+  new_identity_domain_license_type:
+    type: enum
+    title: "License Type of New Identity Domain"
+    description: "The license type of new identity domain"
+    required: false
+    enum:
+      - "premium"
+      - "free"
+    visible:
+      eq:
+        - ${identity_domain_option}
+        - "New Identity Domain"
+
   use_custom_id_domain:
     type: boolean
     title: "Enable an Existing Identity Domain to Manage Landing Zone?"
     description: "Your tenancy already has a default Identity Domain, whose groups are used to manage the Landing Zone. Check this box for enabling groups in an *existing* non-default Identity Domain to manage the resources deployed by the Landing Zone. See <a href='https://docs.oracle.com/en-us/iaas/Content/Identity/usingidentitydomains/oci-iam-concepts.htm'>IAM Technologies</a> for identity domains concepts."
     default: false
+    visible:
+      eq:
+        - ${identity_domain_option}
+        - "Default Domain"
 
   # custom_id_domain_name:
   #   type: string

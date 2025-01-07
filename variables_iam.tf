@@ -146,7 +146,7 @@ variable "new_identity_domain_name" {
 variable "new_identity_domain_license_type" {
   type        = string
   default     = "free"
-  description = "the license type of new identity domain. Value to use: "
+  description = "the license type of new identity domain. Value to use: free, "
 }
 # variable "deploy_id_domain" {
 #   type    = bool
