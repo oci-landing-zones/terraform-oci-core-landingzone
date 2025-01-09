@@ -131,7 +131,7 @@ locals {
         } : {},
         var.deploy_bastion_jump_host == true ? {
           "JUMPHOST-SUB-SL" = {
-            display_name = "jumphost-subnet-security-list"
+            display_name  = "jumphost-subnet-security-list"
             ingress_rules = [
               {
                 description = "Ingress on UDP type 3 code 4."
@@ -162,6 +162,116 @@ locals {
                 dst_port_min = 22
                 dst_port_max = 22
               },
+              local.add_tt_vcn1 == true && var.tt_vcn1_attach_to_drg == true && local.hub_with_vcn == true ? {
+                description  = "Egress to ${coalesce(var.tt_vcn1_app_subnet_name, "${var.service_label}-three-tier-vcn-1-app-subnet")}."
+                stateless    = false
+                protocol     = "TCP"
+                dst          = coalesce(var.tt_vcn1_app_subnet_cidr, cidrsubnet(var.tt_vcn1_cidrs[0], 4, 1))
+                dst_type     = "CIDR_BLOCK"
+                dst_port_min = 22
+                dst_port_max = 22
+              } : {},
+              local.add_tt_vcn2 == true && var.tt_vcn2_attach_to_drg == true && local.hub_with_vcn == true ? {
+                description  = "Egress to ${coalesce(var.tt_vcn2_app_subnet_name, "${var.service_label}-three-tier-vcn-2-app-subnet")}."
+                stateless    = false
+                protocol     = "TCP"
+                dst          = coalesce(var.tt_vcn2_app_subnet_cidr, cidrsubnet(var.tt_vcn2_cidrs[0], 4, 1))
+                dst_type     = "CIDR_BLOCK"
+                dst_port_min = 22
+                dst_port_max = 22
+              } : {},
+              local.add_tt_vcn3 == true && var.tt_vcn3_attach_to_drg == true && local.hub_with_vcn == true ? {
+                description  = "Egress to ${coalesce(var.tt_vcn3_app_subnet_name, "${var.service_label}-three-tier-vcn-3-app-subnet")}."
+                stateless    = false
+                protocol     = "TCP"
+                dst          = coalesce(var.tt_vcn3_app_subnet_cidr, cidrsubnet(var.tt_vcn3_cidrs[0], 4, 1))
+                dst_type     = "CIDR_BLOCK"
+                dst_port_min = 22
+                dst_port_max = 22
+              } : {},
+              local.add_tt_vcn1 == true && var.tt_vcn1_attach_to_drg == true && local.hub_with_vcn == true ? {
+                description  = "Egress to ${coalesce(var.tt_vcn1_db_subnet_name, "${var.service_label}-three-tier-vcn-1-db-subnet")}."
+                stateless    = false
+                protocol     = "TCP"
+                dst          = coalesce(var.tt_vcn1_db_subnet_cidr, cidrsubnet(var.tt_vcn1_cidrs[0], 4, 2))
+                dst_type     = "CIDR_BLOCK"
+                dst_port_min = 22
+                dst_port_max = 22
+              } : {},
+              local.add_tt_vcn2 == true && var.tt_vcn2_attach_to_drg == true && local.hub_with_vcn == true ? {
+                description  = "Egress to ${coalesce(var.tt_vcn2_db_subnet_name, "${var.service_label}-three-tier-vcn-2-db-subnet")}."
+                stateless    = false
+                protocol     = "TCP"
+                dst          = coalesce(var.tt_vcn2_db_subnet_cidr, cidrsubnet(var.tt_vcn2_cidrs[0], 4, 2))
+                dst_type     = "CIDR_BLOCK"
+                dst_port_min = 22
+                dst_port_max = 22
+              } : {},
+              local.add_tt_vcn3 == true && var.tt_vcn3_attach_to_drg == true && local.hub_with_vcn == true ? {
+                description  = "Egress to ${coalesce(var.tt_vcn1_db_subnet_name, "${var.service_label}-three-tier-vcn-3-db-subnet")}."
+                stateless    = false
+                protocol     = "TCP"
+                dst          = coalesce(var.tt_vcn3_db_subnet_cidr, cidrsubnet(var.tt_vcn3_cidrs[0], 4, 2))
+                dst_type     = "CIDR_BLOCK"
+                dst_port_min = 22
+                dst_port_max = 22
+              } : {},
+              ## Egress to OKE VCN - SSH traffic
+              var.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true && local.hub_with_vcn == true ? {
+                description  = "Egress to ${coalesce(var.oke_vcn1_workers_subnet_name, "${var.service_label}-oke-vcn-1-workers-subnet")}."
+                stateless    = false
+                protocol     = "TCP"
+                dst          = coalesce(var.oke_vcn1_services_subnet_cidr, cidrsubnet(var.oke_vcn1_cidrs[0], 8, 2))
+                dst_type     = "CIDR_BLOCK"
+                dst_port_min = 22
+                dst_port_max = 22
+              } : {},
+              var.add_oke_vcn2 == true && var.oke_vcn2_attach_to_drg == true && local.hub_with_vcn == true ? {
+                description  = "Egress to ${coalesce(var.oke_vcn2_workers_subnet_name, "${var.service_label}-oke-vcn-2-workers-subnet")}."
+                stateless    = false
+                protocol     = "TCP"
+                dst          = coalesce(var.oke_vcn2_services_subnet_cidr, cidrsubnet(var.oke_vcn2_cidrs[0], 8, 2))
+                dst_type     = "CIDR_BLOCK"
+                dst_port_min = 22
+                dst_port_max = 22
+              } : {},
+              var.add_oke_vcn3 == true && var.oke_vcn3_attach_to_drg == true && local.hub_with_vcn == true ? {
+                description  = "Egress to ${coalesce(var.oke_vcn2_workers_subnet_name, "${var.service_label}-oke-vcn-3-workers-subnet")}."
+                stateless    = false
+                protocol     = "TCP"
+                dst          = coalesce(var.oke_vcn3_services_subnet_cidr, cidrsubnet(var.oke_vcn3_cidrs[0], 8, 2))
+                dst_type     = "CIDR_BLOCK"
+                dst_port_min = 22
+                dst_port_max = 22
+              } : {},
+              ## Egress to EXA-VCN - SSH traffic
+              var.add_exa_vcn1 == true && var.exa_vcn1_attach_to_drg == true && local.hub_with_vcn == true ? {
+                description  = "Egress to ${coalesce(var.exa_vcn1_client_subnet_name, "${var.service_label}-exadata-vcn-1-client-subnet")}."
+                stateless    = false
+                protocol     = "TCP"
+                dst          = coalesce(var.exa_vcn1_client_subnet_cidr, cidrsubnet(var.exa_vcn1_cidrs[0], 4, 0))
+                dst_type     = "CIDR_BLOCK"
+                dst_port_min = 22
+                dst_port_max = 22
+              } : {},
+              var.add_exa_vcn2 == true && var.exa_vcn2_attach_to_drg == true && local.hub_with_vcn == true ? {
+                description  = "Egress to ${coalesce(var.exa_vcn2_client_subnet_name, "${var.service_label}-exadata-vcn-2-client-subnet")}."
+                stateless    = false
+                protocol     = "TCP"
+                dst          = coalesce(var.exa_vcn2_client_subnet_cidr, cidrsubnet(var.exa_vcn2_cidrs[0], 4, 0))
+                dst_type     = "CIDR_BLOCK"
+                dst_port_min = 22
+                dst_port_max = 22
+              } : {},
+              var.add_exa_vcn3 == true && var.exa_vcn3_attach_to_drg == true && local.hub_with_vcn == true ? {
+                description  = "Egress to ${coalesce(var.exa_vcn3_client_subnet_name, "${var.service_label}-exadata-vcn-3-client-subnet")}."
+                stateless    = false
+                protocol     = "TCP"
+                dst          = coalesce(var.exa_vcn3_client_subnet_cidr, cidrsubnet(var.exa_vcn3_cidrs[0], 4, 0))
+                dst_type     = "CIDR_BLOCK"
+                dst_port_min = 22
+                dst_port_max = 22
+              } : {}
             ]
           }
         } : {}
@@ -374,7 +484,7 @@ locals {
                 }
               },
               ## Route to TT-VCN-1
-              local.add_tt_vcn1 == true && var.tt_vcn1_attach_to_drg == true && local.hub_with_vcn == true && local.chosen_firewall_option == "NO" ? {
+              local.add_tt_vcn1 == true && var.tt_vcn1_attach_to_drg == true && local.hub_with_vcn == true ? {
                 for cidr in var.tt_vcn1_cidrs : "TT-VCN-1-${replace(replace(cidr, ".", ""), "/", "")}-RULE" => {
                   network_entity_key = "HUB-DRG"
                   description        = "Traffic destined to ${coalesce(var.tt_vcn1_name, "${var.service_label}-tt-vcn-1")} CIDR ${cidr} goes to DRG."
@@ -383,7 +493,7 @@ locals {
                 }
               } : {},
               ## Route to TT-VCN-2
-              local.add_tt_vcn2 == true && var.tt_vcn2_attach_to_drg == true && local.hub_with_vcn == true && local.chosen_firewall_option == "NO" ? {
+              local.add_tt_vcn2 == true && var.tt_vcn2_attach_to_drg == true && local.hub_with_vcn == true ? {
                 for cidr in var.tt_vcn2_cidrs : "TT-VCN-2-${replace(replace(cidr, ".", ""), "/", "")}-RULE" => {
                   network_entity_key = "HUB-DRG"
                   description        = "Traffic destined to ${coalesce(var.tt_vcn2_name, "${var.service_label}-tt-vcn-2")} CIDR ${cidr} goes to DRG."
@@ -392,7 +502,7 @@ locals {
                 }
               } : {},
               ## Route to TT-VCN-3
-              local.add_tt_vcn3 == true && var.tt_vcn3_attach_to_drg == true && local.hub_with_vcn == true && local.chosen_firewall_option == "NO" ? {
+              local.add_tt_vcn3 == true && var.tt_vcn3_attach_to_drg == true && local.hub_with_vcn == true ? {
                 for cidr in var.tt_vcn3_cidrs : "TT-VCN-3-${replace(replace(cidr, ".", ""), "/", "")}-RULE" => {
                   network_entity_key = "HUB-DRG"
                   description        = "Traffic destined to ${coalesce(var.tt_vcn3_name, "${var.service_label}-tt-vcn-3")} CIDR ${cidr} goes to DRG."
@@ -401,7 +511,7 @@ locals {
                 }
               } : {},
               ## Route to OKE-VCN-1
-              var.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true && local.hub_with_vcn == true && local.chosen_firewall_option == "NO" ? {
+              var.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true && local.hub_with_vcn == true ? {
                 for cidr in var.oke_vcn1_cidrs : "OKE-VCN-1-${replace(replace(cidr, ".", ""), "/", "")}-RULE" => {
                   network_entity_key = "HUB-DRG"
                   description        = "Traffic destined to ${coalesce(var.oke_vcn1_name, "${var.service_label}-oke-vcn-1")} CIDR ${cidr} goes to DRG."
@@ -410,7 +520,7 @@ locals {
                 }
               } : {},
               ## Route to OKE-VCN-2
-              var.add_oke_vcn2 == true && var.oke_vcn2_attach_to_drg == true && local.hub_with_vcn == true && local.chosen_firewall_option == "NO" ? {
+              var.add_oke_vcn2 == true && var.oke_vcn2_attach_to_drg == true && local.hub_with_vcn == true ? {
                 for cidr in var.oke_vcn2_cidrs : "OKE-VCN-2-${replace(replace(cidr, ".", ""), "/", "")}-RULE" => {
                   network_entity_key = "HUB-DRG"
                   description        = "Traffic destined to ${coalesce(var.oke_vcn2_name, "${var.service_label}-oke-vcn-2")} CIDR ${cidr} goes to DRG."
@@ -419,7 +529,7 @@ locals {
                 }
               } : {},
               ## Route to OKE-VCN-3
-              var.add_oke_vcn3 == true && var.oke_vcn3_attach_to_drg == true && local.hub_with_vcn == true && local.chosen_firewall_option == "NO" ? {
+              var.add_oke_vcn3 == true && var.oke_vcn3_attach_to_drg == true && local.hub_with_vcn == true ? {
                 for cidr in var.oke_vcn3_cidrs : "OKE-VCN-3-${replace(replace(cidr, ".", ""), "/", "")}-RULE" => {
                   network_entity_key = "HUB-DRG"
                   description        = "Traffic destined to ${coalesce(var.oke_vcn3_name, "${var.service_label}-oke-vcn-3")} CIDR ${cidr} goes to DRG."
@@ -428,7 +538,7 @@ locals {
                 }
               } : {},
               ## Route to EXA-VCN-1
-              var.add_exa_vcn1 == true && var.exa_vcn1_attach_to_drg == true && local.hub_with_vcn == true && local.chosen_firewall_option == "NO" ? {
+              var.add_exa_vcn1 == true && var.exa_vcn1_attach_to_drg == true && local.hub_with_vcn == true ? {
                 for cidr in var.exa_vcn1_cidrs : "OKE-EXA-1-${replace(replace(cidr, ".", ""), "/", "")}-RULE" => {
                   network_entity_key = "HUB-DRG"
                   description        = "Traffic destined to ${coalesce(var.exa_vcn1_name, "${var.service_label}-exa-vcn-1")} CIDR ${cidr} goes to DRG."
@@ -437,7 +547,7 @@ locals {
                 }
               } : {},
               ## Route to EXA-VCN-2
-              var.add_exa_vcn2 == true && var.exa_vcn2_attach_to_drg == true && local.hub_with_vcn == true && local.chosen_firewall_option == "NO" ? {
+              var.add_exa_vcn2 == true && var.exa_vcn2_attach_to_drg == true && local.hub_with_vcn == true ? {
                 for cidr in var.exa_vcn2_cidrs : "OKE-EXA-2-${replace(replace(cidr, ".", ""), "/", "")}-RULE" => {
                   network_entity_key = "HUB-DRG"
                   description        = "Traffic destined to ${coalesce(var.exa_vcn2_name, "${var.service_label}-exa-vcn-2")} CIDR ${cidr} goes to DRG."
@@ -446,7 +556,7 @@ locals {
                 }
               } : {},
               ## Route to EXA-VCN-3
-              var.add_exa_vcn3 == true && var.exa_vcn3_attach_to_drg == true && local.hub_with_vcn == true && local.chosen_firewall_option == "NO" ? {
+              var.add_exa_vcn3 == true && var.exa_vcn3_attach_to_drg == true && local.hub_with_vcn == true ? {
                 for cidr in var.oke_vcn3_cidrs : "OKE-EXA-3-${replace(replace(cidr, ".", ""), "/", "")}-RULE" => {
                   network_entity_key = "HUB-DRG"
                   description        = "Traffic destined to ${coalesce(var.exa_vcn3_name, "${var.service_label}-exa-vcn-3")} CIDR ${cidr} goes to DRG."
@@ -858,7 +968,7 @@ locals {
               },
               ## Egress to TT-VCN - SSH traffic
               local.add_tt_vcn1 == true && var.tt_vcn1_attach_to_drg == true && local.hub_with_vcn == true && local.chosen_firewall_option == "NO" ? {
-                "EGRESS-TO-VCN-1-APP-SUBNET-RULE" = {
+                "EGRESS-TO-TT-VCN-1-APP-SUBNET-RULE" = {
                   description  = "Egress to ${coalesce(var.tt_vcn1_app_subnet_name, "${var.service_label}-three-tier-vcn-1-app-subnet")}."
                   stateless    = false
                   protocol     = "TCP"
@@ -869,7 +979,7 @@ locals {
                 }
               } : {},
               local.add_tt_vcn2 == true && var.tt_vcn2_attach_to_drg == true && local.hub_with_vcn == true && local.chosen_firewall_option == "NO" ? {
-                "EGRESS-TO-VCN-2-APP-SUBNET-RULE" = {
+                "EGRESS-TO-TT-VCN-2-APP-SUBNET-RULE" = {
                   description  = "Egress to ${coalesce(var.tt_vcn2_app_subnet_name, "${var.service_label}-three-tier-vcn-2-app-subnet")}."
                   stateless    = false
                   protocol     = "TCP"
@@ -880,7 +990,7 @@ locals {
                 }
               } : {},
               local.add_tt_vcn3 == true && var.tt_vcn3_attach_to_drg == true && local.hub_with_vcn == true && local.chosen_firewall_option == "NO" ? {
-                "EGRESS-TO-VCN-3-APP-SUBNET-RULE" = {
+                "EGRESS-TO-TT-VCN-3-APP-SUBNET-RULE" = {
                   description  = "Egress to ${coalesce(var.tt_vcn3_app_subnet_name, "${var.service_label}-three-tier-vcn-3-app-subnet")}."
                   stateless    = false
                   protocol     = "TCP"
@@ -891,7 +1001,7 @@ locals {
                 }
               } : {},
               local.add_tt_vcn1 == true && var.tt_vcn1_attach_to_drg == true && local.hub_with_vcn == true && local.chosen_firewall_option == "NO" ? {
-                "EGRESS-TO-VCN-1-DB-SUBNET-RULE" = {
+                "EGRESS-TO-TT-VCN-1-DB-SUBNET-RULE" = {
                   description  = "Egress to ${coalesce(var.tt_vcn1_db_subnet_name, "${var.service_label}-three-tier-vcn-1-db-subnet")}."
                   stateless    = false
                   protocol     = "TCP"
@@ -902,7 +1012,7 @@ locals {
                 }
               } : {},
               local.add_tt_vcn2 == true && var.tt_vcn2_attach_to_drg == true && local.hub_with_vcn == true && local.chosen_firewall_option == "NO" ? {
-                "EGRESS-TO-VCN-2-DB-SUBNET-RULE" = {
+                "EGRESS-TO-TT-VCN-2-DB-SUBNET-RULE" = {
                   description  = "Egress to ${coalesce(var.tt_vcn2_db_subnet_name, "${var.service_label}-three-tier-vcn-2-db-subnet")}."
                   stateless    = false
                   protocol     = "TCP"
@@ -913,7 +1023,7 @@ locals {
                 }
               } : {},
               local.add_tt_vcn3 == true && var.tt_vcn3_attach_to_drg == true && local.hub_with_vcn == true && local.chosen_firewall_option == "NO" ? {
-                "EGRESS-TO-VCN-3-DB-SUBNET-RULE" = {
+                "EGRESS-TO-TT-VCN-3-DB-SUBNET-RULE" = {
                   description  = "Egress to ${coalesce(var.tt_vcn1_db_subnet_name, "${var.service_label}-three-tier-vcn-3-db-subnet")}."
                   stateless    = false
                   protocol     = "TCP"
@@ -991,7 +1101,7 @@ locals {
                   dst_port_max = 22
                 }
               } : {}
-            ) # closing egress merge function
+            )
           }
         } : {},
         local.chosen_firewall_option == "OCINFW" ? {
