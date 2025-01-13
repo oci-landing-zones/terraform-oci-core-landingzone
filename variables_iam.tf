@@ -28,11 +28,11 @@ variable "deploy_exainfra_cmp" {
 # ------------------------------------------------------
 # ----- IAM - Identity Domains
 #-------------------------------------------------------
-variable "use_custom_id_domain" {
-  type        = bool
-  default     = false
-  description = "Whether to use an existing identity domain with groups and dynamic groups to grant landing zone IAM policies. If false, groups and dynamic groups from the Default identity domain are utilized."
-}
+//variable "use_custom_id_domain" {
+//  type        = bool
+//  default     = false
+//  description = "Whether to use an existing identity domain with groups and dynamic groups to grant landing zone IAM policies. If false, groups and dynamic groups from the Default identity domain are utilized."
+//}
 # variable "custom_id_domain_name" {
 #   type        = string
 #   default     = null
@@ -136,17 +136,17 @@ variable "existing_id_domain_net_fw_app_dyn_group_name" {
 variable "identity_domain_option" {
   type        = string
   default     = "Default Domain"
-  description = "Option to use the default identity domain or create a new identity domain. Value to use: Default Domain, New Identity Domain"
+  description = "Option to use the default identity domain, create a new identity domain or use custom identity domain. Value to use: Default Domain, New Identity Domain, Use Custom Identity Domain"
 }
 variable "new_identity_domain_name" {
   type        = string
   default     = ""
-  description = "the name of the new identity domain if choose create a new identity domain"
+  description = "The name of the new identity domain if the option to create a new identity domain is chosen."
 }
 variable "new_identity_domain_license_type" {
   type        = string
   default     = "free"
-  description = "the license type of new identity domain. Value to use: free, "
+  description = "the license type of new identity domain. Value to use: free, premium"
 }
 # variable "deploy_id_domain" {
 #   type    = bool

@@ -45,7 +45,6 @@ variableGroups:
       - "identity_domain_option"
       - "new_identity_domain_name"
       - "new_identity_domain_license_type"
-      - "use_custom_id_domain"
       - "custom_id_domain_ocid"
       - "deploy_custom_domain_groups"
     visible:
@@ -80,8 +79,8 @@ variableGroups:
           - ${customize_iam}
           - true
         - eq:
-          - ${use_custom_id_domain}
-          - true
+          - ${identity_domain_option}
+          - "Use Custom Identity Domain"
 
   - title: "Dynamic Groups (Existing Identity Domain)"
     variables:
@@ -99,8 +98,8 @@ variableGroups:
           - ${customize_iam}
           - true
         - eq:
-          - ${use_custom_id_domain}
-          - true      
+          - ${identity_domain_option}
+          - "Use Custom Identity Domain"
 
   - title: "Groups (Default Identity Domain)"
     variables:
@@ -126,9 +125,6 @@ variableGroups:
           - ${customize_iam}
           - true
         - eq:
-          - ${use_custom_id_domain}
-          - false
-        - eq:
           - ${identity_domain_option}
           - "Default Domain"
 
@@ -148,9 +144,6 @@ variableGroups:
         - eq:
           - ${customize_iam}
           - true
-        - eq:
-          - ${use_custom_id_domain}
-          - false      
         - eq:
           - ${identity_domain_option}
           - "Default Domain"
@@ -581,6 +574,7 @@ variables:
     enum:
       - "New Identity Domain"
       - "Default Domain"
+      - "Use Custom Identity Domain"
     default: "Default Domain"
 
   new_identity_domain_name:
@@ -606,15 +600,15 @@ variables:
         - ${identity_domain_option}
         - "New Identity Domain"
 
-  use_custom_id_domain:
-    type: boolean
-    title: "Enable an Existing Identity Domain to Manage Landing Zone?"
-    description: "Your tenancy already has a default Identity Domain, whose groups are used to manage the Landing Zone. Check this box for enabling groups in an *existing* non-default Identity Domain to manage the resources deployed by the Landing Zone. See <a href='https://docs.oracle.com/en-us/iaas/Content/Identity/usingidentitydomains/oci-iam-concepts.htm'>IAM Technologies</a> for identity domains concepts."
-    default: false
-    visible:
-      eq:
-        - ${identity_domain_option}
-        - "Default Domain"
+#  use_custom_id_domain:
+#    type: boolean
+#    title: "Enable an Existing Identity Domain to Manage Landing Zone?"
+#    description: "Your tenancy already has a default Identity Domain, whose groups are used to manage the Landing Zone. Check this box for enabling groups in an *existing* non-default Identity Domain to manage the resources deployed by the Landing Zone. See <a href='https://docs.oracle.com/en-us/iaas/Content/Identity/usingidentitydomains/oci-iam-concepts.htm'>IAM Technologies</a> for identity domains concepts."
+#    default: false
+#    visible:
+#      eq:
+#        - ${identity_domain_option}
+#        - "Default Domain"
 
   # custom_id_domain_name:
   #   type: string
@@ -628,7 +622,10 @@ variables:
     title: "Existing Identity Domain OCID"
     description: "Enter the OCID of the existing Identity Domain"
     required: false
-    visible: use_custom_id_domain
+    visible:
+      eq:
+        - ${identity_domain_option}
+        - "Use Custom Identity Domain"
 
   deploy_custom_domain_groups:
     type: boolean
@@ -636,7 +633,10 @@ variables:
     description: "Check this box to enable Landing Zone to create IAM Domain Groups and Dynamic Groups in the existing, non-default Identity Domain."
     default: false
     required: false
-    visible: use_custom_id_domain
+    visible:
+      eq:
+        - ${identity_domain_option}
+        - "Use Custom Identity Domain"
 
   rm_existing_id_domain_iam_admin_group_name:
     type: array
@@ -647,9 +647,11 @@ variables:
     description: "Enter the existing group(s) to which IAM management policies will be granted to."
     visible:
       and:
-        - use_custom_id_domain
-        - not:
-            - deploy_custom_domain_groups
+        eq:
+          - ${identity_domain_option}
+          - "Use Custom Identity Domain"
+        not:
+          - deploy_custom_domain_groups
 
   rm_existing_id_domain_cred_admin_group_name:
     type: array
@@ -660,9 +662,11 @@ variables:
     description: "Enter the existing group(s) to which credentials management policies will be granted to."
     visible:
       and:
-        - use_custom_id_domain
-        - not:
-            - deploy_custom_domain_groups
+        eq:
+          - ${identity_domain_option}
+          - "Use Custom Identity Domain"
+        not:
+          - deploy_custom_domain_groups
 
   rm_existing_id_domain_security_admin_group_name:
     type: array
@@ -673,9 +677,11 @@ variables:
     description: "Enter the existing group to which security management policies will be granted to."
     visible:
       and:
-        - use_custom_id_domain
-        - not:
-            - deploy_custom_domain_groups
+        eq:
+          - ${identity_domain_option}
+          - "Use Custom Identity Domain"
+        not:
+          - deploy_custom_domain_groups
       
   rm_existing_id_domain_ag_admin_group_name:
     type: array
@@ -686,9 +692,11 @@ variables:
     description: "Enter the existing group(s) to which Access Governance management policies will be granted to."
     visible:
       and:
-        - use_custom_id_domain
-        - not:
-            - deploy_custom_domain_groups
+        eq:
+          - ${identity_domain_option}
+          - "Use Custom Identity Domain"
+        not:
+          - deploy_custom_domain_groups
 
   rm_existing_id_domain_network_admin_group_name:
     type: array
@@ -699,9 +707,11 @@ variables:
     description: "Enter the existing group to which network management policies will be granted to."
     visible:
       and:
-        - use_custom_id_domain
-        - not:
-            - deploy_custom_domain_groups
+        eq:
+          - ${identity_domain_option}
+          - "Use Custom Identity Domain"
+        not:
+          - deploy_custom_domain_groups
       
   rm_existing_id_domain_appdev_admin_group_name:
     type: array
@@ -712,9 +722,11 @@ variables:
     description: "Enter the existing group to which application development management policies will be granted to."
     visible:
       and:
-        - use_custom_id_domain
-        - not:
-            - deploy_custom_domain_groups
+        eq:
+          - ${identity_domain_option}
+          - "Use Custom Identity Domain"
+        not:
+          - deploy_custom_domain_groups
       
   rm_existing_id_domain_database_admin_group_name:
     type: array
@@ -725,9 +737,11 @@ variables:
     description: "Enter the existing group to which database management policies will be granted to."
     visible:
       and:
-        - use_custom_id_domain
-        - not:
-            - deploy_custom_domain_groups
+        eq:
+          - ${identity_domain_option}
+          - "Use Custom Identity Domain"
+        not:
+          - deploy_custom_domain_groups
   
   rm_existing_id_domain_exainfra_admin_group_name:
     type: array
@@ -738,9 +752,11 @@ variables:
     description: "Enter the existing group to which Exadata infrastructure management policies will be granted to."
     visible:
       and:
-        - use_custom_id_domain
-        - not:
-            - deploy_custom_domain_groups
+        eq:
+          - ${identity_domain_option}
+          - "Use Custom Identity Domain"
+        not:
+          - deploy_custom_domain_groups
   
   rm_existing_id_domain_auditor_group_name:
     type: array
@@ -751,9 +767,11 @@ variables:
     description: "Existing group to which auditing policies will be granted to."
     visible:
       and:
-        - use_custom_id_domain
-        - not:
-            - deploy_custom_domain_groups
+        eq:
+          - ${identity_domain_option}
+          - "Use Custom Identity Domain"
+        not:
+          - deploy_custom_domain_groups
       
   rm_existing_id_domain_announcement_reader_group_name:
     type: array
@@ -764,9 +782,11 @@ variables:
     description: "Enter the existing group to which announcement reading policies will be granted to."
     visible:
       and:
-        - use_custom_id_domain
-        - not:
-            - deploy_custom_domain_groups
+        eq:
+          - ${identity_domain_option}
+          - "Use Custom Identity Domain"
+        not:
+          - deploy_custom_domain_groups
   
   rm_existing_id_domain_cost_admin_group_name:
     type: array
@@ -777,9 +797,11 @@ variables:
     description: "Enter the existing group to which Cost management policies will be granted to."
     visible:
       and:
-        - use_custom_id_domain
-        - not:
-            - deploy_custom_domain_groups
+        eq:
+          - ${identity_domain_option}
+          - "Use Custom Identity Domain"
+        not:
+          - deploy_custom_domain_groups
 
   rm_existing_id_domain_storage_admin_group_name:
     type: array
@@ -790,9 +812,11 @@ variables:
     description: "Enter the existing group to which Storage management policies will be granted to."
     visible:
       and:
-        - use_custom_id_domain
-        - not:
-            - deploy_custom_domain_groups
+        eq:
+          - ${identity_domain_option}
+          - "Use Custom Identity Domain"
+        not:
+          - deploy_custom_domain_groups
 
   existing_id_domain_security_fun_dyn_group_name:
     type: string
@@ -800,9 +824,11 @@ variables:
     description: "Existing security dynamic group to run functions."
     visible:
       and:
-        - use_custom_id_domain
-        - not:
-            - deploy_custom_domain_groups
+        eq:
+          - ${identity_domain_option}
+          - "Use Custom Identity Domain"
+        not:
+          - deploy_custom_domain_groups
 
   existing_id_domain_appdev_fun_dyn_group_name:
     type: string
@@ -810,9 +836,11 @@ variables:
     description: "Existing application dynamic group."
     visible:
       and:
-        - use_custom_id_domain
-        - not:
-            - deploy_custom_domain_groups
+        eq:
+          - ${identity_domain_option}
+          - "Use Custom Identity Domain"
+        not:
+          - deploy_custom_domain_groups
 
   existing_id_domain_compute_agent_dyn_group_name:
     type: string
@@ -820,9 +848,11 @@ variables:
     description: "Existing compute agent dynamic group for management agent access."
     visible:
       and:
-        - use_custom_id_domain
-        - not:
-            - deploy_custom_domain_groups
+        eq:
+          - ${identity_domain_option}
+          - "Use Custom Identity Domain"
+        not:
+          - deploy_custom_domain_groups
 
   existing_id_domain_database_kms_dyn_group_name:
     type: string
@@ -830,9 +860,11 @@ variables:
     description: "Existing database dynamic group for database to access keys."
     visible:
       and:
-        - use_custom_id_domain
-        - not:
-            - deploy_custom_domain_groups
+        eq:
+          - ${identity_domain_option}
+          - "Use Custom Identity Domain"
+        not:
+          - deploy_custom_domain_groups
 
   existing_id_domain_net_fw_app_dyn_group_name:
     type: string
@@ -840,9 +872,11 @@ variables:
     description: "Existing network firewall appliance dynamic group for reading firewall instances."
     visible:
       and:
-        - use_custom_id_domain
-        - not:
-            - deploy_custom_domain_groups
+        eq:
+          - ${identity_domain_option}
+          - "Use Custom Identity Domain"
+        not:
+          - deploy_custom_domain_groups
 
   # deploy_id_domain:
   #   type: boolean
