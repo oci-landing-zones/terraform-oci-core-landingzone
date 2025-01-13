@@ -1,5 +1,8 @@
-# November 20, 2024 Release Notes - 1.1.0
+# December 23, 2024 Release Notes - 1.2.0
 ## New
+1. Ability to deploy the OCI Native Network Firewall.
+
+# November 20, 2024 Release Notes - 1.1.0
 1. Ability to enable OCI Zero Trust Packet Routing (ZPR) service in Three-Tier VCNs and Exadata VCNs for use cases involving access to databases.
 2. Enhanced separation of duties between Database administrators and Exadata administrators. Now, Exadata infrastructure and VM clusters are only manageable in the Exadata compartment, and only by Exadata administrators.
 
