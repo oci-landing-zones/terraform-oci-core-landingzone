@@ -149,9 +149,14 @@ The diagrams below shows Landing Zone overall architecture:
 The Landing Zone’s IAM model seeks to enforce segregation of duties and the least privilege principle, by defining compartments, policies, groups and dynamic groups. Existing users can be optionally added to groups, but are not created. The segregation of duties concept is implemented by granting groups *manage* permissions over specific resources on specific compartments. At the same time, other groups are entitled narrower permissions on those same resources. For instance, network administrators are granted *manage* permission over the networking resources in the *Network* compartment. Other groups, like database administrators, are granted *read* permission on *virtual-network-family* in the *Network* compartment and *use* permission on *vnics*, *subnets* and *network-security-groups*, so the databases they provision can make proper use of the network.
 
 ### Identity Domains
-
+The Core Landing Zone has option to use the Default Domain, create a new Domain, or use existing Custom Domain
 #### Default Domain
 Each tenancy includes a Default identity domain created in the root compartment that contains the initial tenant administrator user and group and a default Policy that allows administrators to manage any resource in the tenancy. The Default identity domain lives with the life cycle of the tenancy and can't be deleted.
+
+#### Create a new Domain
+The Core Landing Zone allow users to creat a new Identity Domain in the home compartment of Landing Zone. The users can customize the identity domain name and the identity domain type (free or premium).
+If choosing to create a new Domain, all the groups, dynamic groups and policies will then be created in the new identity domain.
+
 
 #### Custom Domain
 Landing Zone allows for the usage of custom identity domains groups and dynamic groups to manage/access its managed resources. A bespoke identity domain is useful when you need a separate environment for a cloud service or application (for example, one environment for development and one for production). For added security, you can configure each identity domain to have its own credentials (for example, Password and Sign-On policies).
