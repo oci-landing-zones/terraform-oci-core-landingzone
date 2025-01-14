@@ -132,8 +132,8 @@ locals {
         var.deploy_bastion_jump_host == true ? {
           "JUMPHOST-SUB-SL" = {
             display_name = "jumphost-subnet-security-list"
-            ingress_rules = [
-              {
+            ingress_rules = flatten([
+              [{
                 description = "Ingress on UDP type 3 code 4."
                 stateless   = false
                 protocol    = "UDP"
@@ -141,8 +141,8 @@ locals {
                 src_type    = "CIDR_BLOCK"
                 icmp_type   = 3
                 icmp_code   = 4
-              },
-              {
+              }],
+              [{
                 description  = "Ingress from ${coalesce(var.hub_vcn_jumphost_subnet_name, "${var.service_label}-hub-vcn-jumphost-subnet")} on SSH port. Required for connecting Bastion service endpoint to Bastion jump host."
                 stateless    = false
                 protocol     = "TCP"
@@ -150,10 +150,10 @@ locals {
                 src_type     = "CIDR_BLOCK"
                 dst_port_min = 22
                 dst_port_max = 22
-              },
-            ]
-            egress_rules = flatten([[
-              {
+              }]
+            ])
+            egress_rules = flatten([
+              [{
                 description  = "Egress to ${coalesce(var.hub_vcn_jumphost_subnet_name, "${var.service_label}-hub-vcn-jumphost-subnet")} on SSH port. Required by Bastion service session."
                 stateless    = false
                 protocol     = "TCP"
@@ -221,7 +221,7 @@ locals {
                 description  = "Egress to ${coalesce(var.oke_vcn1_workers_subnet_name, "${var.service_label}-oke-vcn-1-workers-subnet")}."
                 stateless    = false
                 protocol     = "TCP"
-                dst          = coalesce(var.oke_vcn1_services_subnet_cidr, cidrsubnet(var.oke_vcn1_cidrs[0], 8, 2))
+                dst          = coalesce(var.oke_vcn1_workers_subnet_cidr, cidrsubnet(var.oke_vcn1_cidrs[0], 8, 1))
                 dst_type     = "CIDR_BLOCK"
                 dst_port_min = 22
                 dst_port_max = 22
@@ -230,7 +230,7 @@ locals {
                 description  = "Egress to ${coalesce(var.oke_vcn2_workers_subnet_name, "${var.service_label}-oke-vcn-2-workers-subnet")}."
                 stateless    = false
                 protocol     = "TCP"
-                dst          = coalesce(var.oke_vcn2_services_subnet_cidr, cidrsubnet(var.oke_vcn2_cidrs[0], 8, 2))
+                dst          = coalesce(var.oke_vcn2_workers_subnet_cidr, cidrsubnet(var.oke_vcn2_cidrs[0], 8, 1))
                 dst_type     = "CIDR_BLOCK"
                 dst_port_min = 22
                 dst_port_max = 22
@@ -239,7 +239,7 @@ locals {
                 description  = "Egress to ${coalesce(var.oke_vcn2_workers_subnet_name, "${var.service_label}-oke-vcn-3-workers-subnet")}."
                 stateless    = false
                 protocol     = "TCP"
-                dst          = coalesce(var.oke_vcn3_services_subnet_cidr, cidrsubnet(var.oke_vcn3_cidrs[0], 8, 2))
+                dst          = coalesce(var.oke_vcn3_workers_subnet_cidr, cidrsubnet(var.oke_vcn3_cidrs[0], 8, 1))
                 dst_type     = "CIDR_BLOCK"
                 dst_port_min = 22
                 dst_port_max = 22
@@ -481,6 +481,14 @@ locals {
                   description        = "To Oracle Services Network."
                   destination        = "all-services"
                   destination_type   = "SERVICE_CIDR_BLOCK"
+                }
+              },
+              {
+                for cidr in var.onprem_cidrs : "ON-PREM-${replace(replace(cidr, ".", ""), "/", "")}-RULE" => {
+                  network_entity_key = "HUB-DRG"
+                  description        = "Traffic destined to on-premises CIDR ${cidr} goes to DRG."
+                  destination        = cidr
+                  destination_type   = "CIDR_BLOCK"
                 }
               },
               ## Route to TT-VCN-1
@@ -1037,7 +1045,7 @@ locals {
                   description  = "Egress to ${coalesce(var.oke_vcn1_workers_subnet_name, "${var.service_label}-oke-vcn-1-workers-subnet")}."
                   stateless    = false
                   protocol     = "TCP"
-                  dst          = coalesce(var.oke_vcn1_services_subnet_cidr, cidrsubnet(var.oke_vcn1_cidrs[0], 8, 2))
+                  dst          = coalesce(var.oke_vcn1_workers_subnet_cidr, cidrsubnet(var.oke_vcn1_cidrs[0], 8, 1))
                   dst_type     = "CIDR_BLOCK"
                   dst_port_min = 22
                   dst_port_max = 22
@@ -1048,7 +1056,7 @@ locals {
                   description  = "Egress to ${coalesce(var.oke_vcn2_workers_subnet_name, "${var.service_label}-oke-vcn-2-workers-subnet")}."
                   stateless    = false
                   protocol     = "TCP"
-                  dst          = coalesce(var.oke_vcn2_services_subnet_cidr, cidrsubnet(var.oke_vcn2_cidrs[0], 8, 2))
+                  dst          = coalesce(var.oke_vcn2_workers_subnet_cidr, cidrsubnet(var.oke_vcn2_cidrs[0], 8, 1))
                   dst_type     = "CIDR_BLOCK"
                   dst_port_min = 22
                   dst_port_max = 22
@@ -1059,7 +1067,7 @@ locals {
                   description  = "Egress to ${coalesce(var.oke_vcn2_workers_subnet_name, "${var.service_label}-oke-vcn-3-workers-subnet")}."
                   stateless    = false
                   protocol     = "TCP"
-                  dst          = coalesce(var.oke_vcn3_services_subnet_cidr, cidrsubnet(var.oke_vcn3_cidrs[0], 8, 2))
+                  dst          = coalesce(var.oke_vcn3_workers_subnet_cidr, cidrsubnet(var.oke_vcn3_cidrs[0], 8, 1))
                   dst_type     = "CIDR_BLOCK"
                   dst_port_min = 22
                   dst_port_max = 22
@@ -1106,6 +1114,15 @@ locals {
           "HUB-VCN-OCI-FIREWALL-NSG" = {
             display_name = "oci-firewall-nsg"
             ingress_rules = merge(
+              {
+                for cidr in var.onprem_cidrs : "INGRESS-FROM-${replace(replace(cidr, ".", ""), "/", "")}-RULE" => {
+                  description = "Ingress from on-premises CIDR."
+                  stateless   = false
+                  protocol    = "TCP"
+                  src         = "${cidr}"
+                  src_type    = "CIDR_BLOCK"
+                }
+              },
               { for cidr in var.hub_vcn_cidrs : "INGRESS-FROM-HUB-VCN-${replace(replace(cidr, ".", ""), "/", "")}-RULE" => {
                 description = "Ingress from ${coalesce(var.hub_vcn_name, "${var.service_label}-hub-vcn")}."
                 stateless   = false
