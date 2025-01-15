@@ -36,8 +36,8 @@ locals {
 
   hub_zpr_policy = local.hub_with_vcn && var.deploy_bastion_jump_host ? {
     ZPR-POLICY-HUB-VCN = {
-      description = "Core Landing Zone ZPR policy for ${var.hub_vcn_name != null ? "${var.service_label}-${var.hub_vcn_name}-zpr-policy" : "${var.service_label}-hub-vcn-zpr-policy"}."
-      name        = var.hub_vcn_name != null && length(var.hub_vcn_name) > 0 ? "${var.service_label}-${var.hub_vcn_name}-zpr-policy" : "${var.service_label}-hub-vcn-zpr-policy"
+      description = "Core Landing Zone ZPR policy for ${var.service_label}-${coalesce(var.hub_vcn_name, "hub-vcn")}-zpr-policy."
+      name        = "${var.service_label}-${coalesce(var.hub_vcn_name, "hub-vcn")}-zpr-policy"
       statements  = concat(local.hub_bastion_zpr_grants, local.hub_on_prem_zpr_grants, local.hub_to_tt_1_zpr_grants, local.hub_to_tt_2_zpr_grants, local.hub_to_tt_3_zpr_grants, local.hub_to_exa_1_zpr_grants, local.hub_to_exa_2_zpr_grants, local.hub_to_exa_3_zpr_grants)
     }
   } : {}
