@@ -102,7 +102,7 @@ variable "net_appliance_name_prefix" {
 
 variable "net_appliance_shape" {
   type        = string
-  default     = VM.Standard2.8"
+  default     = "VM.Standard2.8"
   description = "The instance shape for the network appliance nodes."
 }
 
