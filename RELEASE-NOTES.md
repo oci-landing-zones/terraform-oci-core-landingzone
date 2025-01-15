@@ -1,7 +1,9 @@
 # January 17, 2025 Release Notes - 1.2.1
 ## New
 1. Optional bastion jump host and OCI Bastion Service deployed in the Hub VCN for use with any firewall option: OCI Native or either third party network appliance.
-2. Support for creating a new custom IAM Identity Domain.
+2. Support for creating a new custom IAM Identity Domain. The previous requirement of a single Identity Domain per Landing Zone deployment remains, but this release supports an additional method for deploying a custom domain.
+3. Update for network appliance third party version:
+    - Palo Alto Networks Firewall: 11.1.4-h7.  Versions 11.1.3 and 11.1.2-h1 are no longer supported.
 
 # December 23, 2024 Release Notes - 1.2.0
 ## New
@@ -14,7 +16,7 @@
 # October 31, 2024 Release Notes - 1.0.0
 1. Ability to deploy groups and dynamic groups in an existing identity domain.
 2. Ability to define the network appliance versions. Supported versions are:
-    - Palo Alto Network Firewall: 11.1.3 and 11.1.2-h1.
+    - Palo Alto Networks Firewall: 11.1.3 and 11.1.2-h1. (NB: these versions are deprecated in Core Landing Zone Release 1.2.1)
     - Fortinet Fortigate Firewall: 7.2.9(X64) and 7.4.4(X64)
 3. Ability to deploy a network appliance custom image.
 4. Bug fixes.    
