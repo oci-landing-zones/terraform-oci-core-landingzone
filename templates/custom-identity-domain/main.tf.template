@@ -41,7 +41,7 @@ module "core_lz" {
     # ------------------------------------------------------
     # ----- Existing Identity Domain
     # ------------------------------------------------------
-    Use Custom Identity Domain = "Use Custom Identity Domain" # Designate to Landing Zone that you want to use a pre-existing identity domain.
+    identity_domain_option = "Use Custom Identity Domain" # Designate to Landing Zone that you want to use a pre-existing identity domain.
     custom_id_domain_ocid = <existing identity domain ocid> # Replace with your identity domain OCID.
     deploy_custom_domain_groups = true # This is a critical setting for this template.
     customize_iam = true # Whether Landing Zone IAM settings are to be customized.
