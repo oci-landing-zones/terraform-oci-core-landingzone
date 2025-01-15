@@ -17,7 +17,7 @@ This template has the following parameters set:
 | network_admin_email_endpoints | List of email addresses that receive notifications for networking related events. | ["email.address@example.com"] |
 | security_admin_email_endpoints | List of email addresses that receive notifications for security related events. | ["email.address@example.com"] |
 | enable_cloud_guard | When true, OCI Cloud Guard Service is enabled. Set to false if it's been already enabled through other means. | false |
-| use_custom_id_domain | Designate to use a pre-existing identity domain. | true |
+| identity_domain_option | Option to use the default identity domain, create a new identity domain or use custom identity domain. Value to use: Default Domain, New Identity Domain, Use Custom Identity Domain | "Use Custom Identity Domain" |
 | custom_id_domain_ocid | Replace with your identity domain OCID. | ["your_domain_ocid"] |
 | deploy_custom_domain_groups | Deploy custom identity domain groups and dynamic groups. | true |
 | customize_iam | Whether Landing Zone IAM settings are to be customized. | true |
