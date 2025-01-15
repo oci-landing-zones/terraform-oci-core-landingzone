@@ -41,7 +41,7 @@ module "core_lz" {
     # ------------------------------------------------------
     # ----- Existing Identity Domain
     # ------------------------------------------------------
-    Use Custom Identity Domain = "New Identity Domain" # Designate to Landing Zone that you want to create a new identity domain.
+    identity_domain_option = "New Identity Domain" # Designate to Landing Zone that you want to create a new identity domain.
     new_identity_domain_name = "" # the name of the new identity domain
     new_identity_domain_license_type = "free" # the license type of the new identity domain. Value to use: free, premium
     customize_iam = true # Whether Landing Zone IAM settings are to be customized.
