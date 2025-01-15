@@ -41,7 +41,7 @@ You are required to review/adjust the following variable settings:
 
  - Make sure to pick an OCI region for deployment.
  - Provide real email addresses for *Network Admin Email Endpoints* and *Security Admin Email Endpoints* fields.
- - Provide real CIDR block(s) used to access the Bastion service for *bastion_service_allowed_cidrs* field.
+ - Provide real CIDR block(s) used to access the Bastion service for *bastion\_service\_allowed\_cidrs* field.
  - Uncheck *Enable Cloud Guard Service* option in case it is already enabled in your tenancy.
 
 With the stack created, perform a Plan, followed by an Apply using RMS UI.

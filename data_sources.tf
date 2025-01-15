@@ -16,7 +16,7 @@ data "oci_identity_compartment" "existing_enclosing_compartment" {
 }
 
 data "oci_identity_domain" "existing_identity_domain" {
-    count = var.use_custom_id_domain == true ? 1 : 0
+    count = var.identity_domain_option == "Use Custom Identity Domain" == true ? 1 : 0
     domain_id = trimspace(var.custom_id_domain_ocid)
     lifecycle {
       precondition {
