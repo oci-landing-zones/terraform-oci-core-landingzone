@@ -1,3 +1,8 @@
+# January 17, 2025 Release Notes - 1.2.1
+## New
+1. Optional bastion jump host and OCI Bastion Service deployed in the Hub VCN for use with any firewall option: OCI Native or either third party network appliance.
+2. Support for creating a new custom IAM Identity Domain.
+
 # December 23, 2024 Release Notes - 1.2.0
 ## New
 1. Ability to deploy the OCI Native Network Firewall.

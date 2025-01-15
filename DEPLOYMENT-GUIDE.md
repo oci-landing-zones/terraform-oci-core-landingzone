@@ -124,23 +124,23 @@ The Landing Zone architecture starts with a compartment design for the tenancy a
 
 The Landing Zone can provision one to ten VCNs, either in standalone mode or as constituent parts of a Hub & Spoke architecture. The VCNs can either follow a general-purpose standard N-Tier network topology or oriented towards specific topologies, like supporting Oracle Database Exadata Cloud Service and/or Oracle Kubernetes Engine deployments. VCNs are automatically configured with the necessary routing and with the necessary inbound and outbound interfaces properly secured.
 
-The Landing Zone includes multiple pre-configured security services that can be deployed in tandem with the overall architecture for a stronger security posture. These services are *Oracle Cloud Guard*, *Flow Logs*, *Service Connector Hub*, *Vault*, *Vulnerability Scanning*, *Network Firewall* and *Bastion*.
+The Landing Zone includes multiple pre-configured security services that can be deployed in tandem with the overall architecture for a stronger security posture. These services are *Oracle Cloud Guard*, *Flow Logs*, *Service Connector Hub*, *Vault*, *Vulnerability Scanning*, *Network Firewall* and *Bastion Service*.
 
 From a governance perspective, *Notifications* and *Alarms* are setup to use *Topics* and *Events* for alerting administrators about changes and exceeded metric thresholds for deployed resources. The Landing Zone provisions tag defaults to automatically determine resource owner and creation timestamp. Based on user choice, a foundational *Budget* for cost tracking purposes can be created as well.
 
 As an important aspect to governance, logging is also considered by the Landing Zone. Per CIS Oracle Cloud Infrastructure Benchmark, VCN flow logs and Object Storage logging are enabled by default. Landing Zone takes a step forward and, upon user choice, uses Service Connector Hub service to consolidate OCI log sources into a single designated target, which is an Object Storage bucket by default but can also be an OCI Stream or an OCI Function. Such feature makes it easier for making OCI logs available in third party SIEM solutions, like Splunk.
 
-The diagrams below shows Landing Zone overall architecture:
+The diagrams below show Landing Zone overall architecture flexibility.
 
-**With Simple Networking**
+- All compartments with simple networking (no DRG for cross-VCN connectivity):
 
 ![Architecture_Simple](images/arch_simple.png)
 
-**With Hub & Spoke Networking**
+- Hub & Spoke network compartment using third party firewall (Palo Alto Networks or Fortinet) and optional bastion features:
 
 ![Architecture_Advanced](images/arch-advanced-net-appliance.png)
 
-**With Hub & Spoke Networking Using OCI Network Firewall**
+- Hub & Spoke network compartment using OCI Network Firewall (native) and optional bastion features:
 
 ![Architecture_OCI_NFW](images/arch-advanced-oci-firewall.png)
 
@@ -232,7 +232,7 @@ The Landing Zone supports up to three VCNs of each type.
 
 Regardless the networking types, these VCNs can be deployed standalone or all connected via OCI DRG V2 service in a Hub & Spoke topology. When deploying Hub & Spoke, either a Hub VCN (aka DMZ VCN) can be provisioned or the DRG itself used as the hub. The Landing Zone also optionally deploys a network appliance or OCI Native Firewall in the Hub VCN to control/secure all inbound and outbound traffic routing in the spoke VCNs.
 
-The VCNs can also be configured with no Internet connectivity or for on-premises connectivity. Inbound access to the SSH port from 0.0.0.0/0 IP range is strictly prohibited.
+All VCNs can be configured with no Internet connectivity or for on-premises connectivity. Inbound SSH access (TCP port 22) from 0.0.0.0/0 IP range is prohibited, but Landing Zone may be configured to leverage OCI Bastion Service for secure, restricted access from the Internet.
 
 Due to the very nature of Terraform, it is possible to add, modify and delete VCNs.
 
