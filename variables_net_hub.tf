@@ -55,7 +55,7 @@ variable "hub_vcn_cidrs" {
 variable "hub_vcn_deploy_net_appliance_option" {
   type        = string
   default     = "Don't deploy any network appliance at this time"
-  description = "The network appliance option for deploying in the Hub VCN. Valid values: 'Don't deploy any network appliance at this time' (default), 'Palo Alto Networks VM-Series Firewall', 'Fortinet FortiGate Firewall'. Costs are incurred."
+  description = "The network appliance option for deploying in the Hub VCN. Valid values: 'Don't deploy any network appliance at this time' (default), 'Palo Alto Networks VM-Series Firewall', 'Fortinet FortiGate Firewall', 'User-Provided Virtual Network Appliance', and 'OCI Native Firewall'. Costs are incurred."
 }
 
 variable "enable_native_firewall_threat_log" {
