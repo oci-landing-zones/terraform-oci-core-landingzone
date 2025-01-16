@@ -14,7 +14,7 @@
 ## Modules
 
 | Name | Source | Version |
-|------|--------|---------|
+|------|--------|--------|
 | <a name="module_lz_alarms"></a> [lz\_alarms](#module\_lz\_alarms) | github.com/oci-landing-zones/terraform-oci-modules-observability//alarms | v0.1.8 |
 | <a name="module_lz_budgets"></a> [lz\_budgets](#module\_lz\_budgets) | github.com/oci-landing-zones/terraform-oci-modules-governance//budgets | v0.1.4 |
 | <a name="module_lz_cloud_guard"></a> [lz\_cloud\_guard](#module\_lz\_cloud\_guard) | github.com/oci-landing-zones/terraform-oci-modules-security//cloud-guard | v0.1.7 |
@@ -29,6 +29,7 @@
 | <a name="module_lz_home_region_topics"></a> [lz\_home\_region\_topics](#module\_lz\_home\_region\_topics) | github.com/oci-landing-zones/terraform-oci-modules-observability//notifications | v0.1.8 |
 | <a name="module_lz_logging_analytics"></a> [lz\_logging\_analytics](#module\_lz\_logging\_analytics) | github.com/oci-landing-zones/terraform-oci-modules-observability//logging | v0.1.8 |
 | <a name="module_lz_network"></a> [lz\_network](#module\_lz\_network) | github.com/oci-landing-zones/terraform-oci-modules-networking | v0.7.1 |
+| <a name ="module_lz_new_identity_domain"></a> [lz\_new\_identity\_domain](#module\_lz\_new\_identity\_domain) | github.com/oci-landing-zones/terraform-oci-modules-iam//identity-domains | v0.2.4 |
 | <a name="module_lz_nlb"></a> [lz\_nlb](#module\_lz\_nlb) | github.com/oci-landing-zones/terraform-oci-modules-networking//modules/nlb | v0.7.1 |
 | <a name="module_lz_notifications"></a> [lz\_notifications](#module\_lz\_notifications) | github.com/oci-landing-zones/terraform-oci-modules-observability//events | v0.1.8 |
 | <a name="module_lz_oke_clusters_policy"></a> [lz\_oke\_clusters\_policy](#module\_lz\_oke\_clusters\_policy) | github.com/oci-landing-zones/terraform-oci-modules-iam//policies | v0.2.4 |
@@ -45,7 +46,7 @@
 | <a name="module_lz_zpr"></a> [lz\_zpr](#module\_lz\_zpr) | github.com/oci-landing-zones/terraform-oci-modules-security//zpr | v0.1.9 |
 | <a name="module_native_oci_firewall"></a> [native\_oci\_firewall](#module\_native\_oci\_firewall) | github.com/oci-landing-zones/terraform-oci-modules-networking | v0.7.1 |
 | <a name="module_oci_native_firewall_logs"></a> [oci\_native\_firewall\_logs](#module\_oci\_native\_firewall\_logs) | github.com/oci-landing-zones/terraform-oci-modules-observability//logging | v0.1.9 |
-
+ 
 ## Resources
 
 | Name | Type |
@@ -209,6 +210,7 @@
 | <a name="input_hub_vcn_web_subnet_is_private"></a> [hub\_vcn\_web\_subnet\_is\_private](#input\_hub\_vcn\_web\_subnet\_is\_private) | Whether the Web subnet private. It is public by default. | `bool` | `false` | no |
 | <a name="input_hub_vcn_web_subnet_jump_host_allowed_cidrs"></a> [hub\_vcn\_web\_subnet\_jump\_host\_allowed\_cidrs](#input\_hub\_vcn\_web\_subnet\_jump\_host\_allowed\_cidrs) | List of CIDRs allowed to SSH into the Web subnet via a jump host eventually deployed in the Web subnet. Leave empty for no access. | `list(string)` | `[]` | no |
 | <a name="input_hub_vcn_web_subnet_name"></a> [hub\_vcn\_web\_subnet\_name](#input\_hub\_vcn\_web\_subnet\_name) | The Hub VCN Web subnet name. | `string` | `null` | no |
+| <a name="input_identity_domain_option"></a> [identity\_domain\_option](#input\_identity\_domain\_option) | Option to use the default identity domain, create a new identity domain or use custom identity domain. Value to use: Default Domain, New Identity Domain, Use Custom Identity Domain | `string` | `Default Domain` | no
 | <a name="input_lz_provenant_prefix"></a> [lz\_provenant\_prefix](#input\_lz\_provenant\_prefix) | The provenant landing zone prefix or code that identifies the client of this Landing Zone. This information goes into a freeform tag applied to all deployed resources. | `string` | `"core"` | no |
 | <a name="input_lz_provenant_version"></a> [lz\_provenant\_version](#input\_lz\_provenant\_version) | The provenant landing zone version. This information goes into a freeform tag applied to all deployed resources. | `string` | `null` | no |
 | <a name="input_net_appliance_boot_volume_size"></a> [net\_appliance\_boot\_volume\_size](#input\_net\_appliance\_boot\_volume\_size) | The boot volume size (in GB) for the Network Appliance instances. | `number` | `60` | no |
@@ -221,6 +223,8 @@
 | <a name="input_net_fortigate_version"></a> [net\_fortigate\_version](#input\_net\_fortigate\_version) | Fortinet Fortigate Firewall Version. | `string` | `"7.2.9_(_X64_)"` | no |
 | <a name="input_net_palo_alto_version"></a> [net\_palo\_alto\_version](#input\_net\_palo\_alto\_version) | Palo Alto Firewall Version. | `string` | `"11.1.3"` | no |
 | <a name="input_network_admin_email_endpoints"></a> [network\_admin\_email\_endpoints](#input\_network\_admin\_email\_endpoints) | List of email addresses for all network related notifications. (Type an email address and hit enter to enter multiple values) | `list(string)` | `[]` | no |
+| <a name="input_new_identity_domain_license_type"></a> [new\_identity\_domain\_license\_type](#input\_new\_identity\_domain\_license\_type) | The license type of new identity domain. Value to use: free, premium | `string` | `free` | no |
+| <a name="input_new_identity_domain_name"></a> [new\_identity\_domain\_name](#input\_new\_identity\_domain\_name) | The name of the new identity domain if the option to create a new identity domain is chosen. | `string` | `""` | no |
 | <a name="input_notifications_advanced_options"></a> [notifications\_advanced\_options](#input\_notifications\_advanced\_options) | n/a | `bool` | `false` | no |
 | <a name="input_oci_nfw_ip_ocid"></a> [oci\_nfw\_ip\_ocid](#input\_oci\_nfw\_ip\_ocid) | Enter OCI Network Firewall's Forwarding Private IP OCID. | `string` | `null` | no |
 | <a name="input_oci_nfw_policy_ocid"></a> [oci\_nfw\_policy\_ocid](#input\_oci\_nfw\_policy\_ocid) | Enter the OCI Network Firewall Policy OCID. | `string` | `null` | no |
@@ -351,7 +355,6 @@
 | <a name="input_tt_vcn3_web_subnet_cidr"></a> [tt\_vcn3\_web\_subnet\_cidr](#input\_tt\_vcn3\_web\_subnet\_cidr) | The Web subnet CIDR block. It must be within the VCN CIDR blocks. | `string` | `null` | no |
 | <a name="input_tt_vcn3_web_subnet_is_private"></a> [tt\_vcn3\_web\_subnet\_is\_private](#input\_tt\_vcn3\_web\_subnet\_is\_private) | Whether the Web subnet private. It is public by default. | `bool` | `false` | no |
 | <a name="input_tt_vcn3_web_subnet_name"></a> [tt\_vcn3\_web\_subnet\_name](#input\_tt\_vcn3\_web\_subnet\_name) | The Web subnet name. | `string` | `null` | no |
-| <a name="input_use_custom_id_domain"></a> [use\_custom\_id\_domain](#input\_use\_custom\_id\_domain) | Whether to use an existing identity domain with groups and dynamic groups to grant landing zone IAM policies. If false, groups and dynamic groups from the Default identity domain are utilized. | `bool` | `false` | no |
 | <a name="input_user_ocid"></a> [user\_ocid](#input\_user\_ocid) | n/a | `string` | `""` | no |
 | <a name="input_vss_agent_cis_benchmark_settings_scan_level"></a> [vss\_agent\_cis\_benchmark\_settings\_scan\_level](#input\_vss\_agent\_cis\_benchmark\_settings\_scan\_level) | Valid values: STRICT, MEDIUM, LIGHTWEIGHT, NONE. STRICT: If more than 20% of the CIS benchmarks fail, then the target is assigned a risk level of Critical. MEDIUM: If more than 40% of the CIS benchmarks fail, then the target is assigned a risk level of High. LIGHTWEIGHT: If more than 80% of the CIS benchmarks fail, then the target is assigned a risk level of High. NONE: disables cis benchmark scanning. | `string` | `"MEDIUM"` | no |
 | <a name="input_vss_agent_scan_level"></a> [vss\_agent\_scan\_level](#input\_vss\_agent\_scan\_level) | Valid values: STANDARD, NONE. STANDARD enables agent-based scanning. NONE disables agent-based scanning and moots any agent related attributes. | `string` | `"STANDARD"` | no |
