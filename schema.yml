@@ -220,7 +220,6 @@ variableGroups:
       - "bastion_service_allowed_cidrs"
       - "customize_bastion_service"
       - "bastion_service_name"
-      - "enable_bastion_proxy_status"
       - "customize_jumphost_subnet"
       - "hub_vcn_jumphost_subnet_name"
       - "hub_vcn_jumphost_subnet_cidr"
@@ -4181,17 +4180,6 @@ variables:
     title: "Bastion Service Name"
     required: falseq
     description: "Custom name to give to the Bastion Service"
-    visible:
-      and:
-        - customize_bastion_service
-        - deploy_bastion_jump_host
-        - deploy_bastion_service
-
-  enable_bastion_proxy_status:
-    type: boolean
-    title: "Enable FQDN Support and SOCKS5?"
-    description: "If checked, support for SOCKS5 proxy will be ENABLED on the Bastion Service"
-    default: false
     visible:
       and:
         - customize_bastion_service

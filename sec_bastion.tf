@@ -33,7 +33,6 @@ locals {
         defined_tags          = local.bastion_service_defined_tags
         freeform_tags         = local.bastion_service_freeform_tags
         cidr_block_allow_list = var.bastion_service_allowed_cidrs
-        enable_dns_proxy      = var.enable_bastion_proxy_status
         name                  = local.bastion_service_name
       }
     }

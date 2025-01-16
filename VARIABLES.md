@@ -116,8 +116,6 @@
 | deploy_bastion_service | The option to deploy the bastion service. | `bool` | `false` | no |
 | bastion_service_name | The bastion service name. | `string` | `null` | no |
 | bastion_service_allowed_cidrs | List of the bastion service allowed cidrs. | `list(string)` | `[/]` | no |
-| enable_bastion_proxy_status | The option to enable dns proxy. | `bool` | `false` | no |
-
 
 ### Three Tier Networking
 

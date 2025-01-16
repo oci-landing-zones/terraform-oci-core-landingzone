@@ -203,9 +203,3 @@ variable "bastion_service_allowed_cidrs" {
     error_message = "Validation failed for bastion_service_allowed_cidrs: values must be in CIDR notation."
   }
 }
-
-variable "enable_bastion_proxy_status" {
-  type        = bool
-  default     = false
-  description = "The option to enable dns proxy."
-}
