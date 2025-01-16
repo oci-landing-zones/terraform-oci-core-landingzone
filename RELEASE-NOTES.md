@@ -3,7 +3,7 @@
 1. Optional bastion jump host and OCI Bastion Service deployed in the Hub VCN for use with any firewall option: OCI Native or either third party network appliance.
 2. Support for creating a new custom IAM Identity Domain. The previous requirement of a single Identity Domain per Landing Zone deployment remains, but this release supports an additional method for deploying a custom domain.
 3. Update for network appliance third party version:
-    - Palo Alto Networks Firewall: 11.1.4-h7.  Versions 11.1.3 and 11.1.2-h1 are no longer supported.
+    - Palo Alto Networks Firewall: 11.1.4-h7. 
 
 # December 23, 2024 Release Notes - 1.2.0
 ## New
