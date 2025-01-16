@@ -234,7 +234,7 @@
 | <a name="input_net_appliance_public_rsa_key"></a> [net\_appliance\_public\_rsa\_key](#input\_net\_appliance\_public\_rsa\_key) | The SSH public key to login to Network Appliance Compute instance. | `string` | `null` | no |
 | <a name="input_net_appliance_shape"></a> [net\_appliance\_shape](#input\_net\_appliance\_shape) | The instance shape for the network appliance nodes. | `string` | `"VM.Optimized3.Flex"` | no |
 | <a name="input_net_fortigate_version"></a> [net\_fortigate\_version](#input\_net\_fortigate\_version) | Fortinet Fortigate Firewall Version. | `string` | `"7.2.9_(_X64_)"` | no |
-| <a name="input_net_palo_alto_version"></a> [net\_palo\_alto\_version](#input\_net\_palo\_alto\_version) | Palo Alto Firewall Version. | `string` | `"11.1.3"` | no |
+| <a name="input_net_palo_alto_version"></a> [net\_palo\_alto\_version](#input\_net\_palo\_alto\_version) | Palo Alto Firewall Version. | `string` | `"11.1.4-h7"` | no |
 | <a name="input_network_admin_email_endpoints"></a> [network\_admin\_email\_endpoints](#input\_network\_admin\_email\_endpoints) | List of email addresses for all network related notifications. (Type an email address and hit enter to enter multiple values) | `list(string)` | `[]` | no |
 | <a name="input_notifications_advanced_options"></a> [notifications\_advanced\_options](#input\_notifications\_advanced\_options) | n/a | `bool` | `false` | no |
 | <a name="input_oci_nfw_ip_ocid"></a> [oci\_nfw\_ip\_ocid](#input\_oci\_nfw\_ip\_ocid) | Enter OCI Network Firewall's Forwarding Private IP OCID. | `string` | `null` | no |

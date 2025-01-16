@@ -85,7 +85,7 @@ variable "oci_nfw_policy_ocid" {
 variable "net_palo_alto_version" {
   type        = string
   description = "Palo Alto Firewall Version."
-  default     = "11.1.3"
+  default     = "11.1.4-h7"
 }
 
 variable "net_fortigate_version" {
@@ -102,7 +102,7 @@ variable "net_appliance_name_prefix" {
 
 variable "net_appliance_shape" {
   type        = string
-  default     = "VM.Optimized3.Flex"
+  default     = "VM.Standard2.8"
   description = "The instance shape for the network appliance nodes."
 }
 
