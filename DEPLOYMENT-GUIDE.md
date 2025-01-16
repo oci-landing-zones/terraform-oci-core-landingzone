@@ -154,7 +154,7 @@ The Core Landing Zone has option to use the Default Domain, create a new Domain,
 Each tenancy includes a Default identity domain created in the root compartment that contains the initial tenant administrator user and group and a default Policy that allows administrators to manage any resource in the tenancy. The Default identity domain lives with the life cycle of the tenancy and can't be deleted.
 
 #### Create a new Domain
-The Core Landing Zone allow users to creat a new Identity Domain in the home compartment of Landing Zone. The users can customize the identity domain name and the identity domain type (free or premium).
+The Core Landing Zone allows users to create a new Identity Domain in the home compartment of Landing Zone. The users can customize the identity domain name and the identity domain type (free or premium).
 If choosing to create a new Domain, all the groups, dynamic groups and policies will then be created in the new identity domain.
 
 
