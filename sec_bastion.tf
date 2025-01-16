@@ -23,6 +23,7 @@ locals {
   bastion_service_type          = local.custom_bastion_service_type != null ? local.custom_bastion_service_type : local.default_bastion_service_type
   bastion_service_defined_tags  = local.custom_bastion_service_defined_tags != null ? merge(local.custom_bastion_service_defined_tags, local.default_bastion_service_defined_tags) : local.default_bastion_service_defined_tags
   bastion_service_freeform_tags = local.custom_bastion_service_freeform_tags != null ? merge(local.custom_bastion_service_freeform_tags, local.default_bastion_service_freeform_tags) : local.default_bastion_service_freeform_tags
+  enable_bastion_proxy_status   = false
 
   bastions_configuration = var.deploy_bastion_jump_host == true && var.deploy_bastion_service ? {
     bastions = {
@@ -33,6 +34,7 @@ locals {
         defined_tags          = local.bastion_service_defined_tags
         freeform_tags         = local.bastion_service_freeform_tags
         cidr_block_allow_list = var.bastion_service_allowed_cidrs
+        enable_dns_proxy      = local.enable_bastion_proxy_status
         name                  = local.bastion_service_name
       }
     }
