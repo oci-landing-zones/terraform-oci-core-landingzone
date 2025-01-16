@@ -150,13 +150,12 @@ The Landing Zone’s IAM model seeks to enforce segregation of duties and the le
 
 ### Identity Domains
 The Core Landing Zone has option to use the Default Domain, create a new Domain, or use existing Custom Domain
+
 #### Default Domain
 Each tenancy includes a Default identity domain created in the root compartment that contains the initial tenant administrator user and group and a default Policy that allows administrators to manage any resource in the tenancy. The Default identity domain lives with the life cycle of the tenancy and can't be deleted.
 
-#### Create a new Domain
-The Core Landing Zone allows users to create a new Identity Domain in the home compartment of Landing Zone. The users can customize the identity domain name and the identity domain type (free or premium).
-If choosing to create a new Domain, all the groups, dynamic groups and policies will then be created in the new identity domain.
-
+#### Create a New Domain
+The Core Landing Zone allows users to create a new Identity Domain in the home compartment of Landing Zone. Users can customize the identity domain name and the identity domain type (free or premium). If choosing to create a new Domain, all the groups, dynamic groups and policies will be created in the new identity domain.
 
 #### Custom Domain
 Landing Zone allows for the usage of custom identity domains groups and dynamic groups to manage/access its managed resources. A bespoke identity domain is useful when you need a separate environment for a cloud service or application (for example, one environment for development and one for production). For added security, you can configure each identity domain to have its own credentials (for example, Password and Sign-On policies).
