@@ -13,14 +13,14 @@ This template has the following parameters set:
 
 | Variable Name | Description | Value |
 |---------------|-------------|-------|
-| service_label | A unique identifier to prefix the resources | existingID |
-| network_admin_email_endpoints | List of email addresses that receive notifications for networking related events. | ["email.address@example.com"] |
-| security_admin_email_endpoints | List of email addresses that receive notifications for security related events. | ["email.address@example.com"] |
-| enable_cloud_guard | When true, OCI Cloud Guard Service is enabled. Set to false if it's been already enabled through other means. | false |
-| identity_domain_option | Option to use the default identity domain, create a new identity domain or use custom identity domain. Value to use: Default Domain, New Identity Domain, Use Custom Identity Domain | "Use Custom Identity Domain" |
-| custom_id_domain_ocid | Replace with your identity domain OCID. | ["your_domain_ocid"] |
-| deploy_custom_domain_groups | Deploy custom identity domain groups and dynamic groups. | true |
-| customize_iam | Whether Landing Zone IAM settings are to be customized. | true |
+| service\_label | A unique identifier to prefix the resources | existingID |
+| network\_admin\_email\_endpoints | List of email addresses that receive notifications for networking related events. | ["email.address@example.com"] |
+| security\_admin\_email\_endpoints | List of email addresses that receive notifications for security related events. | ["email.address@example.com"] |
+| enable\_cloud\_guard | When true, OCI Cloud Guard Service is enabled. Set to false if it's been already enabled through other means. | false |
+| identity\_domain\_option | Option to use the default identity domain, create a new identity domain or use custom identity domain. Value to use: Default Domain, New Identity Domain, Use Custom Identity Domain | "Use Custom Identity Domain" |
+| custom\_id\_domain\_ocid | Replace with your identity domain OCID. | ["your\_domain\_ocid"] |
+| deploy\_custom\_domain\_groups | Deploy custom identity domain groups and dynamic groups. | true |
+| customize\_iam | Whether Landing Zone IAM settings are to be customized. | true |
 
 
 For a detailed description of all variables that can be used, see the [Variables](../../VARIABLES.md) documentation.
