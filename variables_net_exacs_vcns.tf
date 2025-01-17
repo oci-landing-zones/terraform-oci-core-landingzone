@@ -76,7 +76,7 @@ variable "exa_vcn2_attach_to_drg" {
 }
 
 variable "exa_vcn2_name" {
-  default = ""
+  default = null
   type    = string
   description = "The VCN name. If unassigned, a default name is provided. VCN label: EXA-VCN-2"
 }
@@ -130,7 +130,7 @@ variable "exa_vcn3_attach_to_drg" {
 
 variable "exa_vcn3_name" {
   type    = string
-  default = ""
+  default = null
   description = "The VCN name. If unassigned, a default name is provided. Label: EXA-VCN-3."
 }
 variable "exa_vcn3_client_subnet_cidr" {

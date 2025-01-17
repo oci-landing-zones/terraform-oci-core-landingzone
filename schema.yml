@@ -42,7 +42,9 @@ variableGroups:
 
   - title: "Identity Domains"
     variables:
-      - "use_custom_id_domain"
+      - "identity_domain_option"
+      - "new_identity_domain_name"
+      - "new_identity_domain_license_type"
       - "custom_id_domain_ocid"
       - "deploy_custom_domain_groups"
     visible:
@@ -77,8 +79,8 @@ variableGroups:
           - ${customize_iam}
           - true
         - eq:
-          - ${use_custom_id_domain}
-          - true
+          - ${identity_domain_option}
+          - "Use Custom Identity Domain"
 
   - title: "Dynamic Groups (Existing Identity Domain)"
     variables:
@@ -96,8 +98,8 @@ variableGroups:
           - ${customize_iam}
           - true
         - eq:
-          - ${use_custom_id_domain}
-          - true      
+          - ${identity_domain_option}
+          - "Use Custom Identity Domain"
 
   - title: "Groups (Default Identity Domain)"
     variables:
@@ -123,8 +125,8 @@ variableGroups:
           - ${customize_iam}
           - true
         - eq:
-          - ${use_custom_id_domain}
-          - false    
+          - ${identity_domain_option}
+          - "Default Domain"
 
   - title: "Dynamic Groups (Default Identity Domain)"
     variables:
@@ -143,8 +145,8 @@ variableGroups:
           - ${customize_iam}
           - true
         - eq:
-          - ${use_custom_id_domain}
-          - false      
+          - ${identity_domain_option}
+          - "Default Domain"
 
   - title: "Policies"   
     variables:
@@ -189,7 +191,6 @@ variableGroups:
       - "hub_vcn_web_subnet_cidr"
       - "hub_vcn_web_subnet_dns"
       - "hub_vcn_web_subnet_is_private"
-      - "hub_vcn_web_subnet_jump_host_allowed_cidrs"
       - "hub_vcn_mgmt_subnet_name"
       - "hub_vcn_mgmt_subnet_cidr"
       - "hub_vcn_mgmt_subnet_dns"
@@ -201,7 +202,39 @@ variableGroups:
       - "hub_vcn_indoor_subnet_name"
       - "hub_vcn_indoor_subnet_cidr"
       - "hub_vcn_indoor_subnet_dns"
+      - "deploy_bastion_jump_host"
     visible: define_net
+
+  - title: "Bastion Jump Host"
+    variables:
+      - "bastion_jump_host_custom_image_ocid"
+      - "bastion_jump_host_marketplace_image_option"
+      - "bastion_jump_host_public_rsa_key"
+      - "customize_jump_host"
+      - "bastion_jump_host_name"
+      - "bastion_jump_host_shape"
+      - "bastion_jump_host_flex_shape_memory"
+      - "bastion_jump_host_flex_shape_cpu"
+      - "bastion_jump_host_boot_volume_size"
+      - "deploy_bastion_service"
+      - "bastion_service_allowed_cidrs"
+      - "customize_bastion_service"
+      - "bastion_service_name"
+      - "customize_jumphost_subnet"
+      - "hub_vcn_jumphost_subnet_name"
+      - "hub_vcn_jumphost_subnet_cidr"
+
+    visible:
+      and:
+        - define_net
+        - or:
+          - eq:
+            - ${hub_deployment_option}
+            - "VCN or on-premises connectivity routing through DMZ VCN with Network Virtual Appliance (DRG and DMZ VCN will be created)"
+          - eq:
+            - ${hub_deployment_option}
+            - "VCN or on-premises connectivity routed through DMZ VCN with Network Virtual Appliance existing DRG (DMZ VCN will be created and DRG ID required)"
+        - deploy_bastion_jump_host
 
   - title: "Networking - Three Tier VCNs"
     variables:
@@ -452,6 +485,10 @@ variableGroups:
       - "firewall_traffic_log_type"
       - "firewall_traffic_log_category"
       - "firewall_traffic_log_service"
+      - "bastion_jump_host_instance_name"
+      - "bastion_jump_host_instance_shape"
+      - "bastion_jump_host_ssh_public_key_path"
+      - "bastion_jump_host_platform_image_name"
 
 variables:
   region:
@@ -563,12 +600,50 @@ variables:
     title: "Deploy ExaCS Infra Compartment?"
     description: "Whether a separate compartment for Exadata Cloud Service Infrastructure is deployed."
     default: false
-  
-  use_custom_id_domain:
-    type: boolean
-    title: "Enable an Existing Identity Domain to Manage Landing Zone?"
-    description: "Your tenancy already has a default Identity Domain, whose groups are used to manage the Landing Zone. Check this box for enabling groups in an *existing* non-default Identity Domain to manage the resources deployed by the Landing Zone. See <a href='https://docs.oracle.com/en-us/iaas/Content/Identity/usingidentitydomains/oci-iam-concepts.htm'>IAM Technologies</a> for identity domains concepts."
-    default: false
+
+  identity_domain_option:
+    type: enum
+    title: "Identity Domain Option"
+    description: "Option to create a new identity domain or use the default domain"
+    required: true
+    enum:
+      - "New Identity Domain"
+      - "Default Domain"
+      - "Use Custom Identity Domain"
+    default: "Default Domain"
+
+  new_identity_domain_name:
+    type: string
+    title: "New Identity Domain Name"
+    description: "The name of new identity domain"
+    required: false
+    visible:
+      eq:
+        - ${identity_domain_option}
+        - "New Identity Domain"
+
+  new_identity_domain_license_type:
+    type: enum
+    title: "License Type of New Identity Domain"
+    description: "The license type of new identity domain"
+    required: false
+    enum:
+      - "premium"
+      - "free"
+    visible:
+      eq:
+        - ${identity_domain_option}
+        - "New Identity Domain"
+
+#  use_custom_id_domain:
+#    type: boolean
+#    title: "Enable an Existing Identity Domain to Manage Landing Zone?"
+#    description: "Your tenancy already has a default Identity Domain, whose groups are used to manage the Landing Zone. Check this box for enabling groups in an *existing* non-default Identity Domain to manage the resources deployed by the Landing Zone. See <a href='https://docs.oracle.com/en-us/iaas/Content/Identity/usingidentitydomains/oci-iam-concepts.htm'>IAM Technologies</a> for identity domains concepts."
+#    default: false
+#    visible:
+#      eq:
+#        - ${identity_domain_option}
+#        - "Default Domain"
 
   # custom_id_domain_name:
   #   type: string
@@ -582,7 +657,10 @@ variables:
     title: "Existing Identity Domain OCID"
     description: "Enter the OCID of the existing Identity Domain"
     required: false
-    visible: use_custom_id_domain
+    visible:
+      eq:
+        - ${identity_domain_option}
+        - "Use Custom Identity Domain"
 
   deploy_custom_domain_groups:
     type: boolean
@@ -590,7 +668,10 @@ variables:
     description: "Check this box to enable Landing Zone to create IAM Domain Groups and Dynamic Groups in the existing, non-default Identity Domain."
     default: false
     required: false
-    visible: use_custom_id_domain
+    visible:
+      eq:
+        - ${identity_domain_option}
+        - "Use Custom Identity Domain"
 
   rm_existing_id_domain_iam_admin_group_name:
     type: array
@@ -601,7 +682,9 @@ variables:
     description: "Enter the existing group(s) to which IAM management policies will be granted to."
     visible:
       and:
-        - use_custom_id_domain
+        - eq:
+          - ${identity_domain_option}
+          - "Use Custom Identity Domain"
         - not:
             - deploy_custom_domain_groups
 
@@ -614,7 +697,9 @@ variables:
     description: "Enter the existing group(s) to which credentials management policies will be granted to."
     visible:
       and:
-        - use_custom_id_domain
+        - eq:
+          - ${identity_domain_option}
+          - "Use Custom Identity Domain"
         - not:
             - deploy_custom_domain_groups
 
@@ -627,7 +712,9 @@ variables:
     description: "Enter the existing group to which security management policies will be granted to."
     visible:
       and:
-        - use_custom_id_domain
+        - eq:
+          - ${identity_domain_option}
+          - "Use Custom Identity Domain"
         - not:
             - deploy_custom_domain_groups
       
@@ -640,7 +727,9 @@ variables:
     description: "Enter the existing group(s) to which Access Governance management policies will be granted to."
     visible:
       and:
-        - use_custom_id_domain
+        - eq:
+            - ${identity_domain_option}
+            - "Use Custom Identity Domain"
         - not:
             - deploy_custom_domain_groups
 
@@ -653,7 +742,9 @@ variables:
     description: "Enter the existing group to which network management policies will be granted to."
     visible:
       and:
-        - use_custom_id_domain
+        - eq:
+            - ${identity_domain_option}
+            - "Use Custom Identity Domain"
         - not:
             - deploy_custom_domain_groups
       
@@ -666,7 +757,9 @@ variables:
     description: "Enter the existing group to which application development management policies will be granted to."
     visible:
       and:
-        - use_custom_id_domain
+        - eq:
+            - ${identity_domain_option}
+            - "Use Custom Identity Domain"
         - not:
             - deploy_custom_domain_groups
       
@@ -679,7 +772,9 @@ variables:
     description: "Enter the existing group to which database management policies will be granted to."
     visible:
       and:
-        - use_custom_id_domain
+        - eq:
+            - ${identity_domain_option}
+            - "Use Custom Identity Domain"
         - not:
             - deploy_custom_domain_groups
   
@@ -692,7 +787,9 @@ variables:
     description: "Enter the existing group to which Exadata infrastructure management policies will be granted to."
     visible:
       and:
-        - use_custom_id_domain
+        - eq:
+            - ${identity_domain_option}
+            - "Use Custom Identity Domain"
         - not:
             - deploy_custom_domain_groups
   
@@ -705,7 +802,9 @@ variables:
     description: "Existing group to which auditing policies will be granted to."
     visible:
       and:
-        - use_custom_id_domain
+        - eq:
+            - ${identity_domain_option}
+            - "Use Custom Identity Domain"
         - not:
             - deploy_custom_domain_groups
       
@@ -718,7 +817,9 @@ variables:
     description: "Enter the existing group to which announcement reading policies will be granted to."
     visible:
       and:
-        - use_custom_id_domain
+        - eq:
+            - ${identity_domain_option}
+            - "Use Custom Identity Domain"
         - not:
             - deploy_custom_domain_groups
   
@@ -731,7 +832,9 @@ variables:
     description: "Enter the existing group to which Cost management policies will be granted to."
     visible:
       and:
-        - use_custom_id_domain
+        - eq:
+            - ${identity_domain_option}
+            - "Use Custom Identity Domain"
         - not:
             - deploy_custom_domain_groups
 
@@ -744,7 +847,9 @@ variables:
     description: "Enter the existing group to which Storage management policies will be granted to."
     visible:
       and:
-        - use_custom_id_domain
+        - eq:
+            - ${identity_domain_option}
+            - "Use Custom Identity Domain"
         - not:
             - deploy_custom_domain_groups
 
@@ -754,7 +859,9 @@ variables:
     description: "Existing security dynamic group to run functions."
     visible:
       and:
-        - use_custom_id_domain
+        - eq:
+            - ${identity_domain_option}
+            - "Use Custom Identity Domain"
         - not:
             - deploy_custom_domain_groups
 
@@ -764,7 +871,9 @@ variables:
     description: "Existing application dynamic group."
     visible:
       and:
-        - use_custom_id_domain
+        - eq:
+            - ${identity_domain_option}
+            - "Use Custom Identity Domain"
         - not:
             - deploy_custom_domain_groups
 
@@ -774,7 +883,9 @@ variables:
     description: "Existing compute agent dynamic group for management agent access."
     visible:
       and:
-        - use_custom_id_domain
+        - eq:
+            - ${identity_domain_option}
+            - "Use Custom Identity Domain"
         - not:
             - deploy_custom_domain_groups
 
@@ -784,7 +895,9 @@ variables:
     description: "Existing database dynamic group for database to access keys."
     visible:
       and:
-        - use_custom_id_domain
+        - eq:
+            - ${identity_domain_option}
+            - "Use Custom Identity Domain"
         - not:
             - deploy_custom_domain_groups
 
@@ -794,7 +907,9 @@ variables:
     description: "Existing network firewall appliance dynamic group for reading firewall instances."
     visible:
       and:
-        - use_custom_id_domain
+        - eq:
+            - ${identity_domain_option}
+            - "Use Custom Identity Domain"
         - not:
             - deploy_custom_domain_groups
 
@@ -3067,8 +3182,7 @@ variables:
     title: "Palo Alto Network Firewall Version."
     description: "Palo Alto Network Firewall Version."
     enum:
-      - "11.1.3"
-      - "11.1.2-h3"
+      - "11.1.4-h7"
     required: true
     visible:
       and:
@@ -3410,7 +3524,7 @@ variables:
     title: "List of CIDR blocks allowed to SSH into the Web Subnet"
     description: "These CIDRs are allowed to SSH into the Web subnet via a jump host eventually deployed in the Web subnet. Leave empty for no access."
     required: false
-    visible: 
+    visible:
       and:
         - define_net
         - customize_hub_vcn_subnets
@@ -3420,7 +3534,7 @@ variables:
             - "VCN or on-premises connectivity routing through DMZ VCN with Network Virtual Appliance (DRG and DMZ VCN will be created)"
           - eq:
             - ${hub_deployment_option}
-            - "VCN or on-premises connectivity routed through DMZ VCN with Network Virtual Appliance existing DRG (DMZ VCN will be created and DRG ID required)"          
+            - "VCN or on-premises connectivity routed through DMZ VCN with Network Virtual Appliance existing DRG (DMZ VCN will be created and DRG ID required)"
 
 # -------------------------------------------
 # ----- Networking - Hub Mgmt Subnet
@@ -3993,6 +4107,165 @@ variables:
     required: false
     visible: create_budget
     description: "List of email addresses for budget alerts. (Type an email address and hit enter to enter multiple values)"
+
+# Bastion Service
+  deploy_bastion_jump_host:
+    type: boolean
+    title: "Deploy a Jump Host for SSH access?"
+    description: "If checked, a jump host compute instance will be deployed in the Jumphost Subnet of the DMZ VCN"
+    required: false
+    visible:
+      and:
+        - define_net
+        - or:
+          - eq:
+            - ${hub_deployment_option}
+            - "VCN or on-premises connectivity routing through DMZ VCN with Network Virtual Appliance (DRG and DMZ VCN will be created)"
+          - eq:
+            - ${hub_deployment_option}
+            - "VCN or on-premises connectivity routed through DMZ VCN with Network Virtual Appliance existing DRG (DMZ VCN will be created and DRG ID required)"
+
+  bastion_jump_host_custom_image_ocid:
+    type: string
+    title: "Jump Host Custom Image OCID"
+    description: "Enter the Custom Image OCID for the Jump Host. If no custom image is provided, you must select a marketplace image below."
+    visible:
+      and:
+        - deploy_bastion_jump_host
+
+  bastion_jump_host_marketplace_image_option:
+    type: enum
+    title: "Choose one of the marketplace image options for the jump host deployment."
+    required: false
+    enum:
+      - "Oracle Linux 8 STIG (Free)"
+      - "CIS Hardened Image Level 1 on Oracle Linux 8 (Paid)"
+    visible:
+      and:
+        - deploy_bastion_jump_host
+
+  deploy_bastion_service:
+    type: boolean
+    title: "Deploy Bastion Service?"
+    description: "This will deploy a Bastion Service."
+    visible:
+      and:
+        -deploy_bastion_jump_host
+
+  bastion_service_allowed_cidrs:
+    type: array
+    items:
+      type: string
+    uniqueItems: true
+    title: "Enter SSH CIDR Blocks"
+    required: true
+    description: "List of CIDR blocks allowed to connect to the Bastion Service"
+    visible:
+      and:
+        - deploy_bastion_jump_host
+        - deploy_bastion_service
+
+  customize_bastion_service:
+    type: boolean
+    title: "Customize Bastion Service?"
+    description: "If checked, provide custom options for Bastion Service."
+    visible:
+      and:
+        - deploy_bastion_jump_host
+        - deploy_bastion_service
+
+  bastion_service_name:
+    type: string
+    title: "Bastion Service Name"
+    required: falseq
+    description: "Custom name to give to the Bastion Service"
+    visible:
+      and:
+        - customize_bastion_service
+        - deploy_bastion_jump_host
+        - deploy_bastion_service
+
+  # bastion_jump_host_platform_image:
+  #   type: oci:core:image:id
+  #   dependsOn:
+  #     compartmentId: ${var.tenancy_ocid}
+  #   title: "Platform Image"
+  #   description: "Select the Platform Image for Jump Host."
+  #   required: true
+  #   visible: deploy_bastion_jump_host
+
+  bastion_jump_host_public_rsa_key:
+    type: string
+    title: "Enter the public SSH Key for the Jump Host"
+    required: false
+    visible: deploy_bastion_jump_host
+    descirption: "The public ssh key of the Jump Host Compute Instance"
+
+  customize_jump_host:
+    type: boolean
+    title: "Customize Jump Host?"
+    required: false
+    default: false
+    description: "If checked, provide custom options for Jump Host Instance"
+    visible: deploy_bastion_jump_host
+
+  bastion_jump_host_name:
+    type: string
+    title: "Jump Host Name"
+    required: false
+    visible: customize_jump_host
+    description: "The name of the jump host. This will be appended to the service label."
+
+  bastion_jump_host_shape:
+      type: oci:core:instanceshape:name
+      dependsOn:
+        compartmentId: ${tenancy_ocid}
+      title: "Jump Host Instance Shape"
+      description: "Select the instance shape for the Compute Instance."
+      required: false
+      visible: customize_jump_host
+
+  bastion_jump_host_flex_shape_memory:
+      type: integer
+      title: "Jump Host Amount of Memory for the Selected Flex Shape"
+      description: "Enter the amount of memory (in GB) for the selected flex shape. Applicable to flexible shapes only."
+      required: false
+      visible: customize_jump_host
+
+  bastion_jump_host_flex_shape_cpu:
+    type: integer
+    title: "Jump Host Number of OCPUs for the Selected Flex Shape"
+    description: "Enter the number of OCPUs for the selected flex shape. Applicable to flexible shapes only."
+    required: false
+    visible: customize_jump_host
+
+  bastion_jump_host_boot_volume_size:
+    type: integer
+    title: "Jump Host Boot Volume Size"
+    description: "Enter the boot volume size (in GB) for the Jump Host Compute Instance."
+    required: false
+    visible: customize_jump_host
+
+  customize_jumphost_subnet:
+    type: boolean
+    title: "Customize Jumphost Subnet?"
+    description: "Check to customize default jumphost subnet settings."
+    required: false
+    visible: deploy_bastion_jump_host
+
+  hub_vcn_jumphost_subnet_name:
+    type: string
+    title: "Jumphost Subnet Name"
+    description: "Enter Jumphost subnet name"
+    required: false
+    visible: customize_jumphost_subnet
+
+  hub_vcn_jumphost_subnet_cidr:
+    type: string
+    title: "Jumphost Subnet CIDR Block"
+    description: "Enter the Jumphost subnet CIDR block. It must be within the Hub (DMZ) VCN CIDR block."
+    required: false
+    visible: customize_jumphost_subnet
 
 outputs:
   release:

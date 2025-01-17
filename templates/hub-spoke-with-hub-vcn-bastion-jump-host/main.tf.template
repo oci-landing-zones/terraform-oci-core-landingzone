@@ -1,17 +1,16 @@
-# Copyright (c) 2025 Oracle and/or its affiliates.
+# Copyright (c) 2024 Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 
-# -------------------------------------------------------------------------------------
-# -- This configuration deploys a landing zone with integration of a pre-existing IAM identity domain.
-# -- No VCN is deployed.
-# -- See other templates for other CIS compliant landing zones with custom settings.
+# ----------------------------------------------------------------------------------------
+# -- This configuration deploys a CIS compliant landing zone with custom VCN settings.
+# -- See other templates for other CIS compliant landing zones with alternative settings.
 # -- 1. Rename this file to main.tf. 
 # -- 2. Provide/review the variable assignments below.
 # -- 3. In this folder, execute the typical Terraform workflow:
 # ----- $ terraform init
 # ----- $ terraform plan
 # ----- $ terraform apply
-# -------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------
 
 module "core_lz" {
     source = "../../"
@@ -24,7 +23,31 @@ module "core_lz" {
     private_key_path     = "path-to-pem-file-with-private-key"               # Replace with user private key local path.
     private_key_password = ""                                                # Replace with private key password, if any.
     region               = "us-phoenix-1" # Replace with region name.
-    service_label        = "existingID"     # Prefix prepended to deployed resource names. 
+    service_label        = "ocibastion"   # Prefix prepended to deployed resource names.
+
+    # ------------------------------------------------------
+    # ----- Networking
+    # ------------------------------------------------------
+    define_net            = true # enables network resources provisioning
+
+    # --- Hub deployment option: a Hub VCN is deployed.
+    hub_deployment_option    = "VCN or on-premises connectivity routing through DMZ VCN with Network Virtual Appliance (DRG and DMZ VCN will be created)"
+    hub_vcn_cidrs            = ["192.168.0.0/24"]
+
+    # -- Bastion Jump Host options: deploy jump host and enable bastion service
+    deploy_bastion_jump_host = true
+    deploy_bastion_service   = true
+    bastion_service_allowed_cidrs = ["x.x.x.x"] # Replace with Bastion service CIDR block allow list
+
+    # --- Spoke VCN: three-tier VCN 1
+    add_tt_vcn1                    = true
+    tt_vcn1_cidrs                  = ["10.0.0.0/20"]
+    tt_vcn1_attach_to_drg          = true
+    
+    # --- Spoke VCN: Exadata VCN 1
+    add_exa_vcn1                   = true
+    exa_vcn1_cidrs                 = ["172.16.0.0/20"]
+    exa_vcn1_attach_to_drg         = true
 
     # ------------------------------------------------------
     # ----- Notifications
@@ -35,14 +58,5 @@ module "core_lz" {
     # ------------------------------------------------------
     # ----- Security
     # ------------------------------------------------------
-    enable_cloud_guard = false # Set to true if Cloud Guard has not already been enabled.
-    enable_security_zones=false # Set to true if Security Zones are required.
-
-    # ------------------------------------------------------
-    # ----- Existing Identity Domain
-    # ------------------------------------------------------
-    identity_domain_option = "Use Custom Identity Domain" # Designate to Landing Zone that you want to use a pre-existing identity domain.
-    custom_id_domain_ocid = <existing identity domain ocid> # Replace with your identity domain OCID.
-    deploy_custom_domain_groups = true # This is a critical setting for this template.
-    customize_iam = true # Whether Landing Zone IAM settings are to be customized.
+    enable_cloud_guard = false # Set to false if Cloud Guard has already been enabled.
 }

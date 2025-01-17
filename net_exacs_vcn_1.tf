@@ -11,29 +11,29 @@ locals {
       is_ipv6enabled                   = false
       is_oracle_gua_allocation_enabled = false
       cidr_blocks                      = var.exa_vcn1_cidrs,
-      dns_label                        = substr(replace(coalesce(var.exa_vcn1_name,"exadata-vcn-1"),"/[^\\w]/",""),0,14)
+      dns_label                        = substr(replace(coalesce(var.exa_vcn1_name, "exadata-vcn-1"), "/[^\\w]/", ""), 0, 14)
       block_nat_traffic                = false
-      security                         = local.enable_zpr == true ? {zpr_attributes = [{namespace:"${local.zpr_namespace_name}",attr_name:"net", attr_value:"exa-vcn-1"}]} : null
+      security                         = local.enable_zpr == true ? { zpr_attributes = [{ namespace : "${local.zpr_namespace_name}", attr_name : "net", attr_value : "exa-vcn-1" }] } : null
 
       subnets = {
         "EXA-VCN-1-CLIENT-SUBNET" = {
-          cidr_block                 = coalesce(var.exa_vcn1_client_subnet_cidr, cidrsubnet(var.exa_vcn1_cidrs[0], 4, 0))
-          dhcp_options_key           = "default_dhcp_options"
-          display_name               = coalesce(var.exa_vcn1_client_subnet_name, "${var.service_label}-exadata-vcn-1-client-subnet")
-          dns_label                  = substr(replace(coalesce(var.exa_vcn1_client_subnet_name,"client-subnet"),"/[^\\w]/",""),0,14)
-          ipv6cidr_blocks            = []
-          prohibit_internet_ingress  = true
-          route_table_key            = "EXA-VCN-1-CLIENT-SUBNET-ROUTE-TABLE"
-          security_list_keys         = ["EXA-VCN-1-CLIENT-SUBNET-SL"]
+          cidr_block                = coalesce(var.exa_vcn1_client_subnet_cidr, cidrsubnet(var.exa_vcn1_cidrs[0], 4, 0))
+          dhcp_options_key          = "default_dhcp_options"
+          display_name              = coalesce(var.exa_vcn1_client_subnet_name, "${var.service_label}-exadata-vcn-1-client-subnet")
+          dns_label                 = substr(replace(coalesce(var.exa_vcn1_client_subnet_name, "client-subnet"), "/[^\\w]/", ""), 0, 14)
+          ipv6cidr_blocks           = []
+          prohibit_internet_ingress = true
+          route_table_key           = "EXA-VCN-1-CLIENT-SUBNET-ROUTE-TABLE"
+          security_list_keys        = ["EXA-VCN-1-CLIENT-SUBNET-SL"]
         }
         "EXA-VCN-1-BACKUP-SUBNET" = {
-          cidr_block                 = coalesce(var.exa_vcn1_backup_subnet_cidr, cidrsubnet(var.exa_vcn1_cidrs[0], 4, 1))
-          dhcp_options_key           = "default_dhcp_options"
-          display_name               = coalesce(var.exa_vcn1_backup_subnet_name, "${var.service_label}-exadata-vcn-1-backup-subnet")
-          dns_label                  = substr(replace(coalesce(var.exa_vcn1_backup_subnet_name,"backup-subnet"),"/[^\\w]/",""),0,14)
-          ipv6cidr_blocks            = []
-          prohibit_internet_ingress  = true
-          route_table_key            = "EXA-VCN-1-BACKUP-SUBNET-ROUTE-TABLE"
+          cidr_block                = coalesce(var.exa_vcn1_backup_subnet_cidr, cidrsubnet(var.exa_vcn1_cidrs[0], 4, 1))
+          dhcp_options_key          = "default_dhcp_options"
+          display_name              = coalesce(var.exa_vcn1_backup_subnet_name, "${var.service_label}-exadata-vcn-1-backup-subnet")
+          dns_label                 = substr(replace(coalesce(var.exa_vcn1_backup_subnet_name, "backup-subnet"), "/[^\\w]/", ""), 0, 14)
+          ipv6cidr_blocks           = []
+          prohibit_internet_ingress = true
+          route_table_key           = "EXA-VCN-1-BACKUP-SUBNET-ROUTE-TABLE"
         }
       }
 
@@ -61,7 +61,7 @@ locals {
         "EXA-VCN-1-BACKUP-SUBNET-ROUTE-TABLE" = {
           display_name = "backup-subnet-route-table"
           route_rules = merge(
-            (local.chosen_hub_option!= 3 && local.chosen_hub_option != 4) ? {
+            (local.chosen_hub_option != 3 && local.chosen_hub_option != 4) ? {
               "OSN-RULE" = {
                 network_entity_key = "EXA-VCN-1-SERVICE-GATEWAY"
                 description        = "To Oracle Services Network."
@@ -121,17 +121,17 @@ locals {
         "EXA-VCN-1-CLIENT-NSG" = {
           display_name = "client-nsg"
           ingress_rules = merge(
-            { for cidr in var.hub_vcn_cidrs : "INGRESS-FROM-SSH-${cidr}-RULE" =>
-              {
-                description  = "Allows SSH connections from hosts in ${cidr} VCN."
+            local.hub_with_vcn == true && var.exa_vcn1_attach_to_drg == true && local.add_exa_vcn1 == true ? {
+              "INGRESS-FROM-SSH-HUB-VCN-RULE" = {
+                description  = "Allows SSH connections from ${coalesce(var.hub_vcn_jumphost_subnet_cidr, cidrsubnet(var.hub_vcn_cidrs[0], 3, 4))} in Hub VCN Jumphost subnet."
                 stateless    = false
                 protocol     = "TCP"
-                src          = cidr
+                src          = coalesce(var.hub_vcn_jumphost_subnet_cidr, cidrsubnet(var.hub_vcn_cidrs[0], 3, 4))
                 src_type     = "CIDR_BLOCK"
                 dst_port_min = 22
                 dst_port_max = 22
-              } if local.hub_with_vcn == true && var.exa_vcn1_attach_to_drg == true && local.add_exa_vcn1 == true
-            },
+              }
+            } : {},
             {
               "INGRESS-FROM-SSH-CLIENT-RULE" = {
                 description  = "Allows SSH connections from hosts in Client NSG."
@@ -476,33 +476,33 @@ locals {
     (upper(var.oke_vcn1_cni_type) == "NATIVE") &&
     (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.exa_vcn1_routable_vcns) == 0 || contains(var.exa_vcn1_routable_vcns, "OKE-VCN-1")))) ? {
       "EGRESS-TO-OKE-VCN-1-PODS-SUBNET-RULE" = {
-        description  = "Egress to ${coalesce(var.oke_vcn2_pods_subnet_name, "${var.service_label}-oke-vcn-1-pods-subnet")}."
-        stateless    = false
-        protocol     = "TCP"
-        dst          = coalesce(var.oke_vcn1_pods_subnet_cidr, cidrsubnet(var.oke_vcn1_cidrs[0], 3, 1))
-        dst_type     = "CIDR_BLOCK"
+        description = "Egress to ${coalesce(var.oke_vcn2_pods_subnet_name, "${var.service_label}-oke-vcn-1-pods-subnet")}."
+        stateless   = false
+        protocol    = "TCP"
+        dst         = coalesce(var.oke_vcn1_pods_subnet_cidr, cidrsubnet(var.oke_vcn1_cidrs[0], 3, 1))
+        dst_type    = "CIDR_BLOCK"
       }
     } : {},
     (local.add_exa_vcn1 == true && var.exa_vcn1_attach_to_drg == true && var.add_oke_vcn2 == true && var.oke_vcn2_attach_to_drg == true) &&
     (upper(var.oke_vcn2_cni_type) == "NATIVE") &&
     (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.exa_vcn1_routable_vcns) == 0 || contains(var.exa_vcn1_routable_vcns, "OKE-VCN-2")))) ? {
       "EGRESS-TO-OKE-VCN-2-PODS-SUBNET-RULE" = {
-        description  = "Egress to ${coalesce(var.oke_vcn2_pods_subnet_name, "${var.service_label}-oke-vcn-2-pods-subnet")}."
-        stateless    = false
-        protocol     = "TCP"
-        dst          = coalesce(var.oke_vcn2_pods_subnet_cidr, cidrsubnet(var.oke_vcn2_cidrs[0], 3, 1))
-        dst_type     = "CIDR_BLOCK"
+        description = "Egress to ${coalesce(var.oke_vcn2_pods_subnet_name, "${var.service_label}-oke-vcn-2-pods-subnet")}."
+        stateless   = false
+        protocol    = "TCP"
+        dst         = coalesce(var.oke_vcn2_pods_subnet_cidr, cidrsubnet(var.oke_vcn2_cidrs[0], 3, 1))
+        dst_type    = "CIDR_BLOCK"
       }
     } : {},
     (local.add_exa_vcn1 == true && var.exa_vcn1_attach_to_drg == true && var.add_oke_vcn3 == true && var.oke_vcn3_attach_to_drg == true) &&
     (upper(var.oke_vcn3_cni_type) == "NATIVE") &&
     (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.exa_vcn1_routable_vcns) == 0 || contains(var.exa_vcn1_routable_vcns, "OKE-VCN-3")))) ? {
       "EGRESS-TO-OKE-VCN-3-PODS-SUBNET-RULE" = {
-        description  = "Egress to ${coalesce(var.oke_vcn3_pods_subnet_name, "${var.service_label}-oke-vcn-3-pods-subnet")}."
-        stateless    = false
-        protocol     = "TCP"
-        dst          = coalesce(var.oke_vcn3_pods_subnet_cidr, cidrsubnet(var.oke_vcn3_cidrs[0], 3, 1))
-        dst_type     = "CIDR_BLOCK"
+        description = "Egress to ${coalesce(var.oke_vcn3_pods_subnet_name, "${var.service_label}-oke-vcn-3-pods-subnet")}."
+        stateless   = false
+        protocol    = "TCP"
+        dst         = coalesce(var.oke_vcn3_pods_subnet_cidr, cidrsubnet(var.oke_vcn3_cidrs[0], 3, 1))
+        dst_type    = "CIDR_BLOCK"
       }
     } : {}
   )
@@ -685,15 +685,15 @@ locals {
     ## Ingress from on-premises CIDRs
     (local.add_exa_vcn1 == true && var.exa_vcn1_attach_to_drg == true && length(var.onprem_cidrs) > 0) &&
     (local.hub_with_vcn == true || local.hub_with_drg_only == true) ? {
-        for cidr in var.onprem_cidrs : "INGRESS-FROM-ONPREM--${replace(replace(cidr,".",""),"/","")}-RULE" => {
-                description  = "Ingress from onprem ${cidr}"
-                stateless    = false
-                protocol     = "TCP"
-                src          = cidr
-                src_type     = "CIDR_BLOCK"
-                dst_port_min = 1521
-                dst_port_max = 1522
-          }
+      for cidr in var.onprem_cidrs : "INGRESS-FROM-ONPREM--${replace(replace(cidr, ".", ""), "/", "")}-RULE" => {
+        description  = "Ingress from onprem ${cidr}"
+        stateless    = false
+        protocol     = "TCP"
+        src          = cidr
+        src_type     = "CIDR_BLOCK"
+        dst_port_min = 1521
+        dst_port_max = 1522
+      }
     } : {}
   )
 }
