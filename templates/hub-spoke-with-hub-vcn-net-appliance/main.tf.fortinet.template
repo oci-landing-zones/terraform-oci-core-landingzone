@@ -35,7 +35,7 @@ module "core_lz_fortinet" {
     define_net  = true # enables network resources provisioning
 
     # --- Hub deployment option: a DRG is deployed.
-    hub_deployment_option = "VCN or on-premises connectivity routing via DRG (DRG will be created)"
+    hub_deployment_option = "VCN or on-premises connectivity routing through DMZ VCN with Network Virtual Appliance (DRG and DMZ VCN will be created)"
     hub_vcn_cidrs         = ["192.168.0.0/24"]
 
     # --- Firewall deployment option.

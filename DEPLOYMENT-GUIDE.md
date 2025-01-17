@@ -17,6 +17,7 @@
     1. [Security Services](#security-services)
     1. [Deploying Lifecycle Environments](#deploying-lifecycle-environments)
     1. [Zero Trust Packet Routing (ZPR)](#zpr-use)
+    1. [Bastion Service](#bastion-use)
 1. [Ways to Deploy](#ways-to-deploy)
     1. [Deploying with Terraform CLI](#deploying-with-terraform-cli)
     1. [Deploying with OCI Resource Manager UI](#deploying-with-orm-ui)
@@ -123,23 +124,23 @@ The Landing Zone architecture starts with a compartment design for the tenancy a
 
 The Landing Zone can provision one to ten VCNs, either in standalone mode or as constituent parts of a Hub & Spoke architecture. The VCNs can either follow a general-purpose standard N-Tier network topology or oriented towards specific topologies, like supporting Oracle Database Exadata Cloud Service and/or Oracle Kubernetes Engine deployments. VCNs are automatically configured with the necessary routing and with the necessary inbound and outbound interfaces properly secured.
 
-The Landing Zone includes multiple pre-configured security services that can be deployed in tandem with the overall architecture for a stronger security posture. These services are *Oracle Cloud Guard*, *Flow Logs*, *Service Connector Hub*, *Vault*, *Vulnerability Scanning*, *Network Firewall* and *Bastion*.
+The Landing Zone includes multiple pre-configured security services that can be deployed in tandem with the overall architecture for a stronger security posture. These services are *Oracle Cloud Guard*, *Flow Logs*, *Service Connector Hub*, *Vault*, *Vulnerability Scanning*, *Network Firewall* and *Bastion Service*.
 
 From a governance perspective, *Notifications* and *Alarms* are setup to use *Topics* and *Events* for alerting administrators about changes and exceeded metric thresholds for deployed resources. The Landing Zone provisions tag defaults to automatically determine resource owner and creation timestamp. Based on user choice, a foundational *Budget* for cost tracking purposes can be created as well.
 
 As an important aspect to governance, logging is also considered by the Landing Zone. Per CIS Oracle Cloud Infrastructure Benchmark, VCN flow logs and Object Storage logging are enabled by default. Landing Zone takes a step forward and, upon user choice, uses Service Connector Hub service to consolidate OCI log sources into a single designated target, which is an Object Storage bucket by default but can also be an OCI Stream or an OCI Function. Such feature makes it easier for making OCI logs available in third party SIEM solutions, like Splunk.
 
-The diagrams below shows Landing Zone overall architecture:
+The diagrams below show Landing Zone overall architecture flexibility.
 
-**With Simple Networking**
+- All compartments with simple networking (no DRG for cross-VCN connectivity):
 
 ![Architecture_Simple](images/arch_simple.png)
 
-**With Hub & Spoke Networking**
+- Hub & Spoke network compartment using third party firewall (Palo Alto Networks or Fortinet) and optional bastion features:
 
 ![Architecture_Advanced](images/arch-advanced-net-appliance.png)
 
-**With Hub & Spoke Networking Using OCI Network Firewall**
+- Hub & Spoke network compartment using OCI Network Firewall (native) and optional bastion features:
 
 ![Architecture_OCI_NFW](images/arch-advanced-oci-firewall.png)
 
@@ -149,9 +150,13 @@ The diagrams below shows Landing Zone overall architecture:
 The Landing Zone’s IAM model seeks to enforce segregation of duties and the least privilege principle, by defining compartments, policies, groups and dynamic groups. Existing users can be optionally added to groups, but are not created. The segregation of duties concept is implemented by granting groups *manage* permissions over specific resources on specific compartments. At the same time, other groups are entitled narrower permissions on those same resources. For instance, network administrators are granted *manage* permission over the networking resources in the *Network* compartment. Other groups, like database administrators, are granted *read* permission on *virtual-network-family* in the *Network* compartment and *use* permission on *vnics*, *subnets* and *network-security-groups*, so the databases they provision can make proper use of the network.
 
 ### Identity Domains
+The Core Landing Zone has option to use the Default Domain, create a new Domain, or use existing Custom Domain
 
 #### Default Domain
 Each tenancy includes a Default identity domain created in the root compartment that contains the initial tenant administrator user and group and a default Policy that allows administrators to manage any resource in the tenancy. The Default identity domain lives with the life cycle of the tenancy and can't be deleted.
+
+#### Create a New Domain
+The Core Landing Zone allows users to create a new Identity Domain in the home compartment of Landing Zone. Users can customize the identity domain name and the identity domain type (free or premium). If choosing to create a new Domain, all the groups, dynamic groups and policies will be created in the new identity domain.
 
 #### Custom Domain
 Landing Zone allows for the usage of custom identity domains groups and dynamic groups to manage/access its managed resources. A bespoke identity domain is useful when you need a separate environment for a cloud service or application (for example, one environment for development and one for production). For added security, you can configure each identity domain to have its own credentials (for example, Password and Sign-On policies).
@@ -231,7 +236,7 @@ The Landing Zone supports up to three VCNs of each type.
 
 Regardless the networking types, these VCNs can be deployed standalone or all connected via OCI DRG V2 service in a Hub & Spoke topology. When deploying Hub & Spoke, either a Hub VCN (aka DMZ VCN) can be provisioned or the DRG itself used as the hub. The Landing Zone also optionally deploys a network appliance or OCI Native Firewall in the Hub VCN to control/secure all inbound and outbound traffic routing in the spoke VCNs.
 
-The VCNs can also be configured with no Internet connectivity or for on-premises connectivity. Inbound access to the SSH port from 0.0.0.0/0 IP range is strictly prohibited.
+All VCNs can be configured with no Internet connectivity or for on-premises connectivity. Inbound SSH access (TCP port 22) from 0.0.0.0/0 IP range is prohibited, but Landing Zone may be configured to leverage OCI Bastion Service for secure, restricted access from the Internet.
 
 Due to the very nature of Terraform, it is possible to add, modify and delete VCNs.
 
@@ -640,6 +645,39 @@ in <zpr_namespace_name>.net:exa-vcn-1 VCN allow '10.1.2.0/24' to connect to <zpr
 ```
 in <zpr_namespace_name>.net:exa-vcn-1 VCN allow '<bastion service CIDR>/32' to connect to <zpr_namespace_name>.bastion:<service_label> endpoints with protocol='tcp/22'
 ```
+## <a name="bastion-use"></a>4.7 Bastion Service
+
+OCI Core Landing Zone supports Bastions. Bastions provide restricted and time-limited access to target resources that don't have public endpoints.
+Bastions let authorized users connect from specific IP addresses to target resources using Secure Shell (SSH) sessions. When connected, users can interact with the target resource by using any software or protocol supported by SSH. For example, you can use the Remote Desktop Protocol (RDP) to connect to a Windows host, or use Oracle Net Services to connect to a database. Targets can include resources like compute instances , DB systems , and Autonomous Database for Transaction Processing and Mixed Workloads databases. Bastions are essential in tenancies with stricter resource controls. For example, you can use a bastion to access Compute instances in compartments that are associated with a security zone. Instances in a security zone cannot have public endpoints. Integration with Oracle Cloud Infrastructure Identity and Access Management (IAM) lets you control who can access a bastion or a session and what they can do with those resources.
+
+The diagram below shows the OCI Core Landing Zone Bastion Pattern in Hub VCN:
+
+<img src="images/arch_bastion.png" alt="Bastion Architecture" width="800"/>
+
+#### To deploy a bastion service, it must be enabled at the tenancy level.
+
+- **deploy\_bastion\_service**: Whether a bastion service is enabled as part of this Landing Zone. By default, no bastion resources are created.
+- **bastion\_service\_name**: The name of the bastion service. The assigned value is <service_label>-bastion.
+- **bastion\_service\_allowed\_cidrs**: The list of the CIDR block(s) allowed to access the bastion service.
+
+To enable the bastion service during deployment using OCI Resource Manager UI:
+1) Check _"Define Networking?"_ in the General section
+2) Check _"Deploy a Jump Host for SSH access?"_ in the Networking - Hub & Spoke Topology section
+3) Check _"Deploy Bastion Service"_ in the Bastion Jump Host section
+
+The default bastion service name is the value of *service\_label* variable concatenated with the '-bastion-service' suffix, which can be overridden by any name of choice by checking _"Customize Bastion Service?"_ and using the optional input field _"Bastion Service Name"_.
+
+<img src="images/Deploy_Bastion1.png" alt="Deploy Bastion" width="800"/>
+<img src="images/Deploy_Bastion2.png" alt="Deploy Bastion" width="800"/>
+<img src="images/Deploy_Bastion3.png" alt="Deploy Bastion" width="800"/>
+
+#### Dynamic Port Forwarding (SOCKS5) Session
+
+A dynamic port forwarding (SOCKS5) session has the same benefits of an SSH port forwarding session, but allows you to dynamically connect to any target resource in a private subnet. Unlike other session types that you configure to connect to a specific target resource (IP address or DNS name), with a dynamic port forwarding (SOCKS5) session you create a tunnel to a target subnet and the client decides which resource and port to connect to.
+
+To enable a dynamic port forwarding (SOCKS5) session, ensure that the bastion service has been enabled (follow steps above). Select _"Customize Bastion Service"_ then check _"Enable FQDN Support and SOCKS5?"_.
+
+<img src="images/Enable_SOCKS5.png" alt="Enable SOCKS5" width="800"/>
 
 # <a name="ways-to-deploy"></a>5. Ways to Deploy
 
