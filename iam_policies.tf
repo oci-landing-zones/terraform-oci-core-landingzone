@@ -2,7 +2,7 @@
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 
 locals {
-  #-------------------------------------------------------------------------- 
+  #--------------------------------------------------------------------------
   #-- Any of these custom variables can be overriden in a _override.tf file
   #--------------------------------------------------------------------------
   custom_policies_defined_tags  = null
@@ -30,8 +30,8 @@ locals {
   net_fw_app_policy_name             = "${var.service_label}-net-firewall-app-policy"
 
   #iam_grants_condition = [for g in local.cred_admin_group_name : "target.group.name != ${g}"]
-  cred_admin_groups                  = var.use_custom_id_domain == false ? [for g in local.cred_admin_group_name : substr(g, 0, 1) == "'" && substr(g, length(g) - 1, 1) == "'" ? "target.group.name != ${g}" : "target.group.name != '${g}'"] : []
-  custom_id_domain_cred_admin_groups = var.use_custom_id_domain == true ? [for g in local.cred_admin_group_name : "target.group.name != ${substr(g, length(local.custom_id_domain_name) + 3, -1)}"] : []
+  cred_admin_groups                  = var.identity_domain_option == "Default Domain" ? [for g in local.cred_admin_group_name : substr(g, 0, 1) == "'" && substr(g, length(g) - 1, 1) == "'" ? "target.group.name != ${g}" : "target.group.name != '${g}'"] : var.identity_domain_option == "New Identity Domain" ? [for g in local.cred_admin_group_name : "target.group.name != ${substr(g, length(var.new_identity_domain_name) + 3, -1)}"] : []
+  custom_id_domain_cred_admin_groups = var.identity_domain_option == "Use Custom Identity Domain" ? [for g in local.cred_admin_group_name : "target.group.name != ${substr(g, length(local.custom_id_domain_name) + 3, -1)}"] : []
 
   ### User Group Policies ###
   ## IAM admin grants at the root compartment
@@ -57,7 +57,7 @@ locals {
     "allow group ${join(",", local.iam_admin_group_name)} to manage orm-stacks in tenancy",
     "allow group ${join(",", local.iam_admin_group_name)} to manage orm-jobs in tenancy",
     "allow group ${join(",", local.iam_admin_group_name)} to manage orm-config-source-providers in tenancy"],
-    var.use_custom_id_domain == true ? ["allow group ${join(",", local.iam_admin_group_name)} to manage groups in tenancy where all {target.domain.name = '${local.custom_id_domain_name}',${join(",", local.custom_id_domain_cred_admin_groups)}}"] : [])
+    var.identity_domain_option == "Use Custom Identity Domain" ? ["allow group ${join(",", local.iam_admin_group_name)} to manage groups in tenancy where all {target.domain.name = '${local.custom_id_domain_name}',${join(",", local.custom_id_domain_cred_admin_groups)}}"] : [])
 
   ## IAM admin grants at the enclosing compartment level, which *can* be the root compartment
   iam_admin_grants_on_enclosing_cmp = [
@@ -212,7 +212,7 @@ locals {
     "allow group ${join(",", local.database_admin_group_name)} to manage alarms in compartment ${local.database_compartment_name}",
     "allow group ${join(",", local.database_admin_group_name)} to manage metrics in compartment ${local.database_compartment_name}",
     "allow group ${join(",", local.database_admin_group_name)} to manage cloudevents-rules in compartment ${local.database_compartment_name}",
-    # CIS 1.2 - 1.14 Level 2 
+    # CIS 1.2 - 1.14 Level 2
     "allow group ${join(",", local.database_admin_group_name)} to manage object-family in compartment ${local.database_compartment_name} where all{request.permission != 'OBJECT_DELETE', request.permission != 'BUCKET_DELETE'}",
     "allow group ${join(",", local.database_admin_group_name)} to manage instance-family in compartment ${local.database_compartment_name}",
     "allow group ${join(",", local.database_admin_group_name)} to manage volume-family in compartment ${local.database_compartment_name} where all{request.permission != 'VOLUME_BACKUP_DELETE', request.permission != 'VOLUME_DELETE', request.permission != 'BOOT_VOLUME_BACKUP_DELETE'}",
@@ -277,7 +277,7 @@ locals {
     "allow group ${join(",", local.appdev_admin_group_name)} to manage metrics in compartment ${local.app_compartment_name}",
     "allow group ${join(",", local.appdev_admin_group_name)} to manage logging-family in compartment ${local.app_compartment_name}",
     "allow group ${join(",", local.appdev_admin_group_name)} to manage instance-family in compartment ${local.app_compartment_name}",
-    # CIS 1.2 - 1.14 Level 2 
+    # CIS 1.2 - 1.14 Level 2
     "allow group ${join(",", local.appdev_admin_group_name)} to manage volume-family in compartment ${local.app_compartment_name} where all{request.permission != 'VOLUME_BACKUP_DELETE', request.permission != 'VOLUME_DELETE', request.permission != 'BOOT_VOLUME_BACKUP_DELETE'}",
     "allow group ${join(",", local.appdev_admin_group_name)} to manage object-family in compartment ${local.app_compartment_name} where all{request.permission != 'OBJECT_DELETE', request.permission != 'BUCKET_DELETE'}",
     "allow group ${join(",", local.appdev_admin_group_name)} to manage file-family in compartment ${local.app_compartment_name} where all{request.permission != 'FILE_SYSTEM_DELETE', request.permission != 'MOUNT_TARGET_DELETE', request.permission != 'EXPORT_SET_DELETE', request.permission != 'FILE_SYSTEM_DELETE_SNAPSHOT', request.permission != 'FILE_SYSTEM_NFSv3_UNEXPORT'}",
@@ -360,7 +360,7 @@ locals {
     "allow group ${join(",", local.exainfra_admin_group_name)} to use vnics in compartment ${local.network_compartment_name}",
     "allow group ${join(",", local.exainfra_admin_group_name)} to manage private-ips in compartment ${local.network_compartment_name}"] : []
 
-  ## All Exainfra admin grants 
+  ## All Exainfra admin grants
   exainfra_admin_grants = concat(local.exainfra_admin_grants_on_exainfra_cmp, local.exainfra_admin_grants_on_security_cmp, local.exainfra_admin_grants_on_network_cmp)
 
   ## Cost admin permissions to be created always at the Root compartment
@@ -522,7 +522,7 @@ locals {
       freeform_tags  = local.policies_freeform_tags
       statements     = local.exainfra_admin_grants
     } : null
-  } : {}  
+  } : {}
 
   net_fw_app_policy = local.firewall_options[var.hub_vcn_deploy_net_appliance_option] == "FORTINET" ? {
     (local.net_fw_app_policy_name) = length(local.net_fw_app_grants_on_enclosing_cmp) > 0 ? {
@@ -532,7 +532,7 @@ locals {
       defined_tags   = local.policies_defined_tags
       freeform_tags  = local.policies_freeform_tags
       statements     = local.net_fw_app_grants_on_enclosing_cmp
-    } : null 
+    } : null
   } : {}
 
   policies = merge(local.default_policies, local.exainfra_policy, local.net_fw_app_policy)
@@ -675,7 +675,7 @@ module "lz_policies" {
 }
 
 locals {
-  #----------------------------------------------------------------------- 
+  #-----------------------------------------------------------------------
   #-- These variables are NOT meant to be overriden.
   #-----------------------------------------------------------------------
   default_policies_defined_tags  = null
