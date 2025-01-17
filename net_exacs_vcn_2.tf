@@ -121,8 +121,8 @@ locals {
         "EXA-VCN-2-CLIENT-NSG" = {
           display_name = "client-nsg"
           ingress_rules = merge(
-            {
-              "INGRESS-FROM-SSH-HUB-VCN-RULE" = local.hub_with_vcn == true && var.exa_vcn2_attach_to_drg == true && local.add_exa_vcn2 == true ? {
+            local.hub_with_vcn == true && var.exa_vcn2_attach_to_drg == true && local.add_exa_vcn2 == true ? {
+              "INGRESS-FROM-SSH-HUB-VCN-RULE" = {
                 description  = "Allows SSH connections from ${coalesce(var.hub_vcn_jumphost_subnet_cidr, cidrsubnet(var.hub_vcn_cidrs[0], 3, 4))} in Hub VCN Jumphost subnet."
                 stateless    = false
                 protocol     = "TCP"
@@ -130,8 +130,8 @@ locals {
                 src_type     = "CIDR_BLOCK"
                 dst_port_min = 22
                 dst_port_max = 22
-              } : {}
-            },
+              }
+            } : {},
             {
               "INGRESS-FROM-SSH-CLIENT-RULE" = {
                 description  = "Allows SSH connections from hosts in Client NSG."
@@ -476,33 +476,33 @@ locals {
     (upper(var.oke_vcn1_cni_type) == "NATIVE") &&
     (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.exa_vcn2_routable_vcns) == 0 || contains(var.exa_vcn2_routable_vcns, "OKE-VCN-1")))) ? {
       "EGRESS-TO-OKE-VCN-1-PODS-SUBNET-RULE" = {
-        description  = "Egress to ${coalesce(var.oke_vcn2_pods_subnet_name, "${var.service_label}-oke-vcn-1-pods-subnet")}."
-        stateless    = false
-        protocol     = "TCP"
-        dst          = coalesce(var.oke_vcn1_pods_subnet_cidr, cidrsubnet(var.oke_vcn1_cidrs[0], 3, 1))
-        dst_type     = "CIDR_BLOCK"
+        description = "Egress to ${coalesce(var.oke_vcn2_pods_subnet_name, "${var.service_label}-oke-vcn-1-pods-subnet")}."
+        stateless   = false
+        protocol    = "TCP"
+        dst         = coalesce(var.oke_vcn1_pods_subnet_cidr, cidrsubnet(var.oke_vcn1_cidrs[0], 3, 1))
+        dst_type    = "CIDR_BLOCK"
       }
     } : {},
     (local.add_exa_vcn2 == true && var.exa_vcn2_attach_to_drg == true && var.add_oke_vcn2 == true && var.oke_vcn2_attach_to_drg == true) &&
     (upper(var.oke_vcn2_cni_type) == "NATIVE") &&
     (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.exa_vcn2_routable_vcns) == 0 || contains(var.exa_vcn2_routable_vcns, "OKE-VCN-2")))) ? {
       "EGRESS-TO-OKE-VCN-2-PODS-SUBNET-RULE" = {
-        description  = "Egress to ${coalesce(var.oke_vcn2_pods_subnet_name, "${var.service_label}-oke-vcn-2-pods-subnet")}."
-        stateless    = false
-        protocol     = "TCP"
-        dst          = coalesce(var.oke_vcn2_pods_subnet_cidr, cidrsubnet(var.oke_vcn2_cidrs[0], 3, 1))
-        dst_type     = "CIDR_BLOCK"
+        description = "Egress to ${coalesce(var.oke_vcn2_pods_subnet_name, "${var.service_label}-oke-vcn-2-pods-subnet")}."
+        stateless   = false
+        protocol    = "TCP"
+        dst         = coalesce(var.oke_vcn2_pods_subnet_cidr, cidrsubnet(var.oke_vcn2_cidrs[0], 3, 1))
+        dst_type    = "CIDR_BLOCK"
       }
     } : {},
     (local.add_exa_vcn2 == true && var.exa_vcn2_attach_to_drg == true && var.add_oke_vcn3 == true && var.oke_vcn3_attach_to_drg == true) &&
     (upper(var.oke_vcn3_cni_type) == "NATIVE") &&
     (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.exa_vcn2_routable_vcns) == 0 || contains(var.exa_vcn2_routable_vcns, "OKE-VCN-3")))) ? {
       "EGRESS-TO-OKE-VCN-3-PODS-SUBNET-RULE" = {
-        description  = "Egress to ${coalesce(var.oke_vcn3_pods_subnet_name, "${var.service_label}-oke-vcn-3-pods-subnet")}."
-        stateless    = false
-        protocol     = "TCP"
-        dst          = coalesce(var.oke_vcn3_pods_subnet_cidr, cidrsubnet(var.oke_vcn3_cidrs[0], 3, 1))
-        dst_type     = "CIDR_BLOCK"
+        description = "Egress to ${coalesce(var.oke_vcn3_pods_subnet_name, "${var.service_label}-oke-vcn-3-pods-subnet")}."
+        stateless   = false
+        protocol    = "TCP"
+        dst         = coalesce(var.oke_vcn3_pods_subnet_cidr, cidrsubnet(var.oke_vcn3_cidrs[0], 3, 1))
+        dst_type    = "CIDR_BLOCK"
       }
     } : {}
   )
