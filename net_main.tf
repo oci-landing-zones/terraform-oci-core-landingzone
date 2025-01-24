@@ -7,7 +7,7 @@ locals {
     network_configuration_categories = {
       "${var.service_label}-network" = {
         vcns                      = merge(local.tt_vcn_1, local.tt_vcn_2, local.tt_vcn_3, local.exa_vcn_1, local.exa_vcn_2, local.exa_vcn_3, local.oke_vcn_1, local.oke_vcn_2, local.oke_vcn_3, local.hub_vcn)
-        non_vcn_specific_gateways = local.drg
+        non_vcn_specific_gateways = merge(local.drg, local.fastconnect)
       }
     }
   }
