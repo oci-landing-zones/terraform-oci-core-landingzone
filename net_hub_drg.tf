@@ -8,14 +8,16 @@ locals {
     "VCN or on-premises connectivity routing via DRG (DRG will be created)"                                                                            = 1,
     "VCN or on-premises connectivity routing via DRG (existing DRG)"                                                                                   = 2,
     "VCN or on-premises connectivity routing through DMZ VCN with Network Virtual Appliance (DRG and DMZ VCN will be created)"                         = 3,
-    "VCN or on-premises connectivity routed through DMZ VCN with Network Virtual Appliance existing DRG (DMZ VCN will be created and DRG ID required)" = 4
+    "VCN or on-premises connectivity routed through DMZ VCN with Network Virtual Appliance existing DRG (DMZ VCN will be created and DRG ID required)" = 4,
+    "No Cross VCN with on-premise connectivity using a new DRG"                                                                                        = 5,
+    "No cross VCN with on-premise connectivity using an existing DRG"                                                                                  = 6
   }
 
   chosen_hub_option = var.hub_deployment_option == "" ? var.hub_deployment : local.hub_options[var.hub_deployment_option]
-  deploy_new_drg    = var.define_net == true && (local.chosen_hub_option == 1 || local.chosen_hub_option == 3)
-  use_existing_drg  = var.define_net == true && (local.chosen_hub_option == 2 || local.chosen_hub_option == 4)
-  hub_with_drg_only = var.define_net == true && (local.chosen_hub_option == 1 || local.chosen_hub_option == 2)
-  hub_with_vcn      = var.define_net == true && (local.chosen_hub_option == 3 || local.chosen_hub_option == 4)
+  deploy_new_drg           = var.define_net == true && (local.chosen_hub_option == 1 || local.chosen_hub_option == 3 || local.chosen_hub_option == 5)
+  use_existing_drg         = var.define_net == true && (local.chosen_hub_option == 2 || local.chosen_hub_option == 4 || local.chosen_hub_option == 6)
+  hub_with_drg_only        = var.define_net == true && (local.chosen_hub_option == 1 || local.chosen_hub_option == 2)
+  hub_with_vcn             = var.define_net == true && (local.chosen_hub_option == 3 || local.chosen_hub_option == 4)
 
   drg = (local.chosen_hub_option != 0) ? {
     # "dynamic_routing_gateways" is for creating a new DRG.
