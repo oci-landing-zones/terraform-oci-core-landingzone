@@ -73,7 +73,7 @@ variable "ipsec_tunnel2_oracle_interface_ip" {
   type = string
   default = ""
   description = "The second IP CIDR block provided by OCI for BGP peering for tunnel 2."
-
+}
 # --------------------------------------------------------------------------
 # ----- Networking - On-Premises Connectivity - FastConnect Virtual Circuit
 #---------------------------------------------------------------------------
