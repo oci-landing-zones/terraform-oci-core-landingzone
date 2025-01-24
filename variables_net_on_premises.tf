@@ -1,5 +1,78 @@
 # Copyright (c) 2025 Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+# --------------------------------------------------------------------------
+# ----- Networking - On-Premises Connectivity - CPE
+#---------------------------------------------------------------------------
+
+variable "cpe_config" {
+  type = string
+  default = "Use Existing"
+  description = "Options to determine CPE configuration which are Create New CPE or Use Existing."
+}
+
+variable "existing_cpe_ocid" {
+  type = string
+  default = ""
+  description = "OCID of the existing CPE object"
+}
+
+variable "cpe_ip_address" {
+  type = string
+  default = ""
+  description = "Public IP address used by the CPE so that a VPN connection can be established."
+}
+
+variable "cpe_name" {
+  type = string
+  default = ""
+  description = "Display name of the CPE"
+}
+
+variable "cpe_device_shape_vendor" {
+  type = string
+  default = ""
+  description = "Name of the device shape vendor used by the CPE. See the list of verified CPE devices for more information"
+}
+
+# --------------------------------------------------------------------------
+# ----- Networking - On-Premises Connectivity - IPSec 
+#---------------------------------------------------------------------------
+
+
+variable "ipsec_tunnel_name" {
+  type = string
+  default = ""
+  description = "Display name used by the CPE."
+}
+
+variable "ipsec_customer_bgp_asn" {
+  type = string
+  default = ""
+  description = "Customer on-premises network's Autonomous System Number."
+}
+
+variable "ipsec_tunnel1_customer_interface_ip" {
+  type = string
+  default = ""
+  description = "The first IP CIDR block used on the customer side for BGP peering for tunnel 1."
+}
+
+variable "ipsec_tunnel1_oracle_interface_ip" {
+  type = string
+  default = ""
+  description = "The first IP CIDR block provided by OCI for BGP peering for tunnel 1."
+}
+
+variable "ipsec_tunnel2_customer_interface_ip" {
+  type = string
+  default = ""
+  description = "The second IP CIDR block used on the customer side for BGP peering for tunnel 2."
+}
+
+variable "ipsec_tunnel2_oracle_interface_ip" {
+  type = string
+  default = ""
+  description = "The second IP CIDR block provided by OCI for BGP peering for tunnel 2."
 
 # --------------------------------------------------------------------------
 # ----- Networking - On-Premises Connectivity - FastConnect Virtual Circuit
