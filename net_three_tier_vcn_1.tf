@@ -127,6 +127,7 @@ locals {
                   destination_type   = "CIDR_BLOCK"
                 }
               },
+              local.tt_cross_vcn_1_drg_routing
             )
           }
         },
