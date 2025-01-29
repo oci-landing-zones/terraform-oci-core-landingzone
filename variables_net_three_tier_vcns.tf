@@ -7,7 +7,7 @@
 variable "add_tt_vcn1" {
   type    = bool
   default = false
-  description = "Whether to add a VCN configured for three-tier workload deployments, with up to four subnets: web (public by default), application (private), database (private). An optional subnet (private by default) for bastion deployment is also available. The added VCN is labelled 'TT-VCN-1'. The label should be used in the '*_routable_vcns' fields of other VCNs for constraining network traffic to those respective VCNs in a Hub/Spoke topology."
+  description = "Whether to add a VCN configured for three-tier workload deployments, with up to four subnets: web (public by default), application (private), database (private). An optional subnet (private by default) for bastion deployment is also available. The added VCN is labelled 'TT-VCN-1'. The label should be used in the '*_routable_vcns' fields of other VCNs for constraining network traffic to those respective VCNs in a Network topology."
 }
 variable "tt_vcn1_name" {
   type    = string
@@ -27,7 +27,7 @@ variable "tt_vcn1_attach_to_drg" {
 variable "tt_vcn1_routable_vcns" {
   type    = list(string)
   default = []
-  description = "The VCN labels that this VCN can send traffic to. Leave unassigned for sending traffic to all VCNs. Only applicable for Hub/Spoke topology where a DRG is deployed as the hub. Valid values: TT-VCN-2, TT-VCN-3, EXA-VCN-1, EXA-VCN-2, EXA-VCN3, OKE-VCN-1, OKE-VCN-2, OKE-VCN-3."
+  description = "The VCN labels that this VCN can send traffic to. Leave unassigned for sending traffic to all VCNs. Only applicable for Network topology where a DRG is deployed as the hub. Valid values: TT-VCN-2, TT-VCN-3, EXA-VCN-1, EXA-VCN-2, EXA-VCN3, OKE-VCN-1, OKE-VCN-2, OKE-VCN-3, OnPremFC, OnPremVPN."
 }
 variable "customize_tt_vcn1_subnets" {
   type    = bool
@@ -97,7 +97,17 @@ variable "tt_vcn1_bastion_subnet_allowed_cidrs" {
 variable "add_tt_vcn2" {
   type    = bool
   default = false
-  description = "Whether to add a second VCN configured for three-tier workload deployments, with up to four subnets: web (public by default), application (private), database (private). An optional subnet (private by default) for bastion deployment is also available. The added VCN is labelled 'TT-VCN-2'. The label should be used in the '*_routable_vcns' fields of other VCNs for constraining network traffic to those respective VCNs in a Hub/Spoke topology."
+  description = "Whether to add a second VCN configured for three-tier workload deployments, with up to four subnets: web (public by default), application (private), database (private). An optional subnet (private by default) for bastion deployment is also available. The added VCN is labelled 'TT-VCN-2'. The label should be used in the '*_routable_vcns' fields of other VCNs for constraining network traffic to those respective VCNs in a Network topology."
+}
+variable "tt_vcn1_fastconnect_route_enable" {
+  type        = bool
+  default     = "false"
+  description = "This checkbox will drive the creation of the routes and security list rules."
+}
+variable "tt_vcn1_ipsec_route_enable" {
+  type        = bool
+  default     = "false"
+  description = "This checkbox will drive the creation of the routes and security list rules."
 }
 
 # ------------------------------------------------------
@@ -121,7 +131,7 @@ variable "tt_vcn2_attach_to_drg" {
 variable "tt_vcn2_routable_vcns" {
   type    = list(string)
   default = []
-  description = "The VCN labels that this VCN can send traffic to. Only applicable for Hub/Spoke topology where a DRG is deployed as the hub. Valid values: TT-VCN-1, TT-VCN-3, EXA-VCN-1, EXA-VCN-2, EXA-VCN3, OKE-VCN-1, OKE-VCN-2, OKE-VCN-3."
+  description = "The VCN labels that this VCN can send traffic to. Only applicable for Network topology where a DRG is deployed as the hub. Valid values: TT-VCN-1, TT-VCN-3, EXA-VCN-1, EXA-VCN-2, EXA-VCN3, OKE-VCN-1, OKE-VCN-2, OKE-VCN-3, OnPremFC, OnPremVPN."
 }
 variable "customize_tt_vcn2_subnets" {
   type    = bool
@@ -192,7 +202,17 @@ variable "tt_vcn2_bastion_subnet_allowed_cidrs" {
 variable "add_tt_vcn3" {
   type    = bool
   default = false
-  description = "Whether to add a third VCN configured for three-tier workload deployments, with up to four subnets: web (public by default), application (private), database (private). An optional subnet (private by default) for bastion deployment is also available. The added VCN is labelled 'TT-VCN-3'. The label should be used in the '*_routable_vcns' fields of other VCNs for constraining network traffic to those respective VCNs in a Hub/Spoke topology."
+  description = "Whether to add a third VCN configured for three-tier workload deployments, with up to four subnets: web (public by default), application (private), database (private). An optional subnet (private by default) for bastion deployment is also available. The added VCN is labelled 'TT-VCN-3'. The label should be used in the '*_routable_vcns' fields of other VCNs for constraining network traffic to those respective VCNs in a Network topology."
+}
+variable "tt_vcn2_fastconnect_route_enable" {
+  type        = bool
+  default     = "false"
+  description = "This checkbox will drive the creation of the routes and security list rules."
+}
+variable "tt_vcn2_ipsec_route_enable" {
+  type        = bool
+  default     = "false"
+  description = "This checkbox will drive the creation of the routes and security list rules."
 }
 
 # ------------------------------------------------------
@@ -216,7 +236,7 @@ variable "tt_vcn3_attach_to_drg" {
 variable "tt_vcn3_routable_vcns" {
   type    = list(string)
   default = []
-  description = "The VCN labels that this VCN can send traffic to. Only applicable for Hub/Spoke topology where a DRG is deployed as the hub. Valid values: TT-VCN-1, TT-VCN-2, EXA-VCN-1, EXA-VCN-2, EXA-VCN3, OKE-VCN-1, OKE-VCN-2, OKE-VCN-3."
+  description = "The VCN labels that this VCN can send traffic to. Only applicable for Network topology where a DRG is deployed as the hub. Valid values: TT-VCN-1, TT-VCN-2, EXA-VCN-1, EXA-VCN-2, EXA-VCN3, OKE-VCN-1, OKE-VCN-2, OKE-VCN-3, OnPremFC, OnPremVPN."
 }
 variable "customize_tt_vcn3_subnets" {
   type    = bool
@@ -282,4 +302,14 @@ variable "tt_vcn3_bastion_subnet_allowed_cidrs" {
   type    = list(string)
   default = []
   description = "List of CIDRs allowed to SSH into the the jump host that is eventually deployed in the public Bastion subnet. Leave it empty for no access. 0.0.0.0/0 is not allowed."
+}
+variable "tt_vcn3_fastconnect_route_enable" {
+  type        = bool
+  default     = "false"
+  description = "This checkbox will drive the creation of the routes and security list rules."
+}
+variable "tt_vcn3_ipsec_route_enable" {
+  type        = bool
+  default     = "false"
+  description = "This checkbox will drive the creation of the routes and security list rules."
 }

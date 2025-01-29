@@ -83,7 +83,16 @@ variable "on_premises_connection_option" {
   default     = "None"
   description = "The option for connecting to on-premises. Valid options are 'None', 'FastConnect Virtual Circuit', 'IPSec VPN', or 'FastConnect and IPSec VPN'"
 }
-
+variable "fastconnect_virtual_circuit_config" {
+  type        = string
+  default     = null
+  description = "Creates New FastConnect Virtual Circuit or connects exisiting VC (Valid values include 'FastConnect Virtual Circuit', 'Use Existing')."
+}
+variable "existing_fastconnect_virtual_circuit_ocid" {
+  type        = string
+  default     = ""
+  description = "The identifier for a virtual circuit in OCI. "
+}
 variable "fastconnect_virtual_circuit_name" {
   type        = string
   default     = ""
@@ -178,4 +187,9 @@ variable "fastconnect_virtual_circuit_is_bfd_enabled" {
   type        = bool
   default     = false
   description = "Set to true to enable BFD for IPv4 BGP peering, or set to false to disable BFD. If this is not set, the default is false."
+}
+variable "fastconnect_virtual_circuit_bandwith_custom_shape" {
+  type        = string
+  default     = ""
+  description = "Custom bandwith level (shape) of the FastConnect virtual circuit."
 }
