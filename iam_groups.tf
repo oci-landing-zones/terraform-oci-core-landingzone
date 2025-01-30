@@ -25,7 +25,7 @@ locals {
 }
 
 module "lz_groups" {
-  source               = "github.com/oci-landing-zones/terraform-oci-modules-iam//groups?ref=v0.2.4"
+  source               = "github.com/oci-landing-zones/terraform-oci-modules-iam//groups?ref=v0.2.7"
   count                = var.identity_domain_option == "Default Domain" ? 1 : 0
   providers            = { oci = oci.home }
   tenancy_ocid         = var.tenancy_ocid
