@@ -671,14 +671,6 @@ The default bastion service name is the value of *service\_label* variable conca
 <img src="images/Deploy_Bastion2.png" alt="Deploy Bastion" width="800"/>
 <img src="images/Deploy_Bastion3.png" alt="Deploy Bastion" width="800"/>
 
-#### Dynamic Port Forwarding (SOCKS5) Session
-
-A dynamic port forwarding (SOCKS5) session has the same benefits of an SSH port forwarding session, but allows you to dynamically connect to any target resource in a private subnet. Unlike other session types that you configure to connect to a specific target resource (IP address or DNS name), with a dynamic port forwarding (SOCKS5) session you create a tunnel to a target subnet and the client decides which resource and port to connect to.
-
-To enable a dynamic port forwarding (SOCKS5) session, ensure that the bastion service has been enabled (follow steps above). Select _"Customize Bastion Service"_ then check _"Enable FQDN Support and SOCKS5?"_.
-
-<img src="images/Enable_SOCKS5.png" alt="Enable SOCKS5" width="800"/>
-
 # <a name="ways-to-deploy"></a>5. Ways to Deploy
 
 Landing Zone can be deployed on OCI in a few ways. This section describes and examines them, providing guidance when to use each one.

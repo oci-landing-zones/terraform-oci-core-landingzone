@@ -208,9 +208,9 @@ See [CONTRIBUTING.md](./CONTRIBUTING.md).
 
 ## <a name="license">License</a>
 
-Copyright (c) 2025, Oracle and/or its affiliates.
+Copyright (c) 2023, 2025, Oracle and/or its affiliates.
 
-Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl/
 
 See [LICENSE](./LICENSE.txt) for more details.
 
@@ -258,10 +258,10 @@ See [LICENSE](./LICENSE.txt) for more details.
 * **OCI Compartment Deletion**
     * By design, OCI compartments are not deleted upon *terraform destroy* by default. Deletion can be enabled in Landing Zone by setting *enable_cmp_delete* variable to true in locals.tf file. However, compartments may take a long time to delete. Not deleting compartments is OK if you plan on reusing them. For more information about deleting compartments in OCI via Terraform, check [OCI Terraform provider documentation](https://registry.terraform.io/providers/hashicorp/oci/latest/docs/resources/identity_compartment).
 
-* **OCI Vault Deletion**
+* **OCI Vault/Key Deletion**
     * By design, OCI vaults and keys are not deleted immediately upon *terraform destroy*, but scheduled for deletion. Both have a default 30 day grace period. For shortening that period, use OCI Console to first cancel the scheduled deletion and then set the earliest possible deletion date (7 days from current date) when deleting.
 
-* **Support for free tier tenancies**
+* **Support for Free Tier Tenancies**
     * Deploying in a free tier tenancy is not supported at this time as there are some services that are not available. If you want to try the Landing Zone please upgrade your account to a Pay As You Go (PAYG) account.
 
 * **Logging Analytics Enablement**
