@@ -1,5 +1,5 @@
-# Copyright (c) 2023 Oracle and/or its affiliates.
-# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+# Copyright (c) 2023, 2025, Oracle and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl/
 
 ### This Terraform configuration provisions Landing Zone groups.
 
@@ -25,7 +25,7 @@ locals {
 }
 
 module "lz_groups" {
-  source               = "github.com/oci-landing-zones/terraform-oci-modules-iam//groups?ref=v0.2.4"
+  source               = "github.com/oci-landing-zones/terraform-oci-modules-iam//groups?ref=v0.2.7"
   count                = var.identity_domain_option == "Default Domain" ? 1 : 0
   providers            = { oci = oci.home }
   tenancy_ocid         = var.tenancy_ocid
