@@ -5,74 +5,72 @@
 #---------------------------------------------------------------------------
 
 variable "cpe_config" {
-  type = string
-  default = "Use Existing"
-  description = "Options to determine CPE configuration which are Create New CPE or Use Existing."
+  type        = string
+  default     = "Use Existing"
+  description = "Options to determine CPE configuration which are 'Create New Customer-Premises Equipment' or 'Use Existing'"
 }
 
 variable "existing_cpe_ocid" {
-  type = string
-  default = ""
-  description = "OCID of the existing CPE object"
+  type        = string
+  default     = ""
+  description = "OCID of the existing Customer-Premises Equipment (CPE) object."
 }
 
 variable "cpe_ip_address" {
-  type = string
-  default = ""
-  description = "Public IP address used by the CPE so that a VPN connection can be established."
+  type        = string
+  default     = ""
+  description = "Public IP address used by the Customer-Premises Equipment (CPE) so that a VPN connection can be established."
 }
 
 variable "cpe_name" {
-  type = string
-  default = ""
-  description = "Display name of the CPE"
+  type        = string
+  default     = ""
+  description = "Display name of the Customer-Premises Equipment (CPE)."
 }
 
 variable "cpe_device_shape_vendor" {
-  type = string
-  default = ""
-  description = "Name of the device shape vendor used by the CPE. See the list of verified CPE devices for more information"
+  type        = string
+  default     = ""
+  description = "Name of the device shape vendor used by the Customer-Premises Equipment (CPE). See the list of verified CPE devices for more information."
 }
 
 # --------------------------------------------------------------------------
 # ----- Networking - On-Premises Connectivity - IPSec 
 #---------------------------------------------------------------------------
-
-
-variable "ipsec_tunnel_name" {
-  type = string
-  default = ""
-  description = "Display name used by the CPE."
+variable "ipsec_vpn_name" {
+  type        = string
+  default     = ""
+  description = "Display name of the IPSec VPN."
 }
 
 variable "ipsec_customer_bgp_asn" {
-  type = string
-  default = ""
+  type        = string
+  default     = ""
   description = "Customer on-premises network's Autonomous System Number."
 }
 
 variable "ipsec_tunnel1_customer_interface_ip" {
-  type = string
-  default = ""
-  description = "The first IP CIDR block used on the customer side for BGP peering for tunnel 1."
+  type        = string
+  default     = ""
+  description = "The first IP CIDR block used on the customer side for BGP peering for IPSec Tunnel 1."
 }
 
 variable "ipsec_tunnel1_oracle_interface_ip" {
-  type = string
-  default = ""
-  description = "The first IP CIDR block provided by OCI for BGP peering for tunnel 1."
+  type        = string
+  default     = ""
+  description = "The first IP CIDR block provided by OCI for BGP peering for IPSec Tunnel 1."
 }
 
 variable "ipsec_tunnel2_customer_interface_ip" {
-  type = string
-  default = ""
-  description = "The second IP CIDR block used on the customer side for BGP peering for tunnel 2."
+  type        = string
+  default     = ""
+  description = "The second IP CIDR block used on the customer side for BGP peering for IPSec Tunnel 2."
 }
 
 variable "ipsec_tunnel2_oracle_interface_ip" {
-  type = string
-  default = ""
-  description = "The second IP CIDR block provided by OCI for BGP peering for tunnel 2."
+  type        = string
+  default     = ""
+  description = "The second IP CIDR block provided by OCI for BGP peering for IPSec Tunnel 2."
 }
 # --------------------------------------------------------------------------
 # ----- Networking - On-Premises Connectivity - FastConnect Virtual Circuit
@@ -86,7 +84,7 @@ variable "on_premises_connection_option" {
 variable "fastconnect_virtual_circuit_config" {
   type        = string
   default     = null
-  description = "Creates New FastConnect Virtual Circuit or connects exisiting VC (Valid values include 'FastConnect Virtual Circuit', 'Use Existing')."
+  description = "Creates New FastConnect Virtual Circuit or connects existing VC (Valid values include 'FastConnect Virtual Circuit', 'Use Existing')."
 }
 variable "existing_fastconnect_virtual_circuit_ocid" {
   type        = string
