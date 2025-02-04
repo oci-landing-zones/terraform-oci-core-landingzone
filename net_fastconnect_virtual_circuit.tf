@@ -3,7 +3,8 @@
 
 locals {
 
-  deploy_fastconnect = length(regexall("FastConnect", var.on_premises_connection_option)) > 0 && local.chosen_hub_option != 0 ? true : false
+  use_existing_fastconnect_virtual_circuit = (length(regexall("FASTCONNECT", upper(var.on_premises_connection_option))) > 0) && local.chosen_hub_option != 0 && (length(regexall("USE EXISTING", upper(var.fastconnect_virtual_circuit_config))) > 0) && length(trimspace(var.existing_fastconnect_virtual_circuit_ocid)) > 0
+  deploy_fastconnect                       = (length(regexall("FASTCONNECT", upper(var.on_premises_connection_option))) > 0) && local.chosen_hub_option != 0 && (length(regexall("CREATE NEW FASTCONNECT VIRTUAL CIRCUIT", upper(var.fastconnect_virtual_circuit_config))) > 0)
 
   fastconnect = local.deploy_fastconnect ? {
     fast_connect_virtual_circuits = {
@@ -17,7 +18,7 @@ locals {
         provision_fc_virtual_circuit                = true
         show_available_fc_virtual_circuit_providers = false
 
-        bandwidth_shape_name      = var.fastconnect_virtual_circuit_bandwith_shape
+        bandwidth_shape_name      = var.fastconnect_virtual_circuit_bandwidth_shape
         provider_service_id       = var.fastconnect_virtual_circuit_provider_service_id
         provider_service_key_name = var.fastconnect_virtual_circuit_provider_service_key_name
 

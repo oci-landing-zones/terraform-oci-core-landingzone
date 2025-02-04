@@ -99,11 +99,6 @@ variable "fastconnect_virtual_circuit_config" {
   default     = null
   description = "Creates New FastConnect Virtual Circuit or connects existing VC (Valid values include 'FastConnect Virtual Circuit', 'Use Existing')."
 }
-variable "existing_fastconnect_virtual_circuit_ocid" {
-  type        = string
-  default     = ""
-  description = "The identifier for a virtual circuit in OCI. "
-}
 variable "fastconnect_virtual_circuit_name" {
   type        = string
   default     = ""
@@ -116,10 +111,10 @@ variable "fastconnect_virtual_circuit_type" {
   description = "The type of IP addresses used in the Fast Connect virtual circuit. Accepted values are PRIVATE, PUBLIC."
 }
 
-variable "fastconnect_virtual_circuit_bandwith_shape" {
+variable "fastconnect_virtual_circuit_bandwidth_shape" {
   type        = string
   default     = "1 Gbps"
-  description = "Bandwith level (shape) of the Fast Connect virtual circuit."
+  description = "Bandwidth level (shape) of the Fast Connect virtual circuit."
 }
 
 variable "fastconnect_virtual_circuit_customer_asn" {
@@ -189,9 +184,9 @@ variable "fastconnect_virtual_circuit_vlan" {
 }
 
 variable "fastconnect_virtual_circuit_ip_mtu" {
-  type        = string
+  type        = number
   default     = null
-  description = "The MTU value to assign to the FastConnect virtual circuit. Supported values are: MTU_1500, MTU_9000. Default is MTU_1500."
+  description = "The MTU value to assign to the FastConnect virtual circuit. Supported values are: 1500, 9000. Default is 1500."
 }
 
 variable "fastconnect_virtual_circuit_is_bfd_enabled" {
@@ -199,8 +194,14 @@ variable "fastconnect_virtual_circuit_is_bfd_enabled" {
   default     = false
   description = "Set to true to enable BFD for IPv4 BGP peering, or set to false to disable BFD. If this is not set, the default is false."
 }
-variable "fastconnect_virtual_circuit_bandwith_custom_shape" {
+variable "fastconnect_virtual_circuit_bandwidth_custom_shape" {
   type        = string
   default     = ""
-  description = "Custom bandwith level (shape) of the FastConnect virtual circuit."
+  description = "Custom bandwidth level (shape) of the FastConnect virtual circuit."
+}
+
+variable "existing_fastconnect_virtual_circuit_ocid" {
+  type        = string
+  default     = ""
+  description = "The OCID of the existing FastConnect Virtual Circuit."
 }

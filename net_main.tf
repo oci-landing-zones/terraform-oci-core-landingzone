@@ -14,10 +14,10 @@ locals {
 }
 
 module "lz_network" {
-  source                = "github.com/oci-landing-zones/terraform-oci-modules-networking?ref=v0.7.1"
+  source                = "github.com/oci-landing-zones/terraform-oci-modules-networking?ref=release-0.7.3"
   depends_on            = [ module.lz_zpr ]
   network_configuration = local.lz_network_configuration
-  network_dependency    = (local.chosen_hub_option == 2 || local.chosen_hub_option == 4) ? {
+  network_dependency    = local.use_existing_drg ? {
     "dynamic_routing_gateways" = {
       "HUB-DRG" = {"id" : trimspace(var.existing_drg_ocid)}
     }
