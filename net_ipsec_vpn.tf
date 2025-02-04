@@ -3,8 +3,11 @@
 
 locals {
 
-  deploy_new_cpe   = (length(regexall("CREATE NEW CUSTOMER-PREMISES EQUIPMENT", upper(var.cpe_config))) > 0) && local.chosen_hub_option != 0 && (length(regexall("IPSEC", upper(var.on_premises_connection_option))) > 0)
-  use_existing_cpe = length(var.existing_cpe_ocid) > 0 && local.chosen_hub_option != 0 && (length(regexall("IPSEC", upper(var.on_premises_connection_option))) > 0)
+  deploy_new_cpe   = (length(regexall("IPSEC", upper(var.on_premises_connection_option))) > 0) && local.chosen_hub_option != 0 && (length(regexall("CREATE NEW CUSTOMER-PREMISES EQUIPMENT", upper(var.cpe_config))) > 0)
+  use_existing_cpe = (length(regexall("IPSEC", upper(var.on_premises_connection_option))) > 0) && local.chosen_hub_option != 0 && (length(regexall("USE EXISTING", upper(var.cpe_config))) > 0) && length(var.existing_cpe_ocid) > 0
+
+  deploy_new_ipsec = (length(regexall("IPSEC", upper(var.on_premises_connection_option))) > 0) && local.chosen_hub_option != 0 && (length(regexall("CREATE NEW IPSEC CONNECTION", upper(var.ipsec_config))) > 0)
+  use_existing_ipsec = (length(regexall("IPSEC", upper(var.on_premises_connection_option))) > 0) && local.chosen_hub_option != 0 && (length(regexall("USE EXISTING IPSEC CONNECTION", upper(var.ipsec_config))) > 0) && length(var.existing_ipsec_ocid) > 0
 
   cpe = local.deploy_new_cpe ? {
     customer_premises_equipments = {
@@ -17,7 +20,7 @@ locals {
     }
   } : null
 
-  ipsec = (length(regexall("IPSEC", upper(var.on_premises_connection_option))) > 0) ? {
+  ipsec = local.deploy_new_ipsec ? {
     ipsecs = {
       LZ-IPSEC-VPN = {
         cpe_key       = local.deploy_new_cpe ? "LZ-CPE" : null

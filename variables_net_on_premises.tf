@@ -16,16 +16,16 @@ variable "existing_cpe_ocid" {
   description = "OCID of the existing Customer-Premises Equipment (CPE) object."
 }
 
-variable "cpe_ip_address" {
-  type        = string
-  default     = ""
-  description = "Public IP address used by the Customer-Premises Equipment (CPE) so that a VPN connection can be established."
-}
-
 variable "cpe_name" {
   type        = string
   default     = ""
   description = "Display name of the Customer-Premises Equipment (CPE)."
+}
+
+variable "cpe_ip_address" {
+  type        = string
+  default     = ""
+  description = "Public IP address used by the Customer-Premises Equipment (CPE) so that a VPN connection can be established."
 }
 
 variable "cpe_device_shape_vendor" {
@@ -37,6 +37,19 @@ variable "cpe_device_shape_vendor" {
 # --------------------------------------------------------------------------
 # ----- Networking - On-Premises Connectivity - IPSec 
 #---------------------------------------------------------------------------
+
+variable "ipsec_config" {
+  type        = string
+  default     = "Use Existing IPSec Connection"
+  description = "Options to determine IPSec VPN and tunnel creation which are 'Create New IPSec Connection' or 'Use Existing IPSec Connection'"
+}
+
+variable "existing_ipsec_ocid" {
+  type        = string
+  default     = ""
+  description = "OCID of the existing IPSec connection VPN, required if using an existing IPSec connection."
+}
+
 variable "ipsec_vpn_name" {
   type        = string
   default     = ""

@@ -145,7 +145,8 @@ locals {
               display_name        = "${coalesce(var.ipsec_vpn_name, "${var.service_label}-oci-ipsec")}-tunnel-1-attachment"
               drg_route_table_key = "IPSEC-TUNNEL-1-DRG-ROUTE-TABLE"
               network_details = {
-                attached_resource_key = "LZ-IPSEC-VPN-TUNNEL-1-KEY"
+                attached_resource_id  = local.use_existing_ipsec ? data.oci_core_ipsec_connection_tunnels.these[0].ip_sec_connection_tunnels[0].id : null
+                attached_resource_key = local.deploy_new_ipsec ? "LZ-IPSEC-VPN-TUNNEL-1-KEY" : null
                 type                  = "IPSEC_TUNNEL"
               }
             },
@@ -153,7 +154,8 @@ locals {
               display_name        = "${coalesce(var.ipsec_vpn_name, "${var.service_label}-oci-ipsec")}-tunnel-2-attachment"
               drg_route_table_key = "IPSEC-TUNNEL-2-DRG-ROUTE-TABLE"
               network_details = {
-                attached_resource_key = "LZ-IPSEC-VPN-TUNNEL-2-KEY"
+                attached_resource_id  = local.use_existing_ipsec ? data.oci_core_ipsec_connection_tunnels.these[0].ip_sec_connection_tunnels[1].id : null
+                attached_resource_key = local.deploy_new_ipsec ? "LZ-IPSEC-VPN-TUNNEL-2-KEY" : null
                 type                  = "IPSEC_TUNNEL"
               }
             }
