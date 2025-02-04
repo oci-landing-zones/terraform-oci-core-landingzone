@@ -258,17 +258,19 @@ variableGroups:
       - "fastconnect_virtual_circuit_type"
       - "fastconnect_virtual_circuit_vlan"
       - "fastconnect_virtual_circuit_routing_policy"
+      - "ipsec_config"
+      - "existing_ipsec_ocid"
+      - "ipsec_vpn_name"
+      - "ipsec_customer_bgp_asn"
       - "ipsec_tunnel1_customer_interface_ip"
       - "ipsec_tunnel1_oracle_interface_ip"
       - "ipsec_tunnel2_customer_interface_ip"
       - "ipsec_tunnel2_oracle_interface_ip"
-      - "ipsec_tunnel_name"
-      - "ipsec_customer_bgp_asn"
       - "cpe_config"
+      - "existing_cpe_ocid"
       - "cpe_name"
       - "cpe_ip_address"
       - "cpe_device_shape_vendor"
-      - "existing_cpe_ocid"
 
   - title: "Networking - Three Tier VCNs"
     variables:
@@ -4054,203 +4056,21 @@ variables:
               - "FastConnect and IPSec"
     default: ""
 
-  ipsec_tunnel1_oracle_interface_ip:
-    type: string
-    title: "OCI Border Gateway Protocol (BGP) IP Address (Tunnel 1)"
-    description: "Enter the first IP CIDR block provided by OCI for BGP peering for tunnel 1."
-    visible:
-        not:
-          - ${hub_deployment_option}
-          - "No cross-VCN or on-premises connectivity"
-        or:
-          - eq:
-              - ${on_premises_connection_option}
-              - "IPSec VPN"
-          - eq:
-              - ${on_premises_connection_option}
-              - "FastConnect and IPSec"
-    default: ""
-
-  ipsec_tunnel2_customer_interface_ip:
-    type: string
-    title: "Customer Border Gateway Protocol (BGP) IP Address (Tunnel 2)"
-    description: "Enter the second IP CIDR block used on the customer side for BGP peering for tunnel 2."
-    visible:
-        not:
-          - ${hub_deployment_option}
-          - "No cross-VCN or on-premises connectivity"
-        or:
-          - eq:
-              - ${on_premises_connection_option}
-              - "IPSec VPN"
-          - eq:
-              - ${on_premises_connection_option}
-              - "FastConnect and IPSec"
-    default: ""
-
-  ipsec_tunnel2_oracle_interface_ip:
-    type: string
-    title: "OCI Border Gateway Protocol (BGP) IP Address (Tunnel 2)"
-    description: "Enter the second IP CIDR block used on the customer side for BGP peering for tunnel 2."
-    visible:
-        not:
-          - ${hub_deployment_option}
-          - "No cross-VCN or on-premises connectivity"
-        or:
-          - eq:
-              - ${on_premises_connection_option}
-              - "IPSec VPN"
-          - eq:
-              - ${on_premises_connection_option}
-              - "FastConnect and IPSec"
-    default: ""
-
-  ipsec_tunnel_name:
-    type: string
-    title: "Tunnel Name"
-    description: "Enter the display name used by the IPSec VPN."
-    visible:
-        not:
-          - ${hub_deployment_option}
-          - "No cross-VCN or on-premises connectivity"
-        or:
-          - eq:
-              - ${on_premises_connection_option}
-              - "IPSec VPN"
-          - eq:
-              - ${on_premises_connection_option}
-              - "FastConnect and IPSec"
-    default: ""
-
-  ipsec_tunnel1_customer_interface_ip:
-    type: string
-    title: "Customer Border Gateway Protocol (BGP) IP Address (Tunnel 1)"
-    description: "Enter the first IP CIDR block provided by OCI for BGP peering for tunnel 1."
-    visible:
-        not:
-          - ${hub_deployment_option}
-          - "No cross-VCN or on-premises connectivity"
-        or:
-          - eq:
-              - ${on_premises_connection_option}
-              - "IPSec VPN"
-          - eq:
-              - ${on_premises_connection_option}
-              - "FastConnect and IPSec"
-    default: ""
-
-  ipsec_customer_bgp_asn:
-    type: string
-    title: "Customer BGP ASN"
-    description: "Enter on-premises network's Autonomous System Number"
-    visible:
-      eq:
-        - ${fastconnect_virtual_circuit_config}
-        - "Create New FastConnect Virtual Circuit"
-
-  cpe_config:
-    type: enum
-    title: "Customer-Premises Equipment (CPE) Configuration"
-    description: "Select whether a new Customer-Premises Equipment will be created or using existing Customer-Premises Equipment"
-    visible:
-       not:
-            - ${hub_deployment_option}
-            - "No cross-VCN or on-premises connectivity"
-       or:
-         - eq:
-            - ${on_premises_connection_option}
-            - "IPSec VPN"
-         - eq:
-            - ${on_premises_connection_option}
-            - "FastConnect and IPSec"
-    enum:
-      - "Use Existing"
-      - "Create new Customer-Premises Equipment"
-    default: "Use Existing" 
-
-  existing_cpe_ocid:
-    type: string
-    title: "Customer-Premises Equipment (CPE) OCID"
-    description: "Enter the OCID of the Customer-Premises Equipment that you want to reuse for On-premises."
-    visible:
-        not:
-          - ${hub_deployment_option}
-          - "No cross-VCN or on-premises connectivity"
-        and:
-          - eq:
-              - ${cpe_config}
-              - "Use Existing"
-          - or:
-            - eq:
-                - ${on_premises_connection_option}
-                - "IPSec VPN"
-            - eq:
-                - ${on_premises_connection_option}
-                - "FastConnect and IPSec"
-
-  cpe_name:
-    type: string
-    title: "Customer-Premises Equipment (CPE) Object Name"
-    description: "Provide a name for the new Customer-Premises Equipment"
-    visible:
-        not:
-          - ${hub_deployment_option}
-          - "No cross-VCN or on-premises connectivity"
-        or:
-          - eq:
-              - ${on_premises_connection_option}
-              - "IPSec VPN"
-          - eq:
-              - ${on_premises_connection_option}
-              - "FastConnect and IPSec"
-
-  cpe_ip_address:
-    type: string
-    title: "Customer-Premises Equipment (CPE) Object IP Address"
-    description: "Provide the IP address of the Customer-Premises Equipment"
-    visible:
-        not:
-          - ${hub_deployment_option}
-          - "No cross-VCN or on-premises connectivity"
-        or:
-          - eq:
-              - ${on_premises_connection_option}
-              - "IPSec VPN"
-          - eq:
-              - ${on_premises_connection_option}
-              - "FastConnect and IPSec"
-
-  cpe_device_shape_vendor:
-    type: string
-    title: "Customer-Premises Equipment (CPE) Device Shape Vendor"
-    description: "Name of the device shape vendor used by the CPE. See <a href=\"https://docs.oracle.com/en-us/iaas/Content/Network/Reference/CPElist.htm\">documentation</a>. for verified CPE devices for more information"
-    visible:
-        not:
-          - ${hub_deployment_option}
-          - "No cross-VCN or on-premises connectivity"
-        or:
-          - eq:
-              - ${on_premises_connection_option}
-              - "IPSec VPN"
-          - eq:
-              - ${on_premises_connection_option}
-              - "FastConnect and IPSec"
-
   fastconnect_virtual_circuit_config:
     type: enum
     title: "FastConnect Virtual Circuit"
     description: "Select whether a new FastConnect Virtual Circuit will be created or using existing."
     visible:
-        not:
-          - ${hub_deployment_option}
-          - "No cross-VCN or on-premises connectivity"
-        or:
-          - eq:
-              - ${on_premises_connection_option}
-              - "FastConnect Virtual Circuit"
-          - eq:
-              - ${on_premises_connection_option}
-              - "FastConnect and IPSec"
+      not:
+        - ${hub_deployment_option}
+        - "No cross-VCN or on-premises connectivity"
+      or:
+        - eq:
+            - ${on_premises_connection_option}
+            - "FastConnect Virtual Circuit"
+        - eq:
+            - ${on_premises_connection_option}
+            - "FastConnect and IPSec"
     enum:
       - "Use Existing"
       - "Create New FastConnect Virtual Circuit"
@@ -4278,7 +4098,7 @@ variables:
     type: enum
     title: "Bandwidth shape"
     description: "Specify the bandwidth of the Virtual Circuit connection"
-    visible: 
+    visible:
       eq:
         - ${fastconnect_virtual_circuit_config}
         - "Create New FastConnect Virtual Circuit"
@@ -4301,7 +4121,7 @@ variables:
     type: enum
     title: "Routing Policy"
     description: "Choose one of the FastConnect virtual Circuit Routing Policies. The routing policy sets how routing information about the Oracle cloud is shared over a public virtual circuit"
-    visible: 
+    visible:
       eq:
         - ${fastconnect_virtual_circuit_config}
         - "Create New FastConnect Virtual Circuit"
@@ -4310,6 +4130,270 @@ variables:
       - "Global"
     default: "Regional"
 
+  ipsec_config:
+    type: enum
+    title: "IPSec Configuration"
+    description: "Select whether a new IPSec Connection will be created or whether an existing IPSec Connection will be provided."
+    visible:
+      not:
+        - ${hub_deployment_option}
+        - "No cross-VCN or on-premises connectivity"
+      or:
+        - eq:
+            - ${on_premises_connection_option}
+            - "IPSec VPN"
+        - eq:
+            - ${on_premises_connection_option}
+            - "FastConnect and IPSec"
+    enum:
+      - "Use Existing IPSec Connection"
+      - "Create New IPSec Connection"
+    default: "Use Existing IPSec Connection"
+
+  existing_ipsec_ocid:
+    type: string
+    title: "IPSec OCID"
+    description: "Enter the OCID of the existing IPSec connection VPN, required if using an existing IPSec connection."
+    visible:
+      not:
+        - ${hub_deployment_option}
+        - "No cross-VCN or on-premises connectivity"
+      and:
+        - eq:
+            - ${ipsec_config}
+            - "Use Existing IPSec Connection"
+        - or:
+            - eq:
+                - ${on_premises_connection_option}
+                - "IPSec VPN"
+            - eq:
+                - ${on_premises_connection_option}
+                - "FastConnect and IPSec"
+
+  ipsec_vpn_name:
+    type: string
+    title: "IPSec VPN Name"
+    description: "Enter the display name used by the IPSec VPN."
+    visible:
+      not:
+        - ${hub_deployment_option}
+        - "No cross-VCN or on-premises connectivity"
+      and:
+        - eq:
+            - ${ipsec_config}
+            - "Create New IPSec Connection"
+        - or:
+            - eq:
+                - ${on_premises_connection_option}
+                - "IPSec VPN"
+            - eq:
+                - ${on_premises_connection_option}
+                - "FastConnect and IPSec"
+    default: ""
+
+  ipsec_customer_bgp_asn:
+    type: string
+    title: "IPSec Tunnel Customer BGP ASN"
+    description: "Enter Customer Network's Border Gateway Protocol (BGP) Autonomous System Number (ASN)."
+    visible:
+      not:
+        - ${hub_deployment_option}
+        - "No cross-VCN or on-premises connectivity"
+      and:
+        - eq:
+            - ${ipsec_config}
+            - "Create New IPSec Connection"
+        - or:
+            - eq:
+                - ${on_premises_connection_option}
+                - "IPSec VPN"
+            - eq:
+                - ${on_premises_connection_option}
+                - "FastConnect and IPSec"
+
+  ipsec_tunnel1_customer_interface_ip:
+    type: string
+    title: "IPSec Tunnel 1 Customer Border Gateway Protocol (BGP) IP Address"
+    description: "Enter the first IP CIDR block for the Customer-Premises Equipment (CPE) for BGP peering for IPSec Tunnel 1."
+    visible:
+      not:
+        - ${hub_deployment_option}
+        - "No cross-VCN or on-premises connectivity"
+      and:
+        - eq:
+            - ${ipsec_config}
+            - "Create New IPSec Connection"
+        - or:
+            - eq:
+                - ${on_premises_connection_option}
+                - "IPSec VPN"
+            - eq:
+                - ${on_premises_connection_option}
+                - "FastConnect and IPSec"
+    default: ""
+
+  ipsec_tunnel1_oracle_interface_ip:
+    type: string
+    title: "IPSec Tunnel 1 OCI Border Gateway Protocol (BGP) IP Address"
+    description: "Enter the first IP CIDR block for Oracle for BGP peering for IPSec Tunnel 1."
+    visible:
+      not:
+        - ${hub_deployment_option}
+        - "No cross-VCN or on-premises connectivity"
+      and:
+        - eq:
+            - ${ipsec_config}
+            - "Create New IPSec Connection"
+        - or:
+            - eq:
+                - ${on_premises_connection_option}
+                - "IPSec VPN"
+            - eq:
+                - ${on_premises_connection_option}
+                - "FastConnect and IPSec"
+    default: ""
+
+  ipsec_tunnel2_customer_interface_ip:
+    type: string
+    title: "IPSec Tunnel 2 Customer Border Gateway Protocol (BGP) IP Address"
+    description: "Enter the second IP CIDR block for the Customer-Premises Equipment (CPE) for BGP peering for IPSec Tunnel 2."
+    visible:
+      not:
+        - ${hub_deployment_option}
+        - "No cross-VCN or on-premises connectivity"
+      and:
+        - eq:
+            - ${ipsec_config}
+            - "Create New IPSec Connection"
+        - or:
+            - eq:
+                - ${on_premises_connection_option}
+                - "IPSec VPN"
+            - eq:
+                - ${on_premises_connection_option}
+                - "FastConnect and IPSec"
+    default: ""
+
+  ipsec_tunnel2_oracle_interface_ip:
+    type: string
+    title: "IPSec Tunnel 2 OCI Border Gateway Protocol (BGP) IP Address"
+    description: "Enter the second IP CIDR block for Oracle for BGP peering for IPSec Tunnel 2."
+    visible:
+      not:
+        - ${hub_deployment_option}
+        - "No cross-VCN or on-premises connectivity"
+      and:
+        - eq:
+            - ${ipsec_config}
+            - "Create New IPSec Connection"
+        - or:
+            - eq:
+                - ${on_premises_connection_option}
+                - "IPSec VPN"
+            - eq:
+                - ${on_premises_connection_option}
+                - "FastConnect and IPSec"
+    default: ""
+
+  cpe_config:
+    type: enum
+    title: "Customer-Premises Equipment (CPE) Configuration"
+    description: "Select whether a new Customer-Premises Equipment will be created or whether an existing Customer-Premises Equipment is provided."
+    visible:
+       not:
+            - ${hub_deployment_option}
+            - "No cross-VCN or on-premises connectivity"
+       or:
+         - eq:
+            - ${on_premises_connection_option}
+            - "IPSec VPN"
+         - eq:
+            - ${on_premises_connection_option}
+            - "FastConnect and IPSec"
+    enum:
+      - "Use Existing"
+      - "Create new Customer-Premises Equipment"
+    default: "Use Existing" 
+
+  existing_cpe_ocid:
+    type: string
+    title: "Customer-Premises Equipment (CPE) OCID"
+    description: "Enter the OCID of the existing Customer-Premises Equipment, required if using an existing CPE"
+    visible:
+        not:
+          - ${hub_deployment_option}
+          - "No cross-VCN or on-premises connectivity"
+        and:
+          - eq:
+              - ${cpe_config}
+              - "Use Existing"
+          - or:
+            - eq:
+                - ${on_premises_connection_option}
+                - "IPSec VPN"
+            - eq:
+                - ${on_premises_connection_option}
+                - "FastConnect and IPSec"
+
+  cpe_name:
+    type: string
+    title: "Customer-Premises Equipment (CPE) Object Name"
+    description: "Provide a name for the new Customer-Premises Equipment"
+    visible:
+        not:
+          - ${hub_deployment_option}
+          - "No cross-VCN or on-premises connectivity"
+        and:
+          - eq:
+              - ${cpe_config}
+              - "Create new Customer-Premises Equipment"
+          - or:
+              - eq:
+                  - ${on_premises_connection_option}
+                  - "IPSec VPN"
+              - eq:
+                  - ${on_premises_connection_option}
+                  - "FastConnect and IPSec"
+
+  cpe_ip_address:
+    type: string
+    title: "Customer-Premises Equipment (CPE) Object IP Address"
+    description: "Provide the IP address of the Customer-Premises Equipment"
+    visible:
+        not:
+          - ${hub_deployment_option}
+          - "No cross-VCN or on-premises connectivity"
+        and:
+          - eq:
+              - ${cpe_config}
+              - "Create new Customer-Premises Equipment"
+          - or:
+              - eq:
+                  - ${on_premises_connection_option}
+                  - "IPSec VPN"
+              - eq:
+                  - ${on_premises_connection_option}
+                  - "FastConnect and IPSec"
+
+  cpe_device_shape_vendor:
+    type: string
+    title: "Customer-Premises Equipment (CPE) Device Shape Vendor"
+    description: "Name of the device shape vendor used by the CPE. See <a href=\"https://docs.oracle.com/en-us/iaas/Content/Network/Reference/CPElist.htm\">documentation</a> for verified CPE devices for more information."
+    visible:
+        not:
+          - ${hub_deployment_option}
+          - "No cross-VCN or on-premises connectivity"
+        and:
+          - eq:
+              - ${cpe_config}
+              - "Create new Customer-Premises Equipment"
+          - or:
+              - eq:
+                  - ${on_premises_connection_option}
+                  - "IPSec VPN"
+              - eq:
+                  - ${on_premises_connection_option}
+                  - "FastConnect and IPSec"
 
 
 # -------------------------------------------
