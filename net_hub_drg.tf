@@ -9,8 +9,8 @@ locals {
     "VCN or on-premises connectivity routing via DRG (existing DRG)"                                                                                   = 2,
     "VCN or on-premises connectivity routing through DMZ VCN with Network Virtual Appliance (DRG and DMZ VCN will be created)"                         = 3,
     "VCN or on-premises connectivity routed through DMZ VCN with Network Virtual Appliance existing DRG (DMZ VCN will be created and DRG ID required)" = 4,
-    "No Cross VCN with on-premise connectivity using a new DRG"                                                                                        = 5,
-    "No cross VCN with on-premise connectivity using an existing DRG"                                                                                  = 6
+    "No cross-VCN with on-premises connectivity using a new DRG"                                                                                       = 5,
+    "No cross-VCN with on-premises connectivity using an existing DRG"                                                                                 = 6
   }
 
   chosen_hub_option = var.hub_deployment_option == "" ? var.hub_deployment : local.hub_options[var.hub_deployment_option]
@@ -165,7 +165,8 @@ locals {
               display_name        = "${coalesce(var.fastconnect_virtual_circuit_name, "${var.service_label}-fastconnect-virtual-circuit")}-attachment"
               drg_route_table_key = "FC-VIRTUAL-CIRCUIT-DRG-ROUTE-TABLE"
               network_details = {
-                attached_resource_key = "FASTCONNECT"
+                attached_resource_key = local.use_existing_fastconnect_virtual_circuit == false ? "FASTCONNECT" : null
+                attached_resource_id  = local.use_existing_fastconnect_virtual_circuit == true ? trimspace(var.existing_fastconnect_virtual_circuit_ocid) : null
                 type                  = "VIRTUAL_CIRCUIT"
               }
             }

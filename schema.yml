@@ -241,17 +241,15 @@ variableGroups:
       - "onprem_cidrs"
       - "fastconnect_virtual_circuit_config"
       - "fastconnect_virtual_circuit_name"
-      - "fastconnect_virtual_circuit_bandwith_shape"
-      - "fastconnect_virtual_circuit_bandwith_custom_shape"
+      - "fastconnect_virtual_circuit_bandwidth_shape"
+      - "fastconnect_virtual_circuit_bandwidth_custom_shape"
       - "fastconnect_virtual_circuit_bgp_md5auth_key"
       - "fastconnect_virtual_circuit_cross_connect_or_cross_connect_group_id"
       - "fastconnect_virtual_circuit_customer_asn"
       - "fastconnect_virtual_circuit_customer_bgp_peering_ip"
-      - "fastconnect_virtual_circuit_customer_bgp_peering_ipv6"
       - "fastconnect_virtual_circuit_ip_mtu"
       - "fastconnect_virtual_circuit_is_bfd_enabled"
       - "fastconnect_virtual_circuit_oracle_bgp_peering_ip"
-      - "fastconnect_virtual_circuit_oracle_bgp_peering_ipv6"
       - "fastconnect_virtual_circuit_provider_service_id"
       - "existing_fastconnect_virtual_circuit_ocid"
       - "fastconnect_virtual_circuit_provider_service_key_name"
@@ -3897,27 +3895,10 @@ variables:
               - "FastConnect and IPSec"
     default: ""
 
-  fastconnect_virtual_circuit_customer_bgp_peering_ipv6:
-    type: string
-    title: "Customer Border Gateway Protocol (BGP) Peering IPv6"
-    description: "Enter the BGP IPv6 address for the edge router on the other end of the BGP session from Oracle. Must use a subnet mask from /28 to /31."
-    visible:
-        not:
-          - ${hub_deployment_option}
-          - "No cross-VCN or on-premises connectivity"
-        or:
-          - eq:
-              - ${on_premises_connection_option}
-              - "FastConnect Virtual Circuit"
-          - eq:
-              - ${on_premises_connection_option}
-              - "FastConnect and IPSec"
-    default: ""
-
   fastconnect_virtual_circuit_ip_mtu:
     type: enum
     title: "IP Maximum Transmission Unit (MTU)"
-    description: "Enter the MTU value to assign to the FastConnect virtual circuit. Supported values are: MTU_1500, MTU_9000. Default is MTU_1500."
+    description: "Enter the MTU value to assign to the FastConnect virtual circuit. Supported values are: 1500, 9000. Default is 1500."
     visible:
         not:
           - ${hub_deployment_option}
@@ -3930,9 +3911,9 @@ variables:
               - ${on_premises_connection_option}
               - "FastConnect and IPSec"
     enum:
-      - "MTU_1500"
-      - "MTU_9000"
-    default: "MTU_1500"
+      - "1500"
+      - "9000"
+    default: "1500"
 
   fastconnect_virtual_circuit_is_bfd_enabled:
     type: boolean
@@ -3955,23 +3936,6 @@ variables:
     type: string
     title: "Oracle Border Gateway Protocol (BGP) Peering IP"
     description: "Enter the IPv4 address for Oracle's end of the BGP session. Must use a subnet mask from /28 to /31."
-    visible:
-        not:
-          - ${hub_deployment_option}
-          - "No cross-VCN or on-premises connectivity"
-        or:
-          - eq:
-              - ${on_premises_connection_option}
-              - "FastConnect Virtual Circuit"
-          - eq:
-              - ${on_premises_connection_option}
-              - "FastConnect and IPSec"
-    default: ""
-
-  fastconnect_virtual_circuit_oracle_bgp_peering_ipv6:
-    type: string
-    title: "Oracle Border Gateway Protocol (BGP) Peering IPv6"
-    description: "Enter the IPv6 address for Oracle's end of the BGP session. Must use a subnet mask from /28 to /31."
     visible:
         not:
           - ${hub_deployment_option}
@@ -4094,7 +4058,7 @@ variables:
         - ${fastconnect_virtual_circuit_config}
         - "Create New FastConnect Virtual Circuit"
 
-  fastconnect_virtual_circuit_bandwith_shape:
+  fastconnect_virtual_circuit_bandwidth_shape:
     type: enum
     title: "Bandwidth shape"
     description: "Specify the bandwidth of the Virtual Circuit connection"
@@ -4108,13 +4072,13 @@ variables:
       - "Custom"
     default: "1 Gbps"
 
-  fastconnect_virtual_circuit_bandwith_custom_shape:
+  fastconnect_virtual_circuit_bandwidth_custom_shape:
     type: string
     title: "Custom Bandwidth Shape"
     description: "Custom bandwidth shape was selected, specify the value"
     visible:
       eq:
-        - ${fastconnect_virtual_circuit_bandwith_shape}
+        - ${fastconnect_virtual_circuit_bandwidth_shape}
         - "Custom"
 
   fastconnect_virtual_circuit_routing_policy:
