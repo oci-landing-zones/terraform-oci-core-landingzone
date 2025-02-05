@@ -354,14 +354,6 @@ locals {
                   destination        = "0.0.0.0/0"
                   destination_type   = "CIDR_BLOCK"
                 }
-              },
-              {
-                for cidr in var.onprem_cidrs : "ONPREM-${replace(replace(cidr, ".", ""), "/", "")}-RULE" => {
-                  network_entity_key = "HUB-DRG"
-                  description        = "Traffic destined to on-premises ${cidr} CIDR range goes to DRG."
-                  destination        = cidr
-                  destination_type   = "CIDR_BLOCK"
-                }
               }
             )
           }
@@ -376,6 +368,14 @@ locals {
                   description        = "To Oracle Services Network."
                   destination        = "all-services"
                   destination_type   = "SERVICE_CIDR_BLOCK"
+                }
+              },
+              {
+                for cidr in var.onprem_cidrs : "ONPREM-${replace(replace(cidr, ".", ""), "/", "")}-RULE" => {
+                  network_entity_key = "HUB-DRG"
+                  description        = "Traffic destined to on-premises ${cidr} CIDR range goes to DRG."
+                  destination        = cidr
+                  destination_type   = "CIDR_BLOCK"
                 }
               },
               local.add_tt_vcn1 == true && var.tt_vcn1_attach_to_drg == true ? { for cidr in var.tt_vcn1_cidrs : "TT-VCN-1-${replace(replace(cidr, ".", ""), "/", "")}}-RULE" => {
