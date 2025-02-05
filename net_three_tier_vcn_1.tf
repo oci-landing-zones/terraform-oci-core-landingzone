@@ -126,7 +126,7 @@ locals {
                   destination        = "0.0.0.0/0"
                   destination_type   = "CIDR_BLOCK"
                 }
-              }
+              },
             )
           }
         },
