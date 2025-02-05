@@ -96,8 +96,8 @@ variable "on_premises_connection_option" {
 }
 variable "fastconnect_virtual_circuit_config" {
   type        = string
-  default     = null
-  description = "Creates New FastConnect Virtual Circuit or connects existing VC (Valid values include 'FastConnect Virtual Circuit', 'Use Existing')."
+  default     = ""
+  description = "Creates New FastConnect Virtual Circuit or connects existing VC (Valid values include 'Create New FastConnect Virtual Circuit', 'Use Existing')."
 }
 variable "fastconnect_virtual_circuit_name" {
   type        = string
