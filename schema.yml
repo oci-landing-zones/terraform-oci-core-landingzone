@@ -239,23 +239,42 @@ variableGroups:
     variables:
       - "on_premises_connection_option" 
       - "onprem_cidrs"
+    visible: define_net
+
+  - title: "Networking - FastConnect Virtual Circuit"
+    variables:
       - "fastconnect_virtual_circuit_config"
+      - "existing_fastconnect_virtual_circuit_ocid"
       - "fastconnect_virtual_circuit_name"
       - "fastconnect_virtual_circuit_bandwidth_shape"
       - "fastconnect_virtual_circuit_bandwidth_custom_shape"
-      - "fastconnect_virtual_circuit_bgp_md5auth_key"
-      - "fastconnect_virtual_circuit_cross_connect_or_cross_connect_group_id"
+      - "fastconnect_virtual_circuit_type"
+      - "fastconnect_virtual_circuit_provider_service_id"
+      - "fastconnect_virtual_circuit_provider_service_key_name"
       - "fastconnect_virtual_circuit_customer_asn"
       - "fastconnect_virtual_circuit_customer_bgp_peering_ip"
-      - "fastconnect_virtual_circuit_ip_mtu"
-      - "fastconnect_virtual_circuit_is_bfd_enabled"
       - "fastconnect_virtual_circuit_oracle_bgp_peering_ip"
-      - "fastconnect_virtual_circuit_provider_service_id"
-      - "existing_fastconnect_virtual_circuit_ocid"
-      - "fastconnect_virtual_circuit_provider_service_key_name"
-      - "fastconnect_virtual_circuit_type"
-      - "fastconnect_virtual_circuit_vlan"
+      - "fastconnect_virtual_circuit_bgp_md5auth_key"
+      - "fastconnect_virtual_circuit_is_bfd_enabled"
       - "fastconnect_virtual_circuit_routing_policy"
+      - "fastconnect_virtual_circuit_ip_mtu"
+    visible:
+      and:
+        - define_net
+        - not:
+          - eq:
+            - ${hub_deployment_option}
+            - "No cross-VCN or on-premises connectivity"
+        - or:
+          - eq:
+            - ${on_premises_connection_option}
+            - "FastConnect Virtual Circuit"
+          - eq:
+            - ${on_premises_connection_option}
+            - "FastConnect and IPSec"
+
+  - title: "Networking - IPSec VPN"
+    variables:
       - "ipsec_config"
       - "existing_ipsec_ocid"
       - "ipsec_vpn_name"
@@ -273,6 +292,20 @@ variableGroups:
       - "cpe_name"
       - "cpe_ip_address"
       - "cpe_device_shape_vendor"
+    visible:
+      and:
+        - define_net
+        - not:
+          - eq:
+            - ${hub_deployment_option}
+            - "No cross-VCN or on-premises connectivity"
+        - or:
+          - eq:
+            - ${on_premises_connection_option}
+            - "IPSec VPN"
+          - eq:
+            - ${on_premises_connection_option}
+            - "FastConnect and IPSec"
 
   - title: "Networking - Three Tier VCNs"
     variables:
@@ -545,6 +578,8 @@ variableGroups:
       - "bastion_jump_host_instance_shape"
       - "bastion_jump_host_ssh_public_key_path"
       - "bastion_jump_host_platform_image_name"
+      - "fastconnect_virtual_circuit_cross_connect_or_cross_connect_group_id"
+      - "fastconnect_virtual_circuit_vlan"
 
 variables:
   region:
@@ -1228,7 +1263,7 @@ variables:
   tt_vcn1_fastconnect_route_enable:
     type: boolean
     title: "Allow this VPN to connect to on-premise resources via FastConnect Virtual Circuit"
-    description: "Click to add three-tirr VCN, with three subnets: web (public by default), application (private), database (private). An optional subnet (private by default) for Bastion deployment is also availble."
+    description: "Click to add three-tier VCN, with three subnets: web (public by default), application (private), database (private). An optional subnet (private by default) for Bastion deployment is also availble."
     visible:
       and:
         - add_tt_vcn1
@@ -1243,7 +1278,7 @@ variables:
   tt_vcn1_ipsec_route_enable:
     type: boolean
     title: "Allow this VPN to connect to on-premise resources via IPSec VPN"
-    description: "Click to add three-tirr VCN, with three subnets: web (public by default), application (private), database (private). An optional subnet (private by default) for Bastion deployment is also availble."
+    description: "Click to add three-tier VCN, with three subnets: web (public by default), application (private), database (private). An optional subnet (private by default) for Bastion deployment is also availble."
     visible:
       and:
         - add_tt_vcn1
@@ -1490,7 +1525,7 @@ variables:
   tt_vcn2_fastconnect_route_enable:
     type: boolean
     title: "Allow this VPN to connect to on-premise resources via FastConnect Virtual Circuit"
-    description: "Click to add three-tirr VCN, with three subnets: web (public by default), application (private), database (private). An optional subnet (private by default) for Bastion deployment is also availble."
+    description: "Click to add three-tier VCN, with three subnets: web (public by default), application (private), database (private). An optional subnet (private by default) for Bastion deployment is also availble."
     visible:
       and:
         - add_tt_vcn2
@@ -1505,7 +1540,7 @@ variables:
   tt_vcn2_ipsec_route_enable:
     type: boolean
     title: "Allow this VPN to connect to on-premise resources via IPSec VPN"
-    description: "Click to add three-tirr VCN, with three subnets: web (public by default), application (private), database (private). An optional subnet (private by default) for Bastion deployment is also availble."
+    description: "Click to add three-tier VCN, with three subnets: web (public by default), application (private), database (private). An optional subnet (private by default) for Bastion deployment is also availble."
     visible:
       and:
         - add_tt_vcn2
@@ -1764,7 +1799,7 @@ variables:
   tt_vcn3_fastconnect_route_enable:
     type: boolean
     title: "Allow this VPN to connect to on-premise resources via FastConnect Virtual Circuit"
-    description: "Click to add three-tirr VCN, with three subnets: web (public by default), application (private), database (private). An optional subnet (private by default) for Bastion deployment is also availble."
+    description: "Click to add three-tier VCN, with three subnets: web (public by default), application (private), database (private). An optional subnet (private by default) for Bastion deployment is also availble."
     visible:
       and:
         - add_tt_vcn3
@@ -1779,7 +1814,7 @@ variables:
   tt_vcn3_ipsec_route_enable:
     type: boolean
     title: "Allow this VPN to connect to on-premise resources via IPSec VPN"
-    description: "Click to add three-tirr VCN, with three subnets: web (public by default), application (private), database (private). An optional subnet (private by default) for Bastion deployment is also availble."
+    description: "Click to add three-tier VCN, with three subnets: web (public by default), application (private), database (private). An optional subnet (private by default) for Bastion deployment is also availble."
     visible:
       and:
         - add_tt_vcn3
@@ -2154,7 +2189,7 @@ variables:
   exa_vcn1_fastconnect_route_enable:
     type: boolean
     title: "Allow this VPN to connect to on-premise resources via FastConnect Virtual Circuit"
-    description: "Click to add three-tirr VCN, with three subnets: web (public by default), application (private), database (private). An optional subnet (private by default) for Bastion deployment is also availble."
+    description: "Click to add three-tier VCN, with three subnets: web (public by default), application (private), database (private). An optional subnet (private by default) for Bastion deployment is also availble."
     visible:
       and:
         - add_exa_vcn1
@@ -2169,7 +2204,7 @@ variables:
   exa_vcn1_ipsec_route_enable:
     type: boolean
     title: "Allow this VPN to connect to on-premise resources via IPSec VPN"
-    description: "Click to add three-tirr VCN, with three subnets: web (public by default), application (private), database (private). An optional subnet (private by default) for Bastion deployment is also availble."
+    description: "Click to add three-tier VCN, with three subnets: web (public by default), application (private), database (private). An optional subnet (private by default) for Bastion deployment is also availble."
     visible:
       and:
         - add_exa_vcn1
@@ -2315,7 +2350,7 @@ variables:
   exa_vcn2_fastconnect_route_enable:
     type: boolean
     title: "Allow this VPN to connect to on-premise resources via FastConnect Virtual Circuit"
-    description: "Click to add three-tirr VCN, with three subnets: web (public by default), application (private), database (private). An optional subnet (private by default) for Bastion deployment is also availble."
+    description: "Click to add three-tier VCN, with three subnets: web (public by default), application (private), database (private). An optional subnet (private by default) for Bastion deployment is also availble."
     visible:
       and:
         - add_exa_vcn2
@@ -2330,7 +2365,7 @@ variables:
   exa_vcn2_ipsec_route_enable:
     type: boolean
     title: "Allow this VPN to connect to on-premise resources via IPSec VPN"
-    description: "Click to add three-tirr VCN, with three subnets: web (public by default), application (private), database (private). An optional subnet (private by default) for Bastion deployment is also availble."
+    description: "Click to add three-tier VCN, with three subnets: web (public by default), application (private), database (private). An optional subnet (private by default) for Bastion deployment is also availble."
     visible:
       and:
         - add_exa_vcn2
@@ -2476,7 +2511,7 @@ variables:
   exa_vcn3_fastconnect_route_enable:
     type: boolean
     title: "Allow this VPN to connect to on-premise resources via FastConnect Virtual Circuit"
-    description: "Click to add three-tirr VCN, with three subnets: web (public by default), application (private), database (private). An optional subnet (private by default) for Bastion deployment is also availble."
+    description: "Click to add three-tier VCN, with three subnets: web (public by default), application (private), database (private). An optional subnet (private by default) for Bastion deployment is also availble."
     visible:
       and:
         - add_exa_vcn3
@@ -2491,7 +2526,7 @@ variables:
   exa_vcn3_ipsec_route_enable:
     type: boolean
     title: "Allow this VPN to connect to on-premise resources via IPSec VPN"
-    description: "Click to add three-tirr VCN, with three subnets: web (public by default), application (private), database (private). An optional subnet (private by default) for Bastion deployment is also availble."
+    description: "Click to add three-tier VCN, with three subnets: web (public by default), application (private), database (private). An optional subnet (private by default) for Bastion deployment is also availble."
     visible:
       and:
         - add_exa_vcn3
@@ -2735,7 +2770,7 @@ variables:
   oke_vcn1_fastconnect_route_enable:
     type: boolean
     title: "Allow this VPN to connect to on-premise resources via FastConnect Virtual Circuit"
-    description: "Click to add three-tirr VCN, with three subnets: web (public by default), application (private), database (private). An optional subnet (private by default) for Bastion deployment is also availble."
+    description: "Click to add three-tier VCN, with three subnets: web (public by default), application (private), database (private). An optional subnet (private by default) for Bastion deployment is also availble."
     visible:
       and:
         - add_oke_vcn1
@@ -2750,7 +2785,7 @@ variables:
   oke_vcn1_ipsec_route_enable:
     type: boolean
     title: "Allow this VPN to connect to on-premise resources via IPSec VPN"
-    description: "Click to add three-tirr VCN, with three subnets: web (public by default), application (private), database (private). An optional subnet (private by default) for Bastion deployment is also availble."
+    description: "Click to add three-tier VCN, with three subnets: web (public by default), application (private), database (private). An optional subnet (private by default) for Bastion deployment is also availble."
     visible:
       and:
         - add_oke_vcn1
@@ -2993,7 +3028,7 @@ variables:
   oke_vcn2_fastconnect_route_enable:
     type: boolean
     title: "Allow this VPN to connect to on-premise resources via FastConnect Virtual Circuit"
-    description: "Click to add three-tirr VCN, with three subnets: web (public by default), application (private), database (private). An optional subnet (private by default) for Bastion deployment is also availble."
+    description: "Click to add three-tier VCN, with three subnets: web (public by default), application (private), database (private). An optional subnet (private by default) for Bastion deployment is also availble."
     visible:
       and:
         - add_oke_vcn2
@@ -3008,7 +3043,7 @@ variables:
   oke_vcn2_ipsec_route_enable:
     type: boolean
     title: "Allow this VPN to connect to on-premise resources via IPSec VPN"
-    description: "Click to add three-tirr VCN, with three subnets: web (public by default), application (private), database (private). An optional subnet (private by default) for Bastion deployment is also availble."
+    description: "Click to add three-tier VCN, with three subnets: web (public by default), application (private), database (private). An optional subnet (private by default) for Bastion deployment is also availble."
     visible:
       and:
         - add_oke_vcn2
@@ -3251,7 +3286,7 @@ variables:
   oke_vcn3_fastconnect_route_enable:
     type: boolean
     title: "Allow this VPN to connect to on-premise resources via FastConnect Virtual Circuit"
-    description: "Click to add three-tirr VCN, with three subnets: web (public by default), application (private), database (private). An optional subnet (private by default) for Bastion deployment is also availble."
+    description: "Click to add three-tier VCN, with three subnets: web (public by default), application (private), database (private). An optional subnet (private by default) for Bastion deployment is also availble."
     visible:
       and:
         - add_oke_vcn3
@@ -3266,7 +3301,7 @@ variables:
   oke_vcn3_ipsec_route_enable:
     type: boolean
     title: "Allow this VPN to connect to on-premise resources via IPSec VPN"
-    description: "Click to add three-tirr VCN, with three subnets: web (public by default), application (private), database (private). An optional subnet (private by default) for Bastion deployment is also availble."
+    description: "Click to add three-tier VCN, with three subnets: web (public by default), application (private), database (private). An optional subnet (private by default) for Bastion deployment is also availble."
     visible:
       and:
         - add_oke_vcn3
@@ -3288,8 +3323,8 @@ variables:
     visible: define_net  
     enum:
       - "No cross-VCN or on-premises connectivity"
-      - "No cross-VCN with on-premises connectivity using an existing DRG"
       - "No cross-VCN with on-premises connectivity using a new DRG"
+      - "No cross-VCN with on-premises connectivity using an existing DRG"
       - "VCN or on-premises connectivity routing via DRG (DRG will be created)"
       - "VCN or on-premises connectivity routing via DRG (existing DRG)"
       - "VCN or on-premises connectivity routing through DMZ VCN with Network Virtual Appliance (DRG and DMZ VCN will be created)"
@@ -3831,227 +3866,34 @@ variables:
             - "No cross-VCN or on-premises connectivity"
     default: ""
 
-  fastconnect_virtual_circuit_bgp_md5auth_key:
-    type: string
-    title: "BGP MD5 Authentication Key"
-    description: "Enter the key for BGP MD5 authentication. Only applicable if your system requires MD5 authentication. If empty, that means you don't use BGP MD5 authentication."
-    visible:
-        not:
-          - ${hub_deployment_option}
-          - "No cross-VCN or on-premises connectivity"
-        or:
-          - eq:
-              - ${on_premises_connection_option}
-              - "FastConnect Virtual Circuit"
-          - eq:
-              - ${on_premises_connection_option}
-              - "FastConnect and IPSec"
-    default: ""
-
-  fastconnect_virtual_circuit_cross_connect_or_cross_connect_group_id:
-    type: string
-    title: "Cross-connect or Cross-connect Group OCID"
-    description: "Enter the OCID of the cross-connect or cross-connect group used for cross-connect mapping."
-    visible:
-        not:
-          - ${hub_deployment_option}
-          - "No cross-VCN or on-premises connectivity"
-        or:
-          - eq:
-              - ${on_premises_connection_option}
-              - "FastConnect Virtual Circuit"
-          - eq:
-              - ${on_premises_connection_option}
-              - "FastConnect and IPSec"
-    default: ""
-
-  fastconnect_virtual_circuit_customer_asn:
-    type: string
-    title: "Customer Advance Shipment Notice (ASN)"
-    description: "Enter your BGP ASN (either public or private). Provide this value only if there is a BGP session that goes from your edge router to Oracle. Otherwise, leave this empty. Can be a 2-byte or 4-byte ASN."
-    visible:
-        not:
-          - ${hub_deployment_option}
-          - "No cross-VCN or on-premises connectivity"
-        or:
-          - eq:
-              - ${on_premises_connection_option}
-              - "FastConnect Virtual Circuit"
-          - eq:
-              - ${on_premises_connection_option}
-              - "FastConnect and IPSec"
-    default: ""
-
-  fastconnect_virtual_circuit_customer_bgp_peering_ip:
-    type: string
-    title: "Customer Border Gateway Protocol (BGP) Peering IP"
-    description: "Enter the BGP IPv4 address for the edge router on the other end of the BGP session from Oracle. Must use a subnet mask from /28 to /31."
-    visible:
-        not:
-          - ${hub_deployment_option}
-          - "No cross-VCN or on-premises connectivity"
-        or:
-          - eq:
-              - ${on_premises_connection_option}
-              - "FastConnect Virtual Circuit"
-          - eq:
-              - ${on_premises_connection_option}
-              - "FastConnect and IPSec"
-    default: ""
-
-  fastconnect_virtual_circuit_ip_mtu:
-    type: enum
-    title: "IP Maximum Transmission Unit (MTU)"
-    description: "Enter the MTU value to assign to the FastConnect virtual circuit. Supported values are: 1500, 9000. Default is 1500."
-    visible:
-        not:
-          - ${hub_deployment_option}
-          - "No cross-VCN or on-premises connectivity"
-        or:
-          - eq:
-              - ${on_premises_connection_option}
-              - "FastConnect Virtual Circuit"
-          - eq:
-              - ${on_premises_connection_option}
-              - "FastConnect and IPSec"
-    enum:
-      - "1500"
-      - "9000"
-    default: "1500"
-
-  fastconnect_virtual_circuit_is_bfd_enabled:
-    type: boolean
-    title: "Bidirectional Forwarding Detection (BFD)"
-    description: "If checked, BFD for IPv4 BGP peering will be enabled."
-    visible:
-        not:
-          - ${hub_deployment_option}
-          - "No cross-VCN or on-premises connectivity"
-        or:
-          - eq:
-              - ${on_premises_connection_option}
-              - "FastConnect Virtual Circuit"
-          - eq:
-              - ${on_premises_connection_option}
-              - "FastConnect and IPSec"
-    default: false
-
-  fastconnect_virtual_circuit_oracle_bgp_peering_ip:
-    type: string
-    title: "Oracle Border Gateway Protocol (BGP) Peering IP"
-    description: "Enter the IPv4 address for Oracle's end of the BGP session. Must use a subnet mask from /28 to /31."
-    visible:
-        not:
-          - ${hub_deployment_option}
-          - "No cross-VCN or on-premises connectivity"
-        or:
-          - eq:
-              - ${on_premises_connection_option}
-              - "FastConnect Virtual Circuit"
-          - eq:
-              - ${on_premises_connection_option}
-              - "FastConnect and IPSec"
-    default: ""
-
-  fastconnect_virtual_circuit_provider_service_id:
-    type: string
-    title: "Provider Service OCID"
-    description: "Enter the OCID of the service offered by the provider (if you're connecting via a provider)."
-    visible:
-        not:
-          - ${hub_deployment_option}
-          - "No cross-VCN or on-premises connectivity"
-        or:
-          - eq:
-              - ${on_premises_connection_option}
-              - "FastConnect Virtual Circuit"
-          - eq:
-              - ${on_premises_connection_option}
-              - "FastConnect and IPSec"
-    default: ""
-
-  fastconnect_virtual_circuit_provider_service_key_name:
-    type: string
-    title: "Provider Service Key"
-    description: "Enter the service key name offered by the provider for FastConnect virtual circuit."
-    visible:
-        not:
-          - ${hub_deployment_option}
-          - "No cross-VCN or on-premises connectivity"
-        or:
-          - eq:
-              - ${on_premises_connection_option}
-              - "FastConnect Virtual Circuit"
-          - eq:
-              - ${on_premises_connection_option}
-              - "FastConnect and IPSec"
-    default: ""
-
-  fastconnect_virtual_circuit_type:
-    type: enum
-    title: "Provider Service Key"
-    description: "Enter the type of IP addresses used in the Fast Connect virtual circuit."
-    visible:
-        not:
-          - ${hub_deployment_option}
-          - "No cross-VCN or on-premises connectivity"
-        or:
-          - eq:
-              - ${on_premises_connection_option}
-              - "FastConnect Virtual Circuit"
-          - eq:
-              - ${on_premises_connection_option}
-              - "FastConnect and IPSec"
-    enum:
-      - "PRIVATE"
-      - "PUBLIC"
-    default: "PRIVATE"
-
-  fastconnect_virtual_circuit_vlan:
-    type: string
-    title: "Virtual Local Area Network (VLAN) ID"
-    description: "Enter the number of the specific VLAN (on the cross-connect or cross-connect group) that is assigned to FastConnect virtual circuit."
-    visible:
-        not:
-          - ${hub_deployment_option}
-          - "No cross-VCN or on-premises connectivity"
-        or:
-          - eq:
-              - ${on_premises_connection_option}
-              - "FastConnect Virtual Circuit"
-          - eq:
-              - ${on_premises_connection_option}
-              - "FastConnect and IPSec"
-    default: ""
-
   fastconnect_virtual_circuit_config:
     type: enum
     title: "FastConnect Virtual Circuit"
     description: "Select whether a new FastConnect Virtual Circuit will be created or using existing."
     visible:
-      not:
-        - ${hub_deployment_option}
-        - "No cross-VCN or on-premises connectivity"
-      or:
-        - eq:
-            - ${on_premises_connection_option}
-            - "FastConnect Virtual Circuit"
-        - eq:
-            - ${on_premises_connection_option}
-            - "FastConnect and IPSec"
+        not:
+              - ${hub_deployment_option}
+              - "No cross-VCN or on-premises connectivity"
+        or:
+          - eq:
+              - ${on_premises_connection_option}
+              - "FastConnect Virtual Circuit"
+          - eq:
+              - ${on_premises_connection_option}
+              - "FastConnect and IPSec"
     enum:
       - "Use Existing"
       - "Create New FastConnect Virtual Circuit"
-    default: ""
 
   existing_fastconnect_virtual_circuit_ocid:
     type: string
     title: "Virtual Circuit OCID"
-    description: "Enter the Virtual Circuit OCID."
+    description: "Enter the OCID of the existing FastConnect Virtual Circuit."
     visible:
       eq:
         - ${fastconnect_virtual_circuit_config}
         - "Use Existing"
+    required: true
 
   fastconnect_virtual_circuit_name:
     type: string
@@ -4079,11 +3921,96 @@ variables:
   fastconnect_virtual_circuit_bandwidth_custom_shape:
     type: string
     title: "Custom Bandwidth Shape"
-    description: "Custom bandwidth shape was selected, specify the value"
+    description: "Enter custom bandwidth shape for the FC virtual circuit. For example: '5 Gbps'"
     visible:
       eq:
         - ${fastconnect_virtual_circuit_bandwidth_shape}
         - "Custom"
+    pattern: "^\\d+\\sGbps$"
+
+  fastconnect_virtual_circuit_type:
+    type: enum
+    title: "Virtual Circuit Type"
+    description: "Enter the type of IP addresses used in the Fast Connect virtual circuit."
+    visible:
+      eq:
+        - ${fastconnect_virtual_circuit_config}
+        - "Create New FastConnect Virtual Circuit"
+    enum:
+      - "PRIVATE"
+      - "PUBLIC"
+    default: "PRIVATE"
+
+  fastconnect_virtual_circuit_provider_service_id:
+    type: string
+    title: "Provider Service OCID"
+    description: "Enter the OCID of the service offered by the provider (if you're connecting via a provider). To get a list of the available service offerings, see 
+    <a href=\"https://docs.cloud.oracle.com/iaas/api/#/en/iaas/latest/FastConnectProviderService/ListFastConnectProviderServices\">ListFastConnectProviderServices</a>"
+    visible:
+      eq:
+        - ${fastconnect_virtual_circuit_config}
+        - "Create New FastConnect Virtual Circuit"
+    default: ""
+
+  fastconnect_virtual_circuit_provider_service_key_name:
+    type: string
+    title: "Provider Service Key"
+    description: "Enter the service key name offered by the provider for FastConnect virtual circuit."
+    visible:
+      eq:
+        - ${fastconnect_virtual_circuit_config}
+        - "Create New FastConnect Virtual Circuit"
+    default: ""
+
+  fastconnect_virtual_circuit_customer_asn:
+    type: string
+    title: "Customer ASN (Autonomous System Number)"
+    description: "Enter your BGP ASN (either public or private). Provide this value only if there is a BGP session that goes from your edge router to Oracle. Otherwise, leave this empty. Can be a 2-byte or 4-byte ASN."
+    visible:
+      eq:
+        - ${fastconnect_virtual_circuit_config}
+        - "Create New FastConnect Virtual Circuit"
+    default: ""
+
+  fastconnect_virtual_circuit_customer_bgp_peering_ip:
+    type: string
+    title: "Customer Border Gateway Protocol (BGP) Peering IP"
+    description: "Enter the BGP IPv4 address for the edge router on the other end of the BGP session from Oracle. Must use a subnet mask from /28 to /31."
+    visible:
+      eq:
+        - ${fastconnect_virtual_circuit_config}
+        - "Create New FastConnect Virtual Circuit"
+    default: ""
+
+  fastconnect_virtual_circuit_oracle_bgp_peering_ip:
+    type: string
+    title: "Oracle Border Gateway Protocol (BGP) Peering IP"
+    description: "Enter the IPv4 address for Oracle's end of the BGP session. Must use a subnet mask from /28 to /31."
+    visible:
+      eq:
+        - ${fastconnect_virtual_circuit_config}
+        - "Create New FastConnect Virtual Circuit"
+    default: ""
+
+  fastconnect_virtual_circuit_bgp_md5auth_key:
+    type: string
+    title: "BGP MD5 Authentication Key"
+    description: "Enter the key for BGP MD5 authentication. Only applicable if your system requires MD5 authentication. If empty, that means you don't use BGP MD5 authentication."
+    visible:
+      eq:
+        - ${fastconnect_virtual_circuit_config}
+        - "Create New FastConnect Virtual Circuit"
+    default: ""
+
+  fastconnect_virtual_circuit_is_bfd_enabled:
+    type: boolean
+    title: "Bidirectional Forwarding Detection (BFD)"
+    description: "If checked, BFD for IPv4 BGP peering will be enabled."
+    visible:
+      eq:
+        - ${fastconnect_virtual_circuit_config}
+        - "Create New FastConnect Virtual Circuit"
+    default: false
 
   fastconnect_virtual_circuit_routing_policy:
     type: enum
@@ -4097,6 +4024,19 @@ variables:
       - "Regional"
       - "Global"
     default: "Regional"
+
+  fastconnect_virtual_circuit_ip_mtu:
+    type: enum
+    title: "IP Maximum Transmission Unit (MTU)"
+    description: "Enter the MTU value to assign to the FastConnect virtual circuit. Supported values are: 1500, 9000. Default is 1500."
+    visible:
+      eq:
+        - ${fastconnect_virtual_circuit_config}
+        - "Create New FastConnect Virtual Circuit"
+    enum:
+      - "1500"
+      - "9000"
+    default: "1500"
 
   ipsec_config:
     type: enum
@@ -4123,40 +4063,18 @@ variables:
     title: "IPSec OCID"
     description: "Enter the OCID of the existing IPSec connection VPN, required if using an existing IPSec connection."
     visible:
-      not:
-        - ${hub_deployment_option}
-        - "No cross-VCN or on-premises connectivity"
-      and:
-        - eq:
-            - ${ipsec_config}
-            - "Use Existing IPSec Connection"
-        - or:
-            - eq:
-                - ${on_premises_connection_option}
-                - "IPSec VPN"
-            - eq:
-                - ${on_premises_connection_option}
-                - "FastConnect and IPSec"
+      eq:
+        - ${ipsec_config}
+        - "Use Existing IPSec Connection"
 
   ipsec_vpn_name:
     type: string
     title: "IPSec VPN Name"
     description: "Enter the display name used by the IPSec VPN."
     visible:
-      not:
-        - ${hub_deployment_option}
-        - "No cross-VCN or on-premises connectivity"
-      and:
-        - eq:
-            - ${ipsec_config}
-            - "Create New IPSec Connection"
-        - or:
-            - eq:
-                - ${on_premises_connection_option}
-                - "IPSec VPN"
-            - eq:
-                - ${on_premises_connection_option}
-                - "FastConnect and IPSec"
+      eq:
+        - ${ipsec_config}
+        - "Create New IPSec Connection"
     default: ""
 
   ipsec_customer_bgp_asn:
@@ -4164,40 +4082,18 @@ variables:
     title: "IPSec Tunnel Customer BGP ASN"
     description: "Enter Customer Network's Border Gateway Protocol (BGP) Autonomous System Number (ASN)."
     visible:
-      not:
-        - ${hub_deployment_option}
-        - "No cross-VCN or on-premises connectivity"
-      and:
-        - eq:
-            - ${ipsec_config}
-            - "Create New IPSec Connection"
-        - or:
-            - eq:
-                - ${on_premises_connection_option}
-                - "IPSec VPN"
-            - eq:
-                - ${on_premises_connection_option}
-                - "FastConnect and IPSec"
+      eq:
+        - ${ipsec_config}
+        - "Create New IPSec Connection"
 
   ipsec_tunnel1_customer_interface_ip:
     type: string
     title: "IPSec Tunnel 1 Customer Border Gateway Protocol (BGP) IP Address"
     description: "Enter the first IP CIDR block for the Customer-Premises Equipment (CPE) for BGP peering for IPSec Tunnel 1."
     visible:
-      not:
-        - ${hub_deployment_option}
-        - "No cross-VCN or on-premises connectivity"
-      and:
-        - eq:
-            - ${ipsec_config}
-            - "Create New IPSec Connection"
-        - or:
-            - eq:
-                - ${on_premises_connection_option}
-                - "IPSec VPN"
-            - eq:
-                - ${on_premises_connection_option}
-                - "FastConnect and IPSec"
+      eq:
+        - ${ipsec_config}
+        - "Create New IPSec Connection"
     default: ""
 
   ipsec_tunnel1_oracle_interface_ip:
@@ -4205,20 +4101,29 @@ variables:
     title: "IPSec Tunnel 1 OCI Border Gateway Protocol (BGP) IP Address"
     description: "Enter the first IP CIDR block for Oracle for BGP peering for IPSec Tunnel 1."
     visible:
-      not:
-        - ${hub_deployment_option}
-        - "No cross-VCN or on-premises connectivity"
-      and:
-        - eq:
-            - ${ipsec_config}
-            - "Create New IPSec Connection"
-        - or:
-            - eq:
-                - ${on_premises_connection_option}
-                - "IPSec VPN"
-            - eq:
-                - ${on_premises_connection_option}
-                - "FastConnect and IPSec"
+      eq:
+        - ${ipsec_config}
+        - "Create New IPSec Connection"
+    default: ""
+
+  ipsec_tunnel1_shared_secret:
+    type: string
+    title: "IPSec Tunnel 1 Shared Secret"
+    description: "Enter IPSec Tunnel 1's shared secret (pre-shared key). If not provided, Oracle will generate one automatically."
+    visible:
+      eq:
+        - ${ipsec_config}
+        - "Create New IPSec Connection"
+    default: ""
+
+  ipsec_tunnel1_ike_version:
+    type: string
+    title: "IPSec Tunnel 1 IKE Version"
+    description: "Enter IPSec Tunnel 1's IKE Version, if using a CPE IKE identifier. Supported values are 'V1' or 'V2'."
+    visible:
+      eq:
+        - ${ipsec_config}
+        - "Create New IPSec Connection"
     default: ""
 
   ipsec_tunnel1_shared_secret:
@@ -4268,20 +4173,9 @@ variables:
     title: "IPSec Tunnel 2 Customer Border Gateway Protocol (BGP) IP Address"
     description: "Enter the second IP CIDR block for the Customer-Premises Equipment (CPE) for BGP peering for IPSec Tunnel 2."
     visible:
-      not:
-        - ${hub_deployment_option}
-        - "No cross-VCN or on-premises connectivity"
-      and:
-        - eq:
-            - ${ipsec_config}
-            - "Create New IPSec Connection"
-        - or:
-            - eq:
-                - ${on_premises_connection_option}
-                - "IPSec VPN"
-            - eq:
-                - ${on_premises_connection_option}
-                - "FastConnect and IPSec"
+      eq:
+        - ${ipsec_config}
+        - "Create New IPSec Connection"
     default: ""
 
   ipsec_tunnel2_oracle_interface_ip:
@@ -4289,20 +4183,29 @@ variables:
     title: "IPSec Tunnel 2 OCI Border Gateway Protocol (BGP) IP Address"
     description: "Enter the second IP CIDR block for Oracle for BGP peering for IPSec Tunnel 2."
     visible:
-      not:
-        - ${hub_deployment_option}
-        - "No cross-VCN or on-premises connectivity"
-      and:
-        - eq:
-            - ${ipsec_config}
-            - "Create New IPSec Connection"
-        - or:
-            - eq:
-                - ${on_premises_connection_option}
-                - "IPSec VPN"
-            - eq:
-                - ${on_premises_connection_option}
-                - "FastConnect and IPSec"
+      eq:
+        - ${ipsec_config}
+        - "Create New IPSec Connection"
+    default: ""
+
+  ipsec_tunnel2_shared_secret:
+    type: string
+    title: "IPSec Tunnel 2 Shared Secret"
+    description: "Enter IPSec Tunnel 2's shared secret (pre-shared key). If not provided, Oracle will generate one automatically."
+    visible:
+      eq:
+        - ${ipsec_config}
+        - "Create New IPSec Connection"
+    default: ""
+
+  ipsec_tunnel2_ike_version:
+    type: string
+    title: "IPSec Tunnel 2 IKE Version"
+    description: "Enter IPSec Tunnel 2's IKE Version, if using a CPE IKE identifier. Supported values are 'V1' or 'V2'."
+    visible:
+      eq:
+        - ${ipsec_config}
+        - "Create New IPSec Connection"
     default: ""
 
   ipsec_tunnel2_shared_secret:
@@ -4352,101 +4255,53 @@ variables:
     title: "Customer-Premises Equipment (CPE) Configuration"
     description: "Select whether a new Customer-Premises Equipment will be created or whether an existing Customer-Premises Equipment is provided."
     visible:
-       not:
-            - ${hub_deployment_option}
-            - "No cross-VCN or on-premises connectivity"
-       or:
-         - eq:
-            - ${on_premises_connection_option}
-            - "IPSec VPN"
-         - eq:
-            - ${on_premises_connection_option}
-            - "FastConnect and IPSec"
+      eq:
+        - ${ipsec_config}
+        - "Create New IPSec Connection"
     enum:
       - "Use Existing"
       - "Create new Customer-Premises Equipment"
-    default: "Use Existing" 
+    default: "Use Existing"
 
   existing_cpe_ocid:
     type: string
     title: "Customer-Premises Equipment (CPE) OCID"
     description: "Enter the OCID of the existing Customer-Premises Equipment, required if using an existing CPE"
     visible:
-        not:
-          - ${hub_deployment_option}
-          - "No cross-VCN or on-premises connectivity"
-        and:
-          - eq:
-              - ${cpe_config}
-              - "Use Existing"
-          - or:
-            - eq:
-                - ${on_premises_connection_option}
-                - "IPSec VPN"
-            - eq:
-                - ${on_premises_connection_option}
-                - "FastConnect and IPSec"
+      and:
+        - eq:
+          - ${cpe_config}
+          - "Use Existing"
+        - eq:
+          - ${ipsec_config}
+          - "Create New IPSec Connection"
 
   cpe_name:
     type: string
     title: "Customer-Premises Equipment (CPE) Object Name"
     description: "Provide a name for the new Customer-Premises Equipment"
     visible:
-        not:
-          - ${hub_deployment_option}
-          - "No cross-VCN or on-premises connectivity"
-        and:
-          - eq:
-              - ${cpe_config}
-              - "Create new Customer-Premises Equipment"
-          - or:
-              - eq:
-                  - ${on_premises_connection_option}
-                  - "IPSec VPN"
-              - eq:
-                  - ${on_premises_connection_option}
-                  - "FastConnect and IPSec"
+      eq:
+        - ${cpe_config}
+        - "Create new Customer-Premises Equipment"
 
   cpe_ip_address:
     type: string
     title: "Customer-Premises Equipment (CPE) Object IP Address"
     description: "Provide the IP address of the Customer-Premises Equipment"
     visible:
-        not:
-          - ${hub_deployment_option}
-          - "No cross-VCN or on-premises connectivity"
-        and:
-          - eq:
-              - ${cpe_config}
-              - "Create new Customer-Premises Equipment"
-          - or:
-              - eq:
-                  - ${on_premises_connection_option}
-                  - "IPSec VPN"
-              - eq:
-                  - ${on_premises_connection_option}
-                  - "FastConnect and IPSec"
+      eq:
+        - ${cpe_config}
+        - "Create new Customer-Premises Equipment"
 
   cpe_device_shape_vendor:
     type: string
     title: "Customer-Premises Equipment (CPE) Device Shape Vendor"
     description: "Name of the device shape vendor used by the CPE. See <a href=\"https://docs.oracle.com/en-us/iaas/Content/Network/Reference/CPElist.htm\">documentation</a> for verified CPE devices for more information."
     visible:
-        not:
-          - ${hub_deployment_option}
-          - "No cross-VCN or on-premises connectivity"
-        and:
-          - eq:
-              - ${cpe_config}
-              - "Create new Customer-Premises Equipment"
-          - or:
-              - eq:
-                  - ${on_premises_connection_option}
-                  - "IPSec VPN"
-              - eq:
-                  - ${on_premises_connection_option}
-                  - "FastConnect and IPSec"
-
+      eq:
+        - ${cpe_config}
+        - "Create new Customer-Premises Equipment"
 
 # -------------------------------------------
 # ----- Networking - Hub Web Subnet
