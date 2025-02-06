@@ -18,7 +18,7 @@ locals {
         provision_fc_virtual_circuit                = true
         show_available_fc_virtual_circuit_providers = false
 
-        bandwidth_shape_name      = var.fastconnect_virtual_circuit_bandwidth_shape
+        bandwidth_shape_name      = coalesce(var.fastconnect_virtual_circuit_bandwidth_custom_shape, var.fastconnect_virtual_circuit_bandwidth_shape)
         provider_service_id       = var.fastconnect_virtual_circuit_provider_service_id
         provider_service_key_name = var.fastconnect_virtual_circuit_provider_service_key_name
 

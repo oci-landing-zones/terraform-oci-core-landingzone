@@ -123,6 +123,13 @@ variable "fastconnect_virtual_circuit_config" {
   default     = ""
   description = "Creates New FastConnect Virtual Circuit or connects existing VC (Valid values include 'Create New FastConnect Virtual Circuit', 'Use Existing')."
 }
+
+variable "existing_fastconnect_virtual_circuit_ocid" {
+  type        = string
+  default     = ""
+  description = "The OCID of the existing FastConnect Virtual Circuit."
+}
+
 variable "fastconnect_virtual_circuit_name" {
   type        = string
   default     = ""
@@ -139,6 +146,20 @@ variable "fastconnect_virtual_circuit_bandwidth_shape" {
   type        = string
   default     = "1 Gbps"
   description = "Bandwidth level (shape) of the Fast Connect virtual circuit."
+  validation {
+    condition     = length(regexall("^\\d+\\sGbps$", var.fastconnect_virtual_circuit_bandwidth_shape)) > 0
+    error_message = "The bandwidth shape of the FC virtual circuit must be in the form '<number> Gbps', e.g., '1 Gbps', '10 Gbps'"
+  }
+}
+
+variable "fastconnect_virtual_circuit_bandwidth_custom_shape" {
+  type        = string
+  default     = "1 Gbps"
+  description = "Custom bandwidth level (shape) of the FastConnect virtual circuit. For example: '5 Gbps'"
+  validation {
+    condition     = length(regexall("^\\d+\\sGbps$", var.fastconnect_virtual_circuit_bandwidth_custom_shape)) > 0
+    error_message = "The bandwidth shape of the FC virtual circuit must be in the form '<number> Gbps', e.g. '2 Gbps', '5 Gbps'"
+  }
 }
 
 variable "fastconnect_virtual_circuit_customer_asn" {
@@ -153,22 +174,10 @@ variable "fastconnect_virtual_circuit_customer_bgp_peering_ip" {
   description = "The BGP IPv4 address for the edge router on the other end of the BGP session from Oracle. Must use a subnet mask from /28 to /31."
 }
 
-variable "fastconnect_virtual_circuit_customer_bgp_peering_ipv6" {
-  type        = string
-  default     = null
-  description = "The BGP IPv6 address for the edge router on the other end of the BGP session from Oracle. Must use a subnet mask from /28 to /31."
-}
-
 variable "fastconnect_virtual_circuit_oracle_bgp_peering_ip" {
   type        = string
   default     = null
   description = "The IPv4 address for Oracle's end of the BGP session. Must use a subnet mask from /28 to /31."
-}
-
-variable "fastconnect_virtual_circuit_oracle_bgp_peering_ipv6" {
-  type        = string
-  default     = null
-  description = "The IPv6 address for Oracle's end of the BGP session. Must use a subnet mask from /28 to /31."
 }
 
 variable "fastconnect_virtual_circuit_routing_policy" {
@@ -218,14 +227,4 @@ variable "fastconnect_virtual_circuit_is_bfd_enabled" {
   default     = false
   description = "Set to true to enable BFD for IPv4 BGP peering, or set to false to disable BFD. If this is not set, the default is false."
 }
-variable "fastconnect_virtual_circuit_bandwidth_custom_shape" {
-  type        = string
-  default     = ""
-  description = "Custom bandwidth level (shape) of the FastConnect virtual circuit."
-}
 
-variable "existing_fastconnect_virtual_circuit_ocid" {
-  type        = string
-  default     = ""
-  description = "The OCID of the existing FastConnect Virtual Circuit."
-}
