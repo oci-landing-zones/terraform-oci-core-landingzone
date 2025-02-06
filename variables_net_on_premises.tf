@@ -74,6 +74,18 @@ variable "ipsec_tunnel1_oracle_interface_ip" {
   description = "The first IP CIDR block provided by OCI for BGP peering for IPSec Tunnel 1."
 }
 
+variable "ipsec_tunnel1_shared_secret" {
+  type        = string
+  default     = ""
+  description = "The IPSec Tunnel 1's shared secret (pre-shared key). If not provided, Oracle will generate one automatically."
+}
+
+variable "ipsec_tunnel1_ike_version" {
+  type        = string
+  default     = ""
+  description = "Version of the internet key exchange (IKE), if using a CPE IKE identifier. Supported values are 'V1' or 'V2'."
+}
+
 variable "ipsec_tunnel2_customer_interface_ip" {
   type        = string
   default     = ""
@@ -84,6 +96,18 @@ variable "ipsec_tunnel2_oracle_interface_ip" {
   type        = string
   default     = ""
   description = "The second IP CIDR block provided by OCI for BGP peering for IPSec Tunnel 2."
+}
+
+variable "ipsec_tunnel2_shared_secret" {
+  type        = string
+  default     = ""
+  description = "The IPSec Tunnel 1's shared secret (pre-shared key). If not provided, Oracle will generate one automatically."
+}
+
+variable "ipsec_tunnel2_ike_version" {
+  type        = string
+  default     = ""
+  description = "Version of the internet key exchange (IKE), if using a CPE IKE identifier. Supported values are 'V1' or 'V2'."
 }
 # --------------------------------------------------------------------------
 # ----- Networking - On-Premises Connectivity - FastConnect Virtual Circuit

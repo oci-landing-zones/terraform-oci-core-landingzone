@@ -1,12 +1,13 @@
 # Copyright (c) 2025 Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 
+
 locals {
 
   deploy_new_cpe   = (length(regexall("IPSEC", upper(var.on_premises_connection_option))) > 0) && local.chosen_hub_option != 0 && (length(regexall("CREATE NEW CUSTOMER-PREMISES EQUIPMENT", upper(var.cpe_config))) > 0)
   use_existing_cpe = (length(regexall("IPSEC", upper(var.on_premises_connection_option))) > 0) && local.chosen_hub_option != 0 && (length(regexall("USE EXISTING", upper(var.cpe_config))) > 0) && length(var.existing_cpe_ocid) > 0
 
-  deploy_new_ipsec = (length(regexall("IPSEC", upper(var.on_premises_connection_option))) > 0) && local.chosen_hub_option != 0 && (length(regexall("CREATE NEW IPSEC CONNECTION", upper(var.ipsec_config))) > 0)
+  deploy_new_ipsec   = (length(regexall("IPSEC", upper(var.on_premises_connection_option))) > 0) && local.chosen_hub_option != 0 && (length(regexall("CREATE NEW IPSEC CONNECTION", upper(var.ipsec_config))) > 0)
   use_existing_ipsec = (length(regexall("IPSEC", upper(var.on_premises_connection_option))) > 0) && local.chosen_hub_option != 0 && (length(regexall("USE EXISTING IPSEC CONNECTION", upper(var.ipsec_config))) > 0) && length(var.existing_ipsec_ocid) > 0
 
   cpe = local.deploy_new_cpe ? {
@@ -37,6 +38,8 @@ locals {
               customer_interface_ip = var.ipsec_tunnel1_customer_interface_ip,
               oracle_interface_ip   = var.ipsec_tunnel1_oracle_interface_ip
             }
+            shared_secret = var.ipsec_tunnel1_shared_secret
+            ike_version   = var.ipsec_tunnel1_ike_version
           }
           tunnel_2 = {
             routing = "BGP",
@@ -45,6 +48,8 @@ locals {
               customer_interface_ip = var.ipsec_tunnel2_customer_interface_ip,
               oracle_interface_ip   = var.ipsec_tunnel2_oracle_interface_ip
             }
+            shared_secret = var.ipsec_tunnel2_shared_secret
+            ike_version   = var.ipsec_tunnel2_ike_version
           }
         }
       }
