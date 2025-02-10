@@ -710,8 +710,7 @@ locals {
               dst_port_min = 443
               dst_port_max = 443
             }
-            },
-            local.oke_vcn_2_to_services_subnet_cross_vcn_ingress
+            }
           )
         }
         },
@@ -821,12 +820,10 @@ locals {
                 dst_port_max = 12250
               }
               },
-              local.oke_vcn_2_to_workers_subnet_cross_vcn_egress,
               local.oke_vcn_2_to_services_subnet_cross_vcn_egress,
               local.oke_vcn_2_to_pods_subnet_cross_vcn_egress,
               local.oke_vcn_2_to_client_subnet_cross_vcn_egress,
               local.oke_vcn_2_to_web_subnet_cross_vcn_egress,
-              local.oke_vcn_2_to_app_subnet_cross_vcn_egress,
               local.oke_vcn_2_to_db_subnet_cross_vcn_egress
             )
             ingress_rules = merge({
