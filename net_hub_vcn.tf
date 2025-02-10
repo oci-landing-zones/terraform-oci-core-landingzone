@@ -936,8 +936,46 @@ locals {
                   dst_port_min = 22
                   dst_port_max = 22
                 }
-              }
-            ) ## end merge function ingress rules
+              },
+              ## Ingress IPSec rules on-premises traffic 
+              ((var.on_premises_connection_option == "IPSec VPN") || (var.on_premises_connection_option == "FastConnect and IPSec"))  ? merge(
+              {
+                for cidr in var.onprem_cidrs : "INGRESS-FROM-IPSEC-VC-ONPREM-500-${replace(replace(cidr, ".", ""), "/", "")}-RULE" => {
+                  description  = "Ingress allows UDP traffic on ports 500 from the on-premise CIDR range ${cidr}. "
+                  stateless    = false
+                  protocol     = "UDP"
+                  src          = cidr
+                  src_type     = "CIDR_BLOCK"
+                  dst_port_min = 500
+                  dst_port_max = 500
+                }
+              },
+              {
+                for cidr in var.onprem_cidrs : "INGRESS-FROM-IPSEC-VC-ONPREM-4500-${replace(replace(cidr, ".", ""), "/", "")}-RULE" => {
+                  description  = "Ingress allows UDP traffic on ports 4500 from the on-premise CIDR range ${cidr}."
+                  stateless    = false
+                  protocol     = "UDP"
+                  src          = cidr
+                  src_type     = "CIDR_BLOCK"
+                  dst_port_min = 4500
+                  dst_port_max = 4500
+                }
+              }) : {},
+              ## Ingress FastConnect rules on-premises traffic 
+              ((var.on_premises_connection_option == "FastConnect Virtual Circuit") || (var.on_premises_connection_option == "FastConnect and IPSec")) ? 
+              {
+                for cidr in var.onprem_cidrs : "INGRESS-FROM-FASTCONNECT-VC-ONPREM-179-${replace(replace(cidr, ".", ""), "/", "")}-RULE" => {
+                  description  = "Ingress allows TCP traffic on port 179 from the on-premise CIDR ranges ${cidr}. "
+                  stateless    = false
+                  protocol     = "TCP"
+                  src          = cidr
+                  src_type     = "CIDR_BLOCK"
+                  dst_port_min = 179
+                  dst_port_max = 179
+                }
+              } : {}
+            ),
+            ## end merge function ingress rules
             egress_rules = merge(
               local.chosen_firewall_option == "OCINFW" ?
               {
@@ -1106,7 +1144,33 @@ locals {
                   dst_port_min = 22
                   dst_port_max = 22
                 }
-              } : {}
+              } : {},
+              ## Egress FastConnect rules on-premises traffic 
+              ((var.on_premises_connection_option == "FastConnect Virtual Circuit") || (var.on_premises_connection_option == "FastConnect and IPSec")) ? 
+              {
+              for cidr in var.onprem_cidrs : "EGRESS-TO-FASTCONNECT-VC-ONPREM-179-RULE-${replace(replace(cidr, ".", ""), "/", "")}-RULE" => {
+                description  = "Egress allows TCP traffic on port 179 to the on-premise CIDR ranges ${cidr}. "
+                stateless    = false
+                protocol     = "TCP"
+                dst          = cidr
+                dst_type     = "CIDR_BLOCK"
+                dst_port_min = 179
+                dst_port_max = 179
+                }
+              } : {},
+              ## Egress IPSec rules on-premises traffic
+              ((var.on_premises_connection_option == "IPSec VPN") || (var.on_premises_connection_option == "FastConnect and IPSec")) ? 
+              {
+              for cidr in var.onprem_cidrs : "EGRESS-TO-IPSEC-VC-ONPREM-ALL-${replace(replace(cidr, ".", ""), "/", "")}-RULE" => {
+                description  = "Egress allows all traffic to the on-premises CIDR ranges  ${cidr}. "
+                stateless    = false
+                protocol     = "ALL"
+                dst          = cidr
+                dst_type     = "CIDR_BLOCK"
+                dst_port_min = null
+                dst_port_max = null
+                }
+              } : {} 
             )
           }
         } : {},

@@ -247,7 +247,9 @@ locals {
                   dst_port_max = 22
                 }
               } : {},
-              local.vcn_3_to_web_subnet_cross_vcn_ingress
+              local.vcn_3_to_web_subnet_cross_vcn_ingress,
+              local.vcn_3_to_onprem_ipsec_ingress,
+              local.vcn_3_to_onprem_fc_ingress,
             ),
             egress_rules = merge(
               {
@@ -272,8 +274,10 @@ locals {
                   dst_port_max = 443
                 }
               },
-              local.vcn_3_to_hub_indoor_subnet_cross_vcn_egress
-            )
+              local.vcn_3_to_hub_indoor_subnet_cross_vcn_egress,
+              local.vcn_3_to_onprem_ipsec_egress,
+              local.vcn_3_to_onprem_fc_egress,
+            ),
           }
         },
         {
@@ -315,7 +319,9 @@ locals {
                     dst_port_max = 22
                   }
                 }
-              ) : {}
+              ) : {},
+            local.vcn_3_to_onprem_ipsec_ingress,
+            local.vcn_3_to_onprem_fc_ingress,
             ),
             egress_rules = merge(
               {
@@ -354,7 +360,9 @@ locals {
               local.vcn_3_to_hub_indoor_subnet_cross_vcn_egress,
               local.vcn_3_to_web_subnet_cross_vcn_egress,
               local.vcn_3_to_oke_cross_vcn_egress,
-              local.vcn_3_to_exa_cross_vcn_egress
+              local.vcn_3_to_exa_cross_vcn_egress,
+              local.vcn_3_to_onprem_ipsec_egress,
+              local.vcn_3_to_onprem_fc_egress,
             )
           }
         },
@@ -384,7 +392,9 @@ locals {
                   dst_port_max = 22
                 }
               } : {},
-              local.vcn_3_to_db_subnet_cross_vcn_ingress
+              local.vcn_3_to_db_subnet_cross_vcn_ingress,
+              local.vcn_3_to_onprem_ipsec_ingress,
+              local.vcn_3_to_onprem_fc_ingress,
             ),
             egress_rules = merge(
               {
@@ -400,8 +410,10 @@ locals {
               },
               local.vcn_3_to_hub_indoor_subnet_cross_vcn_egress,
               local.vcn_3_to_db_subnet_cross_vcn_egress,
-              local.vcn_3_to_exa_cross_vcn_egress
-            )
+              local.vcn_3_to_exa_cross_vcn_egress,
+              local.vcn_3_to_onprem_ipsec_egress,
+              local.vcn_3_to_onprem_fc_egress,
+            ),
           }
         },
         var.deploy_tt_vcn3_bastion_subnet == true ? {
@@ -661,6 +673,40 @@ locals {
       }
     } : {}
   )
+    ## Egress IPSec rules on-premises traffic 
+    vcn_3_to_onprem_ipsec_egress = merge(
+    (local.add_tt_vcn3 == true && var.tt_vcn3_attach_to_drg == true && length(var.onprem_cidrs) > 0) &&
+    (local.hub_with_drg_only == true) && ((var.on_premises_connection_option == "IPSec VPN") || (var.on_premises_connection_option == "FastConnect and IPSec")) && (length(var.tt_vcn3_routable_vcns) != 0) && (contains(var.tt_vcn3_routable_vcns, "OnPremVPN")) ? merge(
+      {
+        for cidr in var.onprem_cidrs : "EGRESS-TO-IPSEC-VC-ONPREM-ALL-${replace(replace(cidr, ".", ""), "/", "")}-RULE" => {
+          description  = "Egress allows all traffic to the on-premises CIDR ranges  ${cidr}. "
+          stateless    = false
+          protocol     = "ALL"
+          dst          = cidr
+          dst_type     = "CIDR_BLOCK"
+          dst_port_min = null
+          dst_port_max = null
+        }
+      },
+    ) : {}
+)
+    ## Egress FastConnect rules on-premises traffic 
+    vcn_3_to_onprem_fc_egress = merge(
+    (local.add_tt_vcn3 == true && var.tt_vcn3_attach_to_drg == true && length(var.onprem_cidrs) > 0) &&
+    (local.hub_with_drg_only == true) && ((var.on_premises_connection_option == "FastConnect Virtual Circuit") || (var.on_premises_connection_option == "FastConnect and IPSec")) && (length(var.tt_vcn3_routable_vcns) != 0) && (contains(var.tt_vcn3_routable_vcns, "OnPremFC")) ? merge(
+      {
+        for cidr in var.onprem_cidrs : "EGRESS-TO-FASTCONNECT-VC-ONPREM-179-RULE-${replace(replace(cidr, ".", ""), "/", "")}-RULE" => {
+          description  = "Egress allows TCP traffic on port 179 to the on-premise CIDR ranges ${cidr}. "
+          stateless    = false
+          protocol     = "TCP"
+          dst          = cidr
+          dst_type     = "CIDR_BLOCK"
+          dst_port_min = 179
+          dst_port_max = 179
+        }
+      },
+    ) : {}
+)
 
   ## Ingress rules into TT-VCN-3 web subnet
   vcn_3_to_web_subnet_cross_vcn_ingress = merge(
@@ -871,6 +917,51 @@ locals {
       }
     ) : {}
   )
+    # Ingress IPSec rules on-premises traffic 
+    vcn_3_to_onprem_ipsec_ingress = merge(
+    (local.add_tt_vcn3 == true && var.tt_vcn3_attach_to_drg == true && length(var.onprem_cidrs) > 0) &&
+    (local.hub_with_drg_only == true) && ((var.on_premises_connection_option == "IPSec VPN") || (var.on_premises_connection_option == "FastConnect and IPSec")) && (length(var.tt_vcn3_routable_vcns) != 0) && (contains(var.tt_vcn3_routable_vcns, "OnPremVPN")) ? merge(
+      {
+        for cidr in var.onprem_cidrs : "INGRESS-FROM-IPSEC-VC-ONPREM-500-${replace(replace(cidr, ".", ""), "/", "")}-RULE" => {
+          description  = "Ingress allows UDP traffic on ports 500 from the on-premise CIDR range ${cidr}. "
+          stateless    = false
+          protocol     = "UDP"
+          src          = cidr
+          src_type     = "CIDR_BLOCK"
+          dst_port_min = 500
+          dst_port_max = 500
+        }
+      },
+      {
+        for cidr in var.onprem_cidrs : "INGRESS-FROM-IPSEC-VC-ONPREM-4500-${replace(replace(cidr, ".", ""), "/", "")}-RULE" => {
+          description  = "Ingress allows UDP traffic on ports 4500 from the on-premise CIDR range ${cidr}."
+          stateless    = false
+          protocol     = "UDP"
+          src          = cidr
+          src_type     = "CIDR_BLOCK"
+          dst_port_min = 4500
+          dst_port_max = 4500
+        }
+      },
+    ) : {}
+)
+    ## Ingress FastConnect rules on-premises traffic 
+    vcn_3_to_onprem_fc_ingress = merge(
+    (local.add_tt_vcn3 == true && var.tt_vcn3_attach_to_drg == true && length(var.onprem_cidrs) > 0) &&
+    (local.hub_with_drg_only == true) && ((var.on_premises_connection_option == "FastConnect Virtual Circuit") || (var.on_premises_connection_option == "FastConnect and IPSec")) && (length(var.tt_vcn3_routable_vcns) != 0) && (contains(var.tt_vcn3_routable_vcns, "OnPremFC")) ? merge(
+      {
+        for cidr in var.onprem_cidrs : "INGRESS-FROM-FASTCONNECT-VC-ONPREM-179-${replace(replace(cidr, ".", ""), "/", "")}-RULE" => {
+          description  = "Ingress allows TCP traffic on port 179 from the on-premise CIDR ranges ${cidr}. "
+          stateless    = false
+          protocol     = "TCP"
+          src          = cidr
+          src_type     = "CIDR_BLOCK"
+          dst_port_min = 179
+          dst_port_max = 179
+        }
+      },
+    ) : {}
+)
 
   tt_cross_vcn_3_drg_routing = merge(
     ## Route to TT-VCN-1
