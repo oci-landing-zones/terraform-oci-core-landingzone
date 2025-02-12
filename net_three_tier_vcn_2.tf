@@ -1,5 +1,5 @@
-# Copyright (c) 2023 Oracle and/or its affiliates.
-# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+# Copyright (c) 2023, 2025, Oracle and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl/
 
 locals {
 
@@ -127,7 +127,6 @@ locals {
                   destination_type   = "CIDR_BLOCK"
                 }
               },
-              local.tt_cross_vcn_2_drg_routing
             )
           }
         },
@@ -702,18 +701,7 @@ locals {
           dst_port_min = 443
           dst_port_max = 443
         }
-      },
-      upper(var.oke_vcn1_cni_type) == "NATIVE" ? {
-        "INGRESS-FROM-OKE-VCN-1-PODS-SUBNET-RULE" = {
-          description  = "Ingress from ${coalesce(var.oke_vcn1_pods_subnet_name, "${var.service_label}-oke-vcn-1-pods-subnet")}."
-          stateless    = false
-          protocol     = "TCP"
-          src          = coalesce(var.oke_vcn1_pods_subnet_cidr, cidrsubnet(var.oke_vcn1_cidrs[0], 3, 1))
-          src_type     = "CIDR_BLOCK"
-          dst_port_min = 443
-          dst_port_max = 443
-        }
-      } : {}
+      }
     ) : {},
     ## Ingress from OKE-VCN-2
     (local.add_tt_vcn2 == true && var.tt_vcn2_attach_to_drg == true && var.add_oke_vcn2 == true && var.oke_vcn2_attach_to_drg == true) &&
@@ -728,18 +716,7 @@ locals {
           dst_port_min = 443
           dst_port_max = 443
         }
-      },
-      upper(var.oke_vcn2_cni_type) == "NATIVE" ? {
-        "INGRESS-FROM-OKE-VCN-2-PODS-SUBNET-RULE" = {
-          description  = "Ingress from ${coalesce(var.oke_vcn2_pods_subnet_name, "${var.service_label}-oke-vcn-2-pods-subnet")}."
-          stateless    = false
-          protocol     = "TCP"
-          src          = coalesce(var.oke_vcn2_pods_subnet_cidr, cidrsubnet(var.oke_vcn2_cidrs[0], 3, 1))
-          src_type     = "CIDR_BLOCK"
-          dst_port_min = 443
-          dst_port_max = 443
-        }
-      } : {}
+      }
     ) : {},
     ## Ingress from OKE-VCN-3
     (local.add_tt_vcn2 == true && var.tt_vcn2_attach_to_drg == true && var.add_oke_vcn3 == true && var.oke_vcn3_attach_to_drg == true) &&
@@ -754,18 +731,7 @@ locals {
           dst_port_min = 443
           dst_port_max = 443
         }
-      },
-      upper(var.oke_vcn3_cni_type) == "NATIVE" ? {
-        "INGRESS-FROM-OKE-VCN-3-PODS-SUBNET-RULE" = {
-          description  = "Ingress from ${coalesce(var.oke_vcn3_pods_subnet_name, "${var.service_label}-oke-vcn-3-pods-subnet")}."
-          stateless    = false
-          protocol     = "TCP"
-          src          = coalesce(var.oke_vcn3_pods_subnet_cidr, cidrsubnet(var.oke_vcn3_cidrs[0], 3, 1))
-          src_type     = "CIDR_BLOCK"
-          dst_port_min = 443
-          dst_port_max = 443
-        }
-      } : {}
+      }
     ) : {},
     ## Ingress from on-premises CIDRs into TT-VCN-2 web subnet
     (local.add_tt_vcn2 == true && var.tt_vcn2_attach_to_drg == true && length(var.onprem_cidrs) > 0) &&
