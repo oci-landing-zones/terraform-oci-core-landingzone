@@ -4126,48 +4126,6 @@ variables:
         - "Create New IPSec Connection"
     default: ""
 
-  ipsec_tunnel1_shared_secret:
-    type: string
-    title: "IPSec Tunnel 1 Shared Secret"
-    description: "Enter IPSec Tunnel 1's shared secret (pre-shared key). If not provided, Oracle will generate one automatically."
-    visible:
-      not:
-        - ${hub_deployment_option}
-        - "No cross-VCN or on-premises connectivity"
-      and:
-        - eq:
-            - ${ipsec_config}
-            - "Create New IPSec Connection"
-        - or:
-            - eq:
-                - ${on_premises_connection_option}
-                - "IPSec VPN"
-            - eq:
-                - ${on_premises_connection_option}
-                - "FastConnect and IPSec"
-    default: ""
-
-  ipsec_tunnel1_ike_version:
-    type: string
-    title: "IPSec Tunnel 1 IKE Version"
-    description: "Enter IPSec Tunnel 1's IKE Version, if using a CPE IKE identifier. Supported values are 'V1' or 'V2'."
-    visible:
-      not:
-        - ${hub_deployment_option}
-        - "No cross-VCN or on-premises connectivity"
-      and:
-        - eq:
-            - ${ipsec_config}
-            - "Create New IPSec Connection"
-        - or:
-            - eq:
-                - ${on_premises_connection_option}
-                - "IPSec VPN"
-            - eq:
-                - ${on_premises_connection_option}
-                - "FastConnect and IPSec"
-    default: ""
-
   ipsec_tunnel2_customer_interface_ip:
     type: string
     title: "IPSec Tunnel 2 Customer Border Gateway Protocol (BGP) IP Address"
@@ -4206,48 +4164,6 @@ variables:
       eq:
         - ${ipsec_config}
         - "Create New IPSec Connection"
-    default: ""
-
-  ipsec_tunnel2_shared_secret:
-    type: string
-    title: "IPSec Tunnel 2 Shared Secret"
-    description: "Enter IPSec Tunnel 2's shared secret (pre-shared key). If not provided, Oracle will generate one automatically."
-    visible:
-      not:
-        - ${hub_deployment_option}
-        - "No cross-VCN or on-premises connectivity"
-      and:
-        - eq:
-            - ${ipsec_config}
-            - "Create New IPSec Connection"
-        - or:
-            - eq:
-                - ${on_premises_connection_option}
-                - "IPSec VPN"
-            - eq:
-                - ${on_premises_connection_option}
-                - "FastConnect and IPSec"
-    default: ""
-
-  ipsec_tunnel2_ike_version:
-    type: string
-    title: "IPSec Tunnel 2 IKE Version"
-    description: "Enter IPSec Tunnel 2's IKE Version, if using a CPE IKE identifier. Supported values are 'V1' or 'V2'."
-    visible:
-      not:
-        - ${hub_deployment_option}
-        - "No cross-VCN or on-premises connectivity"
-      and:
-        - eq:
-            - ${ipsec_config}
-            - "Create New IPSec Connection"
-        - or:
-            - eq:
-                - ${on_premises_connection_option}
-                - "IPSec VPN"
-            - eq:
-                - ${on_premises_connection_option}
-                - "FastConnect and IPSec"
     default: ""
 
   cpe_config:
