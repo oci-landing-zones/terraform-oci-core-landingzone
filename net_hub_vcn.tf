@@ -161,117 +161,7 @@ locals {
                 dst_type     = "CIDR_BLOCK"
                 dst_port_min = 22
                 dst_port_max = 22
-              }],
-              local.add_tt_vcn1 == true && var.tt_vcn1_attach_to_drg == true && local.hub_with_vcn == true ? [{
-                description  = "Egress to ${coalesce(var.tt_vcn1_app_subnet_name, "${var.service_label}-three-tier-vcn-1-app-subnet")}."
-                stateless    = false
-                protocol     = "TCP"
-                dst          = coalesce(var.tt_vcn1_app_subnet_cidr, cidrsubnet(var.tt_vcn1_cidrs[0], 4, 1))
-                dst_type     = "CIDR_BLOCK"
-                dst_port_min = 22
-                dst_port_max = 22
-              }] : [],
-              local.add_tt_vcn2 == true && var.tt_vcn2_attach_to_drg == true && local.hub_with_vcn == true ? [{
-                description  = "Egress to ${coalesce(var.tt_vcn2_app_subnet_name, "${var.service_label}-three-tier-vcn-2-app-subnet")}."
-                stateless    = false
-                protocol     = "TCP"
-                dst          = coalesce(var.tt_vcn2_app_subnet_cidr, cidrsubnet(var.tt_vcn2_cidrs[0], 4, 1))
-                dst_type     = "CIDR_BLOCK"
-                dst_port_min = 22
-                dst_port_max = 22
-              }] : [],
-              local.add_tt_vcn3 == true && var.tt_vcn3_attach_to_drg == true && local.hub_with_vcn == true ? [{
-                description  = "Egress to ${coalesce(var.tt_vcn3_app_subnet_name, "${var.service_label}-three-tier-vcn-3-app-subnet")}."
-                stateless    = false
-                protocol     = "TCP"
-                dst          = coalesce(var.tt_vcn3_app_subnet_cidr, cidrsubnet(var.tt_vcn3_cidrs[0], 4, 1))
-                dst_type     = "CIDR_BLOCK"
-                dst_port_min = 22
-                dst_port_max = 22
-              }] : [],
-              local.add_tt_vcn1 == true && var.tt_vcn1_attach_to_drg == true && local.hub_with_vcn == true ? [{
-                description  = "Egress to ${coalesce(var.tt_vcn1_db_subnet_name, "${var.service_label}-three-tier-vcn-1-db-subnet")}."
-                stateless    = false
-                protocol     = "TCP"
-                dst          = coalesce(var.tt_vcn1_db_subnet_cidr, cidrsubnet(var.tt_vcn1_cidrs[0], 4, 2))
-                dst_type     = "CIDR_BLOCK"
-                dst_port_min = 22
-                dst_port_max = 22
-              }] : [],
-              local.add_tt_vcn2 == true && var.tt_vcn2_attach_to_drg == true && local.hub_with_vcn == true ? [{
-                description  = "Egress to ${coalesce(var.tt_vcn2_db_subnet_name, "${var.service_label}-three-tier-vcn-2-db-subnet")}."
-                stateless    = false
-                protocol     = "TCP"
-                dst          = coalesce(var.tt_vcn2_db_subnet_cidr, cidrsubnet(var.tt_vcn2_cidrs[0], 4, 2))
-                dst_type     = "CIDR_BLOCK"
-                dst_port_min = 22
-                dst_port_max = 22
-              }] : [],
-              local.add_tt_vcn3 == true && var.tt_vcn3_attach_to_drg == true && local.hub_with_vcn == true ? [{
-                description  = "Egress to ${coalesce(var.tt_vcn1_db_subnet_name, "${var.service_label}-three-tier-vcn-3-db-subnet")}."
-                stateless    = false
-                protocol     = "TCP"
-                dst          = coalesce(var.tt_vcn3_db_subnet_cidr, cidrsubnet(var.tt_vcn3_cidrs[0], 4, 2))
-                dst_type     = "CIDR_BLOCK"
-                dst_port_min = 22
-                dst_port_max = 22
-              }] : [],
-              ## Egress to OKE VCN - SSH traffic
-              var.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true && local.hub_with_vcn == true ? [{
-                description  = "Egress to ${coalesce(var.oke_vcn1_workers_subnet_name, "${var.service_label}-oke-vcn-1-workers-subnet")}."
-                stateless    = false
-                protocol     = "TCP"
-                dst          = coalesce(var.oke_vcn1_workers_subnet_cidr, cidrsubnet(var.oke_vcn1_cidrs[0], 8, 1))
-                dst_type     = "CIDR_BLOCK"
-                dst_port_min = 22
-                dst_port_max = 22
-              }] : [],
-              var.add_oke_vcn2 == true && var.oke_vcn2_attach_to_drg == true && local.hub_with_vcn == true ? [{
-                description  = "Egress to ${coalesce(var.oke_vcn2_workers_subnet_name, "${var.service_label}-oke-vcn-2-workers-subnet")}."
-                stateless    = false
-                protocol     = "TCP"
-                dst          = coalesce(var.oke_vcn2_workers_subnet_cidr, cidrsubnet(var.oke_vcn2_cidrs[0], 8, 1))
-                dst_type     = "CIDR_BLOCK"
-                dst_port_min = 22
-                dst_port_max = 22
-              }] : [],
-              var.add_oke_vcn3 == true && var.oke_vcn3_attach_to_drg == true && local.hub_with_vcn == true ? [{
-                description  = "Egress to ${coalesce(var.oke_vcn2_workers_subnet_name, "${var.service_label}-oke-vcn-3-workers-subnet")}."
-                stateless    = false
-                protocol     = "TCP"
-                dst          = coalesce(var.oke_vcn3_workers_subnet_cidr, cidrsubnet(var.oke_vcn3_cidrs[0], 8, 1))
-                dst_type     = "CIDR_BLOCK"
-                dst_port_min = 22
-                dst_port_max = 22
-              }] : [],
-              # Egress to EXA-VCN - SSH traffic
-              var.add_exa_vcn1 == true && var.exa_vcn1_attach_to_drg == true && local.hub_with_vcn == true ? [{
-                description  = "Egress to ${coalesce(var.exa_vcn1_client_subnet_name, "${var.service_label}-exadata-vcn-1-client-subnet")}."
-                stateless    = false
-                protocol     = "TCP"
-                dst          = coalesce(var.exa_vcn1_client_subnet_cidr, cidrsubnet(var.exa_vcn1_cidrs[0], 4, 0))
-                dst_type     = "CIDR_BLOCK"
-                dst_port_min = 22
-                dst_port_max = 22
-              }] : [],
-              var.add_exa_vcn2 == true && var.exa_vcn2_attach_to_drg == true && local.hub_with_vcn == true ? [{
-                description  = "Egress to ${coalesce(var.exa_vcn2_client_subnet_name, "${var.service_label}-exadata-vcn-2-client-subnet")}."
-                stateless    = false
-                protocol     = "TCP"
-                dst          = coalesce(var.exa_vcn2_client_subnet_cidr, cidrsubnet(var.exa_vcn2_cidrs[0], 4, 0))
-                dst_type     = "CIDR_BLOCK"
-                dst_port_min = 22
-                dst_port_max = 22
-              }] : [],
-              var.add_exa_vcn3 == true && var.exa_vcn3_attach_to_drg == true && local.hub_with_vcn == true ? [{
-                description  = "Egress to ${coalesce(var.exa_vcn3_client_subnet_name, "${var.service_label}-exadata-vcn-3-client-subnet")}."
-                stateless    = false
-                protocol     = "TCP"
-                dst          = coalesce(var.exa_vcn3_client_subnet_cidr, cidrsubnet(var.exa_vcn3_cidrs[0], 4, 0))
-                dst_type     = "CIDR_BLOCK"
-                dst_port_min = 22
-                dst_port_max = 22
-              }] : []
+              }]
             ])
           }
         } : {}
@@ -936,44 +826,7 @@ locals {
                   dst_port_min = 22
                   dst_port_max = 22
                 }
-              },
-              ## Ingress IPSec rules on-premises traffic 
-              ((var.on_premises_connection_option == "IPSec VPN") || (var.on_premises_connection_option == "FastConnect and IPSec"))  ? merge(
-              {
-                for cidr in var.onprem_cidrs : "INGRESS-FROM-IPSEC-VC-ONPREM-500-${replace(replace(cidr, ".", ""), "/", "")}-RULE" => {
-                  description  = "Ingress allows UDP traffic on ports 500 from the on-premise CIDR range ${cidr}. "
-                  stateless    = false
-                  protocol     = "UDP"
-                  src          = cidr
-                  src_type     = "CIDR_BLOCK"
-                  dst_port_min = 500
-                  dst_port_max = 500
-                }
-              },
-              {
-                for cidr in var.onprem_cidrs : "INGRESS-FROM-IPSEC-VC-ONPREM-4500-${replace(replace(cidr, ".", ""), "/", "")}-RULE" => {
-                  description  = "Ingress allows UDP traffic on ports 4500 from the on-premise CIDR range ${cidr}."
-                  stateless    = false
-                  protocol     = "UDP"
-                  src          = cidr
-                  src_type     = "CIDR_BLOCK"
-                  dst_port_min = 4500
-                  dst_port_max = 4500
-                }
-              }) : {},
-              ## Ingress FastConnect rules on-premises traffic 
-              ((var.on_premises_connection_option == "FastConnect Virtual Circuit") || (var.on_premises_connection_option == "FastConnect and IPSec")) ? 
-              {
-                for cidr in var.onprem_cidrs : "INGRESS-FROM-FASTCONNECT-VC-ONPREM-179-${replace(replace(cidr, ".", ""), "/", "")}-RULE" => {
-                  description  = "Ingress allows TCP traffic on port 179 from the on-premise CIDR ranges ${cidr}. "
-                  stateless    = false
-                  protocol     = "TCP"
-                  src          = cidr
-                  src_type     = "CIDR_BLOCK"
-                  dst_port_min = 179
-                  dst_port_max = 179
-                }
-              } : {}
+              }
             ),
             ## end merge function ingress rules
             egress_rules = merge(
@@ -1145,32 +998,6 @@ locals {
                   dst_port_max = 22
                 }
               } : {},
-              ## Egress FastConnect rules on-premises traffic 
-              ((var.on_premises_connection_option == "FastConnect Virtual Circuit") || (var.on_premises_connection_option == "FastConnect and IPSec")) ? 
-              {
-              for cidr in var.onprem_cidrs : "EGRESS-TO-FASTCONNECT-VC-ONPREM-179-RULE-${replace(replace(cidr, ".", ""), "/", "")}-RULE" => {
-                description  = "Egress allows TCP traffic on port 179 to the on-premise CIDR ranges ${cidr}. "
-                stateless    = false
-                protocol     = "TCP"
-                dst          = cidr
-                dst_type     = "CIDR_BLOCK"
-                dst_port_min = 179
-                dst_port_max = 179
-                }
-              } : {},
-              ## Egress IPSec rules on-premises traffic
-              ((var.on_premises_connection_option == "IPSec VPN") || (var.on_premises_connection_option == "FastConnect and IPSec")) ? 
-              {
-              for cidr in var.onprem_cidrs : "EGRESS-TO-IPSEC-VC-ONPREM-ALL-${replace(replace(cidr, ".", ""), "/", "")}-RULE" => {
-                description  = "Egress allows all traffic to the on-premises CIDR ranges  ${cidr}. "
-                stateless    = false
-                protocol     = "ALL"
-                dst          = cidr
-                dst_type     = "CIDR_BLOCK"
-                dst_port_min = null
-                dst_port_max = null
-                }
-              } : {} 
             )
           }
         } : {},

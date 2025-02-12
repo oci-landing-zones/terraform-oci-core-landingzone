@@ -707,9 +707,7 @@ locals {
               }
               },
               local.oke_vcn_1_to_workers_subnet_cross_vcn_egress,
-              local.oke_vcn_1_to_pods_subnet_cross_vcn_egress,
-              local.oke_vcn_1_to_onprem_ipsec_egress,
-              local.oke_vcn_1_to_onprem_fc_egress,
+              local.oke_vcn_1_to_pods_subnet_cross_vcn_egress
             ),
             ingress_rules = merge({
               "INGRESS-FROM-ANYWHERE-TCP-RULE" = {
@@ -722,9 +720,7 @@ locals {
                 dst_port_max = 443
               }
               },
-              local.oke_vcn_1_to_services_subnet_cross_vcn_ingress,
-              local.oke_vcn_1_to_onprem_ipsec_ingress,
-              local.oke_vcn_1_to_onprem_fc_ingress,
+              local.oke_vcn_1_to_services_subnet_cross_vcn_ingress
             )
           }
         },
@@ -1131,40 +1127,6 @@ locals {
       }
     } : {}
   )
-   ## Egress IPSec rules on-premises traffic 
-    oke_vcn_1_to_onprem_ipsec_egress = merge(
-    (local.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true && length(var.onprem_cidrs) > 0) &&
-    (local.hub_with_drg_only == true) && ((var.on_premises_connection_option == "IPSec VPN") || (var.on_premises_connection_option == "FastConnect and IPSec")) && (length(var.oke_vcn1_routable_vcns) != 0) && (contains(var.oke_vcn1_routable_vcns, "OnPremVPN")) ? merge(
-      {
-        for cidr in var.onprem_cidrs : "EGRESS-TO-IPSEC-VC-ONPREM-ALL-${replace(replace(cidr, ".", ""), "/", "")}-RULE" => {
-          description  = "Egress allows all traffic to the on-premises CIDR ranges  ${cidr}. "
-          stateless    = false
-          protocol     = "ALL"
-          dst          = cidr
-          dst_type     = "CIDR_BLOCK"
-          dst_port_min = null
-          dst_port_max = null
-        }
-      },
-    ) : {}
-)
-    ## Egress FastConnect rules on-premises traffic 
-    oke_vcn_1_to_onprem_fc_egress = merge(
-    (local.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true && length(var.onprem_cidrs) > 0) &&
-    (local.hub_with_drg_only == true) && ((var.on_premises_connection_option == "FastConnect Virtual Circuit") || (var.on_premises_connection_option == "FastConnect and IPSec")) && (length(var.oke_vcn1_routable_vcns) != 0) && (contains(var.oke_vcn1_routable_vcns, "OnPremFC")) ? merge(
-      {
-        for cidr in var.onprem_cidrs : "EGRESS-TO-FASTCONNECT-VC-ONPREM-179-RULE-${replace(replace(cidr, ".", ""), "/", "")}-RULE" => {
-          description  = "Egress allows TCP traffic on port 179 to the on-premise CIDR ranges ${cidr}. "
-          stateless    = false
-          protocol     = "TCP"
-          dst          = cidr
-          dst_type     = "CIDR_BLOCK"
-          dst_port_min = 179
-          dst_port_max = 179
-        }
-      },
-    ) : {}
-)
 
   ## Ingress rules
   oke_vcn_1_to_services_subnet_cross_vcn_ingress = merge(
@@ -1680,51 +1642,6 @@ locals {
       }
     } : {}
   )
-    ## Ingress IPSec rules on-premises traffic 
-    oke_vcn_1_to_onprem_ipsec_ingress = merge(
-    (local.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true && length(var.onprem_cidrs) > 0) &&
-    (local.hub_with_drg_only == true) && ((var.on_premises_connection_option == "IPSec VPN") || (var.on_premises_connection_option == "FastConnect and IPSec")) && (length(var.oke_vcn1_routable_vcns) != 0) && (contains(var.oke_vcn1_routable_vcns, "OnPremVPN")) ? merge(
-      {
-        for cidr in var.onprem_cidrs : "INGRESS-FROM-IPSEC-VC-ONPREM-500-${replace(replace(cidr, ".", ""), "/", "")}-RULE" => {
-          description  = "Ingress allows UDP traffic on ports 500 from the on-premise CIDR range ${cidr}. "
-          stateless    = false
-          protocol     = "UDP"
-          src          = cidr
-          src_type     = "CIDR_BLOCK"
-          dst_port_min = 500
-          dst_port_max = 500
-        }
-      },
-      {
-        for cidr in var.onprem_cidrs : "INGRESS-FROM-IPSEC-VC-ONPREM-4500-${replace(replace(cidr, ".", ""), "/", "")}-RULE" => {
-          description  = "Ingress allows UDP traffic on ports 4500 from the on-premise CIDR range ${cidr}."
-          stateless    = false
-          protocol     = "UDP"
-          src          = cidr
-          src_type     = "CIDR_BLOCK"
-          dst_port_min = 4500
-          dst_port_max = 4500
-        }
-      },
-    ) : {}
-)
-    ## Ingress FastConnect rules on-premises traffic 
-    oke_vcn_1_to_onprem_fc_ingress = merge(
-    (local.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true && length(var.onprem_cidrs) > 0) &&
-    (local.hub_with_drg_only == true) && ((var.on_premises_connection_option == "FastConnect Virtual Circuit") || (var.on_premises_connection_option == "FastConnect and IPSec")) && (length(var.oke_vcn1_routable_vcns) != 0) && (contains(var.oke_vcn1_routable_vcns, "OnPremFC")) ? merge(
-      {
-        for cidr in var.onprem_cidrs : "INGRESS-FROM-FASTCONNECT-VC-ONPREM-179-${replace(replace(cidr, ".", ""), "/", "")}-RULE" => {
-          description  = "Ingress allows TCP traffic on port 179 from the on-premise CIDR ranges ${cidr}. "
-          stateless    = false
-          protocol     = "TCP"
-          src          = cidr
-          src_type     = "CIDR_BLOCK"
-          dst_port_min = 179
-          dst_port_max = 179
-        }
-      },
-    ) : {}
-)
   
 
 
