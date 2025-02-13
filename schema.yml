@@ -1245,7 +1245,7 @@ variables:
 
   tt_vcn1_onprem_route_enable:
     type: boolean
-    title: "Allow this VCN to connect to on-premise resources?"
+    title: "Allow this VCN to connect to on-premises resources?"
     description: "Click to allow on-premises connectivity to this VCN."
     visible:
       and:
@@ -1494,7 +1494,7 @@ variables:
 
   tt_vcn2_onprem_route_enable:
     type: boolean
-    title: "Allow this VCN to connect to on-premise resources?"
+    title: "Allow this VCN to connect to on-premises resources?"
     description: "Click to allow on-premises connectivity to this VCN."
     visible:
       and:
@@ -1744,7 +1744,7 @@ variables:
 
   tt_vcn3_onprem_route_enable:
     type: boolean
-    title: "Allow this VCN to connect to on-premise resources?"
+    title: "Allow this VCN to connect to on-premises resources?"
     description: "Click to allow on-premises connectivity to this VCN."
     visible:
       and:
@@ -1992,7 +1992,7 @@ variables:
 
   exa_vcn1_onprem_route_enable:
     type: boolean
-    title: "Allow this VCN to connect to on-premise resources?"
+    title: "Allow this VCN to connect to on-premises resources?"
     description: "Click to allow on-premises connectivity to this VCN."
     visible:
       and:
@@ -2137,7 +2137,7 @@ variables:
 
   exa_vcn2_onprem_route_enable:
     type: boolean
-    title: "Allow this VCN to connect to on-premise resources?"
+    title: "Allow this VCN to connect to on-premises resources?"
     description: "Click to allow on-premises connectivity to this VCN."
     visible:
       and:
@@ -2282,7 +2282,7 @@ variables:
 
   exa_vcn3_onprem_route_enable:
     type: boolean
-    title: "Allow this VCN to connect to on-premise resources?"
+    title: "Allow this VCN to connect to on-premises resources?"
     description: "Click to allow on-premises connectivity to this VCN."
     visible:
       and:
@@ -2428,7 +2428,7 @@ variables:
 
   oke_vcn1_onprem_route_enable:
     type: boolean
-    title: "Allow this VCN to connect to on-premise resources?"
+    title: "Allow this VCN to connect to on-premises resources?"
     description: "Click to allow on-premises connectivity to this VCN."
     visible:
       and:
@@ -2670,7 +2670,7 @@ variables:
 
   oke_vcn2_onprem_route_enable:
     type: boolean
-    title: "Allow this VCN to connect to on-premise resources?"
+    title: "Allow this VCN to connect to on-premises resources?"
     description: "Click to allow on-premises connectivity to this VCN."
     visible:
       and:
@@ -2912,7 +2912,7 @@ variables:
 
   oke_vcn3_onprem_route_enable:
     type: boolean
-    title: "Allow this VCN to connect to on-premise resources?"
+    title: "Allow this VCN to connect to on-premises resources?"
     description: "Click to allow on-premises connectivity to this VCN."
     visible:
       and:
@@ -3946,7 +3946,6 @@ variables:
       eq:
         - ${ipsec_config}
         - "Create New IPSec Connection"
-    default: ""
 
   ipsec_tunnel1_ike_version:
     type: string
@@ -3956,7 +3955,6 @@ variables:
       eq:
         - ${ipsec_config}
         - "Create New IPSec Connection"
-    default: ""
 
   ipsec_tunnel2_customer_interface_ip:
     type: string
@@ -3986,7 +3984,6 @@ variables:
       eq:
         - ${ipsec_config}
         - "Create New IPSec Connection"
-    default: ""
 
   ipsec_tunnel2_ike_version:
     type: string
@@ -3996,7 +3993,6 @@ variables:
       eq:
         - ${ipsec_config}
         - "Create New IPSec Connection"
-    default: ""
 
   cpe_config:
     type: enum
