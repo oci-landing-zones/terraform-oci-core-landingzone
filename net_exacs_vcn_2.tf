@@ -214,11 +214,6 @@ locals {
               }
             },
             local.exa_vcn_2_to_client_subnet_cross_vcn_egress,
-            local.exa_vcn_2_to_workers_subnet_cross_vcn_egress,
-            local.exa_vcn_2_to_services_subnet_cross_vcn_egress,
-            local.exa_vcn_2_to_pods_subnet_cross_vcn_egress,
-            local.exa_vcn_2_to_web_subnet_cross_vcn_egress,
-            local.exa_vcn_2_to_app_subnet_cross_vcn_egress,
             local.exa_vcn_2_to_db_subnet_cross_vcn_egress,
           )
         }
@@ -495,7 +490,7 @@ locals {
       }
     } : {},
     ## Ingress from on-premises CIDRs
-    (local.add_exa_vcn2 == true && var.exa_vcn2_attach_to_drg == true && length(var.onprem_cidrs) > 0) &&
+    (local.add_exa_vcn2 == true && (var.exa_vcn2_attach_to_drg == true && length(var.onprem_cidrs) > 0 || var.exa_vcn2_onprem_route_enable)) &&
     (local.hub_with_vcn == true || local.hub_with_drg_only == true) ? {
       for cidr in var.onprem_cidrs : "INGRESS-FROM-ONPREM--${replace(replace(cidr, ".", ""), "/", "")}-RULE" => {
         description  = "Ingress from onprem ${cidr}"

@@ -50,17 +50,12 @@ variable "exa_vcn1_backup_subnet_name" {
 variable "exa_vcn1_routable_vcns" {
   type    = list(string)
   default = []
-  description = "The VCN labels that this VCN can send traffic to. Leave unassigned for sending traffic to all VCNs. Only applicable for Network topology where a DRG is deployed as the hub. Valid values: TT-VCN-1, TT-VCN-2, TT-VCN-3, EXA-VCN-2, EXA-VCN3, OKE-VCN-1, OKE-VCN-2, OKE-VCN-3, OnPremFC, OnPremVPN."
+  description = "The VCN labels that this VCN can send traffic to. Leave unassigned for sending traffic to all VCNs. Only applicable for Network topology where a DRG is deployed as the hub. Valid values: TT-VCN-1, TT-VCN-2, TT-VCN-3, EXA-VCN-2, EXA-VCN3, OKE-VCN-1, OKE-VCN-2, OKE-VCN-3."
 }
-variable "exa_vcn1_fastconnect_route_enable" {
+variable "exa_vcn1_onprem_route_enable" {
   type        = bool
-  default     = "false"
-  description = "This checkbox will drive the creation of the routes and security list rules."
-}
-variable "exa_vcn1_ipsec_route_enable" {
-  type        = bool
-  default     = "false"
-  description = "This checkbox will drive the creation of the routes and security list rules."
+  default     = false
+  description = "This will drive the creation of the routes and security list rules."
 }
 
 # ------------------------------------------------------
@@ -114,17 +109,12 @@ variable "exa_vcn2_backup_subnet_name" {
 variable "exa_vcn2_routable_vcns" {
   type    = list(string)
   default = []
-  description = "The VCN labels that this VCN can send traffic to. Leave unassigned for sending traffic to all VCNs. Only applicable for Network topology where a DRG is deployed as the hub. Valid values: TT-VCN-1, TT-VCN-2, TT-VCN-3, EXA-VCN-1, EXA-VCN3, OKE-VCN-1, OKE-VCN-2, OKE-VCN-3, OnPremFC, OnPremVPN."
+  description = "The VCN labels that this VCN can send traffic to. Leave unassigned for sending traffic to all VCNs. Only applicable for Network topology where a DRG is deployed as the hub. Valid values: TT-VCN-1, TT-VCN-2, TT-VCN-3, EXA-VCN-1, EXA-VCN3, OKE-VCN-1, OKE-VCN-2, OKE-VCN-3."
 }
-variable "exa_vcn2_fastconnect_route_enable" {
+variable "exa_vcn2_onprem_route_enable" {
   type        = bool
-  default     = "false"
-  description = "This checkbox will drive the creation of the routes and security list rules."
-}
-variable "exa_vcn2_ipsec_route_enable" {
-  type        = bool
-  default     = "false"
-  description = "This checkbox will drive the creation of the routes and security list rules."
+  default     = false
+  description = "This will drive the creation of the routes and security list rules."
 }
 
 # ------------------------------------------------------
@@ -173,19 +163,13 @@ variable "exa_vcn3_backup_subnet_name" {
   default = null
   description = "The Backup subnet name."
 }
-
 variable "exa_vcn3_routable_vcns" {
   type    = list(string)
   default = []
-  description = "The VCN labels that this VCN can send traffic to. Leave unassigned for sending traffic to all VCNs. Only applicable for Network topology where a DRG is deployed as the hub. Valid values: TT-VCN-1, TT-VCN-2, TT-VCN-3, EXA-VCN-1, EXA-VCN2, OKE-VCN-1, OKE-VCN-2, OKE-VCN-3, OnPremFC, OnPremVPN."
+  description = "The VCN labels that this VCN can send traffic to. Leave unassigned for sending traffic to all VCNs. Only applicable for Network topology where a DRG is deployed as the hub. Valid values: TT-VCN-1, TT-VCN-2, TT-VCN-3, EXA-VCN-1, EXA-VCN2, OKE-VCN-1, OKE-VCN-2, OKE-VCN-3."
 }
-variable "exa_vcn3_fastconnect_route_enable" {
+variable "exa_vcn3_onprem_route_enable" {
   type        = bool
-  default     = "false"
-  description = "This checkbox will drive the creation of the routes and security list rules."
-}
-variable "exa_vcn3_ipsec_route_enable" {
-  type        = bool
-  default     = "false"
-  description = "This checkbox will drive the creation of the routes and security list rules."
+  default     = false
+  description = "This will drive the creation of the routes and security list rules."
 }
