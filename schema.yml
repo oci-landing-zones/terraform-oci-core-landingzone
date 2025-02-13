@@ -3685,8 +3685,11 @@ variables:
     default: "None"   
 
   onprem_cidrs:
-    type: string
-    uniqueItems: true  
+    type: array
+    items:
+      type: string
+    uniqueItems: true
+    minItems: 1
     title: "On-premises Network CIDR Blocks"
     description: "List of on-premises IP ranges allowed to connect to the Landing Zone network via a DRG. Only VCNs with checked 'Attach this VCN to DRG (Dynamic Routing Gateway)?' will connect."
     visible:
