@@ -100,7 +100,7 @@ locals {
           }
         }
         encryption = {
-          kms_key_id = var.cis_level == 2 ? "NFW-KEY" : null
+          kms_key_id = var.cis_level == 2 ? module.lz_vault[0].keys["NFW-KEY"].id : null
           encrypt_in_transit_on_instance_create = null
           encrypt_in_transit_on_instance_update = null
         }
@@ -144,7 +144,7 @@ locals {
           }
         }
         encryption = {
-          kms_key_id = var.cis_level == 2 ? "NFW-KEY" : null
+          kms_key_id = var.cis_level == 2 ? module.lz_vault[0].keys["NFW-KEY"].id : null //var.cis_level == 2 ? "NFW-KEY" : null
           encrypt_in_transit_on_instance_create = null
           encrypt_in_transit_on_instance_update = null
         }
@@ -216,15 +216,11 @@ module "lz_firewall_appliance" {
   count                   = local.chosen_firewall_option != "NO" ? 1 : 0
   source                  = "github.com/oci-landing-zones/terraform-oci-modules-workloads//cis-compute-storage?ref=v0.1.7"
   instances_configuration = local.instances_configuration
-  kms_dependency          = var.cis_level == 2 ? {
-    "NFW-KEY" = {
-      id = module.lz_vault.keys
-    }
-  } : null
   providers = {
     oci                                  = oci.home
     oci.block_volumes_replication_region = oci.home
   }
+  depends_on = [module.lz_vault]
 }
 
 module "lz_nlb" {

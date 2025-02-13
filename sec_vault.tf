@@ -30,10 +30,8 @@ locals {
         freeform_tags = local.vault_freeform_tags
       }
     }
-    keys                = {
-      local.sch_key_mapkey = local.managed_sch_bucket_key
-      local.nfw_key_maykey = local.managed_nfw_key
-    }
+    keys              = merge(local.managed_sch_bucket_key, local.managed_nfw_key)
+
     existing_key_grants = local.existing_sch_bucket_key_grants
   }
 }
