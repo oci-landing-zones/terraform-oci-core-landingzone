@@ -214,11 +214,6 @@ locals {
               }
             },
             local.exa_vcn_2_to_client_subnet_cross_vcn_egress,
-            local.exa_vcn_2_to_workers_subnet_cross_vcn_egress,
-            local.exa_vcn_2_to_services_subnet_cross_vcn_egress,
-            local.exa_vcn_2_to_pods_subnet_cross_vcn_egress,
-            local.exa_vcn_2_to_web_subnet_cross_vcn_egress,
-            local.exa_vcn_2_to_app_subnet_cross_vcn_egress,
             local.exa_vcn_2_to_db_subnet_cross_vcn_egress,
           )
         }

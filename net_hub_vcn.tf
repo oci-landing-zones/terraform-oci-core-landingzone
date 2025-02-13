@@ -134,9 +134,9 @@ locals {
             display_name = "jumphost-subnet-security-list"
             ingress_rules = flatten([
               [{
-                description = "Ingress on UDP type 3 code 4."
+                description = "Ingress on ICMP type 3 code 4."
                 stateless   = false
-                protocol    = "UDP"
+                protocol    = "ICMP"
                 src         = "0.0.0.0/0"
                 src_type    = "CIDR_BLOCK"
                 icmp_type   = 3
