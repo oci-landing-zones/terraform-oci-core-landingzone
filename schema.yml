@@ -310,8 +310,7 @@ variableGroups:
   - title: "Networking - Three Tier VCNs"
     variables:
       - "add_tt_vcn1"
-      - "tt_vcn1_fastconnect_route_enable"
-      - "tt_vcn1_ipsec_route_enable"
+      - "tt_vcn1_onprem_route_enable"
       - "tt_vcn1_name"
       - "tt_vcn1_cidrs"
       - "tt_vcn1_attach_to_drg"
@@ -329,17 +328,8 @@ variableGroups:
       - "tt_vcn1_bastion_subnet_cidr"
       - "tt_vcn1_bastion_is_access_via_public_endpoint"
       - "tt_vcn1_bastion_subnet_allowed_cidrs"
-      # - "add_tt_vcn1_extra1_subnet"
-      # - "tt_vcn1_extra1_subnet_name"
-      # - "tt_vcn1_extra1_subnet_cidr"
-      # - "tt_vcn1_extra1_subnet_bastion_svc_cidrs"
-      # - "add_tt_vcn1_extra2_subnet"
-      # - "tt_vcn1_extra2_subnet_name"
-      # - "tt_vcn1_extra2_subnet_cidr"
-      # - "tt_vcn1_extra2_subnet_bastion_svc_cidrs"
       - "add_tt_vcn2"
-      - "tt_vcn2_fastconnect_route_enable"
-      - "tt_vcn2_ipsec_route_enable"
+      - "tt_vcn2_onprem_route_enable"
       - "tt_vcn2_name"
       - "tt_vcn2_cidrs"
       - "tt_vcn2_attach_to_drg"
@@ -358,8 +348,7 @@ variableGroups:
       - "tt_vcn2_bastion_is_access_via_public_endpoint"
       - "tt_vcn2_bastion_subnet_allowed_cidrs"
       - "add_tt_vcn3"
-      - "tt_vcn3_fastconnect_route_enable"
-      - "tt_vcn3_ipsec_route_enable"
+      - "tt_vcn3_onprem_route_enable"
       - "tt_vcn3_name"
       - "tt_vcn3_cidrs"
       - "tt_vcn3_attach_to_drg"
@@ -382,8 +371,7 @@ variableGroups:
   - title: "Networking - Exadata Cloud Service VCNs"
     variables:
       - "add_exa_vcn1"
-      - "exa_vcn1_fastconnect_route_enable"
-      - "exa_vcn1_ipsec_route_enable"
+      - "exa_vcn1_onprem_route_enable"
       - "exa_vcn1_name"
       - "exa_vcn1_cidrs"
       - "exa_vcn1_attach_to_drg"
@@ -394,8 +382,7 @@ variableGroups:
       - "exa_vcn1_backup_subnet_cidr"
       - "exa_vcn1_backup_subnet_name"
       - "add_exa_vcn2"
-      - "exa_vcn2_fastconnect_route_enable"
-      - "exa_vcn2_ipsec_route_enable"
+      - "exa_vcn2_onprem_route_enable"
       - "exa_vcn2_name"
       - "exa_vcn2_cidrs"
       - "exa_vcn2_attach_to_drg"
@@ -406,8 +393,7 @@ variableGroups:
       - "exa_vcn2_backup_subnet_cidr"
       - "exa_vcn2_backup_subnet_name"
       - "add_exa_vcn3"
-      - "exa_vcn3_fastconnect_route_enable"
-      - "exa_vcn3_ipsec_route_enable"
+      - "exa_vcn3_onprem_route_enable"
       - "exa_vcn3_cidrs"
       - "exa_vcn3_name"
       - "exa_vcn3_attach_to_drg"
@@ -423,8 +409,7 @@ variableGroups:
   - title: "Networking - OKE VCNs"
     variables:
       - "add_oke_vcn1"
-      - "oke_vcn1_fastconnect_route_enable"
-      - "oke_vcn1_ipsec_route_enable"
+      - "oke_vcn1_onprem_route_enable"
       - "oke_vcn1_cni_type"
       - "oke_vcn1_name"
       - "oke_vcn1_cidrs"
@@ -443,8 +428,7 @@ variableGroups:
       - "oke_vcn1_mgmt_subnet_name"
       - "oke_vcn1_mgmt_subnet_cidr"
       - "add_oke_vcn2"
-      - "oke_vcn2_fastconnect_route_enable"
-      - "oke_vcn2_ipsec_route_enable"
+      - "oke_vcn2_onprem_route_enable"
       - "oke_vcn2_cni_type"
       - "oke_vcn2_name"
       - "oke_vcn2_cidrs"
@@ -463,8 +447,7 @@ variableGroups:
       - "oke_vcn2_mgmt_subnet_name"
       - "oke_vcn2_mgmt_subnet_cidr"
       - "add_oke_vcn3"
-      - "oke_vcn3_fastconnect_route_enable"
-      - "oke_vcn3_ipsec_route_enable"
+      - "oke_vcn3_onprem_route_enable"
       - "oke_vcn3_cni_type"
       - "oke_vcn3_name"
       - "oke_vcn3_cidrs"
@@ -1260,10 +1243,10 @@ variables:
     description: "Click to add a three-tier VCN, with three subnets: web (public by default), application (private) and database (private). An optional subnet (private by default) for bastion deployment is also available."
     visible: define_net
 
-  tt_vcn1_fastconnect_route_enable:
+  tt_vcn1_onprem_route_enable:
     type: boolean
-    title: "Allow this VPN to connect to on-premise resources via FastConnect Virtual Circuit"
-    description: "Click to add three-tier VCN, with three subnets: web (public by default), application (private), database (private). An optional subnet (private by default) for Bastion deployment is also availble."
+    title: "Allow this VCN to connect to on-premise resources?"
+    description: "Click to allow on-premises connectivity to this VCN."
     visible:
       and:
         - add_tt_vcn1
@@ -1274,22 +1257,6 @@ variables:
           - eq:
             - ${on_premises_connection_option}
             - "None"
-          
-  tt_vcn1_ipsec_route_enable:
-    type: boolean
-    title: "Allow this VPN to connect to on-premise resources via IPSec VPN"
-    description: "Click to add three-tier VCN, with three subnets: web (public by default), application (private), database (private). An optional subnet (private by default) for Bastion deployment is also availble."
-    visible:
-      and:
-        - add_tt_vcn1
-        - not:
-          - eq:
-            - ${hub_deployment_option}
-            - "No cross-VCN or on-premises connectivity"
-          - eq:
-            - ${on_premises_connection_option}
-            - "None"
-
 
   tt_vcn1_name:
     type: string
@@ -1345,8 +1312,6 @@ variables:
       - "OKE-VCN-1"
       - "OKE-VCN-2"
       - "OKE-VCN-3"
-      - "OnPremFC"
-      - "OnPremVPN"
     visible: 
       and:
         - define_net
@@ -1515,17 +1480,21 @@ variables:
         - add_tt_vcn1
         - deploy_tt_vcn1_bastion_subnet
         - tt_vcn1_bastion_is_access_via_public_endpoint       
-      
+
+  # ------------------------------------------------------
+  # ----- Networking - Three-tier VCN 2
+  #-------------------------------------------------------
+
   add_tt_vcn2:
     type: boolean
     title: "Add Three-Tier VCN (label: TT-VCN-2)?"
     description: "Click to add a three-tier VCN, with three subnets: web (public by default), application (private) and database (private). An optional subnet (private by default) for bastion deployment is also available."
     visible: define_net
 
-  tt_vcn2_fastconnect_route_enable:
+  tt_vcn2_onprem_route_enable:
     type: boolean
-    title: "Allow this VPN to connect to on-premise resources via FastConnect Virtual Circuit"
-    description: "Click to add three-tier VCN, with three subnets: web (public by default), application (private), database (private). An optional subnet (private by default) for Bastion deployment is also availble."
+    title: "Allow this VCN to connect to on-premise resources?"
+    description: "Click to allow on-premises connectivity to this VCN."
     visible:
       and:
         - add_tt_vcn2
@@ -1533,37 +1502,10 @@ variables:
           - eq:
             - ${hub_deployment_option}
             - "No cross-VCN or on-premises connectivity"
-            - eq:
-            - ${on_premises_connection_option}
-            - "None"
-          
-  tt_vcn2_ipsec_route_enable:
-    type: boolean
-    title: "Allow this VPN to connect to on-premise resources via IPSec VPN"
-    description: "Click to add three-tier VCN, with three subnets: web (public by default), application (private), database (private). An optional subnet (private by default) for Bastion deployment is also availble."
-    visible:
-      and:
-        - add_tt_vcn2
-        - not:
           - eq:
-            - ${hub_deployment_option}
-            - "No cross-VCN or on-premises connectivity"
-            - eq:
             - ${on_premises_connection_option}
             - "None"
-   
-      # - "add_tt_vcn1_extra1_subnet"
-      # - "tt_vcn1_extra1_subnet_name"
-      # - "tt_vcn1_extra1_subnet_cidr"
-      # - "tt_vcn1_extra1_subnet_bastion_svc_cidrs"
-      # - "add_tt_vcn1_extra2_subnet"
-      # - "tt_vcn1_extra2_subnet_name"
-      # - "tt_vcn1_extra2_subnet_cidr"
-      # - "tt_vcn1_extra2_subnet_bastion_svc_cidrs"
 
-# ------------------------------------------------------
-# ----- Networking - Three-tier VCN 2
-#-------------------------------------------------------
   tt_vcn2_name:
     type: string
     title: "VCN Name (label: TT-VCN-2)"
@@ -1618,8 +1560,6 @@ variables:
       - "OKE-VCN-1"
       - "OKE-VCN-2"
       - "OKE-VCN-3"
-      - "OnPremFC"
-      - "OnPremVPN"
     visible: 
       and:
         - define_net
@@ -1789,17 +1729,21 @@ variables:
         - add_tt_vcn2
         - tt_vcn2_bastion_is_access_via_public_endpoint
         - deploy_tt_vcn2_bastion_subnet       
-  
+
+  # ------------------------------------------------------
+  # ----- Networking - Three-tier VCN 3
+  #-------------------------------------------------------
+
   add_tt_vcn3:
     type: boolean
     title: "Add Three-Tier VCN (label: TT-VCN-3)?"
     description: "Click to add a three-tier VCN, with three subnets: web (public by default), application (private) and database (private). An optional subnet (private by default) for bastion deployment is also available."
     visible: define_net
 
-  tt_vcn3_fastconnect_route_enable:
+  tt_vcn3_onprem_route_enable:
     type: boolean
-    title: "Allow this VPN to connect to on-premise resources via FastConnect Virtual Circuit"
-    description: "Click to add three-tier VCN, with three subnets: web (public by default), application (private), database (private). An optional subnet (private by default) for Bastion deployment is also availble."
+    title: "Allow this VCN to connect to on-premise resources?"
+    description: "Click to allow on-premises connectivity to this VCN."
     visible:
       and:
         - add_tt_vcn3
@@ -1807,28 +1751,10 @@ variables:
           - eq:
             - ${hub_deployment_option}
             - "No cross-VCN or on-premises connectivity"
-            - eq:
-            - ${on_premises_connection_option}
-            - "None"
-          
-  tt_vcn3_ipsec_route_enable:
-    type: boolean
-    title: "Allow this VPN to connect to on-premise resources via IPSec VPN"
-    description: "Click to add three-tier VCN, with three subnets: web (public by default), application (private), database (private). An optional subnet (private by default) for Bastion deployment is also availble."
-    visible:
-      and:
-        - add_tt_vcn3
-        - not:
           - eq:
-            - ${hub_deployment_option}
-            - "No cross-VCN or on-premises connectivity"
-            - eq:
             - ${on_premises_connection_option}
             - "None"
-    
-# ------------------------------------------------------
-# ----- Networking - Three-tier VCN 3
-#-------------------------------------------------------
+
   tt_vcn3_name:
     type: string
     title: "VCN Name (label: TT-VCN-3)"
@@ -1883,8 +1809,6 @@ variables:
       - "OKE-VCN-1"
       - "OKE-VCN-2"
       - "OKE-VCN-3"
-      - "OnPremFC"
-      - "OnPremVPN"
     visible: 
       and:
         - define_net
@@ -1897,7 +1821,6 @@ variables:
           - eq:
             - ${hub_deployment_option}
             - "VCN or on-premises connectivity routing via DRG (existing DRG)"
-
 
   customize_tt_vcn3_subnets:
     type: boolean
@@ -2064,6 +1987,21 @@ variables:
     description: "Click to add a VCN configured for Exadata Cloud Service deployment, with two subnets: client (private) and backup (private)."
     visible: define_net
 
+  exa_vcn1_onprem_route_enable:
+    type: boolean
+    title: "Allow this VCN to connect to on-premise resources?"
+    description: "Click to allow on-premises connectivity to this VCN."
+    visible:
+      and:
+        - add_exa_vcn1
+        - not:
+          - eq:
+            - ${hub_deployment_option}
+            - "No cross-VCN or on-premises connectivity"
+          - eq:
+            - ${on_premises_connection_option}
+            - "None"
+
   exa_vcn1_name:
     type: string
     title: "VCN Name (label: EXA-VCN-1)"
@@ -2118,8 +2056,6 @@ variables:
       - "OKE-VCN-1"
       - "OKE-VCN-2"
       - "OKE-VCN-3"
-      - "OnPremFC"
-      - "OnPremVPN"
     visible: 
       and:
         - define_net
@@ -2186,36 +2122,6 @@ variables:
         - customize_exa_vcn1_subnets
         - add_exa_vcn1
 
-  exa_vcn1_fastconnect_route_enable:
-    type: boolean
-    title: "Allow this VPN to connect to on-premise resources via FastConnect Virtual Circuit"
-    description: "Click to add three-tier VCN, with three subnets: web (public by default), application (private), database (private). An optional subnet (private by default) for Bastion deployment is also availble."
-    visible:
-      and:
-        - add_exa_vcn1
-        - not:
-          - eq:
-            - ${hub_deployment_option}
-            - "No cross-VCN or on-premises connectivity"
-          - eq:
-            - ${on_premises_connection_option}
-            - "None"
-          
-  exa_vcn1_ipsec_route_enable:
-    type: boolean
-    title: "Allow this VPN to connect to on-premise resources via IPSec VPN"
-    description: "Click to add three-tier VCN, with three subnets: web (public by default), application (private), database (private). An optional subnet (private by default) for Bastion deployment is also availble."
-    visible:
-      and:
-        - add_exa_vcn1
-        - not:
-          - eq:
-            - ${hub_deployment_option}
-            - "No cross-VCN or on-premises connectivity"
-          - eq:
-            - ${on_premises_connection_option}
-            - "None"
-
   # ------------------------------------------------------
   # ----- Networking - Exadata Cloud Service VCN 2
   #-------------------------------------------------------
@@ -2224,6 +2130,21 @@ variables:
     title: "Add Exadata Cloud Service VCN (label: EXA-VCN-2)?"
     description: "Click to add a VCN configured for Exadata Cloud Service deployment, with two subnets: client (private) and backup (private)."
     visible: define_net
+
+  exa_vcn2_onprem_route_enable:
+    type: boolean
+    title: "Allow this VCN to connect to on-premise resources?"
+    description: "Click to allow on-premises connectivity to this VCN."
+    visible:
+      and:
+        - add_exa_vcn2
+        - not:
+          - eq:
+            - ${hub_deployment_option}
+            - "No cross-VCN or on-premises connectivity"
+          - eq:
+            - ${on_premises_connection_option}
+            - "None"
 
   exa_vcn2_name:
     type: string
@@ -2279,8 +2200,6 @@ variables:
       - "OKE-VCN-1"
       - "OKE-VCN-2"
       - "OKE-VCN-3"
-      - "OnPremFC"
-      - "OnPremVPN"
     visible: 
       and:
         - define_net
@@ -2347,36 +2266,6 @@ variables:
         - customize_exa_vcn2_subnets
         - add_exa_vcn2
 
-  exa_vcn2_fastconnect_route_enable:
-    type: boolean
-    title: "Allow this VPN to connect to on-premise resources via FastConnect Virtual Circuit"
-    description: "Click to add three-tier VCN, with three subnets: web (public by default), application (private), database (private). An optional subnet (private by default) for Bastion deployment is also availble."
-    visible:
-      and:
-        - add_exa_vcn2
-        - not:
-          - eq:
-            - ${hub_deployment_option}
-            - "No cross-VCN or on-premises connectivity"
-          - eq:
-            - ${on_premises_connection_option}
-            - "None"
-          
-  exa_vcn2_ipsec_route_enable:
-    type: boolean
-    title: "Allow this VPN to connect to on-premise resources via IPSec VPN"
-    description: "Click to add three-tier VCN, with three subnets: web (public by default), application (private), database (private). An optional subnet (private by default) for Bastion deployment is also availble."
-    visible:
-      and:
-        - add_exa_vcn2
-        - not:
-          - eq:
-            - ${hub_deployment_option}
-            - "No cross-VCN or on-premises connectivity"
-          - eq:
-            - ${on_premises_connection_option}
-            - "None"
-
   # ------------------------------------------------------
   # ----- Networking - Exadata Cloud Service VCN 3
   #-------------------------------------------------------
@@ -2385,6 +2274,21 @@ variables:
     title: "Add Exadata Cloud Service VCN (label: EXA-VCN-3)?"
     description: "Click to add a VCN configured for Exadata Cloud Service deployment, with two subnets: client (private) and backup (private)."
     visible: define_net
+
+  exa_vcn3_onprem_route_enable:
+    type: boolean
+    title: "Allow this VCN to connect to on-premise resources?"
+    description: "Click to allow on-premises connectivity to this VCN."
+    visible:
+      and:
+        - add_exa_vcn3
+        - not:
+          - eq:
+            - ${hub_deployment_option}
+            - "No cross-VCN or on-premises connectivity"
+          - eq:
+            - ${on_premises_connection_option}
+            - "None"
 
   exa_vcn3_name:
     type: string
@@ -2440,8 +2344,6 @@ variables:
       - "OKE-VCN-1"
       - "OKE-VCN-2"
       - "OKE-VCN-3"
-      - "OnPremFC"
-      - "OnPremVPN"
     visible: 
       and:
         - define_net
@@ -2508,36 +2410,6 @@ variables:
         - customize_exa_vcn3_subnets
         - add_exa_vcn3
 
-  exa_vcn3_fastconnect_route_enable:
-    type: boolean
-    title: "Allow this VPN to connect to on-premise resources via FastConnect Virtual Circuit"
-    description: "Click to add three-tier VCN, with three subnets: web (public by default), application (private), database (private). An optional subnet (private by default) for Bastion deployment is also availble."
-    visible:
-      and:
-        - add_exa_vcn3
-        - not:
-          - eq:
-            - ${hub_deployment_option}
-            - "No cross-VCN or on-premises connectivity"
-          - eq:
-            - ${on_premises_connection_option}
-            - "None"
-          
-  exa_vcn3_ipsec_route_enable:
-    type: boolean
-    title: "Allow this VPN to connect to on-premise resources via IPSec VPN"
-    description: "Click to add three-tier VCN, with three subnets: web (public by default), application (private), database (private). An optional subnet (private by default) for Bastion deployment is also availble."
-    visible:
-      and:
-        - add_exa_vcn3
-        - not:
-          - eq:
-            - ${hub_deployment_option}
-            - "No cross-VCN or on-premises connectivity"
-          - eq:
-            - ${on_premises_connection_option}
-            - "None"
-
 # ------------------------------------------------------
 # ----- Networking - OKE VCN 1
 #-------------------------------------------------------
@@ -2547,6 +2419,21 @@ variables:
     title: "Add OKE VCN (label: OKE-VCN-1)?"
     description: "Click to add a VCN configured for OKE deployment, with at least three subnets: service (public by default), workers (private) and API endpoint (private). Additionally, a private subnet for pods deployment is created if the OKE CNI Type is 'Native'. You can also enable an extra private subnet for managing the OKE cluster."
     visible: define_net  
+
+  oke_vcn1_onprem_route_enable:
+    type: boolean
+    title: "Allow this VCN to connect to on-premise resources?"
+    description: "Click to allow on-premises connectivity to this VCN."
+    visible:
+      and:
+        - add_oke_vcn1
+        - not:
+          - eq:
+            - ${hub_deployment_option}
+            - "No cross-VCN or on-premises connectivity"
+          - eq:
+            - ${on_premises_connection_option}
+            - "None"
 
   oke_vcn1_cni_type:
     type: enum
@@ -2615,8 +2502,6 @@ variables:
       - "TT-VCN-1"
       - "TT-VCN-2"
       - "TT-VCN-3"
-      - "OnPremFC"
-      - "OnPremVPN"
     visible: 
       and:
         - define_net
@@ -2767,36 +2652,6 @@ variables:
             - ${oke_vcn1_cni_type}
             - "Native"
 
-  oke_vcn1_fastconnect_route_enable:
-    type: boolean
-    title: "Allow this VPN to connect to on-premise resources via FastConnect Virtual Circuit"
-    description: "Click to add three-tier VCN, with three subnets: web (public by default), application (private), database (private). An optional subnet (private by default) for Bastion deployment is also availble."
-    visible:
-      and:
-        - add_oke_vcn1
-        - not:
-          - eq:
-            - ${hub_deployment_option}
-            - "No cross-VCN or on-premises connectivity"
-          - eq:
-            - ${on_premises_connection_option}
-            - "None"
-          
-  oke_vcn1_ipsec_route_enable:
-    type: boolean
-    title: "Allow this VPN to connect to on-premise resources via IPSec VPN"
-    description: "Click to add three-tier VCN, with three subnets: web (public by default), application (private), database (private). An optional subnet (private by default) for Bastion deployment is also availble."
-    visible:
-      and:
-        - add_oke_vcn1
-        - not:
-          - eq:
-            - ${hub_deployment_option}
-            - "No cross-VCN or on-premises connectivity"
-          - eq:
-            - ${on_premises_connection_option}
-            - "None"
-
   # ------------------------------------------------------
   # ----- Networking - OKE VCN 2
   #-------------------------------------------------------
@@ -2805,6 +2660,21 @@ variables:
     title: "Add OKE VCN (label: OKE-VCN-2)?"
     description: "Click to add a VCN configured for OKE deployment, with at least three subnets: service (public by default), workers (private) and API endpoint (private). Additionally, a private subnet for pods deployment is created if the OKE CNI Type is 'Native'. You can also enable an extra private subnet for managing the OKE cluster."
     visible: define_net
+
+  oke_vcn2_onprem_route_enable:
+    type: boolean
+    title: "Allow this VCN to connect to on-premise resources?"
+    description: "Click to allow on-premises connectivity to this VCN."
+    visible:
+      and:
+        - add_oke_vcn2
+        - not:
+          - eq:
+            - ${hub_deployment_option}
+            - "No cross-VCN or on-premises connectivity"
+          - eq:
+            - ${on_premises_connection_option}
+            - "None"
 
   oke_vcn2_cni_type:
     type: enum
@@ -2873,8 +2743,6 @@ variables:
       - "TT-VCN-1"
       - "TT-VCN-2"
       - "TT-VCN-3"
-      - "OnPremFC"
-      - "OnPremVPN"
     visible: 
       and:
         - define_net
@@ -3025,36 +2893,6 @@ variables:
           - ${oke_vcn2_cni_type}
           - "Native"
 
-  oke_vcn2_fastconnect_route_enable:
-    type: boolean
-    title: "Allow this VPN to connect to on-premise resources via FastConnect Virtual Circuit"
-    description: "Click to add three-tier VCN, with three subnets: web (public by default), application (private), database (private). An optional subnet (private by default) for Bastion deployment is also availble."
-    visible:
-      and:
-        - add_oke_vcn2
-        - not:
-          - eq:
-            - ${hub_deployment_option}
-            - "No cross-VCN or on-premises connectivity"
-          - eq:
-            - ${on_premises_connection_option}
-            - "None"
-          
-  oke_vcn2_ipsec_route_enable:
-    type: boolean
-    title: "Allow this VPN to connect to on-premise resources via IPSec VPN"
-    description: "Click to add three-tier VCN, with three subnets: web (public by default), application (private), database (private). An optional subnet (private by default) for Bastion deployment is also availble."
-    visible:
-      and:
-        - add_oke_vcn2
-        - not:
-          - eq:
-            - ${hub_deployment_option}
-            - "No cross-VCN or on-premises connectivity"
-          - eq:
-            - ${on_premises_connection_option}
-            - "None"
-
   # ------------------------------------------------------
   # ----- Networking - OKE VCN 3
   #-------------------------------------------------------
@@ -3063,6 +2901,21 @@ variables:
     title: "Add OKE VCN (label: OKE-VCN-3)?"
     description: "Click to add a VCN configured for OKE deployment, with at least three subnets: service (public by default), workers (private) and API endpoint (private). Additionally, a private subnet for pods deployment is created if the OKE CNI Type is 'Native'. You can also enable an extra private subnet for managing the OKE cluster."
     visible: define_net
+
+  oke_vcn3_onprem_route_enable:
+    type: boolean
+    title: "Allow this VCN to connect to on-premise resources?"
+    description: "Click to allow on-premises connectivity to this VCN."
+    visible:
+      and:
+        - add_oke_vcn3
+        - not:
+          - eq:
+            - ${hub_deployment_option}
+            - "No cross-VCN or on-premises connectivity"
+          - eq:
+            - ${on_premises_connection_option}
+            - "None"
 
   oke_vcn3_cni_type:
     type: enum
@@ -3131,8 +2984,6 @@ variables:
       - "TT-VCN-1"
       - "TT-VCN-2"
       - "TT-VCN-3"
-      - "OnPremFC"
-      - "OnPremVPN"
     visible: 
       and:
         - define_net
@@ -3282,36 +3133,6 @@ variables:
         - eq:
           - ${oke_vcn3_cni_type}
           - "Native"
-
-  oke_vcn3_fastconnect_route_enable:
-    type: boolean
-    title: "Allow this VPN to connect to on-premise resources via FastConnect Virtual Circuit"
-    description: "Click to add three-tier VCN, with three subnets: web (public by default), application (private), database (private). An optional subnet (private by default) for Bastion deployment is also availble."
-    visible:
-      and:
-        - add_oke_vcn3
-        - not:
-          - eq:
-            - ${hub_deployment_option}
-            - "No cross-VCN or on-premises connectivity"
-          - eq:
-            - ${on_premises_connection_option}
-            - "None"
-          
-  oke_vcn3_ipsec_route_enable:
-    type: boolean
-    title: "Allow this VPN to connect to on-premise resources via IPSec VPN"
-    description: "Click to add three-tier VCN, with three subnets: web (public by default), application (private), database (private). An optional subnet (private by default) for Bastion deployment is also availble."
-    visible:
-      and:
-        - add_oke_vcn3
-        - not:
-          - eq:
-            - ${hub_deployment_option}
-            - "No cross-VCN or on-premises connectivity"
-          - eq:
-            - ${on_premises_connection_option}
-            - "None"
 
 # ------------------------------------------------------
 # ----- Networking - Hub
