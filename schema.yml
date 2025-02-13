@@ -1254,6 +1254,7 @@ variables:
           - eq:
             - ${hub_deployment_option}
             - "No cross-VCN or on-premises connectivity"
+        - not:
           - eq:
             - ${on_premises_connection_option}
             - "None"
@@ -1502,6 +1503,7 @@ variables:
           - eq:
             - ${hub_deployment_option}
             - "No cross-VCN or on-premises connectivity"
+        - not:
           - eq:
             - ${on_premises_connection_option}
             - "None"
@@ -1751,6 +1753,7 @@ variables:
           - eq:
             - ${hub_deployment_option}
             - "No cross-VCN or on-premises connectivity"
+        - not:
           - eq:
             - ${on_premises_connection_option}
             - "None"
@@ -1998,6 +2001,7 @@ variables:
           - eq:
             - ${hub_deployment_option}
             - "No cross-VCN or on-premises connectivity"
+        - not:
           - eq:
             - ${on_premises_connection_option}
             - "None"
@@ -2142,6 +2146,7 @@ variables:
           - eq:
             - ${hub_deployment_option}
             - "No cross-VCN or on-premises connectivity"
+        - not:
           - eq:
             - ${on_premises_connection_option}
             - "None"
@@ -2286,6 +2291,7 @@ variables:
           - eq:
             - ${hub_deployment_option}
             - "No cross-VCN or on-premises connectivity"
+        - not:
           - eq:
             - ${on_premises_connection_option}
             - "None"
@@ -2431,6 +2437,7 @@ variables:
           - eq:
             - ${hub_deployment_option}
             - "No cross-VCN or on-premises connectivity"
+        - not:
           - eq:
             - ${on_premises_connection_option}
             - "None"
@@ -2672,6 +2679,7 @@ variables:
           - eq:
             - ${hub_deployment_option}
             - "No cross-VCN or on-premises connectivity"
+        - not:
           - eq:
             - ${on_premises_connection_option}
             - "None"
@@ -2913,6 +2921,7 @@ variables:
           - eq:
             - ${hub_deployment_option}
             - "No cross-VCN or on-premises connectivity"
+        - not:
           - eq:
             - ${on_premises_connection_option}
             - "None"
@@ -3877,7 +3886,6 @@ variables:
     enum:
       - "Use Existing IPSec Connection"
       - "Create New IPSec Connection"
-    default: "Use Existing IPSec Connection"
 
   existing_ipsec_ocid:
     type: string
