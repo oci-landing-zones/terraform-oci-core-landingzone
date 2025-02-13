@@ -698,8 +698,10 @@ locals {
               icmp_type   = 3
               icmp_code   = 4
             }
-            }
-          )
+            },
+            local.oke_vcn_2_to_workers_subnet_cross_vcn_egress,
+            local.oke_vcn_2_to_pods_subnet_cross_vcn_egress
+          ),
           ingress_rules = merge({
             "INGRESS-FROM-ANYWHERE-TCP-RULE" = {
               description  = "Allows inbound TCP."
@@ -710,8 +712,9 @@ locals {
               dst_port_min = 443
               dst_port_max = 443
             }
-            }
-          )
+            },
+            local.oke_vcn_2_to_services_subnet_cross_vcn_ingress
+          ),
         }
         },
         var.add_oke_vcn2_mgmt_subnet ? {
@@ -759,7 +762,7 @@ locals {
                 description  = "Allows inbound SSH access."
                 stateless    = false
                 protocol     = "TCP"
-                src          = coalesce(var.oke_vcn2_mgmt_subnet_cidr, cidrsubnet(var.oke_vcn2_cidrs, 12, 48))
+                src          = coalesce(var.oke_vcn2_mgmt_subnet_cidr, cidrsubnet(var.oke_vcn2_cidrs[0], 12, 48))
                 src_type     = "CIDR_BLOCK"
                 dst_port_min = 22
                 dst_port_max = 22
@@ -1393,6 +1396,8 @@ locals {
       }
     } : {}
   )
+
+  
   oke_vcn_2_drg_routing = merge(
     (local.add_oke_vcn2 == true && var.oke_vcn2_attach_to_drg == true && var.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true) &&
     (local.hub_with_drg_only == true && (length(var.oke_vcn2_routable_vcns) == 0 || contains(var.oke_vcn2_routable_vcns, "OKE-VCN-1"))) ? {

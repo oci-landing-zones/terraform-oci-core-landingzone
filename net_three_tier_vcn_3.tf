@@ -272,7 +272,7 @@ locals {
                 }
               },
               local.vcn_3_to_hub_indoor_subnet_cross_vcn_egress
-            )
+            ),
           }
         },
         {
@@ -399,8 +399,8 @@ locals {
               },
               local.vcn_3_to_hub_indoor_subnet_cross_vcn_egress,
               local.vcn_3_to_db_subnet_cross_vcn_egress,
-              local.vcn_3_to_exa_cross_vcn_egress
-            )
+              local.vcn_3_to_exa_cross_vcn_egress,
+            ),
           }
         },
         var.deploy_tt_vcn3_bastion_subnet == true ? {

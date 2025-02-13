@@ -315,8 +315,8 @@ locals {
                     dst_port_max = 22
                   }
                 }
-              ) : {}
-            )
+              ) : {},
+            ),
             egress_rules = merge(
               {
                 "EGRESS-TO-DB-NSG-RULE" = {
@@ -931,5 +931,4 @@ locals {
       }
     } : {}
   )
-
 }

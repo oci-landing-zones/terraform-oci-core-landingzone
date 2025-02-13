@@ -8,7 +8,7 @@
 variable "add_oke_vcn1" {
   type    = bool
   default = false
-  description = "Whether to add a VCN configured for OKE workload deployments, with at least three subnets: service (public by default), workers (private) and API endpoint (private). Additionally, a private subnet for pods deployment is created if the OKE CNI Type is 'Native'. You can also enable an extra private subnet for managing the OKE cluster. The added VCN is labelled 'OKE-VCN-1'. The label should be used in the '*_routable_vcns' fields of other VCNs for constraining network traffic to those respective VCNs in a Hub/Spoke topology."
+  description = "Whether to add a VCN configured for OKE workload deployments, with at least three subnets: service (public by default), workers (private) and API endpoint (private). Additionally, a private subnet for pods deployment is created if the OKE CNI Type is 'Native'. You can also enable an extra private subnet for managing the OKE cluster. The added VCN is labelled 'OKE-VCN-1'. The label should be used in the '*_routable_vcns' fields of other VCNs for constraining network traffic to those respective VCNs in a Network topology."
 }
 
 variable "oke_vcn1_cni_type" {
@@ -38,7 +38,7 @@ variable "oke_vcn1_attach_to_drg" {
 variable "oke_vcn1_routable_vcns" {
   type    = list(string)
   default = []
-  description = "The VCN labels that this VCN can send traffic to. Only applicable for Hub/Spoke topology where a DRG is deployed as the hub. Valid values: TT-VCN-1, TT-VCN-2, TT-VCN-3, EXA-VCN-1, EXA-VCN-2, EXA-VCN3, OKE-VCN-2, OKE-VCN-3."
+  description = "The VCN labels that this VCN can send traffic to. Only applicable for Network topology where a DRG is deployed as the hub. Valid values: TT-VCN-1, TT-VCN-2, TT-VCN-3, EXA-VCN-1, EXA-VCN-2, EXA-VCN3, OKE-VCN-2, OKE-VCN-3, OnPremFC, OnPremVPN."
 }
 
 variable "oke_vcn1_api_subnet_cidr" {
@@ -106,6 +106,17 @@ variable "oke_vcn1_pods_subnet_cidr" {
   default = null
   description = "The Pods subnet CIDR block. It must be within the VCN CIDR blocks."
 }
+variable "oke_vcn1_fastconnect_route_enable" {
+  type        = bool
+  default     = "false"
+  description = "This checkbox will drive the creation of the routes and security list rules."
+}
+variable "oke_vcn1_ipsec_route_enable" {
+  type        = bool
+  default     = "false"
+  description = "This checkbox will drive the creation of the routes and security list rules."
+}
+
 # ------------------------------------------------------
 # ----- Networking - OKE VCN 2
 #-------------------------------------------------------
@@ -113,7 +124,7 @@ variable "oke_vcn1_pods_subnet_cidr" {
 variable "add_oke_vcn2" {
   type    = bool
   default = false
-  description = "Whether to add a second VCN configured for OKE workload deployments, with at least three subnets: service (public by default), workers (private) and API endpoint (private). Additionally, a private subnet for pods deployment is created if the OKE CNI Type is 'Native'. You can also enable an extra private subnet for managing the OKE cluster. The added VCN is labelled 'OKE-VCN-2'. The label should be used in the '*_routable_vcns' fields of other VCNs for constraining network traffic to those respective VCNs in a Hub/Spoke topology."
+  description = "Whether to add a second VCN configured for OKE workload deployments, with at least three subnets: service (public by default), workers (private) and API endpoint (private). Additionally, a private subnet for pods deployment is created if the OKE CNI Type is 'Native'. You can also enable an extra private subnet for managing the OKE cluster. The added VCN is labelled 'OKE-VCN-2'. The label should be used in the '*_routable_vcns' fields of other VCNs for constraining network traffic to those respective VCNs in a Network topology."
 }
 
 variable "oke_vcn2_cni_type" {
@@ -143,7 +154,7 @@ variable "oke_vcn2_attach_to_drg" {
 variable "oke_vcn2_routable_vcns" {
   type    = list(string)
   default = []
-  description = "The VCN labels that this VCN can send traffic to. Only applicable for Hub/Spoke topology where a DRG is deployed as the hub. Valid values: TT-VCN-1, TT-VCN-2, TT-VCN-3, EXA-VCN-1, EXA-VCN-2, EXA-VCN3, OKE-VCN-1, OKE-VCN-3."
+  description = "The VCN labels that this VCN can send traffic to. Only applicable for Network topology where a DRG is deployed as the hub. Valid values: TT-VCN-1, TT-VCN-2, TT-VCN-3, EXA-VCN-1, EXA-VCN-2, EXA-VCN3, OKE-VCN-1, OKE-VCN-3, OnPremFC, OnPremVPN."
 }
 
 variable "oke_vcn2_api_subnet_cidr" {
@@ -211,7 +222,16 @@ variable "oke_vcn2_pods_subnet_cidr" {
   default = null
   description = "The Pods subnet CIDR block. It must be within the VCN CIDR blocks."
 }
-
+variable "oke_vcn2_fastconnect_route_enable" {
+  type        = bool
+  default     = "false"
+  description = "This checkbox will drive the creation of the routes and security list rules."
+}
+variable "oke_vcn2_ipsec_route_enable" {
+  type        = bool
+  default     = "false"
+  description = "This checkbox will drive the creation of the routes and security list rules."
+}
 
 # ------------------------------------------------------
 # ----- Networking - OKE VCN 3
@@ -220,7 +240,7 @@ variable "oke_vcn2_pods_subnet_cidr" {
 variable "add_oke_vcn3" {
   type    = bool
   default = false
-  description = "Whether to add a third VCN configured for OKE workload deployments, with at least three subnets: service (public by default), workers (private) and API endpoint (private). Additionally, a private subnet for pods deployment is created if the OKE CNI Type is 'Native'. You can also enable an extra private subnet for managing the OKE cluster. The added VCN is labelled 'OKE-VCN-3'. The label should be used in the '*_routable_vcns' fields of other VCNs for constraining network traffic to those respective VCNs in a Hub/Spoke topology."
+  description = "Whether to add a third VCN configured for OKE workload deployments, with at least three subnets: service (public by default), workers (private) and API endpoint (private). Additionally, a private subnet for pods deployment is created if the OKE CNI Type is 'Native'. You can also enable an extra private subnet for managing the OKE cluster. The added VCN is labelled 'OKE-VCN-3'. The label should be used in the '*_routable_vcns' fields of other VCNs for constraining network traffic to those respective VCNs in a Network topology."
 }
 
 variable "oke_vcn3_cni_type" {
@@ -250,7 +270,7 @@ variable "oke_vcn3_attach_to_drg" {
 variable "oke_vcn3_routable_vcns" {
   type    = list(string)
   default = []
-  description = "The VCN labels that this VCN can send traffic to. Only applicable for Hub/Spoke topology where a DRG is deployed as the hub. Valid values: TT-VCN-1, TT-VCN-2, TT-VCN-3, EXA-VCN-1, EXA-VCN-2, EXA-VCN3, OKE-VCN-1, OKE-VCN-2."
+  description = "The VCN labels that this VCN can send traffic to. Only applicable for Network topology where a DRG is deployed as the hub. Valid values: TT-VCN-1, TT-VCN-2, TT-VCN-3, EXA-VCN-1, EXA-VCN-2, EXA-VCN3, OKE-VCN-1, OKE-VCN-2, OnPremFC, OnPremVPN."
 }
 
 variable "oke_vcn3_api_subnet_cidr" {
@@ -317,4 +337,14 @@ variable "oke_vcn3_pods_subnet_cidr" {
   type    = string
   default = null
   description = "The Pods subnet CIDR block. It must be within the VCN CIDR blocks."
+}
+variable "oke_vcn3_fastconnect_route_enable" {
+  type        = bool
+  default     = "false"
+  description = "This checkbox will drive the creation of the routes and security list rules."
+}
+variable "oke_vcn3_ipsec_route_enable" {
+  type        = bool
+  default     = "false"
+  description = "This checkbox will drive the creation of the routes and security list rules."
 }

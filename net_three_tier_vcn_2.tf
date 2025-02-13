@@ -354,7 +354,7 @@ locals {
               local.vcn_2_to_web_subnet_cross_vcn_egress,
               local.vcn_2_to_oke_cross_vcn_egress,
               local.vcn_2_to_exa_cross_vcn_egress
-            )
+            ),
           }
         },
         {
@@ -400,7 +400,7 @@ locals {
               local.vcn_2_to_hub_indoor_subnet_cross_vcn_egress,
               local.vcn_2_to_db_subnet_cross_vcn_egress,
               local.vcn_2_to_exa_cross_vcn_egress
-            )
+            ),
           }
         },
         var.deploy_tt_vcn2_bastion_subnet == true ? {

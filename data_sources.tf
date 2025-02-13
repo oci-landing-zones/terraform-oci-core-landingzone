@@ -199,3 +199,8 @@ data "oci_identity_compartments" "exainfra" {
 data "oci_identity_tag_namespaces" "this" {
   compartment_id = var.tenancy_ocid
 }
+
+data "oci_core_ipsec_connection_tunnels" "these" {
+  count = local.use_existing_ipsec ? 1 : 0
+  ipsec_id = var.existing_ipsec_ocid
+}

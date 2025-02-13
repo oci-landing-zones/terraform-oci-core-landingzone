@@ -760,7 +760,7 @@ locals {
                 description  = "Allows inbound SSH access."
                 stateless    = false
                 protocol     = "TCP"
-                src          = coalesce(var.oke_vcn3_mgmt_subnet_cidr, cidrsubnet(var.oke_vcn3_cidrs, 12, 48))
+                src          = coalesce(var.oke_vcn3_mgmt_subnet_cidr, cidrsubnet(var.oke_vcn3_cidrs[0], 12, 48))
                 src_type     = "CIDR_BLOCK"
                 dst_port_min = 22
                 dst_port_max = 22

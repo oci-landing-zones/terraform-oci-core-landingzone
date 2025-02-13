@@ -214,7 +214,12 @@ locals {
               }
             },
             local.exa_vcn_2_to_client_subnet_cross_vcn_egress,
-            local.exa_vcn_2_to_db_subnet_cross_vcn_egress
+            local.exa_vcn_2_to_workers_subnet_cross_vcn_egress,
+            local.exa_vcn_2_to_services_subnet_cross_vcn_egress,
+            local.exa_vcn_2_to_pods_subnet_cross_vcn_egress,
+            local.exa_vcn_2_to_web_subnet_cross_vcn_egress,
+            local.exa_vcn_2_to_app_subnet_cross_vcn_egress,
+            local.exa_vcn_2_to_db_subnet_cross_vcn_egress,
           )
         }
         "EXA-VCN-2-BACKUP-NSG" = {
@@ -503,6 +508,7 @@ locals {
       }
     } : {}
   )
+
 
   exa_vcn_2_drg_routing = merge(
     (local.add_exa_vcn2 == true && var.exa_vcn2_attach_to_drg == true && var.add_exa_vcn1 == true && var.exa_vcn1_attach_to_drg == true) &&

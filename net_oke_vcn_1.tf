@@ -5,6 +5,7 @@ locals {
 
   add_oke_vcn1 = var.define_net == true && var.add_oke_vcn1 == true
 
+
   oke_vcn_1 = local.add_oke_vcn1 == true ? {
     "OKE-VCN-1" = {
       display_name                     = coalesce(var.oke_vcn1_name, "${var.service_label}-oke-vcn-1")
@@ -77,13 +78,13 @@ locals {
         } : {}
       )
 
+
       security_lists = merge(
         {
           "OKE-VCN-1-API-SUBNET-SL" = {
             display_name = "${coalesce(var.oke_vcn1_api_subnet_name, "${var.service_label}-oke-vcn-1-api-subnet")}-security-list"
             egress_rules = []
-            ingress_rules = [
-              {
+            ingress_rules = [{
                 description = "Allows inbound ICMP traffic for path discovery"
                 stateless   = false
                 protocol    = "ICMP"
@@ -91,8 +92,7 @@ locals {
                 src_type    = "CIDR_BLOCK"
                 icmp_type   = 3
                 icmp_code   = 4
-              }
-            ]
+            }]
           }
         },
         {
@@ -703,8 +703,10 @@ locals {
                 icmp_type   = 3
                 icmp_code   = 4
               }
-              }
-            )
+              },
+              local.oke_vcn_1_to_workers_subnet_cross_vcn_egress,
+              local.oke_vcn_1_to_pods_subnet_cross_vcn_egress
+            ),
             ingress_rules = merge({
               "INGRESS-FROM-ANYWHERE-TCP-RULE" = {
                 description  = "Allows inbound TCP."
@@ -1403,6 +1405,8 @@ locals {
       }
     } : {}
   )
+  
+
 
   oke_vcn_1_drg_routing = merge(
     (local.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true && var.add_oke_vcn2 == true && var.oke_vcn2_attach_to_drg == true) &&
