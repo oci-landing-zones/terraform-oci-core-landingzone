@@ -490,7 +490,7 @@ locals {
       }
     } : {},
     ## Ingress from on-premises CIDRs
-    (local.add_exa_vcn3 == true && var.exa_vcn3_attach_to_drg == true && length(var.onprem_cidrs) > 0) &&
+    (local.add_exa_vcn3 == true && (var.exa_vcn3_attach_to_drg == true && var.exa_vcn3_onprem_route_enable)) &&
     (local.hub_with_vcn == true || local.hub_with_drg_only == true) ? {
       for cidr in var.onprem_cidrs : "INGRESS-FROM-ONPREM--${replace(replace(cidr, ".", ""), "/", "")}-RULE" => {
         description  = "Ingress from onprem ${cidr}"

@@ -736,7 +736,7 @@ locals {
       }
     ) : {},
     ## Ingress from on-premises CIDRs into TT-VCN-1 web subnet
-    (local.add_tt_vcn1 == true && var.tt_vcn1_attach_to_drg == true && length(var.onprem_cidrs) > 0) &&
+    (local.add_tt_vcn1 == true && (var.tt_vcn1_attach_to_drg == true && var.tt_vcn1_onprem_route_enable)) &&
     (local.hub_with_vcn == true || local.hub_with_drg_only == true) ? {
       for cidr in var.onprem_cidrs : "INGRESS-FROM-ONPREM-${replace(replace(cidr, ".", ""), "/", "")}-RULE" => {
         description  = "Ingress from onprem ${cidr}"
