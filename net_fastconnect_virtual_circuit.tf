@@ -34,7 +34,7 @@ locals {
           }
         }
         is_bfd_enabled = var.fastconnect_virtual_circuit_is_bfd_enabled
-        routing_policy = var.fastconnect_virtual_circuit_routing_policy
+        routing_policy = [var.fastconnect_virtual_circuit_routing_policy]
         ip_mtu         = var.fastconnect_virtual_circuit_ip_mtu
       }
     }

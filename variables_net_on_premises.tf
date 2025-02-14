@@ -181,7 +181,7 @@ variable "fastconnect_virtual_circuit_oracle_bgp_peering_ip" {
 }
 
 variable "fastconnect_virtual_circuit_routing_policy" {
-  type        = list(string)
+  type        = string
   default     = null
   description = "Defines the BGP relationship for exchanging routes. (Valid values include REGIONAL, GLOBAL)."
 }
