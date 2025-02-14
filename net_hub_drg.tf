@@ -378,7 +378,7 @@ locals {
                     }
                   }
                 } : {},
-                (contains(var.tt_vcn1_routable_vcns, "OnPremFC")) && var.tt_vcn1_attach_to_drg && local.hub_with_drg_only == true && (length(regexall("FASTCONNECT", upper(var.on_premises_connection_option))) > 0) ? {
+                var.tt_vcn1_onprem_route_enable == true && var.tt_vcn1_attach_to_drg && local.hub_with_drg_only == true && (length(regexall("FASTCONNECT", upper(var.on_premises_connection_option))) > 0) ? {
                   "TT-VCN-1-TO-FC-VIRTUAL-CIRCUIT-STMT" = {
                     action   = "ACCEPT",
                     priority = 10,
@@ -388,7 +388,7 @@ locals {
                     }
                   }
                 } : {},
-                (contains(var.tt_vcn1_routable_vcns, "OnPremVPN")) && var.tt_vcn1_attach_to_drg && local.hub_with_drg_only == true && (length(regexall("IPSEC", upper(var.on_premises_connection_option))) > 0) ? {
+                var.tt_vcn1_onprem_route_enable == true && var.tt_vcn1_attach_to_drg && local.hub_with_drg_only == true && (length(regexall("IPSEC", upper(var.on_premises_connection_option))) > 0) ? {
                   "TT-VCN-1-TO-IPSEC-STMT" = {
                     action   = "ACCEPT",
                     priority = 11,
@@ -507,7 +507,7 @@ locals {
                     }
                   }
                 } : {},
-                (contains(var.tt_vcn2_routable_vcns, "OnPremFC")) && var.tt_vcn2_attach_to_drg && local.hub_with_drg_only == true && (length(regexall("FASTCONNECT", upper(var.on_premises_connection_option))) > 0) ? {
+                var.tt_vcn2_onprem_route_enable == true && var.tt_vcn2_attach_to_drg && local.hub_with_drg_only == true && (length(regexall("FASTCONNECT", upper(var.on_premises_connection_option))) > 0) ? {
                   "TT-VCN-2-TO-FC-VIRTUAL-CIRCUIT-STMT" = {
                     action   = "ACCEPT",
                     priority = 10,
@@ -517,7 +517,7 @@ locals {
                     }
                   }
                 } : {},
-                (contains(var.tt_vcn2_routable_vcns, "OnPremVPN")) && var.tt_vcn2_attach_to_drg && local.hub_with_drg_only == true && (length(regexall("IPSEC", upper(var.on_premises_connection_option))) > 0) ? {
+                var.tt_vcn2_onprem_route_enable == true && var.tt_vcn2_attach_to_drg && local.hub_with_drg_only == true && (length(regexall("IPSEC", upper(var.on_premises_connection_option))) > 0) ? {
                   "TT-VCN-2-TO-IPSEC-STMT" = {
                     action   = "ACCEPT",
                     priority = 11,
@@ -636,7 +636,7 @@ locals {
                     }
                   }
                 } : {},
-                (contains(var.tt_vcn3_routable_vcns, "OnPremFC")) && var.tt_vcn3_attach_to_drg && local.hub_with_drg_only == true && (length(regexall("FASTCONNECT", upper(var.on_premises_connection_option))) > 0) ? {
+                var.tt_vcn3_onprem_route_enable == true && var.tt_vcn3_attach_to_drg && local.hub_with_drg_only == true && (length(regexall("FASTCONNECT", upper(var.on_premises_connection_option))) > 0) ? {
                   "TT-VCN-3-TO-FC-VIRTUAL-CIRCUIT-STMT" = {
                     action   = "ACCEPT",
                     priority = 10,
@@ -646,7 +646,7 @@ locals {
                     }
                   }
                 } : {},
-                (contains(var.tt_vcn3_routable_vcns, "OnPremVPN")) && var.tt_vcn3_attach_to_drg && local.hub_with_drg_only == true && (length(regexall("IPSEC", upper(var.on_premises_connection_option))) > 0) ? {
+                var.tt_vcn3_onprem_route_enable == true  && var.tt_vcn3_attach_to_drg && local.hub_with_drg_only == true && (length(regexall("IPSEC", upper(var.on_premises_connection_option))) > 0) ? {
                   "TT-VCN-3-TO-IPSEC-STMT" = {
                     action   = "ACCEPT",
                     priority = 11,
@@ -765,7 +765,7 @@ locals {
                     }
                   }
                 } : {},
-                (contains(var.exa_vcn1_routable_vcns, "OnPremFC")) && var.exa_vcn1_attach_to_drg && local.hub_with_drg_only == true && (length(regexall("FASTCONNECT", upper(var.on_premises_connection_option))) > 0) ? {
+                var.exa_vcn1_onprem_route_enable == true && var.exa_vcn1_attach_to_drg && local.hub_with_drg_only == true && (length(regexall("FASTCONNECT", upper(var.on_premises_connection_option))) > 0) ? {
                   "EXA-VCN-1-TO-FC-VIRTUAL-CIRCUIT-STMT" = {
                     action   = "ACCEPT",
                     priority = 10,
@@ -775,7 +775,7 @@ locals {
                     }
                   }
                 } : {},
-                (contains(var.exa_vcn1_routable_vcns, "OnPremVPN")) && var.exa_vcn1_attach_to_drg && local.hub_with_drg_only == true && (length(regexall("IPSEC", upper(var.on_premises_connection_option))) > 0) ? {
+                var.exa_vcn1_onprem_route_enable == true && var.exa_vcn1_attach_to_drg && local.hub_with_drg_only == true && (length(regexall("IPSEC", upper(var.on_premises_connection_option))) > 0) ? {
                   "EXA-VCN-1-TO-IPSEC-STMT" = {
                     action   = "ACCEPT",
                     priority = 11,
@@ -894,7 +894,7 @@ locals {
                     }
                   }
                 } : {},
-                (contains(var.exa_vcn2_routable_vcns, "OnPremFC")) && var.exa_vcn2_attach_to_drg && local.hub_with_drg_only == true && (length(regexall("FASTCONNECT", upper(var.on_premises_connection_option))) > 0) ? {
+                var.exa_vcn2_onprem_route_enable == true && var.exa_vcn2_attach_to_drg && local.hub_with_drg_only == true && (length(regexall("FASTCONNECT", upper(var.on_premises_connection_option))) > 0) ? {
                   "EXA-VCN-2-TO-FC-VIRTUAL-CIRCUIT-STMT" = {
                     action   = "ACCEPT",
                     priority = 10,
@@ -904,7 +904,7 @@ locals {
                     }
                   }
                 } : {},
-                (contains(var.exa_vcn2_routable_vcns, "OnPremVPN")) && var.exa_vcn2_attach_to_drg && local.hub_with_drg_only == true && (length(regexall("IPSEC", upper(var.on_premises_connection_option))) > 0) ? {
+                var.exa_vcn2_onprem_route_enable == true && var.exa_vcn2_attach_to_drg && local.hub_with_drg_only == true && (length(regexall("IPSEC", upper(var.on_premises_connection_option))) > 0) ? {
                   "EXA-VCN-2-TO-IPSEC-STMT" = {
                     action   = "ACCEPT",
                     priority = 11,
@@ -1023,7 +1023,7 @@ locals {
                     }
                   }
                 } : {},
-                (contains(var.exa_vcn3_routable_vcns, "OnPremFC")) && var.exa_vcn3_attach_to_drg && local.hub_with_drg_only == true && (length(regexall("FASTCONNECT", upper(var.on_premises_connection_option))) > 0) ? {
+                var.exa_vcn3_onprem_route_enable == true && var.exa_vcn3_attach_to_drg && local.hub_with_drg_only == true && (length(regexall("FASTCONNECT", upper(var.on_premises_connection_option))) > 0) ? {
                   "EXA-VCN-3-TO-FC-VIRTUAL-CIRCUIT-STMT" = {
                     action   = "ACCEPT",
                     priority = 10,
@@ -1033,7 +1033,7 @@ locals {
                     }
                   }
                 } : {},
-                (contains(var.exa_vcn3_routable_vcns, "OnPremVPN")) && var.exa_vcn3_attach_to_drg && local.hub_with_drg_only == true && (length(regexall("IPSEC", upper(var.on_premises_connection_option))) > 0) ? {
+                var.exa_vcn3_onprem_route_enable == true && var.exa_vcn3_attach_to_drg && local.hub_with_drg_only == true && (length(regexall("IPSEC", upper(var.on_premises_connection_option))) > 0) ? {
                   "EXA-VCN-3-TO-IPSEC-STMT" = {
                     action   = "ACCEPT",
                     priority = 11,
@@ -1152,7 +1152,7 @@ locals {
                     }
                   }
                 } : {},
-                (contains(var.oke_vcn1_routable_vcns, "OnPremFC")) && var.oke_vcn1_attach_to_drg && local.hub_with_drg_only == true && (length(regexall("FASTCONNECT", upper(var.on_premises_connection_option))) > 0) ? {
+                var.oke_vcn1_onprem_route_enable == true && var.oke_vcn1_attach_to_drg && local.hub_with_drg_only == true && (length(regexall("FASTCONNECT", upper(var.on_premises_connection_option))) > 0) ? {
                   "OKE-VCN-1-TO-FC-VIRTUAL-CIRCUIT-STMT" = {
                     action   = "ACCEPT",
                     priority = 10,
@@ -1162,7 +1162,7 @@ locals {
                     }
                   }
                 } : {},
-                (contains(var.oke_vcn1_routable_vcns, "OnPremVPN")) && var.oke_vcn1_attach_to_drg && local.hub_with_drg_only == true && (length(regexall("IPSEC", upper(var.on_premises_connection_option))) > 0) ? {
+                var.oke_vcn1_onprem_route_enable == true && var.oke_vcn1_attach_to_drg && local.hub_with_drg_only == true && (length(regexall("IPSEC", upper(var.on_premises_connection_option))) > 0) ? {
                   "OKE-VCN-1-TO-IPSEC-STMT" = {
                     action   = "ACCEPT",
                     priority = 11,
@@ -1281,7 +1281,7 @@ locals {
                     }
                   }
                 } : {},
-                (contains(var.oke_vcn2_routable_vcns, "OnPremFC")) && var.oke_vcn2_attach_to_drg && local.hub_with_drg_only == true && (length(regexall("FASTCONNECT", upper(var.on_premises_connection_option))) > 0) ? {
+                var.oke_vcn2_onprem_route_enable == true && var.oke_vcn2_attach_to_drg && local.hub_with_drg_only == true && (length(regexall("FASTCONNECT", upper(var.on_premises_connection_option))) > 0) ? {
                   "OKE-VCN-2-TO-FC-VIRTUAL-CIRCUIT-STMT" = {
                     action   = "ACCEPT",
                     priority = 10,
@@ -1291,7 +1291,7 @@ locals {
                     }
                   }
                 } : {},
-                (contains(var.oke_vcn2_routable_vcns, "OnPremVPN")) && var.oke_vcn2_attach_to_drg && local.hub_with_drg_only == true && (length(regexall("IPSEC", upper(var.on_premises_connection_option))) > 0) ? {
+                var.oke_vcn2_onprem_route_enable == true && var.oke_vcn2_attach_to_drg && local.hub_with_drg_only == true && (length(regexall("IPSEC", upper(var.on_premises_connection_option))) > 0) ? {
                   "OKE-VCN-2-TO-IPSEC-STMT" = {
                     action   = "ACCEPT",
                     priority = 11,
@@ -1410,7 +1410,7 @@ locals {
                     }
                   }
                 } : {},
-                (contains(var.oke_vcn3_routable_vcns, "OnPremFC")) && var.oke_vcn3_attach_to_drg && local.hub_with_drg_only == true && (length(regexall("FASTCONNECT", upper(var.on_premises_connection_option))) > 0) ? {
+                var.oke_vcn3_onprem_route_enable == true && var.oke_vcn3_attach_to_drg && local.hub_with_drg_only == true && (length(regexall("FASTCONNECT", upper(var.on_premises_connection_option))) > 0) ? {
                   "OKE-VCN-3-TO-FC-VIRTUAL-CIRCUIT-STMT" = {
                     action   = "ACCEPT",
                     priority = 10,
@@ -1420,7 +1420,7 @@ locals {
                     }
                   }
                 } : {},
-                (contains(var.oke_vcn3_routable_vcns, "OnPremVPN")) && var.oke_vcn3_attach_to_drg && local.hub_with_drg_only == true && (length(regexall("IPSEC", upper(var.on_premises_connection_option))) > 0) ? {
+                var.oke_vcn3_onprem_route_enable == true && var.oke_vcn3_attach_to_drg && local.hub_with_drg_only == true && (length(regexall("IPSEC", upper(var.on_premises_connection_option))) > 0) ? {
                   "OKE-VCN-3-TO-IPSEC-STMT" = {
                     action   = "ACCEPT",
                     priority = 11,
@@ -1451,7 +1451,7 @@ locals {
                     }
                   }
                 } : {},
-                (contains(var.tt_vcn1_routable_vcns, "OnPremVPN")) && local.hub_with_drg_only == true ? {
+                var.tt_vcn1_onprem_route_enable == true && local.hub_with_drg_only == true ? {
                   "IPSEC-TO-TT-VCN-1-STMT" = {
                     action   = "ACCEPT",
                     priority = 2,
@@ -1462,7 +1462,7 @@ locals {
                     }
                   }
                 } : {},
-                (contains(var.tt_vcn2_routable_vcns, "OnPremVPN")) && local.hub_with_drg_only == true ? {
+                var.tt_vcn2_onprem_route_enable == true && local.hub_with_drg_only == true ? {
                   "IPSEC-TO-TT-VCN-2-STMT" = {
                     action   = "ACCEPT",
                     priority = 3,
@@ -1473,7 +1473,7 @@ locals {
                     }
                   }
                 } : {},
-                (contains(var.tt_vcn3_routable_vcns, "OnPremVPN")) && local.hub_with_drg_only == true ? {
+                var.tt_vcn3_onprem_route_enable == true && local.hub_with_drg_only == true ? {
                   "IPSEC-TO-TT-VCN-3-STMT" = {
                     action   = "ACCEPT",
                     priority = 4,
@@ -1484,7 +1484,7 @@ locals {
                     }
                   }
                 } : {},
-                (contains(var.exa_vcn1_routable_vcns, "OnPremVPN")) && local.hub_with_drg_only == true ? {
+                var.exa_vcn1_onprem_route_enable == true && local.hub_with_drg_only == true ? {
                   "IPSEC-TO-EXA-VCN-1-STMT" = {
                     action   = "ACCEPT",
                     priority = 5,
@@ -1495,7 +1495,7 @@ locals {
                     }
                   }
                 } : {},
-                (contains(var.exa_vcn2_routable_vcns, "OnPremVPN")) && local.hub_with_drg_only == true ? {
+                var.exa_vcn2_onprem_route_enable == true && local.hub_with_drg_only == true ? {
                   "IPSEC-TO-EXA-VCN-2-STMT" = {
                     action   = "ACCEPT",
                     priority = 6,
@@ -1506,7 +1506,7 @@ locals {
                     }
                   }
                 } : {},
-                (contains(var.exa_vcn3_routable_vcns, "OnPremVPN")) && local.hub_with_drg_only == true ? {
+                var.exa_vcn3_onprem_route_enable == true && local.hub_with_drg_only == true ? {
                   "IPSEC-TO-EXA-VCN-3-STMT" = {
                     action   = "ACCEPT",
                     priority = 7,
@@ -1517,7 +1517,7 @@ locals {
                     }
                   }
                 } : {},
-                (contains(var.oke_vcn1_routable_vcns, "OnPremVPN")) && local.hub_with_drg_only == true ? {
+                var.oke_vcn1_onprem_route_enable == true && local.hub_with_drg_only == true ? {
                   "IPSEC-TO-OKE-VCN-1-STMT" = {
                     action   = "ACCEPT",
                     priority = 8,
@@ -1528,7 +1528,7 @@ locals {
                     }
                   }
                 } : {},
-                (contains(var.oke_vcn2_routable_vcns, "OnPremVPN")) && local.hub_with_drg_only == true ? {
+                var.oke_vcn2_onprem_route_enable == true && local.hub_with_drg_only == true ? {
                   "IPSEC-TO-OKE-VCN-2-STMT" = {
                     action   = "ACCEPT",
                     priority = 9,
@@ -1539,7 +1539,7 @@ locals {
                     }
                   }
                 } : {},
-                (contains(var.oke_vcn1_routable_vcns, "OnPremVPN")) && local.hub_with_drg_only == true ? {
+                var.oke_vcn3_onprem_route_enable == true && local.hub_with_drg_only == true ? {
                   "IPSEC-TO-OKE-VCN-3-STMT" = {
                     action   = "ACCEPT",
                     priority = 10,
@@ -1571,7 +1571,7 @@ locals {
                     }
                   }
                 } : {},
-                (contains(var.tt_vcn1_routable_vcns, "OnPremFC")) && local.hub_with_drg_only == true ? {
+                var.tt_vcn1_onprem_route_enable == true && local.hub_with_drg_only == true ? {
                   "FC-VIRTUAL-CIRCUIT-TO-TT-VCN-1-STMT" = {
                     action   = "ACCEPT",
                     priority = 2,
@@ -1582,7 +1582,7 @@ locals {
                     }
                   }
                 } : {},
-                (contains(var.tt_vcn2_routable_vcns, "OnPremFC")) && local.hub_with_drg_only == true ? {
+                var.tt_vcn2_onprem_route_enable == true && local.hub_with_drg_only == true ? {
                   "FC-VIRTUAL-CIRCUIT-TO-TT-VCN-2-STMT" = {
                     action   = "ACCEPT",
                     priority = 3,
@@ -1593,7 +1593,7 @@ locals {
                     }
                   }
                 } : {},
-                (contains(var.tt_vcn3_routable_vcns, "OnPremFC")) && local.hub_with_drg_only == true ? {
+                var.tt_vcn3_onprem_route_enable == true && local.hub_with_drg_only == true ? {
                   "FC-VIRTUAL-CIRCUIT-TO-TT-VCN-3-STMT" = {
                     action   = "ACCEPT",
                     priority = 4,
@@ -1604,7 +1604,7 @@ locals {
                     }
                   }
                 } : {},
-                (contains(var.exa_vcn1_routable_vcns, "OnPremFC")) && local.hub_with_drg_only == true ? {
+                var.exa_vcn1_onprem_route_enable == true && local.hub_with_drg_only == true ? {
                   "FC-VIRTUAL-CIRCUIT-TO-EXA-VCN-1-STMT" = {
                     action   = "ACCEPT",
                     priority = 5,
@@ -1615,7 +1615,7 @@ locals {
                     }
                   }
                 } : {},
-                (contains(var.exa_vcn2_routable_vcns, "OnPremFC")) && local.hub_with_drg_only == true ? {
+                var.exa_vcn2_onprem_route_enable == true && local.hub_with_drg_only == true ? {
                   "FC-VIRTUAL-CIRCUIT-TO-EXA-VCN-2-STMT" = {
                     action   = "ACCEPT",
                     priority = 6,
@@ -1626,7 +1626,7 @@ locals {
                     }
                   }
                 } : {},
-                (contains(var.exa_vcn3_routable_vcns, "OnPremFC")) && local.hub_with_drg_only == true ? {
+                var.exa_vcn3_onprem_route_enable == true && local.hub_with_drg_only == true ? {
                   "FC-VIRTUAL-CIRCUIT-TO-EXA-VCN-3-STMT" = {
                     action   = "ACCEPT",
                     priority = 7,
@@ -1637,7 +1637,7 @@ locals {
                     }
                   }
                 } : {},
-                (contains(var.oke_vcn1_routable_vcns, "OnPremFC")) && local.hub_with_drg_only == true ? {
+                var.oke_vcn1_onprem_route_enable == true && local.hub_with_drg_only == true ? {
                   "FC-VIRTUAL-CIRCUIT-TO-OKE-VCN-1-STMT" = {
                     action   = "ACCEPT",
                     priority = 8,
@@ -1648,7 +1648,7 @@ locals {
                     }
                   }
                 } : {},
-                (contains(var.oke_vcn2_routable_vcns, "OnPremFC")) && local.hub_with_drg_only == true ? {
+                var.oke_vcn2_onprem_route_enable == true && local.hub_with_drg_only == true ? {
                   "FC-VIRTUAL-CIRCUIT-TO-OKE-VCN-2-STMT" = {
                     action   = "ACCEPT",
                     priority = 9,
@@ -1659,7 +1659,7 @@ locals {
                     }
                   }
                 } : {},
-                (contains(var.oke_vcn1_routable_vcns, "OnPremFC")) && local.hub_with_drg_only == true ? {
+                var.oke_vcn3_onprem_route_enable == true && local.hub_with_drg_only == true ? {
                   "FC-VIRTUAL-CIRCUIT-TO-OKE-VCN-3-STMT" = {
                     action   = "ACCEPT",
                     priority = 10,
