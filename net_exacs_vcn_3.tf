@@ -249,7 +249,7 @@ locals {
   ## Egress Rules
   exa_vcn_3_to_client_subnet_cross_vcn_egress = merge(
     (local.add_exa_vcn3 == true && var.exa_vcn3_attach_to_drg == true && var.add_exa_vcn1 == true && var.exa_vcn1_attach_to_drg == true) &&
-    (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.exa_vcn3_routable_vcns) == 0 || contains(var.exa_vcn3_routable_vcns, "EXA-VCN-1")))) ? {
+    (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.exa_vcn3_routable_vcns) == 0 && contains(var.exa_vcn3_routable_vcns, "EXA-VCN-1")))) ? {
       "EGRESS-TO-VCN-1-CLIENT-SUBNET-RULE" = {
         description  = "Egress to ${coalesce(var.exa_vcn1_client_subnet_name, "${var.service_label}-exa-vcn-1-client-subnet")}."
         stateless    = false
@@ -490,7 +490,7 @@ locals {
       }
     } : {},
     ## Ingress from on-premises CIDRs
-    (local.add_exa_vcn3 == true && (var.exa_vcn3_attach_to_drg == true && length(var.onprem_cidrs) > 0 || var.exa_vcn3_onprem_route_enable)) &&
+    (local.add_exa_vcn3 == true && (var.exa_vcn3_attach_to_drg == true && var.exa_vcn3_onprem_route_enable)) &&
     (local.hub_with_vcn == true || local.hub_with_drg_only == true) ? {
       for cidr in var.onprem_cidrs : "INGRESS-FROM-ONPREM--${replace(replace(cidr, ".", ""), "/", "")}-RULE" => {
         description  = "Ingress from onprem ${cidr}"
