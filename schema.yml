@@ -3854,9 +3854,9 @@ variables:
         - ${fastconnect_virtual_circuit_config}
         - "Create New FastConnect Virtual Circuit"
     enum:
-      - "Regional"
-      - "Global"
-    default: "Regional"
+      - "REGIONAL"
+      - "GLOBAL"
+    default: "REGIONAL"
 
   fastconnect_virtual_circuit_ip_mtu:
     type: enum
