@@ -165,8 +165,8 @@ locals {
               display_name        = "${coalesce(var.fastconnect_virtual_circuit_name, "${var.service_label}-fastconnect-virtual-circuit")}-attachment"
               drg_route_table_key = "FC-VIRTUAL-CIRCUIT-DRG-ROUTE-TABLE"
               network_details = {
-                attached_resource_key = local.use_existing_fastconnect_virtual_circuit == false ? "FASTCONNECT" : null
-                attached_resource_id  = local.use_existing_fastconnect_virtual_circuit == true ? trimspace(var.existing_fastconnect_virtual_circuit_ocid) : null
+                attached_resource_id  = local.use_existing_fastconnect_virtual_circuit ? trimspace(var.existing_fastconnect_virtual_circuit_ocid) : null
+                attached_resource_key = local.deploy_fastconnect ? "FASTCONNECT" : null
                 type                  = "VIRTUAL_CIRCUIT"
               }
             }
