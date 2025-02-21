@@ -3,19 +3,6 @@
 # --------------------------------------------------------------------------
 # ----- Networking - On-Premises Connectivity - CPE
 #---------------------------------------------------------------------------
-
-variable "cpe_config" {
-  type        = string
-  default     = "Use Existing"
-  description = "Options to determine CPE configuration which are 'Create New Customer-Premises Equipment' or 'Use Existing'"
-}
-
-variable "existing_cpe_ocid" {
-  type        = string
-  default     = ""
-  description = "OCID of the existing Customer-Premises Equipment (CPE) object."
-}
-
 variable "cpe_name" {
   type        = string
   default     = ""
@@ -37,19 +24,6 @@ variable "cpe_device_shape_vendor" {
 # --------------------------------------------------------------------------
 # ----- Networking - On-Premises Connectivity - IPSec 
 #---------------------------------------------------------------------------
-
-variable "ipsec_config" {
-  type        = string
-  default     = "Use Existing IPSec Connection"
-  description = "Options to determine IPSec VPN and tunnel creation which are 'Create New IPSec Connection' or 'Use Existing IPSec Connection'"
-}
-
-variable "existing_ipsec_ocid" {
-  type        = string
-  default     = ""
-  description = "OCID of the existing IPSec connection VPN, required if using an existing IPSec connection."
-}
-
 variable "ipsec_vpn_name" {
   type        = string
   default     = ""
@@ -112,22 +86,10 @@ variable "ipsec_tunnel2_ike_version" {
 # --------------------------------------------------------------------------
 # ----- Networking - On-Premises Connectivity - FastConnect Virtual Circuit
 #---------------------------------------------------------------------------
-
 variable "on_premises_connection_option" {
   type        = string
   default     = "None"
-  description = "The option for connecting to on-premises. Valid options are 'None', 'FastConnect Virtual Circuit', 'IPSec VPN', or 'FastConnect and IPSec VPN'"
-}
-variable "fastconnect_virtual_circuit_config" {
-  type        = string
-  default     = ""
-  description = "Creates New FastConnect Virtual Circuit or connects existing VC (Valid values include 'Create New FastConnect Virtual Circuit', 'Use Existing')."
-}
-
-variable "existing_fastconnect_virtual_circuit_ocid" {
-  type        = string
-  default     = ""
-  description = "The OCID of the existing FastConnect Virtual Circuit."
+  description = "The options for connecting to on-premises. Valid options are 'None', 'Create New FastConnect Virtual Circuit', 'Create New IPSec VPN', 'Create New FastConnect Virtual Circuit and IPSec VPN', or 'Use Existing On-Premises Connectivity'"
 }
 
 variable "fastconnect_virtual_circuit_name" {

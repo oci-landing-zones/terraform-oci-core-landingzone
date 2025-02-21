@@ -16,14 +16,14 @@ data "oci_identity_compartment" "existing_enclosing_compartment" {
 }
 
 data "oci_identity_domain" "existing_identity_domain" {
-    count = var.identity_domain_option == "Use Custom Identity Domain" == true ? 1 : 0
-    domain_id = trimspace(var.custom_id_domain_ocid)
-    lifecycle {
-      precondition {
-        condition     = var.custom_id_domain_ocid != null
-        error_message = "Existing domain id must be provided when using an existing domain."
-      }
+  count     = var.identity_domain_option == "Use Custom Identity Domain" == true ? 1 : 0
+  domain_id = trimspace(var.custom_id_domain_ocid)
+  lifecycle {
+    precondition {
+      condition     = var.custom_id_domain_ocid != null
+      error_message = "Existing domain id must be provided when using an existing domain."
     }
+  }
 }
 
 data "oci_identity_group" "existing_iam_admin_group" {
@@ -198,9 +198,4 @@ data "oci_identity_compartments" "exainfra" {
 
 data "oci_identity_tag_namespaces" "this" {
   compartment_id = var.tenancy_ocid
-}
-
-data "oci_core_ipsec_connection_tunnels" "these" {
-  count = local.use_existing_ipsec ? 1 : 0
-  ipsec_id = var.existing_ipsec_ocid
 }

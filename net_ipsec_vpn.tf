@@ -3,14 +3,9 @@
 
 
 locals {
+  deploy_new_ipsec = (length(regexall("IPSEC", upper(var.on_premises_connection_option))) > 0) && local.chosen_hub_option != 0
 
-  deploy_new_cpe   = (length(regexall("IPSEC", upper(var.on_premises_connection_option))) > 0) && local.chosen_hub_option != 0 && (length(regexall("CREATE NEW CUSTOMER-PREMISES EQUIPMENT", upper(var.cpe_config))) > 0)
-  use_existing_cpe = (length(regexall("IPSEC", upper(var.on_premises_connection_option))) > 0) && local.chosen_hub_option != 0 && (length(regexall("USE EXISTING", upper(var.cpe_config))) > 0) && length(var.existing_cpe_ocid) > 0
-
-  deploy_new_ipsec   = (length(regexall("IPSEC", upper(var.on_premises_connection_option))) > 0) && local.chosen_hub_option != 0 && (length(regexall("CREATE NEW IPSEC CONNECTION", upper(var.ipsec_config))) > 0)
-  use_existing_ipsec = (length(regexall("IPSEC", upper(var.on_premises_connection_option))) > 0) && local.chosen_hub_option != 0 && (length(regexall("USE EXISTING IPSEC CONNECTION", upper(var.ipsec_config))) > 0) && length(var.existing_ipsec_ocid) > 0
-
-  cpe = local.deploy_new_cpe ? {
+  cpe = local.deploy_new_ipsec ? {
     customer_premises_equipments = {
       LZ-CPE = {
         compartment_id               = local.network_compartment_id,
@@ -24,10 +19,10 @@ locals {
   ipsec = local.deploy_new_ipsec ? {
     ipsecs = {
       LZ-IPSEC-VPN = {
-        cpe_key       = local.deploy_new_cpe ? "LZ-CPE" : null
-        cpe_id        = local.use_existing_cpe ? var.existing_cpe_ocid : null
-        drg_key       = local.deploy_new_drg == true ? "HUB-DRG" : null
-        drg_id        = local.use_existing_drg == true ? trimspace(var.existing_drg_ocid) : null
+        cpe_key = local.deploy_new_ipsec ? "LZ-CPE" : null
+        drg_key = local.deploy_new_drg == true ? "HUB-DRG" : null
+        drg_id  = local.use_existing_drg == true ? var.existing_drg_ocid : null
+
         display_name  = length(var.ipsec_vpn_name) > 0 ? var.ipsec_vpn_name : "${var.service_label}-oci-ipsec-vpn",
         static_routes = var.onprem_cidrs
         tunnels_management = {
