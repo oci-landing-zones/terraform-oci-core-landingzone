@@ -650,7 +650,7 @@ locals {
       ) # closing Route Table merge function
 
       network_security_groups = merge(
-        local.chosen_firewall_option != "OCINFW" ? {
+        local.chosen_firewall_option != "NO" && local.chosen_firewall_option != "OCINFW" ? {
           "HUB-VCN-OUTDOOR-NLB-NSG" = {
             display_name = "outdoor-nlb-nsg"
             ingress_rules = {
@@ -675,7 +675,7 @@ locals {
             }
           }
         } : {},
-        local.chosen_firewall_option != "OCINFW" ? {
+        local.chose_firewall_option != "NO" && local.chosen_firewall_option != "OCINFW" ? {
           "HUB-VCN-OUTDOOR-FW-NSG" = {
             display_name = "outdoor-fw-nsg"
             ingress_rules = {
@@ -910,7 +910,7 @@ locals {
             }
           }
         } : {},
-        local.chosen_firewall_option != "OCINFW" ? {
+        local.chosen_firewall_option != "NO" && local.chosen_firewall_option != "OCINFW" ? {
           "HUB-VCN-MGMT-NSG" = {
             display_name = "mgmt-nsg"
             ingress_rules = merge(
