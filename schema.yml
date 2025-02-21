@@ -243,8 +243,6 @@ variableGroups:
 
   - title: "Networking - FastConnect Virtual Circuit"
     variables:
-      - "fastconnect_virtual_circuit_config"
-      - "existing_fastconnect_virtual_circuit_ocid"
       - "fastconnect_virtual_circuit_name"
       - "fastconnect_virtual_circuit_bandwidth_shape"
       - "fastconnect_virtual_circuit_bandwidth_custom_shape"
@@ -268,15 +266,16 @@ variableGroups:
         - or:
           - eq:
             - ${on_premises_connection_option}
-            - "FastConnect Virtual Circuit"
+            - "Create New FastConnect Virtual Circuit"
           - eq:
             - ${on_premises_connection_option}
-            - "FastConnect and IPSec"
+            - "Create New FastConnect and IPSec"
 
   - title: "Networking - IPSec VPN"
     variables:
-      - "ipsec_config"
-      - "existing_ipsec_ocid"
+      - "cpe_name"
+      - "cpe_ip_address"
+      - "cpe_device_shape_vendor"
       - "ipsec_vpn_name"
       - "ipsec_customer_bgp_asn"
       - "ipsec_tunnel1_customer_interface_ip"
@@ -287,11 +286,6 @@ variableGroups:
       - "ipsec_tunnel2_oracle_interface_ip"
       - "ipsec_tunnel2_shared_secret"
       - "ipsec_tunnel2_ike_version"
-      - "cpe_config"
-      - "existing_cpe_ocid"
-      - "cpe_name"
-      - "cpe_ip_address"
-      - "cpe_device_shape_vendor"
     visible:
       and:
         - define_net
@@ -302,10 +296,10 @@ variableGroups:
         - or:
           - eq:
             - ${on_premises_connection_option}
-            - "IPSec VPN"
+            - "Create New IPSec VPN"
           - eq:
             - ${on_premises_connection_option}
-            - "FastConnect and IPSec"
+            - "Create New FastConnect and IPSec"
 
   - title: "Networking - Three Tier VCNs"
     variables:
@@ -3671,7 +3665,7 @@ variables:
   on_premises_connection_option:
     type: enum
     title: "On-Premises Connectivity Type"
-    description: "Choose one of the available options for connecting to on-premises."
+    description: "Choose one of the available options for connecting to on-premises. If existing on-premises connection is chosen, then DRG route rules for LZ VCNs must be added to the FC/IPSec VPN attachments separately from the LZ deployment."
     visible: 
        not:
          - eq:
@@ -3679,9 +3673,10 @@ variables:
             - "No cross-VCN or on-premises connectivity"
     enum:
       - "None"
-      - "FastConnect Virtual Circuit"
-      - "IPSec VPN"
-      - "FastConnect and IPSec"
+      - "Create New FastConnect Virtual Circuit"
+      - "Create New IPSec VPN"
+      - "Create New FastConnect and IPSec"
+      - "Use Existing On-Premises Connection"
     default: "None"   
 
   onprem_cidrs:
@@ -3695,56 +3690,35 @@ variables:
     visible:
        not:
          - eq:
-            - ${hub_deployment_option}
-            - "No cross-VCN or on-premises connectivity"
+            - ${on_premises_connection_option}
+            - "None"
     default: ""
-
-  fastconnect_virtual_circuit_config:
-    type: enum
-    title: "FastConnect Virtual Circuit"
-    description: "Select whether a new FastConnect Virtual Circuit will be created or using existing."
-    visible:
-        not:
-              - ${hub_deployment_option}
-              - "No cross-VCN or on-premises connectivity"
-        or:
-          - eq:
-              - ${on_premises_connection_option}
-              - "FastConnect Virtual Circuit"
-          - eq:
-              - ${on_premises_connection_option}
-              - "FastConnect and IPSec"
-    enum:
-      - "Use Existing"
-      - "Create New FastConnect Virtual Circuit"
-
-  existing_fastconnect_virtual_circuit_ocid:
-    type: string
-    title: "Virtual Circuit OCID"
-    description: "Enter the OCID of the existing FastConnect Virtual Circuit."
-    visible:
-      eq:
-        - ${fastconnect_virtual_circuit_config}
-        - "Use Existing"
-    required: true
 
   fastconnect_virtual_circuit_name:
     type: string
     title: "Virtual Circuit Name"
     description: "Create a name for the new Virtual Circuit"
     visible:
-      eq:
-        - ${fastconnect_virtual_circuit_config}
-        - "Create New FastConnect Virtual Circuit"
+      - or:
+        - eq:
+          - ${on_premises_connection_option}
+          - "Create New FastConnect Virtual Circuit"
+        - eq:
+          - ${on_premises_connection_option}
+          - "Create New FastConnect and IPSec"
 
   fastconnect_virtual_circuit_bandwidth_shape:
     type: enum
     title: "Bandwidth shape"
     description: "Specify the bandwidth of the Virtual Circuit connection"
     visible:
-      eq:
-        - ${fastconnect_virtual_circuit_config}
-        - "Create New FastConnect Virtual Circuit"
+      - or:
+        - eq:
+          - ${on_premises_connection_option}
+          - "Create New FastConnect Virtual Circuit"
+        - eq:
+          - ${on_premises_connection_option}
+          - "Create New FastConnect and IPSec"
     enum:
       - "1 Gbps"
       - "10 Gbps"
@@ -3766,9 +3740,13 @@ variables:
     title: "Virtual Circuit Type"
     description: "Enter the type of IP addresses used in the Fast Connect virtual circuit."
     visible:
-      eq:
-        - ${fastconnect_virtual_circuit_config}
-        - "Create New FastConnect Virtual Circuit"
+      - or:
+        - eq:
+          - ${on_premises_connection_option}
+          - "Create New FastConnect Virtual Circuit"
+        - eq:
+          - ${on_premises_connection_option}
+          - "Create New FastConnect and IPSec"
     enum:
       - "PRIVATE"
       - "PUBLIC"
@@ -3780,9 +3758,13 @@ variables:
     description: "Enter the OCID of the service offered by the provider (if you're connecting via a provider). To get a list of the available service offerings, see 
     <a href=\"https://docs.cloud.oracle.com/iaas/api/#/en/iaas/latest/FastConnectProviderService/ListFastConnectProviderServices\">ListFastConnectProviderServices</a>"
     visible:
-      eq:
-        - ${fastconnect_virtual_circuit_config}
-        - "Create New FastConnect Virtual Circuit"
+      - or:
+        - eq:
+          - ${on_premises_connection_option}
+          - "Create New FastConnect Virtual Circuit"
+        - eq:
+          - ${on_premises_connection_option}
+          - "Create New FastConnect and IPSec"
     default: ""
 
   fastconnect_virtual_circuit_provider_service_key_name:
@@ -3790,9 +3772,13 @@ variables:
     title: "Provider Service Key"
     description: "Enter the service key name offered by the provider for FastConnect virtual circuit."
     visible:
-      eq:
-        - ${fastconnect_virtual_circuit_config}
-        - "Create New FastConnect Virtual Circuit"
+      - or:
+        - eq:
+          - ${on_premises_connection_option}
+          - "Create New FastConnect Virtual Circuit"
+        - eq:
+          - ${on_premises_connection_option}
+          - "Create New FastConnect and IPSec"
     default: ""
 
   fastconnect_virtual_circuit_customer_asn:
@@ -3800,9 +3786,13 @@ variables:
     title: "Customer ASN (Autonomous System Number)"
     description: "Enter your BGP ASN (either public or private). Provide this value only if there is a BGP session that goes from your edge router to Oracle. Otherwise, leave this empty. Can be a 2-byte or 4-byte ASN."
     visible:
-      eq:
-        - ${fastconnect_virtual_circuit_config}
-        - "Create New FastConnect Virtual Circuit"
+      - or:
+        - eq:
+          - ${on_premises_connection_option}
+          - "Create New FastConnect Virtual Circuit"
+        - eq:
+          - ${on_premises_connection_option}
+          - "Create New FastConnect and IPSec"
     default: ""
 
   fastconnect_virtual_circuit_customer_bgp_peering_ip:
@@ -3810,9 +3800,13 @@ variables:
     title: "Customer Border Gateway Protocol (BGP) Peering IP"
     description: "Enter the BGP IPv4 address for the edge router on the other end of the BGP session from Oracle. Must use a subnet mask from /28 to /31."
     visible:
-      eq:
-        - ${fastconnect_virtual_circuit_config}
-        - "Create New FastConnect Virtual Circuit"
+      - or:
+        - eq:
+          - ${on_premises_connection_option}
+          - "Create New FastConnect Virtual Circuit"
+        - eq:
+          - ${on_premises_connection_option}
+          - "Create New FastConnect and IPSec"
     default: ""
 
   fastconnect_virtual_circuit_oracle_bgp_peering_ip:
@@ -3820,9 +3814,13 @@ variables:
     title: "Oracle Border Gateway Protocol (BGP) Peering IP"
     description: "Enter the IPv4 address for Oracle's end of the BGP session. Must use a subnet mask from /28 to /31."
     visible:
-      eq:
-        - ${fastconnect_virtual_circuit_config}
-        - "Create New FastConnect Virtual Circuit"
+      - or:
+        - eq:
+          - ${on_premises_connection_option}
+          - "Create New FastConnect Virtual Circuit"
+        - eq:
+          - ${on_premises_connection_option}
+          - "Create New FastConnect and IPSec"
     default: ""
 
   fastconnect_virtual_circuit_bgp_md5auth_key:
@@ -3830,9 +3828,13 @@ variables:
     title: "BGP MD5 Authentication Key"
     description: "Enter the key for BGP MD5 authentication. Only applicable if your system requires MD5 authentication. If empty, that means you don't use BGP MD5 authentication."
     visible:
-      eq:
-        - ${fastconnect_virtual_circuit_config}
-        - "Create New FastConnect Virtual Circuit"
+      - or:
+        - eq:
+          - ${on_premises_connection_option}
+          - "Create New FastConnect Virtual Circuit"
+        - eq:
+          - ${on_premises_connection_option}
+          - "Create New FastConnect and IPSec"
     default: ""
 
   fastconnect_virtual_circuit_is_bfd_enabled:
@@ -3840,9 +3842,13 @@ variables:
     title: "Bidirectional Forwarding Detection (BFD)"
     description: "If checked, BFD for IPv4 BGP peering will be enabled."
     visible:
-      eq:
-        - ${fastconnect_virtual_circuit_config}
-        - "Create New FastConnect Virtual Circuit"
+      - or:
+        - eq:
+          - ${on_premises_connection_option}
+          - "Create New FastConnect Virtual Circuit"
+        - eq:
+          - ${on_premises_connection_option}
+          - "Create New FastConnect and IPSec"
     default: false
 
   fastconnect_virtual_circuit_routing_policy:
@@ -3850,9 +3856,13 @@ variables:
     title: "Routing Policy"
     description: "Choose one of the FastConnect virtual Circuit Routing Policies. The routing policy sets how routing information about the Oracle cloud is shared over a public virtual circuit"
     visible:
-      eq:
-        - ${fastconnect_virtual_circuit_config}
-        - "Create New FastConnect Virtual Circuit"
+      - or:
+        - eq:
+          - ${on_premises_connection_option}
+          - "Create New FastConnect Virtual Circuit"
+        - eq:
+          - ${on_premises_connection_option}
+          - "Create New FastConnect and IPSec"
     enum:
       - "REGIONAL"
       - "GLOBAL"
@@ -3863,50 +3873,30 @@ variables:
     title: "IP Maximum Transmission Unit (MTU)"
     description: "Enter the MTU value to assign to the FastConnect virtual circuit. Supported values are: 1500, 9000. Default is 1500."
     visible:
-      eq:
-        - ${fastconnect_virtual_circuit_config}
-        - "Create New FastConnect Virtual Circuit"
+      - or:
+        - eq:
+          - ${on_premises_connection_option}
+          - "Create New FastConnect Virtual Circuit"
+        - eq:
+          - ${on_premises_connection_option}
+          - "Create New FastConnect and IPSec"
     enum:
       - "1500"
       - "9000"
     default: "1500"
-
-  ipsec_config:
-    type: enum
-    title: "IPSec Configuration"
-    description: "Select whether a new IPSec Connection will be created or whether an existing IPSec Connection will be provided."
-    visible:
-      not:
-        - ${hub_deployment_option}
-        - "No cross-VCN or on-premises connectivity"
-      or:
-        - eq:
-            - ${on_premises_connection_option}
-            - "IPSec VPN"
-        - eq:
-            - ${on_premises_connection_option}
-            - "FastConnect and IPSec"
-    enum:
-      - "Use Existing IPSec Connection"
-      - "Create New IPSec Connection"
-
-  existing_ipsec_ocid:
-    type: string
-    title: "IPSec OCID"
-    description: "Enter the OCID of the existing IPSec connection VPN, required if using an existing IPSec connection."
-    visible:
-      eq:
-        - ${ipsec_config}
-        - "Use Existing IPSec Connection"
 
   ipsec_vpn_name:
     type: string
     title: "IPSec VPN Name"
     description: "Enter the display name used by the IPSec VPN."
     visible:
-      eq:
-        - ${ipsec_config}
-        - "Create New IPSec Connection"
+      or:
+        - eq:
+          - ${on_premises_connection_option}
+          - "Create New IPSec VPN"
+        - eq:
+          - ${on_premises_connection_option}
+          - "Create New FastConnect and IPSec"
     default: ""
 
   ipsec_customer_bgp_asn:
@@ -3914,18 +3904,26 @@ variables:
     title: "IPSec Tunnel Customer BGP ASN"
     description: "Enter Customer Network's Border Gateway Protocol (BGP) Autonomous System Number (ASN)."
     visible:
-      eq:
-        - ${ipsec_config}
-        - "Create New IPSec Connection"
+      or:
+        - eq:
+          - ${on_premises_connection_option}
+          - "Create New IPSec VPN"
+        - eq:
+          - ${on_premises_connection_option}
+          - "Create New FastConnect and IPSec"
 
   ipsec_tunnel1_customer_interface_ip:
     type: string
     title: "IPSec Tunnel 1 Customer Border Gateway Protocol (BGP) IP Address"
     description: "Enter the first IP CIDR block for the Customer-Premises Equipment (CPE) for BGP peering for IPSec Tunnel 1."
     visible:
-      eq:
-        - ${ipsec_config}
-        - "Create New IPSec Connection"
+      or:
+        - eq:
+          - ${on_premises_connection_option}
+          - "Create New IPSec VPN"
+        - eq:
+          - ${on_premises_connection_option}
+          - "Create New FastConnect and IPSec"
     default: ""
 
   ipsec_tunnel1_oracle_interface_ip:
@@ -3933,9 +3931,13 @@ variables:
     title: "IPSec Tunnel 1 OCI Border Gateway Protocol (BGP) IP Address"
     description: "Enter the first IP CIDR block for Oracle for BGP peering for IPSec Tunnel 1."
     visible:
-      eq:
-        - ${ipsec_config}
-        - "Create New IPSec Connection"
+      or:
+        - eq:
+          - ${on_premises_connection_option}
+          - "Create New IPSec VPN"
+        - eq:
+          - ${on_premises_connection_option}
+          - "Create New FastConnect and IPSec"
     default: ""
 
   ipsec_tunnel1_shared_secret:
@@ -3943,27 +3945,39 @@ variables:
     title: "IPSec Tunnel 1 Shared Secret"
     description: "Enter IPSec Tunnel 1's shared secret (pre-shared key). If not provided, Oracle will generate one automatically."
     visible:
-      eq:
-        - ${ipsec_config}
-        - "Create New IPSec Connection"
+      or:
+        - eq:
+          - ${on_premises_connection_option}
+          - "Create New IPSec VPN"
+        - eq:
+          - ${on_premises_connection_option}
+          - "Create New FastConnect and IPSec"
 
   ipsec_tunnel1_ike_version:
     type: string
     title: "IPSec Tunnel 1 IKE Version"
     description: "Enter IPSec Tunnel 1's IKE Version, if using a CPE IKE identifier. Supported values are 'V1' or 'V2'."
     visible:
-      eq:
-        - ${ipsec_config}
-        - "Create New IPSec Connection"
+      or:
+        - eq:
+          - ${on_premises_connection_option}
+          - "Create New IPSec VPN"
+        - eq:
+          - ${on_premises_connection_option}
+          - "Create New FastConnect and IPSec"
 
   ipsec_tunnel2_customer_interface_ip:
     type: string
     title: "IPSec Tunnel 2 Customer Border Gateway Protocol (BGP) IP Address"
     description: "Enter the second IP CIDR block for the Customer-Premises Equipment (CPE) for BGP peering for IPSec Tunnel 2."
     visible:
-      eq:
-        - ${ipsec_config}
-        - "Create New IPSec Connection"
+      or:
+        - eq:
+          - ${on_premises_connection_option}
+          - "Create New IPSec VPN"
+        - eq:
+          - ${on_premises_connection_option}
+          - "Create New FastConnect and IPSec"
     default: ""
 
   ipsec_tunnel2_oracle_interface_ip:
@@ -3971,9 +3985,13 @@ variables:
     title: "IPSec Tunnel 2 OCI Border Gateway Protocol (BGP) IP Address"
     description: "Enter the second IP CIDR block for Oracle for BGP peering for IPSec Tunnel 2."
     visible:
-      eq:
-        - ${ipsec_config}
-        - "Create New IPSec Connection"
+      or:
+        - eq:
+          - ${on_premises_connection_option}
+          - "Create New IPSec VPN"
+        - eq:
+          - ${on_premises_connection_option}
+          - "Create New FastConnect and IPSec"
     default: ""
 
   ipsec_tunnel2_shared_secret:
@@ -3981,71 +3999,65 @@ variables:
     title: "IPSec Tunnel 2 Shared Secret"
     description: "Enter IPSec Tunnel 2's shared secret (pre-shared key). If not provided, Oracle will generate one automatically."
     visible:
-      eq:
-        - ${ipsec_config}
-        - "Create New IPSec Connection"
+      or:
+        - eq:
+          - ${on_premises_connection_option}
+          - "Create New IPSec VPN"
+        - eq:
+          - ${on_premises_connection_option}
+          - "Create New FastConnect and IPSec"
 
   ipsec_tunnel2_ike_version:
     type: string
     title: "IPSec Tunnel 2 IKE Version"
     description: "Enter IPSec Tunnel 2's IKE Version, if using a CPE IKE identifier. Supported values are 'V1' or 'V2'."
     visible:
-      eq:
-        - ${ipsec_config}
-        - "Create New IPSec Connection"
-
-  cpe_config:
-    type: enum
-    title: "Customer-Premises Equipment (CPE) Configuration"
-    description: "Select whether a new Customer-Premises Equipment will be created or whether an existing Customer-Premises Equipment is provided."
-    visible:
-      eq:
-        - ${ipsec_config}
-        - "Create New IPSec Connection"
-    enum:
-      - "Use Existing"
-      - "Create new Customer-Premises Equipment"
-    default: "Use Existing"
-
-  existing_cpe_ocid:
-    type: string
-    title: "Customer-Premises Equipment (CPE) OCID"
-    description: "Enter the OCID of the existing Customer-Premises Equipment, required if using an existing CPE"
-    visible:
-      and:
+      or:
         - eq:
-          - ${cpe_config}
-          - "Use Existing"
+          - ${on_premises_connection_option}
+          - "Create New IPSec VPN"
         - eq:
-          - ${ipsec_config}
-          - "Create New IPSec Connection"
+          - ${on_premises_connection_option}
+          - "Create New FastConnect and IPSec"
 
   cpe_name:
     type: string
     title: "Customer-Premises Equipment (CPE) Object Name"
     description: "Provide a name for the new Customer-Premises Equipment"
     visible:
-      eq:
-        - ${cpe_config}
-        - "Create new Customer-Premises Equipment"
+      or:
+        - eq:
+          - ${on_premises_connection_option}
+          - "Create New IPSec VPN"
+        - eq:
+          - ${on_premises_connection_option}
+          - "Create New FastConnect and IPSec"
 
   cpe_ip_address:
     type: string
     title: "Customer-Premises Equipment (CPE) Object IP Address"
     description: "Provide the IP address of the Customer-Premises Equipment"
     visible:
-      eq:
-        - ${cpe_config}
-        - "Create new Customer-Premises Equipment"
+      or:
+        - eq:
+          - ${on_premises_connection_option}
+          - "Create New IPSec VPN"
+        - eq:
+          - ${on_premises_connection_option}
+          - "Create New FastConnect and IPSec"
 
   cpe_device_shape_vendor:
     type: string
     title: "Customer-Premises Equipment (CPE) Device Shape Vendor"
     description: "Name of the device shape vendor used by the CPE. See <a href=\"https://docs.oracle.com/en-us/iaas/Content/Network/Reference/CPElist.htm\">documentation</a> for verified CPE devices for more information."
     visible:
-      eq:
-        - ${cpe_config}
-        - "Create new Customer-Premises Equipment"
+      or:
+        - eq:
+          - ${on_premises_connection_option}
+          - "Create New IPSec VPN"
+        - eq:
+          - ${on_premises_connection_option}
+          - "Create New FastConnect and IPSec"
 
 # -------------------------------------------
 # ----- Networking - Hub Web Subnet
