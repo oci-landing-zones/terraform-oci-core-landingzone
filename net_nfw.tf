@@ -101,6 +101,7 @@ locals {
           }
         }
         encryption = {
+          kms_key_id = var.cis_level == 2 ? module.lz_vault[0].keys["NFW-KEY"].id : null
           encrypt_in_transit_on_instance_create = null
           encrypt_in_transit_on_instance_update = null
         }
@@ -144,6 +145,7 @@ locals {
           }
         }
         encryption = {
+          kms_key_id = var.cis_level == 2 ? module.lz_vault[0].keys["NFW-KEY"].id : null
           encrypt_in_transit_on_instance_create = null
           encrypt_in_transit_on_instance_update = null
         }
@@ -262,6 +264,7 @@ module "lz_firewall_appliance" {
     oci                                  = oci.home
     oci.block_volumes_replication_region = oci.home
   }
+  depends_on = [module.lz_vault]
 }
 
 module "lz_nlb" {
