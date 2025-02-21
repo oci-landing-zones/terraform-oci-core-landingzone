@@ -2,9 +2,7 @@
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 
 locals {
-
-  use_existing_fastconnect_virtual_circuit = (length(regexall("FASTCONNECT", upper(var.on_premises_connection_option))) > 0) && local.chosen_hub_option != 0 && (length(regexall("USE EXISTING", upper(var.fastconnect_virtual_circuit_config))) > 0) && length(trimspace(var.existing_fastconnect_virtual_circuit_ocid)) > 0
-  deploy_fastconnect                       = (length(regexall("FASTCONNECT", upper(var.on_premises_connection_option))) > 0) && local.chosen_hub_option != 0 && (length(regexall("CREATE NEW FASTCONNECT VIRTUAL CIRCUIT", upper(var.fastconnect_virtual_circuit_config))) > 0)
+  deploy_fastconnect = (length(regexall("FASTCONNECT", upper(var.on_premises_connection_option))) > 0) && local.chosen_hub_option != 0
 
   fastconnect = local.deploy_fastconnect ? {
     fast_connect_virtual_circuits = {
