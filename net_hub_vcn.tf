@@ -675,7 +675,7 @@ locals {
             }
           }
         } : {},
-        local.chose_firewall_option != "NO" && local.chosen_firewall_option != "OCINFW" ? {
+        local.chosen_firewall_option != "NO" && local.chosen_firewall_option != "OCINFW" ? {
           "HUB-VCN-OUTDOOR-FW-NSG" = {
             display_name = "outdoor-fw-nsg"
             ingress_rules = {
