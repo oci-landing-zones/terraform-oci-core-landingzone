@@ -236,9 +236,65 @@ locals {
             "IPSEC-TUNNEL-DRG-ROUTE-TABLE" = {
               display_name = "${coalesce(var.ipsec_vpn_name, "${var.service_label}-oci-ipsec")}-tunnel-drg-route-table"
               route_rules = merge(
-                local.hub_with_vcn == true ? {
-                  "IPSEC-TO-HUB-VCN-STMT" = {
-                    destination                 = "0.0.0.0/0"
+                var.tt_vcn1_onprem_route_enable && local.hub_with_vcn == true ? {
+                  "IPSEC-TT-VCN-1-TO-HUB-VCN-STMT" = {
+                    destination                 = var.tt_vcn1_cidrs[0]
+                    destination_type            = "CIDR_BLOCK"
+                    next_hop_drg_attachment_key = "HUB-VCN-ATTACHMENT"
+                  }
+                } : {},
+                var.tt_vcn2_onprem_route_enable && local.hub_with_vcn == true ? {
+                  "IPSEC-TT-VCN-2-TO-HUB-VCN-STMT" = {
+                    destination                 = var.tt_vcn2_cidrs[0]
+                    destination_type            = "CIDR_BLOCK"
+                    next_hop_drg_attachment_key = "HUB-VCN-ATTACHMENT"
+                  }
+                } : {},
+                var.tt_vcn3_onprem_route_enable && local.hub_with_vcn == true ? {
+                  "IPSEC-TT-VCN-3-TO-HUB-VCN-STMT" = {
+                    destination                 = var.tt_vcn3_cidrs[0]
+                    destination_type            = "CIDR_BLOCK"
+                    next_hop_drg_attachment_key = "HUB-VCN-ATTACHMENT"
+                  }
+                } : {},
+                var.exa_vcn1_onprem_route_enable && local.hub_with_vcn == true ? {
+                  "IPSEC-EXA-VCN-1-TO-HUB-VCN-STMT" = {
+                    destination                 = var.exa_vcn1_cidrs[0]
+                    destination_type            = "CIDR_BLOCK"
+                    next_hop_drg_attachment_key = "HUB-VCN-ATTACHMENT"
+                  }
+                } : {},
+                var.exa_vcn2_onprem_route_enable && local.hub_with_vcn == true ? {
+                  "IPSEC-EXA-VCN-2-TO-HUB-VCN-STMT" = {
+                    destination                 = var.exa_vcn2_cidrs[0]
+                    destination_type            = "CIDR_BLOCK"
+                    next_hop_drg_attachment_key = "HUB-VCN-ATTACHMENT"
+                  }
+                } : {},
+                var.exa_vcn3_onprem_route_enable && local.hub_with_vcn == true ? {
+                  "IPSEC-EXA-VCN-3-TO-HUB-VCN-STMT" = {
+                    destination                 = var.exa_vcn3_cidrs[0]
+                    destination_type            = "CIDR_BLOCK"
+                    next_hop_drg_attachment_key = "HUB-VCN-ATTACHMENT"
+                  }
+                } : {},
+                var.oke_vcn1_onprem_route_enable && local.hub_with_vcn == true ? {
+                  "IPSEC-OKE-VCN-1-TO-HUB-VCN-STMT" = {
+                    destination                 = var.oke_vcn1_cidrs[0]
+                    destination_type            = "CIDR_BLOCK"
+                    next_hop_drg_attachment_key = "HUB-VCN-ATTACHMENT"
+                  }
+                } : {},
+                var.oke_vcn2_onprem_route_enable && local.hub_with_vcn == true ? {
+                  "IPSEC-OKE-VCN-2-TO-HUB-VCN-STMT" = {
+                    destination                 = var.oke_vcn2_cidrs[0]
+                    destination_type            = "CIDR_BLOCK"
+                    next_hop_drg_attachment_key = "HUB-VCN-ATTACHMENT"
+                  }
+                } : {},
+                var.oke_vcn3_onprem_route_enable && local.hub_with_vcn == true ? {
+                  "IPSEC-OKE-VCN-3-TO-HUB-VCN-STMT" = {
+                    destination                 = var.oke_vcn3_cidrs[0]
                     destination_type            = "CIDR_BLOCK"
                     next_hop_drg_attachment_key = "HUB-VCN-ATTACHMENT"
                   }
@@ -313,9 +369,65 @@ locals {
             "FC-VIRTUAL-CIRCUIT-DRG-ROUTE-TABLE" = {
               display_name = "${coalesce(var.fastconnect_virtual_circuit_name, "${var.service_label}-fastconnect-virtual-circuit")}-drg-route-table"
               route_rules = merge(
-                local.hub_with_vcn == true ? {
-                  "FC-VIRTUAL-CIRCUIT-TO-HUB-VCN-STMT" = {
-                    destination                 = "0.0.0.0/0"
+                var.tt_vcn1_onprem_route_enable && local.hub_with_vcn == true ? {
+                  "FC-VIRTUAL-CIRCUIT-TT-VCN-1-TO-HUB-VCN-STMT" = {
+                    destination                 = var.tt_vcn1_cidrs[0]
+                    destination_type            = "CIDR_BLOCK"
+                    next_hop_drg_attachment_key = "HUB-VCN-ATTACHMENT"
+                  }
+                } : {},
+                var.tt_vcn2_onprem_route_enable && local.hub_with_vcn == true ? {
+                  "FC-VIRTUAL-CIRCUIT-TT-VCN-2-TO-HUB-VCN-STMT" = {
+                    destination                 = var.tt_vcn2_cidrs[0]
+                    destination_type            = "CIDR_BLOCK"
+                    next_hop_drg_attachment_key = "HUB-VCN-ATTACHMENT"
+                  }
+                } : {},
+                var.tt_vcn3_onprem_route_enable && local.hub_with_vcn == true ? {
+                  "FC-VIRTUAL-CIRCUIT-TT-VCN-3-TO-HUB-VCN-STMT" = {
+                    destination                 = var.tt_vcn3_cidrs[0]
+                    destination_type            = "CIDR_BLOCK"
+                    next_hop_drg_attachment_key = "HUB-VCN-ATTACHMENT"
+                  }
+                } : {},
+                var.exa_vcn1_onprem_route_enable && local.hub_with_vcn == true ? {
+                  "FC-VIRTUAL-CIRCUIT-EXA-VCN-1-TO-HUB-VCN-STMT" = {
+                    destination                 = var.exa_vcn1_cidrs[0]
+                    destination_type            = "CIDR_BLOCK"
+                    next_hop_drg_attachment_key = "HUB-VCN-ATTACHMENT"
+                  }
+                } : {},
+                var.exa_vcn2_onprem_route_enable && local.hub_with_vcn == true ? {
+                  "FC-VIRTUAL-CIRCUIT-EXA-VCN-2-TO-HUB-VCN-STMT" = {
+                    destination                 = var.exa_vcn2_cidrs[0]
+                    destination_type            = "CIDR_BLOCK"
+                    next_hop_drg_attachment_key = "HUB-VCN-ATTACHMENT"
+                  }
+                } : {},
+                var.exa_vcn3_onprem_route_enable && local.hub_with_vcn == true ? {
+                  "FC-VIRTUAL-CIRCUIT-EXA-VCN-3-TO-HUB-VCN-STMT" = {
+                    destination                 = var.exa_vcn3_cidrs[0]
+                    destination_type            = "CIDR_BLOCK"
+                    next_hop_drg_attachment_key = "HUB-VCN-ATTACHMENT"
+                  }
+                } : {},
+                var.oke_vcn1_onprem_route_enable && local.hub_with_vcn == true ? {
+                  "FC-VIRTUAL-CIRCUIT-OKE-VCN-1-TO-HUB-VCN-STMT" = {
+                    destination                 = var.oke_vcn1_cidrs[0]
+                    destination_type            = "CIDR_BLOCK"
+                    next_hop_drg_attachment_key = "HUB-VCN-ATTACHMENT"
+                  }
+                } : {},
+                var.oke_vcn2_onprem_route_enable && local.hub_with_vcn == true ? {
+                  "FC-VIRTUAL-CIRCUIT-OKE-VCN-2-TO-HUB-VCN-STMT" = {
+                    destination                 = var.oke_vcn2_cidrs[0]
+                    destination_type            = "CIDR_BLOCK"
+                    next_hop_drg_attachment_key = "HUB-VCN-ATTACHMENT"
+                  }
+                } : {},
+                var.oke_vcn3_onprem_route_enable && local.hub_with_vcn == true ? {
+                  "FC-VIRTUAL-CIRCUIT-OKE-VCN-3-TO-HUB-VCN-STMT" = {
+                    destination                 = var.oke_vcn3_cidrs[0]
                     destination_type            = "CIDR_BLOCK"
                     next_hop_drg_attachment_key = "HUB-VCN-ATTACHMENT"
                   }
