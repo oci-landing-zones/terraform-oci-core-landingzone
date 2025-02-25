@@ -35,7 +35,7 @@ module "core_lz" {
   hub_vcn_cidrs         = ["192.168.0.0/24"]
 
   # -- Network - On-Premises Connectivity - FastConnect Virtual Circuit
-  onprem_cidrs                                        = ["100.100.0.0/24"] ## The CIDR range of on-premises network
+  onprem_cidrs                                        = ["x.x.x.x/x"] 		       ## Replace with the CIDR range of on-premises network
   on_premises_connection_option                       = "Create New FastConnect Virtual Circuit"
   fastconnect_virtual_circuit_type                    = "PRIVATE"
   fastconnect_virtual_circuit_bandwidth_shape         = "1 Gbps"                       ## Replace with virtual circuit shape
@@ -48,16 +48,13 @@ module "core_lz" {
   add_tt_vcn1           = true
   tt_vcn1_cidrs         = ["10.0.0.0/20"]
   tt_vcn1_attach_to_drg = true
+  tt_vcn1_onprem_route_enable = true
 
   # --- Spoke VCN: Exadata VCN 1
   add_exa_vcn1           = true
   exa_vcn1_cidrs         = ["172.16.0.0/20"]
   exa_vcn1_attach_to_drg = true
-
-  # -- Bastion Jump Host options: deploy jump host and enable bastion service
-  deploy_bastion_jump_host      = true
-  deploy_bastion_service        = true
-  bastion_service_allowed_cidrs = ["x.x.x.x"] # Replace with Bastion service CIDR block allow list1
+  exa_vcn1_onprem_route_enable = true
 
   # ------------------------------------------------------
   # ----- Notifications
