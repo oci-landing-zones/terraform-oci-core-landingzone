@@ -236,6 +236,13 @@ locals {
             "IPSEC-TUNNEL-DRG-ROUTE-TABLE" = {
               display_name = "${coalesce(var.ipsec_vpn_name, "${var.service_label}-oci-ipsec")}-tunnel-drg-route-table"
               route_rules = merge(
+                local.hub_with_vcn == true ? {
+                  for cidr in var.hub_vcn_cidrs : "IPSEC-HUB-VCN-${replace(replace(cidr, ".", ""), "/", "")}-STMT" => {
+                    destination                 = cidr
+                    destination_type            = "CIDR_BLOCK"
+                    next_hop_drg_attachment_key = "HUB-VCN-ATTACHMENT"
+                  }
+                } : {},
                 var.tt_vcn1_onprem_route_enable && local.hub_with_vcn == true ? {
                   for cidr in var.tt_vcn1_cidrs : "IPSEC-TT-VCN-1-${replace(replace(cidr, ".", ""), "/", "")}-TO-HUB-VCN-STMT" => {
                     destination                 = cidr
@@ -369,6 +376,13 @@ locals {
             "FC-VIRTUAL-CIRCUIT-DRG-ROUTE-TABLE" = {
               display_name = "${coalesce(var.fastconnect_virtual_circuit_name, "${var.service_label}-fastconnect-virtual-circuit")}-drg-route-table"
               route_rules = merge(
+                local.hub_with_vcn == true ? {
+                  for cidr in var.hub_vcn_cidrs : "FC-VIRTUAL-CIRCUIT-HUB-VCN-${replace(replace(cidr, ".", ""), "/", "")}-STMT" => {
+                    destination                 = cidr
+                    destination_type            = "CIDR_BLOCK"
+                    next_hop_drg_attachment_key = "HUB-VCN-ATTACHMENT"
+                  }
+                } : {},
                 var.tt_vcn1_onprem_route_enable && local.hub_with_vcn == true ? {
                   for cidr in var.tt_vcn1_cidrs : "FC-VIRTUAL-CIRCUIT-TT-VCN-1-${replace(replace(cidr, ".", ""), "/", "")}-TO-HUB-VCN-STMT" => {
                     destination                 = cidr
