@@ -156,7 +156,7 @@ locals {
     default_compartment_id = local.network_compartment_id
     nlbs = {
       INDOOR_NLB = {
-        display_name = "isv-indoor-nlb"
+        display_name = "${var.service_label}-indoor-nlb"
         is_private   = true
         subnet_id    = module.lz_network.provisioned_networking_resources.subnets["INDOOR-SUBNET"].id
         network_security_group_ids = [module.lz_network.flat_map_of_provisioned_networking_resources["HUB-VCN-INDOOR-NLB-NSG"].id]
@@ -185,7 +185,7 @@ locals {
         }
       }
       OUTDOOR-NLB = {
-        display_name = "isv-outdoor-nlb"
+        display_name = "${var.service_label}-outdoor-nlb"
         is_private   = true
         subnet_id    = module.lz_network.provisioned_networking_resources.subnets["OUTDOOR-SUBNET"].id
         network_security_group_ids = [module.lz_network.flat_map_of_provisioned_networking_resources["HUB-VCN-OUTDOOR-NLB-NSG"].id]
