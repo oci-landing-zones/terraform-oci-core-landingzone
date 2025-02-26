@@ -159,6 +159,8 @@ locals {
         display_name = "isv-indoor-nlb"
         is_private   = true
         subnet_id    = module.lz_network.provisioned_networking_resources.subnets["INDOOR-SUBNET"].id
+        network_security_group_ids = ["HUB-VCN-INDOOR-NLB-NSG"],
+        enable_symmetric_hashing = true,
         listeners = {
           LISTENER-1 = {
             port     = 0
@@ -186,6 +188,7 @@ locals {
         display_name = "isv-outdoor-nlb"
         is_private   = true
         subnet_id    = module.lz_network.provisioned_networking_resources.subnets["OUTDOOR-SUBNET"].id
+        network_security_group_ids = ["HUB-VCN-OUTDOOR-NLB-NSG"],
         listeners = {
           LISTENER-1 = {
             port     = 0
@@ -258,7 +261,7 @@ locals {
 
 module "lz_firewall_appliance" {
   count                   = local.chosen_firewall_option != "NO" && local.chosen_firewall_option != "OCINFW" ? 1 : 0
-  source                  = "github.com/oci-landing-zones/terraform-oci-modules-workloads//cis-compute-storage?ref=v0.1.7"
+  source                  = "github.com/oci-landing-zones/terraform-oci-modules-workloads//cis-compute-storage?ref=v0.1.9"
   instances_configuration = local.instances_configuration
   providers = {
     oci                                  = oci.home
@@ -269,12 +272,12 @@ module "lz_firewall_appliance" {
 
 module "lz_nlb" {
   count             = local.chosen_firewall_option != "NO" && local.chosen_firewall_option != "OCINFW" ? 1 : 0
-  source            = "github.com/oci-landing-zones/terraform-oci-modules-networking//modules/nlb?ref=v0.7.1"
+  source            = "github.com/oci-landing-zones/terraform-oci-modules-networking//modules/nlb?ref=v0.7.3"
   nlb_configuration = local.nlb_configuration
 }
 
 module "native_oci_firewall" {
   count                    = local.chosen_firewall_option == "OCINFW" ? 1 : 0
-  source                   = "github.com/oci-landing-zones/terraform-oci-modules-networking?ref=v0.7.1"
+  source                   = "github.com/oci-landing-zones/terraform-oci-modules-networking?ref=v0.7.3"
   network_configuration    = local.network_firewall_network_configuration
 }
