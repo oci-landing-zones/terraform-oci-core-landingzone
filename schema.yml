@@ -3596,7 +3596,7 @@ variables:
 
   hub_vcn_north_south_entry_point_ocid:
     type: string
-    title: "Hub VCN North/South Traffic Destination OCID"
+    title: "Hub VCN North/South Traffic Destination OCID (Outdoor Network Load Balancer)"
     description: "Enter the private OCID of the Outdoor Network Load Balancer, where all inbound Internet (North/South) traffic is sent to in the Hub VCN."
     required: false
     visible:
@@ -3621,7 +3621,7 @@ variables:
 
   hub_vcn_east_west_entry_point_ocid:
     type: string
-    title: "Hub VCN East/West Traffic Destination OCID"
+    title: "Hub VCN East/West Traffic Destination OCID (Indoor Network Load Balancer)"
     description: "Enter the private OCID of the Indoor Network Load Balancer, where all inter-VCN (East/West) traffic is sent to in the Hub VCN."
     required: false
     visible:
