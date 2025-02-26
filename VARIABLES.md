@@ -366,9 +366,9 @@
 
 | Variable Name | Description | Type | Default | Required |
 |---------------|-------------|------|---------|----------|
-| cpe\_device\_shape\_vendor | Name of the device shape vendor used by the Customer-Premises Equipment (CPE). See the list of verified CPE devices for more information. | `string` | `null` | no |
-| cpe\_ip\_address | Public IP address used by the Customer-Premises Equipment (CPE) so that a VPN connection can be established. | `string` | `null` | no |
-| cpe\_name | Display name of the Customer-Premises Equipment (CPE). | `string` | `null` | no |
+| cpe\_device\_shape\_vendor | Name of the device shape vendor used by the customer-premises equipment (CPE). See the list of verified CPE devices for more information. | `string` | `null` | no |
+| cpe\_ip\_address | Public IP address used by the customer-premises equipment (CPE) so that a VPN connection can be established. | `string` | `null` | no |
+| cpe\_name | Display name of the customer-premises equipment (CPE). | `string` | `null` | no |
 | fastconnect\_virtual\_circuit\_bandwidth\_custom\_shape | Custom bandwidth level (shape) of the FastConnect virtual circuit. For example: "5 Gbps" | `string` | `1 Gbps` | no |
 | fastconnect\_virtual\_circuit\_bandwidth\_shape | Bandwidth level (shape) of the Fast Connect virtual circuit. | `string` | `1 Gbps` | no |
 | fastconnect\_virtual\_circuit\_bgp\_md5auth\_key | The key for BGP MD5 authentication. Only applicable if your system requires MD5 authentication. If empty or not set (null), that means you do not use BGP MD5 authentication. | `string` | `null` | no |
@@ -384,7 +384,7 @@
 | fastconnect\_virtual\_circuit\_routing\_policy | Defines the BGP relationship for exchanging routes. (Valid values include REGIONAL, GLOBAL). | `string` | `null` | no |
 | fastconnect\_virtual\_circuit\_type | The type of IP addresses used in the Fast Connect virtual circuit. Accepted values are PRIVATE, PUBLIC. | `string` | `PRIVATE` | no |
 | fastconnect\_virtual\_circuit\_vlan | The number of the specific VLAN (on the cross-connect or cross-connect group) that is assigned to FastConnect virtual circuit. | `string` | `null` | no |
-| ipsec\_customer\_bgp\_asn | Customer on-premises networks Autonomous System Number. | `string` | `null` | no |
+| ipsec\_customer\_bgp\_asn | Customer-premises networks Autonomous System Number. | `string` | `null` | no |
 | ipsec\_tunnel1\_customer\_interface\_ip | The first IP CIDR block used on the customer side for BGP peering for IPSec Tunnel 1. | `string` | `null` | no |
 | ipsec\_tunnel1\_ike\_version | Version of the internet key exchange (IKE), if using a CPE IKE identifier. Supported values are "V1" or "V2". | `string` | `null` | no |
 | ipsec\_tunnel1\_oracle\_interface\_ip | The first IP CIDR block provided by OCI for BGP peering for IPSec Tunnel 1. | `string` | `null` | no |
