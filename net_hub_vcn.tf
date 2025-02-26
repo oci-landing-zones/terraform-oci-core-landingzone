@@ -1445,14 +1445,13 @@ locals {
           "HUB-VCN-INTERNET-GATEWAY" = {
             enabled         = true
             display_name    = "internet-gateway"
-            route_table_key = coalesce(var.hub_vcn_north_south_entry_point_ocid, local.void) != local.void ? "HUB-VCN-INTERNET-GATEWAY-ROUTE-TABLE" : null
           }
         }
         nat_gateways = {
           "HUB-VCN-NAT-GATEWAY" = {
             block_traffic   = false
             display_name    = "nat-gateway"
-            route_table_key = coalesce(var.oci_nfw_ip_ocid, local.void) != local.void ? "HUB-VCN-NAT-GATEWAY-ROUTE-TABLE" : null
+            route_table_key = coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_east_west_entry_point_ocid, local.void) != local.void ? "HUB-VCN-NAT-GATEWAY-ROUTE-TABLE" : null
           }
         }
         service_gateways = {
