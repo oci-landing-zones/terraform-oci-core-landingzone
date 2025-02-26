@@ -722,23 +722,21 @@ locals {
           "HUB-VCN-OUTDOOR-NLB-NSG" = {
             display_name = "outdoor-nlb-nsg"
             ingress_rules = {
-              "INGRESS-FROM-ANYWHERE-RULE" = {
-                description  = "Ingress from 0.0.0.0/0 on HTTPS port 443."
+              "INGRESS-FROM-LBR-NSG-RULE" = {
+                description  = "Ingress from App Load Balancer NSG."
                 stateless    = false
                 protocol     = "TCP"
-                src          = "0.0.0.0/0"
-                src_type     = "CIDR_BLOCK"
-                dst_port_min = 443
-                dst_port_max = 443
+                src          = "HUB-VCN-APP-LOAD-BALANCER"
+                src_type     = "NETWORK_SECURITY_GROUP"
               }
             }
             egress_rules = {
-              "EGRESS-TO-OUTDOOR-FW-NSG-RULE" = {
-                description = "Egress to Outdoor Firewall NSG."
+              "EGRESS-TO-ANYWHERE-RULE" = {
+                description = "Egress to anywhere."
                 stateless   = false
                 protocol    = "TCP"
-                dst         = "HUB-VCN-OUTDOOR-FW-NSG"
-                dst_type    = "NETWORK_SECURITY_GROUP"
+                dst         = "0.0.0.0/0"
+                dst_type    = "CIDR_BLOCK"
               }
             }
           }
@@ -747,14 +745,19 @@ locals {
           "HUB-VCN-OUTDOOR-FW-NSG" = {
             display_name = "outdoor-fw-nsg"
             ingress_rules = {
-              "INGRESS-FROM-NLB-NSG-RULE" = {
-                description  = "Ingress from Outdoor NLB NSG"
+              "INGRESS-FROM-OUTDOOR-NLB-NSG-RULE" = {
+                description  = "Ingress from Outdoor NLB NSG (for health checks)."
                 stateless    = false
                 protocol     = "TCP"
                 src          = "HUB-VCN-OUTDOOR-NLB-NSG"
                 src_type     = "NETWORK_SECURITY_GROUP"
-                dst_port_min = 80
-                dst_port_max = 80
+              },
+              "INGRESS-FROM-LBR-NSG-RULE" = {
+                description  = "Ingress from App Load Balancer NSG."
+                stateless    = false
+                protocol     = "TCP"
+                src          = "HUB-VCN-APP-LOAD-BALANCER"
+                src_type     = "NETWORK_SECURITY_GROUP"
               }
             }
             egress_rules = {
@@ -863,12 +866,12 @@ locals {
               } : {}
             )
             egress_rules = {
-              "EGRESS-TO-INDOOR-FW-NSG-RULE" = {
-                description = "Egress to Indoor Firewall NSG"
+              "EGRESS-TO-ANYWHERE-RULE" = {
+                description = "Egress to anywhere."
                 stateless   = false
                 protocol    = "TCP"
-                dst         = "HUB-VCN-INDOOR-FW-NSG"
-                dst_type    = "NETWORK_SECURITY_GROUP"
+                dst         = "0.0.0.0/0"
+                dst_type    = "CIDR_BLOCK"
               }
             }
           }
@@ -969,7 +972,7 @@ locals {
             )
             egress_rules = {
               "EGRESS-TO-ANYWHERE-RULE" = {
-                description = "Egress to anywhere over TCP"
+                description = "Egress to anywhere."
                 stateless   = false
                 protocol    = "TCP"
                 dst         = "0.0.0.0/0"
