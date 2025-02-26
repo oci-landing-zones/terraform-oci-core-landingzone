@@ -88,14 +88,14 @@ locals {
               display_name            = "fw-1-indoor"
               hostname                = "fw-1-indoor"
               subnet_id               = module.lz_network.provisioned_networking_resources.subnets["INDOOR-SUBNET"].id
-              network_security_groups = [module.lz_network.flat_map_of_provisioned_networking_resources["HUB-VCN-INDOOR-NLB-NSG"].id]
+              network_security_groups = [module.lz_network.flat_map_of_provisioned_networking_resources["HUB-VCN-INDOOR-FW-NSG"].id]
               skip_source_dest_check  = true
             }
             OUTDOOR = {
               display_name            = "fw-1-outdoor"
               hostname                = "fw-1-outdoor"
               subnet_id               = module.lz_network.provisioned_networking_resources.subnets["OUTDOOR-SUBNET"].id
-              network_security_groups = [module.lz_network.flat_map_of_provisioned_networking_resources["HUB-VCN-OUTDOOR-NLB-NSG"].id]
+              network_security_groups = [module.lz_network.flat_map_of_provisioned_networking_resources["HUB-VCN-OUTDOOR-FW-NSG"].id]
               skip_source_dest_check  = true
             }
           }
@@ -132,14 +132,14 @@ locals {
               display_name            = "fw-2-indoor"
               hostname                = "fw-2-indoor"
               subnet_id               = module.lz_network.provisioned_networking_resources.subnets["INDOOR-SUBNET"].id
-              network_security_groups = [module.lz_network.flat_map_of_provisioned_networking_resources["HUB-VCN-INDOOR-NLB-NSG"].id]
+              network_security_groups = [module.lz_network.flat_map_of_provisioned_networking_resources["HUB-VCN-INDOOR-FW-NSG"].id]
               skip_source_dest_check  = true
             }
             OUTDOOR = {
               display_name            = "fw-2-outdoor"
               hostname                = "fw-2-outdoor"
               subnet_id               = module.lz_network.provisioned_networking_resources.subnets["OUTDOOR-SUBNET"].id
-              network_security_groups = [module.lz_network.flat_map_of_provisioned_networking_resources["HUB-VCN-OUTDOOR-NLB-NSG"].id]
+              network_security_groups = [module.lz_network.flat_map_of_provisioned_networking_resources["HUB-VCN-OUTDOOR-FW-NSG"].id]
               skip_source_dest_check  = true
             }
           }
@@ -159,7 +159,7 @@ locals {
         display_name = "isv-indoor-nlb"
         is_private   = true
         subnet_id    = module.lz_network.provisioned_networking_resources.subnets["INDOOR-SUBNET"].id
-        network_security_group_ids = ["HUB-VCN-INDOOR-NLB-NSG"],
+        network_security_group_ids = [module.lz_network.flat_map_of_provisioned_networking_resources["HUB-VCN-INDOOR-NLB-NSG"].id]
         enable_symmetric_hashing = true,
         listeners = {
           LISTENER-1 = {
@@ -188,7 +188,7 @@ locals {
         display_name = "isv-outdoor-nlb"
         is_private   = true
         subnet_id    = module.lz_network.provisioned_networking_resources.subnets["OUTDOOR-SUBNET"].id
-        network_security_group_ids = ["HUB-VCN-OUTDOOR-NLB-NSG"],
+        network_security_group_ids = [module.lz_network.flat_map_of_provisioned_networking_resources["HUB-VCN-OUTDOOR-NLB-NSG"].id]
         listeners = {
           LISTENER-1 = {
             port     = 0
