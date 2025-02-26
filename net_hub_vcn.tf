@@ -1416,7 +1416,7 @@ locals {
             )
           }
         } : {},
-        local.chosen_firewall_option == "OCINFW" ? {
+        {
           "HUB-VCN-APP-LOAD-BALANCER" = {
             display_name = "app-load-balancer-nsg"
             ingress_rules = {
@@ -1434,7 +1434,7 @@ locals {
               # These are to be added for the various workloads, and should egress to particular backend servers.
             }
           }
-        } : {}
+        }
       ) # closing NSG merge function  
 
       vcn_specific_gateways = {
