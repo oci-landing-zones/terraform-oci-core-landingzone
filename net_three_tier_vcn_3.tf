@@ -126,7 +126,15 @@ locals {
                   destination        = "0.0.0.0/0"
                   destination_type   = "CIDR_BLOCK"
                 }
-              }
+              },
+              (local.hub_with_drg_only && var.tt_vcn3_attach_to_drg == true && var.tt_vcn3_onprem_route_enable) ? {
+                for cidr in var.onprem_cidrs : "ONPREM-${replace(replace(cidr, ".", ""), "/", "")}-RULE" => {
+                  network_entity_key = "HUB-DRG"
+                  description        = "Traffic destined to on-premises ${cidr} CIDR range goes to DRG."
+                  destination        = cidr
+                  destination_type   = "CIDR_BLOCK"
+                }
+              } : {}
             )
           }
         },
