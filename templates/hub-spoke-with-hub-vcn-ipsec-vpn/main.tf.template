@@ -4,7 +4,7 @@
 # ----------------------------------------------------------------------------------------
 # -- This configuration deploys a CIS compliant landing zone with custom VCN settings.
 # -- See other templates for other CIS compliant landing zones with alternative settings.
-# -- 1. Rename this file to main.tf. 
+# -- 1. Rename this file to main.tf.
 # -- 2. Provide/review the variable assignments below.
 # -- 3. In this folder, execute the typical Terraform workflow:
 # ----- $ terraform init
@@ -34,31 +34,30 @@ module "core_lz" {
   hub_deployment_option = "VCN or on-premises connectivity routing through DMZ VCN with Network Virtual Appliance (DRG and DMZ VCN will be created)"
   hub_vcn_cidrs         = ["192.168.0.0/24"]
 
-  # -- Network - On-Premises Connectivity - FastConnect Virtual Circuit
-  onprem_cidrs                        = ["x.x.x.x/x"]             ## Replace with the CIDR range of on-premises network
+  # -- Network - On-Premises Connectivity - IPSec Site-to-Site VPN
   on_premises_connection_option       = "Create New IPSec VPN"
+  onprem_cidrs                        = ["x.x.x.x/x"]             ## Replace with the CIDR range of on-premises network
   cpe_ip_address                      = "x.x.x.x"                 ## Replace with the IP address of CPE public IP
   cpe_device_shape_vendor             = "Libreswan"
-  ipsec_customer_bgp_asn              = "xxxxx"                   ## Replace with valid customer BGP value
-  ipsec_tunnel1_customer_interface_ip = "x.x.x.x/x"               ## Replace with the CPE inside tunnel IP used with BGP Peering (Tunnel 1)
-  ipsec_tunnel1_oracle_interface_ip   = "x.x.x.x/x"               ## Replace with the Oracle inside tunnel IP used with BGP Peering (Tunnel 1)
-  ipsec_tunnel2_customer_interface_ip = "x.x.x.x/x"               ## Replace with the CPE inside tunnel IP used with BGP Peering (Tunnel 2)
-  ipsec_tunnel2_oracle_interface_ip   = "x.x.x.x/x"               ## Replace with the Oracle inside tunnel IP used with BGP Peering (Tunnel 2)
-
+  ipsec_customer_bgp_asn              = "65000"
+  ipsec_tunnel1_customer_interface_ip = "10.10.10.1/30"
+  ipsec_tunnel1_oracle_interface_ip   = "10.10.10.2/30"
+  ipsec_tunnel1_ike_version           = "V1"
+  ipsec_tunnel2_customer_interface_ip = "10.10.10.5/30"
+  ipsec_tunnel2_oracle_interface_ip   = "10.10.10.6/30"
+  ipsec_tunnel2_ike_version           = "V1"
 
   # --- Spoke VCN: three-tier VCN 1
   add_tt_vcn1                 = true
+  tt_vcn1_onprem_route_enable = true
   tt_vcn1_cidrs               = ["10.0.0.0/20"]
   tt_vcn1_attach_to_drg       = true
-  tt_vcn1_onprem_route_enable = true
-
 
   # --- Spoke VCN: Exadata VCN 1
   add_exa_vcn1                 = true
+  exa_vcn1_onprem_route_enable = true
   exa_vcn1_cidrs               = ["172.16.0.0/20"]
   exa_vcn1_attach_to_drg       = true
-  exa_vcn1_onprem_route_enable = true
-
 
   # ------------------------------------------------------
   # ----- Notifications
