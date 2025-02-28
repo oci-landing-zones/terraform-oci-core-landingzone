@@ -82,7 +82,7 @@ A Three-Tier application uses a multi-tier networking model. The three tiers are
 #### **Exadata Cloud Service**
 <img src="images/Consideration_ExaCS_Network.png" alt="ExaCS drawing" width="300"/>
 
-Exadata Cloud Service allows you to leverage the power of Exadata in the cloud. Exadata Cloud Service systems integrate Oracle's Exadata Database Machine hardware with the networking resources needed to securely connect to your organizations on-premise network and to other services in the Oracle cloud.
+Exadata Cloud Service allows you to leverage the power of Exadata in the cloud. Exadata Cloud Service systems integrate Oracle's Exadata Database Machine hardware with the networking resources needed to securely connect to your organizations on-premises network and to other services in the Oracle cloud.
 
 Exadata Cloud Service instances require a VCN with at least two subnets in the VCN. The two subnets required are the *Client* subnet and the *Backup* subnet.
 
@@ -236,11 +236,9 @@ The Landing Zone supports up to three VCNs of each type.
 
 Regardless the networking types, these VCNs can be deployed standalone or all connected via OCI DRG V2 service in a Hub & Spoke topology. When deploying Hub & Spoke, either a Hub VCN (aka DMZ VCN) can be provisioned or the DRG itself used as the hub. The Landing Zone also optionally deploys a network appliance or OCI Native Firewall in the Hub VCN to control/secure all inbound and outbound traffic routing in the spoke VCNs.
 
-All VCNs can be configured with no Internet connectivity or for on-premises connectivity. Inbound SSH access (TCP port 22) from 0.0.0.0/0 IP range is prohibited, but Landing Zone may be configured to leverage OCI Bastion Service for secure, restricted access from the Internet.
+All VCNs can be configured with no Internet connectivity or for on-premises connectivity. Inbound SSH access (TCP port 22) from 0.0.0.0/0 IP range is prohibited, but the landing zone may be configured to leverage OCI Bastion Service for secure, restricted access from the Internet, an on-premises CIDR block, or both.
 
-Due to the very nature of Terraform, it is possible to add, modify and delete VCNs.
-
-Landing Zone allows for switching back and forth between standalone and Hub & Spoke, however it is recommended to plan for a specific design, as manual actions might be needed when switching.
+Due to the very nature of Terraform, it is possible to add, modify and delete VCNs. Landing Zone allows for switching back and forth between standalone and Hub & Spoke, however it is recommended to plan for a specific design, as manual actions might be needed when switching.
 
 ## <a name="governance-3"></a>3.3 Governance
 
@@ -342,11 +340,12 @@ The supported variables are:
 - **custom\_storage\_admin\_group\_name**
 - **custom\_ag\_admin\_group\_name**
 
-### Deploying with Groups and Dynamic Groups from an Existing Custom Identity Domain
+### Deploying with Groups and Dynamic Groups from an Identity Domain
 
-The Landing Zone resources can be managed by user groups and leverage dynamic groups in an existing custom (non-default) Identity Domain. These groups and dynamic groups can be pre-existing or created by the Landing Zone.
+Landing Zone resources can be managed by user groups and leverage dynamic groups in a new or existing custom (non-default) Identity Domain. These groups and dynamic groups can be pre-existing or created by the Landing Zone.
 
-See [Groups and Dynamic Groups From a Custom Identity Domains](./templates/custom-identity-domain).
+- [Groups and Dynamic Groups From a New Identity Domain](./templates/new-identity-domain)
+- [Groups and Dynamic Groups From a Custom Identity Domain](./templates/custom-identity-domain)
 
 ### Extending Landing Zone to a New Region
 
@@ -369,6 +368,9 @@ See deployment scenarios under the [templates](./templates/) folder:
 - [Multiple Three-Tier VCNs peered through DRG](./templates/hub-spoke-with-drg-and-three-tier-vcns)
 - [Multiple VCN types peered through a Hub VCN with native Network Firewall](./templates/hub-spoke-with-hub-vcn-net-firewall)
 - [Multiple VCN types peered through a Hub VCN with third party network appliance](./templates/hub-spoke-with-hub-vcn-net-appliance)
+- [Multiple VCN types peered through a Hub VCN with a Bastion Service enabled on a jump host](./templates/hub-spoke-with-hub-vcn-bastion-jump-host)
+- [On-premises connectivity through a Hub VCN with Site-to-Site VPN using IPSec](./templates/hub-spoke-with-hub-vcn-ipsec-vpn)
+- [On-premises connectivity through a Hub VCN with FastConnect virtual circuits](./templates/hub-spoke-with-hub-vcn-fastconnect-virtual-circuit)
 
 #### Landing Zone OCI Network Firewall Option
 

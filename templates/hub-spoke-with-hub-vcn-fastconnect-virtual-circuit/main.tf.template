@@ -1,0 +1,69 @@
+# Copyright (c) 2024, 2025, Oracle and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl/
+
+# ----------------------------------------------------------------------------------------
+# -- This configuration deploys a CIS compliant landing zone with custom VCN settings.
+# -- See other templates for other CIS compliant landing zones with alternative settings.
+# -- 1. Rename this file to main.tf.
+# -- 2. Provide/review the variable assignments below.
+# -- 3. In this folder, execute the typical Terraform workflow:
+# ----- $ terraform init
+# ----- $ terraform plan
+# ----- $ terraform apply
+# ----------------------------------------------------------------------------------------
+
+module "core_lz" {
+  source = "../../"
+  # ------------------------------------------------------
+  # ----- Environment
+  # ------------------------------------------------------
+  tenancy_ocid         = "ocid1.tenancy.oc1..aaaaaaaa...3jb"               # Replace with your tenancy OCID.
+  user_ocid            = "ocid1.user.oc1..aaaaaaaa...xsb"                  # Replace with your user OCID.
+  fingerprint          = "19:42:xx:92:yy:b3:zz:2f:aa:ea:bb:59:cc:be:dd:ba" # Replace with user fingerprint.
+  private_key_path     = "path-to-pem-file-with-private-key"               # Replace with user private key local path.
+  private_key_password = ""                                                # Replace with private key password, if any.
+  region               = "us-phoenix-1"                                    # Replace with region name.
+  service_label        = "ocifastconnect"                                  # Prefix prepended to deployed resource names.
+
+  # ------------------------------------------------------
+  # ----- Networking
+  # ------------------------------------------------------
+  define_net = true # enables network resources provisioning
+
+  # --- Hub deployment option: a Hub VCN is deployed.
+  hub_deployment_option = "VCN or on-premises connectivity routing through DMZ VCN with Network Virtual Appliance (DRG and DMZ VCN will be created)"
+  hub_vcn_cidrs         = ["192.168.0.0/24"]
+
+  # -- Network - On-Premises Connectivity - FastConnect Virtual Circuit
+  on_premises_connection_option                       = "Create New FastConnect Virtual Circuit"
+  onprem_cidrs                                        = ["x.x.x.x/x"]                   ## Replace with the CIDR range of on-premises network
+  fastconnect_virtual_circuit_bandwidth_shape         = "1 Gbps"                        ## Replace with virtual circuit shape
+  fastconnect_virtual_circuit_type                    = "PRIVATE"
+  fastconnect_virtual_circuit_provider_service_id     = "ocid1.providerservice.oc1.xxx" ## Replace with the OCID of the fastconnect partner provider
+  fastconnect_virtual_circuit_customer_asn            = "xxxxx"                         ## Replace with valid value for customer asn
+  fastconnect_virtual_circuit_customer_bgp_peering_ip = "10.10.10.1/30"
+  fastconnect_virtual_circuit_oracle_bgp_peering_ip   = "10.10.10.2/30"
+
+  # --- Spoke VCN: three-tier VCN 1
+  add_tt_vcn1                 = true
+  tt_vcn1_onprem_route_enable = true
+  tt_vcn1_cidrs               = ["10.0.0.0/20"]
+  tt_vcn1_attach_to_drg       = true
+
+  # --- Spoke VCN: Exadata VCN 1
+  add_exa_vcn1                 = true
+  exa_vcn1_onprem_route_enable = true
+  exa_vcn1_cidrs               = ["172.16.0.0/20"]
+  exa_vcn1_attach_to_drg       = true
+
+  # ------------------------------------------------------
+  # ----- Notifications
+  # ------------------------------------------------------
+  network_admin_email_endpoints  = ["email.address@example.com"] # for network-related events. Replace with a real email address.
+  security_admin_email_endpoints = ["email.address@example.com"] # for security-related events. Replace with a real email address.
+
+  # ------------------------------------------------------
+  # ----- Security
+  # ------------------------------------------------------
+  enable_cloud_guard = false # Set to false if Cloud Guard has already been enabled.
+}

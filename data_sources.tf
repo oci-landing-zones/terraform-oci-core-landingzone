@@ -16,14 +16,14 @@ data "oci_identity_compartment" "existing_enclosing_compartment" {
 }
 
 data "oci_identity_domain" "existing_identity_domain" {
-    count = var.identity_domain_option == "Use Custom Identity Domain" == true ? 1 : 0
-    domain_id = trimspace(var.custom_id_domain_ocid)
-    lifecycle {
-      precondition {
-        condition     = var.custom_id_domain_ocid != null
-        error_message = "Existing domain id must be provided when using an existing domain."
-      }
+  count     = var.identity_domain_option == "Use Custom Identity Domain" == true ? 1 : 0
+  domain_id = trimspace(var.custom_id_domain_ocid)
+  lifecycle {
+    precondition {
+      condition     = var.custom_id_domain_ocid != null
+      error_message = "Existing domain id must be provided when using an existing domain."
     }
+  }
 }
 
 data "oci_identity_group" "existing_iam_admin_group" {
