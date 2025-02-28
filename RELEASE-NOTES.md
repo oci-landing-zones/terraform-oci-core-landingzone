@@ -1,3 +1,6 @@
+# February 28, 2025 Release Notes - 1.4.0
+1. New support for on-premises connectivity through Site-to-Site VPN (IPSec), FastConnect (FC) virtual circuit, or both.
+
 # January 31, 2025 Release Notes - 1.3.1
 1. Fix the Cross-VCN routing issue when choosing to create DRG only.
 
@@ -21,7 +24,6 @@
     - Fortinet Fortigate Firewall: 7.2.9(X64) and 7.4.4(X64)
 3. Ability to deploy a network appliance custom image.
 4. Bug fixes.    
-
 
 # September 06, 2024 Release Notes - 0.0.1 (Early Preview Release)
 ## New
