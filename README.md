@@ -75,7 +75,7 @@ From a functional perspective, the OCI Core Landing Zone adds the following to C
 3. Ability to deploy VCNs for OKE workload deployments, in addition to three-tier and Exadata Cloud service VCNs.
 4. Ability to deploy a network firewall (OCI native or third party appliance) in the Hub VCN (a.k.a. DMZ VCN).
 5. Ability to route traffic between select spoke VCNs, or in a full mesh model.
-6. Ability to deploy a Bastion service in a Jump Host in the Hub VCN 
+6. Ability to deploy a bastion service in a jump host in the Hub VCN
 
 
 ## <a name="arch">Architecture</a>
@@ -121,22 +121,22 @@ Third Party firewall appliance option (Palo Alto Networks or Fortinet):
 - One public subnet for load balancers.
 - Two private subnets: one for inbound North-South traffic (from Internet or on-premises), one for inbound East-West (cross-spoke) traffic.
 - One private subnet for managing the firewall appliance that is eventually deployed.
-- One optional private subnet for Jump Host deployment where the Bastion service and on-premises access via FastConnect is supported
+- One optional private subnet for jump host deployment where the Bastion service and on-premises access via FastConnect is supported.
 
 
 OCI Network Firewall option:
 
 - One public subnet for Internet Gateway (IGW) North-South traffic passed through to the Network Firewall.
 - One private subnet for the Network Firewall and East-West traffic from/to spoke VCNs.
-- One optional private subnet for Jump Host deployment where the Bastion service and on-premises access via FastConnect is supported
+- One optional private subnet for jump host deployment where the Bastion service and on-premises access via FastConnect is supported.
 
-The Hub VCN is coupled with a Dynamic Routing Gateway (DRG) that can be either an existing one or one created and managed by the landing zone. The Hub VCN also supports an optional subnet for jump host deployment. This jump host can be reached through the Hub & Spoke DRG from a user provided on-premise CIDR address range or from the Internet using an OCI Bastion Service session.
+The Hub VCN is coupled with a Dynamic Routing Gateway (DRG) that can be either an existing one or one created and managed by the landing zone. The Hub VCN also supports an optional subnet for jump host deployment. This jump host can be reached through the Hub & Spoke DRG from a user provided on-premises CIDR address range or from the Internet using an OCI Bastion Service session.
 
 Some architecture scenarios enabled by the Hub VCN are:
 
-- **Access to multiple VCNs in the same region:** This scenario enables communication between an on-premises network and multiple VCNs in the same region over a single FastConnect private virtual circuit or Site-to-Site VPN using a VCN as the hub.
+- **Access to multiple VCNs in the same region:** This scenario enables communication between an on-premises network and multiple VCNs in the same region over FastConnect private virtual circuits or Site-to-Site VPN (IPSec) using a VCN as the hub.
 - **Access between multiple networks through a single DRG with a firewall between networks:** This scenario connects several VCNs to a single DRG, with all routing configured to send packets through a firewall in a Hub VCN before they can be sent to another VCN.
-- **Access to multiple networks through a Bastion service deployed on a Jump Host:** This scenario allows access to multiple VCNs from a single Jump Host in the Hub VCN using the Bastion service.
+- **Access to multiple networks through a Bastion service deployed on a jump host:** This scenario allows access to multiple VCNs from a single jump host in the Hub VCN using the Bastion service.
 
 ### <a name="arch-diagram">Diagrams</a>
 
@@ -171,7 +171,8 @@ This module requires Terraform binary version 1.3.0 or greater, as its underlyin
 
 Some deployment scenarios are available under the [templates](./templates/) folder:
 
-- [Groups and Dynamic Groups From a Custom Identity Domains](./templates/custom-identity-domain)
+- [Groups and Dynamic Groups From a New Identity Domain](./templates/new-identity-domain)
+- [Groups and Dynamic Groups From a Custom Identity Domain](./templates/custom-identity-domain)
 - [No Networking](./templates/cis-basic/)
 - [Single Three-Tier VCN with default settings](./templates/standalone-three-tier-vcn-defaults/)
 - [Single Three-Tier VCN with ZPR enabled](./templates/standalone-three-tier-vcn-zpr/)
@@ -179,7 +180,9 @@ Some deployment scenarios are available under the [templates](./templates/) fold
 - [Multiple Three-Tier VCNs peered through DRG](./templates/hub-spoke-with-drg-and-three-tier-vcns)
 - [Multiple VCN types peered through a Hub VCN with native Network Firewall](./templates/hub-spoke-with-hub-vcn-net-firewall)
 - [Multiple VCN types peered through a Hub VCN with third party network appliance](./templates/hub-spoke-with-hub-vcn-net-appliance)
-- [Multiple VCN types peered through a Hub VCN with a Bastion Service enabled on a Jump Host](./templates/hub-spoke-with-hub-vcn-bastion-jump-host)
+- [Multiple VCN types peered through a Hub VCN with a Bastion Service enabled on a jump host](./templates/hub-spoke-with-hub-vcn-bastion-jump-host)
+- [On-premises connectivity through a Hub VCN with Site-to-Site VPN using IPSec](./templates/hub-spoke-with-hub-vcn-ipsec-vpn)
+- [On-premises connectivity through a Hub VCN with FastConnect virtual circuits](./templates/hub-spoke-with-hub-vcn-fastconnect-virtual-circuit)
 
 Another key deployment scenario of OCI Core Landing Zone is [Zero Trust Landing Zone](https://github.com/oci-landing-zones/terraform-oci-zero-trust-landingzone).
 
@@ -218,7 +221,7 @@ See [LICENSE](./LICENSE.txt) for more details.
 ## <a name="known-issues">Known Issues</a>
 
 * **OCI Network Firewall Traffic Logging Does Not Capture Hub & Spoke Bastion Jump Host Activity**
-    * As deployed, the jump host and OCI native firewall subnets are both in the Hub VCN. Due to this relative proximity, the logging service for Network Firewall does not record jump host traffic in the same VCN.
+    * As deployed, the jump host and OCI Native Firewall subnets are both in the Hub VCN. Due to this relative proximity, the logging service for Network Firewall does not record jump host traffic in the same VCN.
 
 * **Network Firewall Policy Security Rule Deletion**
     * Terraform Destroy does not delete the OCI Network Firewall in a single pass. On the first attempt, there is a time out with the following error:

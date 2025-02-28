@@ -7,17 +7,17 @@ locals {
     network_configuration_categories = {
       "${var.service_label}-network" = {
         vcns                      = merge(local.tt_vcn_1, local.tt_vcn_2, local.tt_vcn_3, local.exa_vcn_1, local.exa_vcn_2, local.exa_vcn_3, local.oke_vcn_1, local.oke_vcn_2, local.oke_vcn_3, local.hub_vcn)
-        non_vcn_specific_gateways = local.drg
+        non_vcn_specific_gateways = merge(local.drg, local.cpe, local.ipsec, local.fastconnect)
       }
     }
   }
 }
 
 module "lz_network" {
-  source                = "github.com/oci-landing-zones/terraform-oci-modules-networking?ref=v0.7.1"
+  source                = "github.com/oci-landing-zones/terraform-oci-modules-networking?ref=v0.7.3"
   depends_on            = [ module.lz_zpr ]
   network_configuration = local.lz_network_configuration
-  network_dependency    = (local.chosen_hub_option == 2 || local.chosen_hub_option == 4) ? {
+  network_dependency    = local.use_existing_drg ? {
     "dynamic_routing_gateways" = {
       "HUB-DRG" = {"id" : trimspace(var.existing_drg_ocid)}
     }

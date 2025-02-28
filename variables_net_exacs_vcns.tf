@@ -7,7 +7,7 @@
 variable "add_exa_vcn1" {
   type    = bool
   default = false
-  description = "Whether to add a VCN configured for Exadata Cloud Service deployment, with two subnets: client (private) and backup (private). The added VCN is labelled 'EXA-VCN-1'. The label should be used in the '*_routable_vcns' fields of other VCNs for constraining network traffic to those respective VCNs in a Hub/Spoke topology."
+  description = "Whether to add a VCN configured for Exadata Cloud Service deployment, with two subnets: client (private) and backup (private). The added VCN is labelled 'EXA-VCN-1'. The label should be used in the '*_routable_vcns' fields of other VCNs for constraining network traffic to those respective VCNs in a Network topology."
 }
 
 variable "exa_vcn1_name" {
@@ -50,7 +50,12 @@ variable "exa_vcn1_backup_subnet_name" {
 variable "exa_vcn1_routable_vcns" {
   type    = list(string)
   default = []
-  description = "The VCN labels that this VCN can send traffic to. Leave unassigned for sending traffic to all VCNs. Only applicable for Hub/Spoke topology where a DRG is deployed as the hub. Valid values: TT-VCN-1, TT-VCN-2, TT-VCN-3, EXA-VCN-2, EXA-VCN3, OKE-VCN-1, OKE-VCN-2, OKE-VCN-3."
+  description = "The VCN labels that this VCN can send traffic to. Leave unassigned for sending traffic to all VCNs. Only applicable for Network topology where a DRG is deployed as the hub. Valid values: TT-VCN-1, TT-VCN-2, TT-VCN-3, EXA-VCN-2, EXA-VCN3, OKE-VCN-1, OKE-VCN-2, OKE-VCN-3."
+}
+variable "exa_vcn1_onprem_route_enable" {
+  type        = bool
+  default     = false
+  description = "This will drive the creation of the routes and security list rules."
 }
 
 # ------------------------------------------------------
@@ -60,7 +65,7 @@ variable "exa_vcn1_routable_vcns" {
 variable "add_exa_vcn2" {
   type    = bool
   default = false
-  description = "Whether to add a second VCN configured for Exadata Cloud Service deployment, with two subnets: client (private) and backup (private). The added VCN is labelled 'EXA-VCN-2'. The label should be used in the '*_routable_vcns' fields of other VCNs for constraining network traffic to those respective VCNs in a Hub/Spoke topology."
+  description = "Whether to add a second VCN configured for Exadata Cloud Service deployment, with two subnets: client (private) and backup (private). The added VCN is labelled 'EXA-VCN-2'. The label should be used in the '*_routable_vcns' fields of other VCNs for constraining network traffic to those respective VCNs in a Network topology."
 }
 
 variable "exa_vcn2_cidrs" {
@@ -104,7 +109,12 @@ variable "exa_vcn2_backup_subnet_name" {
 variable "exa_vcn2_routable_vcns" {
   type    = list(string)
   default = []
-  description = "The VCN labels that this VCN can send traffic to. Leave unassigned for sending traffic to all VCNs. Only applicable for Hub/Spoke topology where a DRG is deployed as the hub. Valid values: TT-VCN-1, TT-VCN-2, TT-VCN-3, EXA-VCN-1, EXA-VCN3, OKE-VCN-1, OKE-VCN-2, OKE-VCN-3."
+  description = "The VCN labels that this VCN can send traffic to. Leave unassigned for sending traffic to all VCNs. Only applicable for Network topology where a DRG is deployed as the hub. Valid values: TT-VCN-1, TT-VCN-2, TT-VCN-3, EXA-VCN-1, EXA-VCN3, OKE-VCN-1, OKE-VCN-2, OKE-VCN-3."
+}
+variable "exa_vcn2_onprem_route_enable" {
+  type        = bool
+  default     = false
+  description = "This will drive the creation of the routes and security list rules."
 }
 
 # ------------------------------------------------------
@@ -113,7 +123,7 @@ variable "exa_vcn2_routable_vcns" {
 variable "add_exa_vcn3" {
   type    = bool
   default = false
-  description = "Whether to add a third VCN configured for Exadata Cloud Service deployment, with two subnets: client (private) and backup (private). The added VCN is labelled 'EXA-VCN-3'. The label should be used in the '*_routable_vcns' fields of other VCNs for constraining network traffic to those respective VCNs in a Hub/Spoke topology."
+  description = "Whether to add a third VCN configured for Exadata Cloud Service deployment, with two subnets: client (private) and backup (private). The added VCN is labelled 'EXA-VCN-3'. The label should be used in the '*_routable_vcns' fields of other VCNs for constraining network traffic to those respective VCNs in a Network topology."
 }
 
 variable "exa_vcn3_cidrs" {
@@ -153,9 +163,13 @@ variable "exa_vcn3_backup_subnet_name" {
   default = null
   description = "The Backup subnet name."
 }
-
 variable "exa_vcn3_routable_vcns" {
   type    = list(string)
   default = []
-  description = "The VCN labels that this VCN can send traffic to. Leave unassigned for sending traffic to all VCNs. Only applicable for Hub/Spoke topology where a DRG is deployed as the hub. Valid values: TT-VCN-1, TT-VCN-2, TT-VCN-3, EXA-VCN-1, EXA-VCN2, OKE-VCN-1, OKE-VCN-2, OKE-VCN-3."
+  description = "The VCN labels that this VCN can send traffic to. Leave unassigned for sending traffic to all VCNs. Only applicable for Network topology where a DRG is deployed as the hub. Valid values: TT-VCN-1, TT-VCN-2, TT-VCN-3, EXA-VCN-1, EXA-VCN2, OKE-VCN-1, OKE-VCN-2, OKE-VCN-3."
+}
+variable "exa_vcn3_onprem_route_enable" {
+  type        = bool
+  default     = false
+  description = "This will drive the creation of the routes and security list rules."
 }
