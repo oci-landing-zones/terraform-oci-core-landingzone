@@ -1,7 +1,5 @@
 # February 28, 2025 Release Notes - 1.4.0
 1. New support for on-premises connectivity through Site-to-Site VPN (IPSec), FastConnect (FC) virtual circuit, or both.
-    - Management of landing zone created routing rules to spoke VCNs.
-    - IPSec using Libreswan as Customer-premises Equipment (CPE) endpoint.
 
 # January 31, 2025 Release Notes - 1.3.1
 1. Fix the Cross-VCN routing issue when choosing to create DRG only.
