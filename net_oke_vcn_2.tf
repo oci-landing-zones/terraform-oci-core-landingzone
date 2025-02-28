@@ -1214,7 +1214,7 @@ locals {
     } : {},
     (local.add_oke_vcn2 == true && var.oke_vcn2_attach_to_drg == true && var.add_oke_vcn3 == true && var.oke_vcn3_attach_to_drg == true) &&
     (local.hub_with_vcn == true ||
-    (local.hub_with_drg_only == true && (length(var.oke_vcn2_routable_vcns) == 0 || contains(var.oke_vcn2_routable_vcns, "OKE-VCN-3")))) ? {
+      (local.hub_with_drg_only == true && (length(var.oke_vcn2_routable_vcns) == 0 || contains(var.oke_vcn2_routable_vcns, "OKE-VCN-3")))) ? {
       "INGRESS-FROM-OKE-VCN-3-WORKERS-SUBNET-RULE" = {
         description  = "Ingress from ${coalesce(var.oke_vcn3_workers_subnet_name, "${var.service_label}-oke-vcn-3-workers-subnet")}."
         stateless    = false
