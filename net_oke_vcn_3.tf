@@ -715,7 +715,6 @@ locals {
           )
         }
         },
-        },
         var.add_oke_vcn3_mgmt_subnet ? {
           "OKE-VCN-3-MGMT-NSG" = {
             display_name = "mgmt-nsg"
