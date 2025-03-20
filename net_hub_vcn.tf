@@ -1168,7 +1168,7 @@ locals {
               } : {},
               local.add_tt_vcn3 == true && var.tt_vcn3_attach_to_drg == true && local.hub_with_vcn == true && (local.chosen_firewall_option == "NO" || local.chosen_firewall_option == "OCINFW") ? {
                 "EGRESS-TO-TT-VCN-3-DB-SUBNET-RULE" = {
-                  description  = "Egress to ${coalesce(var.tt_vcn3_db_subnet_name, "${var.service_label}-three-tier-vcn-3-db-subnet")}."
+                  description  = "Egress to ${coalesce(var.tt_vcn1_db_subnet_name, "${var.service_label}-three-tier-vcn-3-db-subnet")}."
                   stateless    = false
                   protocol     = "TCP"
                   dst          = coalesce(var.tt_vcn3_db_subnet_cidr, cidrsubnet(var.tt_vcn3_cidrs[0], 4, 2))
@@ -1202,7 +1202,7 @@ locals {
               } : {},
               var.add_oke_vcn3 == true && var.oke_vcn3_attach_to_drg == true && local.hub_with_vcn == true && (local.chosen_firewall_option == "NO" || local.chosen_firewall_option == "OCINFW") ? {
                 "EGRESS-TO-OKE-VCN-3-WORKERS-SUBNET-RULE" = {
-                  description  = "Egress to ${coalesce(var.oke_vcn3_workers_subnet_name, "${var.service_label}-oke-vcn-3-workers-subnet")}."
+                  description  = "Egress to ${coalesce(var.oke_vcn2_workers_subnet_name, "${var.service_label}-oke-vcn-3-workers-subnet")}."
                   stateless    = false
                   protocol     = "TCP"
                   dst          = coalesce(var.oke_vcn3_workers_subnet_cidr, cidrsubnet(var.oke_vcn3_cidrs[0], 8, 1))
