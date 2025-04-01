@@ -245,7 +245,7 @@ See [LICENSE](./LICENSE.txt) for more details.
 **4. Support for Free Tier Tenancies**
   * For deploying Core Landing Zone in a free tier tenancy, make sure to not request for Cloud Guard and Security Zones, as these services are not available in free tier accounts. Notice that a landing zone deployment without Cloud Guard (or a similar Cloud Security Posture Monitoring tool) is by definition not compliant with CIS (Center for Internet Security) Benchmark Foundations for OCI. For enabling Cloud Guard and Security Zones in Core Landing Zone, please upgrade your account to a Pay As You Go (PAYG) account.	
 
-**5.Logging Analytics Enablement**
+**5. Logging Analytics Enablement**
   * Attempting to onboard your tenancy to Logging Analytics more than once will cause errors.
 
 **6. Provisioning Objects Storage with Terraform**
@@ -272,12 +272,12 @@ See [LICENSE](./LICENSE.txt) for more details.
 
 **12. Unsolicited updates in Identity Domain Groups and Dynamic Groups**
   * Terraform plans for updating groups and dynamic groups in identity domains when no updates have been requested. This seems to be an issue in the underlying provider, and a solution is being sought. The proposed updates are harmless.
-  
-    <details><summary>Click here for unsolicited updates samples:<summary>
+  <br>
+  <details><summary>Click here for unsolicited updates samples:</summary>
     
-    ```
-    # module.lz_custom_domain_groups[0].oci_identity_domains_group.these["STORAGE-ADMIN-GROUP"] will be updated in-place
-    ~ resource "oci_identity_domains_group" "these" {
+  ```
+  # module.lz_custom_domain_groups[0].oci_identity_domains_group.these["STORAGE-ADMIN-GROUP"] will be updated in-place
+  ~ resource "oci_identity_domains_group" "these" {
         id                                                    = "69c215fe74134a1297b34307c793d3a6"
       ~ schemas                                               = [
             "urn:ietf:params:scim:schemas:core:2.0:Group",
@@ -304,11 +304,11 @@ See [LICENSE](./LICENSE.txt) for more details.
         }
         # (1 unchanged block hidden)
     }
-    ```
+  ```
 
-    ```
-    # module.lz_custom_domain_dynamic_groups[0].oci_identity_domains_dynamic_resource_group.these["APP-FUN-DYNAMIC-GROUP"] will be updated in-place
-    ~ resource "oci_identity_domains_dynamic_resource_group" "these" {
+  ```
+  # module.lz_custom_domain_dynamic_groups[0].oci_identity_domains_dynamic_resource_group.these["APP-FUN-DYNAMIC-GROUP"] will be updated in-place
+  ~ resource "oci_identity_domains_dynamic_resource_group" "these" {
         id                        = "5229ae0e21424e2683020445cf6321f4"
         # (15 unchanged attributes hidden)
       ~ urnietfparamsscimschemasoracleidcsextension_oci_tags {
@@ -321,6 +321,7 @@ See [LICENSE](./LICENSE.txt) for more details.
             # (4 unchanged blocks hidden)
         }
     }
-    ```
- </details>
+  ```
+  </details>
+  <br>
 
