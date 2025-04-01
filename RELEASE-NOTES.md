@@ -1,3 +1,8 @@
+# April 02, 2025 Release Notes - 1.4.1
+1. Application admin policies updated for reading Compute images and repositories in the Root compartment.
+2. Identity Domain group memberships managed externally are now kept on subsequent updates of Core Landing Zone.
+3. Event *com.oraclecloud.identitysignon.interactivelogin* added to IAM pre-configured events.
+
 # February 28, 2025 Release Notes - 1.4.0
 1. New support for on-premises connectivity through Site-to-Site VPN (IPSec), FastConnect (FC) virtual circuit, or both.
 
