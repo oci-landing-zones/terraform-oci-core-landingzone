@@ -13,7 +13,7 @@ locals {
 
 module "lz_budgets" {
   count                 = var.extend_landing_zone_to_new_region == false && var.create_budget ? 1 : 0
-  source                = "github.com/oci-landing-zones/terraform-oci-modules-governance//budgets?ref=release-0.1.5"
+  source                = "github.com/oci-landing-zones/terraform-oci-modules-governance//budgets?ref=v0.1.5"
   tenancy_ocid          = var.tenancy_ocid
   budgets_configuration = local.budgets_configuration
 }
