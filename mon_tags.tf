@@ -48,7 +48,7 @@ locals {
 }
 
 module "lz_tags" {
-  source             = "github.com/oci-landing-zones/terraform-oci-modules-governance//tags?ref=v0.1.4"
+  source             = "github.com/oci-landing-zones/terraform-oci-modules-governance//tags?ref=release-0.1.5"
   count              = var.extend_landing_zone_to_new_region == false ? 1 : 0
   providers          = { oci = oci.home }
   tags_configuration = local.tags_configuration
