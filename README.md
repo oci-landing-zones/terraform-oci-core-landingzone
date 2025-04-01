@@ -220,63 +220,64 @@ See [LICENSE](./LICENSE.txt) for more details.
 
 ## <a name="known-issues">Known Issues</a>
 
-1. **Terraform Apply Failure 404-NotAuthorizedorNotFound**
-    * Terraform CLI or Resource Manager fails to apply with a message similar as this:
-    ```
-        2021/07/01 23:53:25[TERRAFORM_CONSOLE] [INFO]
-        2021/07/01 23:53:25[TERRAFORM_CONSOLE] [INFO] Error: 404-NotAuthorizedOrNotFound
-        2021/07/01 23:53:25[TERRAFORM_CONSOLE] [INFO] Provider version: 4.33.0, released on 2021-06-30.
-        2021/07/01 23:53:25[TERRAFORM_CONSOLE] [INFO] Service: Identity Policy
-        2021/07/01 23:53:25[TERRAFORM_CONSOLE] [INFO] Error Message: Authorization failed or requested resource not found
-        2021/07/01 23:53:25[TERRAFORM_CONSOLE] [INFO] OPC request ID: f14a700dc5d00272933a327c8feb2871/5053FB2DA16689F6421821A1B178D450/D3F2FE52F3BF8FB2C769AEFF7754A9B0
-        2021/07/01 23:53:25[TERRAFORM_CONSOLE] [INFO] Suggestion: Either the resource has been deleted or service Identity Policy need policy to access this resource. Policy reference: https://docs.oracle.com/en-us/iaas/Content/Identity/Reference/policyreference.htm
-    ```
+**1. Terraform Apply Failure 404-NotAuthorizedorNotFound**
+  * Terraform CLI or Resource Manager fails to apply with a message similar as this:
+  ```
+    2021/07/01 23:53:25[TERRAFORM_CONSOLE] [INFO]
+    2021/07/01 23:53:25[TERRAFORM_CONSOLE] [INFO] Error: 404-NotAuthorizedOrNotFound
+    2021/07/01 23:53:25[TERRAFORM_CONSOLE] [INFO] Provider version: 4.33.0, released on 2021-06-30.
+    2021/07/01 23:53:25[TERRAFORM_CONSOLE] [INFO] Service: Identity Policy
+    2021/07/01 23:53:25[TERRAFORM_CONSOLE] [INFO] Error Message: Authorization failed or requested resource not found
+    2021/07/01 23:53:25[TERRAFORM_CONSOLE] [INFO] OPC request ID: f14a700dc5d00272933a327c8feb2871/5053FB2DA16689F6421821A1B178D450/D3F2FE52F3BF8FB2C769AEFF7754A9B0
+    2021/07/01 23:53:25[TERRAFORM_CONSOLE] [INFO] Suggestion: Either the resource has been deleted or service Identity Policy need policy to access this resource. Policy reference: https://docs.oracle.com/en-us/iaas/Content/Identity/Reference/policyreference.htm
+  ```
 
-    This is due to eventual consistency, where resources need to be propagated to all regions before becoming fully available. We have dealt with these type of issues in code by introducing artificial delays. However, they may still arise as the consistency is eventual. If you face errors like this, simply re-plan and re-apply the Terraform configuration (you do not need to destroy and start all over). The errors should go away in the subsequent run. If they still persist, the problem is of a different nature.
+  This is due to eventual consistency, where resources need to be propagated to all regions before becoming fully available. We have dealt with these type of issues in code by introducing artificial delays. However, they may still arise as the consistency is eventual. If you face errors like this, simply re-plan and re-apply the Terraform configuration (you do not need to destroy and start all over). The errors should go away in the subsequent run. If they still persist, the problem is of a different nature.
 
-    **If your plan continues to fail, please ensure the OCI service is available in your realm. All OCI services deployed by OCI Core Landing Zone are available in the commercial (OC1) realm but may not be in others.**
+  **If your plan continues to fail, please ensure the OCI service is available in your realm. All OCI services deployed by OCI Core Landing Zone are available in the commercial (OC1) realm but may not be in others.**
 
-2. **OCI Compartment Deletion**
-    * By design, OCI compartments are not deleted upon *terraform destroy* by default. Deletion can be enabled in Landing Zone by setting *enable_cmp_delete* variable to true in locals.tf file. However, compartments may take a long time to delete. Not deleting compartments is OK if you plan on reusing them. For more information about deleting compartments in OCI via Terraform, check [OCI Terraform provider documentation](https://registry.terraform.io/providers/hashicorp/oci/latest/docs/resources/identity_compartment).
+**2. OCI Compartment Deletion**
+  * By design, OCI compartments are not deleted upon *terraform destroy* by default. Deletion can be enabled in Landing Zone by setting *enable_cmp_delete* variable to true in locals.tf file. However, compartments may take a long time to delete. Not deleting compartments is OK if you plan on reusing them. For more information about deleting compartments in OCI via Terraform, check [OCI Terraform provider documentation](https://registry.terraform.io/providers/hashicorp/oci/latest/docs/resources/identity_compartment).
 
-3. **OCI Vault/Key Deletion**
-    * By design, OCI vaults and keys are not deleted immediately upon *terraform destroy*, but scheduled for deletion. Both have a default 30 day grace period. For shortening that period, use OCI Console to first cancel the scheduled deletion and then set the earliest possible deletion date (7 days from current date) when deleting.
+**3. OCI Vault/Key Deletion**
+  * By design, OCI vaults and keys are not deleted immediately upon *terraform destroy*, but scheduled for deletion. Both have a default 30 day grace period. For shortening that period, use OCI Console to first cancel the scheduled deletion and then set the earliest possible deletion date (7 days from current date) when deleting.
 
-4. **Support for Free Tier Tenancies**
-    * For deploying Core Landing Zone in a free tier tenancy, make sure to not request for Cloud Guard and Security Zones, as these services are not available in free tier accounts. Notice that a landing zone deployment without Cloud Guard (or a similar Cloud Security Posture Monitoring tool) is by definition not compliant with CIS (Center for Internet Security) Benchmark Foundations for OCI. For enabling Cloud Guard and Security Zones in Core Landing Zone, please upgrade your account to a Pay As You Go (PAYG) account.	
+**4. Support for Free Tier Tenancies**
+  * For deploying Core Landing Zone in a free tier tenancy, make sure to not request for Cloud Guard and Security Zones, as these services are not available in free tier accounts. Notice that a landing zone deployment without Cloud Guard (or a similar Cloud Security Posture Monitoring tool) is by definition not compliant with CIS (Center for Internet Security) Benchmark Foundations for OCI. For enabling Cloud Guard and Security Zones in Core Landing Zone, please upgrade your account to a Pay As You Go (PAYG) account.	
 
-5. **Logging Analytics Enablement**
-    * Attempting to onboard your tenancy to Logging Analytics more than once will cause errors.
+**5.Logging Analytics Enablement**
+  * Attempting to onboard your tenancy to Logging Analytics more than once will cause errors.
 
-6. **Provisioning Objects Storage with Terraform**
-    * Object Storage namespace can sometimes fail in long running deployments because of Terraform provision order.
+**6. Provisioning Objects Storage with Terraform**
+  * Object Storage namespace can sometimes fail in long running deployments because of Terraform provision order.
 
-7. **OCI Network Firewall Traffic Logging Does Not Capture Hub & Spoke Bastion Jump Host Activity**
-    * As deployed, the jump host and OCI Native Firewall subnets are both in the Hub VCN. Due to this relative proximity, the logging service for Network Firewall does not record jump host traffic in the same VCN.
+**7. OCI Network Firewall Traffic Logging Does Not Capture Hub & Spoke Bastion Jump Host Activity**
+  * As deployed, the jump host and OCI Native Firewall subnets are both in the Hub VCN. Due to this relative proximity, the logging service for Network Firewall does not record jump host traffic in the same VCN.
 
-8. **Network Firewall Policy Security Rule Deletion**
-    * Terraform Destroy does not delete the OCI Network Firewall in a single pass. On the first attempt, there is a time out with the following error:
-    ```
-        Error: 409-IncorrectState, The Policy and its components can not be modified or deleted if the policy is attached to any firewall
-    ```
-    Running Terraform Destroy a second time succeeds and all resources are ready for deletion.
+**8. Network Firewall Policy Security Rule Deletion**
+  * Terraform Destroy does not delete the OCI Network Firewall in a single pass. On the first attempt, there is a time out with the following error:
+  ```
+    Error: 409-IncorrectState, The Policy and its components can not be modified or deleted if the policy is attached to any firewall
+  ```
+  Running Terraform Destroy a second time succeeds and all resources are ready for deletion.
 
-9. **CIS Level and Firewall Functionality**
-    * Deploying an optional firewall network appliance in conjunction with the option of CIS Level 2 is not supported at this time. This limitation is due to the requirement imposed by Security Zone for an encrypted boot volume with a customer managed key on the network appliance. The suggested workaround is to opt for CIS Level 1 if you intend to use a third party firewall. This is going to be addressed in a future release.
+**9. CIS Level and Firewall Functionality**
+  * Deploying an optional firewall network appliance in conjunction with the option of CIS Level 2 is not supported at this time. This limitation is due to the requirement imposed by Security Zone for an encrypted boot volume with a customer managed key on the network appliance. The suggested workaround is to opt for CIS Level 1 if you intend to use a third party firewall. This is going to be addressed in a future release.
 
-10. **OCI ZPR Security Attribute Namespace Blocks Terraform Destroy**
-    * If you use Zero Trust Packet Routing (ZPR), an active Security Attribute Namespace will block any Terraform destroy operation. This issue will be corrected, but for a workaround in the short-term, see [Retiring a Security Attribute Namespace](https://docs.oracle.com/en-us/iaas/Content/zero-trust-packet-routing/retire-security-attribute-namespace.htm). The Security Attribute Namespace, including all associated security attributes, can be retired manually via OCI console, CLI or API ***prior*** to running Terraform destroy.
+**10. OCI ZPR Security Attribute Namespace Blocks Terraform Destroy**
+  * If you use Zero Trust Packet Routing (ZPR), an active Security Attribute Namespace will block any Terraform destroy operation. This issue will be corrected, but for a workaround in the short-term, see [Retiring a Security Attribute Namespace](https://docs.oracle.com/en-us/iaas/Content/zero-trust-packet-routing/retire-security-attribute-namespace.htm). The Security Attribute Namespace, including all associated security attributes, can be retired manually via OCI console, CLI or API ***prior*** to running Terraform destroy.
 
-11. **OCI Marketplace Third Party Firewall Availability**
-    * New with this release of Landing Zone is an optional selection of Palo Alto Networks VM-Series Next Generation Firewall or FortiGate Next-Gen Firewall (BYOL). These offerings are provided through the OCI Marketplace, which will vary by region and realm. Not all versions are released to all realms at the same time.    
+**11. OCI Marketplace Third Party Firewall Availability**
+  * New with this release of Landing Zone is an optional selection of Palo Alto Networks VM-Series Next Generation Firewall or FortiGate Next-Gen Firewall (BYOL). These offerings are provided through the OCI Marketplace, which will vary by region and realm. Not all versions are released to all realms at the same time.    
 
-12. **Unsolicited updates in Identity Domain Groups and Dynamic Groups**
-    * Terraform plans for updating groups and dynamic groups in identity domains when no updates have been requested. This seems to be an issue in the underlying provider, and a solution is being sought. The proposed updates are harmless.
+**12. Unsolicited updates in Identity Domain Groups and Dynamic Groups**
+  * Terraform plans for updating groups and dynamic groups in identity domains when no updates have been requested. This seems to be an issue in the underlying provider, and a solution is being sought. The proposed updates are harmless.
+  
     <details><summary>Click here for unsolicited updates samples:<summary>
-
+    
     ```
     # module.lz_custom_domain_groups[0].oci_identity_domains_group.these["STORAGE-ADMIN-GROUP"] will be updated in-place
-  ~ resource "oci_identity_domains_group" "these" {
+    ~ resource "oci_identity_domains_group" "these" {
         id                                                    = "69c215fe74134a1297b34307c793d3a6"
       ~ schemas                                               = [
             "urn:ietf:params:scim:schemas:core:2.0:Group",
@@ -307,7 +308,7 @@ See [LICENSE](./LICENSE.txt) for more details.
 
     ```
     # module.lz_custom_domain_dynamic_groups[0].oci_identity_domains_dynamic_resource_group.these["APP-FUN-DYNAMIC-GROUP"] will be updated in-place
-  ~ resource "oci_identity_domains_dynamic_resource_group" "these" {
+    ~ resource "oci_identity_domains_dynamic_resource_group" "these" {
         id                        = "5229ae0e21424e2683020445cf6321f4"
         # (15 unchanged attributes hidden)
       ~ urnietfparamsscimschemasoracleidcsextension_oci_tags {
@@ -321,5 +322,5 @@ See [LICENSE](./LICENSE.txt) for more details.
         }
     }
     ```
-    </details>
+ </details>
 
