@@ -108,7 +108,7 @@ locals {
             route_rules = merge(
               (local.chosen_hub_option != 3 && local.chosen_hub_option != 4) ? {
                 "INTERNET-RULE" = {
-                  network_entity_key = var.tt_vcn1_web_subnet_is_private == false ? "TT-VCN-3-INTERNET-GATEWAY" : "TT-VCN-3-NAT-GATEWAY"
+                  network_entity_key = var.tt_vcn3_web_subnet_is_private == false ? "TT-VCN-3-INTERNET-GATEWAY" : "TT-VCN-3-NAT-GATEWAY"
                   description        = "To Internet."
                   destination        = "0.0.0.0/0"
                   destination_type   = "CIDR_BLOCK"
