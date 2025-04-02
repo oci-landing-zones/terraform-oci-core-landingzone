@@ -18,7 +18,7 @@ locals {
       category           = "all",
       resource_id        = v.id,
       is_enabled         = true,
-      retention_duration = 30,
+      retention_duration = 90,
       defined_tags       = local.flow_logs_defined_tags,
       freeform_tags      = local.flow_logs_freeform_tags
     }
@@ -53,7 +53,7 @@ locals {
 
 module "lz_flow_logs" {
   depends_on            = [module.lz_network, module.lz_compartments]
-  source                = "github.com/oci-landing-zones/terraform-oci-modules-observability//logging?ref=v0.1.8"
+  source                = "github.com/oci-landing-zones/terraform-oci-modules-observability//logging?ref=v0.2.2"
   logging_configuration = local.logging_configuration
   tenancy_ocid          = var.tenancy_ocid
 }

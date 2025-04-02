@@ -11,7 +11,7 @@ locals {
 
 module "lz_top_compartment" {
   count                      = var.extend_landing_zone_to_new_region == false && local.deploy_enclosing_compartment ? 1 : 0
-  source                     = "github.com/oci-landing-zones/terraform-oci-modules-iam//compartments?ref=v0.2.4"
+  source                     = "github.com/oci-landing-zones/terraform-oci-modules-iam//compartments?ref=v0.2.9"
   providers                  = { oci = oci.home }
   tenancy_ocid               = var.tenancy_ocid
   compartments_configuration = local.enclosing_compartment_configuration
@@ -19,7 +19,7 @@ module "lz_top_compartment" {
 
 module "lz_compartments" {
   count                      = var.extend_landing_zone_to_new_region == false ? 1 : 0
-  source                     = "github.com/oci-landing-zones/terraform-oci-modules-iam//compartments?ref=v0.2.4"
+  source                     = "github.com/oci-landing-zones/terraform-oci-modules-iam//compartments?ref=v0.2.9"
   providers                  = { oci = oci.home }
   tenancy_ocid               = var.tenancy_ocid
   compartments_configuration = local.enclosed_compartments_configuration
@@ -168,10 +168,10 @@ locals {
   security_compartment_id   = var.extend_landing_zone_to_new_region == false && local.enable_security_compartment == true ? module.lz_compartments[0].compartments[local.security_compartment_key].id : length(data.oci_identity_compartments.security.compartments) > 0 ? data.oci_identity_compartments.security.compartments[0].id : null
 
   app_compartment_name = var.extend_landing_zone_to_new_region == false && local.enable_app_compartment == true ? module.lz_compartments[0].compartments[local.app_compartment_key].name : local.provided_app_compartment_name
-  app_compartment_id   = var.extend_landing_zone_to_new_region == false && local.enable_security_compartment == true ? module.lz_compartments[0].compartments[local.app_compartment_key].id : length(data.oci_identity_compartments.app.compartments) > 0 ? data.oci_identity_compartments.app.compartments[0].id : null
+  app_compartment_id   = var.extend_landing_zone_to_new_region == false && local.enable_app_compartment == true ? module.lz_compartments[0].compartments[local.app_compartment_key].id : length(data.oci_identity_compartments.app.compartments) > 0 ? data.oci_identity_compartments.app.compartments[0].id : null
 
   database_compartment_name = var.extend_landing_zone_to_new_region == false && local.enable_database_compartment == true ? module.lz_compartments[0].compartments[local.database_compartment_key].name : local.provided_database_compartment_name
-  database_compartment_id   = var.extend_landing_zone_to_new_region == false && local.enable_security_compartment == true ? module.lz_compartments[0].compartments[local.database_compartment_key].id : length(data.oci_identity_compartments.database.compartments) > 0 ? data.oci_identity_compartments.database.compartments[0].id : null
+  database_compartment_id   = var.extend_landing_zone_to_new_region == false && local.enable_database_compartment == true ? module.lz_compartments[0].compartments[local.database_compartment_key].id : length(data.oci_identity_compartments.database.compartments) > 0 ? data.oci_identity_compartments.database.compartments[0].id : null
 
   exainfra_compartment_name = var.extend_landing_zone_to_new_region == false && local.enable_exainfra_compartment == true ? module.lz_compartments[0].compartments[local.exainfra_compartment_key].name : local.provided_exainfra_compartment_name
   exainfra_compartment_id   = var.extend_landing_zone_to_new_region == false && local.enable_exainfra_compartment == true ? module.lz_compartments[0].compartments[local.exainfra_compartment_key].id : length(data.oci_identity_compartments.exainfra.compartments) > 0 ? data.oci_identity_compartments.exainfra.compartments[0].id : null
