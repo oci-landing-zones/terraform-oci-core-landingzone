@@ -248,26 +248,23 @@ See [LICENSE](./LICENSE.txt) for more details.
 **5. Logging Analytics Enablement**
   * Attempting to onboard your tenancy to Logging Analytics more than once will cause errors.
 
-**6. Provisioning Object Storage with Terraform**
-  * Object Storage namespace can sometimes fail in long running deployments because of Terraform provision order.
-
-**7. OCI Network Firewall Traffic Logging Does Not Capture Hub & Spoke Bastion Jump Host Activity**
+**6. OCI Network Firewall Traffic Logging Does Not Capture Hub & Spoke Bastion Jump Host Activity**
   * As deployed, the jump host and OCI Native Firewall subnets are both in the Hub VCN. Due to this relative proximity, the logging service for Network Firewall does not record jump host traffic in the same VCN.
 
-**8. Network Firewall Policy Security Rule Deletion**
+**7. Network Firewall Policy Security Rule Deletion**
   * *terraform destroy* does not delete the OCI Network Firewall in a single pass. On the first attempt, there is a time out with the following error:
   ```
     Error: 409-IncorrectState, The Policy and its components can not be modified or deleted if the policy is attached to any firewall
   ```
   Running *terraform destroy* a second time succeeds and all resources are destroyed.
 
-**9. OCI ZPR Security Attribute Namespace Blocks Terraform Destroy**
+**8. OCI ZPR Security Attribute Namespace Blocks *terraform destroy***
   * If you use Zero Trust Packet Routing (ZPR), an active Security Attribute Namespace will block any Terraform destroy operation. This issue will be corrected, but for a workaround in the short-term, see [Retiring a Security Attribute Namespace](https://docs.oracle.com/en-us/iaas/Content/zero-trust-packet-routing/retire-security-attribute-namespace.htm). The Security Attribute Namespace, including all associated security attributes, can be retired manually via OCI console, CLI or API ***prior*** to running Terraform destroy.
 
-**10. OCI Marketplace Third Party Firewall Availability**
+**9. OCI Marketplace Third Party Firewall Availability**
   * Core Landing Zone can optionally deploy Palo Alto Networks VM-Series Next Generation Firewall or FortiGate Next-Gen Firewall (BYOL). These offerings are provided through the OCI Marketplace, which will vary by region and realm. Not all versions are released to all realms at the same time.    
 
-**11. Unsolicited updates in Identity Domain Groups and Dynamic Groups**
+**10. Unsolicited updates in Identity Domain Groups and Dynamic Groups**
   * Terraform plans for updating groups and dynamic groups in identity domains when no updates have been requested. This seems to be an issue in the underlying provider, and a solution is being sought. The proposed updates are harmless.
   <br>
   <details><summary>Click here for unsolicited updates samples:</summary>
