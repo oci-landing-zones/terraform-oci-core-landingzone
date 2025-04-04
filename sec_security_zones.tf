@@ -47,7 +47,6 @@ locals {
 
 module "lz_security_zones" {
   count                        = var.is_free_tenancy == false && var.extend_landing_zone_to_new_region == false ? 1 : 0
-  # count                        = var.enable_security_zones && var.extend_landing_zone_to_new_region == false ? 1 : 0
   source                       = "github.com/oci-landing-zones/terraform-oci-modules-security//security-zones?ref=v0.1.7"
   tenancy_ocid                 = var.tenancy_ocid
   security_zones_configuration = local.security_zones_configuration
