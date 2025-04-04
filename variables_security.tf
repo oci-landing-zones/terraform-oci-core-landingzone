@@ -28,6 +28,11 @@ variable "sz_security_policies" {
 # ------------------------------------------------------
 # ----- Cloud Guard
 # ------------------------------------------------------
+variable "enable_cloud_guard" {
+  type        = bool
+  description = "Whether to enable Cloud Guard service and create a managed target at the Root compartment. The Landing Zone will enable Cloud Guard service and create a managed target at the Root compartment in case a target does not exist."
+  default     = true
+}
 variable "customize_cloud_guard_settings" {
   type        = bool
   description = "Whether to customize Cloud Guard settings for a managed target. The Landing Zone enables Cloud Guard service and creates a managed target at the Root compartment in case a target at the Root compartment does not exist."

@@ -485,7 +485,7 @@ variableGroups:
       - "cloud_guard_risk_level_threshold"
       - "cloud_guard_admin_email_endpoints"
     visible:
-      and:
+      or:
         - eq:
           - ${display_security_logging_governance_settings}
           - true
@@ -500,7 +500,7 @@ variableGroups:
     - "security_zones_reporting_region"
     - "sz_security_policies"
     visible:
-      and:
+      or:
         - eq:
           - ${display_security_logging_governance_settings}
           - true
@@ -580,6 +580,7 @@ variableGroups:
       - "fastconnect_virtual_circuit_cross_connect_or_cross_connect_group_id"
       - "fastconnect_virtual_circuit_vlan"
       - "display_output"
+      - "enable_cloud_guard"
 
 variables:
   is_free_tenancy:
