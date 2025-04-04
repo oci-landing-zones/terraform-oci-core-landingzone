@@ -14,6 +14,7 @@ logoUrl: "https://objectstorage.us-ashburn-1.oraclecloud.com/p/taf6kC9fSJyQDNSYb
 variableGroups:
   - title: "General"
     variables:
+      - "is_free_tenancy"
       - "region"
       - "cis_level"
       - "service_label"
@@ -22,7 +23,7 @@ variableGroups:
       - "define_net"
       - "enable_zpr"
       - "zpr_namespace_name"
-      - "display_output"
+      - "display_security_logging_governance_settings"
 
 
   - title: "Compartments"
@@ -478,17 +479,35 @@ variableGroups:
 
   - title: "Cloud Guard"
     variables:
-      - "enable_cloud_guard"
+      - "customize_cloud_guard_settings"
       - "enable_cloud_guard_cloned_recipes"
       - "cloud_guard_reporting_region"
       - "cloud_guard_risk_level_threshold"
       - "cloud_guard_admin_email_endpoints"
+    visible:
+      and:
+        - eq:
+          - ${display_security_logging_governance_settings}
+          - true
+        - eq:
+          - ${is_free_tenancy}
+          - false
+
 
   - title: "Security Zones"
     variables:
     - "enable_security_zones"
     - "security_zones_reporting_region"
     - "sz_security_policies"
+    visible:
+      and:
+        - eq:
+          - ${display_security_logging_governance_settings}
+          - true
+        - eq:
+          - ${is_free_tenancy}
+          - false
+  
 
   - title: "Logging Consolidation: Service Connector Hub"
     variables:
@@ -501,7 +520,8 @@ variableGroups:
       - "existing_service_connector_bucket_key_id"
       - "existing_service_connector_target_stream_id"
       - "existing_service_connector_target_function_id"
-  
+    visible: display_security_logging_governance_settings 
+
   - title: "Vulnerability Scanning"
     variables:
       - "vss_create"
@@ -512,6 +532,7 @@ variableGroups:
       - "vss_agent_cis_benchmark_settings_scan_level"
       - "vss_enable_file_scan"
       - "vss_folders_to_scan"
+    visible: display_security_logging_governance_settings
 
   - title: "Cost Management"
     variables:
@@ -519,6 +540,7 @@ variableGroups:
        - "budget_alert_threshold"
        - "budget_amount"
        - "budget_alert_email_endpoints"
+    visible: display_security_logging_governance_settings 
 
   - title: "Hidden Variables"
     visible: false
@@ -557,8 +579,15 @@ variableGroups:
       - "bastion_jump_host_platform_image_name"
       - "fastconnect_virtual_circuit_cross_connect_or_cross_connect_group_id"
       - "fastconnect_virtual_circuit_vlan"
+      - "display_output"
 
 variables:
+  is_free_tenancy:
+    type: boolean
+    title: Free Tenancy?
+    description: "Check if your tenancy is a free tier tenancy. It sets the Landing Zone to not deploy Cloud Guard and Security Zones, as these services are not available in free tier tenancies. Notice that a landing zone deployment without Cloud Guard (or a similar Cloud Security Posture Monitoring tool) is by definition not compliant with CIS (Center for Internet Security) Benchmark Foundations for OCI. For enabling Cloud Guard and Security Zones in Core Landing Zone, please upgrade your tenancy to a Pay As You Go (PAYG) or enterprise account."
+    visible: true
+
   region:
     type: oci:identity:region:name
     title: "Region"
@@ -625,6 +654,12 @@ variables:
       and:
       - enable_zpr
       - define_net
+
+  display_security_logging_governance_settings:
+    type: boolean
+    title: "Display Security/Logging/Governance Settings?"
+    description: "Check to enable/configure settings for some OCI Security, Logging, and Governance services."
+    visible: true 
 
   display_output:
     type: boolean
@@ -4388,25 +4423,24 @@ variables:
       - RAW
     visible: notifications_advanced_options  
       
-  enable_cloud_guard:
+  customize_cloud_guard_settings:
     type: boolean
-    title: "Enable Cloud Guard Service? (Uncheck if Cloud Guard is already enabled and a target exists for the Root compartment)"
-    description: "If selected, Cloud Guard service is enabled and the Root compartment is configured with a Cloud Guard target, as long as there is no pre-existing Cloud Guard target for the Root compartment (or target creation will fail). Keep in mind that once you select this, Cloud Guard target is managed by Landing Zone. If later on you unselect this option, the managed target is deleted and all (open, resolved and dismissed) problems associated with the deleted target are moved to 'deleted' state. This operation happens in the background and would take some time to complete. Deleted problems can be viewed from the problems page using the 'deleted' status filter. For more details on Cloud Guard problems lifecycle, see <a href=\"https://docs.oracle.com/en-us/iaas/cloud-guard/using/problems-page.htm#problems-page__sect_prob_lifecycle\">documentation</a>. If Cloud Guard is already enabled and a target exists for the Root compartment, unselect this option."
-    required: true
+    title: "Customize Cloud Guard Settings?"
+    description: "The Landing Zone enables Cloud Guard service and creates a managed target at the Root compartment in case a target at the Root compartment does not exist. Select to customize settings for Cloud Guard."
 
   enable_cloud_guard_cloned_recipes:
     type: boolean
     title: "Enable Cloud Guard Cloned Recipes?"  
     description: "Whether cloned recipes are attached to the managed Cloud Guard target. If not set, Oracle managed recipes are attached."
     required: false
-    visible: enable_cloud_guard
+    visible: customize_cloud_guard_settings
       
   cloud_guard_reporting_region:
     type: oci:identity:region:name
     title: "Reporting Region"
     description: "Cloud Guard reporting region, where Cloud Guard reporting resources are kept. If not set, it defaults to home region."
     required: false
-    visible: enable_cloud_guard
+    visible: customize_cloud_guard_settings
 
   cloud_guard_risk_level_threshold:
     type: enum
@@ -4420,7 +4454,7 @@ variables:
       - Medium
       - Minor
       - Low
-    visible: enable_cloud_guard  
+    visible: customize_cloud_guard_settings  
 
   cloud_guard_admin_email_endpoints:
     type: array
@@ -4430,7 +4464,7 @@ variables:
     title: "Cloud Guard Admin Email Endpoints"
     required: false
     description: "List of email addresses for Cloud Guard related notifications. (Type an email address and hit enter to enter multiple values)"
-    visible: enable_cloud_guard  
+    visible: customize_cloud_guard_settings  
   
   # Security Zone - Variables
   enable_security_zones:
@@ -4869,6 +4903,10 @@ outputs:
   release:
     type: string
     title: OCI Core Landing Zone Release
+
+  is_free_tenancy:
+    type: string
+    title: Tenancy Subscription Type
 
   region:
     type: string

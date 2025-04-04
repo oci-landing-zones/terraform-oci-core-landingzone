@@ -17,6 +17,11 @@ variable "private_key_password" {
 # ------------------------------------------------------
 # ----- General
 #-------------------------------------------------------
+variable "is_free_tenancy" {
+  description = "Whether the tenancy is free tier. It sets the Landing Zone to not deploy Cloud Guard and Security Zones, as these services are not available in free tier tenancies. Notice that a landing zone deployment without Cloud Guard (or a similar Cloud Security Posture Monitoring tool) is by definition not compliant with CIS (Center for Internet Security) Benchmark Foundations for OCI. For enabling Cloud Guard and Security Zones in Core Landing Zone, please upgrade your tenancy to a Pay As You Go (PAYG) or enterprise account."
+  type = bool
+  default = false  
+}
 variable "region" {
   description = "The region where resources are deployed."
   type = string
@@ -62,6 +67,11 @@ variable "display_output" {
   description = "Whether to display a concise set of select resource outputs with their OCIDs and names." 
   type        = bool
   default     = true
+}
+variable "display_security_logging_governance_settings" {
+  description = "When true, allows for enabling/configuring settings for some OCI Security, Logging and Governance services. Only applicable to Resource Manager deployments." 
+  type        = bool
+  default     = false
 }
 variable "lz_provenant_prefix" {
   description   = "The provenant landing zone prefix or code that identifies the client of this Landing Zone. This information goes into a freeform tag applied to all deployed resources."
