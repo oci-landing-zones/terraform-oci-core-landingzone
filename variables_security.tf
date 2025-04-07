@@ -30,8 +30,13 @@ variable "sz_security_policies" {
 # ------------------------------------------------------
 variable "enable_cloud_guard" {
   type        = bool
-  description = "Determines whether the Cloud Guard service should be enabled. If true, Cloud Guard is enabled and the Root compartment is configured with a Cloud Guard target, as long as there is no pre-existing Cloud Guard target for the Root compartment (or target creation will fail). Keep in mind that once you set this to true, Cloud Guard target is managed by Landing Zone. If later on you switch this to false, the managed target is deleted and all (open, resolved and dismissed) problems associated with the deleted target are being moved to 'deleted' state. This operation happens in the background and would take some time to complete. Deleted problems can be viewed from the problems page using the 'deleted' status filter. For more details on Cloud Guard problems lifecycle, see https://docs.oracle.com/en-us/iaas/cloud-guard/using/problems-page-about.htm#problems-page-about__sect_prob_lifecycle. If Cloud Guard is already enabled and a target exists for the Root compartment, set this variable to false."
+  description = "Whether to enable Cloud Guard service and create a managed target at the Root compartment. The Landing Zone will enable Cloud Guard service and create a managed target at the Root compartment in case a target does not exist."
   default     = true
+}
+variable "customize_cloud_guard_settings" {
+  type        = bool
+  description = "Whether to customize Cloud Guard settings for a managed target. The Landing Zone enables Cloud Guard service and creates a managed target at the Root compartment in case a target at the Root compartment does not exist."
+  default     = false
 }
 variable "enable_cloud_guard_cloned_recipes" {
   type        = bool
