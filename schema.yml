@@ -480,10 +480,10 @@ variableGroups:
   - title: "Cloud Guard"
     variables:
       - "customize_cloud_guard_settings"
-      - "enable_cloud_guard_cloned_recipes"
       - "cloud_guard_reporting_region"
-      - "cloud_guard_risk_level_threshold"
       - "cloud_guard_admin_email_endpoints"
+      - "cloud_guard_risk_level_threshold"
+      - "enable_cloud_guard_cloned_recipes"
     visible:
       or:
         - eq:
@@ -4431,22 +4431,22 @@ variables:
 
   enable_cloud_guard_cloned_recipes:
     type: boolean
-    title: "Enable Cloud Guard Cloned Recipes?"  
-    description: "Whether cloned recipes are attached to the managed Cloud Guard target. If not set, Oracle managed recipes are attached."
+    title: "Clone Cloud Guard Managed Recipes?"  
+    description: "When selected, cloned recipes are created and attached to Landing Zone Cloud Guard managed target. Cloned recipes can be modified later on by users. If unselected, Oracle managed recipes are attached. Oracle managed recipes cannot be modified by users. Applicable to Landing Zone managed target only."
     required: false
     visible: customize_cloud_guard_settings
       
   cloud_guard_reporting_region:
     type: oci:identity:region:name
     title: "Reporting Region"
-    description: "Cloud Guard reporting region, where Cloud Guard reporting resources are kept. If not set, it defaults to home region."
+    description: "Cloud Guard reporting region, where Cloud Guard reporting resources are kept. If not set, it defaults to home region. Applicable to Landing Zone managed target only."
     required: false
     visible: customize_cloud_guard_settings
 
   cloud_guard_risk_level_threshold:
     type: enum
     title: "Minimum Risk Level Threshold"
-    description: "Determines the minimum risk level that will trigger an event and send information about the problem to the Cloud Guard Email Endpoints. E.g. a minimum risk level of High will include problems with High or Critical risk levels."
+    description: "Determines the minimum risk level that will trigger an event and send information about the problem to the Cloud Guard Email Endpoints. E.g. a minimum risk level of High will include problems with High or Critical risk levels. Applicable to both Landing Zone managed target and existing target."
     required: false
     default: High
     enum:
@@ -4464,7 +4464,7 @@ variables:
     uniqueItems: true
     title: "Cloud Guard Admin Email Endpoints"
     required: false
-    description: "List of email addresses for Cloud Guard related notifications. (Type an email address and hit enter to enter multiple values)"
+    description: "List of email addresses for Cloud Guard related notifications. Type an email address and hit enter to enter multiple values. Applicable to both Landing Zone managed target and existing target."
     visible: customize_cloud_guard_settings  
   
   # Security Zone - Variables
