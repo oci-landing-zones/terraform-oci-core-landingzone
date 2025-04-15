@@ -16,7 +16,7 @@ This template has the following parameters set:
 | service_label | A unique identifier to prefix the resources | cisbasic |
 | network_admin_email_endpoints | List of email addresses that receive notifications for networking related events. | ["email.address@example.com"] |
 | security_admin_email_endpoints | List of email addresses that receive notifications for security related events. | ["email.address@example.com"] |
-| enable_cloud_guard | When true, OCI Cloud Guard Service is enabled. Set to false if it's been already enabled through other means. | true |
+
 
 For a detailed description of all variables that can be used, see the [Variables](../../VARIABLES.md) documentation.
 
