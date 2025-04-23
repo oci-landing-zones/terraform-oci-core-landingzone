@@ -1431,6 +1431,15 @@ locals {
                   dst         = "${cidr}"
                   dst_type    = "CIDR_BLOCK"
                 }
+              },
+              {
+                "EGRESS-TO-ALL-RULE" = {
+                  description = "Egress to All."
+                  stateless   = false
+                  protocol    = "TCP"
+                  dst         = "0.0.0.0/0"
+                  dst_type    = "CIDR_BLOCK"
+                }
               }
             )
           }
