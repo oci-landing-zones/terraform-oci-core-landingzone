@@ -1,3 +1,9 @@
+# May 09, 2025 Release Notes - 1.5.0
+1. Core enhancements: ... 
+2. Network extensions
+3. Workload extensions: EBS, IAM, FSI
+4. Core LZ express / lite
+
 # April 02, 2025 Release Notes - 1.4.1
 1. Application admin policies updated for reading Compute images and repositories in the Root compartment.
 2. Identity Domain group memberships managed externally are now kept on subsequent updates of Core Landing Zone.
