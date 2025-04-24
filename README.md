@@ -196,7 +196,7 @@ This repository uses a broader collection of repositories containing modules tha
 - [Networking](https://github.com/oci-landing-zones/terraform-oci-modules-networking)
 - [Governance](https://github.com/oci-landing-zones/terraform-oci-modules-governance)
 - [Security](https://github.com/oci-landing-zones/terraform-oci-modules-security)
-- [Observability & Monitoring](https://oci-landing-zones/terraform-oci-modules-observability)
+- [Observability & Monitoring](https://github.com/oci-landing-zones/terraform-oci-modules-observability)
 - [Secure Workloads](https://github.com/oci-landing-zones/terraform-oci-modules-workloads)
 
 The modules in this collection are designed for flexibility, are straightforward to use, and enforce CIS OCI Foundations Benchmark recommendations when possible.
