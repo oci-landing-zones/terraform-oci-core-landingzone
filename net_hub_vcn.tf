@@ -22,7 +22,7 @@ locals {
             ipv6cidr_blocks           = []
             prohibit_internet_ingress = false
             route_table_key           = "WEB-SUBNET-ROUTE-TABLE"
-            security_list_keys        = ["HUB-VCN-SL"]
+            # security_list_keys        = ["HUB-VCN-SL"]
           }
         },
         local.chosen_firewall_option != "NO" && local.chosen_firewall_option != "OCINFW" ? {
@@ -34,7 +34,7 @@ locals {
             ipv6cidr_blocks           = []
             prohibit_internet_ingress = true
             route_table_key           = "OUTDOOR-SUBNET-ROUTE-TABLE"
-            security_list_keys        = ["HUB-VCN-SL"]
+            # security_list_keys        = ["HUB-VCN-SL"]
           }
         } : {},
         local.chosen_firewall_option != "NO" ? {
@@ -46,7 +46,7 @@ locals {
             ipv6cidr_blocks           = []
             prohibit_internet_ingress = true
             route_table_key           = "INDOOR-SUBNET-ROUTE-TABLE"
-            security_list_keys        = ["HUB-VCN-SL"]
+            # security_list_keys        = ["HUB-VCN-SL"]
           }
         } : {},
         local.chosen_firewall_option != "NO" && local.chosen_firewall_option != "OCINFW" ? {
@@ -76,37 +76,10 @@ locals {
       ) # closing Subnets merge function   
 
       security_lists = merge(
-        {
-          "HUB-VCN-SL" = {
-            display_name = "basic-security-list"
-            ingress_rules = [
-              {
-                description = "Ingress on UDP type 3 code 4."
-                stateless   = false
-                protocol    = "UDP"
-                src         = "0.0.0.0/0"
-                src_type    = "CIDR_BLOCK"
-                icmp_type   = 3
-                icmp_code   = 4
-              }
-            ]
-            egress_rules = []
-          }
-        },
         local.chosen_firewall_option != "NO" && local.chosen_firewall_option != "OCINFW" ? {
           "MGMT-SUB-SL" = {
             display_name = "mgmt-subnet-security-list"
-            ingress_rules = [
-              {
-                description = "Ingress on UDP type 3 code 4."
-                stateless   = false
-                protocol    = "UDP"
-                src         = "0.0.0.0/0"
-                src_type    = "CIDR_BLOCK"
-                icmp_type   = 3
-                icmp_code   = 4
-              }
-            ]
+            ingress_rules = []
             egress_rules = [
               {
                 description  = "Egress to Mgmt subnet on SSH port. Required by Bastion service session."
@@ -133,15 +106,7 @@ locals {
           "JUMPHOST-SUB-SL" = {
             display_name = "jumphost-subnet-security-list"
             ingress_rules = flatten([
-              [{
-                description = "Ingress on ICMP type 3 code 4."
-                stateless   = false
-                protocol    = "ICMP"
-                src         = "0.0.0.0/0"
-                src_type    = "CIDR_BLOCK"
-                icmp_type   = 3
-                icmp_code   = 4
-              }],
+              [],
               [{
                 description  = "Ingress from ${coalesce(var.hub_vcn_jumphost_subnet_name, "${var.service_label}-hub-vcn-jumphost-subnet")} on SSH port. Required for connecting Bastion service endpoint to Bastion jump host."
                 stateless    = false
