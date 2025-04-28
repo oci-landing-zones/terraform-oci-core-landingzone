@@ -37,7 +37,7 @@ locals {
                 attached_resource_key = "HUB-VCN"
                 type                  = "VCN"
                 # HuB VCN ingress route table for the DRG. It defines how traffic that leaves the DRG is routed within the VCN.
-                route_table_key ="HUB-VCN-INGRESS-ROUTE-TABLE"
+                route_table_key = "HUB-VCN-INGRESS-ROUTE-TABLE"
               }
             }
           } : {},
@@ -167,7 +167,8 @@ locals {
                 type                  = "VIRTUAL_CIRCUIT"
               }
             }
-          } : {}
+          } : {},
+          local.additional_vcns_attachments
         )
 
         ## IMPORTANT: We only create DRG route tables when the hub is DRG (var.hub_deployment_option 1 and 2). Otherwise, i.e., when the Hub is a VCN, we implement a full mesh with Auto Generated Route Tables and expect the Firewall in the Hub VCN to control routing.
@@ -301,6 +302,13 @@ locals {
                 } : {},
                 var.oke_vcn3_onprem_route_enable && local.hub_with_vcn == true ? {
                   for cidr in var.oke_vcn3_cidrs : "IPSEC-OKE-VCN-3-${replace(replace(cidr, ".", ""), "/", "")}-TO-HUB-VCN-STMT" => {
+                    destination                 = cidr
+                    destination_type            = "CIDR_BLOCK"
+                    next_hop_drg_attachment_key = "HUB-VCN-ATTACHMENT"
+                  }
+                } : {},
+                local.workload_cidrs_onprem != null && local.hub_with_vcn == true ? {
+                  for cidr in local.workload_cidrs_onprem : "IPSEC-WORKLOAD-VCN-${replace(replace(cidr, ".", ""), "/", "")}-TO-HUB-VCN-STMT" => {
                     destination                 = cidr
                     destination_type            = "CIDR_BLOCK"
                     next_hop_drg_attachment_key = "HUB-VCN-ATTACHMENT"
@@ -446,6 +454,13 @@ locals {
                     next_hop_drg_attachment_key = "HUB-VCN-ATTACHMENT"
                   }
                 } : {},
+                local.workload_cidrs_onprem != null && local.hub_with_vcn == true ? {
+                  for cidr in local.workload_cidrs_onprem : "FC-VIRTUAL-CIRCUIT-WORKLOAD-VCN-${replace(replace(cidr, ".", ""), "/", "")}-TO-HUB-VCN-STMT" => {
+                    destination                 = cidr
+                    destination_type            = "CIDR_BLOCK"
+                    next_hop_drg_attachment_key = "HUB-VCN-ATTACHMENT"
+                  }
+                } : {},
                 var.tt_vcn1_onprem_route_enable == true && local.hub_with_drg_only == true ? {
                   for cidr in var.tt_vcn1_cidrs : "FC-VIRTUAL-CIRCUIT-TO-TT-VCN-1-${replace(replace(cidr, ".", ""), "/", "")}-STMT" => {
                     destination                 = cidr
@@ -511,7 +526,8 @@ locals {
                 } : {}
               )
             }
-          } : {}
+          } : {},
+          local.additional_vcns_drg_route_tables
         )
 
         ## IMPORTANT: We only create DRG route distributions when the hub is DRG (var.hub_deployment_option 1 and 2). Otherwise, i.e., when the Hub is a VCN, we implement a full mesh with Auto Generated Route Tables and expect the Firewall in the Hub VCN to control routing.
@@ -1694,6 +1710,7 @@ locals {
               )
             }
           } : {},
+          local.additional_vcns_drg_route_distributions
         )
       }
     }
