@@ -261,7 +261,7 @@ locals {
 
 module "lz_firewall_appliance" {
   count                   = local.chosen_firewall_option != "NO" && local.chosen_firewall_option != "OCINFW" ? 1 : 0
-  source                  = "github.com/oci-landing-zones/terraform-oci-modules-workloads//cis-compute-storage?ref=v0.1.9"
+  source                  = "github.com/oci-landing-zones/terraform-oci-modules-workloads//cis-compute-storage?ref=v0.2.0"
   instances_configuration = local.instances_configuration
   providers = {
     oci                                  = oci.home
