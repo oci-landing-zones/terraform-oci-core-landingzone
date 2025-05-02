@@ -17,14 +17,14 @@
 |------|--------|---------|
 | <a name="module_lz_alarms"></a> [lz\_alarms](#module\_lz\_alarms) | github.com/oci-landing-zones/terraform-oci-modules-observability//alarms | v0.2.2 |
 | <a name="module_lz_bastion"></a> [lz\_bastion](#module\_lz\_bastion) | github.com/oci-landing-zones/terraform-oci-modules-security//bastion | v0.1.9 |
-| <a name="module_lz_bastion_jump_host"></a> [lz\_bastion\_jump\_host](#module\_lz\_bastion\_jump\_host) | github.com/oci-landing-zones/terraform-oci-modules-workloads//cis-compute-storage | v0.1.8 |
+| <a name="module_lz_bastion_jump_host"></a> [lz\_bastion\_jump\_host](#module\_lz\_bastion\_jump\_host) | github.com/oci-landing-zones/terraform-oci-modules-workloads//cis-compute-storage | v0.2.0 |
 | <a name="module_lz_budgets"></a> [lz\_budgets](#module\_lz\_budgets) | github.com/oci-landing-zones/terraform-oci-modules-governance//budgets | v0.1.5 |
 | <a name="module_lz_cloud_guard"></a> [lz\_cloud\_guard](#module\_lz\_cloud\_guard) | github.com/oci-landing-zones/terraform-oci-modules-security//cloud-guard | v0.2.0 |
 | <a name="module_lz_compartments"></a> [lz\_compartments](#module\_lz\_compartments) | github.com/oci-landing-zones/terraform-oci-modules-iam//compartments | v0.2.9 |
 | <a name="module_lz_custom_domain_dynamic_groups"></a> [lz\_custom\_domain\_dynamic\_groups](#module\_lz\_custom\_domain\_dynamic\_groups) | github.com/oci-landing-zones/terraform-oci-modules-iam//identity-domains | v0.2.9 |
 | <a name="module_lz_custom_domain_groups"></a> [lz\_custom\_domain\_groups](#module\_lz\_custom\_domain\_groups) | github.com/oci-landing-zones/terraform-oci-modules-iam//identity-domains | v0.2.9 |
 | <a name="module_lz_dynamic_groups"></a> [lz\_dynamic\_groups](#module\_lz\_dynamic\_groups) | github.com/oci-landing-zones/terraform-oci-modules-iam//dynamic-groups | v0.2.9 |
-| <a name="module_lz_firewall_appliance"></a> [lz\_firewall\_appliance](#module\_lz\_firewall\_appliance) | github.com/oci-landing-zones/terraform-oci-modules-workloads//cis-compute-storage | v0.1.9 |
+| <a name="module_lz_firewall_appliance"></a> [lz\_firewall\_appliance](#module\_lz\_firewall\_appliance) | github.com/oci-landing-zones/terraform-oci-modules-workloads//cis-compute-storage | v0.2.0 |
 | <a name="module_lz_flow_logs"></a> [lz\_flow\_logs](#module\_lz\_flow\_logs) | github.com/oci-landing-zones/terraform-oci-modules-observability//logging | v0.2.2 |
 | <a name="module_lz_groups"></a> [lz\_groups](#module\_lz\_groups) | github.com/oci-landing-zones/terraform-oci-modules-iam//groups | v0.2.9 |
 | <a name="module_lz_home_region_notifications"></a> [lz\_home\_region\_notifications](#module\_lz\_home\_region\_notifications) | github.com/oci-landing-zones/terraform-oci-modules-observability//events | v0.2.2 |
