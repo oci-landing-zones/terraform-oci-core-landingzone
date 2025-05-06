@@ -489,14 +489,7 @@ variableGroups:
       - "cloud_guard_admin_email_endpoints"
       - "cloud_guard_risk_level_threshold"
       - "enable_cloud_guard_cloned_recipes"
-    visible:
-      or:
-        - eq:
-          - ${display_security_logging_governance_settings}
-          - true
-        - eq:
-          - ${is_free_tenancy}
-          - false
+    visible: display_security_logging_governance_settings
 
 
   - title: "Security Zones"
@@ -504,15 +497,7 @@ variableGroups:
     - "enable_security_zones"
     - "security_zones_reporting_region"
     - "sz_security_policies"
-    visible:
-      or:
-        - eq:
-          - ${display_security_logging_governance_settings}
-          - true
-        - eq:
-          - ${is_free_tenancy}
-          - false
-  
+    visible: display_security_logging_governance_settings
 
   - title: "Logging Consolidation: Service Connector Hub"
     variables:
