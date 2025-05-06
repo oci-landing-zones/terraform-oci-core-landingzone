@@ -23,9 +23,9 @@ locals {
 
   additional_vcns_attachments = {
     for ocid in local.combined_workload_ocids :
-    "${upper(local.additional_vcns[ocid].display_name)}-ATTACHMENT" => {
-      display_name        = "${local.additional_vcns[ocid].display_name}-attachment"
-      drg_route_table_key = "${upper(local.additional_vcns[ocid].display_name)}-DRG-ROUTE-TABLE"
+    "VCN-${upper(substr(ocid, -10, 10))}-ATTACHMENT" => {
+      display_name        = "${local.additional_vcns[ocid].display_name}-${substr(ocid, -10, 10)}-attachment"
+      drg_route_table_key = "VCN-${upper(substr(ocid, -10, 10))}-DRG-ROUTE-TABLE"
       network_details = {
         attached_resource_id = ocid
         type                 = "VCN"
@@ -35,20 +35,20 @@ locals {
 
   additional_vcns_drg_route_tables = {
       for ocid in local.combined_workload_ocids :
-      "${upper(local.additional_vcns[ocid].display_name)}-DRG-ROUTE-TABLE" => {
-        display_name                      = "${local.additional_vcns[ocid].display_name}-drg-route-table"
-        import_drg_route_distribution_key = "${upper(local.additional_vcns[ocid].display_name)}-DRG-IMPORT-ROUTE-DISTRIBUTION"
+      "VCN-${upper(substr(ocid, -10, 10))}-DRG-ROUTE-TABLE" => {
+        display_name                      = "${local.additional_vcns[ocid].display_name}-${substr(ocid, -10, 10)}-drg-route-table"
+        import_drg_route_distribution_key = "VCN-${upper(substr(ocid, -10, 10))}-DRG-IMPORT-ROUTE-DISTRIBUTION"
       }
     }
 
   additional_vcns_drg_route_distributions = {
     for ocid in local.combined_workload_ocids :
-    "${upper(local.additional_vcns[ocid].display_name)}-DRG-IMPORT-ROUTE-DISTRIBUTION" => {
-      display_name      = "${local.additional_vcns[ocid].display_name}-drg-import-route-distribution"
+    "VCN-${upper(substr(ocid, -10, 10))}-DRG-IMPORT-ROUTE-DISTRIBUTION" => {
+      display_name      = "${local.additional_vcns[ocid].display_name}-${substr(ocid, -10, 10)}-drg-import-route-distribution"
       distribution_type = "IMPORT"
       statements = merge(
         local.hub_with_vcn == true ? {
-          "${upper(local.additional_vcns[ocid].display_name)}-HUB-VCN-STMT" = {
+          "VCN-${upper(substr(ocid, -10, 10))}-TO-HUB-VCN-STMT" = {
             action   = "ACCEPT",
             priority = 1,
             match_criteria = {
@@ -59,7 +59,7 @@ locals {
           }
         } : {},
         contains(local.workload_cidrs_onprem, local.additional_vcns[ocid].cidr_block) && local.hub_with_drg_only == true && (length(regexall("FASTCONNECT", upper(var.on_premises_connection_option))) > 0) ? {
-          "${upper(local.additional_vcns[ocid].display_name)}-TO-FC-VIRTUAL-CIRCUIT-STMT" = {
+          "VCN-${upper(substr(ocid, -10, 10))}-TO-FC-VIRTUAL-CIRCUIT-STMT" = {
             action   = "ACCEPT",
             priority = 2,
             match_criteria = {
@@ -69,7 +69,7 @@ locals {
           }
         } : {},
         contains(local.workload_cidrs_onprem, local.additional_vcns[ocid].cidr_block) && local.hub_with_drg_only == true && (length(regexall("IPSEC", upper(var.on_premises_connection_option))) > 0) ? {
-          "${upper(local.additional_vcns[ocid].display_name)}-IPSEC-STMT" = {
+          "VCN-${upper(substr(ocid, -10, 10))}-TO-IPSEC-STMT" = {
             action   = "ACCEPT",
             priority = 3,
             match_criteria = {
