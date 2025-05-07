@@ -8,8 +8,8 @@
 
 | Name | Version |
 |------|---------|
-| <a name="provider_oci"></a> [oci](#provider\_oci) | n/a |
-| <a name="provider_time"></a> [time](#provider\_time) | n/a |
+| <a name="provider_oci"></a> [oci](#provider\_oci) | 6.23.0 |
+| <a name="provider_time"></a> [time](#provider\_time) | 0.12.1 |
 
 ## Modules
 
@@ -30,9 +30,9 @@
 | <a name="module_lz_home_region_notifications"></a> [lz\_home\_region\_notifications](#module\_lz\_home\_region\_notifications) | github.com/oci-landing-zones/terraform-oci-modules-observability//events | v0.2.2 |
 | <a name="module_lz_home_region_topics"></a> [lz\_home\_region\_topics](#module\_lz\_home\_region\_topics) | github.com/oci-landing-zones/terraform-oci-modules-observability//notifications | v0.2.2 |
 | <a name="module_lz_logging_analytics"></a> [lz\_logging\_analytics](#module\_lz\_logging\_analytics) | github.com/oci-landing-zones/terraform-oci-modules-observability//logging | v0.2.2 |
-| <a name="module_lz_network"></a> [lz\_network](#module\_lz\_network) | github.com/oci-landing-zones/terraform-oci-modules-networking | v0.7.3 |
+| <a name="module_lz_network"></a> [lz\_network](#module\_lz\_network) | github.com/oci-landing-zones/terraform-oci-modules-networking | release-0.7.5 |
 | <a name="module_lz_new_identity_domain"></a> [lz\_new\_identity\_domain](#module\_lz\_new\_identity\_domain) | github.com/oci-landing-zones/terraform-oci-modules-iam//identity-domains | v0.2.9 |
-| <a name="module_lz_nlb"></a> [lz\_nlb](#module\_lz\_nlb) | github.com/oci-landing-zones/terraform-oci-modules-networking//modules/nlb | v0.7.3 |
+| <a name="module_lz_nlb"></a> [lz\_nlb](#module\_lz\_nlb) | github.com/oci-landing-zones/terraform-oci-modules-networking//modules/nlb | release-0.7.5 |
 | <a name="module_lz_notifications"></a> [lz\_notifications](#module\_lz\_notifications) | github.com/oci-landing-zones/terraform-oci-modules-observability//events | v0.2.2 |
 | <a name="module_lz_oke_clusters_policy"></a> [lz\_oke\_clusters\_policy](#module\_lz\_oke\_clusters\_policy) | github.com/oci-landing-zones/terraform-oci-modules-iam//policies | v0.2.9 |
 | <a name="module_lz_policies"></a> [lz\_policies](#module\_lz\_policies) | github.com/oci-landing-zones/terraform-oci-modules-iam//policies | v0.2.9 |
@@ -46,7 +46,7 @@
 | <a name="module_lz_top_compartment"></a> [lz\_top\_compartment](#module\_lz\_top\_compartment) | github.com/oci-landing-zones/terraform-oci-modules-iam//compartments | v0.2.9 |
 | <a name="module_lz_vault"></a> [lz\_vault](#module\_lz\_vault) | github.com/oci-landing-zones/terraform-oci-modules-security//vaults | v0.1.7 |
 | <a name="module_lz_zpr"></a> [lz\_zpr](#module\_lz\_zpr) | github.com/oci-landing-zones/terraform-oci-modules-security//zpr | v0.1.9 |
-| <a name="module_native_oci_firewall"></a> [native\_oci\_firewall](#module\_native\_oci\_firewall) | github.com/oci-landing-zones/terraform-oci-modules-networking | v0.7.3 |
+| <a name="module_native_oci_firewall"></a> [native\_oci\_firewall](#module\_native\_oci\_firewall) | github.com/oci-landing-zones/terraform-oci-modules-networking | release-0.7.5 |
 | <a name="module_oci_native_firewall_logs"></a> [oci\_native\_firewall\_logs](#module\_oci\_native\_firewall\_logs) | github.com/oci-landing-zones/terraform-oci-modules-observability//logging | v0.1.9 |
 
 ## Resources
@@ -56,6 +56,7 @@
 | [time_sleep.wait_on_compartments](https://registry.terraform.io/providers/hashicorp/time/latest/docs/resources/sleep) | resource |
 | [time_sleep.wait_on_services_policy](https://registry.terraform.io/providers/hashicorp/time/latest/docs/resources/sleep) | resource |
 | [oci_cloud_guard_cloud_guard_configuration.this](https://registry.terraform.io/providers/oracle/oci/latest/docs/data-sources/cloud_guard_cloud_guard_configuration) | data source |
+| [oci_core_vcn.additional_vcns](https://registry.terraform.io/providers/oracle/oci/latest/docs/data-sources/core_vcn) | data source |
 | [oci_identity_compartment.existing_enclosing_compartment](https://registry.terraform.io/providers/oracle/oci/latest/docs/data-sources/identity_compartment) | data source |
 | [oci_identity_compartments.app](https://registry.terraform.io/providers/oracle/oci/latest/docs/data-sources/identity_compartments) | data source |
 | [oci_identity_compartments.database](https://registry.terraform.io/providers/oracle/oci/latest/docs/data-sources/identity_compartments) | data source |
@@ -126,9 +127,12 @@
 | <a name="input_create_budget"></a> [create\_budget](#input\_create\_budget) | If true, a budget is created for the enclosing compartment, based on forecast or actual spending. | `bool` | `false` | no |
 | <a name="input_create_events_as_enabled"></a> [create\_events\_as\_enabled](#input\_create\_events\_as\_enabled) | Whether events should be created in an enabled state by default. If unchecked, events will be created but not emit notifications. | `bool` | `false` | no |
 | <a name="input_custom_id_domain_ocid"></a> [custom\_id\_domain\_ocid](#input\_custom\_id\_domain\_ocid) | The existing identity domain OCID. | `string` | `null` | no |
+| <a name="input_customize_bastion_service"></a> [customize\_bastion\_service](#input\_customize\_bastion\_service) | Set to true to set custom options for Bastion Service. | `bool` | `false` | no |
 | <a name="input_customize_cloud_guard_settings"></a> [customize\_cloud\_guard\_settings](#input\_customize\_cloud\_guard\_settings) | Whether to customize Cloud Guard settings for a managed target. The Landing Zone enables Cloud Guard service and creates a managed target at the Root compartment in case a target at the Root compartment does not exist. | `bool` | `false` | no |
 | <a name="input_customize_hub_vcn_subnets"></a> [customize\_hub\_vcn\_subnets](#input\_customize\_hub\_vcn\_subnets) | Whether to customize default subnets settings of the Hub VCN. Only applicable to RMS deployments. | `bool` | `false` | no |
 | <a name="input_customize_iam"></a> [customize\_iam](#input\_customize\_iam) | Whether Landing Zone IAM settings are to be customized. Customizable options are identity domains, groups, dynamic groups and policies. | `bool` | `false` | no |
+| <a name="input_customize_jump_host"></a> [customize\_jump\_host](#input\_customize\_jump\_host) | Set to true to set custom options for jump host. | `bool` | `false` | no |
+| <a name="input_customize_jumphost_subnet"></a> [customize\_jumphost\_subnet](#input\_customize\_jumphost\_subnet) | Set to true to set custom options for jump host subnet. | `bool` | `false` | no |
 | <a name="input_customize_tt_vcn1_subnets"></a> [customize\_tt\_vcn1\_subnets](#input\_customize\_tt\_vcn1\_subnets) | If true, allows for the customization of default subnets settings. Only applicable to RMS deployments. | `bool` | `false` | no |
 | <a name="input_customize_tt_vcn2_subnets"></a> [customize\_tt\_vcn2\_subnets](#input\_customize\_tt\_vcn2\_subnets) | If true, allows for the customization of default subnets settings. Only applicable to RMS deployments. | `bool` | `false` | no |
 | <a name="input_customize_tt_vcn3_subnets"></a> [customize\_tt\_vcn3\_subnets](#input\_customize\_tt\_vcn3\_subnets) | If true, allows for the customization of default subnets settings. Only applicable to RMS deployments. | `bool` | `false` | no |
@@ -412,7 +416,7 @@
 | <a name="input_tt_vcn3_web_subnet_is_private"></a> [tt\_vcn3\_web\_subnet\_is\_private](#input\_tt\_vcn3\_web\_subnet\_is\_private) | Whether the Web subnet private. It is public by default. | `bool` | `false` | no |
 | <a name="input_tt_vcn3_web_subnet_name"></a> [tt\_vcn3\_web\_subnet\_name](#input\_tt\_vcn3\_web\_subnet\_name) | The Web subnet name. | `string` | `null` | no |
 | <a name="input_user_ocid"></a> [user\_ocid](#input\_user\_ocid) | n/a | `string` | `""` | no |
-| <a name="input_vss_agent_cis_benchmark_settings_scan_level"></a> [vss\_agent\_cis\_benchmark\_settings\_scan\_level](#input\_vss\_agent\_cis\_benchmark\_settings\_scan\_level) | Valid values: STRICT, MEDIUM, LIGHTWEIGHT, NONE. STRICT: If more than 20% of the CIS benchmarks fail, then the target is assigned a risk level of Critical. MEDIUM: If more than 40% of the CIS benchmarks fail, then the target is assigned a risk level of High. LIGHTWEIGHT: If more than 80% of the CIS benchmarks fail, then the target is assigned a risk level of High. NONE: disables cis benchmark scanning. | `string` | `"MEDIUM"` | no |
+| <a name="input_vss_agent_cis_benchmark_settings_scan_level"></a> [vss\_agent\_cis\_benchmark\_settings\_scan\_level](#input\_vss\_agent\_cis\_benchmark\_settings\_scan\_level) | Valid values: STRICT, MEDIUM, LIGHT, NONE. STRICT: If more than 20% of the CIS benchmarks fail, then the target is assigned a risk level of Critical. MEDIUM: If more than 40% of the CIS benchmarks fail, then the target is assigned a risk level of High. LIGHT: If more than 80% of the CIS benchmarks fail, then the target is assigned a risk level of High. NONE: disables cis benchmark scanning. | `string` | `"MEDIUM"` | no |
 | <a name="input_vss_agent_scan_level"></a> [vss\_agent\_scan\_level](#input\_vss\_agent\_scan\_level) | Valid values: STANDARD, NONE. STANDARD enables agent-based scanning. NONE disables agent-based scanning and moots any agent related attributes. | `string` | `"STANDARD"` | no |
 | <a name="input_vss_create"></a> [vss\_create](#input\_vss\_create) | Whether Vulnerability Scanning Service recipes and targets are enabled in the Landing Zone. | `bool` | `false` | no |
 | <a name="input_vss_enable_file_scan"></a> [vss\_enable\_file\_scan](#input\_vss\_enable\_file\_scan) | Whether file scanning is enabled. | `bool` | `false` | no |
@@ -420,6 +424,8 @@
 | <a name="input_vss_port_scan_level"></a> [vss\_port\_scan\_level](#input\_vss\_port\_scan\_level) | Valid values: STANDARD, LIGHT, NONE. STANDARD checks the 1000 most common port numbers, LIGHT checks the 100 most common port numbers, NONE does not check for open ports. | `string` | `"STANDARD"` | no |
 | <a name="input_vss_scan_day"></a> [vss\_scan\_day](#input\_vss\_scan\_day) | The week day for the Vulnerability Scanning Service recipe, if enabled. Only applies if vss\_scan\_schedule is WEEKLY (case insensitive). | `string` | `"SUNDAY"` | no |
 | <a name="input_vss_scan_schedule"></a> [vss\_scan\_schedule](#input\_vss\_scan\_schedule) | The scan schedule for the Vulnerability Scanning Service recipe, if enabled. Valid values are WEEKLY or DAILY (case insensitive). | `string` | `"WEEKLY"` | no |
+| <a name="input_workloadvcn_ocids_onprem_access"></a> [workloadvcn\_ocids\_onprem\_access](#input\_workloadvcn\_ocids\_onprem\_access) | A list of externally-managed VCN OCIDs that require on-premises connectivity. The VCNs provided here attach to the DRG as a spoke and are routeable from the on-premises network. | `list(string)` | `[]` | no |
+| <a name="input_workloadvcn_ocids_public_access"></a> [workloadvcn\_ocids\_public\_access](#input\_workloadvcn\_ocids\_public\_access) | A list of externally-managed VCN OCIDs that require public connectivity. The VCNs provided here attach to the DRG as a spoke and are routeable from the web subnet in the Hub VCN. | `list(string)` | `[]` | no |
 | <a name="input_zpr_namespace_name"></a> [zpr\_namespace\_name](#input\_zpr\_namespace\_name) | ZPR namespace name. | `string` | `null` | no |
 
 ## Outputs
