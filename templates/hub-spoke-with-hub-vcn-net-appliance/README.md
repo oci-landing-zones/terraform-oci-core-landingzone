@@ -45,7 +45,6 @@ This template has the following parameters set:
 | hub_vcn_east_west_entry_point_ocid | The OCID of a private address the Hub VCN routes traffic to for inbound internal cross-vcn traffic (East/West). It must be updated for the second execution of the configuration. | Initially null. For the second time execution, it is the OCID of the indoor network load balancer's private IP address. This is available in the output nlb_private_ip_addresses.INDOOR_NLB. |
 | network_admin_email_endpoints | List of email addresses that receive notifications for networking related events. | ["email.address@example.com"] |
 | security_admin_email_endpoints | List of email addresses that receive notifications for security related events. | ["email.address@example.com"] |
-| enable_cloud_guard | When true, OCI Cloud Guard Service is enabled. Set to false if it's been already enabled through other means. | true |
 | create_budget | Create a default budget | true |
 | budget_alert_threshold | Percentage of Budget | 100 |
 | budget_amount | Monthly Budget Amount (in US$) | 1000|
@@ -60,12 +59,11 @@ This template can be deployed using OCI Resource Manager Service (RMS) or Terraf
 
 By clicking the button below, you are redirected to an OCI RMS Stack with variables pre-assigned for deployment. 
 
-[![Deploy_To_OCI](../../images/DeployToOCI.svg)](https://cloud.oracle.com/resourcemanager/stacks/create?zipUrl=https://github.com/oci-landing-zones/terraform-oci-core-landingzone/archive/refs/heads/main.zip&zipUrlVariables={"service_label":"fortinet","define_net":true,"hub_deployment_option":"VCN%20or%20on-premises%20connectivity%20routing%20via%20DRG%20(DRG%20will%20be%20created)","hub_vcn_cidrs":["192.168.0.0/26"],"hub_vcn_deploy_net_appliance_option":"Fortinet%20FortiGate%20Firewall","net_fortigate_version":"7.2.9%20(X64)%20","net_appliance_flex_shape_memory":"56","net_appliance_flex_shape_cpu":"2","net_appliance_boot_volume_size":"60","net_appliance_public_rsa_key":"Enter%20Public%20SSH%20Key","net_appliance_shape":"VM.Standard.E4.Flex","add_tt_vcn1":true,"tt_vcn1_cidrs":["10.0.0.0/20"],"tt_vcn1_attach_to_drg":true,"add_exa_vcn1":true,"exa_vcn1_cidrs":["172.16.0.0/20"],"exa_vcn1_attach_to_drg":true,"add_oke_vcn1":true,"oke_vcn1_cni_type":"Native","oke_vcn1_cidrs":["10.3.0.0/16"],"oke_vcn1_attach_to_drg":true,"network_admin_email_endpoints":["email.address@example.com"],"security_admin_email_endpoints":["email.address@example.com"],"enable_cloud_guard":true,"create_budget":true,"budget_alert_threshold":"100","budget_amount":"1000","budget_alert_email_endpoints":["email.address@example.com"]})
+[![Deploy_To_OCI](../../images/DeployToOCI.svg)](https://cloud.oracle.com/resourcemanager/stacks/create?zipUrl=https://github.com/oci-landing-zones/terraform-oci-core-landingzone/archive/refs/heads/main.zip&zipUrlVariables={"service_label":"fortinet","define_net":true,"hub_deployment_option":"VCN%20or%20on-premises%20connectivity%20routing%20via%20DRG%20(DRG%20will%20be%20created)","hub_vcn_cidrs":["192.168.0.0/26"],"hub_vcn_deploy_net_appliance_option":"Fortinet%20FortiGate%20Firewall","net_fortigate_version":"7.2.9%20(X64)%20","net_appliance_flex_shape_memory":"56","net_appliance_flex_shape_cpu":"2","net_appliance_boot_volume_size":"60","net_appliance_public_rsa_key":"Enter%20Public%20SSH%20Key","net_appliance_shape":"VM.Standard.E4.Flex","add_tt_vcn1":true,"tt_vcn1_cidrs":["10.0.0.0/20"],"tt_vcn1_attach_to_drg":true,"add_exa_vcn1":true,"exa_vcn1_cidrs":["172.16.0.0/20"],"exa_vcn1_attach_to_drg":true,"add_oke_vcn1":true,"oke_vcn1_cni_type":"Native","oke_vcn1_cidrs":["10.3.0.0/16"],"oke_vcn1_attach_to_drg":true,"network_admin_email_endpoints":["email.address@example.com"],"security_admin_email_endpoints":["email.address@example.com"],"create_budget":true,"budget_alert_threshold":"100","budget_amount":"1000","budget_alert_email_endpoints":["email.address@example.com"]})
 
 You are required to review/adjust the following variable settings:
  - Make sure to pick an OCI region for deployment.
- - Provide real email addresses for *Network Admin Email Endpoints* and *Security Admin Email Endpoints* fields. 
- - Uncheck *Enable Cloud Guard Service* option in case it is already enabled in your tenancy.
+ - Provide real email addresses for *Network Admin Email Endpoints* and *Security Admin Email Endpoints* fields.
 
 With the stack created, perform a Plan, followed by an Apply using RMS UI.
 
@@ -133,7 +131,6 @@ This template has the following parameters set:
 | hub_vcn_east_west_entry_point_ocid | The OCID of a private address the Hub VCN routes traffic to for inbound internal cross-vcn traffic (East/West). It must be updated for the second execution of the configuration. | Initially null. For the second time execution, it is the OCID of the indoor network load balancer's private IP address. This is available in the output nlb_private_ip_addresses.INDOOR_NLB. |
 | network_admin_email_endpoints | List of email addresses that receive notifications for networking related events. | ["email.address@example.com"] |
 | security_admin_email_endpoints | List of email addresses that receive notifications for security related events. | ["email.address@example.com"] |
-| enable_cloud_guard | When true, OCI Cloud Guard Service is enabled. Set to false if it's been already enabled through other means. | true |
 | create_budget | Create a default budget | true |
 | budget_alert_threshold | Percentage of Budget | 100 |
 | budget_amount | Monthly Budget Amount (in US$) | 1000|
@@ -148,12 +145,11 @@ This template can be deployed using OCI Resource Manager Service (RMS) or Terraf
 
 By clicking the button below, you are redirected to an OCI RMS Stack with variables pre-assigned for deployment. 
 
-[![Deploy_To_OCI](../../images/DeployToOCI.svg)](https://cloud.oracle.com/resourcemanager/stacks/create?zipUrl=https://github.com/oci-landing-zones/terraform-oci-core-landingzone/archive/refs/heads/main.zip&zipUrlVariables={"service_label":"paloalto","define_net":true,"hub_deployment_option":"VCN%20or%20on-premises%20connectivity%20routing%20through%20DMZ%20VCN%20with%20Network%20Virtual%20Appiance%20(DRG%20and%20DMZ%20VCN%20will%20be%20created)","hub_vcn_cidrs":["192.168.0.0/26"],"hub_vcn_deploy_net_appliance_option":"Palo%20Alto%20Networks%20VM-Series%20Firewall","net_palo_alto_version":"11.1.4-h7","net_appliance_flex_shape_memory":"56","net_appliance_flex_shape_cpu":"2","net_appliance_boot_volume_size":"60","net_appliance_public_rsa_key":"Enter%20Public%20SSH%20Key","net_appliance_shape":"VM.Standard2.8","add_tt_vcn1":true,"tt_vcn1_cidrs":["10.0.0.0/20"],"tt_vcn1_attach_to_drg":true,"add_exa_vcn1":true,"exa_vcn1_cidrs":["172.16.0.0/20"],"exa_vcn1_attach_to_drg":true,"add_oke_vcn1":true,"oke_vcn1_cni_type":"Native","oke_vcn1_cidrs":["10.3.0.0/16"],"oke_vcn1_attach_to_drg":true,"network_admin_email_endpoints":["email.address@example.com"],"security_admin_email_endpoints":["email.address@example.com"],"enable_cloud_guard":true,"create_budget":true,"budget_alert_threshold":"100","budget_amount":"1000","budget_alert_email_endpoints":["email.address@example.com"]})
+[![Deploy_To_OCI](../../images/DeployToOCI.svg)](https://cloud.oracle.com/resourcemanager/stacks/create?zipUrl=https://github.com/oci-landing-zones/terraform-oci-core-landingzone/archive/refs/heads/main.zip&zipUrlVariables={"service_label":"paloalto","define_net":true,"hub_deployment_option":"VCN%20or%20on-premises%20connectivity%20routing%20through%20DMZ%20VCN%20with%20Network%20Virtual%20Appiance%20(DRG%20and%20DMZ%20VCN%20will%20be%20created)","hub_vcn_cidrs":["192.168.0.0/26"],"hub_vcn_deploy_net_appliance_option":"Palo%20Alto%20Networks%20VM-Series%20Firewall","net_palo_alto_version":"11.1.4-h7","net_appliance_flex_shape_memory":"56","net_appliance_flex_shape_cpu":"2","net_appliance_boot_volume_size":"60","net_appliance_public_rsa_key":"Enter%20Public%20SSH%20Key","net_appliance_shape":"VM.Standard2.8","add_tt_vcn1":true,"tt_vcn1_cidrs":["10.0.0.0/20"],"tt_vcn1_attach_to_drg":true,"add_exa_vcn1":true,"exa_vcn1_cidrs":["172.16.0.0/20"],"exa_vcn1_attach_to_drg":true,"add_oke_vcn1":true,"oke_vcn1_cni_type":"Native","oke_vcn1_cidrs":["10.3.0.0/16"],"oke_vcn1_attach_to_drg":true,"network_admin_email_endpoints":["email.address@example.com"],"security_admin_email_endpoints":["email.address@example.com"],"create_budget":true,"budget_alert_threshold":"100","budget_amount":"1000","budget_alert_email_endpoints":["email.address@example.com"]})
 
 You are required to review/adjust the following variable settings:
  - Make sure to pick an OCI region for deployment.
- - Provide real email addresses for *Network Admin Email Endpoints* and *Security Admin Email Endpoints* fields. 
- - Uncheck *Enable Cloud Guard Service* option in case it is already enabled in your tenancy.
+ - Provide real email addresses for *Network Admin Email Endpoints* and *Security Admin Email Endpoints* fields.
 
 With the stack created, perform a Plan, followed by an Apply using RMS UI.
 
