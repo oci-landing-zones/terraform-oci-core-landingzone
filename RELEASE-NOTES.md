@@ -1,8 +1,14 @@
 # May 09, 2025 Release Notes - 1.5.0
-1. Core enhancements: ... 
-2. Network extensions
-3. Workload extensions: EBS, IAM, FSI
-4. Core LZ express / lite
+
+1. Core Landing Zone Enhancements:
+   - Added support for externally managed VCNs with associated security controls and routing for Hub DRG attachments.
+   - Added routing for jump host access to network firewalls and workload VCNs.
+   - Disallowed CIDR 0.0.0.0/0 from ingress/egress rules in the default security lists.
+   - Automaticlly enable the Cloud Guard service and create a managed target at the root compartment if it does not already exist.
+   - Added a "Display Security/Logging/Governance Settings?" checkbox that displays settings for Cloud Guard, Security Zones, Logging, Vulnerability Scanning and Cost Management.
+2. Generic Network Extension: provides prerequisite resources (VCN, subnets, seclists and NSGs) for a generic workload based on user input.
+3. Generic IAM Extension: provides prerequisite resources (compartments, groups and policies) for a generic workload. This module can either share or isolate those resources from the parent landing zone.
+4. General bug fixes.
 
 # April 02, 2025 Release Notes - 1.4.1
 1. Application admin policies updated for reading Compute images and repositories in the Root compartment.
