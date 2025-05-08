@@ -380,6 +380,7 @@ See deployment scenarios under the [templates](./templates/) folder:
 - [Multiple VCN types peered through a Hub VCN with a Bastion Service enabled on a jump host](./templates/hub-spoke-with-hub-vcn-bastion-jump-host)
 - [On-premises connectivity through a Hub VCN with Site-to-Site VPN using IPSec](./templates/hub-spoke-with-hub-vcn-ipsec-vpn)
 - [On-premises connectivity through a Hub VCN with FastConnect virtual circuits](./templates/hub-spoke-with-hub-vcn-fastconnect-virtual-circuit)
+- [Hub DRG including externally managed VCN using IPSec/LibreSwan](./templates/externally-managed-vcns)
 
 #### Landing Zone OCI Network Firewall Option
 
