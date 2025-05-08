@@ -1,6 +1,6 @@
-# Core Landing Zone with Hub & Spoke Topology, Including Additional Networks Template
+# Core Landing Zone with Hub & Spoke Topology, Including Externally Managed Networks Template
 
-This template shows how to deploy a CIS compliant landing zone using [OCI Core Landing Zone](../../) configured with Hub & Spoke networking topology with the addition of externally-managed VCNs that are allowed access to existing on-premises connectivity and public access through the Hub VCN. The OCIDs of externally-managed VCNs are required for attaching the additional VCNs to the Core Landing Zone DRG. It deploys an IPSec VPN connection for on-premises connection using Libreswan CPE (customer-premises equipment) and Three Tier VCN which are peered through the DRG.
+This template shows how to deploy a CIS compliant landing zone using [OCI Core Landing Zone](../../) configured with Hub & Spoke networking topology with the addition of externally managed VCNs that are allowed access to existing on-premises connectivity and public access through the Hub VCN. The OCIDs of externally managed VCNs are required for attaching the additional VCNs to the Landing Zone DRG. It deploys an IPSec VPN connection for on-premises connection using Libreswan CPE (Customer-Premises Equipment) and Three Tier VCN which are peered through the DRG.
 
 Please see other [templates](../../templates/) available for CIS compliant landing zones with custom configurations.
 
@@ -8,7 +8,7 @@ Please see other [templates](../../templates/) available for CIS compliant landi
 
 This template has the following parameters set:
 
-| Variable Name                     | Description | Value                                                                                                                      |
+| Variable Name | Description | Value |
 |---------------|-------------|-------|
 | service\_label | A unique identifier to prefix the resources | addnet |
 | define\_net | Check to define networking resources. By default, the Landing Zone does NOT deploy any networks. | true |
@@ -31,8 +31,8 @@ This template has the following parameters set:
 | tt\_vcn1\_attach\_to\_drg | When true, attaches three-tier VCN 1 to the DRG | true |
 | network\_admin\_email\_endpoints | List of email addresses that receive notifications for networking related events. | ["email.address@example.com"] |
 | security\_admin\_email\_endpoints | List of email addresses that receive notifications for security related events. | ["email.address@example.com"] |
-| workloadvcn\_ocids\_public\_access | A list of externally-managed VCN OCIDs that require public connectivity. The VCNs provided here attach to the DRG as a spoke and are routeable from the web subnet in the Hub VCN. | ["ocid1.vcn.oc1...aaaaa...yba", "ocid1.vcn.oc1...aaaaaa...q7a"] |
-| workloadvcn\_ocids\_onprem\_access | A list of externally-managed VCN OCIDs that require on-premises connectivity. The VCNs provided here attach to the DRG as a spoke and are routeable from the on-premises network. | ["ocid1.vcn.oc1.iad...aaaaa...q7a", "ocid1.vcn.oc1.iad...aaaaaa...tga"] |
+| workloadvcn\_ocids\_public\_access | A list of externally managed VCN OCIDs that require public connectivity. The VCNs provided here attach to the DRG as a spoke and are routeable from the web subnet in the Hub VCN. | ["ocid1.vcn.oc1aaaaa...yba", "ocid1.vcn.oc1aaaaaa...q7a"] |
+| workloadvcn\_ocids\_onprem\_access | A list of externally managed VCN OCIDs that require on-premises connectivity. The VCNs provided here attach to the DRG as a spoke and are routeable from the on-premises network. | ["ocid1.vcn.oc1.iadaaaaa...q7a", "ocid1.vcn.oc1.iadaaaaaa...tga"] |
 
 For a detailed description of all variables that can be used, see the [Variables](../../VARIABLES.md) documentation.
 
@@ -42,16 +42,16 @@ This template can be deployed using OCI Resource Manager Service (RMS) or Terraf
 
 By clicking the button below, you are redirected to an OCI RMS Stack with variables pre-assigned for deployment.
 
-[![Deploy_To_OCI](../../images/DeployToOCI.svg)](https://cloud.oracle.com/resourcemanager/stacks/create?zipUrl=https://github.com/oci-landing-zones/terraform-oci-core-landingzone/archive/refs/heads/main.zip&zipUrlVariables={"service_label":"addnett","define_net":true,"hub_deployment_option":"VCN%20or%20on-premises%20connectivity%20routing%20through%20DMZ%20VCN%20with%20Network%20Virtual%20Appliance%20%28DRG%20and%20DMZ%20VCN%20will%20be%20created%29","onprem_cidrs":["100.0.0.0/24"],"hub_vcn_deploy_net_appliance_option":"Don%2527t%2Bdeploy%2Bany%2Bnetwork%2Bappliance%2Bat%2Bthis%2Btime","workloadvcn_ocids_public_access":["ocid1.vcn.oc1...aaaaa...yba","ocid1.vcn.oc1...aaaaaa...q7a"],"workloadvcn_ocids_onprem_access":["ocid1.vcn.oc1.iad...aaaaa...q7a","ocid1.vcn.oc1.iad...aaaaaa...tga"],"on_premises_connection_option":"Create%20New%20IPSec%20VPN","cpe_ip_address":"129.146.105.156","cpe_device_shape_vendor":"Libreswan","ipsec_customer_bgp_asn":"65000","ipsec_tunnel1_customer_interface_ip":"10.10.10.1/30","ipsec_tunnel1_oracle_interface_ip":"10.10.10.2/30","ipsec_tunnel2_customer_interface_ip":"10.10.10.5/30","ipsec_tunnel2_oracle_interface_ip":"10.10.10.6/30","add_tt_vcn1":true,"tt_vcn1_attach_to_drg":true,"tt_vcn1_onprem_route_enable":true,"tt_vcn1_name":"TT-VCN-1","network_admin_email_endpoints":["email.address@example.com"],"security_admin_email_endpoints":["email.address@example.com"]})
+[![Deploy_To_OCI](../../images/DeployToOCI.svg)](https://cloud.oracle.com/resourcemanager/stacks/create?zipUrl=https://github.com/oci-landing-zones/terraform-oci-core-landingzone/archive/refs/heads/main.zip&zipUrlVariables={"service_label":"addnett","define_net":true,"hub_deployment_option":"VCN%20or%20on-premises%20connectivity%20routing%20through%20DMZ%20VCN%20with%20Network%20Virtual%20Appliance%20%28DRG%20and%20DMZ%20VCN%20will%20be%20created%29","onprem_cidrs":["x.x.x.x/x"],"hub_vcn_deploy_net_appliance_option":"Don%2527t%2Bdeploy%2Bany%2Bnetwork%2Bappliance%2Bat%2Bthis%2Btime","workloadvcn_ocids_public_access":["ocid1.vcn.oc1aaaaa...yba","ocid1.vcn.oc1aaaaaa...q7a"],"workloadvcn_ocids_onprem_access":["ocid1.vcn.oc1.iadaaaaa...q7a","ocid1.vcn.oc1.iadaaaaaa...tga"],"on_premises_connection_option":"Create%20New%20IPSec%20VPN","cpe_ip_address":"x.x.x.x","cpe_device_shape_vendor":"Libreswan","ipsec_customer_bgp_asn":"65000","ipsec_tunnel1_customer_interface_ip":"10.10.10.1/30","ipsec_tunnel1_oracle_interface_ip":"10.10.10.2/30","ipsec_tunnel2_customer_interface_ip":"10.10.10.5/30","ipsec_tunnel2_oracle_interface_ip":"10.10.10.6/30","add_tt_vcn1":true,"tt_vcn1_attach_to_drg":true,"tt_vcn1_onprem_route_enable":true,"tt_vcn1_name":"TT-VCN-1","network_admin_email_endpoints":["email.address@example.com"],"security_admin_email_endpoints":["email.address@example.com"]})
 
 You are required to review/adjust the following variable settings:
 
  - Make sure to pick an OCI region for deployment.
  - Provide customer CIDR block(s) used to access on-premises network(s) for *onprem\_cidrs* field.
- - Provide cpe and ipsec values for on-premises connectivity: 
+ - Provide CPE and IPSec values for on-premises connectivity:
     *cpe\_ip\_address*, *ipsec\_customer\_bgp\_asn*, *ipsec\_tunnel1\_customer\_interface\_ip*, *ipsec\_tunnel1\_oracle\_interface\_ip*, *ipsec\_tunnel2\_customer\_interface\_ip*, *ipsec\_tunnel2\_oracle\_interface\_ip*
- - Provide a list of externally-managed VCN ocids that are allowed access to existing on-premises connection for *workloadvcn\_ocids\_public\_accesss* field.
- - Provide a list of externally-managed VCN ocids that are allowed public access through the HUB VCN for *workloadvcn\_ocids\_onprem\_access* field.
+ - Provide a list of externally managed VCN OCIDs that are allowed access to existing on-premises connection for *workloadvcn\_ocids\_public\_accesss* field.
+ - Provide a list of externally managed VCN OCIDs that are allowed public access through the Hub VCN for *workloadvcn\_ocids\_onprem\_access* field.
  - Provide customer email addresses for *Network Admin Email Endpoints* and *Security Admin Email Endpoints* fields.
 
 With the stack created, perform a Plan, followed by an Apply using RMS UI.

@@ -183,6 +183,7 @@ Some deployment scenarios are available under the [templates](./templates/) fold
 - [Multiple VCN types peered through a Hub VCN with a Bastion Service enabled on a jump host](./templates/hub-spoke-with-hub-vcn-bastion-jump-host)
 - [On-premises connectivity through a Hub VCN with Site-to-Site VPN using IPSec](./templates/hub-spoke-with-hub-vcn-ipsec-vpn)
 - [On-premises connectivity through a Hub VCN with FastConnect virtual circuits](./templates/hub-spoke-with-hub-vcn-fastconnect-virtual-circuit)
+- [Hub DRG including externally managed VCN using IPSec/LibreSwan](./templates/externally-managed-vcns/)
 
 Another key deployment scenario of OCI Core Landing Zone is [Zero Trust Landing Zone](https://github.com/oci-landing-zones/terraform-oci-zero-trust-landingzone).
 
@@ -318,18 +319,3 @@ See [LICENSE](./LICENSE.txt) for more details.
   ```
   </details>
 
-**11. Service Gateway Route Table Error**
-  * When creating a workload network using the generic network extension on top of Core Landing Zone Hub, the following error has occurred:
-
-  ```
-    Error: 409-Conflict, Gateway entity ocid1.servicegateway.oc1.iad.aaaaaaaas5yvbjgihazzllbkx6iadou3fquymvn54qqaf2c5txfta7cf4v2q using the route table exists
-    Suggestion: The resource is in a conflicted state. Please retry again or contact support for help with service: Core Route Table
-    Documentation: https://registry.terraform.io/providers/oracle/oci/latest/docs/resources/core_route_table
-    API Reference:
-    Request Target: DELETE https://iaas.us-ashburn-1.oraclecloud.com/20160918/routeTables/ocid1.routetable.oc1.iad.aaaaaaaa32gwq4y4...
-    Provider version: 7.0.0, released on 2025-05-07.
-    Service: Core Route Table
-    Operation Name: DeleteRouteTable
-    OPC request ID: cba883e653b314d2a01d57207ee699a9/53A091350D99EED4FBAD8AA4370A2D9C/E3D9B89CCED3A2BECEEE851234567890
-  ```
-  To work around the issue, apply the firewall private IP OCID separately, then apply the additional VCNs separately. In short, do not deploy those two resource types in the same Terraform apply.
