@@ -1,0 +1,206 @@
+# Copyright (c) 2023, 2025, Oracle and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl/
+title: "Generic Workload"
+stackDescription: ""
+description: ""
+schemaVersion: 1.1.0
+version: "0.0.1"
+locale: "en"
+
+variableGroups:
+  - title: "General"
+    variables:
+      - "workload_compartment_name"
+      - "service_label"
+      - "parent_compartment_ocid"
+      - "isolate_workload"
+      - "network_compartment_ocid"
+      - "security_compartment_ocid"
+
+  - title: "Compartment"
+    visible: isolate_workload
+    variables:
+      - "create_workload_app_subcompartment"
+      - "create_workload_network_subcompartment"
+      - "create_workload_database_subcompartment"
+
+  - title: "Groups"
+    variables:
+      - "use_custom_identity_domain"
+      - "custom_identity_domain_ocid"
+      - "custom_identity_domain_name"
+      - "enable_db_admin_group"
+      - "customize_group_name"
+      - "workload_admin_group_name"
+      - "workload_app_admin_group_name"
+      - "workload_db_admin_group_name"
+
+  - title: "Hidden Variables"
+    visible: false
+    variables:
+      - "fingerprint"
+      - "private_key_password"
+      - "private_key_path"
+      - "tenancy_ocid"
+      - "user_ocid"
+      - "region"
+      - "additional_root_policy_statements"
+      - "additional_wkld_admin_policy_statements"
+      - "additional_app_admin_policy_statements"
+      - "additional_db_admin_policy_statements"
+      - "deploy_default_groups"
+      - "deploy_root_policies"
+      - "deploy_wkld_policies"
+      - "deploy_workload_compartment"
+      - "workload_compartment_description"
+      - "network_compartment_description"
+      - "app_compartment_description"
+      - "database_compartment_description"
+
+variables:
+  # General Variables
+  service_label:
+    type: string
+    title: "Service Label"
+    minLength: 1
+    maxLength: 15
+    pattern: "^[A-Za-z][A-Za-z0-9]{1,14}$"
+    description: "A unique label that gets prepended to all resources deployed by the Landing Zone. Max length: 15 characters."
+    required: true
+
+  workload_compartment_name:
+    type: string
+    title: "Workload Compartment Name"
+    description: "The name of the workload to be deployed"
+    required: false
+    default: "workload-cmp"
+
+  parent_compartment_ocid:
+    type: oci:identity:compartment:id
+    title: "Parent Compartment OCID"
+    description: "The ocid of the parent compartment of the Landing Zone deployed"
+    required: true
+
+  isolate_workload:
+    type: boolean
+    title: "Isolate workload from parent landing zone?"
+    description: "The workload uses an isolated approach where network will be contained within the workload compartment instead of a shared network compartment."
+    required: true
+    default: false
+
+  network_compartment_ocid:
+    type: oci:identity:compartment:id
+    title: "Network Compartment OCID"
+    description: "Network Compartment OCID. Ensure that the selected network compartment is within the selected parent compartment."
+    required: true
+    visible:
+      eq:
+        - ${isolate_workload}
+        - false
+
+  security_compartment_ocid:
+    type: oci:identity:compartment:id
+    title: "Security Compartment OCID"
+    description: "Security Compartment OCID. Ensure that the selected security compartment is within the selected parent compartment."
+    required: true
+    visible: true
+
+
+  # Compartment Variables
+  create_workload_app_subcompartment:
+    type: boolean
+    title: "Create Workload App Sub-Compartment?"
+    description: "Create workload app sub-compartment?"
+    required: false
+    default: false
+
+  create_workload_network_subcompartment:
+    type: boolean
+    title: "Create Workload Network Sub-Compartment?"
+    description: "Create workload network sub-compartment?"
+    required: false
+    default: false
+
+  create_workload_database_subcompartment:
+    type: boolean
+    title: "Create Workload Database Sub-Compartment?"
+    description: "Create workload database sub-compartment?"
+    required: false
+    default: false
+
+  # Groups
+  use_custom_identity_domain:
+    type: boolean
+    title: "Use Custom Identity Domain?"
+    description: "Use custom identity domain in parent landing zone?"
+    required: false
+    default: false
+
+  custom_identity_domain_ocid:
+    type: oci:identity:domain:id
+    title: "Custom Identity Domain OCID"
+    description: "The OCID of custom identity domain"
+    required: false
+    visible: use_custom_identity_domain
+  
+  custom_identity_domain_name:
+    type: string
+    title: "Custom Identity Domain Name"
+    description: "The Name of custom identity domain"
+    required: false
+    visible: use_custom_identity_domain
+
+  enable_db_admin_group:
+    type: boolean
+    title: "Enable Database Admin Group?"
+    description: "Enable database admin group?"
+    default: false
+    visible: isolate_workload
+
+  customize_group_name:
+    type: boolean
+    title: "Customize Group Names?"
+    description: "Customize group names?"
+    required: false
+    default: false
+
+  workload_admin_group_name:
+    type: string
+    title: "Workload Admin Group Name"
+    description: "Workload admin group name"
+    required: false
+    default: "workload-admin-group"
+    visible: customize_group_name
+
+  workload_app_admin_group_name:
+    type: string
+    title: "Workload App Admin Group Name"
+    description: "Workload app admin group name"
+    required: false
+    default: "workload-app-admin-group"
+    visible:
+      and:
+        - eq:
+            - ${customize_group_name}
+            - true
+        - eq:
+            - ${isolate_workload}
+            - true
+
+  workload_db_admin_group_name:
+    type: string
+    title: "Workload Database Admin Group Name"
+    description: "Workload database admin group name"
+    required: false
+    default: "workload-db-admin-group"
+    visible:
+      and:
+        - eq:
+            - ${customize_group_name}
+            - true
+        - eq:
+            - ${isolate_workload}
+            - true
+        - eq:
+            - ${enable_db_admin_group}
+            - true
