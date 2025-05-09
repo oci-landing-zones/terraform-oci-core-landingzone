@@ -5,6 +5,7 @@
 Welcome to the [OCI Landing Zones (OLZ) Community](https://github.com/oci-landing-zones)! OCI Landing Zones simplify onboarding and running on OCI by providing design guidance, best practices, and pre-configured Terraform deployment templates for various architectures and use cases. These enable customers to easily provision a secure tenancy foundation in the cloud along with all required services, and reliably scale as workloads expand.
 
 This folder defines a [Core Landing Zone](https://github.com/oci-landing-zones/terraform-oci-core-landingzone) generic extension for network resources. The objective is to augment a Core Landing Zone deployment with network resources for supporting the further deployment of workload resources that are not satisfied by Core Landing Zone features alone.
+This template facilitates segregation of duties, allowing different teams to deploy the resources that they are responsible for, i.e. network, IAM, monitoring and logging as well as specific workload resources.
 
 It is comprised of the following files:
 
