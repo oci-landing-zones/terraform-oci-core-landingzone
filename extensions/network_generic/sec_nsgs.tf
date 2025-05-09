@@ -7,7 +7,7 @@
 
 locals {
 
-  workload_nsgs = var.deploy_nsgs ? merge(local.app_nsg, local.web_nsg, local.db_nsg, local.mgmt_nsg, local.lb_nsg, local.db_backup_nsg, local.spare_nsg) : null
+  workload_nsgs = var.deploy_nsgs ? merge(local.app_nsg, local.web_nsg, local.db_nsg, local.mgmt_nsg, local.lb_nsg, local.db_backup_nsg, local.spare_nsg, var.additional_nsgs) : null
 
   app_nsg = var.add_app_subnet ? {
     WORKLOAD-VCN-APP-NSG = {
