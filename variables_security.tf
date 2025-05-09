@@ -30,8 +30,13 @@ variable "sz_security_policies" {
 # ------------------------------------------------------
 variable "enable_cloud_guard" {
   type        = bool
-  description = "Determines whether the Cloud Guard service should be enabled. If true, Cloud Guard is enabled and the Root compartment is configured with a Cloud Guard target, as long as there is no pre-existing Cloud Guard target for the Root compartment (or target creation will fail). Keep in mind that once you set this to true, Cloud Guard target is managed by Landing Zone. If later on you switch this to false, the managed target is deleted and all (open, resolved and dismissed) problems associated with the deleted target are being moved to 'deleted' state. This operation happens in the background and would take some time to complete. Deleted problems can be viewed from the problems page using the 'deleted' status filter. For more details on Cloud Guard problems lifecycle, see https://docs.oracle.com/en-us/iaas/cloud-guard/using/problems-page-about.htm#problems-page-about__sect_prob_lifecycle. If Cloud Guard is already enabled and a target exists for the Root compartment, set this variable to false."
+  description = "Whether to enable Cloud Guard service and create a managed target at the Root compartment. The Landing Zone will enable Cloud Guard service and create a managed target at the Root compartment in case a target does not exist."
   default     = true
+}
+variable "customize_cloud_guard_settings" {
+  type        = bool
+  description = "Whether to customize Cloud Guard settings for a managed target. The Landing Zone enables Cloud Guard service and creates a managed target at the Root compartment in case a target at the Root compartment does not exist."
+  default     = false
 }
 variable "enable_cloud_guard_cloned_recipes" {
   type        = bool
@@ -106,12 +111,12 @@ variable "vss_agent_scan_level" {
   }
 }
 variable "vss_agent_cis_benchmark_settings_scan_level" {
-  description = "Valid values: STRICT, MEDIUM, LIGHTWEIGHT, NONE. STRICT: If more than 20% of the CIS benchmarks fail, then the target is assigned a risk level of Critical. MEDIUM: If more than 40% of the CIS benchmarks fail, then the target is assigned a risk level of High. LIGHTWEIGHT: If more than 80% of the CIS benchmarks fail, then the target is assigned a risk level of High. NONE: disables cis benchmark scanning."
+  description = "Valid values: STRICT, MEDIUM, LIGHT, NONE. STRICT: If more than 20% of the CIS benchmarks fail, then the target is assigned a risk level of Critical. MEDIUM: If more than 40% of the CIS benchmarks fail, then the target is assigned a risk level of High. LIGHT: If more than 80% of the CIS benchmarks fail, then the target is assigned a risk level of High. NONE: disables cis benchmark scanning."
   type        = string
   default     = "MEDIUM"
   validation {
-    condition     = contains(["STRICT", "MEDIUM", "LIGHTWEIGHT", "NONE"], upper(var.vss_agent_cis_benchmark_settings_scan_level))
-    error_message = "Validation failed for vss_agent_cis_benchmark_settings_scan_level: valid values are STRICT, MEDIUM, LIGHTWEIGHT, NONE (case insensitive)."
+    condition     = contains(["STRICT", "MEDIUM", "LIGHT", "NONE"], upper(var.vss_agent_cis_benchmark_settings_scan_level))
+    error_message = "Validation failed for vss_agent_cis_benchmark_settings_scan_level: valid values are STRICT, MEDIUM, LIGHT, NONE (case insensitive)."
   }
 }
 variable "vss_enable_file_scan" {
@@ -202,4 +207,22 @@ variable "bastion_service_allowed_cidrs" {
     condition     = length([for c in var.bastion_service_allowed_cidrs : c if length(regexall("^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/([0-9]|[1-2][0-9]|3[0-2]))?$", c)) > 0]) == length(var.bastion_service_allowed_cidrs)
     error_message = "Validation failed for bastion_service_allowed_cidrs: values must be in CIDR notation."
   }
+}
+
+variable "customize_bastion_service" {
+  type        = bool
+  default     = false
+  description = "Set to true to set custom options for Bastion Service."
+}
+
+variable "customize_jump_host" {
+  type        = bool
+  default     = false
+  description = "Set to true to set custom options for jump host."
+}
+
+variable "customize_jumphost_subnet" {
+  type        = bool
+  default     = false
+  description = "Set to true to set custom options for jump host subnet."
 }

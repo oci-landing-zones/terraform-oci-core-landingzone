@@ -18,6 +18,7 @@
     1. [Deploying Lifecycle Environments](#deploying-lifecycle-environments)
     1. [Zero Trust Packet Routing (ZPR)](#zpr-use)
     1. [Bastion Service](#bastion-use)
+    1. [Express Deployment](#express-use)
 1. [Ways to Deploy](#ways-to-deploy)
     1. [Deploying with Terraform CLI](#deploying-with-terraform-cli)
     1. [Deploying with OCI Resource Manager UI](#deploying-with-orm-ui)
@@ -36,6 +37,10 @@ The benchmark document does not include guidance on architectural best practices
 Customers do not incur any costs when deploying the Landing Zone and the code is publicly available in GitHub [https://github.com/oci-landing-zones/oci-core-landingzone](https://github.com/oci-landing-zones/oci-core-landingzone) under the OCI Landing Zones project. The main idea behind Landing Zone is to allow for fast enablement of security guard rails where workloads can be subsequently deployed safely. Users are not required to have extensive Terraform knowledge to use the Landing Zone *as is* and should be able to deploy it after entering a few configuration variables.
 
 Landing Zone does not provision any resources where workloads are directly executed on, like Compute instances, Databases, Containers, or Functions. Instead, it provides the appropriate placeholders and attachment points for such resources. As a mental model, picture the Landing Zone as an airport, where choppers (workloads) can land safely. For example, the Landing Zone provides the compartment where databases are expected to be created along with the OCI IAM policies and groups that allow database administrators to manage databases. Additionally, it provides the network structures that database administrators should use when provisioning a database, like subnets and NSGs (Network Security Groups). On top of that, Landing Zone configures various OCI services for a strong security posture.
+
+Customer workloads often require extra resources like network, policies, etc. Using Landing Zone as the foundation, workload resources will be created. But at a later time, any additional workload will require separate, similar resources to be created.
+Therefore, Landing Zone facilitates some workload use cases with generic [extensions](https://github.com/oci-landing-zones/oci-core-landingzone/extensions/). 
+These generic workload extensions allow splitting up the deployment of workload resources into the prerequisites and the workload itself.  
 
 The Landing Zone team monitors OCI services and evaluates new additions and updates, balancing simplicity and flexibility for providing a secure and well architected tenancy for enterprises in OCI.
 
@@ -208,7 +213,7 @@ The Landing Zone defines four dynamic groups to satisfy common needs of workload
 - **AppDev Functions**: to be used by functions defined in the AppDev compartment. The matching rule includes all functions in the AppDev compartment. An example is a function for processing of application data and writing it to an Object Storage bucket.
 - **Compute Agent**: to be used by Compute's management agent in the AppDev compartment.
 - **Database KMS**: to be used by databases in the Database compartment to access keys in the Vault service.
-- **Fortigate Network Appliance**: to be used by Fortigate network appliances to read resources.
+- **FortiGate Network Appliance**: to be used by FortiGate network appliances to read resources.
 
 ### Policies
 
@@ -236,7 +241,11 @@ The Landing Zone supports up to three VCNs of each type.
 
 Regardless the networking types, these VCNs can be deployed standalone or all connected via OCI DRG V2 service in a Hub & Spoke topology. When deploying Hub & Spoke, either a Hub VCN (aka DMZ VCN) can be provisioned or the DRG itself used as the hub. The Landing Zone also optionally deploys a network appliance or OCI Native Firewall in the Hub VCN to control/secure all inbound and outbound traffic routing in the spoke VCNs.
 
-All VCNs can be configured with no Internet connectivity or for on-premises connectivity. Inbound SSH access (TCP port 22) from 0.0.0.0/0 IP range is prohibited, but the landing zone may be configured to leverage OCI Bastion Service for secure, restricted access from the Internet, an on-premises CIDR block, or both.
+The Landing Zone DRG also allows for attachments from additional, externally managed VCNs. This allows for updates to routing so that all Landing Zone resources are centrally managed. In this operational model, resources that are created by the Landing Zone are not altered by the external workload. A workload only creates and updates resources that are owned by the workload. A shared resource like the hub DRG falls under the management of the Landing Zone. 
+
+<img src="images/External_VCN1.png" alt="External VCN" width="800"/>
+
+All VCNs can be configured with no Internet connectivity or for on-premises connectivity. Inbound SSH access (TCP port 22) from 0.0.0.0/0 IP range is prohibited, but the Landing Zone may be configured to leverage OCI Bastion Service for secure, restricted access from the Internet, an on-premises CIDR block, or both.
 
 Due to the very nature of Terraform, it is possible to add, modify and delete VCNs. Landing Zone allows for switching back and forth between standalone and Hub & Spoke, however it is recommended to plan for a specific design, as manual actions might be needed when switching.
 
@@ -267,8 +276,8 @@ Resources tagging is an important component of a governance framework, as it all
 Landing Zone implements three facets of resources tagging:
 
 - **Tag Defaults**: Landing Zone provisions *CreatedBy* (who) and *CreatedOn* (when) tag defaults in a brand new tag namespace if the *Oracle-Tags* namespace is not available in the tenancy. Tag defaults allow for automatic tagging on any subsequently deployed resources. This is mandated by CIS Foundations Benchmark and it is extremely useful for identifying who created a particular resource and when.
-- **Landing Zone tag**: Landing Zone uses a freeform tag to tag all provisioned resources with the simple objective of identifying them as Landing Zone resources.
-- **Customer-defined tags**: Customers can also tag Landing Zone resources as they wish, either via defined tags or freeform tags. Defined tags imply the creation of a tag namespace, while freeform tags do not. This is the approach that customers take when aiming for tag-based policies and cost tracking. As Landing Zone cannot predict namespaces and tag names, custom tags are considered a customization.
+- **Landing Zone tag**: Landing Zone uses a free-form tag to tag all provisioned resources with the simple objective of identifying them as Landing Zone resources.
+- **Customer-defined tags**: Customers can also tag Landing Zone resources as they wish, either via defined tags or free-form tags. Defined tags imply the creation of a tag namespace, while free-form tags do not. This is the approach that customers take when aiming for tag-based policies and cost tracking. As Landing Zone cannot predict namespaces and tag names, custom tags are considered a customization.
 
 # <a name="scenarios"></a>4. Deployment Scenarios
 
@@ -280,7 +289,7 @@ In this section we describe the main deployment scenarios for the Landing Zone a
 
 By default, the Landing Zone compartments are deployed in the tenancy root compartment. In such case, all Landing Zone policies are attached to the root compartment. This behavior is changed by the following configuration variables:
 
-- **enclosing\_compartment\_options**: determines where the landing zone compartments are deployed: within a new enclosing compartment or within an existing enclosing compartment (that can be the Root compartment). Valid options: 'Yes, deploy new', 'Yes, use existing', 'No'"
+- **enclosing\_compartment\_options**: determines where the Landing Zone compartments are deployed: within a new enclosing compartment or within an existing enclosing compartment (that can be the Root compartment). Valid options: 'Yes, deploy new', 'Yes, use existing', 'No'"
 
 - **enclosing\_compartment\_parent\_ocid**: the existing compartment where Landing Zone **enclosing** compartment is created. It is required if *enclosing\_compartment\_options* is 'Yes, deploy New'.
 
@@ -371,6 +380,7 @@ See deployment scenarios under the [templates](./templates/) folder:
 - [Multiple VCN types peered through a Hub VCN with a Bastion Service enabled on a jump host](./templates/hub-spoke-with-hub-vcn-bastion-jump-host)
 - [On-premises connectivity through a Hub VCN with Site-to-Site VPN using IPSec](./templates/hub-spoke-with-hub-vcn-ipsec-vpn)
 - [On-premises connectivity through a Hub VCN with FastConnect virtual circuits](./templates/hub-spoke-with-hub-vcn-fastconnect-virtual-circuit)
+- [Hub DRG including externally managed VCN using IPSec/LibreSwan](./templates/externally-managed-vcns)
 
 #### Landing Zone OCI Network Firewall Option
 
@@ -396,7 +406,7 @@ If updated in the stack this way, the new user policy is baked into the Network 
 
 #### Landing Zone Third Party Firewall Options
 
-Alternatively, Core Landing Zone supports use of a third party *network appliance* (VM instance) with either Palo Alto Networks VM-Series Next Generation Firewall or Fortinet FortiGate Next-Gen Firewall.  Both options leverage compute images available in the [OCI Marktplace](https://cloud.oracle.com/marketplace) with Bring Your Own Licensing (BYOL).
+Alternatively, Core Landing Zone supports use of a third party *network appliance* (VM instance) with either Palo Alto Networks VM-Series Next Generation Firewall or Fortinet FortiGate Next-Gen Firewall.  Both options leverage compute images available in the [OCI Marketplace](https://cloud.oracle.com/marketplace) with Bring Your Own Licensing (BYOL).
 
 Both OCI and Third Party firewall options are provided separately in the deployment scenario templates above.
 
@@ -672,6 +682,10 @@ The default bastion service name is the value of *service\_label* variable conca
 <img src="images/Deploy_Bastion1.png" alt="Deploy Bastion" width="800"/>
 <img src="images/Deploy_Bastion2.png" alt="Deploy Bastion" width="800"/>
 <img src="images/Deploy_Bastion3.png" alt="Deploy Bastion" width="800"/>
+
+## <a name="express-use"></a>4.8 Express Deployment
+
+Core Landing Zone offers an "express" deployment method for a streamlined RMS experience; the express method provides a reduced number of input options. There is a "Free Tenancy?" option that when checked makes the User Interface hide the Cloud Guard and Security Zones input sections because those services are not available with a free tenancy. The default behavior is false (unchecked). For CLI activation, use the *is\_free\_tenancy* variable. Additionally, there is a "Display Security/Logging/Governance Settings?" checkbox (*display\_security\_logging\_governance\_settings* variable) that when clicked, displays the available settings for setting up Cloud Guard, Security Zones, Logging, Vulnerability Scanning and Cost Management.
 
 # <a name="ways-to-deploy"></a>5. Ways to Deploy
 

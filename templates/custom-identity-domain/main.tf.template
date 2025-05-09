@@ -35,7 +35,6 @@ module "core_lz" {
     # ------------------------------------------------------
     # ----- Security
     # ------------------------------------------------------
-    enable_cloud_guard = false # Set to true if Cloud Guard has not already been enabled.
     enable_security_zones=false # Set to true if Security Zones are required.
 
     # ------------------------------------------------------

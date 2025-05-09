@@ -53,9 +53,4 @@ module "core_lz" {
     # ------------------------------------------------------
     network_admin_email_endpoints  = ["email.address@example.com"] # for network-related events. Replace with a real email address.
     security_admin_email_endpoints = ["email.address@example.com"] # for security-related events. Replace with a real email address.
-
-    # ------------------------------------------------------
-    # ----- Security
-    # ------------------------------------------------------
-    enable_cloud_guard = true # Set to false if Cloud Guard has already been enabled.
 }

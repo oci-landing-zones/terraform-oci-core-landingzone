@@ -183,10 +183,11 @@ Some deployment scenarios are available under the [templates](./templates/) fold
 - [Multiple VCN types peered through a Hub VCN with a Bastion Service enabled on a jump host](./templates/hub-spoke-with-hub-vcn-bastion-jump-host)
 - [On-premises connectivity through a Hub VCN with Site-to-Site VPN using IPSec](./templates/hub-spoke-with-hub-vcn-ipsec-vpn)
 - [On-premises connectivity through a Hub VCN with FastConnect virtual circuits](./templates/hub-spoke-with-hub-vcn-fastconnect-virtual-circuit)
+- [Hub DRG including externally managed VCN using IPSec/LibreSwan](./templates/externally-managed-vcns)
 
 Another key deployment scenario of OCI Core Landing Zone is [Zero Trust Landing Zone](https://github.com/oci-landing-zones/terraform-oci-zero-trust-landingzone).
 
-OCI Core Landing Zone release 1.2.0 offers **OCI Network Firewall** in a Hub VCN for use with Three Tier, Exadata and/or OKE networking.
+OCI Core Landing Zone offers **OCI Network Firewall** in a Hub VCN for use with Three Tier, Exadata and/or OKE networking.
 
 
 ## <a name="modules">CIS OCI Foundations Benchmark Modules Collection</a>
@@ -196,7 +197,7 @@ This repository uses a broader collection of repositories containing modules tha
 - [Networking](https://github.com/oci-landing-zones/terraform-oci-modules-networking)
 - [Governance](https://github.com/oci-landing-zones/terraform-oci-modules-governance)
 - [Security](https://github.com/oci-landing-zones/terraform-oci-modules-security)
-- [Observability & Monitoring](https://oci-landing-zones/terraform-oci-modules-observability)
+- [Observability & Monitoring](https://github.com/oci-landing-zones/terraform-oci-modules-observability)
 - [Secure Workloads](https://github.com/oci-landing-zones/terraform-oci-modules-workloads)
 
 The modules in this collection are designed for flexibility, are straightforward to use, and enforce CIS OCI Foundations Benchmark recommendations when possible.
@@ -266,7 +267,7 @@ See [LICENSE](./LICENSE.txt) for more details.
 
 **10. Unsolicited updates in Identity Domain Groups and Dynamic Groups**
   * Terraform plans for updating groups and dynamic groups in identity domains when no updates have been requested. This seems to be an issue in the underlying provider, and a solution is being sought. The proposed updates are harmless.
-  <br>
+
   <details><summary>Click here for unsolicited updates samples:</summary>
     
   ```
@@ -317,5 +318,4 @@ See [LICENSE](./LICENSE.txt) for more details.
     }
   ```
   </details>
-  <br>
 

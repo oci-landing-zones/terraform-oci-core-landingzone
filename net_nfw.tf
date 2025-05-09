@@ -261,7 +261,7 @@ locals {
 
 module "lz_firewall_appliance" {
   count                   = local.chosen_firewall_option != "NO" && local.chosen_firewall_option != "OCINFW" ? 1 : 0
-  source                  = "github.com/oci-landing-zones/terraform-oci-modules-workloads//cis-compute-storage?ref=v0.1.9"
+  source                  = "github.com/oci-landing-zones/terraform-oci-modules-workloads//cis-compute-storage?ref=v0.2.0"
   instances_configuration = local.instances_configuration
   providers = {
     oci                                  = oci.home
@@ -272,12 +272,12 @@ module "lz_firewall_appliance" {
 
 module "lz_nlb" {
   count             = local.chosen_firewall_option != "NO" && local.chosen_firewall_option != "OCINFW" ? 1 : 0
-  source            = "github.com/oci-landing-zones/terraform-oci-modules-networking//modules/nlb?ref=v0.7.3"
+  source            = "github.com/oci-landing-zones/terraform-oci-modules-networking//modules/nlb?ref=release-0.7.5"
   nlb_configuration = local.nlb_configuration
 }
 
 module "native_oci_firewall" {
   count                    = local.chosen_firewall_option == "OCINFW" ? 1 : 0
-  source                   = "github.com/oci-landing-zones/terraform-oci-modules-networking?ref=v0.7.3"
+  source                   = "github.com/oci-landing-zones/terraform-oci-modules-networking?ref=release-0.7.5"
   network_configuration    = local.network_firewall_network_configuration
 }

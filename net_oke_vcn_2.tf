@@ -23,7 +23,7 @@ locals {
             ipv6cidr_blocks           = []
             prohibit_internet_ingress = true
             route_table_key           = "OKE-VCN-2-API-SUBNET-ROUTE-TABLE"
-            security_list_keys        = ["OKE-VCN-2-API-SUBNET-SL"]
+            # security_list_keys        = ["OKE-VCN-2-API-SUBNET-SL"]
           }
         },
         {
@@ -210,23 +210,7 @@ locals {
         } : {}
       )
 
-      security_lists = merge({
-        "OKE-VCN-2-API-SUBNET-SL" = {
-          display_name = "${coalesce(var.oke_vcn2_api_subnet_name, "${var.service_label}-oke-vcn-2-api-subnet")}-security-list"
-          egress_rules = []
-          ingress_rules = [
-            {
-              description = "Allows inbound ICMP traffic for path discovery"
-              stateless   = false
-              protocol    = "ICMP"
-              src         = "0.0.0.0/0"
-              src_type    = "CIDR_BLOCK"
-              icmp_type   = 3
-              icmp_code   = 4
-            }
-          ]
-        }
-        },
+      security_lists = merge(
         {
           "OKE-VCN-2-WORKERS-SUBNET-SL" = {
             display_name = "${coalesce(var.oke_vcn2_workers_subnet_name, "${var.service_label}-oke-vcn-2-workers-subnet")}-security-list"
@@ -1214,7 +1198,7 @@ locals {
     } : {},
     (local.add_oke_vcn2 == true && var.oke_vcn2_attach_to_drg == true && var.add_oke_vcn3 == true && var.oke_vcn3_attach_to_drg == true) &&
     (local.hub_with_vcn == true ||
-      (local.hub_with_drg_only == true && (length(var.oke_vcn2_routable_vcns) == 0 || contains(var.oke_vcn2_routable_vcns, "OKE-VCN-3")))) ? {
+    (local.hub_with_drg_only == true && (length(var.oke_vcn2_routable_vcns) == 0 || contains(var.oke_vcn2_routable_vcns, "OKE-VCN-3")))) ? {
       "INGRESS-FROM-OKE-VCN-3-WORKERS-SUBNET-RULE" = {
         description  = "Ingress from ${coalesce(var.oke_vcn3_workers_subnet_name, "${var.service_label}-oke-vcn-3-workers-subnet")}."
         stateless    = false
