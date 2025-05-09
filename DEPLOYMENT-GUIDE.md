@@ -213,7 +213,7 @@ The Landing Zone defines four dynamic groups to satisfy common needs of workload
 - **AppDev Functions**: to be used by functions defined in the AppDev compartment. The matching rule includes all functions in the AppDev compartment. An example is a function for processing of application data and writing it to an Object Storage bucket.
 - **Compute Agent**: to be used by Compute's management agent in the AppDev compartment.
 - **Database KMS**: to be used by databases in the Database compartment to access keys in the Vault service.
-- **Fortigate Network Appliance**: to be used by Fortigate network appliances to read resources.
+- **FortiGate Network Appliance**: to be used by FortiGate network appliances to read resources.
 
 ### Policies
 
@@ -276,8 +276,8 @@ Resources tagging is an important component of a governance framework, as it all
 Landing Zone implements three facets of resources tagging:
 
 - **Tag Defaults**: Landing Zone provisions *CreatedBy* (who) and *CreatedOn* (when) tag defaults in a brand new tag namespace if the *Oracle-Tags* namespace is not available in the tenancy. Tag defaults allow for automatic tagging on any subsequently deployed resources. This is mandated by CIS Foundations Benchmark and it is extremely useful for identifying who created a particular resource and when.
-- **Landing Zone tag**: Landing Zone uses a freeform tag to tag all provisioned resources with the simple objective of identifying them as Landing Zone resources.
-- **Customer-defined tags**: Customers can also tag Landing Zone resources as they wish, either via defined tags or freeform tags. Defined tags imply the creation of a tag namespace, while freeform tags do not. This is the approach that customers take when aiming for tag-based policies and cost tracking. As Landing Zone cannot predict namespaces and tag names, custom tags are considered a customization.
+- **Landing Zone tag**: Landing Zone uses a free-form tag to tag all provisioned resources with the simple objective of identifying them as Landing Zone resources.
+- **Customer-defined tags**: Customers can also tag Landing Zone resources as they wish, either via defined tags or free-form tags. Defined tags imply the creation of a tag namespace, while free-form tags do not. This is the approach that customers take when aiming for tag-based policies and cost tracking. As Landing Zone cannot predict namespaces and tag names, custom tags are considered a customization.
 
 # <a name="scenarios"></a>4. Deployment Scenarios
 
@@ -406,7 +406,7 @@ If updated in the stack this way, the new user policy is baked into the Network 
 
 #### Landing Zone Third Party Firewall Options
 
-Alternatively, Core Landing Zone supports use of a third party *network appliance* (VM instance) with either Palo Alto Networks VM-Series Next Generation Firewall or Fortinet FortiGate Next-Gen Firewall.  Both options leverage compute images available in the [OCI Marktplace](https://cloud.oracle.com/marketplace) with Bring Your Own Licensing (BYOL).
+Alternatively, Core Landing Zone supports use of a third party *network appliance* (VM instance) with either Palo Alto Networks VM-Series Next Generation Firewall or Fortinet FortiGate Next-Gen Firewall.  Both options leverage compute images available in the [OCI Marketplace](https://cloud.oracle.com/marketplace) with Bring Your Own Licensing (BYOL).
 
 Both OCI and Third Party firewall options are provided separately in the deployment scenario templates above.
 

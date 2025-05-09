@@ -1,10 +1,9 @@
 # May 09, 2025 Release Notes - 1.5.0
-
 1. Core Landing Zone Enhancements:
    - Added support for externally managed VCNs with associated security controls and routing for Hub DRG attachments.
    - Added routing for jump host access to network firewalls and workload VCNs.
    - Disallowed CIDR 0.0.0.0/0 from ingress/egress rules in the default security lists.
-   - Automaticlly enable the Cloud Guard service and create a managed target at the root compartment if it does not already exist.
+   - Automatically enables Cloud Guard service and creates a managed target at the root compartment if it does not already exist.
    - Added a "Display Security/Logging/Governance Settings?" checkbox that displays settings for Cloud Guard, Security Zones, Logging, Vulnerability Scanning and Cost Management.
 2. Generic Network Extension: provides prerequisite resources (VCN, subnets, seclists and NSGs) for a generic workload based on user input.
 3. Generic IAM Extension: provides prerequisite resources (compartments, groups and policies) for a generic workload. This module can either share or isolate those resources from the parent landing zone.
@@ -40,12 +39,11 @@
 1. Ability to deploy groups and dynamic groups in an existing identity domain.
 2. Ability to define the network appliance versions. Supported versions are:
     - Palo Alto Networks Firewall: 11.1.3 and 11.1.2-h1. (NB: these versions are deprecated in Core Landing Zone Release 1.3.0)
-    - Fortinet Fortigate Firewall: 7.2.9(X64) and 7.4.4(X64)
+    - Fortinet FortiGate Firewall: 7.2.9(X64) and 7.4.4(X64)
 3. Ability to deploy a network appliance custom image.
 4. Bug fixes.    
 
 # September 06, 2024 Release Notes - 0.0.1 (Early Preview Release)
-## New
 1. Utilizes the modules available in the [CIS OCI Foundations Benchmark Modules Collection](./README.md#modules) for actual resource management.
 2. Adds the following to CIS Landing Zone:
     - Ability to use groups and dynamic groups from an existing Identity Domain as the grantees of IAM policies.
