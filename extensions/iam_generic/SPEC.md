@@ -61,7 +61,6 @@ No resources.
 | <a name="input_workload_compartment_description"></a> [workload\_compartment\_description](#input\_workload\_compartment\_description)                         | Workload compartment description                                                                                                            | `string`       | `"Workload compartment"` | no |
 | <a name="input_workload_compartment_name"></a> [workload\_compartment\_name](#input\_workload\_compartment\_name)                                              | the name of the workload compartment                                                                                                        | `string`       | `"workload-cmp"` | no |
 | <a name="input_workload_db_admin_group_name"></a> [workload\_db\_admin\_group\_name](#input\_workload\_db\_admin\_group\_name)                                 | the name of the workload database admin group                                                                                               | `string`       | `"workload-db-admin-group"` | no |
-| <a name="input_additional_nsgs"></a> [additional\_nsgs](#input\_additional\_nsg)                                                                                                        | Additional network security groups.                         | `map(object)`  | `[]` | no |
 
 ## Outputs
 
