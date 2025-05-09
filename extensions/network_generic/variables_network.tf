@@ -4,8 +4,10 @@
 # ------------------------------------------------------
 # ----- General
 #-------------------------------------------------------
+
 variable "tenancy_ocid" {
   default = ""
+  description = "OCID of the tenancy."
 }
 variable "user_ocid" {
   default = ""
