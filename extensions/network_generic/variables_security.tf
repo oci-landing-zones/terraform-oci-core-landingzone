@@ -611,3 +611,39 @@ variable "spare_nsg_additional_egress_rules" {
   description = "Additional egress rules for the spare subnet nsg. This allows for the injection of additional optional security rules."
   default = {}
 }
+variable "additional_nsgs" {
+  description = "Optional additional NSG."
+  type = map(object({
+    compartment_id = optional(string),
+    display_name   = optional(string),
+    defined_tags   = optional(map(string))
+    freeform_tags  = optional(map(string))
+    ingress_rules = optional(map(object({
+      description  = optional(string),
+      protocol     = string,
+      stateless    = optional(bool),
+      src          = optional(string),
+      src_type     = optional(string),
+      dst_port_min = optional(number),
+      dst_port_max = optional(number),
+      src_port_min = optional(number),
+      src_port_max = optional(number),
+      icmp_type    = optional(number),
+      icmp_code    = optional(number)
+    }))),
+    egress_rules = optional(map(object({
+      description  = optional(string),
+      protocol     = string,
+      stateless    = optional(bool),
+      dst          = optional(string),
+      dst_type     = optional(string),
+      dst_port_min = optional(number),
+      dst_port_max = optional(number),
+      src_port_min = optional(number),
+      src_port_max = optional(number),
+      icmp_type    = optional(number),
+      icmp_code    = optional(number)
+    })))
+  }))
+  default = {}
+}
