@@ -69,15 +69,6 @@ locals {
           display_name = "${coalesce(var.tt_vcn2_bastion_subnet_name, "${var.service_label}-three-tier-vcn-2-bastion-subnet")}-security-list"
           ingress_rules = [
             {
-              description = "Ingress on UDP type 3 code 4."
-              stateless   = false
-              protocol    = "UDP"
-              src         = "0.0.0.0/0"
-              src_type    = "CIDR_BLOCK"
-              icmp_type   = 3
-              icmp_code   = 4
-            },
-            {
               description  = "Ingress from ${coalesce(var.tt_vcn2_bastion_subnet_name, "${var.service_label}-three-tier-vcn-2-bastion-subnet")} on SSH port. Required for connecting Bastion service endpoint to Bastion host."
               stateless    = false
               protocol     = "TCP"

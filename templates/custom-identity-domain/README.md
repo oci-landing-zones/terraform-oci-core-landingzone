@@ -16,7 +16,6 @@ This template has the following parameters set:
 | service\_label | A unique identifier to prefix the resources | existingID |
 | network\_admin\_email\_endpoints | List of email addresses that receive notifications for networking related events. | ["email.address@example.com"] |
 | security\_admin\_email\_endpoints | List of email addresses that receive notifications for security related events. | ["email.address@example.com"] |
-| enable\_cloud\_guard | When true, OCI Cloud Guard Service is enabled. Set to false if it's been already enabled through other means. | false |
 | identity\_domain\_option | Option to use the default identity domain, create a new identity domain or use custom identity domain. Value to use: Default Domain, New Identity Domain, Use Custom Identity Domain | "Use Custom Identity Domain" |
 | custom\_id\_domain\_ocid | Replace with your identity domain OCID. | ["your\_domain\_ocid"] |
 | deploy\_custom\_domain\_groups | Deploy custom identity domain groups and dynamic groups. | true |
@@ -31,12 +30,11 @@ This template can be deployed using OCI Resource Manager Service (RMS) or Terraf
 
 By clicking the button below, you are redirected to an OCI RMS Stack with variables pre-assigned for deployment. 
 
-[![Deploy_To_OCI](../../images/DeployToOCI.svg)](https://cloud.oracle.com/resourcemanager/stacks/create?zipUrl=https://github.com/oci-landing-zones/terraform-oci-core-landingzone/archive/refs/heads/main.zip&zipUrlVariables={"service_label":"existingID","network_admin_email_endpoints":["email.address@example.com"],"security_admin_email_endpoints":["email.address@example.com"],"enable_cloud_guard":false,"identity_domain_option":"Use%20Custom%20Identity%20Domain","custom_id_domain_ocid":["your_domain_ocid"],"deploy_custom_domain_groups":true,"customize_iam":true})
+[![Deploy_To_OCI](../../images/DeployToOCI.svg)](https://cloud.oracle.com/resourcemanager/stacks/create?zipUrl=https://github.com/oci-landing-zones/terraform-oci-core-landingzone/archive/refs/heads/main.zip&zipUrlVariables={"service_label":"existingID","network_admin_email_endpoints":["email.address@example.com"],"security_admin_email_endpoints":["email.address@example.com"],"identity_domain_option":"Use%20Custom%20Identity%20Domain","custom_id_domain_ocid":["your_domain_ocid"],"deploy_custom_domain_groups":true,"customize_iam":true})
 
 You are required to review/adjust the following variable settings:
  - Make sure to pick an OCI region for deployment.
- - Provide real email addresses for *Network Admin Email Endpoints* and *Security Admin Email Endpoints* fields. 
- - Uncheck *Enable Cloud Guard Service* option in case it is already enabled in your tenancy.
+ - Provide real email addresses for *Network Admin Email Endpoints* and *Security Admin Email Endpoints* fields.
 
 Everything else is optional.    
 

@@ -32,7 +32,7 @@ locals {
           }
         }
         is_bfd_enabled = var.fastconnect_virtual_circuit_is_bfd_enabled
-        routing_policy = [upper(var.fastconnect_virtual_circuit_routing_policy)]
+        routing_policy = try([upper(var.fastconnect_virtual_circuit_routing_policy)], null)
         ip_mtu         = var.fastconnect_virtual_circuit_ip_mtu
       }
     }
