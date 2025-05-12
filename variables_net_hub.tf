@@ -45,8 +45,8 @@ variable "hub_vcn_name" {
   description = "The Hub VCN name."
 }
 variable "hub_vcn_cidrs" {
-  type    = list(string)
-  default = ["192.168.0.0/24"]
+  type        = list(string)
+  default     = ["192.168.0.0/24"]
   description = "List of CIDR blocks for the Hub VCN."
 }
 # ------------------------------------------------------
@@ -59,14 +59,14 @@ variable "hub_vcn_deploy_net_appliance_option" {
 }
 
 variable "enable_native_firewall_threat_log" {
-  type    = bool
-  default = false
+  type        = bool
+  default     = false
   description = "Enable OCI Native Firewall Threat Log."
 }
 
 variable "enable_native_firewall_traffic_log" {
-  type    = bool
-  default = false
+  type        = bool
+  default     = false
   description = "Enable OCI Native Firewall Traffic Log."
 }
 
@@ -113,8 +113,8 @@ variable "net_appliance_flex_shape_memory" {
 }
 
 variable "net_appliance_flex_shape_cpu" {
-  type    = number
-  default = 4
+  type        = number
+  default     = 4
   description = "The number of OCPUs for the selected flex shape. Applicable to flexible shapes only."
 }
 
@@ -227,4 +227,18 @@ variable "hub_vcn_jumphost_subnet_cidr" {
   type        = string
   default     = null
   description = "The Hub VCN Jump Host subnet CIDR block. It must be within the VCN CIDR blocks."
+}
+
+# -------------------------------------------
+# ----- Networking - Additional Networks
+#--------------------------------------------
+variable "workloadvcn_ocids_public_access" {
+  type        = list(string)
+  description = "A list of externally-managed VCN OCIDs that require public connectivity. The VCNs provided here attach to the DRG as a spoke and are routeable from the web subnet in the Hub VCN."
+  default     = []
+}
+variable "workloadvcn_ocids_onprem_access" {
+  type        = list(string)
+  description = "A list of externally-managed VCN OCIDs that require on-premises connectivity. The VCNs provided here attach to the DRG as a spoke and are routeable from the on-premises network."
+  default     = []
 }

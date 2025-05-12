@@ -111,12 +111,12 @@ variable "vss_agent_scan_level" {
   }
 }
 variable "vss_agent_cis_benchmark_settings_scan_level" {
-  description = "Valid values: STRICT, MEDIUM, LIGHTWEIGHT, NONE. STRICT: If more than 20% of the CIS benchmarks fail, then the target is assigned a risk level of Critical. MEDIUM: If more than 40% of the CIS benchmarks fail, then the target is assigned a risk level of High. LIGHTWEIGHT: If more than 80% of the CIS benchmarks fail, then the target is assigned a risk level of High. NONE: disables cis benchmark scanning."
+  description = "Valid values: STRICT, MEDIUM, LIGHT, NONE. STRICT: If more than 20% of the CIS benchmarks fail, then the target is assigned a risk level of Critical. MEDIUM: If more than 40% of the CIS benchmarks fail, then the target is assigned a risk level of High. LIGHT: If more than 80% of the CIS benchmarks fail, then the target is assigned a risk level of High. NONE: disables cis benchmark scanning."
   type        = string
   default     = "MEDIUM"
   validation {
-    condition     = contains(["STRICT", "MEDIUM", "LIGHTWEIGHT", "NONE"], upper(var.vss_agent_cis_benchmark_settings_scan_level))
-    error_message = "Validation failed for vss_agent_cis_benchmark_settings_scan_level: valid values are STRICT, MEDIUM, LIGHTWEIGHT, NONE (case insensitive)."
+    condition     = contains(["STRICT", "MEDIUM", "LIGHT", "NONE"], upper(var.vss_agent_cis_benchmark_settings_scan_level))
+    error_message = "Validation failed for vss_agent_cis_benchmark_settings_scan_level: valid values are STRICT, MEDIUM, LIGHT, NONE (case insensitive)."
   }
 }
 variable "vss_enable_file_scan" {
@@ -207,4 +207,22 @@ variable "bastion_service_allowed_cidrs" {
     condition     = length([for c in var.bastion_service_allowed_cidrs : c if length(regexall("^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/([0-9]|[1-2][0-9]|3[0-2]))?$", c)) > 0]) == length(var.bastion_service_allowed_cidrs)
     error_message = "Validation failed for bastion_service_allowed_cidrs: values must be in CIDR notation."
   }
+}
+
+variable "customize_bastion_service" {
+  type        = bool
+  default     = false
+  description = "Set to true to set custom options for Bastion Service."
+}
+
+variable "customize_jump_host" {
+  type        = bool
+  default     = false
+  description = "Set to true to set custom options for jump host."
+}
+
+variable "customize_jumphost_subnet" {
+  type        = bool
+  default     = false
+  description = "Set to true to set custom options for jump host subnet."
 }

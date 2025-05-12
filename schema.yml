@@ -209,10 +209,10 @@ variableGroups:
     variables:
       - "bastion_jump_host_custom_image_ocid"
       - "bastion_jump_host_marketplace_image_option"
-      - "bastion_jump_host_public_rsa_key"
+      - "bastion_jump_host_ssh_public_key_path"
       - "customize_jump_host"
-      - "bastion_jump_host_name"
-      - "bastion_jump_host_shape"
+      - "bastion_jump_host_instance_name"
+      - "bastion_jump_host_instance_shape"
       - "bastion_jump_host_flex_shape_memory"
       - "bastion_jump_host_flex_shape_cpu"
       - "bastion_jump_host_boot_volume_size"
@@ -463,6 +463,11 @@ variableGroups:
       - "oke_vcn3_mgmt_subnet_dns"
     visible: define_net
 
+  - title: "Networking - Externally Managed VCNs"
+    variables:
+      - "workloadvcn_ocids_public_access"
+      - "workloadvcn_ocids_onprem_access"
+
   - title: "Events and Notifications"
     variables:
       - "network_admin_email_endpoints"
@@ -484,30 +489,28 @@ variableGroups:
       - "cloud_guard_admin_email_endpoints"
       - "cloud_guard_risk_level_threshold"
       - "enable_cloud_guard_cloned_recipes"
-    visible:
-      or:
+    visible: 
+      and:
         - eq:
           - ${display_security_logging_governance_settings}
           - true
         - eq:
           - ${is_free_tenancy}
           - false
-
 
   - title: "Security Zones"
     variables:
     - "enable_security_zones"
     - "security_zones_reporting_region"
     - "sz_security_policies"
-    visible:
-      or:
+    visible: 
+      and:
         - eq:
           - ${display_security_logging_governance_settings}
           - true
         - eq:
           - ${is_free_tenancy}
           - false
-  
 
   - title: "Logging Consolidation: Service Connector Hub"
     variables:
@@ -573,9 +576,6 @@ variableGroups:
       - "firewall_traffic_log_type"
       - "firewall_traffic_log_category"
       - "firewall_traffic_log_service"
-      - "bastion_jump_host_instance_name"
-      - "bastion_jump_host_instance_shape"
-      - "bastion_jump_host_ssh_public_key_path"
       - "bastion_jump_host_platform_image_name"
       - "fastconnect_virtual_circuit_cross_connect_or_cross_connect_group_id"
       - "fastconnect_virtual_circuit_vlan"
@@ -4323,7 +4323,49 @@ variables:
             - "VCN or on-premises connectivity routing through DMZ VCN with Network Virtual Appliance (DRG and DMZ VCN will be created)"
           - eq:
             - ${hub_deployment_option}
-            - "VCN or on-premises connectivity routed through DMZ VCN with Network Virtual Appliance existing DRG (DMZ VCN will be created and DRG ID required)"      
+            - "VCN or on-premises connectivity routed through DMZ VCN with Network Virtual Appliance existing DRG (DMZ VCN will be created and DRG ID required)"
+
+# -------------------------------------------------------------
+# ----- Networking - Externally Managed VCNsional Routing
+# -------------------------------------------------------------
+  workloadvcn_ocids_public_access:
+    type: array
+    items:
+      type: string
+    uniqueItems: true
+    title: "Additional Networks (Public Access): VCN OCIDs"
+    required: false
+    description: "Enter externally-managed VCN OCIDs that require public connectivity. The VCNs provided here attach to the DRG as a spoke and are routeable from the web subnet in the Hub VCN."
+    visible:
+      and:
+        - define_net
+        - or:
+          - eq:
+            - ${hub_deployment_option}
+            - "VCN or on-premises connectivity routing through DMZ VCN with Network Virtual Appliance (DRG and DMZ VCN will be created)"
+          - eq:
+            - ${hub_deployment_option}
+            - "VCN or on-premises connectivity routed through DMZ VCN with Network Virtual Appliance existing DRG (DMZ VCN will be created and DRG ID required)"
+
+  workloadvcn_ocids_onprem_access:
+    type: array
+    items:
+      type: string
+    uniqueItems: true
+    title: "Additional Networks (On-Premises Access): VCN OCIDs"
+    required: false
+    description: "Enter externally-managed VCN OCIDs that require on-premises connectivity. The VCNs provided here attach to the DRG as a spoke and are routeable from the on-premises network."
+    visible:
+      and:
+        - define_net
+        - not:
+          - eq:
+            - ${hub_deployment_option}
+            - "No cross-VCN or on-premises connectivity"
+        - not:
+          - eq:
+            - ${on_premises_connection_option}
+            - "None"
 
   network_admin_email_endpoints:
     type: array
@@ -4674,7 +4716,7 @@ variables:
     enum:
       - STRICT
       - MEDIUM
-      - LIGHTWEIGTH
+      - LIGHT
       - NONE
     visible:
       and:
@@ -4827,7 +4869,7 @@ variables:
   #   required: true
   #   visible: deploy_bastion_jump_host
 
-  bastion_jump_host_public_rsa_key:
+  bastion_jump_host_ssh_public_key_path:
     type: string
     title: "Enter the public SSH Key for the Jump Host"
     required: false
@@ -4842,14 +4884,14 @@ variables:
     description: "If checked, provide custom options for Jump Host Instance"
     visible: deploy_bastion_jump_host
 
-  bastion_jump_host_name:
+  bastion_jump_host_instance_name:
     type: string
     title: "Jump Host Name"
     required: false
     visible: customize_jump_host
     description: "The name of the jump host. This will be appended to the service label."
 
-  bastion_jump_host_shape:
+  bastion_jump_host_instance_shape:
       type: oci:core:instanceshape:name
       dependsOn:
         compartmentId: ${tenancy_ocid}

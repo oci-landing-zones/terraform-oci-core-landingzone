@@ -71,7 +71,6 @@ module "core_lz" {
     # ------------------------------------------------------
     # ----- Security
     # ------------------------------------------------------
-    enable_cloud_guard    = true # Set to false if Cloud Guard has already been enabled.
     enable_security_zones = true # Deploys a security zone for this deployment in the enclosing compartment.
     vss_create            = true # Enables Vulnerability Scanning Service for Compute instances.
 
