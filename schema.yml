@@ -28,7 +28,6 @@ variableGroups:
     - "zpr_namespace_name"
     - "display_security_logging_governance_settings"
 
-
   - title: "Compartments"
     variables:
       - "enclosing_compartment_options"
