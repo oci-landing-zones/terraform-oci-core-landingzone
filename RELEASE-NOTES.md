@@ -1,3 +1,6 @@
+# May 09, 2025 Release Notes - 1.5.1
+1. User Interface (UI) refinements
+
 # May 09, 2025 Release Notes - 1.5.0
 1. Core Landing Zone Enhancements:
    - Added support for externally managed VCNs with associated security controls and routing for Hub DRG attachments.
