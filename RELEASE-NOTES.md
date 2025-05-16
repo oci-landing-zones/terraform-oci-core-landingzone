@@ -1,4 +1,4 @@
-# May 09, 2025 Release Notes - 1.5.1
+# May 24, 2025 Release Notes - 1.5.1
 1. User Interface (UI) refinements
 
 # May 09, 2025 Release Notes - 1.5.0
