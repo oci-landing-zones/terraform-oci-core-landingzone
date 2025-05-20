@@ -5,7 +5,6 @@ locals {
 
   add_oke_vcn1 = var.define_net == true && var.add_oke_vcn1 == true
 
-
   oke_vcn_1 = local.add_oke_vcn1 == true ? {
     "OKE-VCN-1" = {
       display_name                     = coalesce(var.oke_vcn1_name, "${var.service_label}-oke-vcn-1")
@@ -14,7 +13,6 @@ locals {
       cidr_blocks                      = var.oke_vcn1_cidrs,
       dns_label                        = substr(replace(coalesce(var.oke_vcn1_name, "oke-vcn-1"), "/[^\\w]/", ""), 0, 14)
       block_nat_traffic                = false
-
       subnets = merge(
         {
           "OKE-VCN-1-API-SUBNET" = {
@@ -77,8 +75,140 @@ locals {
           }
         } : {}
       )
-
-
+      route_tables = merge({
+        "OKE-VCN-1-API-SUBNET-ROUTE-TABLE" = {
+          display_name = "api-subnet-route-table"
+          route_rules = merge(
+            (local.chosen_hub_option != 3 && local.chosen_hub_option != 4) ? {
+              "SGW-RULE" = {
+                network_entity_key = "OKE-VCN-1-SERVICE-GATEWAY"
+                description        = "Route for sgw"
+                destination        = "all-services"
+                destination_type   = "SERVICE_CIDR_BLOCK"
+              }
+              } : {
+              "HUB-DRG-RULE" = {
+                network_entity_key = "HUB-DRG"
+                description        = "Route to HUB DRG"
+                destination        = "0.0.0.0/0"
+                destination_type   = "CIDR_BLOCK"
+              }
+            },
+            (local.chosen_hub_option != 3 && local.chosen_hub_option != 4) && upper(var.oke_vcn1_cni_type) == "NATIVE" ? {
+              "NATGW-RULE" = {
+                network_entity_key = "OKE-VCN-1-NAT-GATEWAY"
+                description        = "Route for internet access via NAT GW"
+                destination        = "0.0.0.0/0"
+                destination_type   = "CIDR_BLOCK"
+              }
+            } : {}
+          )
+        }
+        },
+        {
+          "OKE-VCN-1-WORKERS-SUBNET-ROUTE-TABLE" = {
+            display_name = "workers-subnet-route-table"
+            route_rules = merge(
+              (local.chosen_hub_option != 3 && local.chosen_hub_option != 4) ? {
+                "SGW-RULE" = {
+                  network_entity_key = "OKE-VCN-1-SERVICE-GATEWAY"
+                  description        = "Route for sgw"
+                  destination        = "all-services"
+                  destination_type   = "SERVICE_CIDR_BLOCK"
+                },
+                "NATGW-RULE" = {
+                  network_entity_key = "OKE-VCN-1-NAT-GATEWAY"
+                  description        = "Route for internet access via NAT GW"
+                  destination        = "0.0.0.0/0"
+                  destination_type   = "CIDR_BLOCK"
+                }
+                } : {
+                "HUB-DRG-RULE" = {
+                  network_entity_key = "HUB-DRG"
+                  description        = "Route to HUB DRG"
+                  destination        = "0.0.0.0/0"
+                  destination_type   = "CIDR_BLOCK"
+                }
+              },
+              local.oke_vcn_1_drg_routing
+            )
+          }
+        },
+        {
+          "OKE-VCN-1-SERVICES-SUBNET-ROUTE-TABLE" = {
+            display_name = "services-subnet-route-table"
+            route_rules = (local.chosen_hub_option != 3 && local.chosen_hub_option != 4) ? {
+              "IGW-RULE" = {
+                network_entity_key = "OKE-VCN-1-INTERNET-GATEWAY"
+                description        = "Route for igw"
+                destination        = "0.0.0.0/0"
+                destination_type   = "CIDR_BLOCK"
+              }
+              } : {
+              "HUB-DRG-RULE" = {
+                network_entity_key = "HUB-DRG"
+                description        = "Route to HUB DRG"
+                destination        = "0.0.0.0/0"
+                destination_type   = "CIDR_BLOCK"
+              }
+            }
+          }
+        },
+        var.add_oke_vcn1_mgmt_subnet ? {
+          "OKE-VCN-1-MGMT-SUBNET-ROUTE-TABLE" = {
+            display_name = "mgmt-subnet-route-table"
+            route_rules = (local.chosen_hub_option != 3 && local.chosen_hub_option != 4) ? {
+              "SGW-RULE" = {
+                network_entity_key = "OKE-VCN-1-SERVICE-GATEWAY"
+                description        = "Route for sgw"
+                destination        = "all-services"
+                destination_type   = "SERVICE_CIDR_BLOCK"
+              }
+              "NATGW-RULE" = {
+                network_entity_key = "OKE-VCN-1-NAT-GATEWAY"
+                description        = "Route for NAT Gateway"
+                destination        = "0.0.0.0/0"
+                destination_type   = "CIDR_BLOCK"
+              }
+              } : {
+              "HUB-DRG-RULE" = {
+                network_entity_key = "HUB-DRG"
+                description        = "Route to HUB DRG"
+                destination        = "0.0.0.0/0"
+                destination_type   = "CIDR_BLOCK"
+              }
+            }
+          }
+        } : {},
+        upper(var.oke_vcn1_cni_type) == "NATIVE" ? {
+          "OKE-VCN-1-PODS-SUBNET-ROUTE-TABLE" = {
+            display_name = "pods-subnet-route-table"
+            route_rules = merge(
+              (local.chosen_hub_option != 3 && local.chosen_hub_option != 4) ? {
+                "SGW-RULE" = {
+                  network_entity_key = "OKE-VCN-1-SERVICE-GATEWAY"
+                  description        = "Route for sgw"
+                  destination        = "all-services"
+                  destination_type   = "SERVICE_CIDR_BLOCK"
+                },
+                "NATGW-RULE" = {
+                  network_entity_key = "OKE-VCN-1-NAT-GATEWAY"
+                  description        = "Route for internet access via NAT GW"
+                  destination        = "0.0.0.0/0"
+                  destination_type   = "CIDR_BLOCK"
+                }
+                } : {
+                "HUB-DRG-RULE" = {
+                  network_entity_key = "HUB-DRG"
+                  description        = "Route to HUB DRG"
+                  destination        = "0.0.0.0/0"
+                  destination_type   = "CIDR_BLOCK"
+                }
+              }
+            )
+          }
+        } : {}
+      )
       security_lists = merge(
         {
           "OKE-VCN-1-WORKERS-SUBNET-SL" = {
@@ -186,501 +316,44 @@ locals {
           }
         } : {}
       )
-
-      route_tables = merge(
-        {
-          "OKE-VCN-1-API-SUBNET-ROUTE-TABLE" = {
-            display_name = "api-subnet-route-table"
-            route_rules = merge(
-              (local.chosen_hub_option != 3 && local.chosen_hub_option != 4) ? {
-                "SGW-RULE" = {
-                  network_entity_key = "OKE-VCN-1-SERVICE-GATEWAY"
-                  description        = "Route for sgw"
-                  destination        = "all-services"
-                  destination_type   = "SERVICE_CIDR_BLOCK"
-                }
-                } : {
-                "HUB-DRG-RULE" = {
-                  network_entity_key = "HUB-DRG"
-                  description        = "Route to HUB DRG"
-                  destination        = "0.0.0.0/0"
-                  destination_type   = "CIDR_BLOCK"
-                }
-              },
-              (local.chosen_hub_option != 3 && local.chosen_hub_option != 4) && upper(var.oke_vcn1_cni_type) == "NATIVE" ? {
-                "NATGW-RULE" = {
-                  network_entity_key = "OKE-VCN-1-NAT-GATEWAY"
-                  description        = "Route for internet access via NAT GW"
-                  destination        = "0.0.0.0/0"
-                  destination_type   = "CIDR_BLOCK"
-                }
-              } : {}
-            )
-          }
-        },
-        {
-          "OKE-VCN-1-WORKERS-SUBNET-ROUTE-TABLE" = {
-            display_name = "workers-subnet-route-table"
-            route_rules = merge(
-              (local.chosen_hub_option != 3 && local.chosen_hub_option != 4) ? {
-                "SGW-RULE" = {
-                  network_entity_key = "OKE-VCN-1-SERVICE-GATEWAY"
-                  description        = "Route for sgw"
-                  destination        = "all-services"
-                  destination_type   = "SERVICE_CIDR_BLOCK"
-                },
-                "NATGW-RULE" = {
-                  network_entity_key = "OKE-VCN-1-NAT-GATEWAY"
-                  description        = "Route for internet access via NAT GW"
-                  destination        = "0.0.0.0/0"
-                  destination_type   = "CIDR_BLOCK"
-                }
-                } : {
-                "HUB-DRG-RULE" = {
-                  network_entity_key = "HUB-DRG"
-                  description        = "Route to HUB DRG"
-                  destination        = "0.0.0.0/0"
-                  destination_type   = "CIDR_BLOCK"
-                }
-              },
-              local.oke_vcn_1_drg_routing
-            )
-          }
-        },
-        {
-          "OKE-VCN-1-SERVICES-SUBNET-ROUTE-TABLE" = {
-            display_name = "services-subnet-route-table"
-            route_rules = (local.chosen_hub_option != 3 && local.chosen_hub_option != 4) ? {
-              "IGW-RULE" = {
-                network_entity_key = "OKE-VCN-1-INTERNET-GATEWAY"
-                description        = "Route for igw"
-                destination        = "0.0.0.0/0"
-                destination_type   = "CIDR_BLOCK"
-              }
-              } : {
-              "HUB-DRG-RULE" = {
-                network_entity_key = "HUB-DRG"
-                description        = "Route to HUB DRG"
-                destination        = "0.0.0.0/0"
-                destination_type   = "CIDR_BLOCK"
-              }
-            }
-          }
-        },
-        var.add_oke_vcn1_mgmt_subnet ? {
-          "OKE-VCN-1-MGMT-SUBNET-ROUTE-TABLE" = {
-            display_name = "mgmt-subnet-route-table"
-            route_rules = (local.chosen_hub_option != 3 && local.chosen_hub_option != 4) ? {
-              "SGW-RULE" = {
-                network_entity_key = "OKE-VCN-1-SERVICE-GATEWAY"
-                description        = "Route for sgw"
-                destination        = "all-services"
-                destination_type   = "SERVICE_CIDR_BLOCK"
-              }
-              "NATGW-RULE" = {
-                network_entity_key = "OKE-VCN-1-NAT-GATEWAY"
-                description        = "Route for NAT Gateway"
-                destination        = "0.0.0.0/0"
-                destination_type   = "CIDR_BLOCK"
-              }
-              } : {
-              "HUB-DRG-RULE" = {
-                network_entity_key = "HUB-DRG"
-                description        = "Route to HUB DRG"
-                destination        = "0.0.0.0/0"
-                destination_type   = "CIDR_BLOCK"
-              }
-            }
-          }
-        } : {},
-        upper(var.oke_vcn1_cni_type) == "NATIVE" ? {
-          "OKE-VCN-1-PODS-SUBNET-ROUTE-TABLE" = {
-            display_name = "pods-subnet-route-table"
-            route_rules = merge((local.chosen_hub_option != 3 && local.chosen_hub_option != 4) ? {
-              "SGW-RULE" = {
-                network_entity_key = "OKE-VCN-1-SERVICE-GATEWAY"
-                description        = "Route for sgw"
-                destination        = "all-services"
-                destination_type   = "SERVICE_CIDR_BLOCK"
-              },
-              "NATGW-RULE" = {
-                network_entity_key = "OKE-VCN-1-NAT-GATEWAY"
-                description        = "Route for internet access via NAT GW"
-                destination        = "0.0.0.0/0"
-                destination_type   = "CIDR_BLOCK"
-              }
-              } : {
-              "HUB-DRG-RULE" = {
-                network_entity_key = "HUB-DRG"
-                description        = "Route to HUB DRG"
-                destination        = "0.0.0.0/0"
-                destination_type   = "CIDR_BLOCK"
-              }
-              }
-            )
-          }
-        } : {}
-      )
-
-      network_security_groups = merge(
-        {
-          "OKE-VCN-1-API-NSG" = {
-            display_name = "api-nsg"
-            egress_rules = merge(
-              {
-                "EGRESS-TO-SERVICES-API-RULE" = {
-                  description = "Allow TCP egress from OKE control plane to OCI services"
-                  stateless   = false
-                  protocol    = "TCP"
-                  dst         = "all-services"
-                  dst_type    = "SERVICE_CIDR_BLOCK"
-                }
-              },
-              {
-                "EGRESS-TO-KUBELET-API-RULE" = {
-                  description  = "Allow TCP egress from OKE control plane to Kubelet on worker nodes."
-                  stateless    = false
-                  protocol     = "TCP"
-                  dst          = "OKE-VCN-1-WORKERS-NSG"
-                  dst_type     = "NETWORK_SECURITY_GROUP"
-                  dst_port_min = 10250
-                  dst_port_max = 10250
-                }
-              },
-              {
-                "EGRESS-TO-WORKERS-API-RULE" = {
-                  description  = "Allow TCP egress from OKE control plane to worker node"
-                  stateless    = false
-                  protocol     = "TCP"
-                  dst          = "OKE-VCN-1-WORKERS-NSG"
-                  dst_type     = "NETWORK_SECURITY_GROUP"
-                  dst_port_min = 12250
-                  dst_port_max = 12250
-                }
-              },
-              {
-                "EGRESS-TO-WORKERS-ICMP-API-RULE" = {
-                  description = "Allows outbound ICMP to worker nodes path discovery."
-                  stateless   = false
-                  protocol    = "ICMP"
-                  dst         = "OKE-VCN-1-WORKERS-NSG"
-                  dst_type    = "NETWORK_SECURITY_GROUP"
-                  icmp_type   = 3
-                  icmp_code   = 4
-                }
-              },
-              upper(var.oke_vcn1_cni_type) == "NATIVE" ? {
-                "EGRESS-TO-API-API-RULE" = {
-                  description  = "Allow TCP egress for Kubernetes control plane inter-communication"
-                  stateless    = false
-                  protocol     = "TCP"
-                  dst          = "OKE-VCN-1-API-NSG"
-                  dst_type     = "NETWORK_SECURITY_GROUP"
-                  dst_port_min = 6443
-                  dst_port_max = 6443
-                }
-                "EGRESS-TO-PODS-API-RULE" = {
-                  description = "Allow Kubernetes API endpoint to communicate with pods."
-                  stateless   = false
-                  protocol    = "ALL"
-                  dst         = "OKE-VCN-1-PODS-NSG"
-                  dst_type    = "NETWORK_SECURITY_GROUP"
-                }
-              } : {}
-            )
-            ingress_rules = merge(
-              {
-                "INGRESS-FROM-WORKERS-6443-API-RULE" = {
-                  description  = "Allows inbound TCP from worker nodes."
-                  stateless    = false
-                  protocol     = "TCP"
-                  src          = "OKE-VCN-1-WORKERS-NSG"
-                  src_type     = "NETWORK_SECURITY_GROUP"
-                  dst_port_min = 6443
-                  dst_port_max = 6443
-                }
-              },
-              {
-                "INGRESS-FROM-WORKERS-10250-API-RULE" = {
-                  description  = "Allows inbound TCP from worker nodes."
-                  stateless    = false
-                  protocol     = "TCP"
-                  src          = "OKE-VCN-1-WORKERS-NSG"
-                  src_type     = "NETWORK_SECURITY_GROUP"
-                  dst_port_min = 10250
-                  dst_port_max = 10250
-                }
-              },
-              {
-                "INGRESS-FROM-WORKERS-12250-API-RULE" = {
-                  description  = "Allows inbound TCP from worker nodes."
-                  stateless    = false
-                  protocol     = "TCP"
-                  src          = "OKE-VCN-1-WORKERS-NSG"
-                  src_type     = "NETWORK_SECURITY_GROUP"
-                  dst_port_min = 12250
-                  dst_port_max = 12250
-                }
-              },
-              upper(var.oke_vcn1_cni_type) == "FLANNEL" ? {
-                "INGRESS-FROM-MGMT-API-RULE" = {
-                  description  = "Allows inbound TCP from mgmt subnet."
-                  stateless    = false
-                  protocol     = "TCP"
-                  src          = coalesce(var.oke_vcn1_mgmt_subnet_cidr, cidrsubnet(var.oke_vcn1_cidrs[0], 4, 3))
-                  src_type     = "CIDR_BLOCK"
-                  dst_port_min = 6443
-                  dst_port_max = 6443
-                }
-                } : upper(var.oke_vcn1_cni_type) == "NATIVE" ? {
-                "INGRESS-FROM-API-API-RULE" = {
-                  description  = "Allow TCP ingress for Kubernetes control plane inter-communication."
-                  stateless    = false
-                  protocol     = "TCP"
-                  src          = "OKE-VCN-1-API-NSG"
-                  src_type     = "NETWORK_SECURITY_GROUP"
-                  dst_port_min = 6443
-                  dst_port_max = 6443
-                }
-                "INGRESS-FROM-BASTION-API-RULE" = {
-                  description  = "Bastion service access to Kubernetes API endpoint"
-                  stateless    = false
-                  protocol     = "TCP"
-                  src          = coalesce(var.oke_vcn1_mgmt_subnet_cidr, cidrsubnet(var.oke_vcn1_cidrs[0], 4, 3))
-                  src_type     = "CIDR_BLOCK"
-                  dst_port_min = 6443
-                  dst_port_max = 6443
-                }
-                "INGRESS-FROM-WORKERS-ICMP-API-RULE" = {
-                  description = "Allow ICMP ingress for path discovery from worker nodes."
-                  stateless   = false
-                  protocol    = "ICMP"
-                  src         = "OKE-VCN-1-WORKERS-NSG"
-                  src_type    = "NETWORK_SECURITY_GROUP"
-                  icmp_type   = 3
-                  icmp_code   = 4
-                }
-                "INGRESS-FROM-PODS-6443-API-RULE" = {
-                  description  = "Pod to Kubernetes API endpoint communication (when using VCN-native pod networking)"
-                  stateless    = false
-                  protocol     = "TCP"
-                  src          = "OKE-VCN-1-PODS-NSG"
-                  src_type     = "NETWORK_SECURITY_GROUP"
-                  dst_port_min = 6443
-                  dst_port_max = 6443
-                }
-                "INGRESS-FROM-PODS-12250-API-RULE" = {
-                  description  = "Pod to Kubernetes API endpoint communication (when using VCN-native pod networking)"
-                  stateless    = false
-                  protocol     = "TCP"
-                  src          = "OKE-VCN-1-PODS-NSG"
-                  src_type     = "NETWORK_SECURITY_GROUP"
-                  dst_port_min = 12250
-                  dst_port_max = 12250
-                }
-              } : {},
-              upper(var.oke_vcn1_cni_type) == "NATIVE" && var.add_oke_vcn1_mgmt_subnet ? {
-                "INGRESS-FROM-OPERATOR-API-RULE" = {
-                  description  = "Operator access to Kubernetes API endpoint"
-                  stateless    = false
-                  protocol     = "TCP"
-                  src          = "OKE-VCN-1-MGMT-NSG"
-                  src_type     = "NETWORK_SECURITY_GROUP"
-                  dst_port_min = 6443
-                  dst_port_max = 6443
-                }
-              } : {}
-            )
-          }
-          "OKE-VCN-1-WORKERS-NSG" = {
-            display_name = "workers-nsg"
-            egress_rules = merge(
-              {
-                "EGRESS-TO-WORKERS-WORKERS-RULE" = {
-                  description = "Allows outbound access to worker nodes."
-                  stateless   = false
-                  protocol    = "ALL"
-                  dst         = "OKE-VCN-1-WORKERS-NSG"
-                  dst_type    = "NETWORK_SECURITY_GROUP"
-                }
-                "EGRESS-TO-SERVICES-WORKERS-RULE" = {
-                  description = "Allows outbound TCP egress to OCI Services."
-                  stateless   = false
-                  protocol    = "TCP"
-                  dst         = "all-services"
-                  dst_type    = "SERVICE_CIDR_BLOCK"
-                }
-                "EGRESS-TO-API-WORKERS-RULE" = {
-                  description  = "Allows outbound TCP to OKE API endpoint."
-                  stateless    = false
-                  protocol     = "TCP"
-                  dst          = "OKE-VCN-1-API-NSG"
-                  dst_type     = "NETWORK_SECURITY_GROUP"
-                  dst_port_min = 6443
-                  dst_port_max = 6443
-                }
-                "EGRESS-TO-CONTROL-PLANE-10250-WORKERS-RULE" = {
-                  description  = "Allows outbound TCP to OKE control plane health check."
-                  stateless    = false
-                  protocol     = "TCP"
-                  dst          = "OKE-VCN-1-API-NSG"
-                  dst_type     = "NETWORK_SECURITY_GROUP"
-                  dst_port_min = 10250
-                  dst_port_max = 10250
-                }
-                "EGRESS-TO-CONTROL-PLANE-12250-WORKERS-RULE" = {
-                  description  = "Allows outbound TCP egress to OKE control plane."
-                  stateless    = false
-                  protocol     = "TCP"
-                  dst          = "OKE-VCN-1-API-NSG"
-                  dst_type     = "NETWORK_SECURITY_GROUP"
-                  dst_port_min = 12250
-                  dst_port_max = 12250
-                }
-                "EGRESS-TO-ANYWHERE-ICMP-WORKERS-RULE" = {
-                  description = "Allows outbound ICMP for path discovery."
-                  stateless   = false
-                  protocol    = "ICMP"
-                  dst         = "0.0.0.0/0"
-                  dst_type    = "CIDR_BLOCK"
-                  icmp_type   = 3
-                  icmp_code   = 4
-                }
-                "EGRESS-TO-ANYWHERE-TCP-WORKERS-RULE" = {
-                  description = "(optional) Allows worker nodes to communicate with the Internet."
-                  stateless   = false
-                  protocol    = "TCP"
-                  dst         = "0.0.0.0/0"
-                  dst_type    = "CIDR_BLOCK"
-                }
-              },
-              upper(var.oke_vcn1_cni_type) == "NATIVE" ? {
-                "EGRESS-TO-PODS-WORKERS-RULE" = {
-                  description = "Allow worker nodes to access pods."
-                  stateless   = false
-                  protocol    = "ALL"
-                  dst         = "OKE-VCN-1-PODS-NSG"
-                  dst_type    = "NETWORK_SECURITY_GROUP"
-                }
-              } : {},
-              local.oke_vcn_1_to_workers_subnet_cross_vcn_egress,
-              local.oke_vcn_1_to_services_subnet_cross_vcn_egress,
-              local.oke_vcn_1_to_client_subnet_cross_vcn_egress,
-              local.oke_vcn_1_to_web_subnet_cross_vcn_egress,
-              local.oke_vcn_1_to_db_subnet_cross_vcn_egress
-            )
-            ingress_rules = merge({
-              "INGRESS-FROM-WORKERS-ALL-WORKERS-RULE" = {
-                description = "Allows all inbound traffic from worker nodes."
+      network_security_groups = merge({
+        "OKE-VCN-1-API-NSG" = {
+          display_name = "api-nsg"
+          egress_rules = merge(
+            {
+              "EGRESS-TO-SERVICES-API-RULE" = {
+                description = "Allow TCP egress from OKE control plane to OCI services"
                 stateless   = false
-                protocol    = "ALL"
-                src         = "OKE-VCN-1-WORKERS-NSG"
-                src_type    = "NETWORK_SECURITY_GROUP"
+                protocol    = "TCP"
+                dst         = "all-services"
+                dst_type    = "SERVICE_CIDR_BLOCK"
               }
-              "INGRESS-FROM-API-WORKERS-RULE" = {
-                description = "Allows all inbound traffic from OKE control plane for webhooks served by workers."
-                stateless   = false
-                protocol    = "ALL"
-                src         = "OKE-VCN-1-API-NSG"
-                src_type    = "NETWORK_SECURITY_GROUP"
-              }
-              "INGRESS-FROM-LB-10256-WORKERS-RULE" = {
-                description  = "Allows inbound TCP for health check from public load balancers."
-                stateless    = false
-                protocol     = "TCP"
-                src          = "OKE-VCN-1-SERVICES-NSG"
-                src_type     = "NETWORK_SECURITY_GROUP"
-                dst_port_min = 10256
-                dst_port_max = 10256
-              }
-              "INGRESS-FROM-LB-TCP-WORKERS-RULE" = {
-                description  = "Allows inbound TCP from public load balancers."
-                stateless    = false
-                protocol     = "TCP"
-                src          = "OKE-VCN-1-SERVICES-NSG"
-                src_type     = "NETWORK_SECURITY_GROUP"
-                dst_port_min = 30000
-                dst_port_max = 32767
-              }
-              },
-              upper(var.oke_vcn1_cni_type) == "FLANNEL" ? {
-                "INGRESS-FROM-MGMT-WORKERS-RULE" = {
-                  description  = "Allows inbound SSH access from mgmt subnet."
-                  stateless    = false
-                  protocol     = "TCP"
-                  src          = coalesce(var.oke_vcn1_mgmt_subnet_cidr, cidrsubnet(var.oke_vcn1_cidrs[0], 12, 48))
-                  src_type     = "CIDR_BLOCK"
-                  dst_port_min = 22
-                  dst_port_max = 22
-                }
-                } : upper(var.oke_vcn1_cni_type) == "NATIVE" ? {
-                "INGRESS-FROM-ANYWHERE-ICMP-WORKERS-RULE" = {
-                  description = "Allow ICMP ingress to workers for path discovery."
-                  stateless   = false
-                  protocol    = "ICMP"
-                  src         = "0.0.0.0/0"
-                  src_type    = "CIDR_BLOCK"
-                  icmp_type   = 3
-                  icmp_code   = 4
-                }
-                "INGRESS-FROM-BASTION-WORKERS-RULE" = {
-                  description  = "Bastion service ssh access to workers"
-                  stateless    = false
-                  protocol     = "TCP"
-                  src          = coalesce(var.oke_vcn1_mgmt_subnet_cidr, cidrsubnet(var.oke_vcn1_cidrs[0], 12, 48))
-                  src_type     = "CIDR_BLOCK"
-                  dst_port_min = 22
-                  dst_port_max = 22
-                }
-              } : {},
-              upper(var.oke_vcn1_cni_type) == "NATIVE" && var.add_oke_vcn1_mgmt_subnet ? {
-                "INGRESS-FROM-OPERATOR-WORKERS-RULE" = {
-                  description  = "Operator ssh access to workers"
-                  stateless    = false
-                  protocol     = "TCP"
-                  src          = "OKE-VCN-1-MGMT-NSG"
-                  src_type     = "NETWORK_SECURITY_GROUP"
-                  dst_port_min = 22
-                  dst_port_max = 22
-                }
-              } : {},
-              (local.hub_with_vcn == true && var.deploy_bastion_jump_host == true) ? {
-                "INGRESS-FROM-HUB-JUMPHOST-SUBNET-RULE" = {
-                  description  = "Ingress from Hub VCN Jumphost Subnet. Required for deploying jump host instance access."
-                  stateless    = false
-                  protocol     = "TCP"
-                  src          = coalesce(var.hub_vcn_jumphost_subnet_cidr, cidrsubnet(var.hub_vcn_cidrs[0], 3, 4))
-                  src_type     = "CIDR_BLOCK"
-                  dst_port_min = 22
-                  dst_port_max = 22
-                }
-              } : {},
-              local.oke_vcn_1_to_workers_subnet_cross_vcn_ingress
-            )
-          }
-          "OKE-VCN-1-SERVICES-NSG" = {
-            display_name = "services-nsg"
-            egress_rules = merge({
-              "EGRESS-TO-WORKERS-NSG-RULE" = {
-                description  = "Allows outbound TCP to workers nodes for NodePort traffic."
+            },
+            {
+              "EGRESS-TO-KUBELET-API-RULE" = {
+                description  = "Allow TCP egress from OKE control plane to Kubelet on worker nodes."
                 stateless    = false
                 protocol     = "TCP"
                 dst          = "OKE-VCN-1-WORKERS-NSG"
                 dst_type     = "NETWORK_SECURITY_GROUP"
-                dst_port_min = 30000
-                dst_port_max = 32767
+                dst_port_min = 10250
+                dst_port_max = 10250
               }
-              "EGRESS-TO-WORKERS-TCP-RULE" = {
-                description  = "Allows outbound TCP egress to worker nodes for health checks."
+            },
+            {
+              "EGRESS-TO-WORKERS-API-RULE" = {
+                description  = "Allow TCP egress from OKE control plane to worker node"
                 stateless    = false
                 protocol     = "TCP"
                 dst          = "OKE-VCN-1-WORKERS-NSG"
                 dst_type     = "NETWORK_SECURITY_GROUP"
-                dst_port_min = 10256
-                dst_port_max = 10256
+                dst_port_min = 12250
+                dst_port_max = 12250
               }
-              "EGRESS-TO-WORKERS-ICMP-RULE" = {
-                description = "Allow outbound ICMP to worker nodes for path discovery."
+            },
+            {
+              "EGRESS-TO-WORKERS-ICMP-API-RULE" = {
+                description = "Allows outbound ICMP to worker nodes path discovery."
                 stateless   = false
                 protocol    = "ICMP"
                 dst         = "OKE-VCN-1-WORKERS-NSG"
@@ -688,23 +361,343 @@ locals {
                 icmp_type   = 3
                 icmp_code   = 4
               }
-              },
-              local.oke_vcn_1_to_workers_subnet_cross_vcn_egress,
-              local.oke_vcn_1_to_pods_subnet_cross_vcn_egress
-            ),
-            ingress_rules = merge({
-              "INGRESS-FROM-ANYWHERE-TCP-RULE" = {
-                description  = "Allows inbound TCP."
+            },
+            upper(var.oke_vcn1_cni_type) == "NATIVE" ? {
+              "EGRESS-TO-API-API-RULE" = {
+                description  = "Allow TCP egress for Kubernetes control plane inter-communication"
                 stateless    = false
                 protocol     = "TCP"
-                src          = "0.0.0.0/0"
+                dst          = "OKE-VCN-1-API-NSG"
+                dst_type     = "NETWORK_SECURITY_GROUP"
+                dst_port_min = 6443
+                dst_port_max = 6443
+              }
+              "EGRESS-TO-PODS-API-RULE" = {
+                description = "Allow Kubernetes API endpoint to communicate with pods."
+                stateless   = false
+                protocol    = "ALL"
+                dst         = "OKE-VCN-1-PODS-NSG"
+                dst_type    = "NETWORK_SECURITY_GROUP"
+              }
+            } : {}
+          )
+          ingress_rules = merge(
+            {
+              "INGRESS-FROM-WORKERS-6443-API-RULE" = {
+                description  = "Allows inbound TCP from worker nodes."
+                stateless    = false
+                protocol     = "TCP"
+                src          = "OKE-VCN-1-WORKERS-NSG"
+                src_type     = "NETWORK_SECURITY_GROUP"
+                dst_port_min = 6443
+                dst_port_max = 6443
+              }
+            },
+            {
+              "INGRESS-FROM-WORKERS-10250-API-RULE" = {
+                description  = "Allows inbound TCP from worker nodes."
+                stateless    = false
+                protocol     = "TCP"
+                src          = "OKE-VCN-1-WORKERS-NSG"
+                src_type     = "NETWORK_SECURITY_GROUP"
+                dst_port_min = 10250
+                dst_port_max = 10250
+              }
+            },
+            {
+              "INGRESS-FROM-WORKERS-12250-API-RULE" = {
+                description  = "Allows inbound TCP from worker nodes."
+                stateless    = false
+                protocol     = "TCP"
+                src          = "OKE-VCN-1-WORKERS-NSG"
+                src_type     = "NETWORK_SECURITY_GROUP"
+                dst_port_min = 12250
+                dst_port_max = 12250
+              }
+            },
+            upper(var.oke_vcn1_cni_type) == "FLANNEL" && var.add_oke_vcn1_mgmt_subnet ? {
+              "INGRESS-FROM-MGMT-API-RULE" = {
+                description  = "Allows inbound TCP from mgmt subnet."
+                stateless    = false
+                protocol     = "TCP"
+                src          = coalesce(var.oke_vcn1_mgmt_subnet_cidr, cidrsubnet(var.oke_vcn1_cidrs[0], 12, 48))
                 src_type     = "CIDR_BLOCK"
-                dst_port_min = 443
-                dst_port_max = 443
+                dst_port_min = 6443
+                dst_port_max = 6443
               }
+              } : upper(var.oke_vcn1_cni_type) == "NATIVE" ? {
+              "INGRESS-FROM-API-API-RULE" = {
+                description  = "Allow TCP ingress for Kubernetes control plane inter-communication."
+                stateless    = false
+                protocol     = "TCP"
+                src          = "OKE-VCN-1-API-NSG"
+                src_type     = "NETWORK_SECURITY_GROUP"
+                dst_port_min = 6443
+                dst_port_max = 6443
               }
-            )
-          }
+              "INGRESS-FROM-BASTION-API-RULE" = {
+                description  = "Bastion service access to Kubernetes API endpoint"
+                stateless    = false
+                protocol     = "TCP"
+                src          = coalesce(var.oke_vcn1_mgmt_subnet_cidr, cidrsubnet(var.oke_vcn1_cidrs[0], 12, 48))
+                src_type     = "CIDR_BLOCK"
+                dst_port_min = 6443
+                dst_port_max = 6443
+              }
+              "INGRESS-FROM-WORKERS-ICMP-API-RULE" = {
+                description = "Allow ICMP ingress for path discovery from worker nodes."
+                stateless   = false
+                protocol    = "ICMP"
+                src         = "OKE-VCN-1-WORKERS-NSG"
+                src_type    = "NETWORK_SECURITY_GROUP"
+                icmp_type   = 3
+                icmp_code   = 4
+              }
+              "INGRESS-FROM-PODS-6443-API-RULE" = {
+                description  = "Pod to Kubernetes API endpoint communication (when using VCN-native pod networking)"
+                stateless    = false
+                protocol     = "TCP"
+                src          = "OKE-VCN-1-PODS-NSG"
+                src_type     = "NETWORK_SECURITY_GROUP"
+                dst_port_min = 6443
+                dst_port_max = 6443
+              }
+              "INGRESS-FROM-PODS-12250-API-RULE" = {
+                description  = "Pod to Kubernetes API endpoint communication (when using VCN-native pod networking)"
+                stateless    = false
+                protocol     = "TCP"
+                src          = "OKE-VCN-1-PODS-NSG"
+                src_type     = "NETWORK_SECURITY_GROUP"
+                dst_port_min = 12250
+                dst_port_max = 12250
+              }
+            } : {},
+            upper(var.oke_vcn1_cni_type) == "NATIVE" && var.add_oke_vcn1_mgmt_subnet ? {
+              "INGRESS-FROM-OPERATOR-API-RULE" = {
+                description  = "Operator access to Kubernetes API endpoint"
+                stateless    = false
+                protocol     = "TCP"
+                src          = "OKE-VCN-1-MGMT-NSG"
+                src_type     = "NETWORK_SECURITY_GROUP"
+                dst_port_min = 6443
+                dst_port_max = 6443
+              }
+            } : {}
+          )
+        }
+        "OKE-VCN-1-WORKERS-NSG" = {
+          display_name = "workers-nsg"
+          egress_rules = merge(
+            {
+              "EGRESS-TO-WORKERS-WORKERS-RULE" = {
+                description = "Allows outbound access to worker nodes."
+                stateless   = false
+                protocol    = "ALL"
+                dst         = "OKE-VCN-1-WORKERS-NSG"
+                dst_type    = "NETWORK_SECURITY_GROUP"
+              }
+              "EGRESS-TO-SERVICES-WORKERS-RULE" = {
+                description = "Allows outbound TCP egress to OCI Services."
+                stateless   = false
+                protocol    = "TCP"
+                dst         = "all-services"
+                dst_type    = "SERVICE_CIDR_BLOCK"
+              }
+              "EGRESS-TO-API-WORKERS-RULE" = {
+                description  = "Allows outbound TCP to OKE API endpoint."
+                stateless    = false
+                protocol     = "TCP"
+                dst          = "OKE-VCN-1-API-NSG"
+                dst_type     = "NETWORK_SECURITY_GROUP"
+                dst_port_min = 6443
+                dst_port_max = 6443
+              }
+              "EGRESS-TO-CONTROL-PLANE-10250-WORKERS-RULE" = {
+                description  = "Allows outbound TCP to OKE control plane health check."
+                stateless    = false
+                protocol     = "TCP"
+                dst          = "OKE-VCN-1-API-NSG"
+                dst_type     = "NETWORK_SECURITY_GROUP"
+                dst_port_min = 10250
+                dst_port_max = 10250
+              }
+              "EGRESS-TO-CONTROL-PLANE-12250-WORKERS-RULE" = {
+                description  = "Allows outbound TCP egress to OKE control plane."
+                stateless    = false
+                protocol     = "TCP"
+                dst          = "OKE-VCN-1-API-NSG"
+                dst_type     = "NETWORK_SECURITY_GROUP"
+                dst_port_min = 12250
+                dst_port_max = 12250
+              }
+              "EGRESS-TO-ANYWHERE-ICMP-WORKERS-RULE" = {
+                description = "Allows outbound ICMP for path discovery."
+                stateless   = false
+                protocol    = "ICMP"
+                dst         = "0.0.0.0/0"
+                dst_type    = "CIDR_BLOCK"
+                icmp_type   = 3
+                icmp_code   = 4
+              }
+              "EGRESS-TO-ANYWHERE-TCP-WORKERS-RULE" = {
+                description = "(optional) Allows worker nodes to communicate with the Internet."
+                stateless   = false
+                protocol    = "TCP"
+                dst         = "0.0.0.0/0"
+                dst_type    = "CIDR_BLOCK"
+              }
+            },
+            upper(var.oke_vcn1_cni_type) == "NATIVE" ? {
+              "EGRESS-TO-PODS-WORKERS-RULE" = {
+                description = "Allow worker nodes to access pods."
+                stateless   = false
+                protocol    = "ALL"
+                dst         = "OKE-VCN-1-PODS-NSG"
+                dst_type    = "NETWORK_SECURITY_GROUP"
+              }
+            } : {},
+            local.oke_vcn_1_to_workers_subnet_cross_vcn_egress,
+            local.oke_vcn_1_to_services_subnet_cross_vcn_egress,
+            local.oke_vcn_1_to_client_subnet_cross_vcn_egress,
+            local.oke_vcn_1_to_web_subnet_cross_vcn_egress,
+            local.oke_vcn_1_to_db_subnet_cross_vcn_egress
+          )
+          ingress_rules = merge({
+            "INGRESS-FROM-WORKERS-ALL-WORKERS-RULE" = {
+              description = "Allows all inbound traffic from worker nodes."
+              stateless   = false
+              protocol    = "ALL"
+              src         = "OKE-VCN-1-WORKERS-NSG"
+              src_type    = "NETWORK_SECURITY_GROUP"
+            }
+            "INGRESS-FROM-API-WORKERS-RULE" = {
+              description = "Allows all inbound traffic from OKE control plane for webhooks served by workers."
+              stateless   = false
+              protocol    = "ALL"
+              src         = "OKE-VCN-1-API-NSG"
+              src_type    = "NETWORK_SECURITY_GROUP"
+            }
+            "INGRESS-FROM-LB-10256-WORKERS-RULE" = {
+              description  = "Allows inbound TCP for health check from public load balancers."
+              stateless    = false
+              protocol     = "TCP"
+              src          = "OKE-VCN-1-SERVICES-NSG"
+              src_type     = "NETWORK_SECURITY_GROUP"
+              dst_port_min = 10256
+              dst_port_max = 10256
+            }
+            "INGRESS-FROM-LB-TCP-WORKERS-RULE" = {
+              description  = "Allows inbound TCP from public load balancers."
+              stateless    = false
+              protocol     = "TCP"
+              src          = "OKE-VCN-1-SERVICES-NSG"
+              src_type     = "NETWORK_SECURITY_GROUP"
+              dst_port_min = 30000
+              dst_port_max = 32767
+            }
+            },
+            upper(var.oke_vcn1_cni_type) == "FLANNEL" && var.add_oke_vcn1_mgmt_subnet ? {
+              "INGRESS-FROM-MGMT-WORKERS-RULE" = {
+                description  = "Allows inbound SSH access from mgmt subnet."
+                stateless    = false
+                protocol     = "TCP"
+                src          = coalesce(var.oke_vcn1_mgmt_subnet_cidr, cidrsubnet(var.oke_vcn1_cidrs[0], 12, 48))
+                src_type     = "CIDR_BLOCK"
+                dst_port_min = 22
+                dst_port_max = 22
+              }
+              } : upper(var.oke_vcn1_cni_type) == "NATIVE" ? {
+              "INGRESS-FROM-ANYWHERE-ICMP-WORKERS-RULE" = {
+                description = "Allow ICMP ingress to workers for path discovery."
+                stateless   = false
+                protocol    = "ICMP"
+                src         = "0.0.0.0/0"
+                src_type    = "CIDR_BLOCK"
+                icmp_type   = 3
+                icmp_code   = 4
+              }
+              "INGRESS-FROM-BASTION-WORKERS-RULE" = {
+                description  = "Bastion service ssh access to workers"
+                stateless    = false
+                protocol     = "TCP"
+                src          = coalesce(var.oke_vcn1_mgmt_subnet_cidr, cidrsubnet(var.oke_vcn1_cidrs[0], 12, 48))
+                src_type     = "CIDR_BLOCK"
+                dst_port_min = 22
+                dst_port_max = 22
+              }
+            } : {},
+            upper(var.oke_vcn1_cni_type) == "NATIVE" && var.add_oke_vcn1_mgmt_subnet ? {
+              "INGRESS-FROM-OPERATOR-WORKERS-RULE" = {
+                description  = "Operator ssh access to workers"
+                stateless    = false
+                protocol     = "TCP"
+                src          = "OKE-VCN-1-MGMT-NSG"
+                src_type     = "NETWORK_SECURITY_GROUP"
+                dst_port_min = 22
+                dst_port_max = 22
+              }
+            } : {},
+            (local.hub_with_vcn == true && var.deploy_bastion_jump_host == true) ? {
+              "INGRESS-FROM-HUB-JUMPHOST-SUBNET-RULE" = {
+                description  = "Ingress from Hub VCN Jumphost Subnet. Required for deploying jump host instance access."
+                stateless    = false
+                protocol     = "TCP"
+                src          = coalesce(var.hub_vcn_jumphost_subnet_cidr, cidrsubnet(var.hub_vcn_cidrs[0], 3, 4))
+                src_type     = "CIDR_BLOCK"
+                dst_port_min = 22
+                dst_port_max = 22
+              }
+            } : {},
+            local.oke_vcn_1_to_workers_subnet_cross_vcn_ingress
+          )
+        }
+        "OKE-VCN-1-SERVICES-NSG" = {
+          display_name = "services-nsg"
+          egress_rules = merge({
+            "EGRESS-TO-WORKERS-NSG-RULE" = {
+              description  = "Allows outbound TCP to workers nodes for NodePort traffic."
+              stateless    = false
+              protocol     = "TCP"
+              dst          = "OKE-VCN-1-WORKERS-NSG"
+              dst_type     = "NETWORK_SECURITY_GROUP"
+              dst_port_min = 30000
+              dst_port_max = 32767
+            }
+            "EGRESS-TO-WORKERS-TCP-RULE" = {
+              description  = "Allows outbound TCP egress to worker nodes for health checks."
+              stateless    = false
+              protocol     = "TCP"
+              dst          = "OKE-VCN-1-WORKERS-NSG"
+              dst_type     = "NETWORK_SECURITY_GROUP"
+              dst_port_min = 10256
+              dst_port_max = 10256
+            }
+            "EGRESS-TO-WORKERS-ICMP-RULE" = {
+              description = "Allow outbound ICMP to worker nodes for path discovery."
+              stateless   = false
+              protocol    = "ICMP"
+              dst         = "OKE-VCN-1-WORKERS-NSG"
+              dst_type    = "NETWORK_SECURITY_GROUP"
+              icmp_type   = 3
+              icmp_code   = 4
+            }
+            },
+            local.oke_vcn_1_to_workers_subnet_cross_vcn_egress,
+            local.oke_vcn_1_to_pods_subnet_cross_vcn_egress
+          ),
+          ingress_rules = merge({
+            "INGRESS-FROM-ANYWHERE-TCP-RULE" = {
+              description  = "Allows inbound TCP."
+              stateless    = false
+              protocol     = "TCP"
+              src          = "0.0.0.0/0"
+              src_type     = "CIDR_BLOCK"
+              dst_port_min = 443
+              dst_port_max = 443
+            }
+            }
+          )
+        }
         },
         var.add_oke_vcn1_mgmt_subnet ? {
           "OKE-VCN-1-MGMT-NSG" = {
@@ -846,7 +839,6 @@ locals {
           }
         } : {}
       )
-
       vcn_specific_gateways = (local.chosen_hub_option != 3 && local.chosen_hub_option != 4) ? {
         internet_gateways = {
           // don't deploy when deploying Hub VCN
@@ -928,8 +920,7 @@ locals {
     } : {}
   )
   oke_vcn_1_to_pods_subnet_cross_vcn_egress = merge(
-    (local.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true && var.add_oke_vcn2 == true && var.oke_vcn2_attach_to_drg == true) &&
-    (upper(var.oke_vcn2_cni_type) == "NATIVE") &&
+    (local.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true && var.add_oke_vcn2 == true && var.oke_vcn2_attach_to_drg == true) && (upper(var.oke_vcn2_cni_type) == "NATIVE") &&
     (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.oke_vcn1_routable_vcns) == 0 || contains(var.oke_vcn1_routable_vcns, "OKE-VCN-2")))) ? {
       "EGRESS-TO-OKE-VCN-2-PODS-SUBNET-RULE" = {
         description = "Egress to ${coalesce(var.oke_vcn2_pods_subnet_name, "${var.service_label}-oke-vcn-2-pods-subnet")}."
@@ -937,12 +928,9 @@ locals {
         protocol    = "TCP"
         dst         = coalesce(var.oke_vcn2_pods_subnet_cidr, cidrsubnet(var.oke_vcn2_cidrs[0], 3, 1))
         dst_type    = "CIDR_BLOCK"
-        #dst_port_min = 443
-        #dst_port_max = 443
       }
     } : {},
-    (local.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true && var.add_oke_vcn3 == true && var.oke_vcn3_attach_to_drg == true) &&
-    (upper(var.oke_vcn3_cni_type) == "NATIVE") &&
+    (local.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true && var.add_oke_vcn3 == true && var.oke_vcn3_attach_to_drg == true) && (upper(var.oke_vcn3_cni_type) == "NATIVE") &&
     (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.oke_vcn1_routable_vcns) == 0 || contains(var.oke_vcn1_routable_vcns, "OKE-VCN-3")))) ? {
       "EGRESS-TO-OKE-VCN-3-PODS-SUBNET-RULE" = {
         description = "Egress to ${coalesce(var.oke_vcn3_pods_subnet_name, "${var.service_label}-oke-vcn-3-pods-subnet")}."
@@ -950,8 +938,6 @@ locals {
         protocol    = "TCP"
         dst         = coalesce(var.oke_vcn3_pods_subnet_cidr, cidrsubnet(var.oke_vcn3_cidrs[0], 3, 1))
         dst_type    = "CIDR_BLOCK"
-        #dst_port_min = 443
-        #dst_port_max = 443
       }
     } : {}
   )
@@ -1299,8 +1285,7 @@ locals {
       }
     } : {},
     (local.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true && var.add_tt_vcn1 == true && var.tt_vcn1_attach_to_drg == true) &&
-    (local.hub_with_vcn == true ||
-      (local.hub_with_drg_only == true && (length(var.oke_vcn1_routable_vcns) == 0 || contains(var.oke_vcn1_routable_vcns, "TT-VCN-1")))) ? {
+    (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.oke_vcn1_routable_vcns) == 0 || contains(var.oke_vcn1_routable_vcns, "TT-VCN-1")))) ? {
       "INGRESS-FROM-TT-VCN-1-APP-SUBNET-RULE" = {
         description = "Ingress from ${coalesce(var.tt_vcn1_app_subnet_name, "${var.service_label}-tt-vcn-1-app-subnet")}."
         stateless   = false
@@ -1390,8 +1375,6 @@ locals {
       }
     } : {}
   )
-  
-
 
   oke_vcn_1_drg_routing = merge(
     (local.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true && var.add_oke_vcn2 == true && var.oke_vcn2_attach_to_drg == true) &&
@@ -1477,5 +1460,4 @@ locals {
       }
     } : {}
   )
-
 }
