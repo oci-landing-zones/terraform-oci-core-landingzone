@@ -183,3 +183,23 @@ variable "deploy_wkld_policies" {
   type = bool
   description = "Whether or not to deploy wkld policies"
 }
+variable "root_policy_name"{
+  default = null
+  type = string
+  description = "Root policy name."
+}
+variable "wkld_admin_policy_name"{
+  default = null
+  type = string
+  description = "Workload Admin policy name."
+}
+variable "db_admin_policy_name"{
+  default = null
+  type = string
+  description = "DB Admin policy name."
+}
+variable "app_admin_policy_name"{
+  default = null
+  type = string
+  description = "App Admin policy name."
+}
