@@ -121,6 +121,7 @@ variableGroups:
       - "db_nsg_additional_ingress_rules"
       - "db_backup_nsg_additional_ingress_rules"
       - "spare_nsg_additional_ingress_rules"
+      - "additional_nsgs"
 
 
 
@@ -810,4 +811,7 @@ variables:
     visible: false
 
   additional_route_tables:
+    visible: false
+
+  additional_nsgs:
     visible: false

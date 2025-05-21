@@ -12,11 +12,11 @@ No providers.
 
 | Name | Source | Version |
 |------|--------|---------|
-| <a name="module_workload_compartment"></a> [workload\_compartment](#module\_workload\_compartment) | github.com/oci-landing-zones/terraform-oci-modules-iam//compartments | v0.2.4 |
-| <a name="module_workload_custom_domain_groups"></a> [workload\_custom\_domain\_groups](#module\_workload\_custom\_domain\_groups) | github.com/oci-landing-zones/terraform-oci-modules-iam//identity-domains | v0.2.4 |
-| <a name="module_workload_default_domain_groups"></a> [workload\_default\_domain\_groups](#module\_workload\_default\_domain\_groups) | github.com/oci-landing-zones/terraform-oci-modules-iam//groups | v0.2.7 |
-| <a name="module_workload_policies"></a> [workload\_policies](#module\_workload\_policies) | github.com/oci-landing-zones/terraform-oci-modules-iam//policies | v0.2.7 |
-| <a name="module_workload_sub_compartments"></a> [workload\_sub\_compartments](#module\_workload\_sub\_compartments) | github.com/oci-landing-zones/terraform-oci-modules-iam//compartments | v0.2.4 |
+| <a name="module_workload_compartment"></a> [workload\_compartment](#module\_workload\_compartment) | github.com/oci-landing-zones/terraform-oci-modules-iam//compartments | v0.2.9  |
+| <a name="module_workload_custom_domain_groups"></a> [workload\_custom\_domain\_groups](#module\_workload\_custom\_domain\_groups) | github.com/oci-landing-zones/terraform-oci-modules-iam//identity-domains | v0.2.9  |
+| <a name="module_workload_default_domain_groups"></a> [workload\_default\_domain\_groups](#module\_workload\_default\_domain\_groups) | github.com/oci-landing-zones/terraform-oci-modules-iam//groups | v0.2.9  |
+| <a name="module_workload_policies"></a> [workload\_policies](#module\_workload\_policies) | github.com/oci-landing-zones/terraform-oci-modules-iam//policies | v0.2.9  |
+| <a name="module_workload_sub_compartments"></a> [workload\_sub\_compartments](#module\_workload\_sub\_compartments) | github.com/oci-landing-zones/terraform-oci-modules-iam//compartments | v0.2.9  |
 
 ## Resources
 

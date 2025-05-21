@@ -291,7 +291,7 @@ locals {
 module "workload_policies" {
   count                  = var.deploy_root_policies || var.deploy_wkld_policies ? 1 : 0
   depends_on             = [module.workload_default_domain_groups, module.workload_custom_domain_groups, module.workload_compartment, module.workload_sub_compartments]
-  source                 = "github.com/oci-landing-zones/terraform-oci-modules-iam//policies?ref=v0.2.7"
+  source                 = "github.com/oci-landing-zones/terraform-oci-modules-iam//policies?ref=v0.2.9"
   providers              = { oci = oci.home }
   tenancy_ocid           = var.tenancy_ocid
   policies_configuration = local.policies_configuration
