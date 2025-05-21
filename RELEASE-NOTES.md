@@ -1,5 +1,6 @@
 # May 22, 2025 Release Notes - 1.5.1
 1. User Interface (UI) refinements and clarifications.
+2. Generic IAM Extension bug fixes
 
 # May 09, 2025 Release Notes - 1.5.0
 1. Core Landing Zone Enhancements:
