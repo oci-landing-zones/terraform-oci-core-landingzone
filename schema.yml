@@ -18,13 +18,15 @@ variableGroups:
       - "region"
       - "cis_level"
       - "service_label"
-      - "extend_landing_zone_to_new_region"
-      - "customize_iam"
-      - "define_net"
-      - "enable_zpr"
-      - "zpr_namespace_name"
-      - "display_security_logging_governance_settings"
 
+  - title: "Configuration Options"
+    variables:
+    - "extend_landing_zone_to_new_region"
+    - "customize_iam"
+    - "define_net"
+    - "enable_zpr"
+    - "zpr_namespace_name"
+    - "display_security_logging_governance_settings"
 
   - title: "Compartments"
     variables:
@@ -499,7 +501,6 @@ variableGroups:
           - false
 
 
-
   - title: "Security Zones"
     variables:
     - "enable_security_zones"
@@ -617,15 +618,15 @@ variables:
 
   extend_landing_zone_to_new_region:
     type: boolean
-    title: "Extend existing Landing Zone to New Region?"
-    description: "Whether an existing Landing Zone is being extended to another region. When set to true, compartments, identity domains, groups, dynamic groups, policies and resources at the home region are not provisioned. Use this when you want provision a Landing Zone in a new region, but reuse existing Landing Zone resources in the home region."
+    title: "Extend an Existing Landing Zone Deployment to Another Region?"
+    description: "Check to reuse the compartments, identity domains, dynamic groups, groups, and policies from a previously deployed Landing Zone in another region. When set to true, compartments, identity domains, groups, dynamic groups, policies and resources at the home region are not provisioned."
     default: false
     visible: true
 
   customize_iam:
     type: boolean
     title: "Customize Default IAM Settings?"
-    description: "Check to customize default settings for compartments, identity domains, groups, dynamic groups and policies."
+    description: "Check if you need to customize the settings for compartments, identity domains, groups, and policies."
     default: false
     visible:
       eq:
@@ -634,8 +635,8 @@ variables:
 
   define_net:
     type: boolean
-    title: "Define Networking?"
-    description: "Check to define networking resources. By default, the Landing Zone does NOT deploy any networks."
+    title: "Define Networking Topology?"
+    description: "Check to define networking resources. If you do not select, the Landing Zone does NOT deploy any networks."
     default: false
     visible: true
 
@@ -660,9 +661,9 @@ variables:
 
   display_security_logging_governance_settings:
     type: boolean
-    title: "Display Security/Logging/Governance Settings?"
-    description: "Check to enable/configure settings for some OCI Security, Logging, and Governance services."
-    visible: true 
+    title: "Customize Security, Logging, or Governance Settings?"
+    description: "Check to configure settings for some OCI Security, Logging, and Governance services. If you do not select, the Landing Zone does NOT deploy Security Zones, Service Connector, Vulnerability Scanning, and Budget resources."
+    visible: true
 
   display_output:
     type: boolean
