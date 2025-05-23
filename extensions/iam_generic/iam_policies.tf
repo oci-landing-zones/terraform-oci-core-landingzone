@@ -116,12 +116,12 @@ locals {
     ] : [],
     # Security cmp policies
     var.security_compartment_ocid != "" ? [
-    "allow group ${var.workload_admin_group_name} to use vaults in compartment id ${var.security_compartment_ocid}",
-    "allow group ${var.workload_admin_group_name} to manage instance-images in compartment id ${var.security_compartment_ocid}",
-    "allow group ${var.workload_admin_group_name} to read vss-family in compartment id ${var.security_compartment_ocid}",
-    "allow group ${var.workload_admin_group_name} to use bastion in compartment id ${var.security_compartment_ocid}",
-    "allow group ${var.workload_admin_group_name} to manage bastion-session in compartment id ${var.security_compartment_ocid}",
-    "allow group ${var.workload_admin_group_name} to read logging-family in compartment id ${var.security_compartment_ocid}"
+    "allow group ${local.wkld_admin_group_name} to use vaults in compartment id ${var.security_compartment_ocid}",
+    "allow group ${local.wkld_admin_group_name} to manage instance-images in compartment id ${var.security_compartment_ocid}",
+    "allow group ${local.wkld_admin_group_name} to read vss-family in compartment id ${var.security_compartment_ocid}",
+    "allow group ${local.wkld_admin_group_name} to use bastion in compartment id ${var.security_compartment_ocid}",
+    "allow group ${local.wkld_admin_group_name} to manage bastion-session in compartment id ${var.security_compartment_ocid}",
+    "allow group ${local.wkld_admin_group_name} to read logging-family in compartment id ${var.security_compartment_ocid}"
     ] : [],
   var.additional_wkld_admin_policy_statements
   ) : []
@@ -251,7 +251,7 @@ locals {
       var.deploy_root_policies ? {
       "ROOT-POLICY" : {
         compartment_id = var.tenancy_ocid
-        name = "${var.service_label}-root-policy"
+        name = coalesce(var.root_policy_name, "${var.service_label}-root-policy")
         description = "Root policy statements"
         statements = local.root_policy_statements
       }
@@ -259,14 +259,14 @@ locals {
     var.deploy_wkld_policies ? {
       "WKLD-ADMIN-POLICY" : {
         compartment_id = var.parent_compartment_ocid
-        name = "${var.service_label}-wkld-admin-policy"
+        name = coalesce(var.wkld_admin_policy_name, "${var.service_label}-wkld-admin-policy")
         description = "Workload admin policies"
         statements = local.wkld_admin_policy_statements
       }
     } : {},
       var.isolate_workload ? {
       "APP-ADMIN-POLICY" : {
-        name = "${var.service_label}-workload-app-admin-policy"
+        name = coalesce(var.app_admin_policy_name, "${var.service_label}-wkld-app-admin-policy")
         description = "Workload App Admin Policies"
         compartment_id = var.parent_compartment_ocid
         statements = local.app_admin_policy_statements
@@ -274,7 +274,7 @@ locals {
     } : {},
       var.isolate_workload && var.enable_db_admin_group ? {
       "DB-ADMIN-POLICY" : {
-        name = "${var.service_label}-workload-DB-Admin-policy"
+        name = coalesce(var.db_admin_policy_name, "${var.service_label}-wkld-db-admin-policy")
         description = "Workload DB Admin Policies"
         compartment_id = var.parent_compartment_ocid
         statements = local.db_admin_policy_statements
@@ -291,7 +291,7 @@ locals {
 module "workload_policies" {
   count                  = var.deploy_root_policies || var.deploy_wkld_policies ? 1 : 0
   depends_on             = [module.workload_default_domain_groups, module.workload_custom_domain_groups, module.workload_compartment, module.workload_sub_compartments]
-  source                 = "github.com/oci-landing-zones/terraform-oci-modules-iam//policies?ref=v0.2.7"
+  source                 = "github.com/oci-landing-zones/terraform-oci-modules-iam//policies?ref=v0.2.9"
   providers              = { oci = oci.home }
   tenancy_ocid           = var.tenancy_ocid
   policies_configuration = local.policies_configuration

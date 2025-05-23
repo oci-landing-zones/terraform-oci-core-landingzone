@@ -58,14 +58,14 @@ locals {
 
 }
 module "workload_default_domain_groups" {
-  source               = "github.com/oci-landing-zones/terraform-oci-modules-iam//groups?ref=v0.2.7"
+  source               = "github.com/oci-landing-zones/terraform-oci-modules-iam//groups?ref=v0.2.9"
   count                = !var.use_custom_identity_domain && var.deploy_default_groups ? 1 : 0
   tenancy_ocid         = var.tenancy_ocid
   groups_configuration = local.default_domain_groups_configuration
 }
 
 module "workload_custom_domain_groups" {
-  source                               = "github.com/oci-landing-zones/terraform-oci-modules-iam//identity-domains?ref=v0.2.4"
+  source                               = "github.com/oci-landing-zones/terraform-oci-modules-iam//identity-domains?ref=v0.2.9"
   count                                = var.use_custom_identity_domain ? 1 : 0
   tenancy_ocid                         = var.tenancy_ocid
   identity_domain_groups_configuration = local.custom_domain_groups_configuration
