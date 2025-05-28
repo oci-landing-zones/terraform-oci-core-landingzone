@@ -44,7 +44,7 @@ core-lz-prep-test-cases-merge:
     - python3 /home/gitlab-runner/pipeline-tools/preprocessor_new.py $MERGE_TEST_CASES_DIR -f tfvars.template -d . --apply
     - echo "  ----- BEGIN - Running CIS Compliance Script  -----  "
     - wget -O cis_reports.py https://raw.githubusercontent.com/oci-landing-zones/oci-cis-landingzone-quickstart/main/scripts/cis_reports.py
-    - python3 cis_reports.py -t merge -report-directory $CI_PIPELINE_ID
+    - python3 cis_reports.py -t merge --report-directory $CI_PIPELINE_ID
     - echo "  ----- SUCCESS - Running CIS Compliance Script  -----  
     - echo "  ----- BEGIN - Packaging Output -----  "
     - echo " TAR $CI_PIPELINE_ID folder"
