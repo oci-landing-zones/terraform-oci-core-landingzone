@@ -59,7 +59,7 @@ core-lz-prep-test-cases-merge:
     - echo "  ----- BEGIN - Creating PAR  -----  "
     - PAR_DATETIME=$(date --date="+24 hours" --rfc-3339=seconds)
     - echo " PAR Expiration is - $PAR_DATETIME "
-    - PAR_LOCATION=$(oci os preauth-request create --access-type AnyObjectRead --bucket-name $MERGE_BUCKET_NAME --namespace-name $NAMESPACE --time-expires "$PAR_DATETIME" --name $PIPELINE_TAR --object-name $PIPELINE_TAR --profile merge --query data.\"full-path\")
+    - PAR_LOCATION=$(oci os preauth-request create --access-type AnyObjectRead --bucket-name $MERGE_BUCKET_NAME --namespace-name $MERGE_NAMESPACE --time-expires "$PAR_DATETIME" --name $PIPELINE_TAR --object-name $PIPELINE_TAR --profile merge --query data.\"full-path\")
     - echo "  ----- SUCCESS - Creating PAR  -----  "
     - python3 /home/gitlab-runner/pipeline-tools/preprocessor_new.py $MERGE_TEST_CASES_DIR -f tfvars.template -d . --destroy
     # - echo "Hello World"
