@@ -7,6 +7,8 @@ variables:
   MERGE_BUCKET_NAME: $MERGE_BUCKET_NAME
   MERGE_NAMESPACE: $MERGE_NAMESPACE
   PAR_LOCATION: ""
+  PIPELINE_TAR: "pipeline-$CI_PIPELINE_ID.tar.gz"
+
 
 core-lz-prep-test-cases-pull:
   stage: tf-prep-test-case-pull
