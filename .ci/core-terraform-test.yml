@@ -53,13 +53,13 @@ core-lz-prep-test-cases-merge:
     - tar -czvf $PIPELINE_TAR $CI_PIPELINE_ID
     - echo "  ----- SUCCESS - Packaging Output -----  "
     - echo "  ----- BEGIN - Uploading Output to Bucket  -----  "
-    - UPLOAD_REQUEST=$(oci os object put -bn $MERGE_BUCKET_NAME -ns $MERGE_NAMESPACE --file $PIPELINE_TAR)
+    - UPLOAD_REQUEST=$(oci os object put -bn $MERGE_BUCKET_NAME -ns $MERGE_NAMESPACE --file $PIPELINE_TAR --profile merge)
     - echo $UPLOAD_REQUEST
     - echo "  ----- SUCCESS - Uploading Output to Bucket  -----  "
     - echo "  ----- BEGIN - Creating PAR  -----  "
     - PAR_DATETIME=$(date --date="+24 hours" --rfc-3339=seconds)
     - echo " PAR Expiration is - $PAR_DATETIME "
-    - PAR_LOCATION=$(oci os preauth-request create --access-type AnyObjectRead --bucket-name $MERGE_BUCKET_NAME --namespace-name $NAMESPACE --time-expires "$PAR_DATETIME" --name $PIPELINE_TAR --object-name $PIPELINE_TAR --query data.\"full-path\")
+    - PAR_LOCATION=$(oci os preauth-request create --access-type AnyObjectRead --bucket-name $MERGE_BUCKET_NAME --namespace-name $NAMESPACE --time-expires "$PAR_DATETIME" --name $PIPELINE_TAR --object-name $PIPELINE_TAR --profile merge --query data.\"full-path\")
     - echo "  ----- SUCCESS - Creating PAR  -----  "
     - python3 /home/gitlab-runner/pipeline-tools/preprocessor_new.py $MERGE_TEST_CASES_DIR -f tfvars.template -d . --destroy
     # - echo "Hello World"
