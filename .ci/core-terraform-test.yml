@@ -4,6 +4,8 @@ variables:
   PROXY_SERVER: $PROXY_SERVER
   PR_TEST_CASES_ZIP: $PR_TEST_CASES_ZIP
   MERGE_TEST_CASES_ZIP: $MERGE_TEST_CASES_ZIP
+  MERGE_BUCKET_NAME: $MERGE_BUCKET_NAME
+  MERGE_NAMESPACE: $MERGE_NAMESPACE
   PAR_LOCATION: ""
 
 core-lz-prep-test-cases-pull:
@@ -40,7 +42,23 @@ core-lz-prep-test-cases-merge:
     - echo $MERGE_TEST_CASES_DIR
     - terraform fmt
     - python3 /home/gitlab-runner/pipeline-tools/preprocessor_new.py $MERGE_TEST_CASES_DIR -f tfvars.template -d . --apply
+    - echo "  ----- BEGIN - Running CIS Compliance Script  -----  "
     - wget -O cis_reports.py https://raw.githubusercontent.com/oci-landing-zones/oci-cis-landingzone-quickstart/main/scripts/cis_reports.py
-    - python3 cis_reports.py -v
+    - python3 cis_reports.py -t merge -report-directory $CI_PIPELINE_ID
+    - echo "  ----- SUCCESS - Running CIS Compliance Script  -----  
+    - echo "  ----- BEGIN - Packaging Output -----  "
+    - echo " TAR $CI_PIPELINE_ID folder"
+    - tar -czvf $PIPELINE_TAR $CI_PIPELINE_ID
+    - echo "  ----- SUCCESS - Packaging Output -----  "
+    - echo "  ----- BEGIN - Uploading Output to Bucket  -----  "
+    - UPLOAD_REQUEST=$(oci os object put -bn $MERGE_BUCKET_NAME -ns $MERGE_NAMESPACE --file $PIPELINE_TAR)
+    - echo $UPLOAD_REQUEST 
+    - echo "  ----- SUCCESS - Uploading Output to Bucket  -----  "
+    - echo "  ----- BEGIN - Creating PAR  -----  "
+    - PAR_DATETIME=$(date --date="+24 hours" --rfc-3339=seconds)
+    - echo " PAR Expiration is - $PAR_DATETIME "
+    - PAR_LOCATION=$(oci os preauth-request create --access-type AnyObjectRead --bucket-name $MERGE_BUCKET_NAME --namespace-name $NAMESPACE --time-expires "$PAR_DATETIME" --name $PIPELINE_TAR --object-name $PIPELINE_TAR --query data.\"full-path\")
+    - echo "  ----- SUCCESS - Creating PAR  -----  "
+    - python3 /home/gitlab-runner/pipeline-tools/preprocessor_new.py $MERGE_TEST_CASES_DIR -f tfvars.template -d . --destroy
     # - echo "Hello World"
     - echo "  ----- END - Running Test MERGE Request Cases -----  "
