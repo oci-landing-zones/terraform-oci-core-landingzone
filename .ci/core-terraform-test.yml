@@ -39,6 +39,8 @@ core-lz-prep-test-cases-merge:
     - export MERGE_TEST_CASES_DIR=${MERGE_TEST_CASES_ZIP::-4}
     - echo $MERGE_TEST_CASES_DIR
     - terraform fmt
-    - python3 /home/gitlab-runner/pipeline-tools/preprocessor.py $MERGE_TEST_CASES_DIR -f tfvars.template -d . --apply
+    - python3 /home/gitlab-runner/pipeline-tools/preprocessor_new.py $MERGE_TEST_CASES_DIR -f tfvars.template -d . --apply
+    - wget -O cis_reports.py https://raw.githubusercontent.com/oci-landing-zones/oci-cis-landingzone-quickstart/main/scripts/cis_reports.py
+    - python3 cis_reports.py -v
     # - echo "Hello World"
     - echo "  ----- END - Running Test MERGE Request Cases -----  "
