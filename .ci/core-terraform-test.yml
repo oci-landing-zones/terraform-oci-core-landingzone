@@ -2,7 +2,8 @@ variables:
   BUCKET_NAME: $BUCKET_NAME
   NAMESPACE: $LZTEAM_NAMESPACE
   PROXY_SERVER: $PROXY_SERVER
-  TEST_CASES_ZIP: $TEST_CASES_ZIP
+  PR_TEST_CASES_ZIP: $PR_TEST_CASES_ZIP
+  MERGE_TEST_CASES_ZIP: $MERGE_TEST_CASES_ZIP
   PAR_LOCATION: ""
 
 core-lz-prep-test-cases-pull:
@@ -15,9 +16,9 @@ core-lz-prep-test-cases-pull:
     - echo "  ----- BEGIN - Running Test Cases on Pull Request -----  "
     - export https_proxy=$PROXY_SERVER:80
     - export http_proxy=$PROXY_SERVER:80
-    - oci os object get -bn $BUCKET_NAME --file $TEST_CASES_ZIP --name $TEST_CASES_ZIP -ns $LZTEAM_NAMESPACE
-    - unzip $TEST_CASES_ZIP
-    - export TEST_CASES_DIR=${TEST_CASES_ZIP::-4}
+    - oci os object get -bn $BUCKET_NAME --file $PR_TEST_CASES_ZIP --name $PR_TEST_CASES_ZIP -ns $LZTEAM_NAMESPACE
+    - unzip $PR_TEST_CASES_ZIP
+    - export TEST_CASES_DIR=${PR_TEST_CASES_ZIP::-4}
     - echo $TEST_CASES_DIR
     - terraform fmt
     - python3 /home/gitlab-runner/pipeline-tools/preprocessor.py $TEST_CASES_DIR -f tfvars.template -d . --plan
@@ -33,11 +34,11 @@ core-lz-prep-test-cases-merge:
     - echo "  ----- BEGIN - Running Test Cases on MERGE Request -----  "
     - export https_proxy=$PROXY_SERVER:80
     - export http_proxy=$PROXY_SERVER:80
-    # - oci os object get -bn $BUCKET_NAME --file $TEST_CASES_ZIP --name $TEST_CASES_ZIP -ns $LZTEAM_NAMESPACE
-    # - unzip $TEST_CASES_ZIP
-    # - export TEST_CASES_DIR=${TEST_CASES_ZIP::-4}
-    # - echo $TEST_CASES_DIR
-    # - terraform fmt
-    # - python3 /home/gitlab-runner/pipeline-tools/preprocessor.py $TEST_CASES_DIR -f tfvars.template -d . --plan
+    - oci os object get -bn $BUCKET_NAME --file $MERGE_TEST_CASES_ZIP --name $MERGE_TEST_CASES_ZIP -ns $LZTEAM_NAMESPACE
+    - unzip $MERGE_TEST_CASES_ZIP
+    - export MERGE_TEST_CASES_DIR=${MERGE_TEST_CASES_ZIP::-4}
+    - echo $MERGE_TEST_CASES_DIR
+    - terraform fmt
+    - python3 /home/gitlab-runner/pipeline-tools/preprocessor.py $MERGE_TEST_CASES_DIR -f tfvars.template -d . --apply
     # - echo "Hello World"
     - echo "  ----- END - Running Test MERGE Request Cases -----  "
