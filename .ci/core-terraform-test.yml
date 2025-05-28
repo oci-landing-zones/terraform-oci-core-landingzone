@@ -45,14 +45,14 @@ core-lz-prep-test-cases-merge:
     - echo "  ----- BEGIN - Running CIS Compliance Script  -----  "
     - wget -O cis_reports.py https://raw.githubusercontent.com/oci-landing-zones/oci-cis-landingzone-quickstart/main/scripts/cis_reports.py
     - python3 cis_reports.py -t merge --report-directory $CI_PIPELINE_ID
-    - echo "  ----- SUCCESS - Running CIS Compliance Script  -----  
+    - echo "  ----- SUCCESS - Running CIS Compliance Script  -----  "
     - echo "  ----- BEGIN - Packaging Output -----  "
     - echo " TAR $CI_PIPELINE_ID folder"
     - tar -czvf $PIPELINE_TAR $CI_PIPELINE_ID
     - echo "  ----- SUCCESS - Packaging Output -----  "
     - echo "  ----- BEGIN - Uploading Output to Bucket  -----  "
     - UPLOAD_REQUEST=$(oci os object put -bn $MERGE_BUCKET_NAME -ns $MERGE_NAMESPACE --file $PIPELINE_TAR)
-    - echo $UPLOAD_REQUEST 
+    - echo $UPLOAD_REQUEST
     - echo "  ----- SUCCESS - Uploading Output to Bucket  -----  "
     - echo "  ----- BEGIN - Creating PAR  -----  "
     - PAR_DATETIME=$(date --date="+24 hours" --rfc-3339=seconds)
