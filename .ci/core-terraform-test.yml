@@ -31,7 +31,7 @@ core-lz-prep-test-cases-pull:
 core-lz-prep-test-cases-merge-pre:
   stage: tf-prep-test-cases-merge-pre
   rules:
-    - if: '$CI_PIPELINE_SOURCE == "push"'
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
 
   script:
     - set -o pipefail
@@ -43,7 +43,7 @@ core-lz-prep-test-cases-merge-pre:
     - export MERGE_TEST_CASES_DIR=${MERGE_TEST_CASES_ZIP::-4}
     - echo $MERGE_TEST_CASES_DIR
     - terraform fmt
-    - python3 /home/gitlab-runner/pipeline-tools/preprocessor.py $TEST_CASES_DIR -f tfvars.template -d . --plan
+    - python3 /home/gitlab-runner/pipeline-tools/preprocessor_new.py $TEST_CASES_DIR -f tfvars.template -d . --plan
     - echo "  ----- END - Running Test for Pull Request Cases -----  "
 
 
