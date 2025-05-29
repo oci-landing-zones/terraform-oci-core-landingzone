@@ -1,0 +1,813 @@
+# Copyright (c) 2023, 2025, Oracle and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl/
+
+title: "Generic Network Extension Workload"
+stackDescription: "This stack deploys the Generic Network Extension Workload, a fully functional workload that allows customers to deploy requirements for the network portion of the Generic Workload." # github link could be added here once it exists
+description: "This stack deploys the Generic Network Extension Workload, a fully functional workload that allows customers to deploy requirements for the network portion of the Generic Workload." # github link could be added here once it exists
+schemaVersion: 1.1.0
+version: "0.0.1"
+locale: "en"
+
+# URL of OCI Core Landing Zone logo icon used on Application Information tab.
+# logoUrl: No current logo, can be added once made
+
+variableGroups:
+  - title: "General"
+    variables:
+      - "region"
+      - "workload_name"
+      - "isolated_resources"
+      - "workload_compartment_ocid"
+      - "network_compartment_ocid"
+      - "deploy_network_architecture"
+
+  - title: "Network"
+    variables:
+      - "workload_vcn_cidr_block"
+      - "hub_drg_ocid"
+      - "hub_vcn_cidrs"
+      - "onprem_cidrs"
+      - "internet_gateway_display_name"
+      - "enable_nat_gateway"
+      - "nat_gateway_display_name"
+      - "nat_gateway_block_traffic"
+      - "enable_service_gateway"
+      - "service_gateway_display_name"
+      - "service_gateway_services"
+      - "add_app_subnet"
+      - "add_db_subnet"
+      - "add_lb_subnet"
+      - "add_mgmt_subnet"
+      - "add_web_subnet"
+      - "add_db_backup_subnet"
+      - "add_spare_subnet"
+      - "customize_subnets"
+      - "app_subnet_name"
+      - "app_subnet_cidr"
+      - "app_subnet_allow_public_access"
+      - "app_subnet_allow_onprem_connectivity"
+      - "db_subnet_name"
+      - "db_subnet_cidr"
+      - "db_subnet_allow_public_access"
+      - "db_subnet_allow_onprem_connectivity"
+      - "lb_subnet_name"
+      - "lb_subnet_cidr"
+      - "lb_subnet_allow_public_access"
+      - "lb_subnet_allow_onprem_connectivity"
+      - "mgmt_subnet_name"
+      - "mgmt_subnet_cidr"
+      - "mgmt_subnet_allow_public_access"
+      - "mgmt_subnet_allow_onprem_connectivity"
+      - "web_subnet_name"
+      - "web_subnet_cidr"
+      - "web_subnet_allow_public_access"
+      - "web_subnet_allow_onprem_connectivity"
+      - "db_backup_subnet_name"
+      - "db_backup_subnet_cidr"
+      - "db_backup_subnet_allow_public_access"
+      - "db_backup_subnet_allow_onprem_connectivity"
+      - "spare_subnet_name"
+      - "spare_subnet_cidr"
+      - "spare_subnet_allow_public_access"
+      - "spare_subnet_allow_onprem_connectivity"
+
+
+  - title: "Security"
+    variables:
+      - "deploy_security_lists"
+      - "deploy_nsgs"
+      - "jumphost_cidrs"
+      - "customize_names"
+      - "app_nsg_name"
+      - "app_subnet_seclist_name"
+      - "web_nsg_name"
+      - "web_subnet_seclist_name"
+      - "db_nsg_name"
+      - "db_subnet_seclist_name"
+      - "mgmt_nsg_name"
+      - "mgmt_subnet_seclist_name"
+      - "lb_nsg_name"
+      - "lb_subnet_seclist_name"
+      - "db_backup_nsg_name"
+      - "db_backup_subnet_seclist_name"
+      - "spare_nsg_name"
+      - "spare_subnet_seclist_name"
+
+  - title: "Hidden Variables"
+    variables:
+      - "fingerprint"
+      - "private_key_password"
+      - "private_key_path"
+      - "tenancy_ocid"
+      - "user_ocid"
+      - "app_subnet_additional_route_rules"
+      - "db_subnet_additional_route_rules"
+      - "lb_subnet_additional_route_rules"
+      - "mgmt_subnet_additional_route_rules"
+      - "web_subnet_additional_route_rules"
+      - "db_backup_subnet_additional_route_rules" 
+      - "spare_subnet_additional_route_rules"
+      - "app_nsg_additional_egress_rules"
+      - "web_nsg_additional_egress_rules"
+      - "mgmt_nsg_additional_egress_rules"
+      - "lb_nsg_additional_egress_rules"
+      - "db_nsg_additional_egress_rules"
+      - "db_backup_nsg_additional_egress_rules"
+      - "spare_nsg_additional_egress_rules"
+      - "app_nsg_additional_ingress_rules"
+      - "web_nsg_additional_ingress_rules"
+      - "mgmt_nsg_additional_ingress_rules"
+      - "lb_nsg_additional_ingress_rules"
+      - "db_nsg_additional_ingress_rules"
+      - "db_backup_nsg_additional_ingress_rules"
+      - "spare_nsg_additional_ingress_rules"
+
+
+
+
+# ------------------------------------------------------
+# ------------   General Vars   ------------------------
+#-------------------------------------------------------
+
+variables:
+
+  region:
+    type: oci:identity:region:name
+    title: "Region"
+    description: "The region for resources deployment."
+    required: true
+
+  workload_name:
+    type: string
+    title: "Workload Name"
+    description: "Provide the name of the workload. This name is appended to resources to differentiate between similar workloads."
+    required: true
+    default: "NetExt"
+
+  isolated_resources:
+    type: boolean
+    title: "Deploy Isolated Resources?"
+    description: "Select if the person deploying this network extension is in the Workload Admin group, so network resources are created inside the workload compartment. Leave unselected if the person deploying this network extension is in the Network Admin group, so network resources are created outside the workload compartment and in the central network compartment of a Landing Zone."
+    required: true
+    default: false
+
+  workload_compartment_ocid:
+    type: oci:identity:compartment:id
+    title: "Workload Compartment OCID"
+    description: "Choose the existing Workload Compartment. Resources will be deployed in this compartment."
+    required: true
+    visible: isolated_resources
+
+  network_compartment_ocid:
+    type: oci:identity:compartment:id
+    title: "Network Compartment OCID"
+    description: "Choose the existing Network Compartment. Resources will be deployed in this compartment."
+    required: true
+    visible:
+      eq:
+        - ${isolated_resources}
+        - false
+
+  deploy_network_architecture:
+    type: enum
+    title: "Network Architecture"
+    description: "Choose one of the options for deploying a network architecture. In the 'Hub and Spoke' option, the Workload VCN will be connected to an external main Hub network as a spoke. In the 'Standalone' option, each workload VCN manages their own internet and on-premises connectivity."
+    default: "Hub and Spoke"
+    required: true
+    enum:
+      - "Hub and Spoke"
+      - "Standalone"
+
+  # ------------------------------------------------------
+  # ------------   Network Vars   ------------------------
+  #-------------------------------------------------------
+
+  workload_vcn_cidr_block:
+    type: string
+    title: "CIDR Block of the Workload VCN"
+    description: "Provide the CIDR block of the Workload VCN."
+    required: true
+
+  hub_drg_ocid:
+    type: string
+    title: "Hub DRG OCID"
+    description: "Provide the OCID of the existing Hub DRG."
+    required: false
+
+  hub_vcn_cidrs:
+    type: array
+    items:
+      type: string
+    uniqueItems: true
+    title: "CIDR blocks of the Hub VCN"
+    description: "Provide the CIDR block(s) of the existing Hub VCN."
+    required: false
+
+  onprem_cidrs:
+    type: array
+    items:
+      type: string
+    uniqueItems: true
+    title: "CIDR blocks of the on-premises connection(s)"
+    description: "Provide the CIDR block(s) of the existing on-premises connection(s)."
+    required: false
+
+  internet_gateway_display_name:
+    type: string
+    title: "Name of the Internet Gateway"
+    description: "Provide the name of the internet gateway."
+    visible:
+      eq:
+        - ${deploy_network_architecture}
+        - "Standalone"
+
+  enable_nat_gateway:
+    type: boolean
+    title: "Add NAT Gateway?"
+    description: "Select to add a NAT Gateway to the Workload VCN."
+    default: false
+
+  nat_gateway_display_name:
+    type: string
+    title: "Name of the NAT Gateway"
+    description: "Provide the name of the NAT Gateway."
+    default: "nat-gateway"
+    visible: enable_nat_gateway
+
+  nat_gateway_block_traffic:
+    type: boolean
+    title: "Block traffic on NAT Gateway?"
+    description: "Select to enable the NAT Gateway to block traffic."
+    default: false
+    visible: enable_nat_gateway
+
+  enable_service_gateway:
+    type: boolean
+    title: "Add Service Gateway?"
+    description: "Select to add a Service Gateway to the Workload VCN."
+    default: false
+
+  service_gateway_display_name:
+    type: string
+    title: "Name of the Service Gateway"
+    description: "Provide the name of the Service Gateway."
+    default: "service-gateway"
+    visible: enable_service_gateway
+
+  service_gateway_services:
+    type: enum
+    title: "Services supported by the Service Gateway"
+    enum:
+      - "objectstorage"
+      - "all-services"
+    description: "Provide the services supported by the Service Gateway."
+    default: "all-services"
+    visible: enable_service_gateway
+
+  add_app_subnet:
+    type: boolean
+    title: "Add Application Subnet?"
+    description: "Select to add an Application Subnet that contains the application-specific network resources."
+    default: false
+
+  app_subnet_name:
+    type: string
+    title: "Name of the App Subnet"
+    description: "Provide the name of the Application Subnet."
+    visible:
+      and:
+        - add_app_subnet
+        - customize_subnets
+
+  app_subnet_cidr:
+    type: string
+    title: "CIDR Block of the App Subnet"
+    description: "Provide the CIDR Block of the App Subnet. It must be within the VCN CIDR block range."
+    visible:
+      and:
+        - add_app_subnet
+        - customize_subnets
+
+  app_subnet_allow_public_access:
+    type: boolean
+    title: "Allow Public Access to App Subnet?"
+    description: "Select to allow public access to the Application Subnet."
+    visible:
+      and:
+        - add_app_subnet
+        - customize_subnets
+
+  app_subnet_allow_onprem_connectivity:
+    type: boolean
+    title: "Allow Access to On-Premises Connectivity?"
+    description: "Select to allow on-premises connectivity to the Application Subnet."
+    visible:
+      and:
+        - add_app_subnet
+        - customize_subnets
+
+  add_db_subnet:
+    type: boolean
+    title: "Add Database Subnet?"
+    description: "Select to add a Database Subnet that contains the database-specific network resources."
+    default: false
+
+  db_subnet_name:
+    type: string
+    title: "Name of the Database Subnet"
+    description: "Provide the name of the Database Subnet."
+    visible:
+      and:
+        - add_db_subnet
+        - customize_subnets
+
+  db_subnet_cidr:
+    type: string
+    title: "CIDR Block of the Database Subnet"
+    description: "Provide the CIDR Block of Database App Subnet. It must be within the VCN CIDR block range."
+    visible:
+      and:
+        - add_db_subnet
+        - customize_subnets
+
+  db_subnet_allow_public_access:
+    type: boolean
+    title: "Allow Public Access to Database Subnet?"
+    description: "Select to allow public access to the Database Subnet."
+    visible:
+      and:
+        - add_db_subnet
+        - customize_subnets
+
+  db_subnet_allow_onprem_connectivity:
+    type: boolean
+    title: "Allow Access to On-Premises Connectivity?"
+    description: "Select to allow on-premises connectivity to the Database Subnet."
+    visible:
+      and:
+        - add_db_subnet
+        - customize_subnets
+
+  add_lb_subnet:
+    type: boolean
+    title: "Add Load Balancer Subnet?"
+    description: "Select to add a Load Balancer Subnet that contains the load balancer resources for outbound connectivity and scaling."
+    default: false
+
+  lb_subnet_name:
+    type: string
+    title: "Name of the Load Balancer Subnet"
+    description: "Provide the name of the Load Balancer Subnet."
+    visible:
+      and:
+        - add_lb_subnet
+        - customize_subnets
+
+  lb_subnet_cidr:
+    type: string
+    title: "CIDR Block of the Load Balancer Subnet"
+    description: "Provide the CIDR Block of Load Balancer App Subnet. It must be within the VCN CIDR block range."
+    visible:
+      and:
+        - add_lb_subnet
+        - customize_subnets
+
+  lb_subnet_allow_public_access:
+    type: boolean
+    title: "Allow Public Access to Load Balancer Subnet?"
+    description: "Select to allow public access to the Load Balancer Subnet."
+    visible:
+      and:
+        - add_lb_subnet
+        - customize_subnets
+
+  lb_subnet_allow_onprem_connectivity:
+    type: boolean
+    title: "Allow Access to On-Premises Connectivity?"
+    description: "Select to allow on-premises connectivity to the Load Balancer Subnet."
+    visible:
+      and:
+        - add_lb_subnet
+        - customize_subnets
+
+  add_mgmt_subnet:
+    type: boolean
+    title: "Add Management Subnet?"
+    description: "Select to add a Management Subnet for management purpose. This can be used for OKE workloads or it can be customized for other purposes."
+    default: false
+
+  mgmt_subnet_name:
+    type: string
+    title: "Name of the Management Subnet"
+    description: "Provide the name of the Management Subnet."
+    visible:
+      and:
+        - add_mgmt_subnet
+        - customize_subnets
+
+  mgmt_subnet_cidr:
+    type: string
+    title: "CIDR Block of the Management Subnet"
+    description: "Provide the CIDR Block of Management Subnet. It must be within the VCN CIDR block range."
+    visible:
+      and:
+        - add_mgmt_subnet
+        - customize_subnets
+
+  mgmt_subnet_allow_public_access:
+    type: boolean
+    title: "Allow Public Access to Management Subnet?"
+    description: "Select to allow public access to the Management Subnet."
+    visible:
+      and:
+        - add_mgmt_subnet
+        - customize_subnets
+
+  mgmt_subnet_allow_onprem_connectivity:
+    type: boolean
+    title: "Allow Access to On-Premises Connectivity?"
+    description: "Select to allow on-premises connectivity to the Management Subnet."
+    visible:
+      and:
+        - add_mgmt_subnet
+        - customize_subnets
+
+  add_web_subnet:
+    type: boolean
+    title: "Add Web Subnet?"
+    description: "Select to add a Web Subnet."
+    default: false
+
+  web_subnet_name:
+    type: string
+    title: "Name of the Web Subnet"
+    description: "Provide the name of the Web Subnet."
+    visible:
+      and:
+        - add_web_subnet
+        - customize_subnets
+
+  web_subnet_cidr:
+    type: string
+    title: "CIDR Block of the Web Subnet"
+    description: "Provide the CIDR Block of Web Subnet. It must be within the VCN CIDR block range."
+    visible:
+      and:
+        - add_web_subnet
+        - customize_subnets
+
+  web_subnet_allow_public_access:
+    type: boolean
+    title: "Allow Public Access to Web Subnet?"
+    description: "Select to allow public access to the Web Subnet."
+    visible:
+      and:
+        - add_web_subnet
+        - customize_subnets
+
+  web_subnet_allow_onprem_connectivity:
+    type: boolean
+    title: "Allow Access to On-Premises Connectivity?"
+    description: "Select to allow on-premises connectivity to the Web Subnet."
+    visible:
+      and:
+        - add_web_subnet
+        - customize_subnets
+
+  add_db_backup_subnet:
+    type: boolean
+    title: "Add Database Backup Subnet?"
+    description: "Select to add Database Backup Subnet."
+    default: false
+
+  db_backup_subnet_name:
+    type: string
+    title: "Name of the Database Backup Subnet"
+    description: "Provide the name of the Database Backup Subnet."
+    visible:
+      and:
+        - add_db_backup_subnet
+        - customize_subnets
+
+  db_backup_subnet_cidr:
+    type: string
+    title: "CIDR Block of the Database Backup Subnet"
+    description: "Provide the CIDR Block of Database Backup Subnet. It must be within the VCN CIDR block range."
+    visible:
+      and:
+        - add_db_backup_subnet
+        - customize_subnets
+
+  db_backup_subnet_allow_public_access:
+    type: boolean
+    title: "Allow Public Access to Database Backup Subnet?"
+    description: "Select to allow public access to the Database Backup Subnet."
+    visible:
+      and:
+        - add_db_backup_subnet
+        - customize_subnets
+
+  db_backup_subnet_allow_onprem_connectivity:
+    type: boolean
+    title: "Allow Access to On-Premises Connectivity?"
+    description: "Select to allow on-premises connectivity to the Database Backup Subnet."
+    visible:
+      and:
+        - add_db_backup_subnet
+        - customize_subnets
+
+  add_spare_subnet:
+    type: boolean
+    title: "Add Spare Subnet?"
+    description: "Select to add a spare subnet."
+    default: false
+
+  spare_subnet_name:
+    type: string
+    title: "Name of the Spare Subnet"
+    description: "Provide the name of the spare subnet."
+    required: true
+    visible: add_spare_subnet
+
+  spare_subnet_cidr:
+    type: string
+    title: "CIDR Block of the Spare Subnet"
+    description: "Provide the CIDR block of spare subnet. It must be within the VCN CIDR block range."
+    required: true
+    visible: add_spare_subnet
+
+  spare_subnet_allow_public_access:
+    type: boolean
+    title: "Allow Public Access to Spare Subnet?"
+    description: "Select to allow public access to the spare subnet."
+    visible:
+      and:
+        - add_spare_subnet
+
+  spare_subnet_allow_onprem_connectivity:
+    type: boolean
+    title: "Allow Access to On-Premises Connectivity?"
+    description: "Select to allow on-premises connectivity to the spare subnet."
+    visible: add_spare_subnet
+
+  customize_subnets:
+    type: boolean
+    title: "Customize Default Subnets?"
+    description: "Select to customize subnet values."
+    default: false
+    required: false
+
+  # ------------------------------------------------------
+  # ------------   Security Vars   ------------------------
+  #-------------------------------------------------------
+
+  deploy_nsgs:
+    type: boolean
+    title: "Deploy Network Security Groups (NSG)?"
+    description: "Whether to deploy NSGs. Select true to deploy NSGs."
+    default: true
+
+  deploy_security_lists:
+    type: boolean
+    title: "Deploy Security Lists?"
+    description: "Whether to deploy security lists. Select true to deploy security lists."
+    default: false
+
+  jumphost_cidrs:
+    type: array
+    items:
+      type: string
+    uniqueItems: true
+    title: "CIDR Blocks of the Jump Host Connection(s)"
+    description: "List of Jump Host CIDR blocks allowed to ssh to Workload VCN subnets."
+    required: false
+
+  customize_names:
+    type: boolean
+    title: "Customize Default Names for Security Lists and/or Network Security Groups?"
+    description: "Select to customize default names."
+    default: false
+
+  app_nsg_name:
+    type: string
+    title: "Custom name of the Application Network Security Group (NSG)"
+    description: "Provide the name of the Application Network Security Group (NSG)."
+    visible:
+      and:
+        - customize_names
+        - deploy_nsgs
+        - add_app_subnet
+
+  app_subnet_seclist_name:
+    type: string
+    title: "Custom name of the Application Network Security List"
+    description: "Provide the name of the Application Security List."
+    visible:
+      and:
+        - customize_names
+        - deploy_security_lists
+        - add_app_subnet
+
+  web_nsg_name:
+    type: string
+    title: "Custom name of the Web Network Security Group (NSG)"
+    description: "Provide the name of the Web Network Security Group (NSG)."
+    visible:
+      and:
+        - customize_names
+        - deploy_nsgs
+        - add_web_subnet
+
+  web_subnet_seclist_name:
+    type: string
+    title: "Custom name of the Web Network Security List"
+    description: "Provide the name of the Web Security List."
+    visible:
+      and:
+        - customize_names
+        - deploy_security_lists
+        - add_web_subnet
+
+  db_nsg_name:
+    type: string
+    title: "Custom name of the Database Network Security Group (NSG)"
+    description: "Provide the name of the Database Network Security Group (NSG)."
+    visible:
+      and:
+        - customize_names
+        - deploy_nsgs
+        - add_db_subnet
+
+  db_subnet_seclist_name:
+    type: string
+    title: "Custom name of the Database Network Security List"
+    description: "Provide the name of the Database Security List."
+    visible:
+      and:
+        - customize_names
+        - deploy_security_lists
+        - add_db_subnet
+
+  mgmt_nsg_name:
+    type: string
+    title: "Custom name of the Management Network Security Group (NSG)"
+    description: "Provide the name of the Management Network Security Group (NSG)."
+    visible:
+      and:
+        - customize_names
+        - deploy_nsgs
+        - add_mgmt_subnet
+
+  mgmt_subnet_seclist_name:
+    type: string
+    title: "Custom name of the Management Network Security List"
+    description: "Provide the name of the Management Security List."
+    visible:
+      and:
+        - customize_names
+        - deploy_security_lists
+        - add_mgmt_subnet
+
+  lb_nsg_name:
+    type: string
+    title: "Custom name of the Load Balancer Network Security Group (NSG)"
+    description: "Provide the name of the Load Balancer Network Security Group (NSG)."
+    visible:
+      and:
+        - customize_names
+        - deploy_nsgs
+        - add_lb_subnet
+
+  lb_subnet_seclist_name:
+    type: string
+    title: "Custom name of the Load Balancer Network Security List"
+    description: "Provide the name of the Load Balancer Security List."
+    visible:
+      and:
+        - customize_names
+        - deploy_security_lists
+        - add_lb_subnet
+
+  db_backup_nsg_name:
+    type: string
+    title: "Custom name of the Database Backup Network Security Group (NSG)"
+    description: "Provide the name of the Database Backup Network Security Group (NSG)."
+    visible:
+      and:
+        - customize_names
+        - deploy_nsgs
+        - add_db_backup_subnet
+
+  db_backup_subnet_seclist_name:
+    type: string
+    title: "Custom name of the Database Backup Network Security List"
+    description: "Provide the name of the Database Backup Security List."
+    visible:
+      and:
+        - customize_names
+        - deploy_security_lists
+        - add_db_backup_subnet
+  spare_nsg_name:
+    type: string
+    title: "Custom name of the Spare Subnet Network Security Group (NSG)"
+    description: "Provide the name of the spare subnet Network Security Group (NSG)."
+    required: true
+    visible:
+      and:
+        - deploy_nsgs
+        - add_spare_subnet
+
+  spare_subnet_seclist_name:
+    type: string
+    title: "Custom name of the Spare Subnet Network Security List"
+    description: "Provide the name of the spare subnet security List."
+    required: true
+    visible:
+      and:
+        - deploy_security_lists
+        - add_spare_subnet
+
+  # ------------------------------------------------------
+  # ------------   Hidden Vars  --------------------------
+  #-------------------------------------------------------
+
+  fingerprint:
+    visible: false
+
+  private_key_password:
+    visible: false
+
+  private_key_path:
+    visible: false
+
+  tenancy_ocid:
+    visible: false
+
+  user_ocid:
+    visible: false
+
+  app_subnet_additional_route_rules:
+    visible: false
+
+  db_subnet_additional_route_rules:
+    visible: false
+  
+  lb_subnet_additional_route_rules:
+    visible: false
+
+  mgmt_subnet_additional_route_rules:
+    visible: false
+
+  web_subnet_additional_route_rules:
+    visible: false
+
+  db_backup_subnet_additional_route_rules:
+    visible: false
+ 
+  spare_subnet_additional_route_rules:
+    visible: false
+
+  app_nsg_additional_egress_rules:
+    visible: false
+
+  web_nsg_additional_egress_rules:
+    visible: false
+
+  mgmt_nsg_additional_egress_rules:
+    visible: false
+
+  lb_nsg_additional_egress_rules:
+    visible: false
+
+  db_nsg_additional_egress_rules:
+    visible: false
+
+  db_backup_nsg_additional_egress_rules:
+    visible: false
+
+  spare_nsg_additional_egress_rules:
+    visible: false
+
+  app_nsg_additional_ingress_rules:
+    visible: false
+
+  web_nsg_additional_ingress_rules:
+    visible: false
+
+  mgmt_nsg_additional_ingress_rules:
+    visible: false
+
+  lb_nsg_additional_ingress_rules:
+    visible: false
+
+  db_nsg_additional_ingress_rules:
+    visible: false
+
+  db_backup_nsg_additional_ingress_rules:
+    visible: false
+
+  spare_nsg_additional_ingress_rules:
+    visible: false
+
+  additional_route_tables:
+    visible: false

@@ -24,8 +24,7 @@ This template has the following parameters set:
 | exa\_vcn1\_cidrs                  | Exa VCN 1 CIDR blocks. | ["172.16.0.0/20"]                                                                                                          |
 | exa\_vcn1\_attach\_to\_drg        | When true, the VCN is attached to a DRG, enabling cross-vcn traffic routing | true                                                                                                                       |
 | network\_admin\_email\_endpoints  | List of email addresses that receive notifications for networking related events. | ["email.address@example.com"]                                                                                              |
-| security\_admin\_email\_endpoints | List of email addresses that receive notifications for security related events. | ["email.address@example.com"]                                                                                              |
-| enable\_cloud\_guard              | When true, OCI Cloud Guard Service is enabled. Set to false if it's been already enabled through other means. | false                                                                                                                      | |
+| security\_admin\_email\_endpoints | List of email addresses that receive notifications for security related events. | ["email.address@example.com"]                                                                                              |                                                                                                                    | |
 
 For a detailed description of all variables that can be used, see the [Variables](../../VARIABLES.md) documentation.
 
@@ -35,14 +34,13 @@ This template can be deployed using OCI Resource Manager Service (RMS) or Terraf
 
 By clicking the button below, you are redirected to an OCI RMS Stack with variables pre-assigned for deployment.
 
-[![Deploy_To_OCI](../../images/DeployToOCI.svg)](https://cloud.oracle.com/resourcemanager/stacks/create?zipUrl=https://github.com/oci-landing-zones/terraform-oci-core-landingzone/archive/refs/heads/main.zip&zipUrlVariables={"service_label":"ocibastion","define_net":true,"hub_deployment_option":"VCN%20or%20on-premises%20connectivity%20routing%20through%20DMZ%20VCN%20with%20Network%20Virtual%20Appliance%20%28DRG%20and%20DMZ%20VCN%20will%20be%20created%29","hub_vcn_cidrs":["192.168.0.0/24"],"deploy_bastion_jump_host":true,"deploy_bastion_service":true,"bastion_service_allowed_cidrs":["x.x.x.x"],"add_tt_vcn1":true,"tt_vcn1_cidrs":["10.0.0.0/20"],"tt_vcn1_attach_to_drg":true,"add_exa_vcn1":true,"exa_vcn1_cidrs":["172.16.0.0/20"],"exa_vcn1_attach_to_drg":true,"network_admin_email_endpoints":["email.address@example.com"],"security_admin_email_endpoints":["email.address@example.com"],"enable_cloud_guard":false})
+[![Deploy_To_OCI](../../images/DeployToOCI.svg)](https://cloud.oracle.com/resourcemanager/stacks/create?zipUrl=https://github.com/oci-landing-zones/terraform-oci-core-landingzone/archive/refs/heads/main.zip&zipUrlVariables={"service_label":"ocibastion","define_net":true,"hub_deployment_option":"VCN%20or%20on-premises%20connectivity%20routing%20through%20DMZ%20VCN%20with%20Network%20Virtual%20Appliance%20%28DRG%20and%20DMZ%20VCN%20will%20be%20created%29","hub_vcn_cidrs":["192.168.0.0/24"],"deploy_bastion_jump_host":true,"deploy_bastion_service":true,"bastion_service_allowed_cidrs":["x.x.x.x"],"add_tt_vcn1":true,"tt_vcn1_cidrs":["10.0.0.0/20"],"tt_vcn1_attach_to_drg":true,"add_exa_vcn1":true,"exa_vcn1_cidrs":["172.16.0.0/20"],"exa_vcn1_attach_to_drg":true,"network_admin_email_endpoints":["email.address@example.com"],"security_admin_email_endpoints":["email.address@example.com"]})
 
 You are required to review/adjust the following variable settings:
 
  - Make sure to pick an OCI region for deployment.
  - Provide real email addresses for *Network Admin Email Endpoints* and *Security Admin Email Endpoints* fields.
  - Provide real CIDR block(s) used to access the Bastion service for *bastion\_service\_allowed\_cidrs* field.
- - Uncheck *Enable Cloud Guard Service* option in case it is already enabled in your tenancy.
 
 With the stack created, perform a Plan, followed by an Apply using RMS UI.
 
