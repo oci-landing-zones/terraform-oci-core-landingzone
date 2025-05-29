@@ -57,6 +57,14 @@ core-lz-prep-test-cases-merge-pre:
     - echo " PAR Expiration is - $PAR_DATETIME "
     - PAR_LOCATION=$(oci os preauth-request create --access-type AnyObjectRead --bucket-name $MERGE_BUCKET_NAME --namespace-name $MERGE_NAMESPACE --time-expires "$PAR_DATETIME" --name $PIPELINE_TAR --object-name $PIPELINE_TAR --profile merge --query data.\"full-path\")
     - echo "  ----- SUCCESS - Creating PAR  -----  "
+    - echo "  ----- PAR Location  -----  "
+    - PAR_LOCATION+=$PIPELINE_TAR
+    - echo $PAR_LOCATION
+    - echo "  ----- BEGIN - Clean Script Execution -----  "
+    - cd /tmp 
+    - rm -rf $PIPELINE_TAR
+    - rm -rf $CI_PIPELINE_ID
+    - echo $PAR_LOCATION | tr -d '"'
     - echo "  ----- END - Running Test for Pull Request Cases -----  "
 
 
