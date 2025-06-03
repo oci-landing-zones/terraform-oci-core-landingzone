@@ -61,9 +61,6 @@ core-lz-prep-test-cases-merge-pre:
     - PAR_LOCATION+=$PIPELINE_TAR
     - echo $PAR_LOCATION
     - echo "  ----- BEGIN - Clean Script Execution -----  "
-    - cd /tmp 
-    - rm -rf $PIPELINE_TAR
-    - rm -rf $CI_PIPELINE_ID
     - echo $PAR_LOCATION | tr -d '"'
     - echo "  ----- END - Running Test for Pull Request Cases -----  "
 
@@ -84,6 +81,11 @@ core-lz-merge-test-case-1:
     - export MERGE_TEST_CASES_DIR=${MERGE_TEST_CASES_ZIP::-4}
     - echo $MERGE_TEST_CASES_DIR
     - terraform fmt
+    - echo "  ----- BEGIN - Running CIS Compliance Script pre deployment  -----  "
+    - wget -O cis_reports.py https://raw.githubusercontent.com/oci-landing-zones/oci-cis-landingzone-quickstart/main/scripts/cis_reports.py
+    - python3 cis_reports.py -t merge --report-directory $CI_PIPELINE_ID
+    - mkdir $MERGE_TEST_CASES_DIR/predeploy
+    - mv $CI_PIPELINE_ID $MERGE_TEST_CASES_DIR/predeploy
     - echo "  ----- BEGIN - Running Terraform Plan  -----  "
     - python3 /home/gitlab-runner/pipeline-tools/preprocessor_new.py $MERGE_TEST_CASES_DIR -f tfvars.template -d . --plan --merge
     - echo "  ----- SUCCESS - Running Terraform Plan  -----  "
@@ -91,16 +93,16 @@ core-lz-merge-test-case-1:
     - python3 /home/gitlab-runner/pipeline-tools/preprocessor_new.py $MERGE_TEST_CASES_DIR -f tfvars.template -d . --apply --merge
     - echo "  ----- SUCCESS - Running Terraform Apply  -----  "
     - echo "  ----- BEGIN - Running CIS Compliance Script  -----  "
-    - wget -O cis_reports.py https://raw.githubusercontent.com/oci-landing-zones/oci-cis-landingzone-quickstart/main/scripts/cis_reports.py
     - python3 cis_reports.py -t merge --report-directory $CI_PIPELINE_ID
+    - mkdir $MERGE_TEST_CASES_DIR/postdeploy
+    - mv $CI_PIPELINE_ID $MERGE_TEST_CASES_DIR/postdeploy
     - echo "  ----- SUCCESS - Running CIS Compliance Script  -----  "
-    - echo "  ----- BEGIN - Copying Plan Output -----  "
-    - cp *.json $MERGE_TEST_CASES_DIR
-    - echo "  ----- SUCCESS - Copying Plan Output -----  "
-    - echo "  ----- BEGIN - CIS Compliance Script Plan Output -----  "
-    - cp -r $CI_PIPELINE_ID $MERGE_TEST_CASES_DIR
-    - echo "  ----- SUCCESS - CIS Compliance Script Plan Output -----  "
+    - echo "  ----- BEGIN - Running Terraform Destroy  -----  "
+    - python3 /home/gitlab-runner/pipeline-tools/preprocessor_new.py $MERGE_TEST_CASES_DIR -f tfvars.template -d . --destroy --merge
+    - echo "  ----- SUCCESS - Running Terraform Destroy  -----  "
     - echo "  ----- BEGIN - Packaging Use Case Output -----  "
+    - cp *.json $MERGE_TEST_CASES_DIR
+    - cp *.txt $MERGE_TEST_CASES_DIR
     - tar -czvf $PIPELINE_TAR $MERGE_TEST_CASES_DIR
     - echo "  ----- SUCCESS - Packaging Use Case Output Output -----  "
     - echo "  ----- BEGIN - Uploading Output to Bucket  -----  "
@@ -115,10 +117,10 @@ core-lz-merge-test-case-1:
     - echo "  ----- PAR Location  -----  "
     - PAR_LOCATION+=$PIPELINE_TAR
     - echo $PAR_LOCATION
-    - echo "  ----- BEGIN - Clean Script Execution -----  "
-    - cd /tmp 
-    - rm -rf $PIPELINE_TAR
-    - rm -rf $CI_PIPELINE_ID
+    # - echo "  ----- BEGIN - Clean Script Execution -----  "
+    # - cd /tmp 
+    # - rm -rf $PIPELINE_TAR
+    # - rm -rf $CI_PIPELINE_ID
     - echo $PAR_LOCATION | tr -d '"'
     - echo "  ----- END - Running Test for Merge Request Cases -----  "
 
