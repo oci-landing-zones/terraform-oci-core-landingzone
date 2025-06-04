@@ -41,7 +41,7 @@ core-lz-prep-test-cases-merge-pre:
     - export http_proxy=$PROXY_SERVER:80
     - TIMESTAMP=$(date +"%Y-%m-%dT%H-%M")
     - echo $TIMESTAMP
-    - PLAN_PIPELINE_TAR=$(plan-$TIMESTAMP-$CI_PIPELINE_ID.tar.gz)
+    - PLAN_PIPELINE_TAR=$plan-$TIMESTAMP-$CI_PIPELINE_ID.tar.gz
     - oci os object get -bn $BUCKET_NAME --file $MERGE_TEST_CASES_ZIP --name $MERGE_TEST_CASES_ZIP -ns $LZTEAM_NAMESPACE
     - unzip $MERGE_TEST_CASES_ZIP
     - export MERGE_TEST_CASES_DIR=${MERGE_TEST_CASES_ZIP::-4}
@@ -79,7 +79,7 @@ core-lz-merge-test-case-1:
     - set -o pipefail
     - TIMESTAMP=$(date +"%Y-%m-%dT%H-%M")
     - echo $TIMESTAMP
-    - MERGE_PIPELINE_TAR=$(plan-$TIMESTAMP-$CI_PIPELINE_ID.tar.gz)
+    - MERGE_PIPELINE_TAR=merge-$TIMESTAMP-$CI_PIPELINE_ID.tar.gz
     - echo "  ----- BEGIN - Running Test Cases on Pull Request -----  "
     - export https_proxy=$PROXY_SERVER:80
     - export http_proxy=$PROXY_SERVER:80
