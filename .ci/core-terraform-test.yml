@@ -7,7 +7,9 @@ variables:
   MERGE_BUCKET_NAME: $MERGE_BUCKET_NAME
   MERGE_NAMESPACE: $MERGE_NAMESPACE
   PAR_LOCATION: ""
-  PIPELINE_TAR: "pipeline-$CI_PIPELINE_ID.tar.gz"
+  TIMESTAMP: $(date +"%Y-%m-%dT%H:%M:%S%z")
+  PLAN_PIPELINE_TAR: "plan-$TIMESTAMP-$CI_PIPELINE_ID.tar.gz"
+  MERGE_PIPELINE_TAR: "merge-$TIMESTAMP-$CI_PIPELINE_ID.tar.gz"
 
 
 core-lz-prep-test-cases-pull:
@@ -46,19 +48,19 @@ core-lz-prep-test-cases-merge-pre:
     - python3 /home/gitlab-runner/pipeline-tools/preprocessor_new.py $MERGE_TEST_CASES_DIR -f tfvars.template -d . --plan --merge
     - echo "  ----- BEGIN - Packaging Output -----  "
     - cp *.json $MERGE_TEST_CASES_DIR
-    - tar -czvf $PIPELINE_TAR $MERGE_TEST_CASES_DIR
+    - tar -czvf $PLAN_PIPELINE_TAR $MERGE_TEST_CASES_DIR
     - echo "  ----- SUCCESS - Packaging Output -----  "
     - echo "  ----- BEGIN - Uploading Output to Bucket  -----  "
-    - UPLOAD_REQUEST=$(oci os object put -bn $MERGE_BUCKET_NAME -ns $MERGE_NAMESPACE --file $PIPELINE_TAR --profile merge)
+    - UPLOAD_REQUEST=$(oci os object put -bn $MERGE_BUCKET_NAME -ns $MERGE_NAMESPACE --file $PLAN_PIPELINE_TAR --profile merge)
     - echo $UPLOAD_REQUEST
     - echo "  ----- SUCCESS - Uploading Output to Bucket  -----  "
     - echo "  ----- BEGIN - Creating PAR  -----  "
     - PAR_DATETIME=$(date --date="+24 hours" --rfc-3339=seconds)
     - echo " PAR Expiration is - $PAR_DATETIME "
-    - PAR_LOCATION=$(oci os preauth-request create --access-type AnyObjectRead --bucket-name $MERGE_BUCKET_NAME --namespace-name $MERGE_NAMESPACE --time-expires "$PAR_DATETIME" --name $PIPELINE_TAR --object-name $PIPELINE_TAR --profile merge --query data.\"full-path\")
+    - PAR_LOCATION=$(oci os preauth-request create --access-type AnyObjectRead --bucket-name $MERGE_BUCKET_NAME --namespace-name $MERGE_NAMESPACE --time-expires "$PAR_DATETIME" --name $PLAN_PIPELINE_TAR --object-name $PLAN_PIPELINE_TAR --profile merge --query data.\"full-path\")
     - echo "  ----- SUCCESS - Creating PAR  -----  "
     - echo "  ----- PAR Location  -----  "
-    - PAR_LOCATION+=$PIPELINE_TAR
+    - PAR_LOCATION+=$PLAN_PIPELINE_TAR
     - echo $PAR_LOCATION
     - echo "  ----- BEGIN - Clean Script Execution -----  "
     - echo $PAR_LOCATION | tr -d '"'
@@ -103,19 +105,19 @@ core-lz-merge-test-case-1:
     - echo "  ----- BEGIN - Packaging Use Case Output -----  "
     - cp *.json $MERGE_TEST_CASES_DIR
     - cp *.txt $MERGE_TEST_CASES_DIR
-    - tar -czvf $PIPELINE_TAR $MERGE_TEST_CASES_DIR
+    - tar -czvf $MERGE_PIPELINE_TAR $MERGE_TEST_CASES_DIR
     - echo "  ----- SUCCESS - Packaging Use Case Output Output -----  "
     - echo "  ----- BEGIN - Uploading Output to Bucket  -----  "
-    - UPLOAD_REQUEST=$(oci os object put -bn $MERGE_BUCKET_NAME -ns $MERGE_NAMESPACE --file $PIPELINE_TAR --profile merge)
+    - UPLOAD_REQUEST=$(oci os object put -bn $MERGE_BUCKET_NAME -ns $MERGE_NAMESPACE --file $MERGE_PIPELINE_TAR --profile merge)
     - echo $UPLOAD_REQUEST
     - echo "  ----- SUCCESS - Uploading Output to Bucket  -----  "
     - echo "  ----- BEGIN - Creating PAR  -----  "
     - PAR_DATETIME=$(date --date="+24 hours" --rfc-3339=seconds)
     - echo " PAR Expiration is - $PAR_DATETIME "
-    - PAR_LOCATION=$(oci os preauth-request create --access-type AnyObjectRead --bucket-name $MERGE_BUCKET_NAME --namespace-name $MERGE_NAMESPACE --time-expires "$PAR_DATETIME" --name $PIPELINE_TAR --object-name $PIPELINE_TAR --profile merge --query data.\"full-path\")
+    - PAR_LOCATION=$(oci os preauth-request create --access-type AnyObjectRead --bucket-name $MERGE_BUCKET_NAME --namespace-name $MERGE_NAMESPACE --time-expires "$PAR_DATETIME" --name $MERGE_PIPELINE_TAR --object-name $MERGE_PIPELINE_TAR --profile merge --query data.\"full-path\")
     - echo "  ----- SUCCESS - Creating PAR  -----  "
     - echo "  ----- PAR Location  -----  "
-    - PAR_LOCATION+=$PIPELINE_TAR
+    - PAR_LOCATION+=$MERGE_PIPELINE_TAR
     - echo $PAR_LOCATION
     # - echo "  ----- BEGIN - Clean Script Execution -----  "
     # - cd /tmp 
