@@ -24,16 +24,20 @@ variableGroups:
       - "create_workload_network_subcompartment"
       - "create_workload_database_subcompartment"
 
-  - title: "Groups"
+  - title: "Groups and Policies"
     variables:
       - "use_custom_identity_domain"
       - "custom_identity_domain_ocid"
       - "custom_identity_domain_name"
       - "enable_db_admin_group"
-      - "customize_group_name"
+      - "customize_group_policy_name"
       - "workload_admin_group_name"
       - "workload_app_admin_group_name"
       - "workload_db_admin_group_name"
+      - "root_policy_name"
+      - "wkld_admin_policy_name"
+      - "db_admin_policy_name"
+      - "app_admin_policy_name"
 
   - title: "Hidden Variables"
     visible: false
@@ -157,10 +161,10 @@ variables:
     default: false
     visible: isolate_workload
 
-  customize_group_name:
+  customize_group_policy_name:
     type: boolean
-    title: "Customize Group Names?"
-    description: "Customize group names?"
+    title: "Customize Group and Policy Names?"
+    description: "Customize group and policy names?"
     required: false
     default: false
 
@@ -169,19 +173,19 @@ variables:
     title: "Workload Admin Group Name"
     description: "Workload admin group name"
     required: false
-    default: "workload-admin-group"
-    visible: customize_group_name
+    default: "wkld-admin-group"
+    visible: customize_group_policy_name
 
   workload_app_admin_group_name:
     type: string
     title: "Workload App Admin Group Name"
     description: "Workload app admin group name"
     required: false
-    default: "workload-app-admin-group"
+    default: "wkld-app-admin-group"
     visible:
       and:
         - eq:
-            - ${customize_group_name}
+            - ${customize_group_policy_name}
             - true
         - eq:
             - ${isolate_workload}
@@ -192,11 +196,11 @@ variables:
     title: "Workload Database Admin Group Name"
     description: "Workload database admin group name"
     required: false
-    default: "workload-db-admin-group"
+    default: "wkld-db-admin-group"
     visible:
       and:
         - eq:
-            - ${customize_group_name}
+            - ${customize_group_policy_name}
             - true
         - eq:
             - ${isolate_workload}
@@ -204,3 +208,35 @@ variables:
         - eq:
             - ${enable_db_admin_group}
             - true
+
+  root_policy_name:
+    type: string
+    title: "Root Policy Name"
+    description: "Root policy name"
+    required: false
+    default: root-policy
+    visible: customize_group_policy_name
+
+  wkld_admin_policy_name:
+    type: string
+    title: "Workload Admin Policy Name"
+    description: "Workload Admin policy name"
+    required: false
+    default: wkld-admin-policy
+    visible: customize_group_policy_name
+
+  db_admin_policy_name:
+    type: string
+    title: "Database Admin Policy Name"
+    description: "Database Admin policy name"
+    required: false
+    default: wkld-db-admin-policy
+    visible: customize_group_policy_name
+  
+  app_admin_policy_name:
+    type: string
+    title: "App Admin Policy Name"
+    description: "App Admin policy name"
+    required: false
+    default: wkld-app-admin-policy
+    visible: customize_group_policy_name

@@ -12,11 +12,11 @@ locals {
 	# statement are from parent LZ
   identity_domain_prefix = var.use_custom_identity_domain ? "${var.custom_identity_domain_name}/" : ""
 
-  app_admin_group_name = "${local.identity_domain_prefix}${var.isolate_workload ? (var.customize_group_name ? local.custom_workload_app_admin_group.CUSTOM-WKL-APP-ADMIN-GROUP.name : local.default_workload_app_admin_group.DEFAULT-WKL-APP-ADMIN-GROUP.name) : ""}"
+  app_admin_group_name = "${local.identity_domain_prefix}${var.isolate_workload ? (var.customize_group_policy_name ? local.custom_workload_app_admin_group.CUSTOM-WKL-APP-ADMIN-GROUP.name : local.default_workload_app_admin_group.DEFAULT-WKL-APP-ADMIN-GROUP.name) : ""}"
 
-  db_admin_group_name = "${local.identity_domain_prefix}${var.isolate_workload && var.enable_db_admin_group ? ( var.customize_group_name ? local.custom_workload_db_admin_group.CUSTOM-WKL-DB-ADMIN-GROUP.name : local.default_workload_db_admin_group.DEFAULT-WKL-DB-ADMIN-GROUP.name) : ""}"
+  db_admin_group_name = "${local.identity_domain_prefix}${var.isolate_workload && var.enable_db_admin_group ? ( var.customize_group_policy_name ? local.custom_workload_db_admin_group.CUSTOM-WKL-DB-ADMIN-GROUP.name : local.default_workload_db_admin_group.DEFAULT-WKL-DB-ADMIN-GROUP.name) : ""}"
 
-  wkld_admin_group_name = "${local.identity_domain_prefix}${var.customize_group_name ? local.custom_workload_admin_group.CUSTOM-WKL-ADMIN-GROUP.name : local.default_workload_admin_group.DEFAULT-WKL-ADMIN-GROUP.name}"
+  wkld_admin_group_name = "${local.identity_domain_prefix}${var.customize_group_policy_name ? local.custom_workload_admin_group.CUSTOM-WKL-ADMIN-GROUP.name : local.default_workload_admin_group.DEFAULT-WKL-ADMIN-GROUP.name}"
 
   service_label_workload_compartment_name = "${var.service_label}-${var.workload_compartment_name}"
 
@@ -68,7 +68,7 @@ locals {
       "allow group ${local.wkld_admin_group_name} to manage metrics in compartment ${local.service_label_workload_compartment_name}",
       "allow group ${local.wkld_admin_group_name} to manage logging-family in compartment ${local.service_label_workload_compartment_name}",
       "allow group ${local.wkld_admin_group_name} to manage instance-family in compartment ${local.service_label_workload_compartment_name}",
-      "allow group ${local.wkld_admin_group_name} to manage volume-family in compartment ${local.service_label_workload_compartment_name} where all { request.permission != 'VOLUME_BACKUP_DELETE', request.permission != 'VOLUME_DELETE', request.permission != 'BOOT_VOLUME_BACKUP_DELETE'}",
+      "allow group ${local.wkld_admin_group_name} to manage volume-family in compartment ${local.service_label_workload_compartment_name}",
       "allow group ${local.wkld_admin_group_name} to manage object-family in compartment ${local.service_label_workload_compartment_name} where all { request.permission != 'OBJECT_DELETE', request.permission != 'BUCKET_DELETE'}",
       "allow group ${local.wkld_admin_group_name} to manage file-family in compartment ${local.service_label_workload_compartment_name} where all { request.permission != 'FILE_SYSTEM_DELETE', request.permission != 'MOUNT_TARGET_DELETE', request.permission != 'EXPORT_SET_DELETE', request.permission != 'FILE_SYSTEM_DELETE_SNAPSHOT', request.permission != 'FILE_SYSTEM_NFSv3_UNEXPORT'}",
       "allow group ${local.wkld_admin_group_name} to manage repos in compartment ${local.service_label_workload_compartment_name}",
@@ -251,7 +251,7 @@ locals {
       var.deploy_root_policies ? {
       "ROOT-POLICY" : {
         compartment_id = var.tenancy_ocid
-        name = coalesce(var.root_policy_name, "${var.service_label}-root-policy")
+        name = "${var.service_label}-${var.root_policy_name}"
         description = "Root policy statements"
         statements = local.root_policy_statements
       }
@@ -259,14 +259,14 @@ locals {
     var.deploy_wkld_policies ? {
       "WKLD-ADMIN-POLICY" : {
         compartment_id = var.parent_compartment_ocid
-        name = coalesce(var.wkld_admin_policy_name, "${var.service_label}-wkld-admin-policy")
+        name = "${var.service_label}-${var.wkld_admin_policy_name}"
         description = "Workload admin policies"
         statements = local.wkld_admin_policy_statements
       }
     } : {},
       var.isolate_workload ? {
       "APP-ADMIN-POLICY" : {
-        name = coalesce(var.app_admin_policy_name, "${var.service_label}-wkld-app-admin-policy")
+        name = "${var.service_label}-${var.app_admin_policy_name}"
         description = "Workload App Admin Policies"
         compartment_id = var.parent_compartment_ocid
         statements = local.app_admin_policy_statements
@@ -274,7 +274,7 @@ locals {
     } : {},
       var.isolate_workload && var.enable_db_admin_group ? {
       "DB-ADMIN-POLICY" : {
-        name = coalesce(var.db_admin_policy_name, "${var.service_label}-wkld-db-admin-policy")
+        name = "${var.service_label}-${var.db_admin_policy_name}"
         description = "Workload DB Admin Policies"
         compartment_id = var.parent_compartment_ocid
         statements = local.db_admin_policy_statements
