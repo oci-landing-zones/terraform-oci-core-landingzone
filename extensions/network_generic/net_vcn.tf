@@ -15,7 +15,7 @@ locals {
           "WORKLOAD-APP-SUBNET" = {
             cidr_block                = coalesce(var.app_subnet_cidr, cidrsubnet(var.workload_vcn_cidr_block, 3, 0))
             display_name              = coalesce(var.app_subnet_name, "${var.workload_name}-app-subnet")
-            dns_label                 = substr(replace(coalesce(var.app_subnet_name, "app-subnet"), "/[^\\w]/", ""), 0, 14)
+            dns_label                 = substr(replace(coalesce(var.app_subnet_name_dns, "app-subnet"), "/[^\\w]/", ""), 0, 14)
             dhcp_options_key          = "default_dhcp_options"
             prohibit_internet_ingress = var.deploy_network_architecture == "Standalone" && var.app_subnet_allow_public_access == true ? false : true
             route_table_key           = "WORKLOAD-APP-SUBNET-ROUTE-TABLE"
@@ -26,7 +26,7 @@ locals {
           "WORKLOAD-DB-SUBNET" = {
             cidr_block                = coalesce(var.db_subnet_cidr, cidrsubnet(var.workload_vcn_cidr_block, 3, 1))
             display_name              = coalesce(var.db_subnet_name, "${var.workload_name}-db-subnet")
-            dns_label                 = substr(replace(coalesce(var.db_subnet_name, "db-subnet"), "/[^\\w]/", ""), 0, 14)
+            dns_label                 = substr(replace(coalesce(var.db_subnet_name_dns, "db-subnet"), "/[^\\w]/", ""), 0, 14)
             dhcp_options_key          = "default_dhcp_options"
             prohibit_internet_ingress = var.deploy_network_architecture == "Standalone" && var.db_subnet_allow_public_access == true ? false : true
             route_table_key           = "WORKLOAD-DB-SUBNET-ROUTE-TABLE"
@@ -37,7 +37,7 @@ locals {
           "WORKLOAD-LB-SUBNET" = {
             cidr_block                = coalesce(var.lb_subnet_cidr, cidrsubnet(var.workload_vcn_cidr_block, 3, 2))
             display_name              = coalesce(var.lb_subnet_name, "${var.workload_name}-lb-subnet")
-            dns_label                 = substr(replace(coalesce(var.lb_subnet_name, "lb-subnet"), "/[^\\w]/", ""), 0, 14)
+            dns_label                 = substr(replace(coalesce(var.lb_subnet_name_dns, "lb-subnet"), "/[^\\w]/", ""), 0, 14)
             dhcp_options_key          = "default_dhcp_options"
             prohibit_internet_ingress = var.deploy_network_architecture == "Standalone" && var.lb_subnet_allow_public_access == true ? false : true
             route_table_key           = "WORKLOAD-LB-SUBNET-ROUTE-TABLE"
@@ -48,7 +48,7 @@ locals {
           "WORKLOAD-MGMT-SUBNET" = {
             cidr_block                = coalesce(var.mgmt_subnet_cidr, cidrsubnet(var.workload_vcn_cidr_block, 3, 3))
             display_name              = coalesce(var.mgmt_subnet_name, "${var.workload_name}-mgmt-subnet")
-            dns_label                 = substr(replace(coalesce(var.mgmt_subnet_name, "mgmt-subnet"), "/[^\\w]/", ""), 0, 14)
+            dns_label                 = substr(replace(coalesce(var.mgmt_subnet_name_dns, "mgmt-subnet"), "/[^\\w]/", ""), 0, 14)
             dhcp_options_key          = "default_dhcp_options"
             prohibit_internet_ingress = var.deploy_network_architecture == "Standalone" && var.mgmt_subnet_allow_public_access == true ? false : true
             route_table_key           = "WORKLOAD-MGMT-SUBNET-ROUTE-TABLE"
@@ -59,7 +59,7 @@ locals {
           "WORKLOAD-WEB-SUBNET" = {
             cidr_block                = coalesce(var.web_subnet_cidr, cidrsubnet(var.workload_vcn_cidr_block, 3, 4))
             display_name              = coalesce(var.web_subnet_name, "${var.workload_name}-web-subnet")
-            dns_label                 = substr(replace(coalesce(var.web_subnet_name, "web-subnet"), "/[^\\w]/", ""), 0, 14)
+            dns_label                 = substr(replace(coalesce(var.web_subnet_name_dns, "web-subnet"), "/[^\\w]/", ""), 0, 14)
             dhcp_options_key          = "default_dhcp_options"
             prohibit_internet_ingress = var.deploy_network_architecture == "Standalone" && var.web_subnet_allow_public_access == true ? false : true
             route_table_key           = "WORKLOAD-WEB-SUBNET-ROUTE-TABLE"
@@ -70,7 +70,7 @@ locals {
           "WORKLOAD-DB-BACKUP-SUBNET" = {
             cidr_block                = coalesce(var.db_backup_subnet_cidr, cidrsubnet(var.workload_vcn_cidr_block, 3, 5))
             display_name              = coalesce(var.db_backup_subnet_name, "${var.workload_name}-db-backup-subnet")
-            dns_label                 = substr(replace(coalesce(var.db_backup_subnet_name, "dbbackupsubnet"), "/[^\\w]/", ""), 0, 14)
+            dns_label                 = substr(replace(coalesce(var.db_backup_subnet_name_dns, "dbbackupsubnet"), "/[^\\w]/", ""), 0, 14)
             dhcp_options_key          = "default_dhcp_options"
             prohibit_internet_ingress = var.deploy_network_architecture == "Standalone" && var.db_backup_subnet_allow_public_access == true ? false : true
             route_table_key           = "WORKLOAD-DB-BACKUP-SUBNET-ROUTE-TABLE"
@@ -81,7 +81,7 @@ locals {
           "WORKLOAD-SPARE-SUBNET" = {
             cidr_block                = var.spare_subnet_cidr
             display_name              = var.spare_subnet_name
-            dns_label                 = substr(replace(var.spare_subnet_name, "/[^\\w]/", ""), 0, 14)
+            dns_label                 = substr(replace(var.spare_subnet_name_dns, "/[^\\w]/", ""), 0, 14)
             dhcp_options_key          = "default_dhcp_options"
             prohibit_internet_ingress = var.deploy_network_architecture == "Standalone" && var.spare_subnet_allow_public_access == true ? false : true
             route_table_key           = "WORKLOAD-SPARE-SUBNET-ROUTE-TABLE"
@@ -396,6 +396,7 @@ locals {
           }
         } : {}
       }
+      #inject_into_existing_vcns
     }
   }
 
@@ -410,7 +411,7 @@ locals {
 }
 
 module "network" {
-  source                = "github.com/oci-landing-zones/terraform-oci-modules-networking?ref=v0.7.5"
+  source                = "github.com/oci-landing-zones/terraform-oci-modules-networking?ref=v0.7.3"
   network_configuration = local.network_configuration
   tenancy_ocid          = var.tenancy_ocid
 }
