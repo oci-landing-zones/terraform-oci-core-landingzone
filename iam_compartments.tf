@@ -35,8 +35,8 @@ locals {
 
   enable_network_compartment  = true
   enable_security_compartment = true
-  enable_app_compartment      = true
-  enable_database_compartment = true
+  enable_app_compartment      = var.deploy_app_cmp
+  enable_database_compartment = var.deploy_database_cmp
   enable_exainfra_compartment = var.deploy_exainfra_cmp
 
   #-----------------------------------------------------------

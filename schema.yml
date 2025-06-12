@@ -33,6 +33,8 @@ variableGroups:
       - "enclosing_compartment_options"
       - "enclosing_compartment_parent_ocid"
       - "existing_enclosing_compartment_ocid"
+      - "deploy_app_cmp"
+      - "deploy_database_cmp"
       - "deploy_exainfra_cmp"
     visible:
       and:
@@ -701,12 +703,21 @@ variables:
         - ${enclosing_compartment_options}
         - "Yes, use existing"
 
+  deploy_app_cmp:
+    type: boolean
+    title: "Deploy Application Compartment?"
+    description: "Whether the application compartment is deployed."
+
+  deploy_database_cmp:
+    type: boolean
+    title: "Deploy Database Compartment?"
+    description: "Whether the database compartment is deployed."  
+  
   deploy_exainfra_cmp:
     type: boolean
     title: "Deploy ExaCS Infra Compartment?"
     description: "Whether a separate compartment for Exadata Cloud Service Infrastructure is deployed."
-    default: false
-
+  
   identity_domain_option:
     type: enum
     title: "Identity Domain Option"
