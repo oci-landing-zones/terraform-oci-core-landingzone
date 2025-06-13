@@ -17,7 +17,7 @@ locals {
 module "lz_cloud_guard" {
   count = var.is_free_tenancy == false && var.extend_landing_zone_to_new_region == false ? 1 : 0
   depends_on                = [null_resource.wait_on_services_policy]
-  source                    = "github.com/oci-landing-zones/terraform-oci-modules-security//cloud-guard?ref=v0.2.0"
+  source                    = "github.com/oci-landing-zones/terraform-oci-modules-security//cloud-guard?ref=cg-update"
   cloud_guard_configuration = local.cloud_guard_configuration
   tenancy_ocid              = var.tenancy_ocid
   enable_output             = true
