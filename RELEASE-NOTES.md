@@ -1,3 +1,8 @@
+# June XX, 2025 Release Notes - 1.5.2
+1. Ability to selectively deploy application and database compartments. When the compartment is suppressed from deployment, so are its associated admin group, dynamic groups and policies. See [Customizing Compartments](./DEPLOYMENT-GUIDE.md#custom-cmp) for details.
+2. East/West traffic enabled for Hub/Spoke topology with no network appliance.
+3. Cloud Guard enablement now depends on service policies deployment.
+
 # May 22, 2025 Release Notes - 1.5.1
 1. User Interface (UI) refinements and clarifications.
 2. Generic IAM Extension bug fixes
