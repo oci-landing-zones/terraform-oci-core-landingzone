@@ -44,10 +44,10 @@ locals {
 #   }
 # }
 
-resource "null_resource" "wait_on_services_policy" {
-  depends_on = [module.lz_services_policy]
-  provisioner "local-exec" {
-    interpreter = local.is_windows ? ["PowerShell", "-Command"] : []
-    command     = local.is_windows ? "Start-Sleep ${local.delay_in_secs}" : "sleep ${local.delay_in_secs}"
-  }
-}
+# resource "null_resource" "wait_on_services_policy" {
+#   depends_on = [module.lz_services_policy]
+#   provisioner "local-exec" {
+#     interpreter = local.is_windows ? ["PowerShell", "-Command"] : []
+#     command     = local.is_windows ? "Start-Sleep ${local.delay_in_secs}" : "sleep ${local.delay_in_secs}"
+#   }
+# }
