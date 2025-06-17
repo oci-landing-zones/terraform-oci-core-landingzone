@@ -106,6 +106,12 @@ variable "app_subnet_name" {
   type        = string
   default     = null
 }
+variable "app_subnet_name_dns" {
+  description = "Name of the Application Subnet."
+  type        = string
+  default     = null
+}
+
 
 variable "app_subnet_cidr" {
   description = "CIDR Block of the App Subnet. It must be within the VCN CIDR block range."
@@ -148,7 +154,11 @@ variable "db_subnet_name" {
   type        = string
   default     = null
 }
-
+variable "db_subnet_name_dns" {
+  description = "Name of the Database Subnet DNS."
+  type        = string
+  default     = null
+}
 variable "db_subnet_cidr" {
   description = "CIDR Block of the Database Subnet. It must be within the VCN CIDR block range."
   type        = string
@@ -187,6 +197,12 @@ variable "add_lb_subnet" {
 
 variable "lb_subnet_name" {
   description = "Name of the Load Balancer Subnet."
+  type        = string
+  default     = null
+}
+
+variable "lb_subnet_name_dns" {
+  description = "Name of the Load Balancer Subnet DNS."
   type        = string
   default     = null
 }
@@ -233,6 +249,12 @@ variable "mgmt_subnet_name" {
   default     = null
 }
 
+variable "mgmt_subnet_name_dns" {
+  description = "Name of the Management Subnet DNS."
+  type        = string
+  default     = null
+}
+
 variable "mgmt_subnet_cidr" {
   description = "CIDR Block of the Management Subnet. It must be within the VCN CIDR block range."
   type        = string
@@ -271,6 +293,12 @@ variable "add_web_subnet" {
 
 variable "web_subnet_name" {
   description = "Name of the Web Subnet."
+  type        = string
+  default     = null
+}
+
+variable "web_subnet_name_dns" {
+  description = "Name of the Web Subnet DNS."
   type        = string
   default     = null
 }
@@ -317,6 +345,12 @@ variable "db_backup_subnet_name" {
   default     = null
 }
 
+variable "db_backup_subnet_name_dns" {
+  description = "Name of the Database Backup Subnet DNS."
+  type        = string
+  default     = null
+}
+
 variable "db_backup_subnet_cidr" {
   description = "CIDR Block of the Database Backup Subnet. It must be within the VCN CIDR block range."
   type        = string
@@ -355,6 +389,12 @@ variable "add_spare_subnet" {
 
 variable "spare_subnet_name" {
   description = "Name of the spare subnet."
+  type        = string
+  default     = ""
+}
+
+variable "spare_subnet_name_dns" {
+  description = "Name of the spare subnet DNS."
   type        = string
   default     = ""
 }

@@ -3455,6 +3455,7 @@ variables:
     title: "Fortinet Fortigate Firewall Version."
     description: "Fortinet Fortigate Firewall Version."
     enum:
+      - "7.2.11_(_X64_)"
       - "7.2.9_(_X64_)"
       - "7.4.4_(_X64_)"
     required: true
