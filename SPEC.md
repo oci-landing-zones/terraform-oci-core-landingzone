@@ -8,7 +8,6 @@
 
 | Name | Version |
 |------|---------|
-| <a name="provider_null"></a> [null](#provider\_null) | n/a |
 | <a name="provider_oci"></a> [oci](#provider\_oci) | n/a |
 | <a name="provider_time"></a> [time](#provider\_time) | n/a |
 
@@ -16,45 +15,44 @@
 
 | Name | Source | Version |
 |------|--------|---------|
-| <a name="module_lz_alarms"></a> [lz\_alarms](#module\_lz\_alarms) | github.com/oci-landing-zones/terraform-oci-modules-observability//alarms | v0.2.3  |
-| <a name="module_lz_bastion"></a> [lz\_bastion](#module\_lz\_bastion) | github.com/oci-landing-zones/terraform-oci-modules-security//bastion | v0.2.0  |
-| <a name="module_lz_bastion_jump_host"></a> [lz\_bastion\_jump\_host](#module\_lz\_bastion\_jump\_host) | github.com/oci-landing-zones/terraform-oci-modules-workloads//cis-compute-storage | v0.2.0  |
-| <a name="module_lz_budgets"></a> [lz\_budgets](#module\_lz\_budgets) | github.com/oci-landing-zones/terraform-oci-modules-governance//budgets | v0.1.5  |
-| <a name="module_lz_cloud_guard"></a> [lz\_cloud\_guard](#module\_lz\_cloud\_guard) | github.com/oci-landing-zones/terraform-oci-modules-security//cloud-guard | v0.2.0  |
-| <a name="module_lz_compartments"></a> [lz\_compartments](#module\_lz\_compartments) | github.com/oci-landing-zones/terraform-oci-modules-iam//compartments | v0.2.9  |
-| <a name="module_lz_custom_domain_dynamic_groups"></a> [lz\_custom\_domain\_dynamic\_groups](#module\_lz\_custom\_domain\_dynamic\_groups) | github.com/oci-landing-zones/terraform-oci-modules-iam//identity-domains | v0.2.9  |
-| <a name="module_lz_custom_domain_groups"></a> [lz\_custom\_domain\_groups](#module\_lz\_custom\_domain\_groups) | github.com/oci-landing-zones/terraform-oci-modules-iam//identity-domains | v0.2.9  |
-| <a name="module_lz_dynamic_groups"></a> [lz\_dynamic\_groups](#module\_lz\_dynamic\_groups) | github.com/oci-landing-zones/terraform-oci-modules-iam//dynamic-groups | v0.2.9  |
-| <a name="module_lz_firewall_appliance"></a> [lz\_firewall\_appliance](#module\_lz\_firewall\_appliance) | github.com/oci-landing-zones/terraform-oci-modules-workloads//cis-compute-storage | v0.2.0  |
-| <a name="module_lz_flow_logs"></a> [lz\_flow\_logs](#module\_lz\_flow\_logs) | github.com/oci-landing-zones/terraform-oci-modules-observability//logging | v0.2.3  |
-| <a name="module_lz_groups"></a> [lz\_groups](#module\_lz\_groups) | github.com/oci-landing-zones/terraform-oci-modules-iam//groups | v0.2.9  |
-| <a name="module_lz_home_region_notifications"></a> [lz\_home\_region\_notifications](#module\_lz\_home\_region\_notifications) | github.com/oci-landing-zones/terraform-oci-modules-observability//events | v0.2.3  |
-| <a name="module_lz_home_region_topics"></a> [lz\_home\_region\_topics](#module\_lz\_home\_region\_topics) | github.com/oci-landing-zones/terraform-oci-modules-observability//notifications | v0.2.3  |
-| <a name="module_lz_logging_analytics"></a> [lz\_logging\_analytics](#module\_lz\_logging\_analytics) | github.com/oci-landing-zones/terraform-oci-modules-observability//logging | v0.2.3  |
-| <a name="module_lz_network"></a> [lz\_network](#module\_lz\_network) | github.com/oci-landing-zones/terraform-oci-modules-networking | v0.7.5  |
-| <a name="module_lz_new_identity_domain"></a> [lz\_new\_identity\_domain](#module\_lz\_new\_identity\_domain) | github.com/oci-landing-zones/terraform-oci-modules-iam//identity-domains | v0.2.9  |
-| <a name="module_lz_nlb"></a> [lz\_nlb](#module\_lz\_nlb) | github.com/oci-landing-zones/terraform-oci-modules-networking//modules/nlb | v0.7.5  |
-| <a name="module_lz_notifications"></a> [lz\_notifications](#module\_lz\_notifications) | github.com/oci-landing-zones/terraform-oci-modules-observability//events | v0.2.3  |
-| <a name="module_lz_oke_clusters_policy"></a> [lz\_oke\_clusters\_policy](#module\_lz\_oke\_clusters\_policy) | github.com/oci-landing-zones/terraform-oci-modules-iam//policies | v0.2.9  |
-| <a name="module_lz_policies"></a> [lz\_policies](#module\_lz\_policies) | github.com/oci-landing-zones/terraform-oci-modules-iam//policies | v0.2.9  |
-| <a name="module_lz_regional_topics"></a> [lz\_regional\_topics](#module\_lz\_regional\_topics) | github.com/oci-landing-zones/terraform-oci-modules-observability//notifications | v0.2.3  |
-| <a name="module_lz_root_policies"></a> [lz\_root\_policies](#module\_lz\_root\_policies) | github.com/oci-landing-zones/terraform-oci-modules-iam//policies | v0.2.9  |
-| <a name="module_lz_scanning"></a> [lz\_scanning](#module\_lz\_scanning) | github.com/oci-landing-zones/terraform-oci-modules-security//vss | v0.2.0  |
-| <a name="module_lz_security_zones"></a> [lz\_security\_zones](#module\_lz\_security\_zones) | github.com/oci-landing-zones/terraform-oci-modules-security//security-zones | v0.2.0  |
-| <a name="module_lz_service_connector_hub"></a> [lz\_service\_connector\_hub](#module\_lz\_service\_connector\_hub) | github.com/oci-landing-zones/terraform-oci-modules-observability//service-connectors | v0.2.3  |
-| <a name="module_lz_services_policy"></a> [lz\_services\_policy](#module\_lz\_services\_policy) | github.com/oci-landing-zones/terraform-oci-modules-iam//policies | v0.2.9  |
-| <a name="module_lz_tags"></a> [lz\_tags](#module\_lz\_tags) | github.com/oci-landing-zones/terraform-oci-modules-governance//tags | v0.1.5  |
-| <a name="module_lz_top_compartment"></a> [lz\_top\_compartment](#module\_lz\_top\_compartment) | github.com/oci-landing-zones/terraform-oci-modules-iam//compartments | v0.2.9  |
-| <a name="module_lz_vault"></a> [lz\_vault](#module\_lz\_vault) | github.com/oci-landing-zones/terraform-oci-modules-security//vaults | v0.2.0  |
-| <a name="module_lz_zpr"></a> [lz\_zpr](#module\_lz\_zpr) | github.com/oci-landing-zones/terraform-oci-modules-security//zpr | v0.2.0  |
-| <a name="module_native_oci_firewall"></a> [native\_oci\_firewall](#module\_native\_oci\_firewall) | github.com/oci-landing-zones/terraform-oci-modules-networking | v0.7.5  |
-| <a name="module_oci_native_firewall_logs"></a> [oci\_native\_firewall\_logs](#module\_oci\_native\_firewall\_logs) | github.com/oci-landing-zones/terraform-oci-modules-observability//logging | v0.2.3  |
+| <a name="module_lz_alarms"></a> [lz\_alarms](#module\_lz\_alarms) | github.com/oci-landing-zones/terraform-oci-modules-observability//alarms | v0.2.3 |
+| <a name="module_lz_bastion"></a> [lz\_bastion](#module\_lz\_bastion) | github.com/oci-landing-zones/terraform-oci-modules-security//bastion | v0.2.0 |
+| <a name="module_lz_bastion_jump_host"></a> [lz\_bastion\_jump\_host](#module\_lz\_bastion\_jump\_host) | github.com/oci-landing-zones/terraform-oci-modules-workloads//cis-compute-storage | v0.2.0 |
+| <a name="module_lz_budgets"></a> [lz\_budgets](#module\_lz\_budgets) | github.com/oci-landing-zones/terraform-oci-modules-governance//budgets | v0.1.5 |
+| <a name="module_lz_cloud_guard"></a> [lz\_cloud\_guard](#module\_lz\_cloud\_guard) | github.com/oci-landing-zones/terraform-oci-modules-security//cloud-guard | v0.2.0 |
+| <a name="module_lz_compartments"></a> [lz\_compartments](#module\_lz\_compartments) | github.com/oci-landing-zones/terraform-oci-modules-iam//compartments | v0.2.9 |
+| <a name="module_lz_custom_domain_dynamic_groups"></a> [lz\_custom\_domain\_dynamic\_groups](#module\_lz\_custom\_domain\_dynamic\_groups) | github.com/oci-landing-zones/terraform-oci-modules-iam//identity-domains | v0.2.9 |
+| <a name="module_lz_custom_domain_groups"></a> [lz\_custom\_domain\_groups](#module\_lz\_custom\_domain\_groups) | github.com/oci-landing-zones/terraform-oci-modules-iam//identity-domains | v0.2.9 |
+| <a name="module_lz_dynamic_groups"></a> [lz\_dynamic\_groups](#module\_lz\_dynamic\_groups) | github.com/oci-landing-zones/terraform-oci-modules-iam//dynamic-groups | v0.2.9 |
+| <a name="module_lz_firewall_appliance"></a> [lz\_firewall\_appliance](#module\_lz\_firewall\_appliance) | github.com/oci-landing-zones/terraform-oci-modules-workloads//cis-compute-storage | v0.2.0 |
+| <a name="module_lz_flow_logs"></a> [lz\_flow\_logs](#module\_lz\_flow\_logs) | github.com/oci-landing-zones/terraform-oci-modules-observability//logging | v0.2.3 |
+| <a name="module_lz_groups"></a> [lz\_groups](#module\_lz\_groups) | github.com/oci-landing-zones/terraform-oci-modules-iam//groups | v0.2.9 |
+| <a name="module_lz_home_region_notifications"></a> [lz\_home\_region\_notifications](#module\_lz\_home\_region\_notifications) | github.com/oci-landing-zones/terraform-oci-modules-observability//events | v0.2.3 |
+| <a name="module_lz_home_region_topics"></a> [lz\_home\_region\_topics](#module\_lz\_home\_region\_topics) | github.com/oci-landing-zones/terraform-oci-modules-observability//notifications | v0.2.3 |
+| <a name="module_lz_logging_analytics"></a> [lz\_logging\_analytics](#module\_lz\_logging\_analytics) | github.com/oci-landing-zones/terraform-oci-modules-observability//logging | v0.2.3 |
+| <a name="module_lz_network"></a> [lz\_network](#module\_lz\_network) | github.com/oci-landing-zones/terraform-oci-modules-networking | v0.7.5 |
+| <a name="module_lz_new_identity_domain"></a> [lz\_new\_identity\_domain](#module\_lz\_new\_identity\_domain) | github.com/oci-landing-zones/terraform-oci-modules-iam//identity-domains | v0.2.9 |
+| <a name="module_lz_nlb"></a> [lz\_nlb](#module\_lz\_nlb) | github.com/oci-landing-zones/terraform-oci-modules-networking//modules/nlb | v0.7.5 |
+| <a name="module_lz_notifications"></a> [lz\_notifications](#module\_lz\_notifications) | github.com/oci-landing-zones/terraform-oci-modules-observability//events | v0.2.3 |
+| <a name="module_lz_oke_clusters_policy"></a> [lz\_oke\_clusters\_policy](#module\_lz\_oke\_clusters\_policy) | github.com/oci-landing-zones/terraform-oci-modules-iam//policies | v0.2.9 |
+| <a name="module_lz_policies"></a> [lz\_policies](#module\_lz\_policies) | github.com/oci-landing-zones/terraform-oci-modules-iam//policies | v0.2.9 |
+| <a name="module_lz_regional_topics"></a> [lz\_regional\_topics](#module\_lz\_regional\_topics) | github.com/oci-landing-zones/terraform-oci-modules-observability//notifications | v0.2.3 |
+| <a name="module_lz_root_policies"></a> [lz\_root\_policies](#module\_lz\_root\_policies) | github.com/oci-landing-zones/terraform-oci-modules-iam//policies | v0.2.9 |
+| <a name="module_lz_scanning"></a> [lz\_scanning](#module\_lz\_scanning) | github.com/oci-landing-zones/terraform-oci-modules-security//vss | v0.2.0 |
+| <a name="module_lz_security_zones"></a> [lz\_security\_zones](#module\_lz\_security\_zones) | github.com/oci-landing-zones/terraform-oci-modules-security//security-zones | v0.2.0 |
+| <a name="module_lz_service_connector_hub"></a> [lz\_service\_connector\_hub](#module\_lz\_service\_connector\_hub) | github.com/oci-landing-zones/terraform-oci-modules-observability//service-connectors | v0.2.3 |
+| <a name="module_lz_services_policy"></a> [lz\_services\_policy](#module\_lz\_services\_policy) | github.com/oci-landing-zones/terraform-oci-modules-iam//policies | v0.2.9 |
+| <a name="module_lz_tags"></a> [lz\_tags](#module\_lz\_tags) | github.com/oci-landing-zones/terraform-oci-modules-governance//tags | v0.1.5 |
+| <a name="module_lz_top_compartment"></a> [lz\_top\_compartment](#module\_lz\_top\_compartment) | github.com/oci-landing-zones/terraform-oci-modules-iam//compartments | v0.2.9 |
+| <a name="module_lz_vault"></a> [lz\_vault](#module\_lz\_vault) | github.com/oci-landing-zones/terraform-oci-modules-security//vaults | v0.2.0 |
+| <a name="module_lz_zpr"></a> [lz\_zpr](#module\_lz\_zpr) | github.com/oci-landing-zones/terraform-oci-modules-security//zpr | v0.2.0 |
+| <a name="module_native_oci_firewall"></a> [native\_oci\_firewall](#module\_native\_oci\_firewall) | github.com/oci-landing-zones/terraform-oci-modules-networking | v0.7.5 |
+| <a name="module_oci_native_firewall_logs"></a> [oci\_native\_firewall\_logs](#module\_oci\_native\_firewall\_logs) | github.com/oci-landing-zones/terraform-oci-modules-observability//logging | v0.2.3 |
 
 ## Resources
 
 | Name | Type |
 |------|------|
-| [null_resource.wait_on_services_policy](https://registry.terraform.io/providers/hashicorp/null/latest/docs/resources/resource) | resource |
 | [time_sleep.wait_on_compartments](https://registry.terraform.io/providers/hashicorp/time/latest/docs/resources/sleep) | resource |
 | [time_sleep.wait_on_services_policy](https://registry.terraform.io/providers/hashicorp/time/latest/docs/resources/sleep) | resource |
 | [oci_cloud_guard_cloud_guard_configuration.this](https://registry.terraform.io/providers/oracle/oci/latest/docs/data-sources/cloud_guard_cloud_guard_configuration) | data source |
@@ -277,7 +275,7 @@
 | <a name="input_net_appliance_name_prefix"></a> [net\_appliance\_name\_prefix](#input\_net\_appliance\_name\_prefix) | Common prefix to network appliance name. To this common prefix, numbers 1 and 2 are appended to the corresponding instance. | `string` | `"net-appliance-instance"` | no |
 | <a name="input_net_appliance_public_rsa_key"></a> [net\_appliance\_public\_rsa\_key](#input\_net\_appliance\_public\_rsa\_key) | The SSH public key to login to Network Appliance Compute instance. | `string` | `null` | no |
 | <a name="input_net_appliance_shape"></a> [net\_appliance\_shape](#input\_net\_appliance\_shape) | The instance shape for the network appliance nodes. | `string` | `"VM.Standard2.8"` | no |
-| <a name="input_net_fortigate_version"></a> [net\_fortigate\_version](#input\_net\_fortigate\_version) | Fortinet Fortigate Firewall Version. | `string` | `"7.2.9_(_X64_)"` | no |
+| <a name="input_net_fortigate_version"></a> [net\_fortigate\_version](#input\_net\_fortigate\_version) | Fortinet Fortigate Firewall Version. | `string` | `"7.2.11_(_X64_)"` | no |
 | <a name="input_net_palo_alto_version"></a> [net\_palo\_alto\_version](#input\_net\_palo\_alto\_version) | Palo Alto Firewall Version. | `string` | `"11.1.4-h7"` | no |
 | <a name="input_network_admin_email_endpoints"></a> [network\_admin\_email\_endpoints](#input\_network\_admin\_email\_endpoints) | List of email addresses for all network related notifications. (Type an email address and hit enter to enter multiple values) | `list(string)` | `[]` | no |
 | <a name="input_new_identity_domain_license_type"></a> [new\_identity\_domain\_license\_type](#input\_new\_identity\_domain\_license\_type) | the license type of new identity domain. Value to use: free, premium | `string` | `"free"` | no |
