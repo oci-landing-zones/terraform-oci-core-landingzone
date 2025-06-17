@@ -271,7 +271,7 @@ locals {
                 }
               },
               local.vcn_3_to_hub_indoor_subnet_cross_vcn_egress
-            ),
+            )
           }
         },
         {
@@ -398,8 +398,8 @@ locals {
               },
               local.vcn_3_to_hub_indoor_subnet_cross_vcn_egress,
               local.vcn_3_to_db_subnet_cross_vcn_egress,
-              local.vcn_3_to_exa_cross_vcn_egress,
-            ),
+              local.vcn_3_to_exa_cross_vcn_egress
+            )
           }
         },
         var.deploy_tt_vcn3_bastion_subnet == true ? {
@@ -469,7 +469,7 @@ locals {
                 dst_type    = "CIDR_BLOCK"
                 } if var.tt_vcn3_bastion_is_access_via_public_endpoint == true
               } # Ingress rule only for jump hosts later deployed in the bastion public subnet.
-            )   # inner merge function    
+            )   # inner merge function
           }
         } : {}
       ) # merge function
@@ -504,8 +504,7 @@ locals {
 
   ## Egress to Hub-VCN indoor subnet
   vcn_3_to_hub_indoor_subnet_cross_vcn_egress = merge(
-    (local.add_tt_vcn3 == true && var.tt_vcn3_attach_to_drg == true &&
-      local.hub_with_vcn == true) ? {
+    (local.add_tt_vcn3 == true && var.tt_vcn3_attach_to_drg == true && local.hub_with_vcn == true) ? {
       "EGRESS-TO-HUB-VCN-INDOOR-SUBNET-RULE" = {
         description = "Egress to ${coalesce(var.hub_vcn_indoor_subnet_name, "${var.service_label}-hub-vcn-indoor-subnet")}."
         stateless   = false
@@ -586,7 +585,7 @@ locals {
         },
       },
     ) : {},
-    ## Egress to OKE-VCN-2 
+    ## Egress to OKE-VCN-2
     (local.add_tt_vcn3 == true && var.tt_vcn3_attach_to_drg == true && var.add_oke_vcn2 == true && var.oke_vcn2_attach_to_drg == true) &&
     (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.tt_vcn3_routable_vcns) == 0 || contains(var.tt_vcn3_routable_vcns, "OKE-VCN-2")))) ? merge(
       {
@@ -601,7 +600,7 @@ locals {
         },
       },
     ) : {},
-    ## Egress to OKE-VCN-3 
+    ## Egress to OKE-VCN-3
     (local.add_tt_vcn3 == true && var.tt_vcn3_attach_to_drg == true && var.add_oke_vcn3 == true && var.oke_vcn3_attach_to_drg == true) &&
     (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.tt_vcn3_routable_vcns) == 0 || contains(var.tt_vcn3_routable_vcns, "OKE-VCN-3")))) ? merge(
       {
@@ -929,5 +928,4 @@ locals {
       }
     } : {}
   )
-
 }
