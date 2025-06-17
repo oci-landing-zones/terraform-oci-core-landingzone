@@ -79,6 +79,11 @@ locals {
         }
 
         cloud_agent = var.deploy_bastion_service == true ? { plugins = [{ name : "Bastion", enabled : true }] } : null
+
+        encryption = {
+          kms_key_id                            = var.cis_level == "2" ? module.lz_vault[0].keys["JUMPHOST-KEY"].id : null
+          encrypt_in_transit_on_instance_create = true
+        }
       }
     }
   }
@@ -102,4 +107,4 @@ module "lz_bastion_jump_host" {
 
   instances_configuration = local.jump_host_instances_configuration
   tenancy_ocid            = var.tenancy_ocid
-} 
+}
