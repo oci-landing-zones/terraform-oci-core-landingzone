@@ -81,7 +81,7 @@ locals {
         cloud_agent = var.deploy_bastion_service == true ? { plugins = [{ name : "Bastion", enabled : true }] } : null
 
         encryption = {
-          kms_key_id                            = var.cis_level == "2" ? module.lz_vault[0].keys["JUMPHOST-KEY"].id : null
+          kms_key_id                            = var.cis_level == "2" && var.deploy_bastion_jump_host ? module.lz_vault[0].keys["JUMPHOST-KEY"].id : null
           encrypt_in_transit_on_instance_create = true
         }
       }
