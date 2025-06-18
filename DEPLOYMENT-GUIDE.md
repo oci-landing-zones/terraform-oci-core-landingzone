@@ -705,34 +705,19 @@ For adding a compartment for Exadata Cloud service, use the following variable:
 
 **Note:** When adding a compartment for Exadata Cloud service, the Core Landing Zone also adds a group and policies for managing Exadata Cloud resources in the compartment.
 
-For adding other compartments to Core Landing Zone topology, users should override the **enclosed_compartments_configuration** variable, utilizing [Terraform overrides feature](https://developer.hashicorp.com/terraform/language/files/override).The idea is that users provide a file name that ends with *_override.tf*, overriding some existing variables in the Core Landing Zone original code. This approach allows for customizations without changing the original code, thus providing protection against eventual updates to Core Landing Zone code base.  
+For adding other compartments to Core Landing Zone topology, users should override the **additional_enclosed_compartments** variable, utilizing [Terraform overrides feature](https://developer.hashicorp.com/terraform/language/files/override).The idea is that users provide a file name that ends with *_override.tf*, overriding some existing variables in the Core Landing Zone original code. This approach allows for customizations without changing the original code, thus providing protection against eventual updates to Core Landing Zone code base.  
 
 For example, the following *iam_override.tf* sample file adds an extra compartment (DEVOPS-CMP) to the topology. It also overrides the enclosing compartment name.
 
 ```
 locals {
     
-    enclosed_compartments_configuration = {  # redefines the compartment topology by adding a DEVOPS-CMP compartment. 
-        default_parent_id : local.enclosing_compartment_id
-        compartments = {
-            NETWORK-CMP = { 
-                name = "${var.service_label}-network-cmp", 
-                description = "Core Landing Zone Network compartment",
-                defined_tags : local.cmps_defined_tags,
-                freeform_tags : local.cmps_freeform_tags
-            },
-            SECURITY-CMP = { 
-                name = "${var.service_label}-security-cmp", 
-                description = "Core Landing Zone Security compartment",
-                defined_tags : local.cmps_defined_tags,
-                freeform_tags : local.cmps_freeform_tags
-            }, 
-            DEVOPS-CMP = { 
-                name = "${var.service_label}-devops-cmp", 
-                description = "Core Landing Zone DevOps compartment",
-                defined_tags : local.cmps_defined_tags,
-                freeform_tags : local.cmps_freeform_tags
-            }  
+    additional_enclosed_compartments = {
+        DEVOPS-CMP = { 
+            name = "${var.service_label}-devops-cmp", 
+            description = "Core Landing Zone DevOps compartment",
+            defined_tags : local.cmps_defined_tags,
+            freeform_tags : local.cmps_freeform_tags
         }  
     }
 
@@ -744,11 +729,9 @@ locals {
 
 The following variables have been verified for overrides. While it is technically possible to override any variable, overriding a variable not in the list has not been verified and can lead to unexpected outcomes.
 
-- **enclosed_compartments_configuration**: defines the compartments to be deployed within the chosen enclosing compartment. Use it for adding compartments, **while making sure to include the original Core Landing Zone compartments to keep**. When doing so, the original Core Landing compartment keys must be used. The original keys are "NETWORK-CMP", "SECURITY-CMP", "APP-CMP", "DATABASE-CMP" and "EXAINFRA-CMP". See example above. 
+- **additional_enclosed_compartments**: defines the additional compartments to be deployed within the chosen enclosing compartment. 
 
-**Note**: "NETWORK-CMP" and "SECURITY-CMP" compartments are required. Removing them from *enclosed_compartments_configuration* is not supported and will lead to errors.
-
-Overriding the default compartment names is also supported. Use the following the variables:
+Overriding the default compartment names is also supported. Use the following variables:
 
 - **provided_enclosing_compartment_name**: the enclosing compartment name.
 - **provided_network_compartment_name**: the network compartment name.
