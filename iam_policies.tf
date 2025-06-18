@@ -321,10 +321,10 @@ locals {
     "allow group ${join(",", local.appdev_admin_group_name)} to read database-family in compartment ${local.database_compartment_name}"] : []
 
   ## AppDev admin grants on enclosing compartment
-  appdev_admin_grants_on_root_cmp = [
+  appdev_admin_grants_on_root_cmp = local.enable_app_compartment ? [
     "allow group ${join(",", local.appdev_admin_group_name)} to read app-catalog-listing in tenancy",
     "allow group ${join(",", local.appdev_admin_group_name)} to read instance-images in tenancy",
-    "allow group ${join(",", local.appdev_admin_group_name)} to read repos in tenancy"]
+    "allow group ${join(",", local.appdev_admin_group_name)} to read repos in tenancy"] : []
 
   ## All AppDev admin grants
   appdev_admin_grants = concat(local.appdev_admin_grants_on_appdev_cmp, local.appdev_admin_grants_on_network_cmp,
@@ -448,15 +448,18 @@ locals {
 
   storage_admin_grants = concat(local.storage_admin_grants_on_app_cmp, local.storage_admin_grants_on_database_cmp, local.storage_admin_grants_on_security_cmp, local.storage_admin_grants_on_network_cmp)
 
-  default_policies = {
-    (local.compute_agent_policy_name) = {
+  compute_agent_policy = local.enable_app_compartment == true ? {
+    (local.compute_agent_policy_name) = length(local.compute_agent_grants) > 0 ? {
       compartment_id = local.enclosing_compartment_id
       name           = local.compute_agent_policy_name
       description    = "Core Landing Zone policy for ${local.appdev_computeagent_dynamic_group_name} group to manage compute agent related services."
       defined_tags   = local.policies_defined_tags
       freeform_tags  = local.policies_freeform_tags
       statements     = local.compute_agent_grants
-    },
+    } : null
+  } : {}
+
+  database_dyn_group_policy = local.enable_database_compartment == true ? {
     (local.database_dynamic_group_policy_name) = length(local.autonomous_database_grants) > 0 ? {
       compartment_id = local.enclosing_compartment_id
       name           = local.database_dynamic_group_policy_name
@@ -464,7 +467,10 @@ locals {
       defined_tags   = local.policies_defined_tags
       freeform_tags  = local.policies_freeform_tags
       statements     = local.autonomous_database_grants
-    } : null,
+    } : null
+  } : {}
+
+  network_admin_policy = local.enable_network_compartment == true ? {
     (local.network_admin_policy_name) = length(local.network_admin_grants) > 0 ? {
       compartment_id = local.enclosing_compartment_id
       name           = local.network_admin_policy_name
@@ -472,7 +478,10 @@ locals {
       defined_tags   = local.policies_defined_tags
       freeform_tags  = local.policies_freeform_tags
       statements     = local.network_admin_grants
-    } : null,
+    } : null
+  } : {}
+
+  security_admin_policy = local.enable_security_compartment == true ? {
     (local.security_admin_policy_name) = length(local.security_admin_grants) > 0 ? {
       compartment_id = local.enclosing_compartment_id
       name           = local.security_admin_policy_name
@@ -480,7 +489,10 @@ locals {
       defined_tags   = local.policies_defined_tags
       freeform_tags  = local.policies_freeform_tags
       statements     = local.security_admin_grants
-    } : null,
+    } : null
+  } : {}
+
+  database_admin_policy = local.enable_database_compartment == true ? {
     (local.database_admin_policy_name) = length(local.database_admin_grants) > 0 ? {
       compartment_id = local.enclosing_compartment_id
       name           = local.database_admin_policy_name
@@ -488,7 +500,10 @@ locals {
       defined_tags   = local.policies_defined_tags
       freeform_tags  = local.policies_freeform_tags
       statements     = local.database_admin_grants
-    } : null,
+    } : null
+  } : {}
+
+  appdev_admin_policy = local.enable_app_compartment == true ? {
     (local.appdev_admin_policy_name) = length(local.appdev_admin_grants) > 0 ? {
       compartment_id = local.enclosing_compartment_id
       name           = local.appdev_admin_policy_name
@@ -496,24 +511,30 @@ locals {
       defined_tags   = local.policies_defined_tags
       freeform_tags  = local.policies_freeform_tags
       statements     = local.appdev_admin_grants
-    } : null,
-    (local.iam_admin_policy_name) = length(local.iam_admin_grants_on_enclosing_cmp) > 0 ? {
+    } : null
+  } : {}
+
+  iam_admin_policy = length(local.iam_admin_grants_on_enclosing_cmp) > 0 ? {
+    (local.iam_admin_policy_name) = {
       compartment_id = local.enclosing_compartment_id
       name           = local.iam_admin_policy_name
       description    = "Core Landing Zone policy for ${join(",", local.iam_admin_group_name)} group to manage IAM resources in Landing Zone enclosing compartment (${local.policy_scope})."
       defined_tags   = local.policies_defined_tags
       freeform_tags  = local.policies_freeform_tags
       statements     = local.iam_admin_grants_on_enclosing_cmp
-    } : null,
-    (local.storage_admin_policy_name) = length(local.storage_admin_grants) > 0 ? {
+    }
+  } : {}
+
+  storage_admin_policy = length(local.storage_admin_grants) > 0 ? {
+    (local.storage_admin_policy_name) = {
       compartment_id = local.enclosing_compartment_id
       name           = local.storage_admin_policy_name
       description    = "Core Landing Zone policy for ${join(",", local.storage_admin_group_name)} group to manage storage resources."
       defined_tags   = local.policies_defined_tags
       freeform_tags  = local.policies_freeform_tags
       statements     = local.storage_admin_grants
-    } : null
-  }
+    }
+  } : {}
 
   exainfra_policy = local.enable_exainfra_compartment ? {
     (local.exainfra_admin_policy_name) = length(local.exainfra_admin_grants) > 0 ? {
@@ -537,7 +558,9 @@ locals {
     } : null
   } : {}
 
-  policies = merge(local.default_policies, local.exainfra_policy, local.net_fw_app_policy)
+  policies = merge(local.compute_agent_policy, local.database_dyn_group_policy, local.network_admin_policy, local.security_admin_policy, 
+                   local.database_admin_policy, local.appdev_admin_policy, local.iam_admin_policy, local.storage_admin_policy,
+                   local.exainfra_policy, local.net_fw_app_policy)
 
   #-- Basic grants on Root compartment
   basic_grants_default_grantees = concat(local.security_admin_group_name, local.network_admin_group_name, local.appdev_admin_group_name, local.database_admin_group_name, local.storage_admin_group_name)
@@ -550,7 +573,7 @@ locals {
     "allow group ${join(",", local.basic_grants_grantees)} to read tag-namespaces in tenancy"
   ]
 
-  root_policies = {
+  basic_root_policy = {
     (local.basic_root_policy_name) = {
       compartment_id = var.tenancy_ocid
       name           = local.basic_root_policy_name
@@ -558,7 +581,10 @@ locals {
       defined_tags   = local.policies_defined_tags
       freeform_tags  = local.policies_freeform_tags
       statements     = local.basic_grants_on_root_cmp
-    },
+    }
+  }  
+
+  appdev_admin_root_policy = local.enable_app_compartment ? {
     (local.appdev_admin_root_policy_name) = {
       compartment_id = var.tenancy_ocid
       name           = local.appdev_admin_root_policy_name
@@ -566,7 +592,10 @@ locals {
       defined_tags   = local.policies_defined_tags
       freeform_tags  = local.policies_freeform_tags
       statements     = local.appdev_admin_grants_on_root_cmp
-    },
+    }
+  } : {} 
+
+  security_admin_root_policy = local.enable_security_compartment ? {
     (local.security_admin_root_policy_name) = {
       compartment_id = var.tenancy_ocid
       name           = local.security_admin_root_policy_name
@@ -574,7 +603,10 @@ locals {
       defined_tags   = local.policies_defined_tags
       freeform_tags  = local.policies_freeform_tags
       statements     = local.security_admin_grants_on_root_cmp
-    },
+    }
+  } : {}
+
+  network_admin_root_policy = local.enable_network_compartment ? {
     (local.network_admin_root_policy_name) = {
       compartment_id   = var.tenancy_ocid
       name             = local.network_admin_root_policy_name
@@ -582,7 +614,10 @@ locals {
       defined_tags     = local.policies_defined_tags
       freeform_tags    = local.policies_freeform_tags
       statements       = local.network_admin_grants_on_root_cmp
-    },
+    }
+  } : {}  
+
+  iam_admin_root_policy = {
     (local.iam_admin_root_policy_name) = {
       compartment_id = var.tenancy_ocid
       name           = local.iam_admin_root_policy_name
@@ -590,7 +625,10 @@ locals {
       defined_tags   = local.policies_defined_tags
       freeform_tags  = local.policies_freeform_tags
       statements     = local.iam_admin_grants_on_root_cmp
-    },
+    }
+  }
+
+  auditor_policy = {
     (local.auditor_policy_name) = {
       compartment_id = var.tenancy_ocid
       name           = local.auditor_policy_name
@@ -625,7 +663,10 @@ locals {
         "allow group ${join(",", local.auditor_group_name)} to read security-attribute-namespace in tenancy",
         "allow group ${join(",", local.auditor_group_name)} to read network-firewall-family in tenancy"
       ]
-    },
+    }
+  }
+
+  announcement_reader_policy = {
     (local.announcement_reader_policy_name) = {
       compartment_id = var.tenancy_ocid
       name           = local.announcement_reader_policy_name
@@ -636,7 +677,10 @@ locals {
         "allow group ${join(",", local.announcement_reader_group_name)} to read announcements in tenancy",
         "allow group ${join(",", local.announcement_reader_group_name)} to use cloud-shell in tenancy"
       ]
-    },
+    }
+  }
+
+  cred_admin_policy = {
     (local.cred_admin_policy_name) = {
       compartment_id = var.tenancy_ocid
       name           = local.cred_admin_policy_name
@@ -649,7 +693,10 @@ locals {
         "allow group ${join(",", local.cred_admin_group_name)} to manage users in tenancy  where any {request.operation = 'ListApiKeys',request.operation = 'ListAuthTokens',request.operation = 'ListCustomerSecretKeys',request.operation = 'UploadApiKey',request.operation = 'DeleteApiKey',request.operation = 'UpdateAuthToken',request.operation = 'CreateAuthToken',request.operation = 'DeleteAuthToken',request.operation = 'CreateSecretKey',request.operation = 'UpdateCustomerSecretKey',request.operation = 'DeleteCustomerSecretKey',request.operation = 'UpdateUserCapabilities'}",
         "allow group ${join(",", local.cred_admin_group_name)} to use cloud-shell in tenancy"
       ]
-    },
+    }
+  }
+
+  cost_admin_policy = {
     (local.cost_admin_root_policy_name) = {
       compartment_id = var.tenancy_ocid
       name           = local.cost_admin_root_policy_name
@@ -657,7 +704,10 @@ locals {
       defined_tags   = local.policies_defined_tags
       freeform_tags  = local.policies_freeform_tags
       statements     = local.cost_root_permissions
-    },
+    }
+  }
+
+  governance_root_policy = {
     (local.access_governance_root_policy_name) = {
       compartment_id = var.tenancy_ocid
       name           = local.access_governance_root_policy_name
@@ -667,6 +717,11 @@ locals {
       statements     = local.access_governance_group_grants_on_root_cmp
     }
   }
+
+  root_policies = merge(local.basic_root_policy, local.appdev_admin_root_policy, local.security_admin_root_policy, local.network_admin_root_policy, 
+                        local.iam_admin_root_policy, local.auditor_policy, local.announcement_reader_policy, local.cred_admin_policy, 
+                        local.cost_admin_policy, local.governance_root_policy)
+    
 }
 
 module "lz_root_policies" {
