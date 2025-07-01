@@ -18,17 +18,17 @@ module "core_lz" {
     # ------------------------------------------------------
     # ----- Environment
     # ------------------------------------------------------
-    tenancy_ocid         = "ocid1.tenancy.oc1..aaaaaaaa...3jb"               # Replace with your tenancy OCID.
-    user_ocid            = "ocid1.user.oc1..aaaaaaaa...xsb"                  # Replace with your user OCID.
-    fingerprint          = "19:42:xx:92:yy:b3:zz:2f:aa:ea:bb:59:cc:be:dd:ba" # Replace with user fingerprint.
-    private_key_path     = "path-to-pem-file-with-private-key"               # Replace with user private key local path.
+    tenancy_ocid         = "ocid1.tenancy.oc1..aaaaaaaaxbchsnzhdxyoewmoqiqzvltba2ri7gijhbd2z5ybpgorv7yhxeeq"               # Replace with your tenancy OCID.
+    user_ocid            = "ocid1.user.oc1..aaaaaaaamgjaxyr65icshx53s42yijcgz64e7z7sqzpy5wi4ozjwfj4eaglq"                  # Replace with your user OCID.
+    fingerprint          = "26:6a:a9:20:bb:6d:40:98:66:87:d2:26:fb:1d:e9:d4" # Replace with user fingerprint.
+    private_key_path     = "~/.oci/miakey.pem"               # Replace with user private key local path.
     private_key_password = ""                                                # Replace with private key password, if any.
-    region               = "us-phoenix-1" # Replace with region name.
-    service_label        = "cisbasic"     # Prefix prepended to deployed resource names. 
+    region               = "us-ashburn-1" # Replace with region name.
+    service_label        = "ccore"     # Prefix prepended to deployed resource names.
 
     # ------------------------------------------------------
     # ----- Notifications
     # ------------------------------------------------------
-    network_admin_email_endpoints  = ["email.address@example.com"] # for network-related events. Replace with a real email address.
-    security_admin_email_endpoints = ["email.address@example.com"] # for security-related events. Replace with a real email address.
+    network_admin_email_endpoints  = ["mia.nguyen@oracle.com"] # for network-related events. Replace with a real email address.
+    security_admin_email_endpoints = ["mia.nguyen@oracle.com"] # for security-related events. Replace with a real email address.
 }
