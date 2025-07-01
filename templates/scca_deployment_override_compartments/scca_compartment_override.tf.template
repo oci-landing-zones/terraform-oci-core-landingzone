@@ -1,0 +1,4 @@
+locals {
+  provided_network_compartment_name   = "${var.service_label}-vdss-cmp"
+  provided_security_compartment_name  = "${var.service_label}-vdms-cmp"
+}
