@@ -1,3 +1,12 @@
+# -------------------------------------------------------------------------------------
+# -- This file overrides the network and security compartments of Core Landing Zone to match the naming conventions of SCCA.
+# -- 1. Rename this file to scca_compartment_override.tf.
+# -- 2. Move this file to the main Core directory.
+# -- 3. Execute the typical Terraform workflow with a configuration file of your choice:
+# ----- $ terraform init
+# ----- $ terraform plan
+# ----- $ terraform apply
+# -------------------------------------------------------------------------------------
 locals {
   provided_network_compartment_name   = "${var.service_label}-vdss-cmp"
   provided_security_compartment_name  = "${var.service_label}-vdms-cmp"
