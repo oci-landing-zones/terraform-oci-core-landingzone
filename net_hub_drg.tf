@@ -16,7 +16,7 @@ locals {
   chosen_hub_option = var.hub_deployment_option == "" ? var.hub_deployment : local.hub_options[var.hub_deployment_option]
   deploy_new_drg    = var.define_net == true && (local.chosen_hub_option == 1 || local.chosen_hub_option == 3 || local.chosen_hub_option == 5)
   use_existing_drg  = var.define_net == true && (local.chosen_hub_option == 2 || local.chosen_hub_option == 4 || local.chosen_hub_option == 6)
-  hub_with_drg_only = var.define_net == true && (local.chosen_hub_option == 1 || local.chosen_hub_option == 2)
+  hub_with_drg_only = var.define_net == true && ((local.chosen_hub_option == 1 || local.chosen_hub_option == 2) || ((local.chosen_hub_option == 3 || local.chosen_hub_option == 4) && local.chosen_firewall_option == "NO"))
   hub_with_vcn      = var.define_net == true && (local.chosen_hub_option == 3 || local.chosen_hub_option == 4)
 
   drg = (local.chosen_hub_option != 0) ? {

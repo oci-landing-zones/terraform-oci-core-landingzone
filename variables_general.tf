@@ -44,7 +44,7 @@ variable "extend_landing_zone_to_new_region" {
   type        = bool
 }
 variable "customize_iam" {
-  description = "Whether Landing Zone IAM settings are to be customized. Customizable options are identity domains, groups, dynamic groups and policies."
+  description = "Whether Landing Zone IAM settings are to be customized. Customizable options are compartments, identity domains, groups, dynamic groups and policies."
   type        = bool
   default     = false
 }
