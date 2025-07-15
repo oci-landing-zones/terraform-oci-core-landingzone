@@ -184,9 +184,11 @@ Some deployment scenarios are available under the [templates](./templates/) fold
 - [On-premises connectivity through a Hub VCN with Site-to-Site VPN using IPSec](./templates/hub-spoke-with-hub-vcn-ipsec-vpn)
 - [On-premises connectivity through a Hub VCN with FastConnect virtual circuits](./templates/hub-spoke-with-hub-vcn-fastconnect-virtual-circuit)
 - [Hub DRG including externally managed VCN using IPSec/LibreSwan](./templates/externally-managed-vcns)
+- [Hub DRG including externally managed VCN using IPSec/LibreSwan](./templates/externally-managed-vcns)
 
 Another key deployment scenario of OCI Core Landing Zone is [Zero Trust Landing Zone](https://github.com/oci-landing-zones/terraform-oci-zero-trust-landingzone).
 
+OCI Core Landing Zone offers **OCI Network Firewall** in a Hub VCN for use with Three Tier, Exadata and/or OKE networking.
 OCI Core Landing Zone offers **OCI Network Firewall** in a Hub VCN for use with Three Tier, Exadata and/or OKE networking.
 
 

@@ -19,6 +19,7 @@ locals {
       resource_id        = v.id,
       is_enabled         = true,
       retention_duration = 90,
+      retention_duration = 90,
       defined_tags       = local.flow_logs_defined_tags,
       freeform_tags      = local.flow_logs_freeform_tags
     }

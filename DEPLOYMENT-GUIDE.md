@@ -19,6 +19,7 @@
     1. [Zero Trust Packet Routing (ZPR)](#zpr-use)
     1. [Bastion Service](#bastion-use)
     1. [Express Deployment](#express-use)
+    1. [Express Deployment](#express-use)
     1. [Customizing Compartments](#custom-cmp)
 1. [Ways to Deploy](#ways-to-deploy)
     1. [Deploying with Terraform CLI](#deploying-with-terraform-cli)

@@ -578,6 +578,7 @@ locals {
       compartment_id = var.tenancy_ocid
       name           = local.basic_root_policy_name
       description    = "Core Landing Zone basic root compartment policy."
+      description    = "Core Landing Zone basic root compartment policy."
       defined_tags   = local.policies_defined_tags
       freeform_tags  = local.policies_freeform_tags
       statements     = local.basic_grants_on_root_cmp
