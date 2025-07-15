@@ -489,7 +489,6 @@ variableGroups:
   - title: "Cloud Guard"
     variables:
       - "customize_cloud_guard_settings"
-      - "customize_cloud_guard_settings"
       - "cloud_guard_reporting_region"
       - "cloud_guard_admin_email_endpoints"
       - "cloud_guard_risk_level_threshold"
