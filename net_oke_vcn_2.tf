@@ -204,12 +204,11 @@ locals {
                   destination        = "0.0.0.0/0"
                   destination_type   = "CIDR_BLOCK"
                 }
-              },
+              }
             )
           }
         } : {}
       )
-
       security_lists = merge(
         {
           "OKE-VCN-2-WORKERS-SUBNET-SL" = {
@@ -365,7 +364,7 @@ locals {
             },
             upper(var.oke_vcn2_cni_type) == "NATIVE" ? {
               "EGRESS-TO-API-API-RULE" = {
-                description  = "Allow TCP egress for Kubernetes control plane inter-communicatioN"
+                description  = "Allow TCP egress for Kubernetes control plane inter-communication"
                 stateless    = false
                 protocol     = "TCP"
                 dst          = "OKE-VCN-2-API-NSG"
@@ -597,7 +596,7 @@ locals {
               dst_port_max = 32767
             }
             },
-            upper(var.oke_vcn2_cni_type) == "FLANNEL" ? {
+            upper(var.oke_vcn2_cni_type) == "FLANNEL" && var.add_oke_vcn2_mgmt_subnet ? {
               "INGRESS-FROM-MGMT-WORKERS-RULE" = {
                 description  = "Allows inbound SSH access from mgmt subnet."
                 stateless    = false
@@ -696,9 +695,8 @@ locals {
               dst_port_min = 443
               dst_port_max = 443
             }
-            },
-            local.oke_vcn_2_to_services_subnet_cross_vcn_ingress
-          ),
+            }
+          )
         }
         },
         var.add_oke_vcn2_mgmt_subnet ? {
@@ -872,7 +870,7 @@ locals {
   oke_vcn_2_to_workers_subnet_cross_vcn_egress = merge(
     (local.add_oke_vcn2 == true && var.oke_vcn2_attach_to_drg == true && var.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true) &&
     (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.oke_vcn2_routable_vcns) == 0 || contains(var.oke_vcn2_routable_vcns, "OKE-VCN-1")))) ? {
-      "EGRESS-TO-VCN-1-WORKERS-SUBNET-RULE" = {
+      "EGRESS-TO-OKE-VCN-1-WORKERS-SUBNET-RULE" = {
         description  = "Egress to ${coalesce(var.oke_vcn1_workers_subnet_name, "${var.service_label}-oke-vcn-1-workers-subnet")}."
         stateless    = false
         protocol     = "TCP"
@@ -884,7 +882,7 @@ locals {
     } : {},
     (local.add_oke_vcn2 == true && var.oke_vcn2_attach_to_drg == true && var.add_oke_vcn3 == true && var.oke_vcn3_attach_to_drg == true) &&
     (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.oke_vcn2_routable_vcns) == 0 || contains(var.oke_vcn2_routable_vcns, "OKE-VCN-3")))) ? {
-      "EGRESS-TO-VCN-3-WORKERS-SUBNET-RULE" = {
+      "EGRESS-TO-OKE-VCN-3-WORKERS-SUBNET-RULE" = {
         description  = "Egress to ${coalesce(var.oke_vcn3_workers_subnet_name, "${var.service_label}-oke-vcn-3-workers-subnet")}."
         stateless    = false
         protocol     = "TCP"
@@ -893,12 +891,12 @@ locals {
         dst_port_min = 30000
         dst_port_max = 32767
       }
-    } : {},
+    } : {}
   )
   oke_vcn_2_to_services_subnet_cross_vcn_egress = merge(
     (local.add_oke_vcn2 == true && var.oke_vcn2_attach_to_drg == true && var.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true) &&
     (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.oke_vcn2_routable_vcns) == 0 || contains(var.oke_vcn2_routable_vcns, "OKE-VCN-1")))) ? {
-      "EGRESS-TO-VCN-1-SERVICES-SUBNET-RULE" = {
+      "EGRESS-TO-OKE-VCN-1-SERVICES-SUBNET-RULE" = {
         description  = "Egress to ${coalesce(var.oke_vcn1_services_subnet_name, "${var.service_label}-oke-vcn-1-services-subnet")}."
         stateless    = false
         protocol     = "TCP"
@@ -910,7 +908,7 @@ locals {
     } : {},
     (local.add_oke_vcn2 == true && var.oke_vcn2_attach_to_drg == true && var.add_oke_vcn3 == true && var.oke_vcn3_attach_to_drg == true) &&
     (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.oke_vcn2_routable_vcns) == 0 || contains(var.oke_vcn2_routable_vcns, "OKE-VCN-3")))) ? {
-      "EGRESS-TO-VCN-3-SERVICES-SUBNET-RULE" = {
+      "EGRESS-TO-OKE-VCN-3-SERVICES-SUBNET-RULE" = {
         description  = "Egress to ${coalesce(var.oke_vcn3_services_subnet_name, "${var.service_label}-oke-vcn-3-services-subnet")}."
         stateless    = false
         protocol     = "TCP"
@@ -922,10 +920,9 @@ locals {
     } : {}
   )
   oke_vcn_2_to_pods_subnet_cross_vcn_egress = merge(
-    (local.add_oke_vcn2 == true && var.oke_vcn2_attach_to_drg == true && var.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true) &&
-    (upper(var.oke_vcn1_cni_type) == "NATIVE") &&
+    (local.add_oke_vcn2 == true && var.oke_vcn2_attach_to_drg == true && var.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true) && (upper(var.oke_vcn1_cni_type) == "NATIVE") &&
     (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.oke_vcn2_routable_vcns) == 0 || contains(var.oke_vcn2_routable_vcns, "OKE-VCN-1")))) ? {
-      "EGRESS-TO-VCN-1-PODS-SUBNET-RULE" = {
+      "EGRESS-TO-OKE-VCN-1-PODS-SUBNET-RULE" = {
         description = "Egress to ${coalesce(var.oke_vcn1_pods_subnet_name, "${var.service_label}-oke-vcn-1-pods-subnet")}."
         stateless   = false
         protocol    = "TCP"
@@ -933,10 +930,9 @@ locals {
         dst_type    = "CIDR_BLOCK"
       }
     } : {},
-    (local.add_oke_vcn2 == true && var.oke_vcn2_attach_to_drg == true && var.add_oke_vcn3 == true && var.oke_vcn3_attach_to_drg == true) &&
-    (upper(var.oke_vcn3_cni_type) == "NATIVE") &&
+    (local.add_oke_vcn2 == true && var.oke_vcn2_attach_to_drg == true && var.add_oke_vcn3 == true && var.oke_vcn3_attach_to_drg == true) && (upper(var.oke_vcn3_cni_type) == "NATIVE") &&
     (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.oke_vcn2_routable_vcns) == 0 || contains(var.oke_vcn2_routable_vcns, "OKE-VCN-3")))) ? {
-      "EGRESS-TO-VCN-3-PODS-SUBNET-RULE" = {
+      "EGRESS-TO-OKE-VCN-3-PODS-SUBNET-RULE" = {
         description = "Egress to ${coalesce(var.oke_vcn3_pods_subnet_name, "${var.service_label}-oke-vcn-3-pods-subnet")}."
         stateless   = false
         protocol    = "TCP"
@@ -1197,8 +1193,7 @@ locals {
       }
     } : {},
     (local.add_oke_vcn2 == true && var.oke_vcn2_attach_to_drg == true && var.add_oke_vcn3 == true && var.oke_vcn3_attach_to_drg == true) &&
-    (local.hub_with_vcn == true ||
-    (local.hub_with_drg_only == true && (length(var.oke_vcn2_routable_vcns) == 0 || contains(var.oke_vcn2_routable_vcns, "OKE-VCN-3")))) ? {
+    (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.oke_vcn2_routable_vcns) == 0 || contains(var.oke_vcn2_routable_vcns, "OKE-VCN-3")))) ? {
       "INGRESS-FROM-OKE-VCN-3-WORKERS-SUBNET-RULE" = {
         description  = "Ingress from ${coalesce(var.oke_vcn3_workers_subnet_name, "${var.service_label}-oke-vcn-3-workers-subnet")}."
         stateless    = false
@@ -1381,7 +1376,6 @@ locals {
     } : {}
   )
 
-  
   oke_vcn_2_drg_routing = merge(
     (local.add_oke_vcn2 == true && var.oke_vcn2_attach_to_drg == true && var.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true) &&
     (local.hub_with_drg_only == true && (length(var.oke_vcn2_routable_vcns) == 0 || contains(var.oke_vcn2_routable_vcns, "OKE-VCN-1"))) ? {
@@ -1466,5 +1460,4 @@ locals {
       }
     } : {}
   )
-
 }
