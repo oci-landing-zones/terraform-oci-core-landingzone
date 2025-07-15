@@ -15,28 +15,18 @@ variableGroups:
   - title: "General"
     variables:
       - "is_free_tenancy"
-      - "is_free_tenancy"
       - "region"
       - "cis_level"
       - "service_label"
 
   - title: "Configuration Options"
     variables:
-    - "extend_landing_zone_to_new_region"
-    - "customize_iam"
-    - "define_net"
-    - "enable_zpr"
-    - "zpr_namespace_name"
-    - "display_security_logging_governance_settings"
-
-  - title: "Configuration Options"
-    variables:
-    - "extend_landing_zone_to_new_region"
-    - "customize_iam"
-    - "define_net"
-    - "enable_zpr"
-    - "zpr_namespace_name"
-    - "display_security_logging_governance_settings"
+      - "extend_landing_zone_to_new_region"
+      - "customize_iam"
+      - "define_net"
+      - "enable_zpr"
+      - "zpr_namespace_name"
+      - "display_security_logging_governance_settings"
 
   - title: "Compartments"
     variables:
