@@ -117,10 +117,10 @@ variable "enable_db_admin_group" {
   type        = bool
   description = "the option to enable workload database admin group"
 }
-variable "customize_group_name" {
+variable "customize_group_policy_name" {
   default     = false
   type        = bool
-  description = "the option to customize the group names"
+  description = "the option to customize group and policy names"
 }
 variable "workload_admin_group_name" {
   default     = "workload-admin-group"
@@ -184,22 +184,22 @@ variable "deploy_wkld_policies" {
   description = "Whether or not to deploy wkld policies"
 }
 variable "root_policy_name"{
-  default = null
+  default = "root-policy"
   type = string
   description = "Root policy name."
 }
 variable "wkld_admin_policy_name"{
-  default = null
+  default = "wkld-admin-policy"
   type = string
   description = "Workload Admin policy name."
 }
 variable "db_admin_policy_name"{
-  default = null
+  default = "wkld-db-admin-policy"
   type = string
   description = "DB Admin policy name."
 }
 variable "app_admin_policy_name"{
-  default = null
+  default = "wkld-app-admin-policy"
   type = string
   description = "App Admin policy name."
 }
