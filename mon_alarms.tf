@@ -13,7 +13,7 @@ locals {
 
 # Alarms is a regional service. As such, we must not skip provisioning when extending Landing Zone to a new region.
 module "lz_alarms" {
-  source               = "github.com/oci-landing-zones/terraform-oci-modules-observability//alarms?ref=v0.2.2"
+  source               = "github.com/oci-landing-zones/terraform-oci-modules-observability//alarms?ref=v0.2.3"
   alarms_configuration = local.alarms_configuration
   topics_dependency    = module.lz_regional_topics.topics
 }

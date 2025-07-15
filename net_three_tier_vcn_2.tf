@@ -61,7 +61,7 @@ locals {
             security_list_keys        = var.tt_vcn2_bastion_is_access_via_public_endpoint == false ? ["TT-VCN-2-BASTION-SUBNET-SL"] : []
           }
         } : {}
-      ) # merge function    
+      ) # merge function
 
       security_lists = var.deploy_tt_vcn2_bastion_subnet == true && var.tt_vcn2_bastion_is_access_via_public_endpoint == false ? {
         # The bastion subnet security list is only applicable to Bastion service endpoints, which are private.
@@ -235,7 +235,7 @@ locals {
                 }
               },
               var.deploy_tt_vcn2_bastion_subnet == true ? {
-                "INGRESS-FROM-BASTION-RULE" = {
+                "INGRESS-FROM-BASTION-NSG-RULE" = {
                   description  = "Ingress from Bastion NSG."
                   stateless    = false
                   protocol     = "TCP"
@@ -279,7 +279,7 @@ locals {
             display_name = "app-nsg"
             ingress_rules = merge(
               {
-                "INGRESS-FROM-LBR-RULE" = {
+                "INGRESS-FROM-LBR-NSG-RULE" = {
                   description  = "Ingress from LBR NSG"
                   stateless    = false
                   protocol     = "TCP"
@@ -290,7 +290,7 @@ locals {
                 }
               },
               var.deploy_tt_vcn2_bastion_subnet == true ? {
-                "INGRESS-FROM-BASTION-RULE" = {
+                "INGRESS-FROM-BASTION-NSG-RULE" = {
                   description  = "Ingress from Bastion NSG."
                   stateless    = false
                   protocol     = "TCP"
@@ -353,7 +353,7 @@ locals {
               local.vcn_2_to_web_subnet_cross_vcn_egress,
               local.vcn_2_to_oke_cross_vcn_egress,
               local.vcn_2_to_exa_cross_vcn_egress
-            ),
+            )
           }
         },
         {
@@ -399,7 +399,7 @@ locals {
               local.vcn_2_to_hub_indoor_subnet_cross_vcn_egress,
               local.vcn_2_to_db_subnet_cross_vcn_egress,
               local.vcn_2_to_exa_cross_vcn_egress
-            ),
+            )
           }
         },
         var.deploy_tt_vcn2_bastion_subnet == true ? {
@@ -571,7 +571,7 @@ locals {
   ## Egress to OKE-VCNs:
   vcn_2_to_oke_cross_vcn_egress = merge(
     ## Egress to OKE-VCN-1
-    (local.add_tt_vcn2 == true && var.tt_vcn1_attach_to_drg == true && var.add_oke_vcn2 == true && var.oke_vcn1_attach_to_drg == true) &&
+    (local.add_tt_vcn2 == true && var.tt_vcn2_attach_to_drg == true && var.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true) &&
     (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.tt_vcn2_routable_vcns) == 0 || contains(var.tt_vcn2_routable_vcns, "OKE-VCN-1")))) ? merge(
       {
         "EGRESS-TO-OKE-VCN-1-SERVICES-SUBNET-RULE" = {
@@ -585,7 +585,7 @@ locals {
         },
       },
     ) : {},
-    ## Egress to OKE-VCN-2 
+    ## Egress to OKE-VCN-2
     (local.add_tt_vcn2 == true && var.tt_vcn2_attach_to_drg == true && var.add_oke_vcn2 == true && var.oke_vcn2_attach_to_drg == true) &&
     (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.tt_vcn2_routable_vcns) == 0 || contains(var.tt_vcn2_routable_vcns, "OKE-VCN-2")))) ? merge(
       {
@@ -600,7 +600,7 @@ locals {
         },
       },
     ) : {},
-    ## Egress to OKE-VCN-3 
+    ## Egress to OKE-VCN-3
     (local.add_tt_vcn2 == true && var.tt_vcn2_attach_to_drg == true && var.add_oke_vcn3 == true && var.oke_vcn3_attach_to_drg == true) &&
     (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.tt_vcn2_routable_vcns) == 0 || contains(var.tt_vcn2_routable_vcns, "OKE-VCN-3")))) ? merge(
       {
@@ -928,5 +928,4 @@ locals {
       }
     } : {}
   )
-
 }

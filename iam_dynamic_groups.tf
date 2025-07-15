@@ -52,7 +52,7 @@ locals {
   default_security_functions_dynamic_group_name  = "sec-fun-dynamic-group"
   provided_security_functions_dynamic_group_name = coalesce(local.custom_security_fun_dyn_group_name, "${var.service_label}-${local.default_security_functions_dynamic_group_name}")
 
-  security_functions_dynamic_group = length(trimspace(var.existing_security_fun_dyn_group_name)) == 0 ? {
+  security_functions_dynamic_group = length(trimspace(var.existing_security_fun_dyn_group_name)) == 0 && local.enable_security_compartment == true ? {
     (local.security_functions_dynamic_group_key) = {
       name          = local.provided_security_functions_dynamic_group_name
       description   = "Core Landing Zone dynamic group for security functions execution."
@@ -62,7 +62,7 @@ locals {
     }
   } : {}
 
-  custom_domain_security_functions_dynamic_group = var.deploy_custom_domain_groups ? {
+  custom_domain_security_functions_dynamic_group = var.deploy_custom_domain_groups && local.enable_security_compartment == true ? {
     (local.security_functions_dynamic_group_key) = {
       identity_domain_id = trimspace(var.custom_id_domain_ocid)
       name               = local.provided_security_functions_dynamic_group_name
@@ -80,7 +80,7 @@ locals {
   default_appdev_functions_dynamic_group_name  = "app-fun-dynamic-group"
   provided_appdev_functions_dynamic_group_name = coalesce(local.custom_appdev_fun_dyn_group_name, "${var.service_label}-${local.default_appdev_functions_dynamic_group_name}")
 
-  appdev_functions_dynamic_group = length(trimspace(var.existing_appdev_fun_dyn_group_name)) == 0 ? {
+  appdev_functions_dynamic_group = length(trimspace(var.existing_appdev_fun_dyn_group_name)) == 0 && local.enable_app_compartment == true ? {
     (local.appdev_functions_dynamic_group_key) = {
       name          = local.provided_appdev_functions_dynamic_group_name
       description   = "Core Landing Zone dynamic group for application functions execution."
@@ -90,7 +90,7 @@ locals {
     }
   } : {}
 
-  custom_domain_appdev_functions_dynamic_group = var.deploy_custom_domain_groups ? {
+  custom_domain_appdev_functions_dynamic_group = var.deploy_custom_domain_groups && local.enable_app_compartment == true ? {
     (local.appdev_functions_dynamic_group_key) = {
       identity_domain_id = trimspace(var.custom_id_domain_ocid)
       name               = local.provided_appdev_functions_dynamic_group_name
@@ -108,7 +108,7 @@ locals {
   default_appdev_computeagent_dynamic_group_name  = "app-computeagent-dynamic-group"
   provided_appdev_computeagent_dynamic_group_name = coalesce(local.custom_appdev_computeagent_dyn_group_name, "${var.service_label}-${local.default_appdev_computeagent_dynamic_group_name}")
 
-  appdev_computeagent_dynamic_group = length(trimspace(var.existing_compute_agent_dyn_group_name)) == 0 ? {
+  appdev_computeagent_dynamic_group = length(trimspace(var.existing_compute_agent_dyn_group_name)) == 0 && local.enable_app_compartment == true ? {
     (local.appdev_computeagent_dynamic_group_key) = {
       name          = local.provided_appdev_computeagent_dynamic_group_name
       description   = "Core Landing Zone dynamic group for Compute Agent plugin execution."
@@ -118,7 +118,7 @@ locals {
     }
   } : {}
 
-  custom_domain_appdev_computeagent_dynamic_group = var.deploy_custom_domain_groups ? {
+  custom_domain_appdev_computeagent_dynamic_group = var.deploy_custom_domain_groups && local.enable_app_compartment == true ? {
     (local.appdev_computeagent_dynamic_group_key) = {
       identity_domain_id = trimspace(var.custom_id_domain_ocid)
       name               = local.provided_appdev_computeagent_dynamic_group_name
@@ -136,7 +136,7 @@ locals {
   default_database_kms_dynamic_group_name  = "database-kms-dynamic-group"
   provided_database_kms_dynamic_group_name = coalesce(local.custom_database_kms_dyn_group_name, "${var.service_label}-${local.default_database_kms_dynamic_group_name}")
 
-  database_kms_dynamic_group = length(trimspace(var.existing_database_kms_dyn_group_name)) == 0 ? {
+  database_kms_dynamic_group = length(trimspace(var.existing_database_kms_dyn_group_name)) == 0 && local.enable_database_compartment == true ? {
     (local.database_kms_dynamic_group_key) = {
       name          = local.provided_database_kms_dynamic_group_name
       description   = "Core Landing Zone dynamic group for databases accessing Key Management service (aka Vault service)."
@@ -146,7 +146,7 @@ locals {
     }
   } : {}
 
-  custom_domain_database_kms_dynamic_group = var.deploy_custom_domain_groups ? {
+  custom_domain_database_kms_dynamic_group = var.deploy_custom_domain_groups && local.enable_database_compartment == true ? {
     (local.database_kms_dynamic_group_key) = {
       identity_domain_id = trimspace(var.custom_id_domain_ocid)
       name               = local.provided_database_kms_dynamic_group_name
@@ -164,7 +164,7 @@ locals {
   default_net_fw_app_dynamic_group_name  = "net-fw-app-dynamic-group"
   provided_net_fw_app_dynamic_group_name = coalesce(local.custom_net_fw_app_dyn_group_name, "${var.service_label}-${local.default_net_fw_app_dynamic_group_name}")
 
-  net_fw_app_dynamic_group = length(trimspace(var.existing_net_fw_app_dyn_group_name)) == 0 && local.firewall_options[var.hub_vcn_deploy_net_appliance_option] == "FORTINET" ? {
+  net_fw_app_dynamic_group = length(trimspace(var.existing_net_fw_app_dyn_group_name)) == 0 && local.firewall_options[var.hub_vcn_deploy_net_appliance_option] == "FORTINET" && local.enable_network_compartment == true ? {
     (local.net_fw_app_dynamic_group_key) = {
       name          = local.provided_net_fw_app_dynamic_group_name
       description   = "Core Landing Zone dynamic group for network firewall appliances."
@@ -174,7 +174,7 @@ locals {
     }
   } : {}
 
-  custom_domain_net_fw_app_dynamic_group = var.deploy_custom_domain_groups && local.firewall_options[var.hub_vcn_deploy_net_appliance_option] == "FORTINET" ? {
+  custom_domain_net_fw_app_dynamic_group = var.deploy_custom_domain_groups && local.firewall_options[var.hub_vcn_deploy_net_appliance_option] == "FORTINET" && local.enable_network_compartment == true ? {
     (local.net_fw_app_dynamic_group_key) = {
       identity_domain_id = trimspace(var.custom_id_domain_ocid)
       name               = local.provided_net_fw_app_dynamic_group_name
