@@ -1,4 +1,4 @@
-# July 15, 2025 Release Notes - 1.5.2
+# July 16, 2025 Release Notes - 1.5.2
 1. Ability to selectively deploy application and database compartments. When the compartment is suppressed from deployment, so are its associated admin group, dynamic groups and policies. See [Customizing Compartments](./DEPLOYMENT-GUIDE.md#custom-cmp) for details.
 2. East/West traffic enabled for Hub/Spoke topology with no network appliance.
 3. *Cloud Guard 404-NotAuthorizedOrNotFound Error* documented in [Known Issues](./README.md#known-issues).
