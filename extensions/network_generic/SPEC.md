@@ -12,7 +12,7 @@ No providers.
 
 | Name | Source | Version |
 |------|--------|---------|
-| <a name="module_network"></a> [network](#module\_network) | github.com/oci-landing-zones/terraform-oci-modules-networking | v0.7.3 |
+| <a name="module_network"></a> [network](#module\_network) | github.com/oci-landing-zones/terraform-oci-modules-networking | v0.7.6 |
 
 ## Resources
 
