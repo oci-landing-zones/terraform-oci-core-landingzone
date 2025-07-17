@@ -24,12 +24,12 @@ module "lz_oke_clusters_policy" {
   source = "github.com/oci-landing-zones/terraform-oci-modules-iam//policies?ref=v0.2.9"
   providers = { oci = oci.home }
   tenancy_ocid = var.tenancy_ocid
-  policies_configuration = local.oke_clusters_policy_configuration
+  policies_configuration = length(local.oke_clusters_statements) > 0 ? local.oke_clusters_policy_configuration : local.empty_policies_configuration
 }
 
 locals {
 #--------------------------------------------------------------------------
-#-- These variables are NOT meant to be overriden.
+#-- These variables are NOT meant to be overridden.
 #--------------------------------------------------------------------------  
   default_service_policy_defined_tags = null
   default_service_policy_freeform_tags = local.landing_zone_tags
@@ -78,20 +78,21 @@ locals {
   # Grants allowing OKE clusters to use Native Pod Networking (NPN) and to use network resources in the Network compartment.
   # In Core Landing Zone, OKE clusters are defined in the App compartment, while the network resources are defined in the Network compartment.
   # Reference: https://docs.oracle.com/en-us/iaas/Content/ContEng/Concepts/contengpodnetworking_topic-OCI_CNI_plugin.htm
-  oke_clusters_statements = ["allow any-user to manage instances in compartment ${local.app_compartment_name} where all { request.principal.type = 'cluster', request.principal.compartment.id = '${local.app_compartment_id}' }",
+  oke_clusters_statements = local.enable_app_compartment && local.enable_network_compartment ? [
+                            "allow any-user to manage instances in compartment ${local.app_compartment_name} where all { request.principal.type = 'cluster', request.principal.compartment.id = '${local.app_compartment_id}' }",
                             "allow any-user to use private-ips in compartment ${local.network_compartment_name} where all { request.principal.type = 'cluster', request.principal.compartment.id = '${local.app_compartment_id}' }",
                             "allow any-user to use network-security-groups in compartment ${local.network_compartment_name} where all { request.principal.type = 'cluster', request.principal.compartment.id = '${local.app_compartment_id}' }",
-                            "allow any-user to use subnets in compartment ${local.network_compartment_name} where all { request.principal.type = 'cluster', request.principal.compartment.id = '${local.app_compartment_id}' }"]
+                            "allow any-user to use subnets in compartment ${local.network_compartment_name} where all { request.principal.type = 'cluster', request.principal.compartment.id = '${local.app_compartment_id}' }"] : []
 
   oke_clusters_policy = { 
-    ("${var.service_label}-oke-clusters-policy") : {
+    ("${var.service_label}-oke-clusters-policy") : length(local.oke_clusters_statements) > 0 ? {
       compartment_id   = local.enclosing_compartment_id
       name             = "${var.service_label}-oke-clusters-policy"
-      description      = "Landing Zone policy for OKE clusters. It allows OKE clusters to use Native Pod Networking (NPN) and to use network resources in the Network compartment."
+      description      = "Core Landing Zone policy for OKE clusters. It allows OKE clusters to use Native Pod Networking (NPN) and to use network resources in the Network compartment."
       statements       = local.oke_clusters_statements
       defined_tags     = local.service_policy_defined_tags
       freeform_tags    = local.service_policy_freeform_tags
-    }
+    } : null
   } 
 
   oke_clusters_policy_configuration = {

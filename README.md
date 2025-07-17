@@ -189,7 +189,6 @@ Another key deployment scenario of OCI Core Landing Zone is [Zero Trust Landing 
 
 OCI Core Landing Zone offers **OCI Network Firewall** in a Hub VCN for use with Three Tier, Exadata and/or OKE networking.
 
-
 ## <a name="modules">CIS OCI Foundations Benchmark Modules Collection</a>
 
 This repository uses a broader collection of repositories containing modules that help customers align their OCI implementations with the CIS OCI Foundations Benchmark recommendations:
@@ -318,4 +317,29 @@ See [LICENSE](./LICENSE.txt) for more details.
     }
   ```
   </details>
+
+&nbsp; 
+
+**11. Cloud Guard 404-NotAuthorizedOrNotFound Error**  
+
+  During *terraform apply*, Terraform fails with an error message like the one below. This typically happens in scenarios where Cloud Guard is not enabled in the tenancy. The error is due to a timing issue, as enabling Cloud Guard depends on IAM policies that are not available and may have not yet been deployed in the same apply. Unfortunately, in this particular scenario, it is not possible to introduce a *depends_on* clause on Cloud Guard module to delay it a bit.
+  
+  This problem is solved by re-executing the plan, followed by an apply.
+
+  <details><summary>Click here for error message:</summary>
+
+  ```
+    Error: 404-NotAuthorizedOrNotFound, Compartment ocid1.tenancy.oc1..aaaaaa...8yb is missing required permissions to read following resource types : [tenancies]
+    Suggestion: Either the resource has been deleted or service Cloud Guard Configuration need policy to access this resource. Policy reference: https://docs.oracle.com/en-us/iaas/Content/Identity/Reference/policyreference.htm
+    Documentation: https://registry.terraform.io/providers/oracle/oci/latest/docs/resources/cloud_guard_cloud_guard_configuration
+    API Reference: https://docs.oracle.com/iaas/api/#/en/cloud-guard/20200131/Configuration/UpdateConfiguration
+    Request Target: PUT https://cloudguard-cp-api.us-phoenix-1.oci.oraclecloud.com/20200131/configuration?compartmentId=ocid1.tenancy.oc1..aaaaaa...8yb
+    Provider version: 7.4.0, released on 2025-06-08.
+    Service: Cloud Guard Configuration
+    Operation Name: UpdateConfiguration
+    OPC request ID: c8399f6aecc01b9aa95f0312bbdecf3e/5D217CDD43021325923C51F076B1EA1C/A810AB78B0FB47F90D7F95A51ACB9DE2
+    with module.lz_cloud_guard[0].oci_cloud_guard_cloud_guard_configuration.this[0],
+    on .terraform/modules/lz_cloud_guard/cloud-guard/main.tf line 32, in resource "oci_cloud_guard_cloud_guard_configuration" "this"
+    32: resource "oci_cloud_guard_cloud_guard_configuration" "this" {
+  ```  
 

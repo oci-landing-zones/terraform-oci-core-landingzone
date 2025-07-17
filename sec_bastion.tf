@@ -85,14 +85,14 @@ locals {
 }
 
 module "lz_bastion" {
-  source                 = "github.com/oci-landing-zones/terraform-oci-modules-security//bastion?ref=v0.1.9"
+  source                 = "github.com/oci-landing-zones/terraform-oci-modules-security//bastion?ref=v0.2.1"
   bastions_configuration = local.bastions_configuration
   count                  = var.deploy_bastion_service ? 1 : 0
 }
 
 module "lz_bastion_jump_host" {
 
-  source = "github.com/oci-landing-zones/terraform-oci-modules-workloads//cis-compute-storage?ref=v0.2.0"
+  source = "github.com/oci-landing-zones/terraform-oci-modules-workloads//cis-compute-storage?ref=v0.2.1"
   count  = (local.hub_with_vcn == true && var.deploy_bastion_jump_host == true) ? 1 : 0
 
   providers = {

@@ -9,7 +9,7 @@ version: "0.0.1"
 locale: "en"
 
 # URL of OCI Core Landing Zone logo icon used on Application Information tab.
-logoUrl: "https://objectstorage.us-ashburn-1.oraclecloud.com/p/taf6kC9fSJyQDNSYbxvqxS_JsdnSu56oFZ3-1h5vI7-WfJUv77mplChopLxZPePW/n/ociateam/b/cis-landing-zone/o/landing_zone_130.png"
+logoUrl: "https://objectstorage.us-ashburn-1.oraclecloud.com/p/TmBgCfJd3fU4V-8_YWdwtfrzXtwk2y67pjnT2xE1S00CSvv-L0ShoNebe4cs1su7/n/ociateam/b/cis-landing-zone/o/landing_zone_130.png"
 
 variableGroups:
   - title: "General"
@@ -21,18 +21,20 @@ variableGroups:
 
   - title: "Configuration Options"
     variables:
-    - "extend_landing_zone_to_new_region"
-    - "customize_iam"
-    - "define_net"
-    - "enable_zpr"
-    - "zpr_namespace_name"
-    - "display_security_logging_governance_settings"
+      - "extend_landing_zone_to_new_region"
+      - "customize_iam"
+      - "define_net"
+      - "enable_zpr"
+      - "zpr_namespace_name"
+      - "display_security_logging_governance_settings"
 
   - title: "Compartments"
     variables:
       - "enclosing_compartment_options"
       - "enclosing_compartment_parent_ocid"
       - "existing_enclosing_compartment_ocid"
+      - "deploy_app_cmp"
+      - "deploy_database_cmp"
       - "deploy_exainfra_cmp"
     visible:
       and:
@@ -500,7 +502,6 @@ variableGroups:
           - ${is_free_tenancy}
           - false
 
-
   - title: "Security Zones"
     variables:
     - "enable_security_zones"
@@ -702,12 +703,21 @@ variables:
         - ${enclosing_compartment_options}
         - "Yes, use existing"
 
+  deploy_app_cmp:
+    type: boolean
+    title: "Deploy Application Compartment?"
+    description: "Whether the application compartment is deployed."
+
+  deploy_database_cmp:
+    type: boolean
+    title: "Deploy Database Compartment?"
+    description: "Whether the database compartment is deployed."  
+  
   deploy_exainfra_cmp:
     type: boolean
     title: "Deploy ExaCS Infra Compartment?"
     description: "Whether a separate compartment for Exadata Cloud Service Infrastructure is deployed."
-    default: false
-
+  
   identity_domain_option:
     type: enum
     title: "Identity Domain Option"
@@ -3445,6 +3455,7 @@ variables:
     title: "Fortinet Fortigate Firewall Version."
     description: "Fortinet Fortigate Firewall Version."
     enum:
+      - "7.2.11_(_X64_)"
       - "7.2.9_(_X64_)"
       - "7.4.4_(_X64_)"
     required: true

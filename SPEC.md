@@ -15,8 +15,8 @@
 
 | Name | Source | Version |
 |------|--------|---------|
-| <a name="module_lz_alarms"></a> [lz\_alarms](#module\_lz\_alarms) | github.com/oci-landing-zones/terraform-oci-modules-observability//alarms | v0.2.2 |
-| <a name="module_lz_bastion"></a> [lz\_bastion](#module\_lz\_bastion) | github.com/oci-landing-zones/terraform-oci-modules-security//bastion | v0.1.9 |
+| <a name="module_lz_alarms"></a> [lz\_alarms](#module\_lz\_alarms) | github.com/oci-landing-zones/terraform-oci-modules-observability//alarms | v0.2.3 |
+| <a name="module_lz_bastion"></a> [lz\_bastion](#module\_lz\_bastion) | github.com/oci-landing-zones/terraform-oci-modules-security//bastion | v0.2.0 |
 | <a name="module_lz_bastion_jump_host"></a> [lz\_bastion\_jump\_host](#module\_lz\_bastion\_jump\_host) | github.com/oci-landing-zones/terraform-oci-modules-workloads//cis-compute-storage | v0.2.0 |
 | <a name="module_lz_budgets"></a> [lz\_budgets](#module\_lz\_budgets) | github.com/oci-landing-zones/terraform-oci-modules-governance//budgets | v0.1.5 |
 | <a name="module_lz_cloud_guard"></a> [lz\_cloud\_guard](#module\_lz\_cloud\_guard) | github.com/oci-landing-zones/terraform-oci-modules-security//cloud-guard | v0.2.0 |
@@ -25,29 +25,29 @@
 | <a name="module_lz_custom_domain_groups"></a> [lz\_custom\_domain\_groups](#module\_lz\_custom\_domain\_groups) | github.com/oci-landing-zones/terraform-oci-modules-iam//identity-domains | v0.2.9 |
 | <a name="module_lz_dynamic_groups"></a> [lz\_dynamic\_groups](#module\_lz\_dynamic\_groups) | github.com/oci-landing-zones/terraform-oci-modules-iam//dynamic-groups | v0.2.9 |
 | <a name="module_lz_firewall_appliance"></a> [lz\_firewall\_appliance](#module\_lz\_firewall\_appliance) | github.com/oci-landing-zones/terraform-oci-modules-workloads//cis-compute-storage | v0.2.0 |
-| <a name="module_lz_flow_logs"></a> [lz\_flow\_logs](#module\_lz\_flow\_logs) | github.com/oci-landing-zones/terraform-oci-modules-observability//logging | v0.2.2 |
+| <a name="module_lz_flow_logs"></a> [lz\_flow\_logs](#module\_lz\_flow\_logs) | github.com/oci-landing-zones/terraform-oci-modules-observability//logging | v0.2.3 |
 | <a name="module_lz_groups"></a> [lz\_groups](#module\_lz\_groups) | github.com/oci-landing-zones/terraform-oci-modules-iam//groups | v0.2.9 |
-| <a name="module_lz_home_region_notifications"></a> [lz\_home\_region\_notifications](#module\_lz\_home\_region\_notifications) | github.com/oci-landing-zones/terraform-oci-modules-observability//events | v0.2.2 |
-| <a name="module_lz_home_region_topics"></a> [lz\_home\_region\_topics](#module\_lz\_home\_region\_topics) | github.com/oci-landing-zones/terraform-oci-modules-observability//notifications | v0.2.2 |
-| <a name="module_lz_logging_analytics"></a> [lz\_logging\_analytics](#module\_lz\_logging\_analytics) | github.com/oci-landing-zones/terraform-oci-modules-observability//logging | v0.2.2 |
-| <a name="module_lz_network"></a> [lz\_network](#module\_lz\_network) | github.com/oci-landing-zones/terraform-oci-modules-networking | release-0.7.5 |
+| <a name="module_lz_home_region_notifications"></a> [lz\_home\_region\_notifications](#module\_lz\_home\_region\_notifications) | github.com/oci-landing-zones/terraform-oci-modules-observability//events | v0.2.3 |
+| <a name="module_lz_home_region_topics"></a> [lz\_home\_region\_topics](#module\_lz\_home\_region\_topics) | github.com/oci-landing-zones/terraform-oci-modules-observability//notifications | v0.2.3 |
+| <a name="module_lz_logging_analytics"></a> [lz\_logging\_analytics](#module\_lz\_logging\_analytics) | github.com/oci-landing-zones/terraform-oci-modules-observability//logging | v0.2.3 |
+| <a name="module_lz_network"></a> [lz\_network](#module\_lz\_network) | github.com/oci-landing-zones/terraform-oci-modules-networking | v0.7.5 |
 | <a name="module_lz_new_identity_domain"></a> [lz\_new\_identity\_domain](#module\_lz\_new\_identity\_domain) | github.com/oci-landing-zones/terraform-oci-modules-iam//identity-domains | v0.2.9 |
-| <a name="module_lz_nlb"></a> [lz\_nlb](#module\_lz\_nlb) | github.com/oci-landing-zones/terraform-oci-modules-networking//modules/nlb | release-0.7.5 |
-| <a name="module_lz_notifications"></a> [lz\_notifications](#module\_lz\_notifications) | github.com/oci-landing-zones/terraform-oci-modules-observability//events | v0.2.2 |
+| <a name="module_lz_nlb"></a> [lz\_nlb](#module\_lz\_nlb) | github.com/oci-landing-zones/terraform-oci-modules-networking//modules/nlb | v0.7.5 |
+| <a name="module_lz_notifications"></a> [lz\_notifications](#module\_lz\_notifications) | github.com/oci-landing-zones/terraform-oci-modules-observability//events | v0.2.3 |
 | <a name="module_lz_oke_clusters_policy"></a> [lz\_oke\_clusters\_policy](#module\_lz\_oke\_clusters\_policy) | github.com/oci-landing-zones/terraform-oci-modules-iam//policies | v0.2.9 |
 | <a name="module_lz_policies"></a> [lz\_policies](#module\_lz\_policies) | github.com/oci-landing-zones/terraform-oci-modules-iam//policies | v0.2.9 |
-| <a name="module_lz_regional_topics"></a> [lz\_regional\_topics](#module\_lz\_regional\_topics) | github.com/oci-landing-zones/terraform-oci-modules-observability//notifications | v0.2.2 |
+| <a name="module_lz_regional_topics"></a> [lz\_regional\_topics](#module\_lz\_regional\_topics) | github.com/oci-landing-zones/terraform-oci-modules-observability//notifications | v0.2.3 |
 | <a name="module_lz_root_policies"></a> [lz\_root\_policies](#module\_lz\_root\_policies) | github.com/oci-landing-zones/terraform-oci-modules-iam//policies | v0.2.9 |
-| <a name="module_lz_scanning"></a> [lz\_scanning](#module\_lz\_scanning) | github.com/oci-landing-zones/terraform-oci-modules-security//vss | v0.1.7 |
-| <a name="module_lz_security_zones"></a> [lz\_security\_zones](#module\_lz\_security\_zones) | github.com/oci-landing-zones/terraform-oci-modules-security//security-zones | v0.1.7 |
-| <a name="module_lz_service_connector_hub"></a> [lz\_service\_connector\_hub](#module\_lz\_service\_connector\_hub) | github.com/oci-landing-zones/terraform-oci-modules-observability//service-connectors | v0.2.2 |
+| <a name="module_lz_scanning"></a> [lz\_scanning](#module\_lz\_scanning) | github.com/oci-landing-zones/terraform-oci-modules-security//vss | v0.2.0 |
+| <a name="module_lz_security_zones"></a> [lz\_security\_zones](#module\_lz\_security\_zones) | github.com/oci-landing-zones/terraform-oci-modules-security//security-zones | v0.2.0 |
+| <a name="module_lz_service_connector_hub"></a> [lz\_service\_connector\_hub](#module\_lz\_service\_connector\_hub) | github.com/oci-landing-zones/terraform-oci-modules-observability//service-connectors | v0.2.3 |
 | <a name="module_lz_services_policy"></a> [lz\_services\_policy](#module\_lz\_services\_policy) | github.com/oci-landing-zones/terraform-oci-modules-iam//policies | v0.2.9 |
 | <a name="module_lz_tags"></a> [lz\_tags](#module\_lz\_tags) | github.com/oci-landing-zones/terraform-oci-modules-governance//tags | v0.1.5 |
 | <a name="module_lz_top_compartment"></a> [lz\_top\_compartment](#module\_lz\_top\_compartment) | github.com/oci-landing-zones/terraform-oci-modules-iam//compartments | v0.2.9 |
-| <a name="module_lz_vault"></a> [lz\_vault](#module\_lz\_vault) | github.com/oci-landing-zones/terraform-oci-modules-security//vaults | v0.1.7 |
-| <a name="module_lz_zpr"></a> [lz\_zpr](#module\_lz\_zpr) | github.com/oci-landing-zones/terraform-oci-modules-security//zpr | v0.1.9 |
-| <a name="module_native_oci_firewall"></a> [native\_oci\_firewall](#module\_native\_oci\_firewall) | github.com/oci-landing-zones/terraform-oci-modules-networking | release-0.7.5 |
-| <a name="module_oci_native_firewall_logs"></a> [oci\_native\_firewall\_logs](#module\_oci\_native\_firewall\_logs) | github.com/oci-landing-zones/terraform-oci-modules-observability//logging | v0.1.9 |
+| <a name="module_lz_vault"></a> [lz\_vault](#module\_lz\_vault) | github.com/oci-landing-zones/terraform-oci-modules-security//vaults | v0.2.0 |
+| <a name="module_lz_zpr"></a> [lz\_zpr](#module\_lz\_zpr) | github.com/oci-landing-zones/terraform-oci-modules-security//zpr | v0.2.0 |
+| <a name="module_native_oci_firewall"></a> [native\_oci\_firewall](#module\_native\_oci\_firewall) | github.com/oci-landing-zones/terraform-oci-modules-networking | v0.7.5 |
+| <a name="module_oci_native_firewall_logs"></a> [oci\_native\_firewall\_logs](#module\_oci\_native\_firewall\_logs) | github.com/oci-landing-zones/terraform-oci-modules-observability//logging | v0.2.3 |
 
 ## Resources
 
@@ -130,7 +130,7 @@
 | <a name="input_customize_bastion_service"></a> [customize\_bastion\_service](#input\_customize\_bastion\_service) | Set to true to set custom options for Bastion Service. | `bool` | `false` | no |
 | <a name="input_customize_cloud_guard_settings"></a> [customize\_cloud\_guard\_settings](#input\_customize\_cloud\_guard\_settings) | Whether to customize Cloud Guard settings for a managed target. The Landing Zone enables Cloud Guard service and creates a managed target at the Root compartment in case a target at the Root compartment does not exist. | `bool` | `false` | no |
 | <a name="input_customize_hub_vcn_subnets"></a> [customize\_hub\_vcn\_subnets](#input\_customize\_hub\_vcn\_subnets) | Whether to customize default subnets settings of the Hub VCN. Only applicable to RMS deployments. | `bool` | `false` | no |
-| <a name="input_customize_iam"></a> [customize\_iam](#input\_customize\_iam) | Whether Landing Zone IAM settings are to be customized. Customizable options are identity domains, groups, dynamic groups and policies. | `bool` | `false` | no |
+| <a name="input_customize_iam"></a> [customize\_iam](#input\_customize\_iam) | Whether Landing Zone IAM settings are to be customized. Customizable options are compartments, identity domains, groups, dynamic groups and policies. | `bool` | `false` | no |
 | <a name="input_customize_jump_host"></a> [customize\_jump\_host](#input\_customize\_jump\_host) | Set to true to set custom options for jump host. | `bool` | `false` | no |
 | <a name="input_customize_jumphost_subnet"></a> [customize\_jumphost\_subnet](#input\_customize\_jumphost\_subnet) | Set to true to set custom options for jump host subnet. | `bool` | `false` | no |
 | <a name="input_customize_tt_vcn1_subnets"></a> [customize\_tt\_vcn1\_subnets](#input\_customize\_tt\_vcn1\_subnets) | If true, allows for the customization of default subnets settings. Only applicable to RMS deployments. | `bool` | `false` | no |
@@ -138,16 +138,18 @@
 | <a name="input_customize_tt_vcn3_subnets"></a> [customize\_tt\_vcn3\_subnets](#input\_customize\_tt\_vcn3\_subnets) | If true, allows for the customization of default subnets settings. Only applicable to RMS deployments. | `bool` | `false` | no |
 | <a name="input_database_admin_email_endpoints"></a> [database\_admin\_email\_endpoints](#input\_database\_admin\_email\_endpoints) | List of email addresses for all database related notifications. (Type an email address and hit enter to enter multiple values) | `list(string)` | `[]` | no |
 | <a name="input_define_net"></a> [define\_net](#input\_define\_net) | Whether networking is defined as part of this Landing Zone. By default, no networking resources are created. | `bool` | `false` | no |
+| <a name="input_deploy_app_cmp"></a> [deploy\_app\_cmp](#input\_deploy\_app\_cmp) | Whether the application compartment is deployed. | `bool` | `true` | no |
 | <a name="input_deploy_bastion_jump_host"></a> [deploy\_bastion\_jump\_host](#input\_deploy\_bastion\_jump\_host) | The option to deploy the bastion jump host. | `bool` | `false` | no |
 | <a name="input_deploy_bastion_service"></a> [deploy\_bastion\_service](#input\_deploy\_bastion\_service) | The option to deploy the bastion service. | `bool` | `false` | no |
 | <a name="input_deploy_custom_domain_groups"></a> [deploy\_custom\_domain\_groups](#input\_deploy\_custom\_domain\_groups) | Whether to deploy IAM domain groups and dynamic groups in the existing domain. If false, the Landing Zone will use the existing groups and dynamic groups in the existing domain. | `bool` | `false` | no |
+| <a name="input_deploy_database_cmp"></a> [deploy\_database\_cmp](#input\_deploy\_database\_cmp) | Whether the database compartment is deployed. | `bool` | `true` | no |
 | <a name="input_deploy_exainfra_cmp"></a> [deploy\_exainfra\_cmp](#input\_deploy\_exainfra\_cmp) | Whether a separate compartment for Exadata Cloud Service Infrastructure is deployed. | `bool` | `false` | no |
 | <a name="input_deploy_tt_vcn1_bastion_subnet"></a> [deploy\_tt\_vcn1\_bastion\_subnet](#input\_deploy\_tt\_vcn1\_bastion\_subnet) | Whether to deploy a subnet where you can further deploy OCI Bastion service or a jump host. | `bool` | `false` | no |
 | <a name="input_deploy_tt_vcn2_bastion_subnet"></a> [deploy\_tt\_vcn2\_bastion\_subnet](#input\_deploy\_tt\_vcn2\_bastion\_subnet) | Whether to deploy a subnet where you can further deploy OCI Bastion service or a jump host. | `bool` | `false` | no |
 | <a name="input_deploy_tt_vcn3_bastion_subnet"></a> [deploy\_tt\_vcn3\_bastion\_subnet](#input\_deploy\_tt\_vcn3\_bastion\_subnet) | Whether to deploy a subnet where you can further deploy OCI Bastion service or a jump host. | `bool` | `false` | no |
 | <a name="input_display_output"></a> [display\_output](#input\_display\_output) | Whether to display a concise set of select resource outputs with their OCIDs and names. | `bool` | `true` | no |
 | <a name="input_display_security_logging_governance_settings"></a> [display\_security\_logging\_governance\_settings](#input\_display\_security\_logging\_governance\_settings) | When true, allows for enabling/configuring settings for some OCI Security, Logging and Governance services. Only applicable to Resource Manager deployments. | `bool` | `false` | no |
-| <a name="input_dyn_groups_options"></a> [dyn\_groups\_options](#input\_dyn\_groups\_options) | ----- IAM - Dynamic Groups ----- | `string` | `"Yes"` | no |
+| <a name="input_dyn_groups_options"></a> [dyn\_groups\_options](#input\_dyn\_groups\_options) | ------------------------------------------------------ ----- IAM - Dynamic Groups ------------------------------------------------------- | `string` | `"Yes"` | no |
 | <a name="input_enable_cloud_guard"></a> [enable\_cloud\_guard](#input\_enable\_cloud\_guard) | Whether to enable Cloud Guard service and create a managed target at the Root compartment. The Landing Zone will enable Cloud Guard service and create a managed target at the Root compartment in case a target does not exist. | `bool` | `true` | no |
 | <a name="input_enable_cloud_guard_cloned_recipes"></a> [enable\_cloud\_guard\_cloned\_recipes](#input\_enable\_cloud\_guard\_cloned\_recipes) | Whether cloned recipes are attached to the managed Cloud Guard target. If false, Oracle managed recipes are attached. | `bool` | `true` | no |
 | <a name="input_enable_native_firewall_threat_log"></a> [enable\_native\_firewall\_threat\_log](#input\_enable\_native\_firewall\_threat\_log) | Enable OCI Native Firewall Threat Log. | `bool` | `false` | no |
@@ -234,7 +236,7 @@
 | <a name="input_groups_options"></a> [groups\_options](#input\_groups\_options) | Whether to deploy new groups or use existing groups. | `string` | `"Yes"` | no |
 | <a name="input_hub_deployment"></a> [hub\_deployment](#input\_hub\_deployment) | The available options for hub deployment as an integer. 'No cross-VCN or on-premises connectivity' = 0, 'VCN or on-premises connectivity routing via DRG (DRG will be created)' = 1, 'VCN or on-premises connectivity routing via DRG (existing DRG)' = 2, 'VCN or on-premises connectivity routing through DMZ VCN with Network Virtual Appliance (DRG and DMZ VCN will be created)' = 3, 'VCN or on-premises connectivity routed through DMZ VCN with Network Virtual Appliance existing DRG (DMZ VCN will be created and DRG ID required)' = 4, 'No cross-VCN with on-premises connectivity using an existing DRG' = 5, 'No cross-VCN with on-premises connectivity using a new DRG' = 6 | `number` | `0` | no |
 | <a name="input_hub_deployment_option"></a> [hub\_deployment\_option](#input\_hub\_deployment\_option) | The available options for hub deployment. Valid values: 'No cross-VCN or on-premises connectivity', 'VCN or on-premises connectivity routing via DRG (DRG will be created)', 'VCN or on-premises connectivity routing via DRG (existing DRG)', 'VCN or on-premises connectivity routing through DMZ VCN with Network Virtual Appliance (DRG and DMZ VCN will be created)', 'VCN or on-premises connectivity routed through DMZ VCN with Network Virtual Appliance existing DRG (DMZ VCN will be created and DRG ID required)', 'No cross-VCN with on-premises connectivity using an existing DRG', 'No cross-VCN with on-premises connectivity using a new DRG'. All the VCNs that attach to the DRG join the topology as spokes. | `string` | `""` | no |
-| <a name="input_hub_vcn_cidrs"></a> [hub\_vcn\_cidrs](#input\_hub\_vcn\_cidrs) | List of CIDR blocks for the Hub VCN. | `list(string)` | <pre>[<br/>  "192.168.0.0/24"<br/>]</pre> | no |
+| <a name="input_hub_vcn_cidrs"></a> [hub\_vcn\_cidrs](#input\_hub\_vcn\_cidrs) | List of CIDR blocks for the Hub VCN. | `list(string)` | <pre>[<br>  "192.168.0.0/24"<br>]</pre> | no |
 | <a name="input_hub_vcn_deploy_net_appliance_option"></a> [hub\_vcn\_deploy\_net\_appliance\_option](#input\_hub\_vcn\_deploy\_net\_appliance\_option) | The network appliance option for deploying in the Hub VCN. Valid values: 'Don't deploy any network appliance at this time' (default), 'Palo Alto Networks VM-Series Firewall', 'Fortinet FortiGate Firewall', 'User-Provided Virtual Network Appliance', and 'OCI Native Firewall'. Costs are incurred. | `string` | `"Don't deploy any network appliance at this time"` | no |
 | <a name="input_hub_vcn_east_west_entry_point_ocid"></a> [hub\_vcn\_east\_west\_entry\_point\_ocid](#input\_hub\_vcn\_east\_west\_entry\_point\_ocid) | The OCID of a private address the Hub VCN routes traffic to for inbound internal cross-vcn traffic (East/West). This variable is to be assigned with the OCID of the indoor network load balancer's private IP address. | `string` | `null` | no |
 | <a name="input_hub_vcn_indoor_subnet_cidr"></a> [hub\_vcn\_indoor\_subnet\_cidr](#input\_hub\_vcn\_indoor\_subnet\_cidr) | The Hub VCN Indoor subnet CIDR block. It must be within the VCN CIDR blocks. | `string` | `null` | no |
@@ -273,7 +275,7 @@
 | <a name="input_net_appliance_name_prefix"></a> [net\_appliance\_name\_prefix](#input\_net\_appliance\_name\_prefix) | Common prefix to network appliance name. To this common prefix, numbers 1 and 2 are appended to the corresponding instance. | `string` | `"net-appliance-instance"` | no |
 | <a name="input_net_appliance_public_rsa_key"></a> [net\_appliance\_public\_rsa\_key](#input\_net\_appliance\_public\_rsa\_key) | The SSH public key to login to Network Appliance Compute instance. | `string` | `null` | no |
 | <a name="input_net_appliance_shape"></a> [net\_appliance\_shape](#input\_net\_appliance\_shape) | The instance shape for the network appliance nodes. | `string` | `"VM.Standard2.8"` | no |
-| <a name="input_net_fortigate_version"></a> [net\_fortigate\_version](#input\_net\_fortigate\_version) | Fortinet Fortigate Firewall Version. | `string` | `"7.2.9_(_X64_)"` | no |
+| <a name="input_net_fortigate_version"></a> [net\_fortigate\_version](#input\_net\_fortigate\_version) | Fortinet Fortigate Firewall Version. | `string` | `"7.2.11_(_X64_)"` | no |
 | <a name="input_net_palo_alto_version"></a> [net\_palo\_alto\_version](#input\_net\_palo\_alto\_version) | Palo Alto Firewall Version. | `string` | `"11.1.4-h7"` | no |
 | <a name="input_network_admin_email_endpoints"></a> [network\_admin\_email\_endpoints](#input\_network\_admin\_email\_endpoints) | List of email addresses for all network related notifications. (Type an email address and hit enter to enter multiple values) | `list(string)` | `[]` | no |
 | <a name="input_new_identity_domain_license_type"></a> [new\_identity\_domain\_license\_type](#input\_new\_identity\_domain\_license\_type) | the license type of new identity domain. Value to use: free, premium | `string` | `"free"` | no |

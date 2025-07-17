@@ -64,7 +64,7 @@ locals {
       ) # merge function
 
       security_lists = var.deploy_tt_vcn1_bastion_subnet == true && var.tt_vcn1_bastion_is_access_via_public_endpoint == false ? {
-        ## The bastion subnet security list is only applicable to Bastion service endpoints, which are private.
+        # The bastion subnet security list is only applicable to Bastion service endpoints, which are private.
         "TT-VCN-1-BASTION-SUBNET-SL" = {
           display_name = "${coalesce(var.tt_vcn1_bastion_subnet_name, "${var.service_label}-three-tier-vcn-1-bastion-subnet")}-security-list"
           ingress_rules = [
@@ -95,7 +95,7 @@ locals {
       route_tables = merge(
         {
           "TT-VCN-1-WEB-SUBNET-ROUTE-TABLE" = {
-            display_name = "web-subnet-route-table"
+            display_name = "web-subnet-rtable"
             route_rules = merge(
               (local.chosen_hub_option != 3 && local.chosen_hub_option != 4) ? {
                 "INTERNET-RULE" = {
@@ -131,7 +131,7 @@ locals {
         },
         {
           "TT-VCN-1-APP-SUBNET-ROUTE-TABLE" = {
-            display_name = "app-subnet-route-table"
+            display_name = "app-subnet-rtable"
             route_rules = merge(
               (local.chosen_hub_option != 3 && local.chosen_hub_option != 4) ? {
                 "INTERNET-RULE" = {
@@ -160,7 +160,7 @@ locals {
         },
         {
           "TT-VCN-1-DB-SUBNET-ROUTE-TABLE" = {
-            display_name = "db-subnet-route-table"
+            display_name = "db-subnet-rtable"
             route_rules = merge(
               (local.chosen_hub_option != 3 && local.chosen_hub_option != 4) ? {
                 "INTERNET-RULE" = {
@@ -249,7 +249,7 @@ locals {
             ),
             egress_rules = merge(
               {
-                "EGRESS-TO-APP-NSG-RULE" = {
+                "EGRESS-TO-APP-RULE" = {
                   description  = "Egress to App NSG."
                   stateless    = false
                   protocol     = "TCP"
@@ -271,7 +271,6 @@ locals {
                 }
               },
               local.vcn_1_to_hub_indoor_subnet_cross_vcn_egress
-              #local.vcn_1_to_app_subnet_cross_vcn_egress
             )
           }
         },
@@ -314,7 +313,7 @@ locals {
                     dst_port_max = 22
                   }
                 }
-              ) : {},
+              ) : {}
             ),
             egress_rules = merge(
               {
@@ -362,7 +361,7 @@ locals {
             display_name = "db-nsg"
             ingress_rules = merge(
               {
-                "INGRESS-FROM-APP-NSG-RULE" = {
+                "INGRESS-FROM-APP-RULE" = {
                   description  = "Ingress from App NSG"
                   stateless    = false
                   protocol     = "TCP"
@@ -373,7 +372,7 @@ locals {
                 }
               },
               var.deploy_tt_vcn1_bastion_subnet == true ? {
-                "INGRESS-FROM-BASTION-NSG-RULE" = {
+                "INGRESS-FROM-BASTION-RULE" = {
                   description  = "Ingress from Bastion NSG."
                   stateless    = false
                   protocol     = "TCP"
@@ -416,10 +415,10 @@ locals {
                 dst_port_min = 22
                 dst_port_max = 22
               } if var.tt_vcn1_bastion_is_access_via_public_endpoint == true # Ingress rule only for jump hosts later deployed in the bastion public subnet.
-            }
+            },
             egress_rules = merge(
               {
-                "EGRESS-TO-LBR-NSG-RULE" = {
+                "EGRESS-TO-LBR-RULE" = {
                   description  = "Egress to LBR NSG."
                   stateless    = false
                   protocol     = "TCP"
@@ -430,7 +429,7 @@ locals {
                 }
               },
               {
-                "EGRESS-TO-APP-NSG-RULE" = {
+                "EGRESS-TO-APP-RULE" = {
                   description  = "Egress to App NSG."
                   stateless    = false
                   protocol     = "TCP"
@@ -441,7 +440,7 @@ locals {
                 }
               },
               {
-                "EGRESS-TO-DB-NSG-RULE" = {
+                "EGRESS-TO-DB-RULE" = {
                   description  = "Egress to DB NSG."
                   stateless    = false
                   protocol     = "TCP"
@@ -479,18 +478,18 @@ locals {
         internet_gateways = {
           "TT-VCN-1-INTERNET-GATEWAY" = {
             enabled      = true
-            display_name = "internet-gateway"
+            display_name = "Internet Gateway"
           }
         }
         nat_gateways = {
           "TT-VCN-1-NAT-GATEWAY" = {
             block_traffic = false
-            display_name  = "nat-gateway"
+            display_name  = "NAT Gateway"
           }
         }
         service_gateways = {
           "TT-VCN-1-SERVICE-GATEWAY" = {
-            display_name = "service-gateway"
+            display_name = "Service Gateway"
             services     = "all-services"
           }
         }
@@ -505,8 +504,7 @@ locals {
 
   ## Egress to Hub-VCN indoor subnet
   vcn_1_to_hub_indoor_subnet_cross_vcn_egress = merge(
-    (local.add_tt_vcn1 == true && var.tt_vcn1_attach_to_drg == true &&
-      local.hub_with_vcn == true) ? {
+    (local.add_tt_vcn1 == true && var.tt_vcn1_attach_to_drg == true && local.hub_with_vcn == true) ? {
       "EGRESS-TO-HUB-VCN-INDOOR-SUBNET-RULE" = {
         description = "Egress to ${coalesce(var.hub_vcn_indoor_subnet_name, "${var.service_label}-hub-vcn-indoor-subnet")}."
         stateless   = false
@@ -587,7 +585,7 @@ locals {
         },
       },
     ) : {},
-    ## Egress to OKE-VCN-2 
+    ## Egress to OKE-VCN-2
     (local.add_tt_vcn1 == true && var.tt_vcn1_attach_to_drg == true && var.add_oke_vcn2 == true && var.oke_vcn2_attach_to_drg == true) &&
     (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.tt_vcn1_routable_vcns) == 0 || contains(var.tt_vcn1_routable_vcns, "OKE-VCN-2")))) ? merge(
       {
@@ -602,7 +600,7 @@ locals {
         },
       },
     ) : {},
-    ## Egress to OKE-VCN-3 
+    ## Egress to OKE-VCN-3
     (local.add_tt_vcn1 == true && var.tt_vcn1_attach_to_drg == true && var.add_oke_vcn3 == true && var.oke_vcn3_attach_to_drg == true) &&
     (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.tt_vcn1_routable_vcns) == 0 || contains(var.tt_vcn1_routable_vcns, "OKE-VCN-3")))) ? merge(
       {
