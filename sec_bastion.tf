@@ -89,8 +89,8 @@ locals {
           encrypt_in_transit_on_instance_create = true
         }
         disable_legacy_imds_endpoints = true
-        cis_level     = var.cis_level
-        platform_type = var.cis_level == "2" ? (strcontains(var.bastion_jump_host_instance_shape, "VM.Standard") ? (strcontains(var.bastion_jump_host_instance_shape, "VM.Standard.E") ? "AMD_VM" : "INTEL_VM") : null) : null ## VM.Standard.E[0-9] = AMD_VM ### VM.Standard[0-9] = INTEL_VM
+        cis_level                     = var.cis_level
+        platform_type                 = var.cis_level == "2" ? (length(regexall("VM.Standard", var.bastion_jump_host_instance_shape)) > 0 ? (length(regexall("VM.Standard.E", var.bastion_jump_host_instance_shape)) > 0 ? "AMD_VM" : "INTEL_VM") : null) : null ## VM.Standard.E[0-9] = AMD_VM ### VM.Standard[0-9] = INTEL_VM
       }
     }
   }
