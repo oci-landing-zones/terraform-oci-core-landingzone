@@ -123,7 +123,7 @@ locals {
   managed_jumphost_key = var.cis_level == "2" && var.deploy_bastion_jump_host ? {
     (local.jumphost_key_mapkey) = {
       vault_key     = local.vault_key
-      name          = "${var.service_label}-jump-key"
+      name          = "${var.service_label}-jumphost-key"
       algorithm     = "AES"
       length        = 32
       defined_tags  = local.keys_defined_tags

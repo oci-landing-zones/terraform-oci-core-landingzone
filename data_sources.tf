@@ -199,3 +199,12 @@ data "oci_identity_compartments" "exainfra" {
 data "oci_identity_tag_namespaces" "this" {
   compartment_id = var.tenancy_ocid
 }
+
+data "oci_core_images" "platform_oel_images" {
+    compartment_id           = var.tenancy_ocid
+    operating_system         = "Oracle Linux"
+    operating_system_version = "8"
+    shape                    = var.bastion_jump_host_instance_shape
+    sort_by                  = "TIMECREATED"
+    sort_order               = "DESC"
+}
