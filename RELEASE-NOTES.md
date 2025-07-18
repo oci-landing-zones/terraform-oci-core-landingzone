@@ -1,4 +1,4 @@
-# Month DD, 2025 - 1.5.3
+# Month DD, 2025 Release Notes - 1.5.3
 1. Added CIS Level 2 support for jumphost compute instance.
 
 # July 15, 2025 Release Notes - 1.5.2
