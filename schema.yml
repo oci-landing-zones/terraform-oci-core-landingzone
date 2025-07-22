@@ -580,7 +580,6 @@ variableGroups:
       - "firewall_traffic_log_type"
       - "firewall_traffic_log_category"
       - "firewall_traffic_log_service"
-      - "bastion_jump_host_platform_image_name"
       - "fastconnect_virtual_circuit_cross_connect_or_cross_connect_group_id"
       - "fastconnect_virtual_circuit_vlan"
       - "display_output"
@@ -4817,14 +4816,15 @@ variables:
   bastion_jump_host_custom_image_ocid:
     type: string
     title: "Jump Host Custom Image OCID"
-    description: "Enter the Custom Image OCID for the Jump Host. If no custom image is provided, you must select a marketplace image below."
+    description: "Enter the Custom Image OCID for the Jump Host (optional)."
     visible:
       and:
         - deploy_bastion_jump_host
 
   bastion_jump_host_marketplace_image_option:
     type: enum
-    title: "Choose one of the marketplace image options for the jump host deployment."
+    title: "Marketplace Image Options"
+    description: "Choose a marketplace image for jump host deployment. This is required if no custom image OCID is provided above."
     required: false
     enum:
       - "Oracle Linux 8 STIG (Free)"
@@ -4832,6 +4832,9 @@ variables:
     visible:
       and:
         - deploy_bastion_jump_host
+        - eq:
+          - cis_level
+          - "1"
 
   deploy_bastion_service:
     type: boolean
@@ -4884,11 +4887,11 @@ variables:
   #   visible: deploy_bastion_jump_host
 
   bastion_jump_host_ssh_public_key_path:
-    type: string
-    title: "Enter the public SSH Key for the Jump Host"
+    type: oci:core:ssh:publickey
+    title: "Choose the public SSH Key for the Jump Host"
     required: false
     visible: deploy_bastion_jump_host
-    descirption: "The public ssh key of the Jump Host Compute Instance"
+    description: "The public ssh key of the Jump Host Compute Instance"
 
   customize_jump_host:
     type: boolean

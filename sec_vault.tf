@@ -30,7 +30,7 @@ locals {
         freeform_tags = local.vault_freeform_tags
       }
     }
-    keys              = merge(local.managed_sch_bucket_key, local.managed_nfw_key)
+    keys = merge(local.managed_sch_bucket_key, local.managed_nfw_key, local.managed_jumphost_key)
 
     existing_key_grants = local.existing_sch_bucket_key_grants
   }
@@ -93,8 +93,9 @@ locals {
   keys_defined_tags  = local.custom_keys_defined_tags != null ? merge(local.custom_keys_defined_tags, local.default_keys_defined_tags) : local.default_keys_defined_tags
   keys_freeform_tags = local.custom_keys_freeform_tags != null ? merge(local.custom_keys_freeform_tags, local.default_keys_freeform_tags) : local.default_keys_freeform_tags
 
-  sch_key_mapkey = "SCH-BUCKET-KEY"
-  nfw_key_mapkey = "NFW-KEY"
+  sch_key_mapkey      = "SCH-BUCKET-KEY"
+  nfw_key_mapkey      = "NFW-KEY"
+  jumphost_key_mapkey = "JUMPHOST-KEY"
 
   managed_sch_bucket_key = var.existing_service_connector_bucket_key_id == null && var.enable_service_connector && var.service_connector_target_kind == "objectstorage" && var.cis_level == "2" ? {
     (local.sch_key_mapkey) = {
@@ -110,12 +111,23 @@ locals {
 
   managed_nfw_key = var.cis_level == "2" && var.hub_vcn_deploy_net_appliance_option != "Don't deploy any network appliance at this time" && var.hub_vcn_deploy_net_appliance_option != "OCI Native Firewall" ? {
     (local.nfw_key_mapkey) = {
-      vault_key        = local.vault_key
-      name             = "${var.service_label}-nfw-key"
-      algorithm        = "AES"
-      length           = 32
-      defined_tags     = local.keys_defined_tags
-      freeform_tags    = local.keys_freeform_tags
+      vault_key     = local.vault_key
+      name          = "${var.service_label}-nfw-key"
+      algorithm     = "AES"
+      length        = 32
+      defined_tags  = local.keys_defined_tags
+      freeform_tags = local.keys_freeform_tags
+    }
+  } : {}
+
+  managed_jumphost_key = var.cis_level == "2" && var.deploy_bastion_jump_host ? {
+    (local.jumphost_key_mapkey) = {
+      vault_key     = local.vault_key
+      name          = "${var.service_label}-jumphost-key"
+      algorithm     = "AES"
+      length        = 32
+      defined_tags  = local.keys_defined_tags
+      freeform_tags = local.keys_freeform_tags
     }
   } : {}
 
