@@ -7,14 +7,14 @@ locals {
   #--------------------------------------------------------------------------
   custom_policies_defined_tags  = null
   custom_policies_freeform_tags = null
-	
-	# for shared resources use case: Both the network cmp and security cmp in policy 
-	# statement are from parent LZ
+
+  # for shared resources use case: Both the network cmp and security cmp in policy 
+  # statement are from parent LZ
   identity_domain_prefix = var.use_custom_identity_domain ? "${var.custom_identity_domain_name}/" : ""
 
   app_admin_group_name = "${local.identity_domain_prefix}${var.isolate_workload ? (var.customize_group_policy_name ? local.custom_workload_app_admin_group.CUSTOM-WKL-APP-ADMIN-GROUP.name : local.default_workload_app_admin_group.DEFAULT-WKL-APP-ADMIN-GROUP.name) : ""}"
 
-  db_admin_group_name = "${local.identity_domain_prefix}${var.isolate_workload && var.enable_db_admin_group ? ( var.customize_group_policy_name ? local.custom_workload_db_admin_group.CUSTOM-WKL-DB-ADMIN-GROUP.name : local.default_workload_db_admin_group.DEFAULT-WKL-DB-ADMIN-GROUP.name) : ""}"
+  db_admin_group_name = "${local.identity_domain_prefix}${var.isolate_workload && var.enable_db_admin_group ? (var.customize_group_policy_name ? local.custom_workload_db_admin_group.CUSTOM-WKL-DB-ADMIN-GROUP.name : local.default_workload_db_admin_group.DEFAULT-WKL-DB-ADMIN-GROUP.name) : ""}"
 
   wkld_admin_group_name = "${local.identity_domain_prefix}${var.customize_group_policy_name ? local.custom_workload_admin_group.CUSTOM-WKL-ADMIN-GROUP.name : local.default_workload_admin_group.DEFAULT-WKL-ADMIN-GROUP.name}"
 
@@ -58,31 +58,31 @@ locals {
   ) : []
 
   wkld_admin_policy_statements = var.deploy_wkld_policies ? concat([
-      "allow group ${local.wkld_admin_group_name} to read all-resources in compartment ${local.service_label_workload_compartment_name}",
-      "allow group ${local.wkld_admin_group_name} to manage functions-family in compartment ${local.service_label_workload_compartment_name}",
-      "allow group ${local.wkld_admin_group_name} to manage api-gateway-family in compartment ${local.service_label_workload_compartment_name}",
-      "allow group ${local.wkld_admin_group_name} to manage ons-family in compartment ${local.service_label_workload_compartment_name}",
-      "allow group ${local.wkld_admin_group_name} to manage streams in compartment ${local.service_label_workload_compartment_name}",
-      "allow group ${local.wkld_admin_group_name} to manage cluster-family in compartment ${local.service_label_workload_compartment_name}",
-      "allow group ${local.wkld_admin_group_name} to manage alarms in compartment ${local.service_label_workload_compartment_name}",
-      "allow group ${local.wkld_admin_group_name} to manage metrics in compartment ${local.service_label_workload_compartment_name}",
-      "allow group ${local.wkld_admin_group_name} to manage logging-family in compartment ${local.service_label_workload_compartment_name}",
-      "allow group ${local.wkld_admin_group_name} to manage instance-family in compartment ${local.service_label_workload_compartment_name}",
-      "allow group ${local.wkld_admin_group_name} to manage volume-family in compartment ${local.service_label_workload_compartment_name}",
-      "allow group ${local.wkld_admin_group_name} to manage object-family in compartment ${local.service_label_workload_compartment_name} where all { request.permission != 'OBJECT_DELETE', request.permission != 'BUCKET_DELETE'}",
-      "allow group ${local.wkld_admin_group_name} to manage file-family in compartment ${local.service_label_workload_compartment_name} where all { request.permission != 'FILE_SYSTEM_DELETE', request.permission != 'MOUNT_TARGET_DELETE', request.permission != 'EXPORT_SET_DELETE', request.permission != 'FILE_SYSTEM_DELETE_SNAPSHOT', request.permission != 'FILE_SYSTEM_NFSv3_UNEXPORT'}",
-      "allow group ${local.wkld_admin_group_name} to manage repos in compartment ${local.service_label_workload_compartment_name}",
-      "allow group ${local.wkld_admin_group_name} to manage orm-stacks in compartment ${local.service_label_workload_compartment_name}",
-      "allow group ${local.wkld_admin_group_name} to manage orm-jobs in compartment ${local.service_label_workload_compartment_name}",
-      "allow group ${local.wkld_admin_group_name} to manage orm-config-source-providers in compartment ${local.service_label_workload_compartment_name}",
-      "allow group ${local.wkld_admin_group_name} to read audit-events in compartment ${local.service_label_workload_compartment_name}",
-      "allow group ${local.wkld_admin_group_name} to read work-requests in compartment ${local.service_label_workload_compartment_name}",
-      "allow group ${local.wkld_admin_group_name} to manage bastion-session in compartment ${local.service_label_workload_compartment_name}",
-      "allow group ${local.wkld_admin_group_name} to manage cloudevents-rules in compartment ${local.service_label_workload_compartment_name}",
-      "allow group ${local.wkld_admin_group_name} to read instance-agent-plugins in compartment ${local.service_label_workload_compartment_name}",
-      "allow group ${local.wkld_admin_group_name} to manage keys in compartment ${local.service_label_workload_compartment_name}",
-      "allow group ${local.wkld_admin_group_name} to use key-delegate in compartment ${local.service_label_workload_compartment_name}",
-      "allow group ${local.wkld_admin_group_name} to manage secret-family in compartment ${local.service_label_workload_compartment_name}"
+    "allow group ${local.wkld_admin_group_name} to read all-resources in compartment ${local.service_label_workload_compartment_name}",
+    "allow group ${local.wkld_admin_group_name} to manage functions-family in compartment ${local.service_label_workload_compartment_name}",
+    "allow group ${local.wkld_admin_group_name} to manage api-gateway-family in compartment ${local.service_label_workload_compartment_name}",
+    "allow group ${local.wkld_admin_group_name} to manage ons-family in compartment ${local.service_label_workload_compartment_name}",
+    "allow group ${local.wkld_admin_group_name} to manage streams in compartment ${local.service_label_workload_compartment_name}",
+    "allow group ${local.wkld_admin_group_name} to manage cluster-family in compartment ${local.service_label_workload_compartment_name}",
+    "allow group ${local.wkld_admin_group_name} to manage alarms in compartment ${local.service_label_workload_compartment_name}",
+    "allow group ${local.wkld_admin_group_name} to manage metrics in compartment ${local.service_label_workload_compartment_name}",
+    "allow group ${local.wkld_admin_group_name} to manage logging-family in compartment ${local.service_label_workload_compartment_name}",
+    "allow group ${local.wkld_admin_group_name} to manage instance-family in compartment ${local.service_label_workload_compartment_name}",
+    "allow group ${local.wkld_admin_group_name} to manage volume-family in compartment ${local.service_label_workload_compartment_name}",
+    "allow group ${local.wkld_admin_group_name} to manage object-family in compartment ${local.service_label_workload_compartment_name} where all { request.permission != 'OBJECT_DELETE', request.permission != 'BUCKET_DELETE'}",
+    "allow group ${local.wkld_admin_group_name} to manage file-family in compartment ${local.service_label_workload_compartment_name} where all { request.permission != 'FILE_SYSTEM_DELETE', request.permission != 'MOUNT_TARGET_DELETE', request.permission != 'EXPORT_SET_DELETE', request.permission != 'FILE_SYSTEM_DELETE_SNAPSHOT', request.permission != 'FILE_SYSTEM_NFSv3_UNEXPORT'}",
+    "allow group ${local.wkld_admin_group_name} to manage repos in compartment ${local.service_label_workload_compartment_name}",
+    "allow group ${local.wkld_admin_group_name} to manage orm-stacks in compartment ${local.service_label_workload_compartment_name}",
+    "allow group ${local.wkld_admin_group_name} to manage orm-jobs in compartment ${local.service_label_workload_compartment_name}",
+    "allow group ${local.wkld_admin_group_name} to manage orm-config-source-providers in compartment ${local.service_label_workload_compartment_name}",
+    "allow group ${local.wkld_admin_group_name} to read audit-events in compartment ${local.service_label_workload_compartment_name}",
+    "allow group ${local.wkld_admin_group_name} to read work-requests in compartment ${local.service_label_workload_compartment_name}",
+    "allow group ${local.wkld_admin_group_name} to manage bastion-session in compartment ${local.service_label_workload_compartment_name}",
+    "allow group ${local.wkld_admin_group_name} to manage cloudevents-rules in compartment ${local.service_label_workload_compartment_name}",
+    "allow group ${local.wkld_admin_group_name} to read instance-agent-plugins in compartment ${local.service_label_workload_compartment_name}",
+    "allow group ${local.wkld_admin_group_name} to manage keys in compartment ${local.service_label_workload_compartment_name}",
+    "allow group ${local.wkld_admin_group_name} to use key-delegate in compartment ${local.service_label_workload_compartment_name}",
+    "allow group ${local.wkld_admin_group_name} to manage secret-family in compartment ${local.service_label_workload_compartment_name}"
     ],
     # isolated and network are enabled, use the network subcompartment
     var.isolate_workload == true && var.create_workload_network_subcompartment == true ? [
@@ -116,14 +116,14 @@ locals {
     ] : [],
     # Security cmp policies
     var.security_compartment_ocid != "" ? [
-    "allow group ${local.wkld_admin_group_name} to use vaults in compartment id ${var.security_compartment_ocid}",
-    "allow group ${local.wkld_admin_group_name} to manage instance-images in compartment id ${var.security_compartment_ocid}",
-    "allow group ${local.wkld_admin_group_name} to read vss-family in compartment id ${var.security_compartment_ocid}",
-    "allow group ${local.wkld_admin_group_name} to use bastion in compartment id ${var.security_compartment_ocid}",
-    "allow group ${local.wkld_admin_group_name} to manage bastion-session in compartment id ${var.security_compartment_ocid}",
-    "allow group ${local.wkld_admin_group_name} to read logging-family in compartment id ${var.security_compartment_ocid}"
+      "allow group ${local.wkld_admin_group_name} to use vaults in compartment id ${var.security_compartment_ocid}",
+      "allow group ${local.wkld_admin_group_name} to manage instance-images in compartment id ${var.security_compartment_ocid}",
+      "allow group ${local.wkld_admin_group_name} to read vss-family in compartment id ${var.security_compartment_ocid}",
+      "allow group ${local.wkld_admin_group_name} to use bastion in compartment id ${var.security_compartment_ocid}",
+      "allow group ${local.wkld_admin_group_name} to manage bastion-session in compartment id ${var.security_compartment_ocid}",
+      "allow group ${local.wkld_admin_group_name} to read logging-family in compartment id ${var.security_compartment_ocid}"
     ] : [],
-  var.additional_wkld_admin_policy_statements
+    var.additional_wkld_admin_policy_statements
   ) : []
 
   app_main_policy_cmp = var.create_workload_app_subcompartment ? "${local.service_label_workload_compartment_name}:${var.service_label}-app-cmp" : local.service_label_workload_compartment_name
@@ -177,7 +177,7 @@ locals {
       "allow group ${local.app_admin_group_name} to use vaults in compartment id ${var.security_compartment_ocid}",
       "allow group ${local.app_admin_group_name} to manage instance-images in compartment id ${var.security_compartment_ocid}",
       "allow group ${local.app_admin_group_name} to read vss-family in compartment id ${var.security_compartment_ocid}",
-      "allow group ${local.app_admin_group_name} to use bastion in compartment id ${var.security_compartment_ocid}", #[this refers to the bastion framework designed earlier]
+      "allow group ${local.app_admin_group_name} to use bastion in compartment id ${var.security_compartment_ocid}",            #[this refers to the bastion framework designed earlier]
       "allow group ${local.app_admin_group_name} to manage bastion-session in compartment id ${var.security_compartment_ocid}", #[this refers to the bastion framework designed earlier]
       "allow group ${local.app_admin_group_name} to read logging-family in compartment id ${var.security_compartment_ocid}"
     ] : [],
@@ -236,54 +236,54 @@ locals {
       "allow group ${local.db_admin_group_name} to use subnets in compartment ${local.service_label_workload_compartment_name}",
       "allow group ${local.db_admin_group_name} to use network-security-groups in compartment ${local.service_label_workload_compartment_name}",
     ] : [],
-     # For security services
+    # For security services
     var.security_compartment_ocid != "" ? [
       "allow group ${local.db_admin_group_name} to read vss-family in compartment id ${var.security_compartment_ocid}",
       "allow group ${local.db_admin_group_name} to use vaults in compartment id ${var.security_compartment_ocid}",
       "allow group ${local.db_admin_group_name} to read logging-family in compartment id ${var.security_compartment_ocid}",
-      "allow group ${local.db_admin_group_name} to use bastion in compartment id ${var.security_compartment_ocid}", # [this refers to the bastion framework designed earlier]
+      "allow group ${local.db_admin_group_name} to use bastion in compartment id ${var.security_compartment_ocid}",           # [this refers to the bastion framework designed earlier]
       "allow group ${local.db_admin_group_name} to manage bastion-session in compartment id ${var.security_compartment_ocid}" # [this refers to the bastion framework designed earlier]
     ] : [],
     var.additional_db_admin_policy_statements
   )
 
   policies = merge(
-      var.deploy_root_policies ? {
+    var.deploy_root_policies ? {
       "ROOT-POLICY" : {
         compartment_id = var.tenancy_ocid
-        name = "${var.service_label}-${var.root_policy_name}"
-        description = "Root policy statements"
-        statements = local.root_policy_statements
+        name           = "${var.service_label}-${var.root_policy_name}"
+        description    = "Root policy statements"
+        statements     = local.root_policy_statements
       }
     } : {},
     var.deploy_wkld_policies ? {
       "WKLD-ADMIN-POLICY" : {
         compartment_id = var.parent_compartment_ocid
-        name = "${var.service_label}-${var.wkld_admin_policy_name}"
-        description = "Workload admin policies"
-        statements = local.wkld_admin_policy_statements
+        name           = "${var.service_label}-${var.wkld_admin_policy_name}"
+        description    = "Workload admin policies"
+        statements     = local.wkld_admin_policy_statements
       }
     } : {},
-      var.isolate_workload ? {
+    var.isolate_workload ? {
       "APP-ADMIN-POLICY" : {
-        name = "${var.service_label}-${var.app_admin_policy_name}"
-        description = "Workload App Admin Policies"
+        name           = "${var.service_label}-${var.app_admin_policy_name}"
+        description    = "Workload App Admin Policies"
         compartment_id = var.parent_compartment_ocid
-        statements = local.app_admin_policy_statements
+        statements     = local.app_admin_policy_statements
       }
     } : {},
-      var.isolate_workload && var.enable_db_admin_group ? {
+    var.isolate_workload && var.enable_db_admin_group ? {
       "DB-ADMIN-POLICY" : {
-        name = "${var.service_label}-${var.db_admin_policy_name}"
-        description = "Workload DB Admin Policies"
+        name           = "${var.service_label}-${var.db_admin_policy_name}"
+        description    = "Workload DB Admin Policies"
         compartment_id = var.parent_compartment_ocid
-        statements = local.db_admin_policy_statements
+        statements     = local.db_admin_policy_statements
       }
     } : {}
   )
 
   policies_configuration = {
-   supplied_policies = local.policies
+    supplied_policies = local.policies
   }
 }
 
@@ -292,7 +292,7 @@ module "workload_policies" {
   count                  = var.deploy_root_policies || var.deploy_wkld_policies ? 1 : 0
   depends_on             = [module.workload_default_domain_groups, module.workload_custom_domain_groups, module.workload_compartment, module.workload_sub_compartments]
   source                 = "github.com/oci-landing-zones/terraform-oci-modules-iam//policies?ref=v0.2.9"
-  providers              = { oci = oci.home }
+  providers              = { oci = oci }
   tenancy_ocid           = var.tenancy_ocid
   policies_configuration = local.policies_configuration
 }

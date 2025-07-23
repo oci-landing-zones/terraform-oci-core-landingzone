@@ -103,7 +103,7 @@ locals {
                   destination_type  = "CIDR_BLOCK"
                 }
               } : {},
-              ((var.deploy_network_architecture == "Hub and Spoke" && var.app_subnet_allow_public_access == true ) || (var.deploy_network_architecture == "Standalone" && var.app_subnet_allow_public_access == false)) && var.hub_vcn_cidrs != null && var.hub_drg_ocid != null ? {
+              ((var.deploy_network_architecture == "Hub and Spoke" && var.app_subnet_allow_public_access == true) || (var.deploy_network_architecture == "Standalone" && var.app_subnet_allow_public_access == false)) && var.hub_vcn_cidrs != null && var.hub_drg_ocid != null ? {
                 for cidr in var.hub_vcn_cidrs : "HUB-VCN-${replace(replace(cidr, ".", ""), "/", "")}-RULE" => {
                   network_entity_id = var.hub_drg_ocid
                   description       = "Traffic destined to Hub VCN ${cidr} CIDR range goes to DRG."
@@ -135,7 +135,7 @@ locals {
           "WORKLOAD-DB-SUBNET-ROUTE-TABLE" = {
             display_name = "${coalesce(var.db_subnet_name, "${var.workload_name}-db-subnet")}-route-table"
             route_rules = merge(
-              ((var.deploy_network_architecture == "Hub and Spoke")  || (var.deploy_network_architecture == "Standalone" && var.db_subnet_allow_public_access == false)) && var.db_subnet_allow_onprem_connectivity && var.onprem_cidrs != null && var.hub_drg_ocid != null ? {
+              ((var.deploy_network_architecture == "Hub and Spoke") || (var.deploy_network_architecture == "Standalone" && var.db_subnet_allow_public_access == false)) && var.db_subnet_allow_onprem_connectivity && var.onprem_cidrs != null && var.hub_drg_ocid != null ? {
                 for cidr in var.onprem_cidrs : "ONPREM-${replace(replace(cidr, ".", ""), "/", "")}-RULE" => {
                   network_entity_id = var.hub_drg_ocid
                   description       = "Traffic destined to on-premises ${cidr} CIDR range goes to DRG."
@@ -215,7 +215,7 @@ locals {
           "WORKLOAD-MGMT-SUBNET-ROUTE-TABLE" = {
             display_name = "${coalesce(var.mgmt_subnet_name, "${var.workload_name}-mgmt-subnet")}-route-table"
             route_rules = merge(
-              ((var.deploy_network_architecture == "Hub and Spoke")|| (var.deploy_network_architecture == "Standalone" && var.mgmt_subnet_allow_public_access == false)) && var.mgmt_subnet_allow_onprem_connectivity && var.onprem_cidrs != null && var.hub_drg_ocid != null ? {
+              ((var.deploy_network_architecture == "Hub and Spoke") || (var.deploy_network_architecture == "Standalone" && var.mgmt_subnet_allow_public_access == false)) && var.mgmt_subnet_allow_onprem_connectivity && var.onprem_cidrs != null && var.hub_drg_ocid != null ? {
                 for cidr in var.onprem_cidrs : "ONPREM-${replace(replace(cidr, ".", ""), "/", "")}-RULE" => {
                   network_entity_id = var.hub_drg_ocid
                   description       = "Traffic destined to on-premises ${cidr} CIDR range goes to DRG."

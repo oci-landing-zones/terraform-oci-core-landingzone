@@ -263,7 +263,7 @@ locals {
         var.db_backup_nsg_additional_ingress_rules
       )
       egress_rules = merge(
-        var.db_backup_subnet_allow_public_access && var.deploy_network_architecture == "Standalone"? {
+        var.db_backup_subnet_allow_public_access && var.deploy_network_architecture == "Standalone" ? {
           "PUBLIC-EGRESS-TO-ALL" = {
             description  = "Egress to All for public subnets."
             stateless    = false

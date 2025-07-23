@@ -1,5 +1,6 @@
 # Month DD, 2025 Release Notes - 1.5.3
 1. Added CIS Level 2 support for jumphost compute instance.
+2. Updated Generic IAM and Network provider files
 
 # July 15, 2025 Release Notes - 1.5.2
 1. Ability to selectively deploy application and database compartments. When the compartment is suppressed from deployment, so are its associated admin group, dynamic groups and policies. See [Customizing Compartments](./DEPLOYMENT-GUIDE.md#custom-cmp) for details.
