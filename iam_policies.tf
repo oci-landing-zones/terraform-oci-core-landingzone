@@ -661,7 +661,8 @@ locals {
         "allow group ${join(",", local.auditor_group_name)} to read zpr-configuration in tenancy",
         "allow group ${join(",", local.auditor_group_name)} to read zpr-policy in tenancy",
         "allow group ${join(",", local.auditor_group_name)} to read security-attribute-namespace in tenancy",
-        "allow group ${join(",", local.auditor_group_name)} to read network-firewall-family in tenancy"
+        "allow group ${join(",", local.auditor_group_name)} to read network-firewall-family in tenancy",
+        "allow group ${join(",", local.auditor_group_name)} to read capture-filters in tenancy"
       ]
     }
   }
