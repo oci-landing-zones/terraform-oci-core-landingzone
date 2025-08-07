@@ -19,6 +19,16 @@ variable "existing_enclosing_compartment_ocid" {
   default     = null
   description = "The existing compartment where Landing Zone compartments (Network, Security, App, Database) are created."
 }
+variable "deploy_app_cmp" {
+  type        = bool
+  default     = true
+  description = "Whether the application compartment is deployed."
+}
+variable "deploy_database_cmp" {
+  type        = bool
+  default     = true
+  description = "Whether the database compartment is deployed."
+}
 variable "deploy_exainfra_cmp" {
   type        = bool
   default     = false

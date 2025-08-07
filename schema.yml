@@ -9,7 +9,7 @@ version: "0.0.1"
 locale: "en"
 
 # URL of OCI Core Landing Zone logo icon used on Application Information tab.
-logoUrl: "https://objectstorage.us-ashburn-1.oraclecloud.com/p/taf6kC9fSJyQDNSYbxvqxS_JsdnSu56oFZ3-1h5vI7-WfJUv77mplChopLxZPePW/n/ociateam/b/cis-landing-zone/o/landing_zone_130.png"
+logoUrl: "https://objectstorage.us-ashburn-1.oraclecloud.com/p/TmBgCfJd3fU4V-8_YWdwtfrzXtwk2y67pjnT2xE1S00CSvv-L0ShoNebe4cs1su7/n/ociateam/b/cis-landing-zone/o/landing_zone_130.png"
 
 variableGroups:
   - title: "General"
@@ -33,6 +33,8 @@ variableGroups:
       - "enclosing_compartment_options"
       - "enclosing_compartment_parent_ocid"
       - "existing_enclosing_compartment_ocid"
+      - "deploy_app_cmp"
+      - "deploy_database_cmp"
       - "deploy_exainfra_cmp"
     visible:
       and:
@@ -578,7 +580,6 @@ variableGroups:
       - "firewall_traffic_log_type"
       - "firewall_traffic_log_category"
       - "firewall_traffic_log_service"
-      - "bastion_jump_host_platform_image_name"
       - "fastconnect_virtual_circuit_cross_connect_or_cross_connect_group_id"
       - "fastconnect_virtual_circuit_vlan"
       - "display_output"
@@ -701,12 +702,21 @@ variables:
         - ${enclosing_compartment_options}
         - "Yes, use existing"
 
+  deploy_app_cmp:
+    type: boolean
+    title: "Deploy Application Compartment?"
+    description: "Whether the application compartment is deployed."
+
+  deploy_database_cmp:
+    type: boolean
+    title: "Deploy Database Compartment?"
+    description: "Whether the database compartment is deployed."  
+  
   deploy_exainfra_cmp:
     type: boolean
     title: "Deploy ExaCS Infra Compartment?"
     description: "Whether a separate compartment for Exadata Cloud Service Infrastructure is deployed."
-    default: false
-
+  
   identity_domain_option:
     type: enum
     title: "Identity Domain Option"
@@ -3444,6 +3454,7 @@ variables:
     title: "Fortinet Fortigate Firewall Version."
     description: "Fortinet Fortigate Firewall Version."
     enum:
+      - "7.2.11_(_X64_)"
       - "7.2.9_(_X64_)"
       - "7.4.4_(_X64_)"
     required: true
@@ -4805,14 +4816,15 @@ variables:
   bastion_jump_host_custom_image_ocid:
     type: string
     title: "Jump Host Custom Image OCID"
-    description: "Enter the Custom Image OCID for the Jump Host. If no custom image is provided, you must select a marketplace image below."
+    description: "Enter the Custom Image OCID for the Jump Host (optional)."
     visible:
       and:
         - deploy_bastion_jump_host
 
   bastion_jump_host_marketplace_image_option:
     type: enum
-    title: "Choose one of the marketplace image options for the jump host deployment."
+    title: "Marketplace Image Options"
+    description: "Choose a marketplace image for jump host deployment. This is required if no custom image OCID is provided above."
     required: false
     enum:
       - "Oracle Linux 8 STIG (Free)"
@@ -4820,6 +4832,9 @@ variables:
     visible:
       and:
         - deploy_bastion_jump_host
+        - eq:
+          - cis_level
+          - "1"
 
   deploy_bastion_service:
     type: boolean
@@ -4872,11 +4887,11 @@ variables:
   #   visible: deploy_bastion_jump_host
 
   bastion_jump_host_ssh_public_key_path:
-    type: string
-    title: "Enter the public SSH Key for the Jump Host"
+    type: oci:core:ssh:publickey
+    title: "Choose the public SSH Key for the Jump Host"
     required: false
     visible: deploy_bastion_jump_host
-    descirption: "The public ssh key of the Jump Host Compute Instance"
+    description: "The public ssh key of the Jump Host Compute Instance"
 
   customize_jump_host:
     type: boolean

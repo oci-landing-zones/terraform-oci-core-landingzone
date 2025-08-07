@@ -1,3 +1,13 @@
+# Month DD, 2025 Release Notes - 1.5.3
+1. Added CIS Level 2 support for jumphost compute instance.
+2. Updated Generic IAM and Network provider files
+
+# July 15, 2025 Release Notes - 1.5.2
+1. Ability to selectively deploy application and database compartments. When the compartment is suppressed from deployment, so are its associated admin group, dynamic groups and policies. See [Customizing Compartments](./DEPLOYMENT-GUIDE.md#custom-cmp) for details.
+2. East/West traffic enabled for Hub/Spoke topology with no network appliance.
+3. *Cloud Guard 404-NotAuthorizedOrNotFound Error* documented in [Known Issues](./README.md#known-issues).
+4. Added new FortiGate version (7.2.11_(X64)) to list of supported versions.
+
 # May 22, 2025 Release Notes - 1.5.1
 1. User Interface (UI) refinements and clarifications.
 2. Generic IAM Extension bug fixes
