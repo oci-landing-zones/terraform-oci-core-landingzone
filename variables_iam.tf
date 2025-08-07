@@ -24,7 +24,36 @@ variable "deploy_exainfra_cmp" {
   default     = false
   description = "Whether a separate compartment for Exadata Cloud Service Infrastructure is deployed."
 }
-
+variable "custom_enclosing_compartment_name" {
+  type        = string
+  default     = null
+  description = "Custom name of the enclosing compartment."
+}
+variable "custom_network_compartment_name" {
+  type        = string
+  default     = null
+  description = "Custom name of the network compartment."
+}
+variable "custom_security_compartment_name" {
+  type        = string
+  default     = null
+  description = "Custom name of the security compartment."
+}
+variable "custom_app_compartment_name" {
+  type        = string
+  default     = null
+  description = "Custom name of the app compartment."
+}
+variable "custom_database_compartment_name" {
+  type        = string
+  default     = null
+  description = "Custom name of the database compartment."
+}
+variable "custom_exainfra_compartment_name" {
+  type        = string
+  default     = null
+  description = "Custom name of the exadata infrastructure compartment."
+}
 # ------------------------------------------------------
 # ----- IAM - Identity Domains
 #-------------------------------------------------------
