@@ -6,9 +6,9 @@ locals {
   #-- Any of these local vars can be overriden in a _override.tf file
   #------------------------------------------------------------------------------------------------------
   #-- Vault
-  custom_vault_name          = null
-  custom_vault_key           = null
-  custom_vault_type          = null
+  custom_vault_name          = var.custom_vault_name
+  custom_vault_key           = var.custom_vault_key
+  custom_vault_type          = var.custom_vault_type
   custom_vault_defined_tags  = null
   custom_vault_freeform_tags = null
 
@@ -26,11 +26,12 @@ locals {
     vaults = {
       (local.vault_key) = {
         name          = local.vault_name
+        type          = local.vault_type
         defined_tags  = local.vault_defined_tags
         freeform_tags = local.vault_freeform_tags
       }
     }
-    keys              = merge(local.managed_sch_bucket_key, local.managed_nfw_key)
+    keys = merge(local.managed_sch_bucket_key, local.managed_nfw_key)
 
     existing_key_grants = local.existing_sch_bucket_key_grants
   }
@@ -110,12 +111,12 @@ locals {
 
   managed_nfw_key = var.cis_level == "2" && var.hub_vcn_deploy_net_appliance_option != "Don't deploy any network appliance at this time" && var.hub_vcn_deploy_net_appliance_option != "OCI Native Firewall" ? {
     (local.nfw_key_mapkey) = {
-      vault_key        = local.vault_key
-      name             = "${var.service_label}-nfw-key"
-      algorithm        = "AES"
-      length           = 32
-      defined_tags     = local.keys_defined_tags
-      freeform_tags    = local.keys_freeform_tags
+      vault_key     = local.vault_key
+      name          = "${var.service_label}-nfw-key"
+      algorithm     = "AES"
+      length        = 32
+      defined_tags  = local.keys_defined_tags
+      freeform_tags = local.keys_freeform_tags
     }
   } : {}
 

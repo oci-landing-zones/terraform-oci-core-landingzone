@@ -226,3 +226,25 @@ variable "customize_jumphost_subnet" {
   default     = false
   description = "Set to true to set custom options for jump host subnet."
 }
+
+# ------------------------------------------------------
+# ----- Vault
+# ------------------------------------------------------
+
+variable "custom_vault_name" {
+  type        = string
+  default     = null
+  description = "The optional, custom name of the vault."
+}
+
+variable "custom_vault_key" {
+  type        = string
+  default     = null
+  description = "The optional, custom key name of the vault."
+}
+
+variable "custom_vault_type" {
+  type        = string
+  default     = null
+  description = "The optional, custom type of the vault."
+}
