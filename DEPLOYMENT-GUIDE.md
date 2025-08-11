@@ -725,6 +725,14 @@ locals {
 }
 ```
 
+For changing the default compartment names without using an override, users should use the following variables:
+- **custom_enclosing_compartment_name**: the user-provided enclosing compartment name.
+- **custom_network_compartment_name**: the user-provided network compartment name.
+- **custom_security_compartment_name**: the user-provided security compartment name.
+- **custom_app_compartment_name**: the user-provided app compartment name when **deploy_app_cmp** is true.
+- **custom_database_compartment_name**: the user-provided database compartment name when **deploy_database_cmp** is true.
+- **custom_exainfra_compartment_name**: the user-provided Exadata Cloud Service compartment name when **deploy_exainfa_cmp** is true.
+
 ### Supported Overrides
 
 The following variables have been verified for overrides. While it is technically possible to override any variable, overriding a variable not in the list has not been verified and can lead to unexpected outcomes.

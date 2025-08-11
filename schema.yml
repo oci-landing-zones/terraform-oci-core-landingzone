@@ -36,6 +36,11 @@ variableGroups:
       - "deploy_app_cmp"
       - "deploy_database_cmp"
       - "deploy_exainfra_cmp"
+      - "custom_enclosing_compartment_name"
+      - "custom_network_compartment_name"
+      - "custom_security_compartment_name"
+      - "custom_database_compartment_name"
+      - "custom_exainfra_compartment_name"
     visible:
       and:
         - eq:
@@ -702,21 +707,64 @@ variables:
         - ${enclosing_compartment_options}
         - "Yes, use existing"
 
+  custom_enclosing_compartment_name:
+    type: string
+    title: "Enclosing Compartment Name"
+    description: "The custom name of the enclosing compartment. If none is provided, the default name for the enclosing compartment will be used."
+    required: false
+    visible:
+      eq:
+        - ${enclosing_compartment_options}
+        - "Yes, deploy new"
+
+  custom_network_compartment_name:
+    type: string
+    title: "Network Compartment Name"
+    description: "The custom name of the network compartment. If none is provided, the default name for the network compartment will be used."
+    required: false
+
+  custom_security_compartment_name:
+    type: string
+    title: "Security Compartment Name"
+    description: "The custom name of the security compartment. If none is provided, the default name for the security compartment will be used."
+    required: false
+
   deploy_app_cmp:
     type: boolean
     title: "Deploy Application Compartment?"
     description: "Whether the application compartment is deployed."
 
+  custom_app_compartment_name:
+    type: string
+    title: "App Compartment Name"
+    description: "The custom name of the app compartment. If none is provided, the default name for the app compartment will be used."
+    required: false
+    visible: deploy_app_cmp
+
   deploy_database_cmp:
     type: boolean
     title: "Deploy Database Compartment?"
     description: "Whether the database compartment is deployed."  
-  
+
+  custom_database_compartment_name:
+    type: string
+    title: "Database Compartment Name"
+    description: "The custom name of the database compartment. If none is provided, the default name for the database compartment will be used."
+    required: false
+    visible: deploy_database_cmp
+
   deploy_exainfra_cmp:
     type: boolean
     title: "Deploy ExaCS Infra Compartment?"
     description: "Whether a separate compartment for Exadata Cloud Service Infrastructure is deployed."
-  
+
+  custom_exainfra_compartment_name:
+    type: string
+    title: "ExaCS Infra Compartment Name"
+    description: "The custom name of the ExaCS Infra compartment. If none is provided, the default name for the ExaCS Infra compartment will be used."
+    required: false
+    visible: deploy_exainfra_cmp
+
   identity_domain_option:
     type: enum
     title: "Identity Domain Option"
