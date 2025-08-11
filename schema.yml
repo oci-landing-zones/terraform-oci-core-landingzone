@@ -39,6 +39,7 @@ variableGroups:
       - "custom_enclosing_compartment_name"
       - "custom_network_compartment_name"
       - "custom_security_compartment_name"
+      - "custom_app_compartment_name"
       - "custom_database_compartment_name"
       - "custom_exainfra_compartment_name"
     visible:
