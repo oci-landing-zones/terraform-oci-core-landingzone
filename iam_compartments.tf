@@ -61,12 +61,12 @@ locals {
   #----------------------------------------------------------------------------------------------------------
   #----- Provided compartment names
   #----------------------------------------------------------------------------------------------------------
-  provided_enclosing_compartment_name = "${var.service_label}-top-cmp"
-  provided_network_compartment_name   = "${var.service_label}-network-cmp"
-  provided_security_compartment_name  = "${var.service_label}-security-cmp"
-  provided_app_compartment_name       = "${var.service_label}-app-cmp"
-  provided_database_compartment_name  = "${var.service_label}-database-cmp"
-  provided_exainfra_compartment_name  = "${var.service_label}-exainfra-cmp"
+  provided_enclosing_compartment_name = var.custom_enclosing_compartment_name != null ? var.custom_enclosing_compartment_name : "${var.service_label}-top-cmp"
+  provided_network_compartment_name   = var.custom_network_compartment_name != null ? var.custom_network_compartment_name : "${var.service_label}-network-cmp"
+  provided_security_compartment_name  = var.custom_security_compartment_name != null ? var.custom_security_compartment_name : "${var.service_label}-security-cmp"
+  provided_app_compartment_name       = var.custom_app_compartment_name != null ? var.custom_app_compartment_name : "${var.service_label}-app-cmp"
+  provided_database_compartment_name  = var.custom_database_compartment_name != null ? var.custom_database_compartment_name : "${var.service_label}-database-cmp"
+  provided_exainfra_compartment_name  = var.custom_exainfra_compartment_name != null ? var.custom_exainfra_compartment_name : "${var.service_label}-exainfra-cmp"
 
   #----------------------------------------------------------------------
   #----- Auxiliary object for Terraform ternary operator satisfaction
