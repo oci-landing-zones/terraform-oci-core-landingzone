@@ -733,6 +733,8 @@ For changing the default compartment names without using an override, users shou
 - **custom_database_compartment_name**: the user-provided database compartment name when **deploy_database_cmp** is true.
 - **custom_exainfra_compartment_name**: the user-provided Exadata Cloud Service compartment name when **deploy_exainfa_cmp** is true.
 
+Note that the custom compartment names are taken literally, i.e., they are not concatenated with service_label variable or any other prefix.
+
 ### Supported Overrides
 
 The following variables have been verified for overrides. While it is technically possible to override any variable, overriding a variable not in the list has not been verified and can lead to unexpected outcomes.

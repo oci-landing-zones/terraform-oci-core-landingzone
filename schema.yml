@@ -33,14 +33,14 @@ variableGroups:
       - "enclosing_compartment_options"
       - "enclosing_compartment_parent_ocid"
       - "existing_enclosing_compartment_ocid"
-      - "deploy_app_cmp"
-      - "deploy_database_cmp"
-      - "deploy_exainfra_cmp"
       - "custom_enclosing_compartment_name"
       - "custom_network_compartment_name"
       - "custom_security_compartment_name"
+      - "deploy_app_cmp"
       - "custom_app_compartment_name"
+      - "deploy_database_cmp"
       - "custom_database_compartment_name"
+      - "deploy_exainfra_cmp"
       - "custom_exainfra_compartment_name"
     visible:
       and:
