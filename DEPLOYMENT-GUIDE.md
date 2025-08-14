@@ -523,7 +523,10 @@ Cloud Guard is a key component in OCI secure posture management. It uses detecto
 
 ### Vaults
 
-Some customers want more control over the lifecycle of encryption keys. By default, Landing Zone provisions a *Vault* with a *Key* that is used to encrypt a sample Object Storage bucket. While this key could be used by other clients, we recommend creating different keys for security and lifecycle reasons. Currently, Landing Zone does not expose any variables to control the provisioning of vaults and keys.
+Some customers want more control over the lifecycle of encryption keys. By default, Landing Zone provisions a *Vault*. When cis_level is 2, Landing Zone also deploys a *Key* that is used to encrypt a sample Object Storage bucket. While this key could be used by other clients, we recommend creating different keys for security and lifecycle reasons. Currently, Landing Zone exposes the following variables to control vault configuration:
+
+- **vault\_type**: the type of vault deployed. Valid values are DEFAULT or VIRTUAL_PRIVATE. Default vault_type is DEFAULT.
+- **vault\_replica\_region**: the region the vault will be replicated in. Only available if Virtual Private Vault is selected.
 
 > **_NOTE:_** Encrypting with customer-managed keys is a CIS Foundations Benchmark Level 2 requirement.
 
