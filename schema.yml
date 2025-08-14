@@ -5031,7 +5031,7 @@ variables:
     required: false
     visible:
       eq:
-        - ${custom_vault_type}
+        - ${vault_type}
         - "VIRTUAL_PRIVATE"
 
 outputs:
