@@ -19,12 +19,51 @@ variable "existing_enclosing_compartment_ocid" {
   default     = null
   description = "The existing compartment where Landing Zone compartments (Network, Security, App, Database) are created."
 }
+variable "deploy_app_cmp" {
+  type        = bool
+  default     = true
+  description = "Whether the application compartment is deployed."
+}
+variable "deploy_database_cmp" {
+  type        = bool
+  default     = true
+  description = "Whether the database compartment is deployed."
+}
 variable "deploy_exainfra_cmp" {
   type        = bool
   default     = false
   description = "Whether a separate compartment for Exadata Cloud Service Infrastructure is deployed."
 }
-
+variable "custom_enclosing_compartment_name" {
+  type        = string
+  default     = null
+  description = "Custom name of the enclosing compartment."
+}
+variable "custom_network_compartment_name" {
+  type        = string
+  default     = null
+  description = "Custom name of the network compartment."
+}
+variable "custom_security_compartment_name" {
+  type        = string
+  default     = null
+  description = "Custom name of the security compartment."
+}
+variable "custom_app_compartment_name" {
+  type        = string
+  default     = null
+  description = "Custom name of the app compartment."
+}
+variable "custom_database_compartment_name" {
+  type        = string
+  default     = null
+  description = "Custom name of the database compartment."
+}
+variable "custom_exainfra_compartment_name" {
+  type        = string
+  default     = null
+  description = "Custom name of the exadata infrastructure compartment."
+}
 # ------------------------------------------------------
 # ----- IAM - Identity Domains
 #-------------------------------------------------------

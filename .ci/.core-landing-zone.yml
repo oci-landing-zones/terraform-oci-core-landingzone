@@ -8,4 +8,6 @@ include:
 
 stages:
   - tf-prep-test-case-pull
-  - tf-prep-test-case-merge
+  - tf-prep-test-cases-merge-pre
+  - tf-merge-test-case-1
+  - tf-merge-test-case-2 

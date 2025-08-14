@@ -19,6 +19,7 @@
     1. [Zero Trust Packet Routing (ZPR)](#zpr-use)
     1. [Bastion Service](#bastion-use)
     1. [Express Deployment](#express-use)
+    1. [Customizing Compartments](#custom-cmp)
 1. [Ways to Deploy](#ways-to-deploy)
     1. [Deploying with Terraform CLI](#deploying-with-terraform-cli)
     1. [Deploying with OCI Resource Manager UI](#deploying-with-orm-ui)
@@ -690,9 +691,72 @@ The default bastion service name is the value of *service\_label* variable conca
 
 Core Landing Zone offers an "express" deployment method for a streamlined RMS experience; the express method provides a reduced number of input options. There is a "Free Tenancy?" option that when checked makes the User Interface hide the Cloud Guard and Security Zones input sections because those services are not available with a free tenancy. The default behavior is false (unchecked). For CLI activation, use the *is\_free\_tenancy* variable. Additionally, there is a "Display Security/Logging/Governance Settings?" checkbox (*display\_security\_logging\_governance\_settings* variable) that when clicked, displays the available settings for setting up Cloud Guard, Security Zones, Logging, Vulnerability Scanning and Cost Management.
 
+## <a name="custom-cmp"></a>4.9 Customizing Compartments
+
+Core Landing Zone supports suppressing and adding compartments to its [compartments topology](./images/arch_simple.png).
+
+For suppressing compartments, use the following variables:
+
+- **deploy_app_cmp**: when false, the application compartment is not deployed. Default value is true.
+- **deploy_database_cmp**: when false, the database compartment is not deployed. Default value is true.
+
+**Note:** When suppressing a compartment, the Core Landing Zone also suppresses groups, dynamic groups and policies associated with the suppressed compartment.
+
+For adding a compartment for Exadata Cloud service, use the following variable:
+
+- **deploy_exainfa_cmp**: when true, a compartment for Exadata Cloud Service resources is deployed. Default value is false.
+
+**Note:** When adding a compartment for Exadata Cloud service, the Core Landing Zone also adds a group and policies for managing Exadata Cloud resources in the compartment.
+
+For adding other compartments to Core Landing Zone topology, users should override the **additional_enclosed_compartments** variable, utilizing [Terraform overrides feature](https://developer.hashicorp.com/terraform/language/files/override).The idea is that users provide a file name that ends with *_override.tf*, overriding some existing variables in the Core Landing Zone original code. This approach allows for customizations without changing the original code, thus providing protection against eventual updates to Core Landing Zone code base.  
+
+For example, the following *iam_override.tf* sample file adds an extra compartment (DEVOPS-CMP) to the topology. It also overrides the enclosing compartment name.
+
+```
+locals {
+    
+    additional_enclosed_compartments = {
+        DEVOPS-CMP = { 
+            name = "${var.service_label}-devops-cmp", 
+            description = "Core Landing Zone DevOps compartment",
+            defined_tags : local.cmps_defined_tags,
+            freeform_tags : local.cmps_freeform_tags
+        }  
+    }
+
+    provided_enclosing_compartment_name = "${var.service_label}-shared-cmp" # overrides the enclosing compartment name
+}
+```
+
+For changing the default compartment names without using an override, users should use the following variables:
+- **custom_enclosing_compartment_name**: the user-provided enclosing compartment name.
+- **custom_network_compartment_name**: the user-provided network compartment name.
+- **custom_security_compartment_name**: the user-provided security compartment name.
+- **custom_app_compartment_name**: the user-provided app compartment name when **deploy_app_cmp** is true.
+- **custom_database_compartment_name**: the user-provided database compartment name when **deploy_database_cmp** is true.
+- **custom_exainfra_compartment_name**: the user-provided Exadata Cloud Service compartment name when **deploy_exainfa_cmp** is true.
+
+Note that the custom compartment names are taken literally, i.e., they are not concatenated with service_label variable or any other prefix.
+
+### Supported Overrides
+
+The following variables have been verified for overrides. While it is technically possible to override any variable, overriding a variable not in the list has not been verified and can lead to unexpected outcomes.
+
+- **additional_enclosed_compartments**: defines the additional compartments to be deployed within the chosen enclosing compartment. 
+
+Overriding the default compartment names is also supported. Use the following variables:
+
+- **provided_enclosing_compartment_name**: the enclosing compartment name.
+- **provided_network_compartment_name**: the network compartment name.
+- **provided_security_compartment_name**: the security compartment name.
+- **provided_app_compartment_name**: the application compartment name.
+- **provided_database_compartment_name**: the database compartment name.
+- **provided_exainfra_compartment_name**: the Exadata Cloud service compartment name.
+
+
 # <a name="ways-to-deploy"></a>5. Ways to Deploy
 
-Landing Zone can be deployed on OCI in a few ways. This section describes and examines them, providing guidance when to use each one.
+Core Landing Zone can be deployed on OCI in a few ways. This section describes and examines them, providing guidance when to use each one.
 
 ## <a name="deploying-with-terraform-cli"></a>5.1 Deploying with Terraform CLI
 

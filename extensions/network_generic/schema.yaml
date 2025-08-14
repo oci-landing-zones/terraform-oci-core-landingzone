@@ -94,6 +94,7 @@ variableGroups:
       - "spare_subnet_seclist_name"
 
   - title: "Hidden Variables"
+    visible: false
     variables:
       - "fingerprint"
       - "private_key_password"
@@ -121,9 +122,15 @@ variableGroups:
       - "db_nsg_additional_ingress_rules"
       - "db_backup_nsg_additional_ingress_rules"
       - "spare_nsg_additional_ingress_rules"
+      - "app_subnet_name_dns"
+      - "db_subnet_name_dns"
+      - "lb_subnet_name_dns"
+      - "mgmt_subnet_name_dns"
+      - "db_backup_subnet_name_dns"
+      - "spare_subnet_name_dns"
+      - "web_subnet_name_dns"
       - "additional_nsgs"
-
-
+      - "additional_route_tables"
 
 
 # ------------------------------------------------------
@@ -727,91 +734,3 @@ variables:
       and:
         - deploy_security_lists
         - add_spare_subnet
-
-  # ------------------------------------------------------
-  # ------------   Hidden Vars  --------------------------
-  #-------------------------------------------------------
-
-  fingerprint:
-    visible: false
-
-  private_key_password:
-    visible: false
-
-  private_key_path:
-    visible: false
-
-  tenancy_ocid:
-    visible: false
-
-  user_ocid:
-    visible: false
-
-  app_subnet_additional_route_rules:
-    visible: false
-
-  db_subnet_additional_route_rules:
-    visible: false
-  
-  lb_subnet_additional_route_rules:
-    visible: false
-
-  mgmt_subnet_additional_route_rules:
-    visible: false
-
-  web_subnet_additional_route_rules:
-    visible: false
-
-  db_backup_subnet_additional_route_rules:
-    visible: false
- 
-  spare_subnet_additional_route_rules:
-    visible: false
-
-  app_nsg_additional_egress_rules:
-    visible: false
-
-  web_nsg_additional_egress_rules:
-    visible: false
-
-  mgmt_nsg_additional_egress_rules:
-    visible: false
-
-  lb_nsg_additional_egress_rules:
-    visible: false
-
-  db_nsg_additional_egress_rules:
-    visible: false
-
-  db_backup_nsg_additional_egress_rules:
-    visible: false
-
-  spare_nsg_additional_egress_rules:
-    visible: false
-
-  app_nsg_additional_ingress_rules:
-    visible: false
-
-  web_nsg_additional_ingress_rules:
-    visible: false
-
-  mgmt_nsg_additional_ingress_rules:
-    visible: false
-
-  lb_nsg_additional_ingress_rules:
-    visible: false
-
-  db_nsg_additional_ingress_rules:
-    visible: false
-
-  db_backup_nsg_additional_ingress_rules:
-    visible: false
-
-  spare_nsg_additional_ingress_rules:
-    visible: false
-
-  additional_route_tables:
-    visible: false
-
-  additional_nsgs:
-    visible: false

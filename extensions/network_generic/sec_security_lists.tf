@@ -37,13 +37,13 @@ locals {
       ])
       egress_rules = flatten([
         var.app_subnet_allow_public_access && var.deploy_network_architecture == "Standalone" ? [{
-            description  = "Egress to All for public subnets."
-            stateless    = false
-            protocol     = "TCP"
-            dst          = "0.0.0.0/0"
-            dst_type     = "CIDR_BLOCK"
-            dst_port_min = null
-            dst_port_max = null
+          description  = "Egress to All for public subnets."
+          stateless    = false
+          protocol     = "TCP"
+          dst          = "0.0.0.0/0"
+          dst_type     = "CIDR_BLOCK"
+          dst_port_min = null
+          dst_port_max = null
         }] : [],
         var.app_subnet_seclist_additional_egress_rules
       ])
@@ -78,13 +78,13 @@ locals {
       ])
       egress_rules = flatten([
         var.web_subnet_allow_public_access && var.deploy_network_architecture == "Standalone" ? [{
-            description  = "Egress to All for public subnets."
-            stateless    = false
-            protocol     = "TCP"
-            dst          = "0.0.0.0/0"
-            dst_type     = "CIDR_BLOCK"
-            dst_port_min = null
-            dst_port_max = null
+          description  = "Egress to All for public subnets."
+          stateless    = false
+          protocol     = "TCP"
+          dst          = "0.0.0.0/0"
+          dst_type     = "CIDR_BLOCK"
+          dst_port_min = null
+          dst_port_max = null
         }] : [],
         var.web_subnet_seclist_additional_egress_rules
       ])
@@ -119,13 +119,13 @@ locals {
       ])
       egress_rules = flatten([
         var.db_subnet_allow_public_access && var.deploy_network_architecture == "Standalone" ? [{
-            description  = "Egress to All for public subnets."
-            stateless    = false
-            protocol     = "TCP"
-            dst          = "0.0.0.0/0"
-            dst_type     = "CIDR_BLOCK"
-            dst_port_min = null
-            dst_port_max = null
+          description  = "Egress to All for public subnets."
+          stateless    = false
+          protocol     = "TCP"
+          dst          = "0.0.0.0/0"
+          dst_type     = "CIDR_BLOCK"
+          dst_port_min = null
+          dst_port_max = null
         }] : [],
         var.db_subnet_seclist_additional_egress_rules
       ])
@@ -160,13 +160,13 @@ locals {
       ])
       egress_rules = flatten([
         var.mgmt_subnet_allow_public_access && var.deploy_network_architecture == "Standalone" ? [{
-            description  = "Egress to All for public subnets."
-            stateless    = false
-            protocol     = "TCP"
-            dst          = "0.0.0.0/0"
-            dst_type     = "CIDR_BLOCK"
-            dst_port_min = null
-            dst_port_max = null
+          description  = "Egress to All for public subnets."
+          stateless    = false
+          protocol     = "TCP"
+          dst          = "0.0.0.0/0"
+          dst_type     = "CIDR_BLOCK"
+          dst_port_min = null
+          dst_port_max = null
         }] : [],
         var.mgmt_subnet_seclist_additional_egress_rules
       ])
@@ -201,13 +201,13 @@ locals {
       ])
       egress_rules = flatten([
         var.lb_subnet_allow_public_access && var.deploy_network_architecture == "Standalone" ? [{
-            description  = "Egress to All for public subnets."
-            stateless    = false
-            protocol     = "TCP"
-            dst          = "0.0.0.0/0"
-            dst_type     = "CIDR_BLOCK"
-            dst_port_min = null
-            dst_port_max = null
+          description  = "Egress to All for public subnets."
+          stateless    = false
+          protocol     = "TCP"
+          dst          = "0.0.0.0/0"
+          dst_type     = "CIDR_BLOCK"
+          dst_port_min = null
+          dst_port_max = null
         }] : [],
         var.lb_subnet_seclist_additional_egress_rules
       ])
@@ -242,13 +242,13 @@ locals {
       ])
       egress_rules = flatten([
         var.db_backup_subnet_allow_public_access && var.deploy_network_architecture == "Standalone" ? [{
-            description  = "Egress to All for public subnets."
-            stateless    = false
-            protocol     = "TCP"
-            dst          = "0.0.0.0/0"
-            dst_type     = "CIDR_BLOCK"
-            dst_port_min = null
-            dst_port_max = null
+          description  = "Egress to All for public subnets."
+          stateless    = false
+          protocol     = "TCP"
+          dst          = "0.0.0.0/0"
+          dst_type     = "CIDR_BLOCK"
+          dst_port_min = null
+          dst_port_max = null
         }] : [],
         var.db_backup_subnet_seclist_additional_egress_rules
       ])
@@ -283,13 +283,13 @@ locals {
       ])
       egress_rules = flatten([
         var.spare_subnet_allow_public_access && var.deploy_network_architecture == "Standalone" ? [{
-            description  = "Egress to All for public subnets."
-            stateless    = false
-            protocol     = "TCP"
-            dst          = "0.0.0.0/0"
-            dst_type     = "CIDR_BLOCK"
-            dst_port_min = null
-            dst_port_max = null
+          description  = "Egress to All for public subnets."
+          stateless    = false
+          protocol     = "TCP"
+          dst          = "0.0.0.0/0"
+          dst_type     = "CIDR_BLOCK"
+          dst_port_min = null
+          dst_port_max = null
         }] : [],
         var.spare_subnet_seclist_additional_egress_rules
       ])

@@ -35,8 +35,8 @@ locals {
 
   enable_network_compartment  = true
   enable_security_compartment = true
-  enable_app_compartment      = true
-  enable_database_compartment = true
+  enable_app_compartment      = var.deploy_app_cmp
+  enable_database_compartment = var.deploy_database_cmp
   enable_exainfra_compartment = var.deploy_exainfra_cmp
 
   #-----------------------------------------------------------
@@ -61,12 +61,12 @@ locals {
   #----------------------------------------------------------------------------------------------------------
   #----- Provided compartment names
   #----------------------------------------------------------------------------------------------------------
-  provided_enclosing_compartment_name = "${var.service_label}-top-cmp"
-  provided_network_compartment_name   = "${var.service_label}-network-cmp"
-  provided_security_compartment_name  = "${var.service_label}-security-cmp"
-  provided_app_compartment_name       = "${var.service_label}-app-cmp"
-  provided_database_compartment_name  = "${var.service_label}-database-cmp"
-  provided_exainfra_compartment_name  = "${var.service_label}-exainfra-cmp"
+  provided_enclosing_compartment_name = var.custom_enclosing_compartment_name != null ? var.custom_enclosing_compartment_name : "${var.service_label}-top-cmp"
+  provided_network_compartment_name   = var.custom_network_compartment_name != null ? var.custom_network_compartment_name : "${var.service_label}-network-cmp"
+  provided_security_compartment_name  = var.custom_security_compartment_name != null ? var.custom_security_compartment_name : "${var.service_label}-security-cmp"
+  provided_app_compartment_name       = var.custom_app_compartment_name != null ? var.custom_app_compartment_name : "${var.service_label}-app-cmp"
+  provided_database_compartment_name  = var.custom_database_compartment_name != null ? var.custom_database_compartment_name : "${var.service_label}-database-cmp"
+  provided_exainfra_compartment_name  = var.custom_exainfra_compartment_name != null ? var.custom_exainfra_compartment_name : "${var.service_label}-exainfra-cmp"
 
   #----------------------------------------------------------------------
   #----- Auxiliary object for Terraform ternary operator satisfaction
@@ -145,15 +145,27 @@ locals {
     }
   } : {}
 
-  all_enclosed_compartments = merge(local.network_cmp, local.security_cmp, local.app_cmp, local.database_cmp, local.exainfra_cmp)
+  lz_default_enclosed_compartments = merge(local.network_cmp, local.security_cmp, local.app_cmp, local.database_cmp, local.exainfra_cmp)
+
+  # For adding compartments to Core Landing Zone, override additional_enclosed_compartments variable with a map of additional compartments, like:
+  # additional_enclosed_compartments = {
+  #     DEVOPS-CMP = { 
+  #         name = "${var.service_label}-devops-cmp", 
+  #         description = "Core Landing Zone custom DevOps compartment" 
+  #     }
+  # }
+  additional_enclosed_compartments = {}
+
+  all_enclosed_compartments = merge(local.lz_default_enclosed_compartments, local.additional_enclosed_compartments)
   #------------------------------------------------------------------------
   #----- Enclosing compartment configuration definition. Input to module.
   #------------------------------------------------------------------------
-  enclosed_compartments_configuration = length(local.all_enclosed_compartments) > 0 ? {
+  enclosed_compartments_configuration = {
     default_parent_id : local.enclosing_compartment_id
     compartments : local.all_enclosed_compartments
-  } : local.empty_compartments_configuration
+  }
 
+  
   #---------------------------------------------------------------------------------------
   #----- Variables with compartment names and OCIDs per compartments module output
   #---------------------------------------------------------------------------------------

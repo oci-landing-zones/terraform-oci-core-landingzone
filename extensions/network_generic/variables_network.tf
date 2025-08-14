@@ -6,7 +6,7 @@
 #-------------------------------------------------------
 
 variable "tenancy_ocid" {
-  default = ""
+  default     = ""
   description = "OCID of the tenancy."
 }
 variable "user_ocid" {
@@ -22,6 +22,7 @@ variable "private_key_password" {
   default = ""
 }
 variable "region" {
+  default = ""
   description = "The region where resources are deployed."
   type        = string
 }
@@ -106,6 +107,12 @@ variable "app_subnet_name" {
   type        = string
   default     = null
 }
+variable "app_subnet_name_dns" {
+  description = "Name of the Application Subnet."
+  type        = string
+  default     = null
+}
+
 
 variable "app_subnet_cidr" {
   description = "CIDR Block of the App Subnet. It must be within the VCN CIDR block range."
@@ -121,7 +128,7 @@ variable "app_subnet_allow_public_access" {
 
 variable "app_subnet_additional_route_rules" {
   description = "Optional additional route rules for the Application Subnet."
-  type        = map(object({
+  type = map(object({
     network_entity_id  = optional(string),
     network_entity_key = optional(string),
     description        = optional(string),
@@ -148,7 +155,11 @@ variable "db_subnet_name" {
   type        = string
   default     = null
 }
-
+variable "db_subnet_name_dns" {
+  description = "Name of the Database Subnet DNS."
+  type        = string
+  default     = null
+}
 variable "db_subnet_cidr" {
   description = "CIDR Block of the Database Subnet. It must be within the VCN CIDR block range."
   type        = string
@@ -163,7 +174,7 @@ variable "db_subnet_allow_public_access" {
 
 variable "db_subnet_additional_route_rules" {
   description = "Optional additional route rules for the Database Subnet."
-  type        = map(object({
+  type = map(object({
     network_entity_id  = optional(string),
     network_entity_key = optional(string),
     description        = optional(string),
@@ -191,6 +202,12 @@ variable "lb_subnet_name" {
   default     = null
 }
 
+variable "lb_subnet_name_dns" {
+  description = "Name of the Load Balancer Subnet DNS."
+  type        = string
+  default     = null
+}
+
 variable "lb_subnet_cidr" {
   description = "CIDR Block of the Load Balancer Subnet. It must be within the VCN CIDR block range."
   type        = string
@@ -205,7 +222,7 @@ variable "lb_subnet_allow_public_access" {
 
 variable "lb_subnet_additional_route_rules" {
   description = "Optional additional route rules for the Load Balancer Subnet."
-  type        = map(object({
+  type = map(object({
     network_entity_id  = optional(string),
     network_entity_key = optional(string),
     description        = optional(string),
@@ -233,6 +250,12 @@ variable "mgmt_subnet_name" {
   default     = null
 }
 
+variable "mgmt_subnet_name_dns" {
+  description = "Name of the Management Subnet DNS."
+  type        = string
+  default     = null
+}
+
 variable "mgmt_subnet_cidr" {
   description = "CIDR Block of the Management Subnet. It must be within the VCN CIDR block range."
   type        = string
@@ -247,7 +270,7 @@ variable "mgmt_subnet_allow_public_access" {
 
 variable "mgmt_subnet_additional_route_rules" {
   description = "Optional additional route rules for the Load Balancer Subnet."
-  type        = map(object({
+  type = map(object({
     network_entity_id  = optional(string),
     network_entity_key = optional(string),
     description        = optional(string),
@@ -275,6 +298,12 @@ variable "web_subnet_name" {
   default     = null
 }
 
+variable "web_subnet_name_dns" {
+  description = "Name of the Web Subnet DNS."
+  type        = string
+  default     = null
+}
+
 variable "web_subnet_cidr" {
   description = "CIDR Block of the Web Subnet. It must be within the VCN CIDR block range."
   type        = string
@@ -289,7 +318,7 @@ variable "web_subnet_allow_public_access" {
 
 variable "web_subnet_additional_route_rules" {
   description = "Optional additional route rules for the Web Subnet."
-  type        = map(object({
+  type = map(object({
     network_entity_id  = optional(string),
     network_entity_key = optional(string),
     description        = optional(string),
@@ -317,6 +346,12 @@ variable "db_backup_subnet_name" {
   default     = null
 }
 
+variable "db_backup_subnet_name_dns" {
+  description = "Name of the Database Backup Subnet DNS."
+  type        = string
+  default     = null
+}
+
 variable "db_backup_subnet_cidr" {
   description = "CIDR Block of the Database Backup Subnet. It must be within the VCN CIDR block range."
   type        = string
@@ -337,7 +372,7 @@ variable "db_backup_subnet_allow_onprem_connectivity" {
 
 variable "db_backup_subnet_additional_route_rules" {
   description = "Optional additional route rules for the Database Backup Subnet."
-  type        = map(object({
+  type = map(object({
     network_entity_id  = optional(string),
     network_entity_key = optional(string),
     description        = optional(string),
@@ -355,6 +390,12 @@ variable "add_spare_subnet" {
 
 variable "spare_subnet_name" {
   description = "Name of the spare subnet."
+  type        = string
+  default     = ""
+}
+
+variable "spare_subnet_name_dns" {
+  description = "Name of the spare subnet DNS."
   type        = string
   default     = ""
 }
@@ -379,14 +420,14 @@ variable "spare_subnet_allow_onprem_connectivity" {
 
 variable "spare_subnet_additional_route_rules" {
   description = "Optional additional route rules for the spare subnet."
-  type        = map(object({
+  type = map(object({
     network_entity_id  = optional(string),
     network_entity_key = optional(string),
     description        = optional(string),
     destination        = string,
     destination_type   = string
   }))
-  default     = {}
+  default = {}
 }
 
 variable "enable_nat_gateway" {
@@ -433,7 +474,7 @@ variable "service_gateway_services" {
 }
 variable "additional_route_tables" {
   description = "Optional additional route tables."
-  type        = map(object({
+  type = map(object({
     compartment_id = optional(string),
     defined_tags   = optional(map(string)),
     freeform_tags  = optional(map(string)),
@@ -442,8 +483,8 @@ variable "additional_route_tables" {
       network_entity_id  = optional(string),
       network_entity_key = optional(string),
       description        = optional(string),
-      destination = optional(string),
-      destination_type = optional(string) // Supported values: "CIDR_BLOCK", "SERVICE_CIDR_BLOCK" - only for SGW
+      destination        = optional(string),
+      destination_type   = optional(string) // Supported values: "CIDR_BLOCK", "SERVICE_CIDR_BLOCK" - only for SGW
     })))
   }))
   default = {}
