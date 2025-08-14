@@ -231,20 +231,14 @@ variable "customize_jumphost_subnet" {
 # ----- Vault
 # ------------------------------------------------------
 
-variable "custom_vault_name" {
+variable "vault_type" {
   type        = string
-  default     = null
-  description = "The optional, custom name of the vault."
+  default     = "DEFAULT"
+  description = "The type of the vault. Options are 'DEFAULT' and 'VIRTUAL_PRIVATE'."
 }
 
-variable "custom_vault_key" {
+variable "vault_replica_region" {
   type        = string
   default     = null
-  description = "The optional, custom key name of the vault."
-}
-
-variable "custom_vault_type" {
-  type        = string
-  default     = null
-  description = "The optional, custom type of the vault."
+  description = "The replica region where the vault backup is located. Only applicable when vault_type is VIRTUAL_PRIVATE."
 }
