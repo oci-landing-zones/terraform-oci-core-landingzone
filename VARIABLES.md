@@ -89,36 +89,38 @@
 
 ### <a name="security"></a> Security
 
-| Variable Name | Description | Type | Default | Required |
-|---------------|-------------|------|---------|----------|
-| bastion\_jump\_host\_boot\_volume\_size | The boot volume size (in GB) for the bastion jump host instance. | `number` | `60` | no |
-| bastion\_jump\_host\_custom\_image\_ocid | The custom image ocid of the user-provided bastion jump host instance. The custom image takes precedence over marketplace image. | `string` | `null` | no |
-| bastion\_jump\_host\_flex\_shape\_cpu | The number of OCPUs for the selected flex shape. Applicable to flexible shapes only. | `number` | `2` | no |
-| bastion\_jump\_host\_flex\_shape\_memory | The amount of memory (in GB) for the selected flex shape. Applicable to flexible shapes only. | `number` | `56` | no |
-| bastion\_jump\_host\_instance\_name | The display name of the bastion jump host instance. | `string` | `bastion-jump-host-instance` | no |
-| bastion\_jump\_host\_instance\_shape | The instance shape for the bastion jump host instance. | `string` | `VM.Standard.E4.Flex` | no |
-| bastion\_jump\_host\_marketplace\_image\_option | Options to select a jump host marketplace image. Either `Oracle Linux 8 STIG (Free)`, or `CIS Hardened Image Level 1 on Oracle Linux 8 (Paid)`. | `string` | `null` | no |
-| bastion\_jump\_host\_ssh\_public\_key\_path | The SSH public key to login to bastion jump host instance. | `string` | `null`| no |
-| bastion\_service\_allowed\_cidrs | List of the bastion service allowed cidrs. | `list(string)` | `[/]` | no |
-| bastion\_service\_name | The bastion service name. | `string` | `null` | no |
-| cloud\_guard\_admin\_email\_endpoints | List of email addresses for Cloud Guard related notifications. | `list(string)` | `[]` | no |
-| cloud\_guard\_reporting\_region | Cloud Guard reporting region, where Cloud Guard reporting resources are kept. If not set, it defaults to home region. | `string` | `null` | no |
-| cloud\_guard\_risk\_level\_threshold | Determines the minimum Risk level that triggers sending Cloud Guard problems to the defined Cloud Guard Email Endpoint. E.g. a setting of High will send notifications for Critical and High problems. | `string` | `High` | no |
-| deploy\_bastion\_jump\_host | The option to deploy the bastion jump host. | `bool` | `false` | no |
-| deploy\_bastion\_service | The option to deploy the bastion service. | `bool` | `false` | no |
-| enable\_cloud\_guard | Determines whether the Cloud Guard service should be enabled. If true, Cloud Guard is enabled and the Root compartment is configured with a Cloud Guard target, as long as there is no pre-existing Cloud Guard target for the Root compartment (or target creation will fail). If Cloud Guard is already enabled and a target exists for the Root compartment, set this variable to false. | `bool` | `true` | no |
-| enable\_cloud\_guard\_cloned\_recipes | Whether cloned recipes are attached to the managed Cloud Guard target. If false, Oracle managed recipes are attached. | `bool` | `true` | no |
-| enable\_security\_zones | Determines if Security Zones are enabled in Landing Zone. When set to true, the Security Zone is enabled for the enclosing compartment. If no enclosing compartment is used, then the Security Zone is not enabled. | `bool` | `false` | no |
-| security\_zones\_reporting\_region | The reporting region of security zones. It defaults to tenancy home region if undefined. | `string` | `null` | no |
-| sz\_security\_policies | Additional Security Zones Policy OCIDs to add to security zone recipe (The default policies are added based on CIS level). To get a Security Zone policy OCID use the oci cli: oci cloud-guard security-policy-collection list-security-policies --compartment-id <tenancy-ocid>. | `list(string)` | `[]` | no |
+| Variable Name                                     | Description | Type | Default | Required |
+|---------------------------------------------------|-------------|------|---------|----------|
+| bastion\_jump\_host\_boot\_volume\_size           | The boot volume size (in GB) for the bastion jump host instance. | `number` | `60` | no |
+| bastion\_jump\_host\_custom\_image\_ocid          | The custom image ocid of the user-provided bastion jump host instance. The custom image takes precedence over marketplace image. | `string` | `null` | no |
+| bastion\_jump\_host\_flex\_shape\_cpu             | The number of OCPUs for the selected flex shape. Applicable to flexible shapes only. | `number` | `2` | no |
+| bastion\_jump\_host\_flex\_shape\_memory          | The amount of memory (in GB) for the selected flex shape. Applicable to flexible shapes only. | `number` | `56` | no |
+| bastion\_jump\_host\_instance\_name               | The display name of the bastion jump host instance. | `string` | `bastion-jump-host-instance` | no |
+| bastion\_jump\_host\_instance\_shape              | The instance shape for the bastion jump host instance. | `string` | `VM.Standard.E4.Flex` | no |
+| bastion\_jump\_host\_marketplace\_image\_option   | Options to select a jump host marketplace image. Either `Oracle Linux 8 STIG (Free)`, or `CIS Hardened Image Level 1 on Oracle Linux 8 (Paid)`. | `string` | `null` | no |
+| bastion\_jump\_host\_ssh\_public\_key\_path       | The SSH public key to login to bastion jump host instance. | `string` | `null`| no |
+| bastion\_service\_allowed\_cidrs                  | List of the bastion service allowed cidrs. | `list(string)` | `[/]` | no |
+| bastion\_service\_name                            | The bastion service name. | `string` | `null` | no |
+| cloud\_guard\_admin\_email\_endpoints             | List of email addresses for Cloud Guard related notifications. | `list(string)` | `[]` | no |
+| cloud\_guard\_reporting\_region                   | Cloud Guard reporting region, where Cloud Guard reporting resources are kept. If not set, it defaults to home region. | `string` | `null` | no |
+| cloud\_guard\_risk\_level\_threshold              | Determines the minimum Risk level that triggers sending Cloud Guard problems to the defined Cloud Guard Email Endpoint. E.g. a setting of High will send notifications for Critical and High problems. | `string` | `High` | no |
+| deploy\_bastion\_jump\_host                       | The option to deploy the bastion jump host. | `bool` | `false` | no |
+| deploy\_bastion\_service                          | The option to deploy the bastion service. | `bool` | `false` | no |
+| enable\_cloud\_guard                              | Determines whether the Cloud Guard service should be enabled. If true, Cloud Guard is enabled and the Root compartment is configured with a Cloud Guard target, as long as there is no pre-existing Cloud Guard target for the Root compartment (or target creation will fail). If Cloud Guard is already enabled and a target exists for the Root compartment, set this variable to false. | `bool` | `true` | no |
+| enable\_cloud\_guard\_cloned\_recipes             | Whether cloned recipes are attached to the managed Cloud Guard target. If false, Oracle managed recipes are attached. | `bool` | `true` | no |
+| enable\_security\_zones                           | Determines if Security Zones are enabled in Landing Zone. When set to true, the Security Zone is enabled for the enclosing compartment. If no enclosing compartment is used, then the Security Zone is not enabled. | `bool` | `false` | no |
+| security\_zones\_reporting\_region                | The reporting region of security zones. It defaults to tenancy home region if undefined. | `string` | `null` | no |
+| sz\_security\_policies                            | Additional Security Zones Policy OCIDs to add to security zone recipe (The default policies are added based on CIS level). To get a Security Zone policy OCID use the oci cli: oci cloud-guard security-policy-collection list-security-policies --compartment-id <tenancy-ocid>. | `list(string)` | `[]` | no |
+| vault\_replica\_region                            | The replica region where the vault backup is located. Only applicable when vault\_type is VIRTUAL\_PRIVATE. | `string` | `null` | no |
+| vault\_type                                       | The type of the vault. Options are 'DEFAULT' and 'VIRTUAL\_PRIVATE'. | `string` | `"DEFAULT"` | no |
 | vss\_agent\_cis\_benchmark\_settings\_scan\_level | Valid values: STRICT, MEDIUM, LIGHTWEIGHT, NONE. STRICT: If more than 20% of the CIS benchmarks fail, then the target is assigned a risk level of Critical. MEDIUM: If more than 40% of the CIS benchmarks fail, then the target is assigned a risk level of High. LIGHTWEIGHT: If more than 80% of the CIS benchmarks fail, then the target is assigned a risk level of High. NONE: disables cis benchmark scanning. | `string` | `MEDIUM` | no |
-| vss\_agent\_scan\_level | Valid values: STANDARD, NONE. STANDARD enables agent-based scanning. NONE disables agent-based scanning and moots any agent related attributes. | `string` | `STANDARD` | no |
-| vss\_create | Whether Vulnerability Scanning Service recipes and targets are enabled in the Landing Zone. | `bool` | `false` | no |
-| vss\_enable\_file\_scan | Whether file scanning is enabled. | `bool` | `false` | no |
-| vss\_folders\_to\_scan | A list of folders to scan. Only applies if `vss_enable_file_scan` is true. Currently, the Scanning service checks for vulnerabilities only in log4j and spring4shell. | `list(string)` | `[/]` | no |
-| vss\_port\_scan\_level | Valid values: STANDARD, LIGHT, NONE. STANDARD checks the 1000 most common port numbers, LIGHT checks the 100 most common port numbers, NONE does not check for open ports. | `string` | `STANDARD` | no |
-| vss\_scan\_day | The week day for the Vulnerability Scanning Service recipe, if enabled. Only applies if vss\_scan\_schedule is WEEKLY (case insensitive). | `string` | `SUNDAY` | no |
-| vss\_scan\_schedule | The scan schedule for the Vulnerability Scanning Service recipe, if enabled. Valid values are WEEKLY or DAILY (case insensitive). | `string` | `WEEKLY` | no |
+| vss\_agent\_scan\_level                           | Valid values: STANDARD, NONE. STANDARD enables agent-based scanning. NONE disables agent-based scanning and moots any agent related attributes. | `string` | `STANDARD` | no |
+| vss\_create                                       | Whether Vulnerability Scanning Service recipes and targets are enabled in the Landing Zone. | `bool` | `false` | no |
+| vss\_enable\_file\_scan                           | Whether file scanning is enabled. | `bool` | `false` | no |
+| vss\_folders\_to\_scan                            | A list of folders to scan. Only applies if `vss_enable_file_scan` is true. Currently, the Scanning service checks for vulnerabilities only in log4j and spring4shell. | `list(string)` | `[/]` | no |
+| vss\_port\_scan\_level                            | Valid values: STANDARD, LIGHT, NONE. STANDARD checks the 1000 most common port numbers, LIGHT checks the 100 most common port numbers, NONE does not check for open ports. | `string` | `STANDARD` | no |
+| vss\_scan\_day                                    | The week day for the Vulnerability Scanning Service recipe, if enabled. Only applies if vss\_scan\_schedule is WEEKLY (case insensitive). | `string` | `SUNDAY` | no |
+| vss\_scan\_schedule                               | The scan schedule for the Vulnerability Scanning Service recipe, if enabled. Valid values are WEEKLY or DAILY (case insensitive). | `string` | `WEEKLY` | no |
 
 ### <a name="three-tier-networking"></a> Three Tier Networking
 
