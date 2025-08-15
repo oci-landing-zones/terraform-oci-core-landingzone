@@ -7,9 +7,9 @@
 ## Providers
 
 | Name | Version |
-|------|--------|
-| <a name="provider_oci"></a> [oci](#provider\_oci) | 6.23.0 |
-| <a name="provider_time"></a> [time](#provider\_time) | 0.12.1 |
+|------|---------|
+| <a name="provider_oci"></a> [oci](#provider\_oci) | n/a |
+| <a name="provider_time"></a> [time](#provider\_time) | n/a |
 
 ## Modules
 
@@ -17,7 +17,7 @@
 |------|--------|---------|
 | <a name="module_lz_alarms"></a> [lz\_alarms](#module\_lz\_alarms) | github.com/oci-landing-zones/terraform-oci-modules-observability//alarms | v0.2.3 |
 | <a name="module_lz_bastion"></a> [lz\_bastion](#module\_lz\_bastion) | github.com/oci-landing-zones/terraform-oci-modules-security//bastion | v0.2.0 |
-| <a name="module_lz_bastion_jump_host"></a> [lz\_bastion\_jump\_host](#module\_lz\_bastion\_jump\_host) | github.com/oci-landing-zones/terraform-oci-modules-workloads//cis-compute-storage | v0.2.0 |
+| <a name="module_lz_bastion_jump_host"></a> [lz\_bastion\_jump\_host](#module\_lz\_bastion\_jump\_host) | github.com/oci-landing-zones/terraform-oci-modules-workloads//cis-compute-storage | v0.2.1 |
 | <a name="module_lz_budgets"></a> [lz\_budgets](#module\_lz\_budgets) | github.com/oci-landing-zones/terraform-oci-modules-governance//budgets | v0.1.5 |
 | <a name="module_lz_cloud_guard"></a> [lz\_cloud\_guard](#module\_lz\_cloud\_guard) | github.com/oci-landing-zones/terraform-oci-modules-security//cloud-guard | v0.2.0 |
 | <a name="module_lz_compartments"></a> [lz\_compartments](#module\_lz\_compartments) | github.com/oci-landing-zones/terraform-oci-modules-iam//compartments | v0.2.9 |
@@ -56,6 +56,7 @@
 | [time_sleep.wait_on_compartments](https://registry.terraform.io/providers/hashicorp/time/latest/docs/resources/sleep) | resource |
 | [time_sleep.wait_on_services_policy](https://registry.terraform.io/providers/hashicorp/time/latest/docs/resources/sleep) | resource |
 | [oci_cloud_guard_cloud_guard_configuration.this](https://registry.terraform.io/providers/oracle/oci/latest/docs/data-sources/cloud_guard_cloud_guard_configuration) | data source |
+| [oci_core_images.platform_oel_images](https://registry.terraform.io/providers/oracle/oci/latest/docs/data-sources/core_images) | data source |
 | [oci_core_vcn.additional_vcns](https://registry.terraform.io/providers/oracle/oci/latest/docs/data-sources/core_vcn) | data source |
 | [oci_identity_compartment.existing_enclosing_compartment](https://registry.terraform.io/providers/oracle/oci/latest/docs/data-sources/identity_compartment) | data source |
 | [oci_identity_compartments.app](https://registry.terraform.io/providers/oracle/oci/latest/docs/data-sources/identity_compartments) | data source |
@@ -126,7 +127,13 @@
 | <a name="input_create_alarms_as_enabled"></a> [create\_alarms\_as\_enabled](#input\_create\_alarms\_as\_enabled) | Whether a alarms should be created in an enabled state by default. If unchecked, alarms will be created but not emit alerts. | `bool` | `false` | no |
 | <a name="input_create_budget"></a> [create\_budget](#input\_create\_budget) | If true, a budget is created for the enclosing compartment, based on forecast or actual spending. | `bool` | `false` | no |
 | <a name="input_create_events_as_enabled"></a> [create\_events\_as\_enabled](#input\_create\_events\_as\_enabled) | Whether events should be created in an enabled state by default. If unchecked, events will be created but not emit notifications. | `bool` | `false` | no |
+| <a name="input_custom_app_compartment_name"></a> [custom\_app\_compartment\_name](#input\_custom\_app\_compartment\_name) | Custom name of the app compartment. | `string` | `null` | no |
+| <a name="input_custom_database_compartment_name"></a> [custom\_database\_compartment\_name](#input\_custom\_database\_compartment\_name) | Custom name of the database compartment. | `string` | `null` | no |
+| <a name="input_custom_enclosing_compartment_name"></a> [custom\_enclosing\_compartment\_name](#input\_custom\_enclosing\_compartment\_name) | Custom name of the enclosing compartment. | `string` | `null` | no |
+| <a name="input_custom_exainfra_compartment_name"></a> [custom\_exainfra\_compartment\_name](#input\_custom\_exainfra\_compartment\_name) | Custom name of the exadata infrastructure compartment. | `string` | `null` | no |
 | <a name="input_custom_id_domain_ocid"></a> [custom\_id\_domain\_ocid](#input\_custom\_id\_domain\_ocid) | The existing identity domain OCID. | `string` | `null` | no |
+| <a name="input_custom_network_compartment_name"></a> [custom\_network\_compartment\_name](#input\_custom\_network\_compartment\_name) | Custom name of the network compartment. | `string` | `null` | no |
+| <a name="input_custom_security_compartment_name"></a> [custom\_security\_compartment\_name](#input\_custom\_security\_compartment\_name) | Custom name of the security compartment. | `string` | `null` | no |
 | <a name="input_customize_bastion_service"></a> [customize\_bastion\_service](#input\_customize\_bastion\_service) | Set to true to set custom options for Bastion Service. | `bool` | `false` | no |
 | <a name="input_customize_cloud_guard_settings"></a> [customize\_cloud\_guard\_settings](#input\_customize\_cloud\_guard\_settings) | Whether to customize Cloud Guard settings for a managed target. The Landing Zone enables Cloud Guard service and creates a managed target at the Root compartment in case a target at the Root compartment does not exist. | `bool` | `false` | no |
 | <a name="input_customize_hub_vcn_subnets"></a> [customize\_hub\_vcn\_subnets](#input\_customize\_hub\_vcn\_subnets) | Whether to customize default subnets settings of the Hub VCN. Only applicable to RMS deployments. | `bool` | `false` | no |
@@ -156,6 +163,7 @@
 | <a name="input_enable_native_firewall_traffic_log"></a> [enable\_native\_firewall\_traffic\_log](#input\_enable\_native\_firewall\_traffic\_log) | Enable OCI Native Firewall Traffic Log. | `bool` | `false` | no |
 | <a name="input_enable_security_zones"></a> [enable\_security\_zones](#input\_enable\_security\_zones) | Determines if Security Zones are enabled in Landing Zone. When set to true, the Security Zone is enabled for the enclosing compartment. If no enclosing compartment is used, then the Security Zone is not enabled. | `bool` | `false` | no |
 | <a name="input_enable_service_connector"></a> [enable\_service\_connector](#input\_enable\_service\_connector) | Whether Service Connector should be enabled. If true, a single Service Connector is managed for all services log sources and the designated target specified in 'Service Connector Target Kind'. The Service Connector resource is created in INACTIVE state. To activate, check 'Activate Service Connector?' (costs may incur). | `bool` | `false` | no |
+| <a name="input_enable_vault"></a> [enable\_vault](#input\_enable\_vault) | Whether to enable vault service. Set to true to deploy a vault. | `bool` | `false` | no |
 | <a name="input_enable_zpr"></a> [enable\_zpr](#input\_enable\_zpr) | Whether to enable ZPR service. | `bool` | `false` | no |
 | <a name="input_enclosing_compartment_options"></a> [enclosing\_compartment\_options](#input\_enclosing\_compartment\_options) | Determines where the landing zone compartments are deployed: within a new enclosing compartment or within an existing select enclosing compartment (that can be the Root compartment). Valid options: 'Yes, deploy new', 'Yes, use existing', 'No' | `string` | `"Yes, deploy new"` | no |
 | <a name="input_enclosing_compartment_parent_ocid"></a> [enclosing\_compartment\_parent\_ocid](#input\_enclosing\_compartment\_parent\_ocid) | The existing compartment where Landing Zone enclosing compartment is created. | `string` | `null` | no |

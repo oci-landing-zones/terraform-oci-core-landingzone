@@ -5018,7 +5018,7 @@ variables:
   enable_vault:
     type: boolean
     title: "Enable Vault?"
-    description: "Check to deploy a Vault."
+    description: "If checked, a vault will be created."
     required: false
 
   vault_type:
@@ -5035,7 +5035,7 @@ variables:
   vault_replica_region:
     type: oci:identity:region:name
     title: "Vault Replica Region"
-    description: "The replica region of the vault."
+    description: "The replica region of the vault. Applicable to VIRTUAL_PRIVATE vault only."
     required: false
     visible:
       and:
