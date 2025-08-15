@@ -557,6 +557,7 @@ variableGroups:
 
   - title: "Vault"
     variables:
+      - "enable_vault"
       - "vault_type"
       - "vault_replica_region"
     visible: display_security_logging_governance_settings
@@ -5014,6 +5015,12 @@ variables:
     required: false
     visible: customize_jumphost_subnet
 
+  enable_vault:
+    type: boolean
+    title: "Enable Vault?"
+    description: "Check to deploy a Vault."
+    required: false
+
   vault_type:
     type: enum
     title: "Vault Type"
@@ -5023,6 +5030,7 @@ variables:
     enum:
       - "DEFAULT"
       - "VIRTUAL_PRIVATE"
+    visible: enable_vault
 
   vault_replica_region:
     type: oci:identity:region:name
@@ -5030,9 +5038,11 @@ variables:
     description: "The replica region of the vault."
     required: false
     visible:
-      eq:
-        - ${vault_type}
-        - "VIRTUAL_PRIVATE"
+      and:
+        - eq:
+          - ${vault_type}
+          - "VIRTUAL_PRIVATE"
+        - enable_vault
 
 outputs:
   release:

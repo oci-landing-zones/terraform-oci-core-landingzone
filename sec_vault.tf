@@ -43,6 +43,7 @@ locals {
 #---------------------------------------------------------------------------
 module "lz_vault" {
   source     = "github.com/oci-landing-zones/terraform-oci-modules-security//vaults?ref=v0.2.0"
+  count      = local.enable_vault ? 1 : 0
   depends_on = [time_sleep.wait_on_services_policy]
   providers = {
     oci      = oci
@@ -77,7 +78,7 @@ locals {
   vault_type          = local.custom_vault_type != null ? local.custom_vault_type : var.vault_type
   vault_defined_tags  = local.custom_vault_defined_tags != null ? local.custom_vault_defined_tags : local.default_vault_defined_tags
   vault_freeform_tags = local.custom_vault_freeform_tags != null ? merge(local.custom_vault_freeform_tags, local.default_vault_freeform_tags) : local.default_vault_freeform_tags
-
+  enable_vault        = var.cis_level == "2" || var.enable_vault == true ? true : false
   #-- Keys
   default_sch_bucket_key_name = "${var.service_label}-sch-bucket-key"
   sch_bucket_key_name         = local.custom_sch_bucket_key_name != null ? local.custom_sch_bucket_key_name : local.default_sch_bucket_key_name

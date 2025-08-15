@@ -231,6 +231,11 @@ variable "customize_jumphost_subnet" {
 # ----- Vault
 # ------------------------------------------------------
 
+variable "enable_vault" {
+  type        = bool
+  default     = false
+  description = "Whether to enable vault service."
+}
 variable "vault_type" {
   type        = string
   default     = "DEFAULT"
