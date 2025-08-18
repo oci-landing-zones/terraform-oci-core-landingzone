@@ -12,7 +12,7 @@ variableGroups:
     variables:
       - "workload_compartment_name"
       - "service_label"
-      - "home_region"
+      - "region"
       - "parent_compartment_ocid"
       - "isolate_workload"
       - "network_compartment_ocid"
@@ -72,9 +72,9 @@ variables:
     description: "A unique label that gets prepended to all resources deployed by the Landing Zone. Max length: 15 characters."
     required: true
 
-  home_region:
+  region:
     type: oci:identity:region:name
-    title: "Home Region"
+    title: "Region"
     description: "The region for resources deployment."
     required: true
 
