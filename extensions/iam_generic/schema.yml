@@ -10,9 +10,9 @@ locale: "en"
 variableGroups:
   - title: "General"
     variables:
+      - "region"
       - "workload_compartment_name"
       - "service_label"
-      - "region"
       - "parent_compartment_ocid"
       - "isolate_workload"
       - "network_compartment_ocid"
