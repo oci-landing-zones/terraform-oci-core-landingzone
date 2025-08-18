@@ -7,8 +7,8 @@ locals {
   #------------------------------------------------------------------------------------------------------
   #-- Vault
   custom_vault_name          = null
-  custom_vault_key           = null
   custom_vault_type          = null
+  custom_vault_key           = null
   custom_vault_defined_tags  = null
   custom_vault_freeform_tags = null
 
@@ -25,9 +25,11 @@ locals {
 
     vaults = {
       (local.vault_key) = {
-        name          = local.vault_name
-        defined_tags  = local.vault_defined_tags
-        freeform_tags = local.vault_freeform_tags
+        name           = local.vault_name
+        type           = local.vault_type
+        replica_region = var.vault_replica_region
+        defined_tags   = local.vault_defined_tags
+        freeform_tags  = local.vault_freeform_tags
       }
     }
     keys = merge(local.managed_sch_bucket_key, local.managed_nfw_key, local.managed_jumphost_key)
@@ -41,8 +43,8 @@ locals {
 #---------------------------------------------------------------------------
 module "lz_vault" {
   source     = "github.com/oci-landing-zones/terraform-oci-modules-security//vaults?ref=v0.2.0"
-  depends_on = [time_sleep.wait_on_services_policy]
   count      = local.enable_vault ? 1 : 0
+  depends_on = [time_sleep.wait_on_services_policy]
   providers = {
     oci      = oci
     oci.home = oci.home
@@ -68,18 +70,15 @@ locals {
   #-- Vault
   default_vault_name          = "${var.service_label}-vault"
   default_vault_key           = "VIRTUAL-VAULT"
-  default_vault_type          = "DEFAULT"
   default_vault_defined_tags  = null
   default_vault_freeform_tags = local.landing_zone_tags
 
   vault_name          = local.custom_vault_name != null ? local.custom_vault_name : local.default_vault_name
   vault_key           = local.custom_vault_key != null ? local.custom_vault_key : local.default_vault_key
-  vault_type          = local.custom_vault_type != null ? local.custom_vault_type : local.default_vault_type
+  vault_type          = local.custom_vault_type != null ? local.custom_vault_type : var.vault_type
   vault_defined_tags  = local.custom_vault_defined_tags != null ? local.custom_vault_defined_tags : local.default_vault_defined_tags
   vault_freeform_tags = local.custom_vault_freeform_tags != null ? merge(local.custom_vault_freeform_tags, local.default_vault_freeform_tags) : local.default_vault_freeform_tags
-
-  enable_vault = var.cis_level == "2" ? true : false
-
+  enable_vault        = var.cis_level == "2" || var.enable_vault == true ? true : false
   #-- Keys
   default_sch_bucket_key_name = "${var.service_label}-sch-bucket-key"
   sch_bucket_key_name         = local.custom_sch_bucket_key_name != null ? local.custom_sch_bucket_key_name : local.default_sch_bucket_key_name

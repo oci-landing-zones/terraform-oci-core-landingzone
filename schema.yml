@@ -555,6 +555,13 @@ variableGroups:
        - "budget_alert_email_endpoints"
     visible: display_security_logging_governance_settings 
 
+  - title: "Vault"
+    variables:
+      - "enable_vault"
+      - "vault_type"
+      - "vault_replica_region"
+    visible: display_security_logging_governance_settings
+
   - title: "Hidden Variables"
     visible: false
     variables:
@@ -5007,6 +5014,35 @@ variables:
     description: "Enter the Jumphost subnet CIDR block. It must be within the Hub (DMZ) VCN CIDR block."
     required: false
     visible: customize_jumphost_subnet
+
+  enable_vault:
+    type: boolean
+    title: "Enable Vault?"
+    description: "If checked, a vault will be created."
+    required: false
+
+  vault_type:
+    type: enum
+    title: "Vault Type"
+    description: "The type of the vault. The default value type is DEFAULT."
+    required: false
+    default: "DEFAULT"
+    enum:
+      - "DEFAULT"
+      - "VIRTUAL_PRIVATE"
+    visible: enable_vault
+
+  vault_replica_region:
+    type: oci:identity:region:name
+    title: "Vault Replica Region"
+    description: "The replica region of the vault. Applicable to VIRTUAL_PRIVATE vault only."
+    required: false
+    visible:
+      and:
+        - eq:
+          - ${vault_type}
+          - "VIRTUAL_PRIVATE"
+        - enable_vault
 
 outputs:
   release:

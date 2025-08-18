@@ -226,3 +226,24 @@ variable "customize_jumphost_subnet" {
   default     = false
   description = "Set to true to set custom options for jump host subnet."
 }
+
+# ------------------------------------------------------
+# ----- Vault
+# ------------------------------------------------------
+
+variable "enable_vault" {
+  type        = bool
+  default     = false
+  description = "Whether to enable vault service. Set to true to deploy a vault."
+}
+variable "vault_type" {
+  type        = string
+  default     = "DEFAULT"
+  description = "The type of the vault. Options are 'DEFAULT' and 'VIRTUAL_PRIVATE'."
+}
+
+variable "vault_replica_region" {
+  type        = string
+  default     = null
+  description = "The replica region where the vault backup is located. Only applicable when vault_type is VIRTUAL_PRIVATE."
+}
