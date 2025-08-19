@@ -20,7 +20,7 @@ variable "private_key_password" {
   default = ""
 }
 variable "region" {
-  default = ""
+  default     = ""
   description = "The region where resources are deployed."
   type        = string
 }
