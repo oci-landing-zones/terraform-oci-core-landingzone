@@ -74,8 +74,8 @@ variables:
 
   region:
     type: oci:identity:region:name
-    title: "Region"
-    description: "The region for resources deployment."
+    title: "Home Region"
+    description: "Select the tenancy home region for resources deployment."
     required: true
 
   workload_compartment_name:
