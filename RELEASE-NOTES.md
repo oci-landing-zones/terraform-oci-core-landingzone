@@ -1,4 +1,4 @@
-# August 19, 2025 Release Notes - 1.5.3
+# August 22, 2025 Release Notes - 1.5.3
 1. Ability to customize default compartment names through input variables. See [Customizing Compartments](./DEPLOYMENT-GUIDE.md#custom-cmp) for details. 
 2. Ability to explicitly deploy Vault service and define its type through input variables. Virtual private vaults can be replicated to another region. See variables *enable_vault*, *vault_type* and *vault_replica_region* in [VARIABLES.md](./VARIABLES.md).
 3. Jump Host Compute instance configured according to CIS level setting.
