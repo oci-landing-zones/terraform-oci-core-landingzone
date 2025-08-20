@@ -58,12 +58,10 @@ module "workload_compartment" {
   source                     = "github.com/oci-landing-zones/terraform-oci-modules-iam//compartments?ref=v0.2.9"
   tenancy_ocid               = var.tenancy_ocid
   compartments_configuration = local.workload_compartment_configuration
-  providers                  = { oci = oci }
 }
 
 module "workload_sub_compartments" {
   source                     = "github.com/oci-landing-zones/terraform-oci-modules-iam//compartments?ref=v0.2.9"
   tenancy_ocid               = var.tenancy_ocid
   compartments_configuration = local.workload_sub_compartments_configuration
-  providers                  = { oci = oci }
 }
