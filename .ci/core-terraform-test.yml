@@ -1,0 +1,171 @@
+variables:
+  BUCKET_NAME: $BUCKET_NAME
+  NAMESPACE: $LZTEAM_NAMESPACE
+  PROXY_SERVER: $PROXY_SERVER
+  PR_TEST_CASES_ZIP: $PR_TEST_CASES_ZIP
+  MERGE_TEST_CASES_ZIP: $MERGE_TEST_CASES_ZIP
+  MERGE_BUCKET_NAME: $MERGE_BUCKET_NAME
+  MERGE_NAMESPACE: $MERGE_NAMESPACE
+  PAR_LOCATION: ""
+  PLAN_PIPELINE_TAR: "plan-$TIMESTAMP-$CI_PIPELINE_ID.tar.gz"
+  MERGE_PIPELINE_TAR: "merge-$TIMESTAMP-$CI_PIPELINE_ID.tar.gz"
+
+
+core-lz-prep-test-cases-pull:
+  stage: tf-prep-test-case-pull
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "push"'
+
+  script:
+    - set -o pipefail
+    - echo "  ----- BEGIN - Running Test Cases on Pull Request -----  "
+    - export https_proxy=$PROXY_SERVER:80
+    - export http_proxy=$PROXY_SERVER:80
+    - oci os object get -bn $BUCKET_NAME --file $PR_TEST_CASES_ZIP --name $PR_TEST_CASES_ZIP -ns $LZTEAM_NAMESPACE
+    - unzip $PR_TEST_CASES_ZIP
+    - export TEST_CASES_DIR=${PR_TEST_CASES_ZIP::-4}
+    - echo $TEST_CASES_DIR
+    - terraform fmt
+    - python3 /home/gitlab-runner/pipeline-tools/preprocessor.py $TEST_CASES_DIR -f tfvars.template -d . --plan
+    - echo "  ----- END - Running Test for Pull Request Cases -----  "
+
+core-lz-prep-test-cases-merge-pre:
+  stage: tf-prep-test-cases-merge-pre
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+
+  script:
+    - set -o pipefail
+    - echo "  ----- BEGIN - Running Test Cases on Pull Request -----  "
+    - export https_proxy=$PROXY_SERVER:80
+    - export http_proxy=$PROXY_SERVER:80
+    - TIMESTAMP=$(date +"%Y-%m-%dT%H-%M")
+    - echo $TIMESTAMP
+    - PLAN_PIPELINE_TAR=$plan-$TIMESTAMP-$CI_PIPELINE_ID.tar.gz
+    - oci os object get -bn $BUCKET_NAME --file $MERGE_TEST_CASES_ZIP --name $MERGE_TEST_CASES_ZIP -ns $LZTEAM_NAMESPACE
+    - unzip $MERGE_TEST_CASES_ZIP
+    - export MERGE_TEST_CASES_DIR=${MERGE_TEST_CASES_ZIP::-4}
+    - echo $MERGE_TEST_CASES_DIR
+    - terraform fmt
+    - python3 /home/gitlab-runner/pipeline-tools/preprocessor_new.py $MERGE_TEST_CASES_DIR -f tfvars.template -d . --plan --merge
+    - echo "  ----- BEGIN - Packaging Output -----  "
+    - cp *.json $MERGE_TEST_CASES_DIR
+    - tar -czvf $PLAN_PIPELINE_TAR $MERGE_TEST_CASES_DIR
+    - echo "  ----- SUCCESS - Packaging Output -----  "
+    - echo "  ----- BEGIN - Uploading Output to Bucket  -----  "
+    - UPLOAD_REQUEST=$(oci os object put -bn $MERGE_BUCKET_NAME -ns $MERGE_NAMESPACE --file $PLAN_PIPELINE_TAR --profile merge)
+    - echo $UPLOAD_REQUEST
+    - echo "  ----- SUCCESS - Uploading Output to Bucket  -----  "
+    - echo "  ----- BEGIN - Creating PAR  -----  "
+    - PAR_DATETIME=$(date --date="+24 hours" --rfc-3339=seconds)
+    - echo " PAR Expiration is - $PAR_DATETIME "
+    - PAR_LOCATION=$(oci os preauth-request create --access-type AnyObjectRead --bucket-name $MERGE_BUCKET_NAME --namespace-name $MERGE_NAMESPACE --time-expires "$PAR_DATETIME" --name $PLAN_PIPELINE_TAR --object-name $PLAN_PIPELINE_TAR --profile merge --query data.\"full-path\")
+    - echo "  ----- SUCCESS - Creating PAR  -----  "
+    - echo "  ----- PAR Location  -----  "
+    - PAR_LOCATION+=$PLAN_PIPELINE_TAR
+    - echo $PAR_LOCATION
+    - echo "  ----- BEGIN - Clean Script Execution -----  "
+    - echo $PAR_LOCATION | tr -d '"'
+    - echo "  ----- END - Running Test for Pull Request Cases -----  "
+
+
+
+core-lz-merge-test-case-1:
+  stage: tf-merge-test-case-1
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+
+  script:
+    - set -o pipefail
+    - TIMESTAMP=$(date +"%Y-%m-%dT%H-%M")
+    - echo $TIMESTAMP
+    - MERGE_PIPELINE_TAR=merge-$TIMESTAMP-$CI_PIPELINE_ID.tar.gz
+    - echo "  ----- BEGIN - Running Test Cases on Pull Request -----  "
+    - export https_proxy=$PROXY_SERVER:80
+    - export http_proxy=$PROXY_SERVER:80
+    - oci os object get -bn $BUCKET_NAME --file $MERGE_TEST_CASES_ZIP --name $MERGE_TEST_CASES_ZIP -ns $LZTEAM_NAMESPACE
+    - unzip $MERGE_TEST_CASES_ZIP
+    - export MERGE_TEST_CASES_DIR=${MERGE_TEST_CASES_ZIP::-4}
+    - echo $MERGE_TEST_CASES_DIR
+    - terraform fmt
+    - echo "  ----- BEGIN - Running CIS Compliance Script pre deployment  -----  "
+    - wget -O cis_reports.py https://raw.githubusercontent.com/oci-landing-zones/oci-cis-landingzone-quickstart/main/scripts/cis_reports.py
+    - python3 cis_reports.py -t merge --report-directory $CI_PIPELINE_ID
+    - mkdir $MERGE_TEST_CASES_DIR/predeploy
+    - mv $CI_PIPELINE_ID $MERGE_TEST_CASES_DIR/predeploy
+    - echo "  ----- BEGIN - Running Terraform Plan  -----  "
+    - python3 /home/gitlab-runner/pipeline-tools/preprocessor_new.py $MERGE_TEST_CASES_DIR -f tfvars.template -d . --plan --merge
+    - echo "  ----- SUCCESS - Running Terraform Plan  -----  "
+    - echo "  ----- BEGIN - Running Terraform Apply  -----  "
+    - python3 /home/gitlab-runner/pipeline-tools/preprocessor_new.py $MERGE_TEST_CASES_DIR -f tfvars.template -d . --apply --merge
+    - echo "  ----- SUCCESS - Running Terraform Apply  -----  "
+    - echo "  ----- BEGIN - Running CIS Compliance Script  -----  "
+    - python3 cis_reports.py -t merge --report-directory $CI_PIPELINE_ID
+    - mkdir $MERGE_TEST_CASES_DIR/postdeploy
+    - mv $CI_PIPELINE_ID $MERGE_TEST_CASES_DIR/postdeploy
+    - echo "  ----- SUCCESS - Running CIS Compliance Script  -----  "
+    - echo "  ----- BEGIN - Running Terraform Destroy  -----  "
+    - python3 /home/gitlab-runner/pipeline-tools/preprocessor_new.py $MERGE_TEST_CASES_DIR -f tfvars.template -d . --destroy --merge
+    - echo "  ----- SUCCESS - Running Terraform Destroy  -----  "
+    - echo "  ----- BEGIN - Packaging Use Case Output -----  "
+    - cp *.json $MERGE_TEST_CASES_DIR
+    - cp *.txt $MERGE_TEST_CASES_DIR
+    - tar -czvf $MERGE_PIPELINE_TAR $MERGE_TEST_CASES_DIR
+    - echo "  ----- SUCCESS - Packaging Use Case Output Output -----  "
+    - echo "  ----- BEGIN - Uploading Output to Bucket  -----  "
+    - UPLOAD_REQUEST=$(oci os object put -bn $MERGE_BUCKET_NAME -ns $MERGE_NAMESPACE --file $MERGE_PIPELINE_TAR --profile merge)
+    - echo $UPLOAD_REQUEST
+    - echo "  ----- SUCCESS - Uploading Output to Bucket  -----  "
+    - echo "  ----- BEGIN - Creating PAR  -----  "
+    - PAR_DATETIME=$(date --date="+24 hours" --rfc-3339=seconds)
+    - echo " PAR Expiration is - $PAR_DATETIME "
+    - PAR_LOCATION=$(oci os preauth-request create --access-type AnyObjectRead --bucket-name $MERGE_BUCKET_NAME --namespace-name $MERGE_NAMESPACE --time-expires "$PAR_DATETIME" --name $MERGE_PIPELINE_TAR --object-name $MERGE_PIPELINE_TAR --profile merge --query data.\"full-path\")
+    - echo "  ----- SUCCESS - Creating PAR  -----  "
+    - echo "  ----- PAR Location  -----  "
+    - PAR_LOCATION+=$MERGE_PIPELINE_TAR
+    - echo $PAR_LOCATION
+    # - echo "  ----- BEGIN - Clean Script Execution -----  "
+    # - cd /tmp 
+    # - rm -rf $PIPELINE_TAR
+    # - rm -rf $CI_PIPELINE_ID
+    - echo $PAR_LOCATION | tr -d '"'
+    - echo "  ----- END - Running Test for Merge Request Cases -----  "
+
+core-lz-merge-test-case-2:
+  stage: tf-merge-test-case-2
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+
+  script:
+    - set -o pipefail
+    - echo "  ----- BEGIN - Running Test Case 2 on MERGE Request -----  "
+    # - export https_proxy=$PROXY_SERVER:80
+    # - export http_proxy=$PROXY_SERVER:80
+    # - oci os object get -bn $BUCKET_NAME --file $MERGE_TEST_CASES_ZIP --name $MERGE_TEST_CASES_ZIP -ns $LZTEAM_NAMESPACE
+    # - unzip $MERGE_TEST_CASES_ZIP
+    # - export MERGE_TEST_CASES_DIR=${MERGE_TEST_CASES_ZIP::-4}
+    # - echo $MERGE_TEST_CASES_DIR
+    # - terraform fmt
+    # - python3 /home/gitlab-runner/pipeline-tools/preprocessor_new.py $MERGE_TEST_CASES_DIR -f tfvars.template -d . --plan --merge
+    # - python3 /home/gitlab-runner/pipeline-tools/preprocessor_new.py $MERGE_TEST_CASES_DIR -f tfvars.template -d . --apply --merge
+    # - echo "  ----- BEGIN - Running CIS Compliance Script  -----  "
+    # - wget -O cis_reports.py https://raw.githubusercontent.com/oci-landing-zones/oci-cis-landingzone-quickstart/main/scripts/cis_reports.py
+    # - python3 cis_reports.py -t merge --report-directory $CI_PIPELINE_ID
+    # - echo "  ----- SUCCESS - Running CIS Compliance Script  -----  "
+    # - echo "  ----- BEGIN - Packaging Output -----  "
+    # - echo " TAR $CI_PIPELINE_ID folder"
+    # - tar -czvf $PIPELINE_TAR $CI_PIPELINE_ID
+    # - echo "  ----- SUCCESS - Packaging Output -----  "
+    # - echo "  ----- BEGIN - Uploading Output to Bucket  -----  "
+    # - UPLOAD_REQUEST=$(oci os object put -bn $MERGE_BUCKET_NAME -ns $MERGE_NAMESPACE --file $PIPELINE_TAR --profile merge)
+    # - echo $UPLOAD_REQUEST
+    # - echo "  ----- SUCCESS - Uploading Output to Bucket  -----  "
+    # - echo "  ----- BEGIN - Creating PAR  -----  "
+    # - PAR_DATETIME=$(date --date="+24 hours" --rfc-3339=seconds)
+    # - echo " PAR Expiration is - $PAR_DATETIME "
+    # - PAR_LOCATION=$(oci os preauth-request create --access-type AnyObjectRead --bucket-name $MERGE_BUCKET_NAME --namespace-name $MERGE_NAMESPACE --time-expires "$PAR_DATETIME" --name $PIPELINE_TAR --object-name $PIPELINE_TAR --profile merge --query data.\"full-path\")
+    # - echo "  ----- SUCCESS - Creating PAR  -----  "
+    # - python3 /home/gitlab-runner/pipeline-tools/preprocessor_new.py $MERGE_TEST_CASES_DIR -f tfvars.template -d . --destroy --merge
+    # # - echo "Hello World"
+    - echo "  ----- END - Running Test Case 2 on Merge request -----  "
+
