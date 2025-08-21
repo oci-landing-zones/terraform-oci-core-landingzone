@@ -584,6 +584,7 @@ variableGroups:
       - "existing_ag_admin_group_name"
       - "lz_provenant_prefix"
       - "lz_provenant_version"
+      - "lz_provenant_label"
       - "hub_deployment"
       - "firewall_threat_log_name"
       - "firewall_threat_log_type"

@@ -167,7 +167,7 @@ locals {
   net_fw_app_dynamic_group = length(trimspace(var.existing_net_fw_app_dyn_group_name)) == 0 && local.firewall_options[var.hub_vcn_deploy_net_appliance_option] == "FORTINET" && local.enable_network_compartment == true ? {
     (local.net_fw_app_dynamic_group_key) = {
       name          = local.provided_net_fw_app_dynamic_group_name
-      description   = "Core Landing Zone dynamic group for network firewall appliances."
+      description   = "${var.lz_provenant_label} dynamic group for network firewall appliances."
       matching_rule = "ALL {resource.compartment.id = '${local.network_compartment_id}'}"
       defined_tags  = local.dynamic_groups_defined_tags
       freeform_tags = local.dynamic_groups_freeform_tags
@@ -178,7 +178,7 @@ locals {
     (local.net_fw_app_dynamic_group_key) = {
       identity_domain_id = trimspace(var.custom_id_domain_ocid)
       name               = local.provided_net_fw_app_dynamic_group_name
-      description        = "Core Landing Zone dynamic group for network firewall appliances."
+      description        = "${var.lz_provenant_label} dynamic group for network firewall appliances."
       matching_rule      = "ALL {resource.compartment.id = '${local.network_compartment_id}'}"
       defined_tags       = local.dynamic_groups_defined_tags
       freeform_tags      = local.dynamic_groups_freeform_tags

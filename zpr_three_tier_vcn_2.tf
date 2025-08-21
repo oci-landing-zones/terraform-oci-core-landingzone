@@ -41,7 +41,7 @@ locals {
 
   tt_2_zpr_policy = local.add_tt_vcn2 ? {
     ZPR-POLICY-TT-2 = {
-      description = "Core Landing Zone ZPR policy for ${var.service_label}-${coalesce(var.tt_vcn2_name, "tt-vcn-2")}-zpr-policy."
+      description = "${var.lz_provenant_label} ZPR policy for ${var.service_label}-${coalesce(var.tt_vcn2_name, "tt-vcn-2")}-zpr-policy."
       name        = "${var.service_label}-${coalesce(var.tt_vcn2_name, "tt-vcn-2")}-zpr-policy"
       statements  = concat(local.tt_2_hub_zpr_grants, local.tt_2_zpr_grants, local.tt_2_to_tt_1_zpr_grants, local.tt_2_to_tt_3_zpr_grants, local.tt_2_to_exa_1_zpr_grants, local.tt_2_to_exa_2_zpr_grants, local.tt_2_to_exa_3_zpr_grants)
     }
