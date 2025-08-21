@@ -29,7 +29,7 @@ module "lz_custom_domain_dynamic_groups" {
   count                                        = var.identity_domain_option == "Use Custom Identity Domain" && var.deploy_custom_domain_groups ? 1 : 0
   tenancy_ocid                                 = var.tenancy_ocid
   identity_domain_dynamic_groups_configuration = var.extend_landing_zone_to_new_region == false && var.identity_domain_option == "Use Custom Identity Domain" ? (local.custom_dynamic_groups_configuration != null ? local.custom_dynamic_groups_configuration : local.custom_domain_dynamic_groups_configuration) : local.empty_dynamic_groups_configuration
-  identity_domain_groups_configuration         = {}
+  identity_domain_groups_configuration         = local.empty_groups_configuration
 }
 
 locals {
