@@ -535,6 +535,13 @@ variableGroups:
       - "existing_service_connector_target_function_id"
     visible: display_security_logging_governance_settings 
 
+  - title: "Key Management: Vault Service"
+    variables:
+      - "enable_vault"
+      - "vault_type"
+      - "vault_replica_region"
+    visible: display_security_logging_governance_settings
+
   - title: "Vulnerability Scanning"
     variables:
       - "vss_create"
@@ -554,13 +561,6 @@ variableGroups:
        - "budget_amount"
        - "budget_alert_email_endpoints"
     visible: display_security_logging_governance_settings 
-
-  - title: "Vault"
-    variables:
-      - "enable_vault"
-      - "vault_type"
-      - "vault_replica_region"
-    visible: display_security_logging_governance_settings
 
   - title: "Hidden Variables"
     visible: false
