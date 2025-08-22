@@ -89,7 +89,7 @@ variable "lz_provenant_version" {
 }
 
 variable "lz_provenant_label" {
-  description = "Human-readable label used in descriptions and tags."
+  description = "Human-readable label used in resource descriptions."
   type        = string
   default     = "Core Landing Zone"
 }
