@@ -93,7 +93,7 @@ variable "lz_provenant_label" {
   type        = string
   default     = "Core Landing Zone"
   validation {
-    condition     = length(trim(var.lz_provenant_label)) > 0
+    condition     = length(var.lz_provenant_label) > 0
     error_message = "lz_provenant_label cannot be empty."
   }
 }
