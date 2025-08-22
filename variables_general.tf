@@ -89,11 +89,7 @@ variable "lz_provenant_version" {
 }
 
 variable "lz_provenant_label" {
-  description = "Human-readable label used in descriptions, display names, tags, and outputs."
+  description = "Human-readable label used in descriptions and tags."
   type        = string
   default     = "Core Landing Zone"
-  validation {
-    condition     = length(var.lz_provenant_label) > 0
-    error_message = "lz_provenant_label cannot be empty."
-  }
 }
