@@ -1,9 +1,10 @@
-# August 22, 2025 Release Notes - 1.5.3
+# August 26, 2025 Release Notes - 1.5.3
 1. Ability to customize default compartment names through input variables. See [Customizing Compartments](./DEPLOYMENT-GUIDE.md#custom-cmp) for details. 
 2. Ability to explicitly deploy Vault service and define its type through input variables. Virtual private vaults can be replicated to another region. See variables *enable_vault*, *vault_type* and *vault_replica_region* in [VARIABLES.md](./VARIABLES.md).
 3. Jump Host Compute instance configured according to CIS level setting.
 4. IAM backed module updated (v0.3.0) for user lookup optimization in custom identity domains.
-5. Generic IAM and Network provider files updated.
+5. Ability to customize Landing Zone resource descriptions via *lz_provenant_label* input variable (currently not exposed in RMS UI). 
+6. Generic IAM and Network provider files updated.
 
 # July 15, 2025 Release Notes - 1.5.2
 1. Ability to selectively deploy application and database compartments. When the compartment is suppressed from deployment, so are its associated admin group, dynamic groups and policies. See [Customizing Compartments](./DEPLOYMENT-GUIDE.md#custom-cmp) for details.

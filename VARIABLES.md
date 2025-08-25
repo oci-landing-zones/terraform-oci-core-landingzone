@@ -23,6 +23,7 @@
 | extend\_landing\_zone\_to\_new\_region | Whether Landing Zone is being extended to another region. When set to true, compartments, groups, policies and resources at the home region are not provisioned. Use this when you want to provision a Landing Zone in a new region, but reuse existing Landing Zone resources in the home region. | `bool` | `false` | no |
 | lz\_provenant\_prefix | The provenant landing zone prefix or code that identifies the client of this Landing Zone. This information goes into a freeform tag applied to all deployed resources. | `string` | `core` | no |
 | lz\_provenant\_version | The provenant landing zone version. This information goes into a freeform tag applied to all deployed resources. | `string` | `null` | no |
+| lz\_provenant\_label | Human-readable label used in resource descriptions. | `string` | `Core Landing Zone` | no |
 | service\_label | A unique label that gets prepended to all resources deployed by the Landing Zone. Max length: 15 characters. | `any` | | yes |
 | zpr\_namespace\_name | The name of ZPR security attribute namespace. | `string` | `<service_label>-zpr` | no |
 
