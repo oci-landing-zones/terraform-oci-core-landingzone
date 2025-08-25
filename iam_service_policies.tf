@@ -63,7 +63,7 @@ locals {
     ("${var.service_label}-services-policy") : {
       compartment_id   = var.tenancy_ocid
       name             = "${var.service_label}-services-policy"
-      description      = "Core Landing Zone policy for OCI services."
+      description      = "${var.lz_provenant_label} policy for OCI services."
       statements       = concat(local.cloud_guard_statements, local.vss_statements, local.os_mgmt_statements, local.keys_access_statements)
       defined_tags     = local.service_policy_defined_tags
       freeform_tags    = local.service_policy_freeform_tags
@@ -88,7 +88,7 @@ locals {
     ("${var.service_label}-oke-clusters-policy") : length(local.oke_clusters_statements) > 0 ? {
       compartment_id   = local.enclosing_compartment_id
       name             = "${var.service_label}-oke-clusters-policy"
-      description      = "Core Landing Zone policy for OKE clusters. It allows OKE clusters to use Native Pod Networking (NPN) and to use network resources in the Network compartment."
+      description      = "${var.lz_provenant_label} policy for OKE clusters. It allows OKE clusters to use Native Pod Networking (NPN) and to use network resources in the Network compartment."
       statements       = local.oke_clusters_statements
       defined_tags     = local.service_policy_defined_tags
       freeform_tags    = local.service_policy_freeform_tags

@@ -452,7 +452,7 @@ locals {
     (local.compute_agent_policy_name) = length(local.compute_agent_grants) > 0 ? {
       compartment_id = local.enclosing_compartment_id
       name           = local.compute_agent_policy_name
-      description    = "Core Landing Zone policy for ${local.appdev_computeagent_dynamic_group_name} group to manage compute agent related services."
+      description    = "${var.lz_provenant_label} policy for ${local.appdev_computeagent_dynamic_group_name} group to manage compute agent related services."
       defined_tags   = local.policies_defined_tags
       freeform_tags  = local.policies_freeform_tags
       statements     = local.compute_agent_grants
@@ -463,7 +463,7 @@ locals {
     (local.database_dynamic_group_policy_name) = length(local.autonomous_database_grants) > 0 ? {
       compartment_id = local.enclosing_compartment_id
       name           = local.database_dynamic_group_policy_name
-      description    = "Core Landing Zone policy for ${local.database_kms_dynamic_group_name} group to use Vault service."
+      description    = "${var.lz_provenant_label} policy for ${local.database_kms_dynamic_group_name} group to use Vault service."
       defined_tags   = local.policies_defined_tags
       freeform_tags  = local.policies_freeform_tags
       statements     = local.autonomous_database_grants
@@ -474,7 +474,7 @@ locals {
     (local.network_admin_policy_name) = length(local.network_admin_grants) > 0 ? {
       compartment_id = local.enclosing_compartment_id
       name           = local.network_admin_policy_name
-      description    = "Core Landing Zone policy for ${join(",", local.network_admin_group_name)} group to manage network related services."
+      description    = "${var.lz_provenant_label} policy for ${join(",", local.network_admin_group_name)} group to manage network related services."
       defined_tags   = local.policies_defined_tags
       freeform_tags  = local.policies_freeform_tags
       statements     = local.network_admin_grants
@@ -485,7 +485,7 @@ locals {
     (local.security_admin_policy_name) = length(local.security_admin_grants) > 0 ? {
       compartment_id = local.enclosing_compartment_id
       name           = local.security_admin_policy_name
-      description    = "Core Landing Zone policy for ${join(",", local.security_admin_group_name)} group to manage security related services in Landing Zone enclosing compartment (${local.policy_scope})."
+      description    = "${var.lz_provenant_label} policy for ${join(",", local.security_admin_group_name)} group to manage security related services in Landing Zone enclosing compartment (${local.policy_scope})."
       defined_tags   = local.policies_defined_tags
       freeform_tags  = local.policies_freeform_tags
       statements     = local.security_admin_grants
@@ -496,7 +496,7 @@ locals {
     (local.database_admin_policy_name) = length(local.database_admin_grants) > 0 ? {
       compartment_id = local.enclosing_compartment_id
       name           = local.database_admin_policy_name
-      description    = "Core Landing Zone policy for ${join(",", local.database_admin_group_name)} group to manage database related resources."
+      description    = "${var.lz_provenant_label} policy for ${join(",", local.database_admin_group_name)} group to manage database related resources."
       defined_tags   = local.policies_defined_tags
       freeform_tags  = local.policies_freeform_tags
       statements     = local.database_admin_grants
@@ -507,7 +507,7 @@ locals {
     (local.appdev_admin_policy_name) = length(local.appdev_admin_grants) > 0 ? {
       compartment_id = local.enclosing_compartment_id
       name           = local.appdev_admin_policy_name
-      description    = "Core Landing Zone policy for ${join(",", local.appdev_admin_group_name)} group to manage app development related services."
+      description    = "${var.lz_provenant_label} policy for ${join(",", local.appdev_admin_group_name)} group to manage app development related services."
       defined_tags   = local.policies_defined_tags
       freeform_tags  = local.policies_freeform_tags
       statements     = local.appdev_admin_grants
@@ -518,7 +518,7 @@ locals {
     (local.iam_admin_policy_name) = {
       compartment_id = local.enclosing_compartment_id
       name           = local.iam_admin_policy_name
-      description    = "Core Landing Zone policy for ${join(",", local.iam_admin_group_name)} group to manage IAM resources in Landing Zone enclosing compartment (${local.policy_scope})."
+      description    = "${var.lz_provenant_label} policy for ${join(",", local.iam_admin_group_name)} group to manage IAM resources in Landing Zone enclosing compartment (${local.policy_scope})."
       defined_tags   = local.policies_defined_tags
       freeform_tags  = local.policies_freeform_tags
       statements     = local.iam_admin_grants_on_enclosing_cmp
@@ -529,7 +529,7 @@ locals {
     (local.storage_admin_policy_name) = {
       compartment_id = local.enclosing_compartment_id
       name           = local.storage_admin_policy_name
-      description    = "Core Landing Zone policy for ${join(",", local.storage_admin_group_name)} group to manage storage resources."
+      description    = "${var.lz_provenant_label} policy for ${join(",", local.storage_admin_group_name)} group to manage storage resources."
       defined_tags   = local.policies_defined_tags
       freeform_tags  = local.policies_freeform_tags
       statements     = local.storage_admin_grants
@@ -540,7 +540,7 @@ locals {
     (local.exainfra_admin_policy_name) = length(local.exainfra_admin_grants) > 0 ? {
       compartment_id = local.enclosing_compartment_id
       name           = local.exainfra_admin_policy_name
-      description    = "Core Landing Zone policy for ${join(",", local.exainfra_admin_group_name)} group to manage Exadata infrastructures in compartment ${local.exainfra_compartment_name}."
+      description    = "${var.lz_provenant_label} policy for ${join(",", local.exainfra_admin_group_name)} group to manage Exadata infrastructures in compartment ${local.exainfra_compartment_name}."
       defined_tags   = local.policies_defined_tags
       freeform_tags  = local.policies_freeform_tags
       statements     = local.exainfra_admin_grants
@@ -551,7 +551,7 @@ locals {
     (local.net_fw_app_policy_name) = length(local.net_fw_app_grants_on_enclosing_cmp) > 0 ? {
       compartment_id = local.enclosing_compartment_id
       name           = local.net_fw_app_policy_name
-      description    = "Core Landing Zone policy for ${local.net_fw_app_dynamic_group_name} group to read compartment resources (policy for network firewall appliances)."
+      description    = "${var.lz_provenant_label} policy for ${local.net_fw_app_dynamic_group_name} group to read compartment resources (policy for network firewall appliances)."
       defined_tags   = local.policies_defined_tags
       freeform_tags  = local.policies_freeform_tags
       statements     = local.net_fw_app_grants_on_enclosing_cmp
@@ -577,7 +577,7 @@ locals {
     (local.basic_root_policy_name) = {
       compartment_id = var.tenancy_ocid
       name           = local.basic_root_policy_name
-      description    = "Core Landing Zone basic root compartment policy."
+      description    = "${var.lz_provenant_label} basic root compartment policy."
       defined_tags   = local.policies_defined_tags
       freeform_tags  = local.policies_freeform_tags
       statements     = local.basic_grants_on_root_cmp
@@ -588,7 +588,7 @@ locals {
     (local.appdev_admin_root_policy_name) = {
       compartment_id = var.tenancy_ocid
       name           = local.appdev_admin_root_policy_name
-      description    = "Core Landing Zone root compartment policy for ${join(",", local.appdev_admin_group_name)} group."
+      description    = "${var.lz_provenant_label} root compartment policy for ${join(",", local.appdev_admin_group_name)} group."
       defined_tags   = local.policies_defined_tags
       freeform_tags  = local.policies_freeform_tags
       statements     = local.appdev_admin_grants_on_root_cmp
@@ -599,7 +599,7 @@ locals {
     (local.security_admin_root_policy_name) = {
       compartment_id = var.tenancy_ocid
       name           = local.security_admin_root_policy_name
-      description    = "Core Landing Zone root compartment policy for ${join(",", local.security_admin_group_name)} group."
+      description    = "${var.lz_provenant_label} root compartment policy for ${join(",", local.security_admin_group_name)} group."
       defined_tags   = local.policies_defined_tags
       freeform_tags  = local.policies_freeform_tags
       statements     = local.security_admin_grants_on_root_cmp
@@ -610,7 +610,7 @@ locals {
     (local.network_admin_root_policy_name) = {
       compartment_id   = var.tenancy_ocid
       name             = local.network_admin_root_policy_name
-      description      = "Core Landing Zone root compartment policy for ${join(",", local.network_admin_group_name)} group."
+      description      = "${var.lz_provenant_label} root compartment policy for ${join(",", local.network_admin_group_name)} group."
       defined_tags     = local.policies_defined_tags
       freeform_tags    = local.policies_freeform_tags
       statements       = local.network_admin_grants_on_root_cmp
@@ -621,7 +621,7 @@ locals {
     (local.iam_admin_root_policy_name) = {
       compartment_id = var.tenancy_ocid
       name           = local.iam_admin_root_policy_name
-      description    = "Core Landing Zone root compartment policy for ${join(",", local.iam_admin_group_name)} group."
+      description    = "${var.lz_provenant_label} root compartment policy for ${join(",", local.iam_admin_group_name)} group."
       defined_tags   = local.policies_defined_tags
       freeform_tags  = local.policies_freeform_tags
       statements     = local.iam_admin_grants_on_root_cmp
@@ -632,7 +632,7 @@ locals {
     (local.auditor_policy_name) = {
       compartment_id = var.tenancy_ocid
       name           = local.auditor_policy_name
-      description    = "Core Landing Zone root compartment policy for ${join(",", local.auditor_group_name)} group."
+      description    = "${var.lz_provenant_label} root compartment policy for ${join(",", local.auditor_group_name)} group."
       defined_tags   = local.policies_defined_tags
       freeform_tags  = local.policies_freeform_tags
       statements = [
@@ -671,7 +671,7 @@ locals {
     (local.announcement_reader_policy_name) = {
       compartment_id = var.tenancy_ocid
       name           = local.announcement_reader_policy_name
-      description    = "Core Landing Zone root compartment policy for ${join(",", local.announcement_reader_group_name)} group."
+      description    = "${var.lz_provenant_label} root compartment policy for ${join(",", local.announcement_reader_group_name)} group."
       defined_tags   = local.policies_defined_tags
       freeform_tags  = local.policies_freeform_tags
       statements = [
@@ -685,7 +685,7 @@ locals {
     (local.cred_admin_policy_name) = {
       compartment_id = var.tenancy_ocid
       name           = local.cred_admin_policy_name
-      description    = "Core Landing Zone root compartment policy for ${join(",", local.cred_admin_group_name)} group."
+      description    = "${var.lz_provenant_label} root compartment policy for ${join(",", local.cred_admin_group_name)} group."
       defined_tags   = local.policies_defined_tags
       freeform_tags  = local.policies_freeform_tags
       statements = [
@@ -701,7 +701,7 @@ locals {
     (local.cost_admin_root_policy_name) = {
       compartment_id = var.tenancy_ocid
       name           = local.cost_admin_root_policy_name
-      description    = "Core Landing Zone root compartment policy for ${join(",", local.cost_admin_group_name)} group."
+      description    = "${var.lz_provenant_label} root compartment policy for ${join(",", local.cost_admin_group_name)} group."
       defined_tags   = local.policies_defined_tags
       freeform_tags  = local.policies_freeform_tags
       statements     = local.cost_root_permissions
@@ -712,7 +712,7 @@ locals {
     (local.access_governance_root_policy_name) = {
       compartment_id = var.tenancy_ocid
       name           = local.access_governance_root_policy_name
-      description    = "Core Landing Zone root compartment policy for ${join(",", local.ag_admin_group_name)} group."
+      description    = "${var.lz_provenant_label} root compartment policy for ${join(",", local.ag_admin_group_name)} group."
       defined_tags   = local.policies_defined_tags
       freeform_tags  = local.policies_freeform_tags
       statements     = local.access_governance_group_grants_on_root_cmp

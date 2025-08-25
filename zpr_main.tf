@@ -19,7 +19,7 @@ locals {
     namespaces = {
       ZPR-LZ-NAMESPACE = {
         compartment_id = local.enclosing_compartment_id
-        description    = "Core Landing Zone ZPR Namespace."
+        description    = "${var.lz_provenant_label} ZPR Namespace."
         name           = local.zpr_namespace_name
       }
     }

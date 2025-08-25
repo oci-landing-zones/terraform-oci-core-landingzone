@@ -25,12 +25,12 @@ locals {
     namespaces = {
       ARCH-CENTER-NAMESPACE = {
         name        = "ArchitectureCenter\\oci-core-landing-zone-${var.service_label}"
-        description = "OCI Core Landing Zone tag namespace for OCI Architecture Center."
+        description = "${var.lz_provenant_label} tag namespace for OCI Architecture Center."
         is_retired  = false
         tags = {
           ARCH-CENTER-TAG = {
             name        = "release"
-            description = "OCI Core Landing Zone tag for OCI Architecture Center."
+            description = "${var.lz_provenant_label} tag for OCI Architecture Center."
           }
         }
       }
