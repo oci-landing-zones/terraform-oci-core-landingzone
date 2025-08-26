@@ -79,7 +79,7 @@ locals {
       security_lists = merge(
         local.chosen_firewall_option != "NO" && local.chosen_firewall_option != "OCINFW" ? {
           "MGMT-SUB-SL" = {
-            display_name = "mgmt-subnet-security-list"
+            display_name  = "mgmt-subnet-security-list"
             ingress_rules = []
             egress_rules = [
               {
@@ -147,58 +147,58 @@ locals {
                 }
               },
               local.add_tt_vcn1 == true && var.tt_vcn1_attach_to_drg == true ? { for cidr in var.tt_vcn1_cidrs : "TT-VCN-1-${replace(replace(cidr, ".", ""), "/", "")}}-RULE" => {
-                description       = "Traffic destined to ${coalesce(var.tt_vcn1_name, "${var.service_label}-three-tier-vcn-1")} CIDR ${cidr} goes to ${coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_north_south_entry_point_ocid, "DRG")}."
-                destination       = "${cidr}"
-                destination_type  = "CIDR_BLOCK"
-                network_entity_id = coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_north_south_entry_point_ocid, local.void) != local.void ? coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_north_south_entry_point_ocid) : null
+                description        = "Traffic destined to ${coalesce(var.tt_vcn1_name, "${var.service_label}-three-tier-vcn-1")} CIDR ${cidr} goes to ${coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_north_south_entry_point_ocid, "DRG")}."
+                destination        = "${cidr}"
+                destination_type   = "CIDR_BLOCK"
+                network_entity_id  = coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_north_south_entry_point_ocid, local.void) != local.void ? coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_north_south_entry_point_ocid) : null
                 network_entity_key = coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_north_south_entry_point_ocid, local.void) == local.void ? "HUB-DRG" : null
                 }
               } : {},
               local.add_tt_vcn2 == true && var.tt_vcn2_attach_to_drg == true ? { for cidr in var.tt_vcn2_cidrs : "TT-VCN-2-${replace(replace(cidr, ".", ""), "/", "")}-RULE" => {
-                description       = "Traffic destined to ${coalesce(var.tt_vcn2_name, "${var.service_label}-three-tier-vcn-2")} CIDR ${cidr} goes to ${coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_north_south_entry_point_ocid, "DRG")}."
-                destination       = "${cidr}"
-                destination_type  = "CIDR_BLOCK"
-                network_entity_id = coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_north_south_entry_point_ocid, local.void) != local.void ? coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_north_south_entry_point_ocid) : null
+                description        = "Traffic destined to ${coalesce(var.tt_vcn2_name, "${var.service_label}-three-tier-vcn-2")} CIDR ${cidr} goes to ${coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_north_south_entry_point_ocid, "DRG")}."
+                destination        = "${cidr}"
+                destination_type   = "CIDR_BLOCK"
+                network_entity_id  = coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_north_south_entry_point_ocid, local.void) != local.void ? coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_north_south_entry_point_ocid) : null
                 network_entity_key = coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_north_south_entry_point_ocid, local.void) == local.void ? "HUB-DRG" : null
                 }
               } : {},
               local.add_tt_vcn3 == true && var.tt_vcn3_attach_to_drg == true ? { for cidr in var.tt_vcn3_cidrs : "TT-VCN-3-${replace(replace(cidr, ".", ""), "/", "")}-RULE" => {
-                description       = "Traffic destined to ${coalesce(var.tt_vcn3_name, "${var.service_label}-three-tier-vcn-3")} CIDR ${cidr} goes to ${coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_north_south_entry_point_ocid, "DRG")}."
-                destination       = "${cidr}"
-                destination_type  = "CIDR_BLOCK"
-                network_entity_id = coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_north_south_entry_point_ocid, local.void) != local.void ? coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_north_south_entry_point_ocid) : null
+                description        = "Traffic destined to ${coalesce(var.tt_vcn3_name, "${var.service_label}-three-tier-vcn-3")} CIDR ${cidr} goes to ${coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_north_south_entry_point_ocid, "DRG")}."
+                destination        = "${cidr}"
+                destination_type   = "CIDR_BLOCK"
+                network_entity_id  = coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_north_south_entry_point_ocid, local.void) != local.void ? coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_north_south_entry_point_ocid) : null
                 network_entity_key = coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_north_south_entry_point_ocid, local.void) == local.void ? "HUB-DRG" : null
                 }
               } : {},
               local.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true ? { for cidr in var.oke_vcn1_cidrs : "OKE-VCN-1-${replace(replace(cidr, ".", ""), "/", "")}}-RULE" => {
-                description       = "Traffic destined to ${coalesce(var.oke_vcn1_name, "${var.service_label}-oke-vcn-1")} CIDR ${cidr} goes to ${coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_north_south_entry_point_ocid, "DRG")}."
-                destination       = "${cidr}"
-                destination_type  = "CIDR_BLOCK"
-                network_entity_id = coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_north_south_entry_point_ocid, local.void) != local.void ? coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_north_south_entry_point_ocid) : null
+                description        = "Traffic destined to ${coalesce(var.oke_vcn1_name, "${var.service_label}-oke-vcn-1")} CIDR ${cidr} goes to ${coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_north_south_entry_point_ocid, "DRG")}."
+                destination        = "${cidr}"
+                destination_type   = "CIDR_BLOCK"
+                network_entity_id  = coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_north_south_entry_point_ocid, local.void) != local.void ? coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_north_south_entry_point_ocid) : null
                 network_entity_key = coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_north_south_entry_point_ocid, local.void) == local.void ? "HUB-DRG" : null
                 }
               } : {},
               local.add_oke_vcn2 == true && var.oke_vcn2_attach_to_drg == true ? { for cidr in var.oke_vcn2_cidrs : "OKE-VCN-2-${replace(replace(cidr, ".", ""), "/", "")}}-RULE" => {
-                description       = "Traffic destined to ${coalesce(var.oke_vcn2_name, "${var.service_label}-oke-vcn-2")} CIDR ${cidr} goes to ${coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_north_south_entry_point_ocid, "DRG")}."
-                destination       = "${cidr}"
-                destination_type  = "CIDR_BLOCK"
-                network_entity_id = coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_north_south_entry_point_ocid, local.void) != local.void ? coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_north_south_entry_point_ocid) : null
+                description        = "Traffic destined to ${coalesce(var.oke_vcn2_name, "${var.service_label}-oke-vcn-2")} CIDR ${cidr} goes to ${coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_north_south_entry_point_ocid, "DRG")}."
+                destination        = "${cidr}"
+                destination_type   = "CIDR_BLOCK"
+                network_entity_id  = coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_north_south_entry_point_ocid, local.void) != local.void ? coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_north_south_entry_point_ocid) : null
                 network_entity_key = coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_north_south_entry_point_ocid, local.void) == local.void ? "HUB-DRG" : null
                 }
               } : {},
               local.add_oke_vcn3 == true && var.oke_vcn3_attach_to_drg == true ? { for cidr in var.oke_vcn3_cidrs : "OKE-VCN-3-${replace(replace(cidr, ".", ""), "/", "")}}-RULE" => {
-                description       = "Traffic destined to ${coalesce(var.oke_vcn3_name, "${var.service_label}-oke-vcn-3")} CIDR ${cidr} goes to ${coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_north_south_entry_point_ocid, "DRG")}."
-                destination       = "${cidr}"
-                destination_type  = "CIDR_BLOCK"
-                network_entity_id = coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_north_south_entry_point_ocid, local.void) != local.void ? coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_north_south_entry_point_ocid) : null
+                description        = "Traffic destined to ${coalesce(var.oke_vcn3_name, "${var.service_label}-oke-vcn-3")} CIDR ${cidr} goes to ${coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_north_south_entry_point_ocid, "DRG")}."
+                destination        = "${cidr}"
+                destination_type   = "CIDR_BLOCK"
+                network_entity_id  = coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_north_south_entry_point_ocid, local.void) != local.void ? coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_north_south_entry_point_ocid) : null
                 network_entity_key = coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_north_south_entry_point_ocid, local.void) == local.void ? "HUB-DRG" : null
                 }
               } : {},
               local.workload_cidrs_public != null ? { for cidr in local.workload_cidrs_public : "PUBLIC-ACCESS-VCN-${replace(replace(cidr, ".", ""), "/", "")}}-RULE" => {
-                description = "Traffic destined to additional networks public access CIDR ${cidr} goes to ${coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_north_south_entry_point_ocid, "DRG")}."
-                destination = "${cidr}"
-                destination_type = "CIDR_BLOCK"
-                network_entity_id = coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_north_south_entry_point_ocid, local.void) != local.void ? coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_north_south_entry_point_ocid) : null
+                description        = "Traffic destined to additional networks public access CIDR ${cidr} goes to ${coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_north_south_entry_point_ocid, "DRG")}."
+                destination        = "${cidr}"
+                destination_type   = "CIDR_BLOCK"
+                network_entity_id  = coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_north_south_entry_point_ocid, local.void) != local.void ? coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_north_south_entry_point_ocid) : null
                 network_entity_key = coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_north_south_entry_point_ocid, local.void) == local.void ? "HUB-DRG" : null
                 }
               } : {}
@@ -442,7 +442,7 @@ locals {
                 }
               } : {},
               {
-                for cidr in local.combined_workload_cidrs: "WORKLOAD-${replace(replace(cidr, ".", ""), "/", "")}-RULE" => {
+                for cidr in local.combined_workload_cidrs : "WORKLOAD-${replace(replace(cidr, ".", ""), "/", "")}-RULE" => {
                   network_entity_key = "HUB-DRG"
                   description        = "Traffic destined to Workload CIDR ${cidr} goes to DRG."
                   destination        = cidr
@@ -516,17 +516,17 @@ locals {
               {
                 for cidr in var.onprem_cidrs : "ON-PREM-${replace(replace(cidr, ".", ""), "/", "")}-RULE" => {
                   network_entity_id = coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_east_west_entry_point_ocid)
-                  description        = "Traffic destined to on-premises CIDR ${cidr} goes to ${coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_east_west_entry_point_ocid)}."
-                  destination        = cidr
-                  destination_type   = "CIDR_BLOCK"
+                  description       = "Traffic destined to on-premises CIDR ${cidr} goes to ${coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_east_west_entry_point_ocid)}."
+                  destination       = cidr
+                  destination_type  = "CIDR_BLOCK"
                 } if coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_east_west_entry_point_ocid, local.void) != local.void
               },
               {
-                for cidr in local.combined_workload_cidrs: "WORKLOAD-${replace(replace(cidr, ".", ""), "/", "")}-RULE" => {
-                  network_entity_id  = coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_east_west_entry_point_ocid)
-                  description        = "Traffic destined to Workload CIDR ${cidr} goes to ${coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_east_west_entry_point_ocid)}."
-                  destination        = cidr
-                  destination_type   = "CIDR_BLOCK"
+                for cidr in local.combined_workload_cidrs : "WORKLOAD-${replace(replace(cidr, ".", ""), "/", "")}-RULE" => {
+                  network_entity_id = coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_east_west_entry_point_ocid)
+                  description       = "Traffic destined to Workload CIDR ${cidr} goes to ${coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_east_west_entry_point_ocid)}."
+                  destination       = cidr
+                  destination_type  = "CIDR_BLOCK"
                 } if coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_east_west_entry_point_ocid, local.void) != local.void
               }
             )
@@ -573,10 +573,10 @@ locals {
             route_rules = merge(
               {
                 "OSN-RULE" = {
-                    network_entity_key = "HUB-VCN-SERVICE-GATEWAY"
-                    description        = "Traffic destined to Oracle Services Network goes to service gateway."
-                    destination        = "all-services"
-                    destination_type   = "SERVICE_CIDR_BLOCK"
+                  network_entity_key = "HUB-VCN-SERVICE-GATEWAY"
+                  description        = "Traffic destined to Oracle Services Network goes to service gateway."
+                  destination        = "all-services"
+                  destination_type   = "SERVICE_CIDR_BLOCK"
                 }
               },
               (coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_east_west_entry_point_ocid, local.void) != local.void) ? {
@@ -597,10 +597,10 @@ locals {
               } : {},
               (coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_east_west_entry_point_ocid, local.void) != local.void) ? {
                 "ANYWHERE-RULE" = {
-                    description       = "All remaining traffic goes to ${coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_east_west_entry_point_ocid)}."
-                    destination       = "0.0.0.0/0"
-                    destination_type  = "CIDR_BLOCK"
-                    network_entity_id = coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_east_west_entry_point_ocid)
+                  description       = "All remaining traffic goes to ${coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_east_west_entry_point_ocid)}."
+                  destination       = "0.0.0.0/0"
+                  destination_type  = "CIDR_BLOCK"
+                  network_entity_id = coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_east_west_entry_point_ocid)
                 }
               } : {}
             )
@@ -676,7 +676,7 @@ locals {
         local.service_gateway_route_rules != {} ? {
           "HUB-VCN-SERVICE-GATEWAY-ROUTE-TABLE" = {
             display_name = "service-gateway-route-table"
-            route_rules = local.service_gateway_route_rules
+            route_rules  = local.service_gateway_route_rules
           }
         } : {}
       ) # closing Route Table merge function
@@ -687,11 +687,11 @@ locals {
             display_name = "outdoor-nlb-nsg"
             ingress_rules = {
               "INGRESS-FROM-LBR-NSG-RULE" = {
-                description  = "Ingress from App Load Balancer NSG."
-                stateless    = false
-                protocol     = "TCP"
-                src          = "HUB-VCN-APP-LOAD-BALANCER"
-                src_type     = "NETWORK_SECURITY_GROUP"
+                description = "Ingress from App Load Balancer NSG."
+                stateless   = false
+                protocol    = "TCP"
+                src         = "HUB-VCN-APP-LOAD-BALANCER"
+                src_type    = "NETWORK_SECURITY_GROUP"
               }
             }
             egress_rules = {
@@ -710,18 +710,18 @@ locals {
             display_name = "outdoor-fw-nsg"
             ingress_rules = {
               "INGRESS-FROM-OUTDOOR-NLB-NSG-RULE" = {
-                description  = "Ingress from Outdoor NLB NSG (for health checks)."
-                stateless    = false
-                protocol     = "TCP"
-                src          = "HUB-VCN-OUTDOOR-NLB-NSG"
-                src_type     = "NETWORK_SECURITY_GROUP"
+                description = "Ingress from Outdoor NLB NSG (for health checks)."
+                stateless   = false
+                protocol    = "TCP"
+                src         = "HUB-VCN-OUTDOOR-NLB-NSG"
+                src_type    = "NETWORK_SECURITY_GROUP"
               },
               "INGRESS-FROM-LBR-NSG-RULE" = {
-                description  = "Ingress from App Load Balancer NSG."
-                stateless    = false
-                protocol     = "TCP"
-                src          = "HUB-VCN-APP-LOAD-BALANCER"
-                src_type     = "NETWORK_SECURITY_GROUP"
+                description = "Ingress from App Load Balancer NSG."
+                stateless   = false
+                protocol    = "TCP"
+                src         = "HUB-VCN-APP-LOAD-BALANCER"
+                src_type    = "NETWORK_SECURITY_GROUP"
               }
             }
             egress_rules = {
@@ -1210,7 +1210,7 @@ locals {
                 }
               } : {},
               {
-                for cidr in local.combined_workload_cidrs: "EGRESS-TO-WORKLOAD-${replace(replace(cidr, ".", ""), "/", "")}-RULE" => {
+                for cidr in local.combined_workload_cidrs : "EGRESS-TO-WORKLOAD-${replace(replace(cidr, ".", ""), "/", "")}-RULE" => {
                   description  = "Egress to Workload VCN CIDR ${cidr} for SSH."
                   stateless    = false
                   protocol     = "TCP"
@@ -1459,8 +1459,8 @@ locals {
       vcn_specific_gateways = {
         internet_gateways = {
           "HUB-VCN-INTERNET-GATEWAY" = {
-            enabled         = true
-            display_name    = "internet-gateway"
+            enabled      = true
+            display_name = "internet-gateway"
           }
         }
         nat_gateways = {
@@ -1544,5 +1544,5 @@ locals {
       description        = "Traffic destined additional networks public access CIDR ${cidr} goes to DRG."
       destination        = "${cidr}"
       destination_type   = "CIDR_BLOCK"
-    } } : {})
+  } } : {})
 }

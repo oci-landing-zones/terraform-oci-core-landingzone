@@ -16,10 +16,10 @@ locals {
   identity_domain_groups_configuration = {
     default_identity_domain_id : "NEW-DOMAIN"
     groups : merge(local.iam_admin_group, local.cred_admin_group, local.cost_admin_group,
-              local.network_admin_group, local.security_admin_group,
-              local.appdev_admin_group, local.database_admin_group, local.exainfra_admin_group,
-              local.storage_admin_group, local.auditor_group, local.announcement_reader_group,
-              local.ag_admin_group)
+      local.network_admin_group, local.security_admin_group,
+      local.appdev_admin_group, local.database_admin_group, local.exainfra_admin_group,
+      local.storage_admin_group, local.auditor_group, local.announcement_reader_group,
+    local.ag_admin_group)
   }
 
   identity_domain_dynamic_groups_configuration = {

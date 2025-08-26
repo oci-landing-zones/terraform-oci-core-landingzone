@@ -201,10 +201,10 @@ data "oci_identity_tag_namespaces" "this" {
 }
 
 data "oci_core_images" "platform_oel_images" {
-    compartment_id           = var.tenancy_ocid
-    operating_system         = "Oracle Linux"
-    operating_system_version = "8"
-    shape                    = var.bastion_jump_host_instance_shape
-    sort_by                  = "TIMECREATED"
-    sort_order               = "DESC"
+  compartment_id           = var.tenancy_ocid
+  operating_system         = "Oracle Linux"
+  operating_system_version = "8"
+  shape                    = var.bastion_jump_host_instance_shape
+  sort_by                  = "TIMECREATED"
+  sort_order               = "DESC"
 }

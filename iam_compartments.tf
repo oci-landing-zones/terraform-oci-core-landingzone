@@ -165,7 +165,7 @@ locals {
     compartments : local.all_enclosed_compartments
   }
 
-  
+
   #---------------------------------------------------------------------------------------
   #----- Variables with compartment names and OCIDs per compartments module output
   #---------------------------------------------------------------------------------------

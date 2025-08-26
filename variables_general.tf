@@ -19,12 +19,12 @@ variable "private_key_password" {
 #-------------------------------------------------------
 variable "is_free_tenancy" {
   description = "Whether the tenancy is free tier. It sets the Landing Zone to not deploy Cloud Guard and Security Zones, as these services are not available in free tier tenancies. Notice that a landing zone deployment without Cloud Guard (or a similar Cloud Security Posture Monitoring tool) is by definition not compliant with CIS (Center for Internet Security) Benchmark Foundations for OCI. For enabling Cloud Guard and Security Zones in Core Landing Zone, please upgrade your tenancy to a Pay As You Go (PAYG) or enterprise account."
-  type = bool
-  default = false  
+  type        = bool
+  default     = false
 }
 variable "region" {
   description = "The region where resources are deployed."
-  type = string
+  type        = string
 }
 variable "service_label" {
   description = "A unique label that gets prepended to all resources deployed by the Landing Zone. Max length: 15 characters."
@@ -64,23 +64,23 @@ variable "zpr_namespace_name" {
   default     = null
 }
 variable "display_output" {
-  description = "Whether to display a concise set of select resource outputs with their OCIDs and names." 
+  description = "Whether to display a concise set of select resource outputs with their OCIDs and names."
   type        = bool
   default     = true
 }
 variable "display_security_logging_governance_settings" {
-  description = "When true, allows for enabling/configuring settings for some OCI Security, Logging and Governance services. Only applicable to Resource Manager deployments." 
+  description = "When true, allows for enabling/configuring settings for some OCI Security, Logging and Governance services. Only applicable to Resource Manager deployments."
   type        = bool
   default     = false
 }
 variable "lz_provenant_prefix" {
-  description   = "The provenant landing zone prefix or code that identifies the client of this Landing Zone. This information goes into a freeform tag applied to all deployed resources."
-  type          = string
-  default       = "core"
+  description = "The provenant landing zone prefix or code that identifies the client of this Landing Zone. This information goes into a freeform tag applied to all deployed resources."
+  type        = string
+  default     = "core"
   validation {
     condition     = length(regexall("^[A-Za-z][A-Za-z0-9]{1,4}$", var.lz_provenant_prefix)) > 0
     error_message = "Validation failed for lz_provenant_prefix: value must contain alphanumeric characters only, starting with a letter up to a maximum of 5 characters."
-  }  
+  }
 }
 variable "lz_provenant_version" {
   description = "The provenant landing zone version. This information goes into a freeform tag applied to all deployed resources."
