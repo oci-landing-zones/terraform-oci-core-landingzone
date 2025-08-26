@@ -535,7 +535,7 @@ locals {
       statements     = local.storage_admin_grants
     }
   } : {}
-  
+
   exainfra_policy = local.enable_exainfra_compartment ? {
     (local.exainfra_admin_policy_name) = length(local.exainfra_admin_grants) > 0 ? {
       compartment_id = local.enclosing_compartment_id
