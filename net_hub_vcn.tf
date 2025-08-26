@@ -25,7 +25,6 @@ locals {
             prohibit_internet_ingress = false
             route_table_key           = "WEB-SUBNET-ROUTE-TABLE"
             # security_list_keys        = ["HUB-VCN-SL"]
-            # security_list_keys        = ["HUB-VCN-SL"]
           }
         },
         local.chosen_firewall_option != "NO" && local.chosen_firewall_option != "OCINFW" ? {
@@ -38,7 +37,6 @@ locals {
             prohibit_internet_ingress = true
             route_table_key           = "OUTDOOR-SUBNET-ROUTE-TABLE"
             # security_list_keys        = ["HUB-VCN-SL"]
-            # security_list_keys        = ["HUB-VCN-SL"]
           }
         } : {},
         local.chosen_firewall_option != "NO" ? {
@@ -50,7 +48,6 @@ locals {
             ipv6cidr_blocks           = []
             prohibit_internet_ingress = true
             route_table_key           = "INDOOR-SUBNET-ROUTE-TABLE"
-            # security_list_keys        = ["HUB-VCN-SL"]
             # security_list_keys        = ["HUB-VCN-SL"]
           }
         } : {},
@@ -707,7 +704,6 @@ locals {
             )
           }
         } : {},
-        local.service_gateway_route_rules != {} ? {
         local.service_gateway_route_rules != {} ? {
           "HUB-VCN-SERVICE-GATEWAY-ROUTE-TABLE" = {
             display_name = "service-gateway-route-table"
@@ -1491,7 +1487,6 @@ locals {
                   dst         = "0.0.0.0/0"
                   dst_type    = "CIDR_BLOCK"
                 }
-              },
               },
               local.workload_cidrs_public != null ? { for cidr in local.workload_cidrs_public : "EGRESS-TO-WORKLOAD-${replace(replace(cidr, ".", ""), "/", "")}-RULE" => {
                 description = "Egress to additional networks public access CIDR ${cidr}."
