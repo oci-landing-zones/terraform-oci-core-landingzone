@@ -10,12 +10,10 @@ locale: "en"
 
 # URL of OCI Core Landing Zone logo icon used on Application Information tab.
 logoUrl: "https://objectstorage.us-ashburn-1.oraclecloud.com/p/TmBgCfJd3fU4V-8_YWdwtfrzXtwk2y67pjnT2xE1S00CSvv-L0ShoNebe4cs1su7/n/ociateam/b/cis-landing-zone/o/landing_zone_130.png"
-logoUrl: "https://objectstorage.us-ashburn-1.oraclecloud.com/p/TmBgCfJd3fU4V-8_YWdwtfrzXtwk2y67pjnT2xE1S00CSvv-L0ShoNebe4cs1su7/n/ociateam/b/cis-landing-zone/o/landing_zone_130.png"
 
 variableGroups:
   - title: "General"
     variables:
-      - "is_free_tenancy"
       - "is_free_tenancy"
       - "region"
       - "cis_level"
