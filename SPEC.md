@@ -8,8 +8,8 @@
 
 | Name | Version |
 |------|---------|
-| <a name="provider_oci"></a> [oci](#provider\_oci) | n/a |
-| <a name="provider_time"></a> [time](#provider\_time) | n/a |
+| <a name="provider_oci"></a> [oci](#provider\_oci) | 6.23.0 |
+| <a name="provider_time"></a> [time](#provider\_time) | 0.12.1 |
 
 ## Modules
 
@@ -170,7 +170,7 @@
 | <a name="input_exa_vcn1_attach_to_drg"></a> [exa\_vcn1\_attach\_to\_drg](#input\_exa\_vcn1\_attach\_to\_drg) | If true, the VCN is attached to a DRG, enabling cross-vcn traffic routing. | `bool` | `false` | no |
 | <a name="input_exa_vcn1_backup_subnet_cidr"></a> [exa\_vcn1\_backup\_subnet\_cidr](#input\_exa\_vcn1\_backup\_subnet\_cidr) | The Backup subnet CIDR block. It must be within the VCN CIDR blocks. | `string` | `null` | no |
 | <a name="input_exa_vcn1_backup_subnet_name"></a> [exa\_vcn1\_backup\_subnet\_name](#input\_exa\_vcn1\_backup\_subnet\_name) | The Backup subnet name. | `string` | `null` | no |
-| <a name="input_exa_vcn1_cidrs"></a> [exa\_vcn1\_cidrs](#input\_exa\_vcn1\_cidrs) | The list of CIDR blocks for the VCN. | `list(string)` | <pre>[<br>  "172.16.0.0/20"<br>]</pre> | no |
+| <a name="input_exa_vcn1_cidrs"></a> [exa\_vcn1\_cidrs](#input\_exa\_vcn1\_cidrs) | The list of CIDR blocks for the VCN. | `list(string)` | <pre>[<br/>  "172.16.0.0/20"<br/>]</pre> | no |
 | <a name="input_exa_vcn1_client_subnet_cidr"></a> [exa\_vcn1\_client\_subnet\_cidr](#input\_exa\_vcn1\_client\_subnet\_cidr) | The Client subnet CIDR block. It must be within the VCN CIDR blocks. | `string` | `null` | no |
 | <a name="input_exa_vcn1_client_subnet_name"></a> [exa\_vcn1\_client\_subnet\_name](#input\_exa\_vcn1\_client\_subnet\_name) | The Client subnet name. | `string` | `null` | no |
 | <a name="input_exa_vcn1_name"></a> [exa\_vcn1\_name](#input\_exa\_vcn1\_name) | The VCN name. If unassigned, a default name is provided. VCN label: EXA-VCN-1. | `string` | `null` | no |
@@ -179,7 +179,7 @@
 | <a name="input_exa_vcn2_attach_to_drg"></a> [exa\_vcn2\_attach\_to\_drg](#input\_exa\_vcn2\_attach\_to\_drg) | If true, the VCN is attached to a DRG, enabling cross-vcn traffic routing. | `bool` | `false` | no |
 | <a name="input_exa_vcn2_backup_subnet_cidr"></a> [exa\_vcn2\_backup\_subnet\_cidr](#input\_exa\_vcn2\_backup\_subnet\_cidr) | The Backup subnet CIDR block. It must be within the VCN CIDR blocks. | `string` | `null` | no |
 | <a name="input_exa_vcn2_backup_subnet_name"></a> [exa\_vcn2\_backup\_subnet\_name](#input\_exa\_vcn2\_backup\_subnet\_name) | The Backup subnet name. | `string` | `null` | no |
-| <a name="input_exa_vcn2_cidrs"></a> [exa\_vcn2\_cidrs](#input\_exa\_vcn2\_cidrs) | The list of CIDR blocks for the VCN. | `list(string)` | <pre>[<br>  "172.17.0.0/20"<br>]</pre> | no |
+| <a name="input_exa_vcn2_cidrs"></a> [exa\_vcn2\_cidrs](#input\_exa\_vcn2\_cidrs) | The list of CIDR blocks for the VCN. | `list(string)` | <pre>[<br/>  "172.17.0.0/20"<br/>]</pre> | no |
 | <a name="input_exa_vcn2_client_subnet_cidr"></a> [exa\_vcn2\_client\_subnet\_cidr](#input\_exa\_vcn2\_client\_subnet\_cidr) | The Client subnet CIDR block. It must be within the VCN CIDR blocks. | `string` | `null` | no |
 | <a name="input_exa_vcn2_client_subnet_name"></a> [exa\_vcn2\_client\_subnet\_name](#input\_exa\_vcn2\_client\_subnet\_name) | The Client subnet name. | `string` | `null` | no |
 | <a name="input_exa_vcn2_name"></a> [exa\_vcn2\_name](#input\_exa\_vcn2\_name) | The VCN name. If unassigned, a default name is provided. VCN label: EXA-VCN-2 | `string` | `null` | no |
@@ -188,7 +188,7 @@
 | <a name="input_exa_vcn3_attach_to_drg"></a> [exa\_vcn3\_attach\_to\_drg](#input\_exa\_vcn3\_attach\_to\_drg) | If true, the VCN is attached to a DRG, enabling cross-vcn traffic routing. | `bool` | `false` | no |
 | <a name="input_exa_vcn3_backup_subnet_cidr"></a> [exa\_vcn3\_backup\_subnet\_cidr](#input\_exa\_vcn3\_backup\_subnet\_cidr) | The Backup subnet CIDR block. It must be within the VCN CIDR blocks. | `string` | `null` | no |
 | <a name="input_exa_vcn3_backup_subnet_name"></a> [exa\_vcn3\_backup\_subnet\_name](#input\_exa\_vcn3\_backup\_subnet\_name) | The Backup subnet name. | `string` | `null` | no |
-| <a name="input_exa_vcn3_cidrs"></a> [exa\_vcn3\_cidrs](#input\_exa\_vcn3\_cidrs) | The list of CIDR blocks for the VCN. | `list(string)` | <pre>[<br>  "172.18.0.0/20"<br>]</pre> | no |
+| <a name="input_exa_vcn3_cidrs"></a> [exa\_vcn3\_cidrs](#input\_exa\_vcn3\_cidrs) | The list of CIDR blocks for the VCN. | `list(string)` | <pre>[<br/>  "172.18.0.0/20"<br/>]</pre> | no |
 | <a name="input_exa_vcn3_client_subnet_cidr"></a> [exa\_vcn3\_client\_subnet\_cidr](#input\_exa\_vcn3\_client\_subnet\_cidr) | The Client subnet CIDR block. It must be within the VCN CIDR blocks. | `string` | `null` | no |
 | <a name="input_exa_vcn3_client_subnet_name"></a> [exa\_vcn3\_client\_subnet\_name](#input\_exa\_vcn3\_client\_subnet\_name) | The Client subnet name. | `string` | `null` | no |
 | <a name="input_exa_vcn3_name"></a> [exa\_vcn3\_name](#input\_exa\_vcn3\_name) | The VCN name. If unassigned, a default name is provided. Label: EXA-VCN-3. | `string` | `null` | no |
@@ -295,7 +295,7 @@
 | <a name="input_oke_vcn1_api_subnet_cidr"></a> [oke\_vcn1\_api\_subnet\_cidr](#input\_oke\_vcn1\_api\_subnet\_cidr) | The API subnet CIDR block. It must be within the VCN CIDR blocks. | `string` | `null` | no |
 | <a name="input_oke_vcn1_api_subnet_name"></a> [oke\_vcn1\_api\_subnet\_name](#input\_oke\_vcn1\_api\_subnet\_name) | The API subnet name. | `string` | `null` | no |
 | <a name="input_oke_vcn1_attach_to_drg"></a> [oke\_vcn1\_attach\_to\_drg](#input\_oke\_vcn1\_attach\_to\_drg) | If true, the VCN is attached to a DRG, enabling cross-vcn traffic routing. | `bool` | `false` | no |
-| <a name="input_oke_vcn1_cidrs"></a> [oke\_vcn1\_cidrs](#input\_oke\_vcn1\_cidrs) | The list of CIDR blocks for the VCN. | `list(string)` | <pre>[<br>  "10.3.0.0/16"<br>]</pre> | no |
+| <a name="input_oke_vcn1_cidrs"></a> [oke\_vcn1\_cidrs](#input\_oke\_vcn1\_cidrs) | The list of CIDR blocks for the VCN. | `list(string)` | <pre>[<br/>  "10.3.0.0/16"<br/>]</pre> | no |
 | <a name="input_oke_vcn1_cni_type"></a> [oke\_vcn1\_cni\_type](#input\_oke\_vcn1\_cni\_type) | The CNI type for the OKE cluster. Valid values: 'Flannel' (default), 'Native'. If 'Native', a private subnet for pods deployment is created. | `string` | `"Flannel"` | no |
 | <a name="input_oke_vcn1_mgmt_subnet_cidr"></a> [oke\_vcn1\_mgmt\_subnet\_cidr](#input\_oke\_vcn1\_mgmt\_subnet\_cidr) | The Management subnet CIDR block. It must be within the VCN CIDR blocks. | `string` | `null` | no |
 | <a name="input_oke_vcn1_mgmt_subnet_name"></a> [oke\_vcn1\_mgmt\_subnet\_name](#input\_oke\_vcn1\_mgmt\_subnet\_name) | The Management subnet name. | `string` | `null` | no |
@@ -311,7 +311,7 @@
 | <a name="input_oke_vcn2_api_subnet_cidr"></a> [oke\_vcn2\_api\_subnet\_cidr](#input\_oke\_vcn2\_api\_subnet\_cidr) | The API subnet CIDR block. It must be within the VCN CIDR blocks. | `string` | `null` | no |
 | <a name="input_oke_vcn2_api_subnet_name"></a> [oke\_vcn2\_api\_subnet\_name](#input\_oke\_vcn2\_api\_subnet\_name) | The API subnet name. | `string` | `null` | no |
 | <a name="input_oke_vcn2_attach_to_drg"></a> [oke\_vcn2\_attach\_to\_drg](#input\_oke\_vcn2\_attach\_to\_drg) | If true, the VCN is attached to a DRG, enabling cross-vcn traffic routing. | `bool` | `false` | no |
-| <a name="input_oke_vcn2_cidrs"></a> [oke\_vcn2\_cidrs](#input\_oke\_vcn2\_cidrs) | The list of CIDR blocks for the VCN. | `list(string)` | <pre>[<br>  "10.4.0.0/16"<br>]</pre> | no |
+| <a name="input_oke_vcn2_cidrs"></a> [oke\_vcn2\_cidrs](#input\_oke\_vcn2\_cidrs) | The list of CIDR blocks for the VCN. | `list(string)` | <pre>[<br/>  "10.4.0.0/16"<br/>]</pre> | no |
 | <a name="input_oke_vcn2_cni_type"></a> [oke\_vcn2\_cni\_type](#input\_oke\_vcn2\_cni\_type) | The CNI type for the OKE cluster. Valid values: 'Flannel' (default), 'Native'. If 'Native', a private subnet for pods deployment is created. | `string` | `"Flannel"` | no |
 | <a name="input_oke_vcn2_mgmt_subnet_cidr"></a> [oke\_vcn2\_mgmt\_subnet\_cidr](#input\_oke\_vcn2\_mgmt\_subnet\_cidr) | The Management subnet CIDR block. It must be within the VCN CIDR blocks. | `string` | `null` | no |
 | <a name="input_oke_vcn2_mgmt_subnet_name"></a> [oke\_vcn2\_mgmt\_subnet\_name](#input\_oke\_vcn2\_mgmt\_subnet\_name) | The Management subnet name. | `string` | `null` | no |
@@ -327,7 +327,7 @@
 | <a name="input_oke_vcn3_api_subnet_cidr"></a> [oke\_vcn3\_api\_subnet\_cidr](#input\_oke\_vcn3\_api\_subnet\_cidr) | The API subnet CIDR block. It must be within the VCN CIDR blocks. | `string` | `null` | no |
 | <a name="input_oke_vcn3_api_subnet_name"></a> [oke\_vcn3\_api\_subnet\_name](#input\_oke\_vcn3\_api\_subnet\_name) | The API subnet name. | `string` | `null` | no |
 | <a name="input_oke_vcn3_attach_to_drg"></a> [oke\_vcn3\_attach\_to\_drg](#input\_oke\_vcn3\_attach\_to\_drg) | If true, the VCN is attached to a DRG, enabling cross-vcn traffic routing. | `bool` | `false` | no |
-| <a name="input_oke_vcn3_cidrs"></a> [oke\_vcn3\_cidrs](#input\_oke\_vcn3\_cidrs) | The list of CIDR blocks for the VCN. | `list(string)` | <pre>[<br>  "10.5.0.0/16"<br>]</pre> | no |
+| <a name="input_oke_vcn3_cidrs"></a> [oke\_vcn3\_cidrs](#input\_oke\_vcn3\_cidrs) | The list of CIDR blocks for the VCN. | `list(string)` | <pre>[<br/>  "10.5.0.0/16"<br/>]</pre> | no |
 | <a name="input_oke_vcn3_cni_type"></a> [oke\_vcn3\_cni\_type](#input\_oke\_vcn3\_cni\_type) | The CNI type for the OKE cluster. Valid values: 'Flannel' (default), 'Native'. If 'Native', a private subnet for pods deployment is created. | `string` | `"Flannel"` | no |
 | <a name="input_oke_vcn3_mgmt_subnet_cidr"></a> [oke\_vcn3\_mgmt\_subnet\_cidr](#input\_oke\_vcn3\_mgmt\_subnet\_cidr) | The Management subnet CIDR block. It must be within the VCN CIDR blocks. | `string` | `null` | no |
 | <a name="input_oke_vcn3_mgmt_subnet_name"></a> [oke\_vcn3\_mgmt\_subnet\_name](#input\_oke\_vcn3\_mgmt\_subnet\_name) | The Management subnet name. | `string` | `null` | no |
@@ -385,7 +385,7 @@
 | <a name="input_tt_vcn1_bastion_subnet_allowed_cidrs"></a> [tt\_vcn1\_bastion\_subnet\_allowed\_cidrs](#input\_tt\_vcn1\_bastion\_subnet\_allowed\_cidrs) | List of CIDR blocks allowed to SSH into the the jump host that is eventually deployed in the public Bastion subnet. Leave it empty for no access. | `list(string)` | `[]` | no |
 | <a name="input_tt_vcn1_bastion_subnet_cidr"></a> [tt\_vcn1\_bastion\_subnet\_cidr](#input\_tt\_vcn1\_bastion\_subnet\_cidr) | The Bastion subnet CIDR block. A /29 block is usually enough, unless you plan on deploying a large number of jump hosts. It must be within the VCN CIDR blocks. | `string` | `null` | no |
 | <a name="input_tt_vcn1_bastion_subnet_name"></a> [tt\_vcn1\_bastion\_subnet\_name](#input\_tt\_vcn1\_bastion\_subnet\_name) | The Bastion subnet name. | `string` | `null` | no |
-| <a name="input_tt_vcn1_cidrs"></a> [tt\_vcn1\_cidrs](#input\_tt\_vcn1\_cidrs) | The list of CIDR blocks for the VCN. | `list(string)` | <pre>[<br>  "10.0.0.0/20"<br>]</pre> | no |
+| <a name="input_tt_vcn1_cidrs"></a> [tt\_vcn1\_cidrs](#input\_tt\_vcn1\_cidrs) | The list of CIDR blocks for the VCN. | `list(string)` | <pre>[<br/>  "10.0.0.0/20"<br/>]</pre> | no |
 | <a name="input_tt_vcn1_db_subnet_cidr"></a> [tt\_vcn1\_db\_subnet\_cidr](#input\_tt\_vcn1\_db\_subnet\_cidr) | The Database subnet CIDR block. It must be within the VCN CIDR blocks. | `string` | `null` | no |
 | <a name="input_tt_vcn1_db_subnet_name"></a> [tt\_vcn1\_db\_subnet\_name](#input\_tt\_vcn1\_db\_subnet\_name) | The Database subnet name. | `string` | `null` | no |
 | <a name="input_tt_vcn1_name"></a> [tt\_vcn1\_name](#input\_tt\_vcn1\_name) | The VCN name. If unassigned, a default name is provided. VCN label: TT-VCN-1. | `string` | `null` | no |
@@ -401,7 +401,7 @@
 | <a name="input_tt_vcn2_bastion_subnet_allowed_cidrs"></a> [tt\_vcn2\_bastion\_subnet\_allowed\_cidrs](#input\_tt\_vcn2\_bastion\_subnet\_allowed\_cidrs) | List of CIDRs blocks allowed to SSH into the the jump host that is eventually deployed in the public Bastion subnet. Leave it empty for no access. | `list(string)` | `[]` | no |
 | <a name="input_tt_vcn2_bastion_subnet_cidr"></a> [tt\_vcn2\_bastion\_subnet\_cidr](#input\_tt\_vcn2\_bastion\_subnet\_cidr) | The Bastion subnet CIDR block. A /29 block is usually enough, unless you plan on deploying a large number of jump hosts. It must be within the VCN CIDR blocks. | `string` | `null` | no |
 | <a name="input_tt_vcn2_bastion_subnet_name"></a> [tt\_vcn2\_bastion\_subnet\_name](#input\_tt\_vcn2\_bastion\_subnet\_name) | The Bastion subnet name. | `string` | `null` | no |
-| <a name="input_tt_vcn2_cidrs"></a> [tt\_vcn2\_cidrs](#input\_tt\_vcn2\_cidrs) | The list of CIDR blocks for the VCN. | `list(string)` | <pre>[<br>  "10.1.0.0/20"<br>]</pre> | no |
+| <a name="input_tt_vcn2_cidrs"></a> [tt\_vcn2\_cidrs](#input\_tt\_vcn2\_cidrs) | The list of CIDR blocks for the VCN. | `list(string)` | <pre>[<br/>  "10.1.0.0/20"<br/>]</pre> | no |
 | <a name="input_tt_vcn2_db_subnet_cidr"></a> [tt\_vcn2\_db\_subnet\_cidr](#input\_tt\_vcn2\_db\_subnet\_cidr) | The Database subnet CIDR block. It must be within the VCN CIDR blocks. | `string` | `null` | no |
 | <a name="input_tt_vcn2_db_subnet_name"></a> [tt\_vcn2\_db\_subnet\_name](#input\_tt\_vcn2\_db\_subnet\_name) | The Database subnet name. | `string` | `null` | no |
 | <a name="input_tt_vcn2_name"></a> [tt\_vcn2\_name](#input\_tt\_vcn2\_name) | The VCN name. If unassigned, a default name is provided. Label: TT-VCN-2. | `string` | `null` | no |
@@ -417,7 +417,7 @@
 | <a name="input_tt_vcn3_bastion_subnet_allowed_cidrs"></a> [tt\_vcn3\_bastion\_subnet\_allowed\_cidrs](#input\_tt\_vcn3\_bastion\_subnet\_allowed\_cidrs) | List of CIDRs allowed to SSH into the the jump host that is eventually deployed in the public Bastion subnet. Leave it empty for no access. 0.0.0.0/0 is not allowed. | `list(string)` | `[]` | no |
 | <a name="input_tt_vcn3_bastion_subnet_cidr"></a> [tt\_vcn3\_bastion\_subnet\_cidr](#input\_tt\_vcn3\_bastion\_subnet\_cidr) | The Bastion subnet CIDR block. A /29 block is usually enough, unless you plan on deploying a large number of jump hosts. It must be within the VCN CIDR blocks. | `string` | `null` | no |
 | <a name="input_tt_vcn3_bastion_subnet_name"></a> [tt\_vcn3\_bastion\_subnet\_name](#input\_tt\_vcn3\_bastion\_subnet\_name) | The Bastion subnet name. | `string` | `null` | no |
-| <a name="input_tt_vcn3_cidrs"></a> [tt\_vcn3\_cidrs](#input\_tt\_vcn3\_cidrs) | The list of CIDR blocks for the VCN. | `list(string)` | <pre>[<br>  "10.2.0.0/20"<br>]</pre> | no |
+| <a name="input_tt_vcn3_cidrs"></a> [tt\_vcn3\_cidrs](#input\_tt\_vcn3\_cidrs) | The list of CIDR blocks for the VCN. | `list(string)` | <pre>[<br/>  "10.2.0.0/20"<br/>]</pre> | no |
 | <a name="input_tt_vcn3_db_subnet_cidr"></a> [tt\_vcn3\_db\_subnet\_cidr](#input\_tt\_vcn3\_db\_subnet\_cidr) | The Database subnet CIDR block. It must be within the VCN CIDR blocks. | `string` | `null` | no |
 | <a name="input_tt_vcn3_db_subnet_name"></a> [tt\_vcn3\_db\_subnet\_name](#input\_tt\_vcn3\_db\_subnet\_name) | The Database subnet name. | `string` | `null` | no |
 | <a name="input_tt_vcn3_name"></a> [tt\_vcn3\_name](#input\_tt\_vcn3\_name) | The VCN name. If unassigned, a default name is provided. Label: TT-VCN-3. | `string` | `null` | no |
@@ -433,7 +433,7 @@
 | <a name="input_vss_agent_scan_level"></a> [vss\_agent\_scan\_level](#input\_vss\_agent\_scan\_level) | Valid values: STANDARD, NONE. STANDARD enables agent-based scanning. NONE disables agent-based scanning and moots any agent related attributes. | `string` | `"STANDARD"` | no |
 | <a name="input_vss_create"></a> [vss\_create](#input\_vss\_create) | Whether Vulnerability Scanning Service recipes and targets are enabled in the Landing Zone. | `bool` | `false` | no |
 | <a name="input_vss_enable_file_scan"></a> [vss\_enable\_file\_scan](#input\_vss\_enable\_file\_scan) | Whether file scanning is enabled. | `bool` | `false` | no |
-| <a name="input_vss_folders_to_scan"></a> [vss\_folders\_to\_scan](#input\_vss\_folders\_to\_scan) | A list of folders to scan. Only applies if vss\_enable\_file\_scan is true. Currently, the Scanning service checks for vulnerabilities only in log4j and spring4shell. | `list(string)` | <pre>[<br>  "/"<br>]</pre> | no |
+| <a name="input_vss_folders_to_scan"></a> [vss\_folders\_to\_scan](#input\_vss\_folders\_to\_scan) | A list of folders to scan. Only applies if vss\_enable\_file\_scan is true. Currently, the Scanning service checks for vulnerabilities only in log4j and spring4shell. | `list(string)` | <pre>[<br/>  "/"<br/>]</pre> | no |
 | <a name="input_vss_port_scan_level"></a> [vss\_port\_scan\_level](#input\_vss\_port\_scan\_level) | Valid values: STANDARD, LIGHT, NONE. STANDARD checks the 1000 most common port numbers, LIGHT checks the 100 most common port numbers, NONE does not check for open ports. | `string` | `"STANDARD"` | no |
 | <a name="input_vss_scan_day"></a> [vss\_scan\_day](#input\_vss\_scan\_day) | The week day for the Vulnerability Scanning Service recipe, if enabled. Only applies if vss\_scan\_schedule is WEEKLY (case insensitive). | `string` | `"SUNDAY"` | no |
 | <a name="input_vss_scan_schedule"></a> [vss\_scan\_schedule](#input\_vss\_scan\_schedule) | The scan schedule for the Vulnerability Scanning Service recipe, if enabled. Valid values are WEEKLY or DAILY (case insensitive). | `string` | `"WEEKLY"` | no |

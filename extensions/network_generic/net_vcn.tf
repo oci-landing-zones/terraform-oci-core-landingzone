@@ -411,7 +411,7 @@ locals {
 }
 
 module "network" {
-  source                = "github.com/oci-landing-zones/terraform-oci-modules-networking?ref=v0.7.5"
+  source                = "github.com/oci-landing-zones/terraform-oci-modules-networking?ref=v0.7.7"
   network_configuration = local.network_configuration
   tenancy_ocid          = var.tenancy_ocid
 }
