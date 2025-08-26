@@ -23,7 +23,6 @@ locals {
             ipv6cidr_blocks           = []
             prohibit_internet_ingress = true
             route_table_key           = "OKE-VCN-2-API-SUBNET-ROUTE-TABLE"
-            # security_list_keys        = ["OKE-VCN-2-API-SUBNET-SL"]
           }
         },
         {
