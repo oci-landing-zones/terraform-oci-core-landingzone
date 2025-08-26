@@ -3,7 +3,7 @@
 
 locals {
   #--------------------------------------------------------------------------
-  #-- Any of these custom variables can be overriden in a _override.tf file
+  #-- Any of these custom variables can be overridden in a _override.tf file
   #--------------------------------------------------------------------------
   custom_policies_defined_tags  = null
   custom_policies_freeform_tags = null

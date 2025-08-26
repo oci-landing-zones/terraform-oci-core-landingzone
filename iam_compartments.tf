@@ -3,7 +3,7 @@
 
 locals {
   #------------------------------------------------------------------------------------------------------
-  #-- Any of these local variables can be overriden in a _override.tf file
+  #-- Any of these local variables can be overridden in a _override.tf file
   #------------------------------------------------------------------------------------------------------
   custom_cmps_defined_tags  = null
   custom_cmps_freeform_tags = null
@@ -164,7 +164,6 @@ locals {
     default_parent_id : local.enclosing_compartment_id
     compartments : local.all_enclosed_compartments
   }
-
 
   #---------------------------------------------------------------------------------------
   #----- Variables with compartment names and OCIDs per compartments module output

@@ -3,6 +3,7 @@
 
 locals {
 
+
   hub_vcn = local.hub_with_vcn == true ? { # local variable hub_with_vcn is defined in net_hub_drg.tf.
     "HUB-VCN" = {
       display_name                     = coalesce(var.hub_vcn_name, "${var.service_label}-hub-vcn")
@@ -108,6 +109,7 @@ locals {
             display_name = "jumphost-subnet-security-list"
             ingress_rules = flatten([
               [],
+              [],
               [{
                 description  = "Ingress from ${coalesce(var.hub_vcn_jumphost_subnet_name, "${var.service_label}-hub-vcn-jumphost-subnet")} on SSH port. Required for connecting Bastion service endpoint to Bastion jump host."
                 stateless    = false
@@ -199,6 +201,22 @@ locals {
                 destination        = "${cidr}"
                 destination_type   = "CIDR_BLOCK"
                 network_entity_id  = coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_north_south_entry_point_ocid, local.void) != local.void ? coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_north_south_entry_point_ocid) : null
+                network_entity_key = coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_north_south_entry_point_ocid, local.void) == local.void ? "HUB-DRG" : null
+                }
+              } : {},
+              local.workload_cidrs_public != null ? { for cidr in local.workload_cidrs_public : "PUBLIC-ACCESS-VCN-${replace(replace(cidr, ".", ""), "/", "")}}-RULE" => {
+                description        = "Traffic destined to additional networks public access CIDR ${cidr} goes to ${coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_north_south_entry_point_ocid, "DRG")}."
+                destination        = "${cidr}"
+                destination_type   = "CIDR_BLOCK"
+                network_entity_id  = coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_north_south_entry_point_ocid, local.void) != local.void ? coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_north_south_entry_point_ocid) : null
+                network_entity_key = coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_north_south_entry_point_ocid, local.void) == local.void ? "HUB-DRG" : null
+                }
+              } : {},
+              local.workload_cidrs_public != null ? { for cidr in local.workload_cidrs_public : "PUBLIC-ACCESS-VCN-${replace(replace(cidr, ".", ""), "/", "")}}-RULE" => {
+                description = "Traffic destined to additional networks public access CIDR ${cidr} goes to ${coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_north_south_entry_point_ocid, "DRG")}."
+                destination = "${cidr}"
+                destination_type = "CIDR_BLOCK"
+                network_entity_id = coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_north_south_entry_point_ocid, local.void) != local.void ? coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_north_south_entry_point_ocid) : null
                 network_entity_key = coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_north_south_entry_point_ocid, local.void) == local.void ? "HUB-DRG" : null
                 }
               } : {}
@@ -307,6 +325,13 @@ locals {
               local.add_exa_vcn3 == true && var.exa_vcn3_attach_to_drg == true ? { for cidr in var.exa_vcn3_cidrs : "EXA-VCN-3-${replace(replace(cidr, ".", ""), "/", "")}}-RULE" => {
                 network_entity_key = "HUB-DRG"
                 description        = "Traffic destined to ${coalesce(var.exa_vcn3_name, "${var.service_label}-exa-vcn-3")} CIDR ${cidr} goes to DRG."
+                destination        = "${cidr}"
+                destination_type   = "CIDR_BLOCK"
+                }
+              } : {},
+              local.workload_cidrs_public != null ? { for cidr in local.workload_cidrs_public : "PUBLIC-ACCESS-VCN-${replace(replace(cidr, ".", ""), "/", "")}}-RULE" => {
+                network_entity_key = "HUB-DRG"
+                description        = "Traffic destined to additional networks public access CIDR ${cidr} goes to DRG."
                 destination        = "${cidr}"
                 destination_type   = "CIDR_BLOCK"
                 }
@@ -669,6 +694,12 @@ locals {
                 description       = "Traffic destined additional networks public access CIDR ${cidr} goes to ${coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_east_west_entry_point_ocid)}."
                 destination       = "${cidr}"
                 destination_type  = "CIDR_BLOCK"
+              } } : {},
+              local.workload_cidrs_public != null ? { for cidr in local.workload_cidrs_public : "PUBLIC-ACCESS-VCN-${replace(replace(cidr, ".", ""), "/", "")}}-RULE" => {
+                network_entity_id = coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_east_west_entry_point_ocid)
+                description       = "Traffic destined additional networks public access CIDR ${cidr} goes to ${coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_east_west_entry_point_ocid)}."
+                destination       = "${cidr}"
+                destination_type  = "CIDR_BLOCK"
               } } : {}
             )
           }
@@ -835,6 +866,14 @@ locals {
                 src         = "${cidr}"
                 src_type    = "CIDR_BLOCK"
                 }
+              } : {},
+              local.workload_cidrs_public != null ? { for cidr in local.workload_cidrs_public : "INGRESS-FROM-WORKLOAD-${replace(replace(cidr, ".", ""), "/", "")}-RULE" => {
+                description = "Ingress from additional networks public access CIDR ${cidr}."
+                stateless   = false
+                protocol    = "TCP"
+                src         = "${cidr}"
+                src_type    = "CIDR_BLOCK"
+                }
               } : {}
             )
             egress_rules = {
@@ -935,6 +974,14 @@ locals {
               } : {},
               local.add_exa_vcn3 == true && var.exa_vcn3_attach_to_drg == true ? { for cidr in var.exa_vcn3_cidrs : "INGRESS-FROM-EXA-VCN-3-${replace(replace(cidr, ".", ""), "/", "")}-RULE" => {
                 description = "Ingress from ${coalesce(var.exa_vcn3_name, "${var.service_label}-exa-vcn-3")}."
+                stateless   = false
+                protocol    = "TCP"
+                src         = "${cidr}"
+                src_type    = "CIDR_BLOCK"
+                }
+              } : {},
+              local.workload_cidrs_public != null ? { for cidr in local.workload_cidrs_public : "INGRESS-FROM-WORKLOAD-${replace(replace(cidr, ".", ""), "/", "")}-RULE" => {
+                description = "Ingress from additional networks public access CIDR ${cidr}."
                 stateless   = false
                 protocol    = "TCP"
                 src         = "${cidr}"
@@ -1167,6 +1214,7 @@ locals {
               var.add_oke_vcn3 == true && var.oke_vcn3_attach_to_drg == true && local.hub_with_vcn == true && (local.chosen_firewall_option == "NO" || local.chosen_firewall_option == "OCINFW") ? {
                 "EGRESS-TO-OKE-VCN-3-WORKERS-SUBNET-RULE" = {
                   description  = "Egress to ${coalesce(var.oke_vcn3_workers_subnet_name, "${var.service_label}-oke-vcn-3-workers-subnet")}."
+                  description  = "Egress to ${coalesce(var.oke_vcn3_workers_subnet_name, "${var.service_label}-oke-vcn-3-workers-subnet")}."
                   stateless    = false
                   protocol     = "TCP"
                   dst          = coalesce(var.oke_vcn3_workers_subnet_cidr, cidrsubnet(var.oke_vcn3_cidrs[0], 8, 1))
@@ -1323,6 +1371,14 @@ locals {
                 src         = "${cidr}"
                 src_type    = "CIDR_BLOCK"
                 }
+              } : {},
+              local.workload_cidrs_public != null ? { for cidr in local.workload_cidrs_public : "INGRESS-FROM-WORKLOAD-${replace(replace(cidr, ".", ""), "/", "")}-RULE" => {
+                description = "Ingress from additional networks public access CIDR ${cidr}."
+                stateless   = false
+                protocol    = "TCP"
+                src         = "${cidr}"
+                src_type    = "CIDR_BLOCK"
+                }
               } : {}
             )
             egress_rules = merge(
@@ -1432,6 +1488,23 @@ locals {
                   dst_type    = "CIDR_BLOCK"
                 }
               },
+              local.workload_cidrs_public != null ? { for cidr in local.workload_cidrs_public : "EGRESS-TO-WORKLOAD-${replace(replace(cidr, ".", ""), "/", "")}-RULE" => {
+                description = "Egress to additional networks public access CIDR ${cidr}."
+                stateless   = false
+                protocol    = "TCP"
+                dst         = "${cidr}"
+                dst_type    = "CIDR_BLOCK"
+                }
+              } : {},
+              {
+                "EGRESS-TO-ALL-RULE" = {
+                  description = "Egress to All."
+                  stateless   = false
+                  protocol    = "TCP"
+                  dst         = "0.0.0.0/0"
+                  dst_type    = "CIDR_BLOCK"
+                }
+              },
             )
           }
         } : {},
@@ -1474,6 +1547,7 @@ locals {
           "HUB-VCN-SERVICE-GATEWAY" = {
             display_name    = "service-gateway"
             services        = "all-services"
+            route_table_key = local.service_gateway_route_rules != {} ? "HUB-VCN-SERVICE-GATEWAY-ROUTE-TABLE" : null
             route_table_key = local.service_gateway_route_rules != {} ? "HUB-VCN-SERVICE-GATEWAY-ROUTE-TABLE" : null
           }
 

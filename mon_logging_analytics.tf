@@ -38,7 +38,7 @@ module "lz_logging_analytics" {
 
 locals {
   #------------------------------------------------------------------------------------------------------
-  #-- These variables are NOT meant to be overriden
+  #-- These variables are NOT meant to be overridden
   #------------------------------------------------------------------------------------------------------
   #-- Logging Analytics tags
   default_logging_analytics_defined_tags  = null

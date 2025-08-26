@@ -45,7 +45,7 @@
 | <a name="module_lz_tags"></a> [lz\_tags](#module\_lz\_tags) | github.com/oci-landing-zones/terraform-oci-modules-governance//tags | v0.1.5 |
 | <a name="module_lz_top_compartment"></a> [lz\_top\_compartment](#module\_lz\_top\_compartment) | github.com/oci-landing-zones/terraform-oci-modules-iam//compartments | v0.3.0 |
 | <a name="module_lz_vault"></a> [lz\_vault](#module\_lz\_vault) | github.com/oci-landing-zones/terraform-oci-modules-security//vaults | v0.2.2 |
-| <a name="module_lz_zpr"></a> [lz\_zpr](#module\_lz\_zpr) | github.com/oci-landing-zones/terraform-oci-modules-security//zpr | v0.2.0 |
+| <a name="module_lz_zpr"></a> [lz\_zpr](#module\_lz\_zpr) | github.com/oci-landing-zones/terraform-oci-modules-security//zpr | v0.2.2 |
 | <a name="module_native_oci_firewall"></a> [native\_oci\_firewall](#module\_native\_oci\_firewall) | github.com/oci-landing-zones/terraform-oci-modules-networking | v0.7.7 |
 | <a name="module_oci_native_firewall_logs"></a> [oci\_native\_firewall\_logs](#module\_oci\_native\_firewall\_logs) | github.com/oci-landing-zones/terraform-oci-modules-observability//logging | v0.2.3 |
 
