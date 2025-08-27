@@ -3,7 +3,7 @@
 
 locals {
   #------------------------------------------------------------------------------------------------------
-  #-- Any of these local vars can be overriden in a _override.tf file
+  #-- Any of these local vars can be overridden in a _override.tf file
   #------------------------------------------------------------------------------------------------------
   custom_service_connector_name                      = null
   custom_service_connector_target_bucket_name        = null

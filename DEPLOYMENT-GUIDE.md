@@ -524,7 +524,11 @@ Cloud Guard is a key component in OCI secure posture management. It uses detecto
 
 ### Vaults
 
-Some customers want more control over the lifecycle of encryption keys. By default, Landing Zone provisions a *Vault* with a *Key* that is used to encrypt a sample Object Storage bucket. While this key could be used by other clients, we recommend creating different keys for security and lifecycle reasons. Currently, Landing Zone does not expose any variables to control the provisioning of vaults and keys.
+Some customers want more control over the lifecycle of encryption keys. By default, when cis_level is 2, Core Landing Zone provisions a **Vault**, and an encryption **Key** in some specific scenarios, like when Core Landing Zone also provisions storage (case of Service Connector Hub with bucket as target) or Compute instances (case of firewall appliances and jump host instances). While these keys could be used by other clients, we recommend creating different keys for security and lifecycle reasons. Currently, Core Landing Zone exposes the following variables to control vault configuration:
+
+- **enable\_vault**: whether to deploy a Vault. A Vault will be automatically enabled when cis_level is 2. Default is false.
+- **vault\_type**: the type of vault deployed. Valid values are DEFAULT or VIRTUAL_PRIVATE. Default vault_type is DEFAULT.
+- **vault\_replica\_region**: the region the vault will be replicated in. Only available if Virtual Private Vault is selected.
 
 > **_NOTE:_** Encrypting with customer-managed keys is a CIS Foundations Benchmark Level 2 requirement.
 
@@ -724,6 +728,16 @@ locals {
     provided_enclosing_compartment_name = "${var.service_label}-shared-cmp" # overrides the enclosing compartment name
 }
 ```
+
+For changing the default compartment names without using an override, users should use the following variables:
+- **custom_enclosing_compartment_name**: the user-provided enclosing compartment name.
+- **custom_network_compartment_name**: the user-provided network compartment name.
+- **custom_security_compartment_name**: the user-provided security compartment name.
+- **custom_app_compartment_name**: the user-provided app compartment name when **deploy_app_cmp** is true.
+- **custom_database_compartment_name**: the user-provided database compartment name when **deploy_database_cmp** is true.
+- **custom_exainfra_compartment_name**: the user-provided Exadata Cloud Service compartment name when **deploy_exainfa_cmp** is true.
+
+Note that the custom compartment names are taken literally, i.e., they are not concatenated with service_label variable or any other prefix.
 
 ### Supported Overrides
 

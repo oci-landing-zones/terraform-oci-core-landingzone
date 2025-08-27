@@ -83,7 +83,7 @@ variable "app_subnet_seclist_name" {
 
 variable "app_subnet_seclist_additional_ingress_rules" {
   description = "Optional additional ingress rules for the Application subnet security list."
-  type        = list(object({
+  type = list(object({
     stateless    = optional(bool),
     protocol     = string,
     description  = optional(string),
@@ -101,7 +101,7 @@ variable "app_subnet_seclist_additional_ingress_rules" {
 
 variable "app_subnet_seclist_additional_egress_rules" {
   description = "Optional additional egress rules for the Application subnet security list."
-  type        = list(object({
+  type = list(object({
     stateless    = optional(bool),
     protocol     = string,
     description  = optional(string),
@@ -125,7 +125,7 @@ variable "web_subnet_seclist_name" {
 
 variable "web_subnet_seclist_additional_ingress_rules" {
   description = "Optional additional ingress rules for the Web subnet security list."
-  type        = list(object({
+  type = list(object({
     stateless    = optional(bool),
     protocol     = string,
     description  = optional(string),
@@ -143,7 +143,7 @@ variable "web_subnet_seclist_additional_ingress_rules" {
 
 variable "web_subnet_seclist_additional_egress_rules" {
   description = "Optional additional egress rules for the Web subnet security list."
-  type        = list(object({
+  type = list(object({
     stateless    = optional(bool),
     protocol     = string,
     description  = optional(string),
@@ -167,7 +167,7 @@ variable "db_subnet_seclist_name" {
 
 variable "db_subnet_seclist_additional_ingress_rules" {
   description = "Optional additional ingress rules for the Database subnet security list."
-  type        = list(object({
+  type = list(object({
     stateless    = optional(bool),
     protocol     = string,
     description  = optional(string),
@@ -185,7 +185,7 @@ variable "db_subnet_seclist_additional_ingress_rules" {
 
 variable "db_subnet_seclist_additional_egress_rules" {
   description = "Optional additional egress rules for the Database subnet security list."
-  type        = list(object({
+  type = list(object({
     stateless    = optional(bool),
     protocol     = string,
     description  = optional(string),
@@ -209,7 +209,7 @@ variable "mgmt_subnet_seclist_name" {
 
 variable "mgmt_subnet_seclist_additional_ingress_rules" {
   description = "Optional additional ingress rules for the Management subnet security list."
-  type        = list(object({
+  type = list(object({
     stateless    = optional(bool),
     protocol     = string,
     description  = optional(string),
@@ -227,7 +227,7 @@ variable "mgmt_subnet_seclist_additional_ingress_rules" {
 
 variable "mgmt_subnet_seclist_additional_egress_rules" {
   description = "Optional additional egress rules for the Management subnet security list."
-  type        = list(object({
+  type = list(object({
     stateless    = optional(bool),
     protocol     = string,
     description  = optional(string),
@@ -251,7 +251,7 @@ variable "lb_subnet_seclist_name" {
 
 variable "lb_subnet_seclist_additional_ingress_rules" {
   description = "Optional additional ingress rules for the Load Balancer subnet security list."
-  type        = list(object({
+  type = list(object({
     stateless    = optional(bool),
     protocol     = string,
     description  = optional(string),
@@ -269,7 +269,7 @@ variable "lb_subnet_seclist_additional_ingress_rules" {
 
 variable "lb_subnet_seclist_additional_egress_rules" {
   description = "Optional additional egress rules for the Load Balancer subnet security list."
-  type        = list(object({
+  type = list(object({
     stateless    = optional(bool),
     protocol     = string,
     description  = optional(string),
@@ -293,7 +293,7 @@ variable "db_backup_subnet_seclist_name" {
 
 variable "db_backup_subnet_seclist_additional_ingress_rules" {
   description = "Optional additional ingress rules for the Database Backup subnet security list."
-  type        = list(object({
+  type = list(object({
     stateless    = optional(bool),
     protocol     = string,
     description  = optional(string),
@@ -311,7 +311,7 @@ variable "db_backup_subnet_seclist_additional_ingress_rules" {
 
 variable "db_backup_subnet_seclist_additional_egress_rules" {
   description = "Optional additional egress rules for the Database Backup subnet security list."
-  type        = list(object({
+  type = list(object({
     stateless    = optional(bool),
     protocol     = string,
     description  = optional(string),
@@ -335,7 +335,7 @@ variable "spare_subnet_seclist_name" {
 
 variable "spare_subnet_seclist_additional_ingress_rules" {
   description = "Optional additional ingress rules for the spare subnet security list."
-  type        = list(object({
+  type = list(object({
     stateless    = optional(bool),
     protocol     = string,
     description  = optional(string),
@@ -353,7 +353,7 @@ variable "spare_subnet_seclist_additional_ingress_rules" {
 
 variable "spare_subnet_seclist_additional_egress_rules" {
   description = "Optional additional egress rules for the spare subnet security list."
-  type        = list(object({
+  type = list(object({
     stateless    = optional(bool),
     protocol     = string,
     description  = optional(string),
@@ -383,7 +383,7 @@ variable "app_nsg_additional_ingress_rules" {
   }))
 
   description = "Additional ingress rules for App subnet nsg. This allows for the injection of additional optional security rules."
-  default = {}
+  default     = {}
 }
 
 variable "app_nsg_additional_egress_rules" {
@@ -400,7 +400,7 @@ variable "app_nsg_additional_egress_rules" {
   }))
 
   description = "Additional egress rules for App subnet nsg. This allows for the injection of additional optional security rules."
-  default = {}
+  default     = {}
 }
 
 
@@ -418,7 +418,7 @@ variable "web_nsg_additional_ingress_rules" {
   }))
 
   description = "Additional ingress rules for Web subnet nsg. This allows for the injection of additional optional security rules."
-  default = {}
+  default     = {}
 }
 
 variable "web_nsg_additional_egress_rules" {
@@ -435,7 +435,7 @@ variable "web_nsg_additional_egress_rules" {
   }))
 
   description = "Additional egress rules for Web subnet nsg. This allows for the injection of additional optional security rules."
-  default = {}
+  default     = {}
 }
 
 
@@ -453,7 +453,7 @@ variable "db_nsg_additional_ingress_rules" {
   }))
 
   description = "Additional ingress rules for db subnet nsg. This allows for the injection of additional optional security rules."
-  default = {}
+  default     = {}
 }
 
 variable "db_nsg_additional_egress_rules" {
@@ -470,7 +470,7 @@ variable "db_nsg_additional_egress_rules" {
   }))
 
   description = "Additional egress rules for db subnet nsg. This allows for the injection of additional optional security rules."
-  default = {}
+  default     = {}
 }
 
 
@@ -488,7 +488,7 @@ variable "mgmt_nsg_additional_ingress_rules" {
   }))
 
   description = "Additional ingress rules for the management subnet nsg. This allows for the injection of additional optional security rules."
-  default = {}
+  default     = {}
 }
 
 variable "mgmt_nsg_additional_egress_rules" {
@@ -505,7 +505,7 @@ variable "mgmt_nsg_additional_egress_rules" {
   }))
 
   description = "Additional egress rules for the management subnet nsg. This allows for the injection of additional optional security rules."
-  default = {}
+  default     = {}
 }
 
 
@@ -523,7 +523,7 @@ variable "lb_nsg_additional_ingress_rules" {
   }))
 
   description = "Additional ingress rules for the lb subnet nsg. This allows for the injection of additional optional security rules."
-  default = {}
+  default     = {}
 }
 
 variable "lb_nsg_additional_egress_rules" {
@@ -540,7 +540,7 @@ variable "lb_nsg_additional_egress_rules" {
   }))
 
   description = "Additional egress rules for the lb subnet nsg. This allows for the injection of additional optional security rules."
-  default = {}
+  default     = {}
 }
 
 
@@ -558,7 +558,7 @@ variable "db_backup_nsg_additional_ingress_rules" {
   }))
 
   description = "Additional ingress rules for the db backup subnet nsg. This allows for the injection of additional optional security rules."
-  default = {}
+  default     = {}
 }
 
 variable "db_backup_nsg_additional_egress_rules" {
@@ -575,7 +575,7 @@ variable "db_backup_nsg_additional_egress_rules" {
   }))
 
   description = "Additional egress rules for the db backup subnet nsg. This allows for the injection of additional optional security rules."
-  default = {}
+  default     = {}
 }
 
 variable "spare_nsg_additional_ingress_rules" {
@@ -592,7 +592,7 @@ variable "spare_nsg_additional_ingress_rules" {
   }))
 
   description = "Additional ingress rules for the spare subnet nsg. This allows for the injection of additional optional security rules."
-  default = {}
+  default     = {}
 }
 
 variable "spare_nsg_additional_egress_rules" {
@@ -609,7 +609,7 @@ variable "spare_nsg_additional_egress_rules" {
   }))
 
   description = "Additional egress rules for the spare subnet nsg. This allows for the injection of additional optional security rules."
-  default = {}
+  default     = {}
 }
 variable "additional_nsgs" {
   description = "Optional additional NSG."

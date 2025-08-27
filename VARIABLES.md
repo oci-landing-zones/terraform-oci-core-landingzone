@@ -23,104 +23,114 @@
 | extend\_landing\_zone\_to\_new\_region | Whether Landing Zone is being extended to another region. When set to true, compartments, groups, policies and resources at the home region are not provisioned. Use this when you want to provision a Landing Zone in a new region, but reuse existing Landing Zone resources in the home region. | `bool` | `false` | no |
 | lz\_provenant\_prefix | The provenant landing zone prefix or code that identifies the client of this Landing Zone. This information goes into a freeform tag applied to all deployed resources. | `string` | `core` | no |
 | lz\_provenant\_version | The provenant landing zone version. This information goes into a freeform tag applied to all deployed resources. | `string` | `null` | no |
+| lz\_provenant\_label | Human-readable label used in resource descriptions. | `string` | `Core Landing Zone` | no |
 | service\_label | A unique label that gets prepended to all resources deployed by the Landing Zone. Max length: 15 characters. | `any` | | yes |
 | zpr\_namespace\_name | The name of ZPR security attribute namespace. | `string` | `<service_label>-zpr` | no |
 
 ### <a name="identity"></a> Identity
 
-| Variable Name | Description | Type | Default | Required |
-|---------------|-------------|------|---------|----------|
-| custom\_id\_domain\_ocid | The existing identity domain OCID. | `string` | `null` | no |
-| deploy\_app\_cmp | Whether the application compartment is deployed. | `bool` | `true` | no |
-| deploy\_database\_cmp | Whether the database compartment is deployed. | `bool` | `true` | no |
-| deploy\_exainfra\_cmp | Whether a separate compartment for Exadata Cloud Service Infrastructure is deployed. | `bool` | `false` | no |
-| dyn\_groups\_options | IAM - Dynamic Groups | `string` | `Yes` | no |
-| enclosing\_compartment\_parent\_ocid | The existing compartment where Landing Zone enclosing compartment is created. | `string` | `null` | no |
-| existing\_ag\_admin\_group\_name | The existing group to which Access Governance management policies will be granted to. | `list(string)` | `[]` | no |
-| existing\_announcement\_reader\_group\_name | The existing group to which announcement reading policies will be granted to. | `list(string)` | `[]` | no |
-| existing\_appdev\_admin\_group\_name | The existing group to which application management policies will be granted to. | `list(string)` | `[]` | no |
-| existing\_appdev\_fun\_dyn\_group\_name | Existing appdev dynamic group. | `string` | `"` | no |
-| existing\_auditor\_group\_name | The existing group to which auditing policies will be granted to. | `list(string)` | `[]` | no |
-| existing\_compute\_agent\_dyn\_group\_name | Existing compute agent dynamic group for management agent access. | `string` | `"` | no |
-| existing\_cost\_admin\_group\_name | The existing group to which Cost management policies will be granted to. | `list(string)` | `[]` | no |
-| existing\_cred\_admin\_group\_name | The existing group to which credentials management policies will be granted to. | `list(string)` | `[]` | no |
-| existing\_database\_admin\_group\_name | The existing group to which database management policies will be granted to. | `list(string)` | `[]` | no |
-| existing\_database\_kms\_dyn\_group\_name | Existing database dynamic group for database to access keys. | `string` | `"` | no |
-| existing\_enclosing\_compartment\_ocid | The existing compartment where Landing Zone compartments (Network, Security, App, Database) are created. | `string` | `null` | no |
-| existing\_exainfra\_admin\_group\_name | The existing group to which Exadata Cloud Service infrastructure management policies will be granted to. | `list(string)` | `[]` | no |
-| existing\_iam\_admin\_group\_name | The existing group to which IAM management policies will be granted to. | `list(string)` | `[]` | no |
-| existing\_id\_domain\_appdev\_fun\_dyn\_group\_name | The existing dynamic group name in the existing identity domain for executing applications functions. | `string` | `"` | no |
-| existing\_id\_domain\_compute\_agent\_dyn\_group\_name | The existing dynamic group name in the existing identity domain for Compute agents. | `string` | `"` | no |
-| existing\_id\_domain\_database\_kms\_dyn\_group\_name | The existing dynamic group name in the existing identity domain for accessing database encryption keys. | `string` | `"` | no |
-| existing\_id\_domain\_net\_fw\_app\_dyn\_group\_name | The existing dynamic group name in the existing identity domain for running network firewall appliances. | `string` | `"` | no |
-| existing\_id\_domain\_security\_fun\_dyn\_group\_name | The existing dynamic group name in the existing identity domain for executing security functions. | `string` | `"` | no |
-| existing\_net\_fw\_app\_dyn\_group\_name | Existing network firewall appliance dynamic group for reading firewall instances. | `string` | `"` | no |
-| existing\_network\_admin\_group\_name | The existing group to which network management policies will be granted to. | `list(string)` | `[]` | no |
-| existing\_security\_admin\_group\_name | The existing group to which security management policies will be granted to. | `list(string)` | `[]` | no |
-| existing\_security\_fun\_dyn\_group\_name | Existing security dynamic group to run functions. | `string` | `"` | no |
-| existing\_storage\_admin\_group\_name | The existing group to which Storage management policies will be granted to. | `list(string)` | `[]` | no |
-| groups\_options | Whether to deploy new groups or use existing groups. | `string` | `Yes` | no |
-| identity\_domain\_option | Option to use the default identity domain, create a new identity domain or use custom identity domain. Value to use: Default Domain, New Identity Domain, Use Custom Identity Domain | `string` | `Default Domain` | yes |
-| new\_identity\_domain\_name | The name of the new identity domain if the option to create a new identity domain is chosen. | `string` | `null` | no |
-| new\_identity\_domain\_license\_type | the license type of new identity domain. Value to use: free, premium. | `string` | `null` | no |
-| policies\_in\_root\_compartment | Whether policies in the Root compartment should be created or simply used. If 'CREATE', you must be sure the user executing this stack has permissions to create policies in the Root compartment. If 'USE', policies must have been created previously. | `string` | `CREATE` | no |
-| rm\_existing\_ag\_admin\_group\_name | Only applicable to RMS deployments. The existing group to which access governance policies will be granted to. | `string` | `"` | no |
-| rm\_existing\_announcement\_reader\_group\_name | Only applicable to RMS deployments. The existing group to which announcement reader policies will be granted to. | `string` | `"` | no |
-| rm\_existing\_appdev\_admin\_group\_name | Only applicable to RMS deployments. The existing group to which application management policies will be granted to. | `string` | `"` | no |
-| rm\_existing\_auditor\_group\_name | Only applicable to RMS deployments. The existing group to which auditor policies will be granted to. | `string` | `"` | no |
-| rm\_existing\_cost\_admin\_group\_name | Only applicable to RMS deployments. The existing group to which cost management policies will be granted to. | `string` | `"` | no |
-| rm\_existing\_cred\_admin\_group\_name | Only applicable to RMS deployments. The existing group to which credentials management policies will be granted to. | `string` | `"` | no |
-| rm\_existing\_database\_admin\_group\_name | Only applicable to RMS deployments. The existing group to which database management policies will be granted to. | `string` | `"` | no |
-| rm\_existing\_exainfra\_admin\_group\_name | Only applicable to RMS deployments. The existing group to which Exadata Cloud Service infrastructure management policies will be granted to. | `string` | `"` | no |
-| rm\_existing\_iam\_admin\_group\_name | Only applicable to RMS deployments. The existing group to which IAM management policies will be granted to. | `string` | `"` | no |
-| rm\_existing\_id\_domain\_ag\_admin\_group\_name | The existing access governance admin group name in the existing identity domain. | `list(string)` | `[]` | no |
+| Variable Name                                               | Description | Type | Default | Required |
+|-------------------------------------------------------------|-------------|------|---------|----------|
+| custom\_app\_compartment\_name                              | Custom name of the app compartment. | `string` | `null` | no |
+| custom\_database\_compartment\_name                         | Custom name of the database compartment. | `string` | `null` | no |
+| custom\_enclosing\_compartment\_name                        | Custom name of the enclosing compartment. | `string` | `null` | no |
+| custom\_exainfra\_compartment\_name                         | Custom name of the exadata infrastructure compartment. | `string` | `null` | no |
+| custom\_id\_domain\_ocid                                    | The existing identity domain OCID. | `string` | `null` | no |
+| custom\_network\_compartment\_name                          | Custom name of the network compartment. | `string` | `null` | no |
+| custom\_security\_compartment\_name                         | Custom name of the security compartment. | `string` | `null` | no |
+| deploy\_app\_cmp                                            | Whether the application compartment is deployed. | `bool` | `true` | no |
+| deploy\_database\_cmp                                       | Whether the database compartment is deployed. | `bool` | `true` | no |
+| deploy\_exainfra\_cmp                                       | Whether a separate compartment for Exadata Cloud Service Infrastructure is deployed. | `bool` | `false` | no |
+| dyn\_groups\_options                                        | IAM - Dynamic Groups | `string` | `Yes` | no |
+| enclosing\_compartment\_parent\_ocid                        | The existing compartment where Landing Zone enclosing compartment is created. | `string` | `null` | no |
+| existing\_ag\_admin\_group\_name                            | The existing group to which Access Governance management policies will be granted to. | `list(string)` | `[]` | no |
+| existing\_announcement\_reader\_group\_name                 | The existing group to which announcement reading policies will be granted to. | `list(string)` | `[]` | no |
+| existing\_appdev\_admin\_group\_name                        | The existing group to which application management policies will be granted to. | `list(string)` | `[]` | no |
+| existing\_appdev\_fun\_dyn\_group\_name                     | Existing appdev dynamic group. | `string` | `"` | no |
+| existing\_auditor\_group\_name                              | The existing group to which auditing policies will be granted to. | `list(string)` | `[]` | no |
+| existing\_compute\_agent\_dyn\_group\_name                  | Existing compute agent dynamic group for management agent access. | `string` | `"` | no |
+| existing\_cost\_admin\_group\_name                          | The existing group to which Cost management policies will be granted to. | `list(string)` | `[]` | no |
+| existing\_cred\_admin\_group\_name                          | The existing group to which credentials management policies will be granted to. | `list(string)` | `[]` | no |
+| existing\_database\_admin\_group\_name                      | The existing group to which database management policies will be granted to. | `list(string)` | `[]` | no |
+| existing\_database\_kms\_dyn\_group\_name                   | Existing database dynamic group for database to access keys. | `string` | `"` | no |
+| existing\_enclosing\_compartment\_ocid                      | The existing compartment where Landing Zone compartments (Network, Security, App, Database) are created. | `string` | `null` | no |
+| existing\_exainfra\_admin\_group\_name                      | The existing group to which Exadata Cloud Service infrastructure management policies will be granted to. | `list(string)` | `[]` | no |
+| existing\_iam\_admin\_group\_name                           | The existing group to which IAM management policies will be granted to. | `list(string)` | `[]` | no |
+| existing\_id\_domain\_appdev\_fun\_dyn\_group\_name         | The existing dynamic group name in the existing identity domain for executing applications functions. | `string` | `"` | no |
+| existing\_id\_domain\_compute\_agent\_dyn\_group\_name      | The existing dynamic group name in the existing identity domain for Compute agents. | `string` | `"` | no |
+| existing\_id\_domain\_database\_kms\_dyn\_group\_name       | The existing dynamic group name in the existing identity domain for accessing database encryption keys. | `string` | `"` | no |
+| existing\_id\_domain\_net\_fw\_app\_dyn\_group\_name        | The existing dynamic group name in the existing identity domain for running network firewall appliances. | `string` | `"` | no |
+| existing\_id\_domain\_security\_fun\_dyn\_group\_name       | The existing dynamic group name in the existing identity domain for executing security functions. | `string` | `"` | no |
+| existing\_net\_fw\_app\_dyn\_group\_name                    | Existing network firewall appliance dynamic group for reading firewall instances. | `string` | `"` | no |
+| existing\_network\_admin\_group\_name                       | The existing group to which network management policies will be granted to. | `list(string)` | `[]` | no |
+| existing\_security\_admin\_group\_name                      | The existing group to which security management policies will be granted to. | `list(string)` | `[]` | no |
+| existing\_security\_fun\_dyn\_group\_name                   | Existing security dynamic group to run functions. | `string` | `"` | no |
+| existing\_storage\_admin\_group\_name                       | The existing group to which Storage management policies will be granted to. | `list(string)` | `[]` | no |
+| groups\_options                                             | Whether to deploy new groups or use existing groups. | `string` | `Yes` | no |
+| identity\_domain\_option                                    | Option to use the default identity domain, create a new identity domain or use custom identity domain. Value to use: Default Domain, New Identity Domain, Use Custom Identity Domain | `string` | `Default Domain` | yes |
+| new\_identity\_domain\_name                                 | The name of the new identity domain if the option to create a new identity domain is chosen. | `string` | `null` | no |
+| new\_identity\_domain\_license\_type                        | the license type of new identity domain. Value to use: free, premium. | `string` | `null` | no |
+| policies\_in\_root\_compartment                             | Whether policies in the Root compartment should be created or simply used. If 'CREATE', you must be sure the user executing this stack has permissions to create policies in the Root compartment. If 'USE', policies must have been created previously. | `string` | `CREATE` | no |
+| rm\_existing\_ag\_admin\_group\_name                        | Only applicable to RMS deployments. The existing group to which access governance policies will be granted to. | `string` | `"` | no |
+| rm\_existing\_announcement\_reader\_group\_name             | Only applicable to RMS deployments. The existing group to which announcement reader policies will be granted to. | `string` | `"` | no |
+| rm\_existing\_appdev\_admin\_group\_name                    | Only applicable to RMS deployments. The existing group to which application management policies will be granted to. | `string` | `"` | no |
+| rm\_existing\_auditor\_group\_name                          | Only applicable to RMS deployments. The existing group to which auditor policies will be granted to. | `string` | `"` | no |
+| rm\_existing\_cost\_admin\_group\_name                      | Only applicable to RMS deployments. The existing group to which cost management policies will be granted to. | `string` | `"` | no |
+| rm\_existing\_cred\_admin\_group\_name                      | Only applicable to RMS deployments. The existing group to which credentials management policies will be granted to. | `string` | `"` | no |
+| rm\_existing\_database\_admin\_group\_name                  | Only applicable to RMS deployments. The existing group to which database management policies will be granted to. | `string` | `"` | no |
+| rm\_existing\_exainfra\_admin\_group\_name                  | Only applicable to RMS deployments. The existing group to which Exadata Cloud Service infrastructure management policies will be granted to. | `string` | `"` | no |
+| rm\_existing\_iam\_admin\_group\_name                       | Only applicable to RMS deployments. The existing group to which IAM management policies will be granted to. | `string` | `"` | no |
+| rm\_existing\_id\_domain\_ag\_admin\_group\_name            | The existing access governance admin group name in the existing identity domain. | `list(string)` | `[]` | no |
 | rm\_existing\_id\_domain\_announcement\_reader\_group\_name | The existing announcement readers group name in the existing identity domain. | `list(string)` | `[]` | no |
-| rm\_existing\_id\_domain\_appdev\_admin\_group\_name | The existing applications admin group name in the existing identity domain. | `list(string)` | `[]` | no |
-| rm\_existing\_id\_domain\_auditor\_group\_name | The existing auditor group name in the existing identity domain. | `list(string)` | `[]` | no |
-| rm\_existing\_id\_domain\_cost\_admin\_group\_name | The existing cost admin group name in the existing identity domain. | `list(string)` | `[]` | no |
-| rm\_existing\_id\_domain\_cred\_admin\_group\_name | The existing credentials admin group name in the existing identity domain. | `list(string)` | `[]` | no |
-| rm\_existing\_id\_domain\_database\_admin\_group\_name | The existing database admin group name in the existing identity domain. | `list(string)` | `[]` | no |
-| rm\_existing\_id\_domain\_exainfra\_admin\_group\_name | The existing Exadata CS infrastructure admin group name in the existing identity domain. | `list(string)` | `[]` | no |
-| rm\_existing\_id\_domain\_iam\_admin\_group\_name | The existing IAM admin group name in the existing identity domain. | `list(string)` | `[]` | no |
-| rm\_existing\_id\_domain\_network\_admin\_group\_name | The existing network admin group name in the existing identity domain. | `list(string)` | `[]` | no |
-| rm\_existing\_id\_domain\_security\_admin\_group\_name | The existing security admin group name in the existing identity domain. | `list(string)` | `[]` | no |
-| rm\_existing\_id\_domain\_storage\_admin\_group\_name | The existing storage admin group name in the existing identity domain. | `list(string)` | `[]` | no |
-| rm\_existing\_network\_admin\_group\_name | Only applicable to RMS deployments. The existing group to which network management policies will be granted to. | `string` | `"` | no |
-| rm\_existing\_security\_admin\_group\_name | Only applicable to RMS deployments. The existing group to which security policies will be granted to. | `string` | `"` | no |
-| rm\_existing\_storage\_admin\_group\_name | Only applicable to RMS deployments. The existing group to which storage management policies will be granted to. | `string` | `"` | no |
+| rm\_existing\_id\_domain\_appdev\_admin\_group\_name        | The existing applications admin group name in the existing identity domain. | `list(string)` | `[]` | no |
+| rm\_existing\_id\_domain\_auditor\_group\_name              | The existing auditor group name in the existing identity domain. | `list(string)` | `[]` | no |
+| rm\_existing\_id\_domain\_cost\_admin\_group\_name          | The existing cost admin group name in the existing identity domain. | `list(string)` | `[]` | no |
+| rm\_existing\_id\_domain\_cred\_admin\_group\_name          | The existing credentials admin group name in the existing identity domain. | `list(string)` | `[]` | no |
+| rm\_existing\_id\_domain\_database\_admin\_group\_name      | The existing database admin group name in the existing identity domain. | `list(string)` | `[]` | no |
+| rm\_existing\_id\_domain\_exainfra\_admin\_group\_name      | The existing Exadata CS infrastructure admin group name in the existing identity domain. | `list(string)` | `[]` | no |
+| rm\_existing\_id\_domain\_iam\_admin\_group\_name           | The existing IAM admin group name in the existing identity domain. | `list(string)` | `[]` | no |
+| rm\_existing\_id\_domain\_network\_admin\_group\_name       | The existing network admin group name in the existing identity domain. | `list(string)` | `[]` | no |
+| rm\_existing\_id\_domain\_security\_admin\_group\_name      | The existing security admin group name in the existing identity domain. | `list(string)` | `[]` | no |
+| rm\_existing\_id\_domain\_storage\_admin\_group\_name       | The existing storage admin group name in the existing identity domain. | `list(string)` | `[]` | no |
+| rm\_existing\_network\_admin\_group\_name                   | Only applicable to RMS deployments. The existing group to which network management policies will be granted to. | `string` | `"` | no |
+| rm\_existing\_security\_admin\_group\_name                  | Only applicable to RMS deployments. The existing group to which security policies will be granted to. | `string` | `"` | no |
+| rm\_existing\_storage\_admin\_group\_name                   | Only applicable to RMS deployments. The existing group to which storage management policies will be granted to. | `string` | `"` | no |
 
 ### <a name="security"></a> Security
 
-| Variable Name | Description | Type | Default | Required |
-|---------------|-------------|------|---------|----------|
-| bastion\_jump\_host\_boot\_volume\_size | The boot volume size (in GB) for the bastion jump host instance. | `number` | `60` | no |
-| bastion\_jump\_host\_custom\_image\_ocid | The custom image ocid of the user-provided bastion jump host instance. The custom image takes precedence over marketplace image. | `string` | `null` | no |
-| bastion\_jump\_host\_flex\_shape\_cpu | The number of OCPUs for the selected flex shape. Applicable to flexible shapes only. | `number` | `2` | no |
-| bastion\_jump\_host\_flex\_shape\_memory | The amount of memory (in GB) for the selected flex shape. Applicable to flexible shapes only. | `number` | `56` | no |
-| bastion\_jump\_host\_instance\_name | The display name of the bastion jump host instance. | `string` | `bastion-jump-host-instance` | no |
-| bastion\_jump\_host\_instance\_shape | The instance shape for the bastion jump host instance. | `string` | `VM.Standard.E4.Flex` | no |
+| Variable Name                                   | Description | Type | Default | Required |
+|-------------------------------------------------|-------------|------|---------|----------|
+| bastion\_jump\_host\_boot\_volume\_size         | The boot volume size (in GB) for the bastion jump host instance. | `number` | `60` | no |
+| bastion\_jump\_host\_custom\_image\_ocid        | The custom image ocid of the user-provided bastion jump host instance. The custom image takes precedence over marketplace image. | `string` | `null` | no |
+| bastion\_jump\_host\_flex\_shape\_cpu           | The number of OCPUs for the selected flex shape. Applicable to flexible shapes only. | `number` | `2` | no |
+| bastion\_jump\_host\_flex\_shape\_memory        | The amount of memory (in GB) for the selected flex shape. Applicable to flexible shapes only. | `number` | `56` | no |
+| bastion\_jump\_host\_instance\_name             | The display name of the bastion jump host instance. | `string` | `bastion-jump-host-instance` | no |
+| bastion\_jump\_host\_instance\_shape            | The instance shape for the bastion jump host instance. | `string` | `VM.Standard.E4.Flex` | no |
 | bastion\_jump\_host\_marketplace\_image\_option | Options to select a jump host marketplace image. Either `Oracle Linux 8 STIG (Free)`, or `CIS Hardened Image Level 1 on Oracle Linux 8 (Paid)`. | `string` | `null` | no |
-| bastion\_jump\_host\_ssh\_public\_key\_path | The SSH public key to login to bastion jump host instance. | `string` | `null`| no |
-| bastion\_service\_allowed\_cidrs | List of the bastion service allowed cidrs. | `list(string)` | `[/]` | no |
-| bastion\_service\_name | The bastion service name. | `string` | `null` | no |
-| cloud\_guard\_admin\_email\_endpoints | List of email addresses for Cloud Guard related notifications. | `list(string)` | `[]` | no |
-| cloud\_guard\_reporting\_region | Cloud Guard reporting region, where Cloud Guard reporting resources are kept. If not set, it defaults to home region. | `string` | `null` | no |
-| cloud\_guard\_risk\_level\_threshold | Determines the minimum Risk level that triggers sending Cloud Guard problems to the defined Cloud Guard Email Endpoint. E.g. a setting of High will send notifications for Critical and High problems. | `string` | `High` | no |
-| deploy\_bastion\_jump\_host | The option to deploy the bastion jump host. | `bool` | `false` | no |
-| deploy\_bastion\_service | The option to deploy the bastion service. | `bool` | `false` | no |
-| enable\_cloud\_guard | Determines whether the Cloud Guard service should be enabled. If true, Cloud Guard is enabled and the Root compartment is configured with a Cloud Guard target, as long as there is no pre-existing Cloud Guard target for the Root compartment (or target creation will fail). If Cloud Guard is already enabled and a target exists for the Root compartment, set this variable to false. | `bool` | `true` | no |
-| enable\_cloud\_guard\_cloned\_recipes | Whether cloned recipes are attached to the managed Cloud Guard target. If false, Oracle managed recipes are attached. | `bool` | `true` | no |
-| enable\_security\_zones | Determines if Security Zones are enabled in Landing Zone. When set to true, the Security Zone is enabled for the enclosing compartment. If no enclosing compartment is used, then the Security Zone is not enabled. | `bool` | `false` | no |
-| security\_zones\_reporting\_region | The reporting region of security zones. It defaults to tenancy home region if undefined. | `string` | `null` | no |
-| sz\_security\_policies | Additional Security Zones Policy OCIDs to add to security zone recipe (The default policies are added based on CIS level). To get a Security Zone policy OCID use the oci cli: oci cloud-guard security-policy-collection list-security-policies --compartment-id <tenancy-ocid>. | `list(string)` | `[]` | no |
+| bastion\_jump\_host\_ssh\_public\_key\_path     | The SSH public key to login to bastion jump host instance. | `string` | `null`| no |
+| bastion\_service\_allowed\_cidrs                | List of the bastion service allowed cidrs. | `list(string)` | `[/]` | no |
+| bastion\_service\_name                          | The bastion service name. | `string` | `null` | no |
+| cloud\_guard\_admin\_email\_endpoints           | List of email addresses for Cloud Guard related notifications. | `list(string)` | `[]` | no |
+| cloud\_guard\_reporting\_region                 | Cloud Guard reporting region, where Cloud Guard reporting resources are kept. If not set, it defaults to home region. | `string` | `null` | no |
+| cloud\_guard\_risk\_level\_threshold            | Determines the minimum Risk level that triggers sending Cloud Guard problems to the defined Cloud Guard Email Endpoint. E.g. a setting of High will send notifications for Critical and High problems. | `string` | `High` | no |
+| deploy\_bastion\_jump\_host                     | The option to deploy the bastion jump host. | `bool` | `false` | no |
+| deploy\_bastion\_service                        | The option to deploy the bastion service. | `bool` | `false` | no |
+| enable\_cloud\_guard                            | Determines whether the Cloud Guard service should be enabled. If true, Cloud Guard is enabled and the Root compartment is configured with a Cloud Guard target, as long as there is no pre-existing Cloud Guard target for the Root compartment (or target creation will fail). If Cloud Guard is already enabled and a target exists for the Root compartment, set this variable to false. | `bool` | `true` | no |
+| enable\_cloud\_guard\_cloned\_recipes           | Whether cloned recipes are attached to the managed Cloud Guard target. If false, Oracle managed recipes are attached. | `bool` | `true` | no |
+| enable\_security\_zones                         | Determines if Security Zones are enabled in Landing Zone. When set to true, the Security Zone is enabled for the enclosing compartment. If no enclosing compartment is used, then the Security Zone is not enabled. | `bool` | `false` | no |
+| enable\_vault                                   | Whether to enable vault service. Set to true to deploy a vault. | `bool` | `false` | no |
+| security\_zones\_reporting\_region                | The reporting region of security zones. It defaults to tenancy home region if undefined. | `string` | `null` | no |
+| sz\_security\_policies                            | Additional Security Zones Policy OCIDs to add to security zone recipe (The default policies are added based on CIS level). To get a Security Zone policy OCID use the oci cli: oci cloud-guard security-policy-collection list-security-policies --compartment-id <tenancy-ocid>. | `list(string)` | `[]` | no |
+| vault\_replica\_region                            | The replica region where the vault backup is located. Only applicable when vault\_type is VIRTUAL\_PRIVATE. | `string` | `null` | no |
+| vault\_type                                       | The type of the vault. Options are 'DEFAULT' and 'VIRTUAL\_PRIVATE'. | `string` | `"DEFAULT"` | no |
 | vss\_agent\_cis\_benchmark\_settings\_scan\_level | Valid values: STRICT, MEDIUM, LIGHTWEIGHT, NONE. STRICT: If more than 20% of the CIS benchmarks fail, then the target is assigned a risk level of Critical. MEDIUM: If more than 40% of the CIS benchmarks fail, then the target is assigned a risk level of High. LIGHTWEIGHT: If more than 80% of the CIS benchmarks fail, then the target is assigned a risk level of High. NONE: disables cis benchmark scanning. | `string` | `MEDIUM` | no |
-| vss\_agent\_scan\_level | Valid values: STANDARD, NONE. STANDARD enables agent-based scanning. NONE disables agent-based scanning and moots any agent related attributes. | `string` | `STANDARD` | no |
-| vss\_create | Whether Vulnerability Scanning Service recipes and targets are enabled in the Landing Zone. | `bool` | `false` | no |
-| vss\_enable\_file\_scan | Whether file scanning is enabled. | `bool` | `false` | no |
-| vss\_folders\_to\_scan | A list of folders to scan. Only applies if `vss_enable_file_scan` is true. Currently, the Scanning service checks for vulnerabilities only in log4j and spring4shell. | `list(string)` | `[/]` | no |
-| vss\_port\_scan\_level | Valid values: STANDARD, LIGHT, NONE. STANDARD checks the 1000 most common port numbers, LIGHT checks the 100 most common port numbers, NONE does not check for open ports. | `string` | `STANDARD` | no |
-| vss\_scan\_day | The week day for the Vulnerability Scanning Service recipe, if enabled. Only applies if vss\_scan\_schedule is WEEKLY (case insensitive). | `string` | `SUNDAY` | no |
-| vss\_scan\_schedule | The scan schedule for the Vulnerability Scanning Service recipe, if enabled. Valid values are WEEKLY or DAILY (case insensitive). | `string` | `WEEKLY` | no |
+| vss\_agent\_scan\_level                           | Valid values: STANDARD, NONE. STANDARD enables agent-based scanning. NONE disables agent-based scanning and moots any agent related attributes. | `string` | `STANDARD` | no |
+| vss\_create                                       | Whether Vulnerability Scanning Service recipes and targets are enabled in the Landing Zone. | `bool` | `false` | no |
+| vss\_enable\_file\_scan                           | Whether file scanning is enabled. | `bool` | `false` | no |
+| vss\_folders\_to\_scan                            | A list of folders to scan. Only applies if `vss_enable_file_scan` is true. Currently, the Scanning service checks for vulnerabilities only in log4j and spring4shell. | `list(string)` | `[/]` | no |
+| vss\_port\_scan\_level                            | Valid values: STANDARD, LIGHT, NONE. STANDARD checks the 1000 most common port numbers, LIGHT checks the 100 most common port numbers, NONE does not check for open ports. | `string` | `STANDARD` | no |
+| vss\_scan\_day                                    | The week day for the Vulnerability Scanning Service recipe, if enabled. Only applies if vss\_scan\_schedule is WEEKLY (case insensitive). | `string` | `SUNDAY` | no |
+| vss\_scan\_schedule                               | The scan schedule for the Vulnerability Scanning Service recipe, if enabled. Valid values are WEEKLY or DAILY (case insensitive). | `string` | `WEEKLY` | no |
 
 ### <a name="three-tier-networking"></a> Three Tier Networking
 

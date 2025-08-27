@@ -3,7 +3,7 @@
 
 locals {
   #------------------------------------------------------------------------------------------------------
-  #-- Any of these local variables can be overriden in a _override.tf file
+  #-- Any of these local variables can be overridden in a _override.tf file
   #------------------------------------------------------------------------------------------------------
   # Tags
   custom_topics_defined_tags  = null

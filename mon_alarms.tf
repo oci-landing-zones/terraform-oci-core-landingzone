@@ -5,7 +5,7 @@
 
 locals {
   #------------------------------------------------------------------------------------------------------
-  #-- Any of these local variables can be overriden in a _override.tf file
+  #-- Any of these local variables can be overridden in a _override.tf file
   #------------------------------------------------------------------------------------------------------
   custom_alarms_defined_tags  = null
   custom_alarms_freeform_tags = null

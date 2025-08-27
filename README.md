@@ -189,6 +189,7 @@ Another key deployment scenario of OCI Core Landing Zone is [Zero Trust Landing 
 
 OCI Core Landing Zone offers **OCI Network Firewall** in a Hub VCN for use with Three Tier, Exadata and/or OKE networking.
 
+
 ## <a name="modules">CIS OCI Foundations Benchmark Modules Collection</a>
 
 This repository uses a broader collection of repositories containing modules that help customers align their OCI implementations with the CIS OCI Foundations Benchmark recommendations:

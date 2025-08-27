@@ -1,3 +1,6 @@
+# Copyright (c) 2023, 2025, Oracle and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl/
+
 locals {
   identity_domains_configuration = {
     identity_domains : {
@@ -13,10 +16,10 @@ locals {
   identity_domain_groups_configuration = {
     default_identity_domain_id : "NEW-DOMAIN"
     groups : merge(local.iam_admin_group, local.cred_admin_group, local.cost_admin_group,
-              local.network_admin_group, local.security_admin_group,
-              local.appdev_admin_group, local.database_admin_group, local.exainfra_admin_group,
-              local.storage_admin_group, local.auditor_group, local.announcement_reader_group,
-              local.ag_admin_group)
+      local.network_admin_group, local.security_admin_group,
+      local.appdev_admin_group, local.database_admin_group, local.exainfra_admin_group,
+      local.storage_admin_group, local.auditor_group, local.announcement_reader_group,
+    local.ag_admin_group)
   }
 
   identity_domain_dynamic_groups_configuration = {
@@ -28,7 +31,7 @@ locals {
 }
 
 module "lz_new_identity_domain" {
-  source                                       = "github.com/oci-landing-zones/terraform-oci-modules-iam//identity-domains?ref=v0.2.9"
+  source                                       = "github.com/oci-landing-zones/terraform-oci-modules-iam//identity-domains?ref=v0.3.0"
   count                                        = var.identity_domain_option == "New Identity Domain" ? 1 : 0
   providers                                    = { oci = oci.home }
   tenancy_ocid                                 = var.tenancy_ocid

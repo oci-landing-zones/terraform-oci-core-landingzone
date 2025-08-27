@@ -20,6 +20,7 @@ variable "private_key_password" {
   default = ""
 }
 variable "region" {
+  default     = ""
   description = "The region where resources are deployed."
   type        = string
 }
@@ -43,35 +44,35 @@ variable "isolate_workload" {
   type        = bool
   description = "the option to isolate the workload"
 }
-variable "network_compartment_ocid"{
+variable "network_compartment_ocid" {
   default     = ""
   type        = string
   description = "The network compartment OCID. Applicable when isolate_workload is false."
 }
-variable "security_compartment_ocid"{
+variable "security_compartment_ocid" {
   default     = ""
   type        = string
   description = "The security compartment OCID. Applicable when isolate_workload is false."
 }
 
 variable "workload_compartment_description" {
-  default = "Workload compartment"
-  type = string
+  default     = "Workload compartment"
+  type        = string
   description = "Workload compartment description"
 }
 variable "network_compartment_description" {
-  default = "Workload sub-compartment for all network related resources: VCNs, subnets, network gateways, security lists, NSGs, load balancers, VNICs, and others."
-  type = string
+  default     = "Workload sub-compartment for all network related resources: VCNs, subnets, network gateways, security lists, NSGs, load balancers, VNICs, and others."
+  type        = string
   description = "Network compartment description"
 }
 variable "app_compartment_description" {
-  default = "Workload sub-compartment for all resources related to application development: compute instances, storage, functions, OKE, API Gateway, streaming, and others."
-  type = string
+  default     = "Workload sub-compartment for all resources related to application development: compute instances, storage, functions, OKE, API Gateway, streaming, and others."
+  type        = string
   description = "App compartment description"
 }
 variable "database_compartment_description" {
-  default = "Workload sub-compartment for all network related resources: VCNs, subnets, network gateways, security lists, NSGs, load balancers, VNICs, and others."
-  type = string
+  default     = "Workload sub-compartment for all network related resources: VCNs, subnets, network gateways, security lists, NSGs, load balancers, VNICs, and others."
+  type        = string
   description = "Database compartment description"
 }
 
@@ -163,43 +164,43 @@ variable "additional_db_admin_policy_statements" {
 #-------------------------------------------------------
 
 variable "deploy_workload_compartment" {
-  default = true
-  type = bool
+  default     = true
+  type        = bool
   description = "Whether or not to deploy workload compartment"
 }
 
 variable "deploy_default_groups" {
-  default = true
-  type = bool
+  default     = true
+  type        = bool
   description = "Whether or not to deploy groups"
 }
 variable "deploy_root_policies" {
-  default = true
-  type = bool
+  default     = true
+  type        = bool
   description = "Whether or not to deploy root policies"
 }
 variable "deploy_wkld_policies" {
-  default = true
-  type = bool
+  default     = true
+  type        = bool
   description = "Whether or not to deploy wkld policies"
 }
-variable "root_policy_name"{
-  default = "root-policy"
-  type = string
+variable "root_policy_name" {
+  default     = "root-policy"
+  type        = string
   description = "Root policy name."
 }
-variable "wkld_admin_policy_name"{
-  default = "wkld-admin-policy"
-  type = string
+variable "wkld_admin_policy_name" {
+  default     = "wkld-admin-policy"
+  type        = string
   description = "Workload Admin policy name."
 }
-variable "db_admin_policy_name"{
-  default = "wkld-db-admin-policy"
-  type = string
+variable "db_admin_policy_name" {
+  default     = "wkld-db-admin-policy"
+  type        = string
   description = "DB Admin policy name."
 }
-variable "app_admin_policy_name"{
-  default = "wkld-app-admin-policy"
-  type = string
+variable "app_admin_policy_name" {
+  default     = "wkld-app-admin-policy"
+  type        = string
   description = "App Admin policy name."
 }

@@ -66,8 +66,12 @@ locals {
           ocid = var.bastion_jump_host_custom_image_ocid
         } : null
 
-        marketplace_image = var.bastion_jump_host_custom_image_ocid == null && var.bastion_jump_host_marketplace_image_option != null ? {
+        marketplace_image = var.cis_level == "1" && var.bastion_jump_host_marketplace_image_option != null ? {
           name = local.jump_host_marketplace_image_map[var.bastion_jump_host_marketplace_image_option]
+        } : null
+
+        platform_image = var.cis_level == "2" && var.bastion_jump_host_custom_image_ocid == null ? {
+          ocid = data.oci_core_images.platform_oel_images.images[0].id
         } : null
 
         security = local.enable_zpr == true ? { zpr_attributes = [{ namespace : "${local.zpr_namespace_name}", attr_name : "bastion", attr_value : local.zpr_label }] } : null
@@ -79,6 +83,14 @@ locals {
         }
 
         cloud_agent = var.deploy_bastion_service == true ? { plugins = [{ name : "Bastion", enabled : true }] } : null
+
+        encryption = {
+          kms_key_id                            = var.cis_level == "2" && var.deploy_bastion_jump_host ? module.lz_vault[0].keys["JUMPHOST-KEY"].id : null
+          encrypt_in_transit_on_instance_create = true
+        }
+        disable_legacy_imds_endpoints = true
+        cis_level                     = var.cis_level
+        platform_type                 = var.cis_level == "2" ? (length(regexall("VM.Standard", var.bastion_jump_host_instance_shape)) > 0 ? (length(regexall("VM.Standard.E", var.bastion_jump_host_instance_shape)) > 0 ? "AMD_VM" : "INTEL_VM") : null) : null ## VM.Standard.E[0-9] = AMD_VM ### VM.Standard[0-9] = INTEL_VM
       }
     }
   }
@@ -102,4 +114,4 @@ module "lz_bastion_jump_host" {
 
   instances_configuration = local.jump_host_instances_configuration
   tenancy_ocid            = var.tenancy_ocid
-} 
+}
