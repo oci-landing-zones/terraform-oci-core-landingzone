@@ -168,4 +168,3 @@ core-lz-merge-test-case-2:
     # - python3 /home/gitlab-runner/pipeline-tools/preprocessor_new.py $MERGE_TEST_CASES_DIR -f tfvars.template -d . --destroy --merge
     # # - echo "Hello World"
     - echo "  ----- END - Running Test Case 2 on Merge request -----  "
-

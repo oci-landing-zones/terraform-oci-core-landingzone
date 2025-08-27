@@ -16,37 +16,37 @@
 | Name | Source | Version |
 |------|--------|---------|
 | <a name="module_lz_alarms"></a> [lz\_alarms](#module\_lz\_alarms) | github.com/oci-landing-zones/terraform-oci-modules-observability//alarms | v0.2.3 |
-| <a name="module_lz_bastion"></a> [lz\_bastion](#module\_lz\_bastion) | github.com/oci-landing-zones/terraform-oci-modules-security//bastion | v0.2.0 |
-| <a name="module_lz_bastion_jump_host"></a> [lz\_bastion\_jump\_host](#module\_lz\_bastion\_jump\_host) | github.com/oci-landing-zones/terraform-oci-modules-workloads//cis-compute-storage | v0.2.0 |
+| <a name="module_lz_bastion"></a> [lz\_bastion](#module\_lz\_bastion) | github.com/oci-landing-zones/terraform-oci-modules-security//bastion | v0.2.1 |
+| <a name="module_lz_bastion_jump_host"></a> [lz\_bastion\_jump\_host](#module\_lz\_bastion\_jump\_host) | github.com/oci-landing-zones/terraform-oci-modules-workloads//cis-compute-storage | v0.2.1 |
 | <a name="module_lz_budgets"></a> [lz\_budgets](#module\_lz\_budgets) | github.com/oci-landing-zones/terraform-oci-modules-governance//budgets | v0.1.5 |
-| <a name="module_lz_cloud_guard"></a> [lz\_cloud\_guard](#module\_lz\_cloud\_guard) | github.com/oci-landing-zones/terraform-oci-modules-security//cloud-guard | v0.2.0 |
-| <a name="module_lz_compartments"></a> [lz\_compartments](#module\_lz\_compartments) | github.com/oci-landing-zones/terraform-oci-modules-iam//compartments | v0.2.9 |
-| <a name="module_lz_custom_domain_dynamic_groups"></a> [lz\_custom\_domain\_dynamic\_groups](#module\_lz\_custom\_domain\_dynamic\_groups) | github.com/oci-landing-zones/terraform-oci-modules-iam//identity-domains | v0.2.9 |
-| <a name="module_lz_custom_domain_groups"></a> [lz\_custom\_domain\_groups](#module\_lz\_custom\_domain\_groups) | github.com/oci-landing-zones/terraform-oci-modules-iam//identity-domains | v0.2.9 |
-| <a name="module_lz_dynamic_groups"></a> [lz\_dynamic\_groups](#module\_lz\_dynamic\_groups) | github.com/oci-landing-zones/terraform-oci-modules-iam//dynamic-groups | v0.2.9 |
-| <a name="module_lz_firewall_appliance"></a> [lz\_firewall\_appliance](#module\_lz\_firewall\_appliance) | github.com/oci-landing-zones/terraform-oci-modules-workloads//cis-compute-storage | v0.2.0 |
+| <a name="module_lz_cloud_guard"></a> [lz\_cloud\_guard](#module\_lz\_cloud\_guard) | github.com/oci-landing-zones/terraform-oci-modules-security//cloud-guard | v0.2.2 |
+| <a name="module_lz_compartments"></a> [lz\_compartments](#module\_lz\_compartments) | github.com/oci-landing-zones/terraform-oci-modules-iam//compartments | v0.3.0 |
+| <a name="module_lz_custom_domain_dynamic_groups"></a> [lz\_custom\_domain\_dynamic\_groups](#module\_lz\_custom\_domain\_dynamic\_groups) | github.com/oci-landing-zones/terraform-oci-modules-iam//identity-domains | v0.3.0 |
+| <a name="module_lz_custom_domain_groups"></a> [lz\_custom\_domain\_groups](#module\_lz\_custom\_domain\_groups) | github.com/oci-landing-zones/terraform-oci-modules-iam//identity-domains | v0.3.0 |
+| <a name="module_lz_dynamic_groups"></a> [lz\_dynamic\_groups](#module\_lz\_dynamic\_groups) | github.com/oci-landing-zones/terraform-oci-modules-iam//dynamic-groups | v0.3.0 |
+| <a name="module_lz_firewall_appliance"></a> [lz\_firewall\_appliance](#module\_lz\_firewall\_appliance) | github.com/oci-landing-zones/terraform-oci-modules-workloads//cis-compute-storage | v0.2.1 |
 | <a name="module_lz_flow_logs"></a> [lz\_flow\_logs](#module\_lz\_flow\_logs) | github.com/oci-landing-zones/terraform-oci-modules-observability//logging | v0.2.3 |
-| <a name="module_lz_groups"></a> [lz\_groups](#module\_lz\_groups) | github.com/oci-landing-zones/terraform-oci-modules-iam//groups | v0.2.9 |
+| <a name="module_lz_groups"></a> [lz\_groups](#module\_lz\_groups) | github.com/oci-landing-zones/terraform-oci-modules-iam//groups | v0.3.0 |
 | <a name="module_lz_home_region_notifications"></a> [lz\_home\_region\_notifications](#module\_lz\_home\_region\_notifications) | github.com/oci-landing-zones/terraform-oci-modules-observability//events | v0.2.3 |
 | <a name="module_lz_home_region_topics"></a> [lz\_home\_region\_topics](#module\_lz\_home\_region\_topics) | github.com/oci-landing-zones/terraform-oci-modules-observability//notifications | v0.2.3 |
 | <a name="module_lz_logging_analytics"></a> [lz\_logging\_analytics](#module\_lz\_logging\_analytics) | github.com/oci-landing-zones/terraform-oci-modules-observability//logging | v0.2.3 |
-| <a name="module_lz_network"></a> [lz\_network](#module\_lz\_network) | github.com/oci-landing-zones/terraform-oci-modules-networking | v0.7.5 |
-| <a name="module_lz_new_identity_domain"></a> [lz\_new\_identity\_domain](#module\_lz\_new\_identity\_domain) | github.com/oci-landing-zones/terraform-oci-modules-iam//identity-domains | v0.2.9 |
-| <a name="module_lz_nlb"></a> [lz\_nlb](#module\_lz\_nlb) | github.com/oci-landing-zones/terraform-oci-modules-networking//modules/nlb | v0.7.5 |
+| <a name="module_lz_network"></a> [lz\_network](#module\_lz\_network) | github.com/oci-landing-zones/terraform-oci-modules-networking | v0.7.7 |
+| <a name="module_lz_new_identity_domain"></a> [lz\_new\_identity\_domain](#module\_lz\_new\_identity\_domain) | github.com/oci-landing-zones/terraform-oci-modules-iam//identity-domains | v0.3.0 |
+| <a name="module_lz_nlb"></a> [lz\_nlb](#module\_lz\_nlb) | github.com/oci-landing-zones/terraform-oci-modules-networking//modules/nlb | v0.7.7 |
 | <a name="module_lz_notifications"></a> [lz\_notifications](#module\_lz\_notifications) | github.com/oci-landing-zones/terraform-oci-modules-observability//events | v0.2.3 |
-| <a name="module_lz_oke_clusters_policy"></a> [lz\_oke\_clusters\_policy](#module\_lz\_oke\_clusters\_policy) | github.com/oci-landing-zones/terraform-oci-modules-iam//policies | v0.2.9 |
-| <a name="module_lz_policies"></a> [lz\_policies](#module\_lz\_policies) | github.com/oci-landing-zones/terraform-oci-modules-iam//policies | v0.2.9 |
+| <a name="module_lz_oke_clusters_policy"></a> [lz\_oke\_clusters\_policy](#module\_lz\_oke\_clusters\_policy) | github.com/oci-landing-zones/terraform-oci-modules-iam//policies | v0.3.0 |
+| <a name="module_lz_policies"></a> [lz\_policies](#module\_lz\_policies) | github.com/oci-landing-zones/terraform-oci-modules-iam//policies | v0.3.0 |
 | <a name="module_lz_regional_topics"></a> [lz\_regional\_topics](#module\_lz\_regional\_topics) | github.com/oci-landing-zones/terraform-oci-modules-observability//notifications | v0.2.3 |
-| <a name="module_lz_root_policies"></a> [lz\_root\_policies](#module\_lz\_root\_policies) | github.com/oci-landing-zones/terraform-oci-modules-iam//policies | v0.2.9 |
-| <a name="module_lz_scanning"></a> [lz\_scanning](#module\_lz\_scanning) | github.com/oci-landing-zones/terraform-oci-modules-security//vss | v0.2.0 |
-| <a name="module_lz_security_zones"></a> [lz\_security\_zones](#module\_lz\_security\_zones) | github.com/oci-landing-zones/terraform-oci-modules-security//security-zones | v0.2.0 |
+| <a name="module_lz_root_policies"></a> [lz\_root\_policies](#module\_lz\_root\_policies) | github.com/oci-landing-zones/terraform-oci-modules-iam//policies | v0.3.0 |
+| <a name="module_lz_scanning"></a> [lz\_scanning](#module\_lz\_scanning) | github.com/oci-landing-zones/terraform-oci-modules-security//vss | v0.2.2 |
+| <a name="module_lz_security_zones"></a> [lz\_security\_zones](#module\_lz\_security\_zones) | github.com/oci-landing-zones/terraform-oci-modules-security//security-zones | v0.2.2 |
 | <a name="module_lz_service_connector_hub"></a> [lz\_service\_connector\_hub](#module\_lz\_service\_connector\_hub) | github.com/oci-landing-zones/terraform-oci-modules-observability//service-connectors | v0.2.3 |
-| <a name="module_lz_services_policy"></a> [lz\_services\_policy](#module\_lz\_services\_policy) | github.com/oci-landing-zones/terraform-oci-modules-iam//policies | v0.2.9 |
+| <a name="module_lz_services_policy"></a> [lz\_services\_policy](#module\_lz\_services\_policy) | github.com/oci-landing-zones/terraform-oci-modules-iam//policies | v0.3.0 |
 | <a name="module_lz_tags"></a> [lz\_tags](#module\_lz\_tags) | github.com/oci-landing-zones/terraform-oci-modules-governance//tags | v0.1.5 |
-| <a name="module_lz_top_compartment"></a> [lz\_top\_compartment](#module\_lz\_top\_compartment) | github.com/oci-landing-zones/terraform-oci-modules-iam//compartments | v0.2.9 |
-| <a name="module_lz_vault"></a> [lz\_vault](#module\_lz\_vault) | github.com/oci-landing-zones/terraform-oci-modules-security//vaults | v0.2.0 |
-| <a name="module_lz_zpr"></a> [lz\_zpr](#module\_lz\_zpr) | github.com/oci-landing-zones/terraform-oci-modules-security//zpr | v0.2.0 |
-| <a name="module_native_oci_firewall"></a> [native\_oci\_firewall](#module\_native\_oci\_firewall) | github.com/oci-landing-zones/terraform-oci-modules-networking | v0.7.5 |
+| <a name="module_lz_top_compartment"></a> [lz\_top\_compartment](#module\_lz\_top\_compartment) | github.com/oci-landing-zones/terraform-oci-modules-iam//compartments | v0.3.0 |
+| <a name="module_lz_vault"></a> [lz\_vault](#module\_lz\_vault) | github.com/oci-landing-zones/terraform-oci-modules-security//vaults | v0.2.2 |
+| <a name="module_lz_zpr"></a> [lz\_zpr](#module\_lz\_zpr) | github.com/oci-landing-zones/terraform-oci-modules-security//zpr | v0.2.2 |
+| <a name="module_native_oci_firewall"></a> [native\_oci\_firewall](#module\_native\_oci\_firewall) | github.com/oci-landing-zones/terraform-oci-modules-networking | v0.7.7 |
 | <a name="module_oci_native_firewall_logs"></a> [oci\_native\_firewall\_logs](#module\_oci\_native\_firewall\_logs) | github.com/oci-landing-zones/terraform-oci-modules-observability//logging | v0.2.3 |
 
 ## Resources
@@ -56,6 +56,7 @@
 | [time_sleep.wait_on_compartments](https://registry.terraform.io/providers/hashicorp/time/latest/docs/resources/sleep) | resource |
 | [time_sleep.wait_on_services_policy](https://registry.terraform.io/providers/hashicorp/time/latest/docs/resources/sleep) | resource |
 | [oci_cloud_guard_cloud_guard_configuration.this](https://registry.terraform.io/providers/oracle/oci/latest/docs/data-sources/cloud_guard_cloud_guard_configuration) | data source |
+| [oci_core_images.platform_oel_images](https://registry.terraform.io/providers/oracle/oci/latest/docs/data-sources/core_images) | data source |
 | [oci_core_vcn.additional_vcns](https://registry.terraform.io/providers/oracle/oci/latest/docs/data-sources/core_vcn) | data source |
 | [oci_identity_compartment.existing_enclosing_compartment](https://registry.terraform.io/providers/oracle/oci/latest/docs/data-sources/identity_compartment) | data source |
 | [oci_identity_compartments.app](https://registry.terraform.io/providers/oracle/oci/latest/docs/data-sources/identity_compartments) | data source |
@@ -126,7 +127,13 @@
 | <a name="input_create_alarms_as_enabled"></a> [create\_alarms\_as\_enabled](#input\_create\_alarms\_as\_enabled) | Whether a alarms should be created in an enabled state by default. If unchecked, alarms will be created but not emit alerts. | `bool` | `false` | no |
 | <a name="input_create_budget"></a> [create\_budget](#input\_create\_budget) | If true, a budget is created for the enclosing compartment, based on forecast or actual spending. | `bool` | `false` | no |
 | <a name="input_create_events_as_enabled"></a> [create\_events\_as\_enabled](#input\_create\_events\_as\_enabled) | Whether events should be created in an enabled state by default. If unchecked, events will be created but not emit notifications. | `bool` | `false` | no |
+| <a name="input_custom_app_compartment_name"></a> [custom\_app\_compartment\_name](#input\_custom\_app\_compartment\_name) | Custom name of the app compartment. | `string` | `null` | no |
+| <a name="input_custom_database_compartment_name"></a> [custom\_database\_compartment\_name](#input\_custom\_database\_compartment\_name) | Custom name of the database compartment. | `string` | `null` | no |
+| <a name="input_custom_enclosing_compartment_name"></a> [custom\_enclosing\_compartment\_name](#input\_custom\_enclosing\_compartment\_name) | Custom name of the enclosing compartment. | `string` | `null` | no |
+| <a name="input_custom_exainfra_compartment_name"></a> [custom\_exainfra\_compartment\_name](#input\_custom\_exainfra\_compartment\_name) | Custom name of the exadata infrastructure compartment. | `string` | `null` | no |
 | <a name="input_custom_id_domain_ocid"></a> [custom\_id\_domain\_ocid](#input\_custom\_id\_domain\_ocid) | The existing identity domain OCID. | `string` | `null` | no |
+| <a name="input_custom_network_compartment_name"></a> [custom\_network\_compartment\_name](#input\_custom\_network\_compartment\_name) | Custom name of the network compartment. | `string` | `null` | no |
+| <a name="input_custom_security_compartment_name"></a> [custom\_security\_compartment\_name](#input\_custom\_security\_compartment\_name) | Custom name of the security compartment. | `string` | `null` | no |
 | <a name="input_customize_bastion_service"></a> [customize\_bastion\_service](#input\_customize\_bastion\_service) | Set to true to set custom options for Bastion Service. | `bool` | `false` | no |
 | <a name="input_customize_cloud_guard_settings"></a> [customize\_cloud\_guard\_settings](#input\_customize\_cloud\_guard\_settings) | Whether to customize Cloud Guard settings for a managed target. The Landing Zone enables Cloud Guard service and creates a managed target at the Root compartment in case a target at the Root compartment does not exist. | `bool` | `false` | no |
 | <a name="input_customize_hub_vcn_subnets"></a> [customize\_hub\_vcn\_subnets](#input\_customize\_hub\_vcn\_subnets) | Whether to customize default subnets settings of the Hub VCN. Only applicable to RMS deployments. | `bool` | `false` | no |
@@ -156,6 +163,7 @@
 | <a name="input_enable_native_firewall_traffic_log"></a> [enable\_native\_firewall\_traffic\_log](#input\_enable\_native\_firewall\_traffic\_log) | Enable OCI Native Firewall Traffic Log. | `bool` | `false` | no |
 | <a name="input_enable_security_zones"></a> [enable\_security\_zones](#input\_enable\_security\_zones) | Determines if Security Zones are enabled in Landing Zone. When set to true, the Security Zone is enabled for the enclosing compartment. If no enclosing compartment is used, then the Security Zone is not enabled. | `bool` | `false` | no |
 | <a name="input_enable_service_connector"></a> [enable\_service\_connector](#input\_enable\_service\_connector) | Whether Service Connector should be enabled. If true, a single Service Connector is managed for all services log sources and the designated target specified in 'Service Connector Target Kind'. The Service Connector resource is created in INACTIVE state. To activate, check 'Activate Service Connector?' (costs may incur). | `bool` | `false` | no |
+| <a name="input_enable_vault"></a> [enable\_vault](#input\_enable\_vault) | Whether to enable vault service. Set to true to deploy a vault. | `bool` | `false` | no |
 | <a name="input_enable_zpr"></a> [enable\_zpr](#input\_enable\_zpr) | Whether to enable ZPR service. | `bool` | `false` | no |
 | <a name="input_enclosing_compartment_options"></a> [enclosing\_compartment\_options](#input\_enclosing\_compartment\_options) | Determines where the landing zone compartments are deployed: within a new enclosing compartment or within an existing select enclosing compartment (that can be the Root compartment). Valid options: 'Yes, deploy new', 'Yes, use existing', 'No' | `string` | `"Yes, deploy new"` | no |
 | <a name="input_enclosing_compartment_parent_ocid"></a> [enclosing\_compartment\_parent\_ocid](#input\_enclosing\_compartment\_parent\_ocid) | The existing compartment where Landing Zone enclosing compartment is created. | `string` | `null` | no |
@@ -266,6 +274,7 @@
 | <a name="input_ipsec_tunnel2_shared_secret"></a> [ipsec\_tunnel2\_shared\_secret](#input\_ipsec\_tunnel2\_shared\_secret) | The IPSec Tunnel 1's shared secret (pre-shared key). If not provided, Oracle will generate one automatically. | `string` | `null` | no |
 | <a name="input_ipsec_vpn_name"></a> [ipsec\_vpn\_name](#input\_ipsec\_vpn\_name) | Display name of the IPSec VPN. | `string` | `""` | no |
 | <a name="input_is_free_tenancy"></a> [is\_free\_tenancy](#input\_is\_free\_tenancy) | Whether the tenancy is free tier. It sets the Landing Zone to not deploy Cloud Guard and Security Zones, as these services are not available in free tier tenancies. Notice that a landing zone deployment without Cloud Guard (or a similar Cloud Security Posture Monitoring tool) is by definition not compliant with CIS (Center for Internet Security) Benchmark Foundations for OCI. For enabling Cloud Guard and Security Zones in Core Landing Zone, please upgrade your tenancy to a Pay As You Go (PAYG) or enterprise account. | `bool` | `false` | no |
+| <a name="input_lz_provenant_label"></a> [lz\_provenant\_label](#input\_lz\_provenant\_label) | Human-readable label used in resource descriptions. | `string` | `"Core Landing Zone"` | no |
 | <a name="input_lz_provenant_prefix"></a> [lz\_provenant\_prefix](#input\_lz\_provenant\_prefix) | The provenant landing zone prefix or code that identifies the client of this Landing Zone. This information goes into a freeform tag applied to all deployed resources. | `string` | `"core"` | no |
 | <a name="input_lz_provenant_version"></a> [lz\_provenant\_version](#input\_lz\_provenant\_version) | The provenant landing zone version. This information goes into a freeform tag applied to all deployed resources. | `string` | `null` | no |
 | <a name="input_net_appliance_boot_volume_size"></a> [net\_appliance\_boot\_volume\_size](#input\_net\_appliance\_boot\_volume\_size) | The boot volume size (in GB) for the Network Appliance instances. | `number` | `60` | no |
@@ -418,6 +427,8 @@
 | <a name="input_tt_vcn3_web_subnet_is_private"></a> [tt\_vcn3\_web\_subnet\_is\_private](#input\_tt\_vcn3\_web\_subnet\_is\_private) | Whether the Web subnet private. It is public by default. | `bool` | `false` | no |
 | <a name="input_tt_vcn3_web_subnet_name"></a> [tt\_vcn3\_web\_subnet\_name](#input\_tt\_vcn3\_web\_subnet\_name) | The Web subnet name. | `string` | `null` | no |
 | <a name="input_user_ocid"></a> [user\_ocid](#input\_user\_ocid) | n/a | `string` | `""` | no |
+| <a name="input_vault_replica_region"></a> [vault\_replica\_region](#input\_vault\_replica\_region) | The replica region where the vault backup is located. Only applicable when vault\_type is VIRTUAL\_PRIVATE. | `string` | `null` | no |
+| <a name="input_vault_type"></a> [vault\_type](#input\_vault\_type) | The type of the vault. Options are 'DEFAULT' and 'VIRTUAL\_PRIVATE'. | `string` | `"DEFAULT"` | no |
 | <a name="input_vss_agent_cis_benchmark_settings_scan_level"></a> [vss\_agent\_cis\_benchmark\_settings\_scan\_level](#input\_vss\_agent\_cis\_benchmark\_settings\_scan\_level) | Valid values: STRICT, MEDIUM, LIGHT, NONE. STRICT: If more than 20% of the CIS benchmarks fail, then the target is assigned a risk level of Critical. MEDIUM: If more than 40% of the CIS benchmarks fail, then the target is assigned a risk level of High. LIGHT: If more than 80% of the CIS benchmarks fail, then the target is assigned a risk level of High. NONE: disables cis benchmark scanning. | `string` | `"MEDIUM"` | no |
 | <a name="input_vss_agent_scan_level"></a> [vss\_agent\_scan\_level](#input\_vss\_agent\_scan\_level) | Valid values: STANDARD, NONE. STANDARD enables agent-based scanning. NONE disables agent-based scanning and moots any agent related attributes. | `string` | `"STANDARD"` | no |
 | <a name="input_vss_create"></a> [vss\_create](#input\_vss\_create) | Whether Vulnerability Scanning Service recipes and targets are enabled in the Landing Zone. | `bool` | `false` | no |

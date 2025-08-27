@@ -3,7 +3,7 @@
 
 locals {
   #------------------------------------------------------------------------------------------------------
-  #-- Any of these local vars can be overriden in a _override.tf file
+  #-- Any of these local vars can be overridden in a _override.tf file
   #------------------------------------------------------------------------------------------------------
   all_flow_logs_defined_tags  = {}
   all_flow_logs_freeform_tags = {}

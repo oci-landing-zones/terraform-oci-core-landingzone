@@ -134,8 +134,8 @@ With the stack created, perform a Plan, followed by an Apply using RMS UI.
 
 ## Terraform CLI Deployment
 
-1. Rename file *main.tf.template* to *main.tf*.
-2. Provide/review the variable assignments in *main.tf*.
+1. Rename file *terraform.tfvars.template* to *terraform.tfvars*.
+2. Provide/review the variable assignments in *terraform.tfvars*.
 3. In this folder, execute the typical Terraform workflow:
 
 	``

@@ -34,12 +34,12 @@ locals {
   }
 
   additional_vcns_drg_route_tables = {
-      for ocid in local.combined_workload_ocids :
-      "VCN-${upper(substr(ocid, -10, 10))}-DRG-ROUTE-TABLE" => {
-        display_name                      = "${local.additional_vcns[ocid].display_name}-${substr(ocid, -10, 10)}-drg-route-table"
-        import_drg_route_distribution_key = "VCN-${upper(substr(ocid, -10, 10))}-DRG-IMPORT-ROUTE-DISTRIBUTION"
-      }
+    for ocid in local.combined_workload_ocids :
+    "VCN-${upper(substr(ocid, -10, 10))}-DRG-ROUTE-TABLE" => {
+      display_name                      = "${local.additional_vcns[ocid].display_name}-${substr(ocid, -10, 10)}-drg-route-table"
+      import_drg_route_distribution_key = "VCN-${upper(substr(ocid, -10, 10))}-DRG-IMPORT-ROUTE-DISTRIBUTION"
     }
+  }
 
   additional_vcns_drg_route_distributions = {
     for ocid in local.combined_workload_ocids :

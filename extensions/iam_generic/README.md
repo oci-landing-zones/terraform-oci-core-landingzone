@@ -13,6 +13,7 @@ It is comprised of the following files:
 - [iam_groups.tf](./iam_groups.tf) - provides for (workload segregation of duties) groups in the default domain; if using a custom identity domain, the groups are created there.
 - [iam_policies.tf](./iam_policies.tf) - creates root policies, workload admin policies, workload app admin policies and workload database admin policies.
 
+Please note that IAM resources such as compartments, policies, and groups are deployed in the home region provided by the user.
 For more details on the use and deployment of this extension, see the associated [deployment guide](./DEPLOYMENT-GUIDE.md). 
 The modules in this collection are designed for flexibility, are straightforward to use, and enforce CIS OCI Foundations Benchmark recommendations when possible.
 

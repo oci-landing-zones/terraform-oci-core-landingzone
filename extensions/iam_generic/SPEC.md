@@ -6,7 +6,9 @@
 
 ## Providers
 
-No providers.
+| Name | Version |
+|------|---------|
+| <a name="provider_oci"></a> [oci](#provider\_oci) | n/a |
 
 ## Modules
 
@@ -20,7 +22,11 @@ No providers.
 
 ## Resources
 
-No resources.
+| Name | Type |
+|------|------|
+| [oci_identity_compartment.lz_network_compartment](https://registry.terraform.io/providers/oracle/oci/latest/docs/data-sources/identity_compartment) | data source |
+| [oci_identity_compartment.lz_security_compartment](https://registry.terraform.io/providers/oracle/oci/latest/docs/data-sources/identity_compartment) | data source |
+| [oci_identity_domain.existing_identity_domain](https://registry.terraform.io/providers/oracle/oci/latest/docs/data-sources/identity_domain) | data source |
 
 ## Inputs
 
@@ -47,12 +53,16 @@ No resources.
 | <a name="input_enable_db_admin_group"></a> [enable\_db\_admin\_group](#input\_enable\_db\_admin\_group) | the option to enable workload database admin group | `bool` | `false` | no |
 | <a name="input_fingerprint"></a> [fingerprint](#input\_fingerprint) | n/a | `string` | `""` | no |
 | <a name="input_isolate_workload"></a> [isolate\_workload](#input\_isolate\_workload) | the option to isolate the workload | `bool` | `false` | no |
+| <a name="input_lz_network_policy_name"></a> [lz\_network\_policy\_name](#input\_lz\_network\_policy\_name) | Landing Zone network policy name. | `string` | `null` | no |
+| <a name="input_lz_security_policy_name"></a> [lz\_security\_policy\_name](#input\_lz\_security\_policy\_name) | Landing Zone security policy name. | `string` | `null` | no |
 | <a name="input_network_compartment_description"></a> [network\_compartment\_description](#input\_network\_compartment\_description) | Network compartment description | `string` | `"Workload sub-compartment for all network related resources: VCNs, subnets, network gateways, security lists, NSGs, load balancers, VNICs, and others."` | no |
 | <a name="input_network_compartment_ocid"></a> [network\_compartment\_ocid](#input\_network\_compartment\_ocid) | The network compartment OCID. Applicable when isolate\_workload is false. | `string` | `""` | no |
+| <a name="input_override_group_names"></a> [override\_group\_names](#input\_override\_group\_names) | the option to override the default group names | `bool` | `false` | no |
+| <a name="input_override_policy_names"></a> [override\_policy\_names](#input\_override\_policy\_names) | the option to override the default policy names | `bool` | `false` | no |
 | <a name="input_parent_compartment_ocid"></a> [parent\_compartment\_ocid](#input\_parent\_compartment\_ocid) | the OCID of the root compartment in the parent landing zone | `string` | `""` | no |
 | <a name="input_private_key_password"></a> [private\_key\_password](#input\_private\_key\_password) | n/a | `string` | `""` | no |
 | <a name="input_private_key_path"></a> [private\_key\_path](#input\_private\_key\_path) | n/a | `string` | `""` | no |
-| <a name="input_region"></a> [region](#input\_region) | The region where resources are deployed. | `string` | n/a | yes |
+| <a name="input_region"></a> [region](#input\_region) | The region where resources are deployed. | `string` | `""` | no |
 | <a name="input_root_policy_name"></a> [root\_policy\_name](#input\_root\_policy\_name) | Root policy name. | `string` | `"root-policy"` | no |
 | <a name="input_security_compartment_ocid"></a> [security\_compartment\_ocid](#input\_security\_compartment\_ocid) | The security compartment OCID. Applicable when isolate\_workload is false. | `string` | `""` | no |
 | <a name="input_service_label"></a> [service\_label](#input\_service\_label) | A unique label that gets prepended to all resources deployed by the Landing Zone. Max length: 15 characters. | `string` | `""` | no |
@@ -62,8 +72,10 @@ No resources.
 | <a name="input_wkld_admin_policy_name"></a> [wkld\_admin\_policy\_name](#input\_wkld\_admin\_policy\_name) | Workload Admin policy name. | `string` | `"wkld-admin-policy"` | no |
 | <a name="input_workload_admin_group_name"></a> [workload\_admin\_group\_name](#input\_workload\_admin\_group\_name) | the name of workload admin group | `string` | `"workload-admin-group"` | no |
 | <a name="input_workload_app_admin_group_name"></a> [workload\_app\_admin\_group\_name](#input\_workload\_app\_admin\_group\_name) | the name of the workload app admin group | `string` | `"workload-app-admin-group"` | no |
+| <a name="input_workload_app_subcompartment_name"></a> [workload\_app\_subcompartment\_name](#input\_workload\_app\_subcompartment\_name) | the name of the application sub-compartment | `string` | `null` | no |
 | <a name="input_workload_compartment_description"></a> [workload\_compartment\_description](#input\_workload\_compartment\_description) | Workload compartment description | `string` | `"Workload compartment"` | no |
 | <a name="input_workload_compartment_name"></a> [workload\_compartment\_name](#input\_workload\_compartment\_name) | the name of the workload compartment | `string` | `"workload-cmp"` | no |
+| <a name="input_workload_database_subcompartment_name"></a> [workload\_database\_subcompartment\_name](#input\_workload\_database\_subcompartment\_name) | the name of the database sub-compartment | `string` | `null` | no |
 | <a name="input_workload_db_admin_group_name"></a> [workload\_db\_admin\_group\_name](#input\_workload\_db\_admin\_group\_name) | the name of the workload database admin group | `string` | `"workload-db-admin-group"` | no |
 
 ## Outputs

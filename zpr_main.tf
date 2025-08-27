@@ -19,7 +19,7 @@ locals {
     namespaces = {
       ZPR-LZ-NAMESPACE = {
         compartment_id = local.enclosing_compartment_id
-        description    = "Core Landing Zone ZPR Namespace."
+        description    = "${var.lz_provenant_label} ZPR Namespace."
         name           = local.zpr_namespace_name
       }
     }
@@ -60,7 +60,7 @@ locals {
 
 module "lz_zpr" {
   count             = local.enable_zpr ? 1 : 0
-  source            = "github.com/oci-landing-zones/terraform-oci-modules-security//zpr?ref=v0.2.0"
+  source            = "github.com/oci-landing-zones/terraform-oci-modules-security//zpr?ref=v0.2.2"
   providers         = { oci = oci.home }
   tenancy_ocid      = var.tenancy_ocid
   zpr_configuration = local.lz_zpr_configuration
