@@ -242,3 +242,11 @@ variable "workloadvcn_ocids_onprem_access" {
   description = "A list of externally-managed VCN OCIDs that require on-premises connectivity. The VCNs provided here attach to the DRG as a spoke and are routeable from the on-premises network."
   default     = []
 }
+# -------------------------------------------
+# ----- Networking - Internet Gateway
+#--------------------------------------------
+variable "hub_vcn_enable_internet_gateway" {
+  type = bool
+  description = "Whether to enable an internet gateway in the Hub VCN. Set to true to enable internet gateway."
+  default = true
+}

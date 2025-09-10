@@ -140,14 +140,14 @@ locals {
           "WEB-SUBNET-ROUTE-TABLE" = {
             display_name = "web-subnet-route-table"
             route_rules = merge(
-              {
+              var.hub_vcn_enable_internet_gateway ? {
                 "INTERNET-RULE" = {
                   network_entity_key = "HUB-VCN-INTERNET-GATEWAY"
                   description        = "To Internet."
                   destination        = "0.0.0.0/0"
                   destination_type   = "CIDR_BLOCK"
                 }
-              },
+              } : {},
               local.add_tt_vcn1 == true && var.tt_vcn1_attach_to_drg == true ? { for cidr in var.tt_vcn1_cidrs : "TT-VCN-1-${replace(replace(cidr, ".", ""), "/", "")}}-RULE" => {
                 description        = "Traffic destined to ${coalesce(var.tt_vcn1_name, "${var.service_label}-three-tier-vcn-1")} CIDR ${cidr} goes to ${coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_north_south_entry_point_ocid, "DRG")}."
                 destination        = "${cidr}"
@@ -1529,14 +1529,16 @@ locals {
         }
       ) # closing NSG merge function  
 
-      vcn_specific_gateways = {
-        internet_gateways = {
-          "HUB-VCN-INTERNET-GATEWAY" = {
-            enabled      = true
-            display_name = "internet-gateway"
+      vcn_specific_gateways = merge(
+        var.hub_vcn_enable_internet_gateway ? {
+          internet_gateways = {
+            "HUB-VCN-INTERNET-GATEWAY" = {
+              enabled      = true
+              display_name = "internet-gateway"
+            }
           }
-        }
-        nat_gateways = {
+        } : {},
+        { nat_gateways = {
           "HUB-VCN-NAT-GATEWAY" = {
             block_traffic   = false
             display_name    = "nat-gateway"
@@ -1550,9 +1552,8 @@ locals {
             route_table_key = local.service_gateway_route_rules != {} ? "HUB-VCN-SERVICE-GATEWAY-ROUTE-TABLE" : null
             route_table_key = local.service_gateway_route_rules != {} ? "HUB-VCN-SERVICE-GATEWAY-ROUTE-TABLE" : null
           }
-
         }
-      }
+      })
     }
   } : null
 }

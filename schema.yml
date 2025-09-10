@@ -213,6 +213,7 @@ variableGroups:
       - "hub_vcn_indoor_subnet_cidr"
       - "hub_vcn_indoor_subnet_dns"
       - "deploy_bastion_jump_host"
+      - "hub_vcn_enable_internet_gateway"
     visible: define_net
 
   - title: "Bastion Jump Host"
@@ -5044,6 +5045,22 @@ variables:
           - ${vault_type}
           - "VIRTUAL_PRIVATE"
         - enable_vault
+
+  hub_vcn_enable_internet_gateway:
+    type: boolean
+    title: "Deploy Internet Gateway for Hub VCN?"
+    description: "If checked, an internet gateway will be deployed in the Hub VCN."
+    required: false
+    visible:
+      and:
+        - define_net
+        - or:
+          - eq:
+            - ${hub_deployment_option}
+            - "VCN or on-premises connectivity routing through DMZ VCN with Network Virtual Appliance (DRG and DMZ VCN will be created)"
+          - eq:
+            - ${hub_deployment_option}
+            - "VCN or on-premises connectivity routed through DMZ VCN with Network Virtual Appliance existing DRG (DMZ VCN will be created and DRG ID required)"
 
 outputs:
   release:
