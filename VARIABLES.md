@@ -344,6 +344,7 @@
 | hub\_vcn\_cidrs | List of CIDR blocks for the Hub VCN. | `list(string)` | `[192.168.0.0/26]` | no |
 | hub\_vcn\_deploy\_net\_appliance\_option | The network appliance option for deploying in the Hub VCN. Valid values: 'Don't deploy any network appliance at this time' (default), 'Palo Alto Networks VM-Series Firewall', 'Fortinet FortiGate Firewall', 'User-Provided Virtual Network Appliance', and 'OCI Native Firewall'. Costs are incurred. | `string` | `Don't deploy any network appliance at this time` | no |
 | hub\_vcn\_dns | The Hub VCN DNS name. | `string` | `null` | no |
+| hub\_vcn\_enable\_internet\_gateway | Whether to enable an internet gateway in the Hub VCN. Set to true to enable internet gateway. | `bool` | `true` | no |
 | hub\_vcn\_east\_west\_entry\_point\_ocid | The OCID of a private address the Hub VCN routes traffic to for inbound internal cross-vcn traffic (East/West). This variable is to be assigned with the OCID of the indoor network load balancer's private IP address. | `string` | `null` | no |
 | hub\_vcn\_indoor\_subnet\_cidr | The Hub VCN Indoor subnet CIDR block. It must be within the VCN CIDR blocks. | `string` | `null` | no |
 | hub\_vcn\_indoor\_subnet\_dns | The Hub VCN Indoor subnet DNS name. Use only letters and numbers, no special characters. | `string` | `null` | no |
