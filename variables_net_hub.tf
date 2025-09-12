@@ -246,7 +246,7 @@ variable "workloadvcn_ocids_onprem_access" {
 # ----- Networking - Internet Gateway
 #--------------------------------------------
 variable "hub_vcn_enable_internet_gateway" {
-  type = bool
+  type        = bool
   description = "Whether to enable an internet gateway in the Hub VCN. Set to true to enable internet gateway."
-  default = true
+  default     = true
 }

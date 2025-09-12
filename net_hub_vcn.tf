@@ -213,10 +213,10 @@ locals {
                 }
               } : {},
               local.workload_cidrs_public != null ? { for cidr in local.workload_cidrs_public : "PUBLIC-ACCESS-VCN-${replace(replace(cidr, ".", ""), "/", "")}}-RULE" => {
-                description = "Traffic destined to additional networks public access CIDR ${cidr} goes to ${coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_north_south_entry_point_ocid, "DRG")}."
-                destination = "${cidr}"
-                destination_type = "CIDR_BLOCK"
-                network_entity_id = coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_north_south_entry_point_ocid, local.void) != local.void ? coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_north_south_entry_point_ocid) : null
+                description        = "Traffic destined to additional networks public access CIDR ${cidr} goes to ${coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_north_south_entry_point_ocid, "DRG")}."
+                destination        = "${cidr}"
+                destination_type   = "CIDR_BLOCK"
+                network_entity_id  = coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_north_south_entry_point_ocid, local.void) != local.void ? coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_north_south_entry_point_ocid) : null
                 network_entity_key = coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_north_south_entry_point_ocid, local.void) == local.void ? "HUB-DRG" : null
                 }
               } : {}
@@ -1544,15 +1544,15 @@ locals {
             display_name    = "nat-gateway"
             route_table_key = coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_east_west_entry_point_ocid, local.void) != local.void ? "HUB-VCN-NAT-GATEWAY-ROUTE-TABLE" : null
           }
-        }
-        service_gateways = {
-          "HUB-VCN-SERVICE-GATEWAY" = {
-            display_name    = "service-gateway"
-            services        = "all-services"
-            route_table_key = local.service_gateway_route_rules != {} ? "HUB-VCN-SERVICE-GATEWAY-ROUTE-TABLE" : null
-            route_table_key = local.service_gateway_route_rules != {} ? "HUB-VCN-SERVICE-GATEWAY-ROUTE-TABLE" : null
           }
-        }
+          service_gateways = {
+            "HUB-VCN-SERVICE-GATEWAY" = {
+              display_name    = "service-gateway"
+              services        = "all-services"
+              route_table_key = local.service_gateway_route_rules != {} ? "HUB-VCN-SERVICE-GATEWAY-ROUTE-TABLE" : null
+              route_table_key = local.service_gateway_route_rules != {} ? "HUB-VCN-SERVICE-GATEWAY-ROUTE-TABLE" : null
+            }
+          }
       })
     }
   } : null
