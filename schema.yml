@@ -176,6 +176,7 @@ variableGroups:
     variables:
       - "hub_deployment_option"
       - "existing_drg_ocid"
+      - "hub_vcn_enable_internet_gateway"
       - "hub_vcn_name"
       - "hub_vcn_cidrs"
       - "hub_vcn_dns"
@@ -213,7 +214,6 @@ variableGroups:
       - "hub_vcn_indoor_subnet_cidr"
       - "hub_vcn_indoor_subnet_dns"
       - "deploy_bastion_jump_host"
-      - "hub_vcn_enable_internet_gateway"
     visible: define_net
 
   - title: "Bastion Jump Host"
@@ -5048,8 +5048,8 @@ variables:
 
   hub_vcn_enable_internet_gateway:
     type: boolean
-    title: "Deploy Internet Gateway for Hub VCN?"
-    description: "If checked, an internet gateway will be deployed in the Hub VCN."
+    title: "Enable Access from the Internet?"
+    description: "When checked, access from the Internet is enabled into the Hub VCN via an Internet Gateway. When unchecked, an Internet Gateway is not deployed and access from Internet is blocked."
     required: false
     visible:
       and:
