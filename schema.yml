@@ -176,6 +176,7 @@ variableGroups:
     variables:
       - "hub_deployment_option"
       - "existing_drg_ocid"
+      - "hub_vcn_enable_internet_gateway"
       - "hub_vcn_name"
       - "hub_vcn_cidrs"
       - "hub_vcn_dns"
@@ -5044,6 +5045,22 @@ variables:
           - ${vault_type}
           - "VIRTUAL_PRIVATE"
         - enable_vault
+
+  hub_vcn_enable_internet_gateway:
+    type: boolean
+    title: "Enable Access from the Internet?"
+    description: "When checked, access from the Internet is enabled into the Hub VCN via an Internet Gateway. When unchecked, an Internet Gateway is not deployed and access from Internet is blocked."
+    required: false
+    visible:
+      and:
+        - define_net
+        - or:
+          - eq:
+            - ${hub_deployment_option}
+            - "VCN or on-premises connectivity routing through DMZ VCN with Network Virtual Appliance (DRG and DMZ VCN will be created)"
+          - eq:
+            - ${hub_deployment_option}
+            - "VCN or on-premises connectivity routed through DMZ VCN with Network Virtual Appliance existing DRG (DMZ VCN will be created and DRG ID required)"
 
 outputs:
   release:
