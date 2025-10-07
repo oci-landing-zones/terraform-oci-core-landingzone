@@ -10,7 +10,7 @@ locals {
   // for each tt vcn that is added, add its name to the list of validator values
   tt_vcn_validator_values = [for index, tt_vcn_added in tolist([local.add_tt_vcn1, local.add_tt_vcn2, local.add_tt_vcn3]) : "tt-vcn-${index + 1}" if tt_vcn_added == true]
 
-  hub_vcn_validator_values = local.hub_with_vcn && var.deploy_bastion_jump_host ? ["hub-vcn"] : []
+  hub_vcn_validator_values = local.hub_with_vcn ? ["hub-vcn"] : []
 
   lz_zpr_configuration = local.enable_zpr ? {
     default_defined_tags  = null

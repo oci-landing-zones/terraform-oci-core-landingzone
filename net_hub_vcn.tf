@@ -12,7 +12,7 @@ locals {
       cidr_blocks                      = var.hub_vcn_cidrs
       dns_label                        = substr(replace(coalesce(var.hub_vcn_name, "hub-vcn"), "/[^\\w]/", ""), 0, 14)
       block_nat_traffic                = false
-      security                         = local.enable_zpr == true && var.deploy_bastion_jump_host ? { zpr_attributes = [{ namespace : "${local.zpr_namespace_name}", attr_name : "net", attr_value : "hub-vcn" }] } : null
+      security                         = local.enable_zpr == true ? { zpr_attributes = [{ namespace : "${local.zpr_namespace_name}", attr_name : "net", attr_value : "hub-vcn" }] } : null
 
       subnets = merge(
         {
