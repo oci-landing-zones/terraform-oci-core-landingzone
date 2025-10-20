@@ -626,7 +626,7 @@ variables:
     title: "Service Label"
     minLength: 1
     maxLength: 15
-    pattern: "^[A-Za-z][A-Za-z0-9]{1,14}$"
+    pattern: ^[A-Za-z][A-Za-z0-9]{1,14}$
     description: "A unique label that gets prepended to all resources deployed by the Landing Zone. Max length: 15 characters."
     required: true
 
@@ -2552,7 +2552,7 @@ variables:
       and:
       - define_net
       - add_oke_vcn1
-    required: true
+    required: false
 
   oke_vcn1_name:
     type: string
@@ -2794,7 +2794,7 @@ variables:
       and:
       - define_net
       - add_oke_vcn2
-    required: true
+    required: false
 
   oke_vcn2_name:
     type: string
@@ -3036,7 +3036,7 @@ variables:
       and:
         - define_net
         - add_oke_vcn3
-    required: true
+    required: false
 
   oke_vcn3_name:
     type: string
@@ -3460,7 +3460,7 @@ variables:
     type: string
     title: "Network Appliance Image OCID"
     description: "Enter the Image OCID of the Network Appliance."
-    required: true
+    required: false
     visible:
       and:
         - define_net
@@ -3486,7 +3486,7 @@ variables:
     description: "Palo Alto Network Firewall Version."
     enum:
       - "11.1.4-h7"
-    required: true
+    required: false
     visible:
       and:
         - define_net
@@ -3514,7 +3514,7 @@ variables:
       - "7.2.11_(_X64_)"
       - "7.2.9_(_X64_)"
       - "7.4.4_(_X64_)"
-    required: true
+    required: false
     visible:
       and:
         - define_net
@@ -3839,7 +3839,7 @@ variables:
       eq:
         - ${fastconnect_virtual_circuit_bandwidth_shape}
         - "Custom"
-    pattern: "^\\d+\\sGbps$"
+    pattern: ^\\d+\\sGbps$
 
   fastconnect_virtual_circuit_type:
     type: enum
@@ -4529,7 +4529,7 @@ variables:
     type: enum
     title: "Alarm Message Format"
     description: "Format of the message sent by Alarms"
-    required: true
+    required: false
     enum:
       - PRETTY_JSON
       - ONS_OPTIMIZED
@@ -4623,6 +4623,7 @@ variables:
     required: true
     title: "Activate Service Connector? (This might incur some cost)"
     description: "Whether Service Connector should be activated. If true, costs my incur due to usage of Object Storage bucket, Streaming or Function."
+    default: false
     visible: enable_service_connector
   
   service_connector_target_kind:
@@ -4643,6 +4644,7 @@ variables:
     required: true
     title: "Onboard Logging Analytics?"
     description: "Whether Logging Analytics will be enabled in the tenancy. If true, the Logging Analytics service will be enabled in the tenancy and a new Logging Analytics Namespace will be created. If false, the existing Logging Analytics namespace will be used. Only applicable if 'service_connector_target_kind' is set to 'logginganalytics'."
+    default: false
     visible:
       and:
         - ${enable_service_connector}
@@ -4907,7 +4909,7 @@ variables:
       type: string
     uniqueItems: true
     title: "Enter SSH CIDR Blocks"
-    required: true
+    required: false
     description: "List of CIDR blocks allowed to connect to the Bastion Service"
     visible:
       and:
