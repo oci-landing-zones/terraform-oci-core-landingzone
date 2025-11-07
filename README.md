@@ -37,7 +37,7 @@
     1. [IAM](#arch-iam)
     1. [Network](#arch-network)
     1. [Diagrams](#arch-diagram)
-    1. [Mapping to CIS OCI Benchmark v2.0](./ARCH-MAPPING-CIS.md)
+    1. [Mapping to CIS OCI Benchmark v3.0.0](./ARCH-MAPPING-CIS.md)
 1. [Requirements](#requirements)
 1. [Deployment Scenarios](#deployment-scenarios)
 1. [CIS OCI Foundations Benchmark Modules Collection](#modules)
