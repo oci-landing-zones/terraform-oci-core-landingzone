@@ -1,4 +1,4 @@
-# November 7, 2025 Release Notes - 1.5.4
+# November 14, 2025 Release Notes - 1.5.4
 1. Allowing access from the internet to the Hub VCN is now an optional variable. Set to true to enable access from the Internet via the Internet Gateway.
 2. Ability to add defined_tags and freeform_tags to Log Analytics Log Group.
 3. Event *com.oraclecloud.identitycontrolplane.createidpgroupmapping* and *com.oraclecloud.identitycontrolplane.deleteidpgroupmapping* are updated to *com.oraclecloud.identitycontrolplane.addidpgroupmapping* and *com.oraclecloud.identitycontrolplane.removeidpgroupmapping* in IAM pre-configured events.
