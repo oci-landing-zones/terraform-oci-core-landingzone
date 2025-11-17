@@ -68,7 +68,7 @@ variables:
     title: "Service Label"
     minLength: 1
     maxLength: 15
-    pattern: "^[A-Za-z][A-Za-z0-9]{1,14}$"
+    pattern: ^[A-Za-z][A-Za-z0-9]{1,14}$
     description: "A unique label that gets prepended to all resources deployed by the Landing Zone. Max length: 15 characters."
     required: true
 
