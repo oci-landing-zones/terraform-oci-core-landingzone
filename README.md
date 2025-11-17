@@ -37,7 +37,7 @@
     1. [IAM](#arch-iam)
     1. [Network](#arch-network)
     1. [Diagrams](#arch-diagram)
-    1. [Mapping to CIS OCI Benchmark v2.0](./ARCH-MAPPING-CIS.md)
+    1. [Mapping to CIS OCI Benchmark v3.0.0](./ARCH-MAPPING-CIS.md)
 1. [Requirements](#requirements)
 1. [Deployment Scenarios](#deployment-scenarios)
 1. [CIS OCI Foundations Benchmark Modules Collection](#modules)
@@ -49,7 +49,7 @@
 
 The OCI Core Landing Zone unifies the OCI landing zone initiatives that follow a centralized deployment paradigm for provisioning the base tenancy, including [CIS Landing Zone](https://github.com/oci-landing-zones/oci-cis-landingzone-quickstart) and [Oracle Enterprise Landing Zone](https://github.com/oci-landing-zones/oracle-enterprise-landingzone). For deploying landing zones in multiple stacks, see [The OCI Operating Entities Landing Zone](https://github.com/oci-landing-zones/oci-landing-zone-operating-entities).
 
-The OCI Core Landing Zone deploys a standardized environment in an Oracle Cloud Infrastructure (OCI) tenancy that helps organizations to comply with the [CIS OCI Foundations Benchmark v2.0](https://www.cisecurity.org/benchmark/oracle_cloud/).
+The OCI Core Landing Zone deploys a standardized environment in an Oracle Cloud Infrastructure (OCI) tenancy that is compliant with the [CIS OCI Foundations Benchmark v3.0](https://www.cisecurity.org/benchmark/oracle_cloud/).
 
 It uses multiple compartments, groups, and IAM policies to segregate access to resources based on job function. The resources are configured to meet the CIS OCI Foundations Benchmark settings related to:
 

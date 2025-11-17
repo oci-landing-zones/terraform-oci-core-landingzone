@@ -60,7 +60,7 @@ locals {
 
 module "lz_zpr" {
   count             = local.enable_zpr ? 1 : 0
-  source            = "github.com/oci-landing-zones/terraform-oci-modules-security//zpr?ref=v0.2.2"
+  source            = "github.com/oci-landing-zones/terraform-oci-modules-security//zpr?ref=v0.2.3"
   providers         = { oci = oci.home }
   tenancy_ocid      = var.tenancy_ocid
   zpr_configuration = local.lz_zpr_configuration
