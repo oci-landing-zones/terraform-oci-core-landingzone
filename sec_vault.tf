@@ -42,7 +42,7 @@ locals {
 #-- KMS Keys used by AppDev bucket and Service Connector bucket
 #---------------------------------------------------------------------------
 module "lz_vault" {
-  source     = "github.com/oci-landing-zones/terraform-oci-modules-security//vaults?ref=v0.2.2"
+  source     = "github.com/oci-landing-zones/terraform-oci-modules-security//vaults?ref=v0.2.3"
   count      = local.enable_vault ? 1 : 0
   depends_on = [time_sleep.wait_on_services_policy]
   providers = {
