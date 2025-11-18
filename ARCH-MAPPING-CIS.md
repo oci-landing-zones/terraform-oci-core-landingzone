@@ -1,6 +1,6 @@
 # CIS OCI Benchmark to OCI Core Landing Zone Architecture Mapping
 ## Overview
-The OCI Core Landing Zone configures services and resources in an OCI tenancy to comply with the [CIS OCI Foundations Benchmark v2.0.0](https://www.cisecurity.org/benchmark/oracle_cloud/).  This document details how the OCI Core Landing Zone configuration aligns with the CIS Benchmark v2.0.0.
+The OCI Core Landing Zone configures services and resources in an OCI tenancy to comply with the [CIS OCI Foundations Benchmark v2.0.0](https://www.cisecurity.org/benchmark/oracle_cloud/).  This document details how the OCI Core Landing Zone configuration aligns with the CIS Benchmark v2.0.0. An update to this document showing how OCI Core Landing Zone aligns with the CIS Benchmark v3.0.0 will be found in the next release.
 
 ## Architecture to CIS OCI Benchmark
 The diagram below shows how the services and resources deployed in a single VCN deployment map to the CIS OCI Benchmark v2.0.0.

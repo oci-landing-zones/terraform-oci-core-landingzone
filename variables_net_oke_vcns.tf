@@ -112,6 +112,11 @@ variable "oke_vcn1_onprem_route_enable" {
   description = "This will drive the creation of the routes and security list rules."
 }
 
+variable "customize_oke_vcn1_subnets" {
+  type        = bool
+  default     = false
+  description = "If true, allows for the customization of default subnets settings. Only applicable to RMS deployments."
+}
 # ------------------------------------------------------
 # ----- Networking - OKE VCN 2
 #-------------------------------------------------------
@@ -223,6 +228,11 @@ variable "oke_vcn2_onprem_route_enable" {
   description = "This will drive the creation of the routes and security list rules."
 }
 
+variable "customize_oke_vcn2_subnets" {
+  type        = bool
+  default     = false
+  description = "If true, allows for the customization of default subnets settings. Only applicable to RMS deployments."
+}
 # ------------------------------------------------------
 # ----- Networking - OKE VCN 3
 #-------------------------------------------------------
@@ -332,4 +342,9 @@ variable "oke_vcn3_onprem_route_enable" {
   type        = bool
   default     = false
   description = "This will drive the creation of the routes and security list rules."
+}
+variable "customize_oke_vcn3_subnets" {
+  type        = bool
+  default     = false
+  description = "If true, allows for the customization of default subnets settings. Only applicable to RMS deployments."
 }

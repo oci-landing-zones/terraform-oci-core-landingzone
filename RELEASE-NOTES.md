@@ -1,3 +1,12 @@
+# November 17, 2025 Release Notes - 1.5.4
+1. Allowing access from the internet to the Hub VCN is now an optional variable. Set to true to enable access from the Internet via the Internet Gateway.
+2. Ability to add defined_tags and freeform_tags to Log Analytics Log Group.
+3. Event *com.oraclecloud.identitycontrolplane.createidpgroupmapping* and *com.oraclecloud.identitycontrolplane.deleteidpgroupmapping* are updated to *com.oraclecloud.identitycontrolplane.addidpgroupmapping* and *com.oraclecloud.identitycontrolplane.removeidpgroupmapping* in IAM pre-configured events.
+4. Updated observability, workloads, IAM, networking, governance, and security modules to latest release versions.
+5. Updated required variables and default values in Schema UI.
+6. Bug fix: ZPR can now be enabled when deploying a Hub VCN without needing a Bastion Jump Host. 
+7. Bug fix: custom values for OKE and Exadata subnets are now saved when editing an existing stack in RMS. 
+
 # August 26, 2025 Release Notes - 1.5.3
 1. Ability to customize default compartment names through input variables. See [Customizing Compartments](./DEPLOYMENT-GUIDE.md#custom-cmp) for details. 
 2. Ability to explicitly deploy Vault service and define its type through input variables. Virtual private vaults can be replicated to another region. See variables *enable_vault*, *vault_type* and *vault_replica_region* in [VARIABLES.md](./VARIABLES.md).
