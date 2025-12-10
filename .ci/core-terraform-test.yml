@@ -15,15 +15,15 @@ workflow:
   rules:
     - changes:
         - "**/*.tf" # triggers if any file ending in .tf in any dir is changed
-        - "extensions/**/*" # (can be removed) lots of .tf files, have subdirectories that specifically have main.tf/providers.tf
-        - "templates/**/*" # (can be removed and replaced with .tf.template) has subdirs filled with .tf.template files, waiting on Josh to understand if this is needed
+        # - "extensions/**/*" # (can be removed) lots of .tf files, have subdirectories that specifically have main.tf/providers.tf
+        # - "templates/**/*" # (can be removed and replaced with .tf.template) has subdirs filled with .tf.template files, waiting on Josh to understand if this is needed
       when: always
     - when: never  # pipeline isn't triggered if conditions above aren't met
 
 core-lz-prep-test-cases-pull:
   stage: tf-prep-test-case-pull
   rules:
-    - if: '$CI_PIPELINE_SOURCE == "push"' # are these conditions still required in the case that the workflow above is established? 
+    - if: '$CI_PIPELINE_SOURCE == "push"'
 
   script:
     - set -o pipefail
@@ -41,7 +41,7 @@ core-lz-prep-test-cases-pull:
 core-lz-prep-test-cases-merge-pre:
   stage: tf-prep-test-cases-merge-pre
   rules:
-    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"' # are these conditions still required in the case that the workflow above is established? 
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
 
   script:
     - set -o pipefail
@@ -82,7 +82,7 @@ core-lz-prep-test-cases-merge-pre:
 core-lz-merge-test-case-1:
   stage: tf-merge-test-case-1
   rules:
-    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"' # are these conditions still required in the case that the workflow above is established? 
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
 
   script:
     - set -o pipefail
@@ -143,7 +143,7 @@ core-lz-merge-test-case-1:
 core-lz-merge-test-case-2:
   stage: tf-merge-test-case-2
   rules:
-    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"' # are these conditions still required in the case that the workflow above is established? 
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
 
   script:
     - set -o pipefail
