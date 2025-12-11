@@ -16,7 +16,7 @@ workflow:
     - changes:
         - "**/*.tf" # triggers if any file ending in .tf in any dir is changed
       when: always
-    - when: never  # pipeline isn't triggered if conditions above aren't met
+    - when: never  # pipeline isn't triggered if conditions above aren't met test
 
 core-lz-prep-test-cases-pull:
   stage: tf-prep-test-case-pull
