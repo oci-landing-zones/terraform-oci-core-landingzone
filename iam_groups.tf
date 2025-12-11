@@ -2,6 +2,7 @@
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl/
 
 ### This Terraform configuration provisions Landing Zone groups.
+# random test comment
 
 locals {
   #------------------------------------------------------------------------------------------------------
