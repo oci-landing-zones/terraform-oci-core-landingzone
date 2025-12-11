@@ -15,8 +15,6 @@ workflow:
   rules:
     - changes:
         - "**/*.tf" # triggers if any file ending in .tf in any dir is changed
-        # - "extensions/**/*" # (can be removed) lots of .tf files, have subdirectories that specifically have main.tf/providers.tf
-        # - "templates/**/*" # (can be removed and replaced with .tf.template) has subdirs filled with .tf.template files, waiting on Josh to understand if this is needed
       when: always
     - when: never  # pipeline isn't triggered if conditions above aren't met
 
