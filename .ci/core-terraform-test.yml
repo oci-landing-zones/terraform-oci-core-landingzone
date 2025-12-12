@@ -11,6 +11,13 @@ variables:
   MERGE_PIPELINE_TAR: "merge-$TIMESTAMP-$CI_PIPELINE_ID.tar.gz"
 
 
+workflow:
+  rules:
+    - changes:
+        - "**/*.tf" # triggers if any file ending in .tf in any dir is changed
+      when: always
+    - when: never  # pipeline isn't triggered if conditions above aren't met
+
 core-lz-prep-test-cases-pull:
   stage: tf-prep-test-case-pull
   rules:
