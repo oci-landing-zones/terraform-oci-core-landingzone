@@ -134,8 +134,8 @@ core-lz-merge-test-case-1:
 core-lz-cis-compliance-verification:
   stage: tf-merge-test-case-2
   rules:
-    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
-
+    - if: '$CI_COMMIT_REF_NAME == "fawwahme/LANZ-4179-pipeline-security"'
+  when: manual
   script:
     - set -o pipefail
     - echo "  ----- BEGIN --- CIS Compliance Verification --- "
@@ -150,7 +150,5 @@ core-lz-cis-compliance-verification:
     - oci os object get -bn $BUCKET_NAME --file comparison-tools.zip --name comparison-tools.zip -ns $LZTEAM_NAMESPACE
     - unzip comparison-tools.zip
     - echo "--- Running CIS compliance check Script ---"
-    - python3 tools/security_check.py \
-        --pre-report "$MERGE_TEST_CASES_DIR/predeploy/cis_summary_report.csv" \
-        --post-report "$MERGE_TEST_CASES_DIR/postdeploy/cis_summary_report.csv"
+    - python3 tools/security_check.py --pre-report "$MERGE_TEST_CASES_DIR/predeploy/cis_summary_report.csv" --post-report "$MERGE_TEST_CASES_DIR/postdeploy/cis_summary_report.csv"
     - echo "  ----- Complete --- CIS Compliance Verification --- "
