@@ -141,13 +141,13 @@ core-lz-cis-compliance-verification:
     - echo "  ----- BEGIN --- CIS Compliance Verification --- "
     - export https_proxy=$PROXY_SERVER:80
     - export http_proxy=$PROXY_SERVER:80
-    - MERGE_TEST_CASES_DIR=${MERGE_TEST_CASES_ZIP::-4}
-    - unzip $MERGE_TEST_CASES_ZIP
     - echo "  ----- Pulling CIS compliance Checker Script -----  "
     - oci os object get -bn $BUCKET_NAME --file comparison-tools.zip --name comparison-tools.zip -ns $LZTEAM_NAMESPACE
+    - MERGE_TEST_CASES_DIR=${MERGE_TEST_CASES_ZIP::-4}
+    - unzip $MERGE_TEST_CASES_ZIP
     - unzip comparison-tools.zip
     - echo "--- Running CIS compliance check Script ---"
-    - python3 tools/security_check.py \
+    - python3 security_check.py \
         --pre-report "$MERGE_TEST_CASES_DIR/predeploy/cis_summary_report.csv" \
         --post-report "$MERGE_TEST_CASES_DIR/postdeploy/cis_summary_report.csv"
     - echo "  ----- Complete --- CIS Compliance Verification --- "
