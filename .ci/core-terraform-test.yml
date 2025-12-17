@@ -150,7 +150,6 @@ core-lz-cis-compliance-verification:
     - echo "  ----- BEGIN --- CIS Compliance Verification --- "
     - export https_proxy=$PROXY_SERVER:80
     - export http_proxy=$PROXY_SERVER:80
-    # Find the artifact TAR file (created by previous job)
     - MERGE_PIPELINE_TAR=$(ls merge-*.tar.gz | head -1)
     - |
       if [ -z "$MERGE_PIPELINE_TAR" ]; then
@@ -158,15 +157,10 @@ core-lz-cis-compliance-verification:
         exit 1
       fi
       echo "Found merge TAR file: $MERGE_PIPELINE_TAR"
-
-
-    # Extract the CIS reports
     - echo "--- Extracting CIS reports ---"
     - tar -xzvf $MERGE_PIPELINE_TAR
     - MERGE_TEST_CASES_DIR=$(basename $MERGE_PIPELINE_TAR .tar.gz)
     - echo "CIS reports directory: $MERGE_TEST_CASES_DIR"
-
-
     - echo "  ----- Downloading CIS compliance checker script ----- "
     - oci os object get -bn $BUCKET_NAME --file comparison-tools.zip --name comparison-tools.zip -ns $LZTEAM_NAMESPACE
     - unzip comparison-tools.zip
