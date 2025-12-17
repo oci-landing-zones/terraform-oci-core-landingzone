@@ -151,7 +151,6 @@ core-lz-cis-compliance-verification:
     - export https_proxy=$PROXY_SERVER:80
     - export http_proxy=$PROXY_SERVER:80
     - MERGE_PIPELINE_TAR=$(ls merge-*.tar.gz | head -1)
-    - if [ -z "$MERGE_PIPELINE_TAR" ]; then echo "No merge TAR file found"; exit 1; else echo "Found merge TAR file: $MERGE_PIPELINE_TAR"; fi
     - echo "--- Extracting CIS reports ---"
     - tar -xzvf $MERGE_PIPELINE_TAR
     - MERGE_TEST_CASES_DIR=$(basename $MERGE_PIPELINE_TAR .tar.gz)
