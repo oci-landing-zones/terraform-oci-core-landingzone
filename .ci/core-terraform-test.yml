@@ -144,12 +144,16 @@ core-lz-cis-compliance-verification:
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
   dependencies:
     - core-lz-merge-test-case-1  # Depend on the job that creates the artifact
-
+  when: manual
   script:
     - set -o pipefail
     - echo "  ----- BEGIN --- CIS Compliance Verification --- "
     - export https_proxy=$PROXY_SERVER:80
     - export http_proxy=$PROXY_SERVER:80
+    - MERGE_PIPELINE_TAR=$(ls merge-*.tar.gz | head -1)
+    - echo "--- Extracting CIS reports ---"
+    - tar -xzvf $MERGE_PIPELINE_TAR
+    - MERGE_TEST_CASES_DIR=$(basename $MERGE_PIPELINE_TAR .tar.gz)
     - echo "CIS reports directory -- $MERGE_TEST_CASES_DIR"
     - echo "  ----- Downloading CIS compliance checker script ----- "
     - oci os object get -bn $BUCKET_NAME --file comparison-tools.zip --name comparison-tools.zip -ns $LZTEAM_NAMESPACE
