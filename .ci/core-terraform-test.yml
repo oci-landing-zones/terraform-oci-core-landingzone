@@ -150,14 +150,11 @@ core-lz-cis-compliance-verification:
     - echo "  ----- BEGIN --- CIS Compliance Verification --- "
     - export https_proxy=$PROXY_SERVER:80
     - export http_proxy=$PROXY_SERVER:80
-    - MERGE_PIPELINE_TAR=$(ls merge-*.tar.gz | head -1)
-    - echo "--- Extracting CIS reports ---"
-    - tar -xzvf $MERGE_PIPELINE_TAR
-    - MERGE_TEST_CASES_DIR=$(basename $MERGE_PIPELINE_TAR .tar.gz)
-    - echo "CIS reports directory: $MERGE_TEST_CASES_DIR"
+    - echo "CIS reports directory -- $MERGE_TEST_CASES_DIR"
     - echo "  ----- Downloading CIS compliance checker script ----- "
     - oci os object get -bn $BUCKET_NAME --file comparison-tools.zip --name comparison-tools.zip -ns $LZTEAM_NAMESPACE
     - unzip comparison-tools.zip
     - echo "--- Running CIS compliance check Script ---"
     - python3 tools/security_check.py --pre-report "$MERGE_TEST_CASES_DIR/predeploy/cis_summary_report.csv" --post-report "$MERGE_TEST_CASES_DIR/postdeploy/cis_summary_report.csv"
-    - echo "  ----- Complete --- CIS Compliance Verification --- "
+
+
