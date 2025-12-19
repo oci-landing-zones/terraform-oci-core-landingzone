@@ -129,36 +129,39 @@ core-lz-merge-test-case-1:
     # - rm -rf $PIPELINE_TAR
     # - rm -rf $CI_PIPELINE_ID
     - echo $PAR_LOCATION | tr -d '"'
+    - echo "--- Copying TAR file to /tmp for CIS compliance job ---"
+    - cp $MERGE_PIPELINE_TAR /tmp/${CI_PIPELINE_ID}_cis_reports.tar.gz
+    - echo "✅ TAR file copied to /tmp/${CI_PIPELINE_ID}_cis_reports.tar.gz"
+    - echo "🔍 Full path -> $(pwd)/$MERGE_PIPELINE_TAR → /tmp/${CI_PIPELINE_ID}_cis_reports.tar.gz"
     - echo "  ----- END - Running Test for Merge Request Cases -----  "
 
-  artifacts:
-    paths:
-      - $MERGE_PIPELINE_TAR
-    expire_in: 1 hour  # Clean up after pipeline completes
-    when: always
 
 
 core-lz-cis-compliance-verification:
   stage: tf-merge-test-case-2
   rules:
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
-  dependencies:
-    - core-lz-merge-test-case-1  # Depend on the job that creates the artifact
-  when: manual
+  # when: manual
   script:
     - set -o pipefail
     - echo "  ----- BEGIN --- CIS Compliance Verification --- "
     - export https_proxy=$PROXY_SERVER:80
     - export http_proxy=$PROXY_SERVER:80
-    - MERGE_PIPELINE_TAR=$(ls merge-*.tar.gz | head -1)
+    - echo "--- Finding latest merge results ---"
+    - MERGE_PIPELINE_TAR="/tmp/${CI_PIPELINE_ID}_cis_reports.tar.gz"
     - echo "--- Extracting CIS reports ---"
     - tar -xzvf $MERGE_PIPELINE_TAR
-    - MERGE_TEST_CASES_DIR=$(basename $MERGE_PIPELINE_TAR .tar.gz)
-    - echo "CIS reports directory -- $MERGE_TEST_CASES_DIR"
-    - echo "  ----- Downloading CIS compliance checker script ----- "
+    - |
+      MERGE_TEST_CASES_DIR=$(basename $MERGE_PIPELINE_TAR .tar.gz)
+      echo "Reports directory: $MERGE_TEST_CASES_DIR"
+    # Download comparison tools
+    - echo "--- Downloading CIS compliance checker ---"
     - oci os object get -bn $BUCKET_NAME --file comparison-tools.zip --name comparison-tools.zip -ns $LZTEAM_NAMESPACE
     - unzip comparison-tools.zip
-    - echo "--- Running CIS compliance check Script ---"
-    - python3 tools/security_check.py --pre-report "$MERGE_TEST_CASES_DIR/predeploy/cis_summary_report.csv" --post-report "$MERGE_TEST_CASES_DIR/postdeploy/cis_summary_report.csv"
-
+    # Run compliance check
+    - echo "--- Running CIS compliance verification ---"
+    - |
+      python3 tools/security_check.py \
+        --pre-report "$MERGE_TEST_CASES_DIR/predeploy/cis_summary_report.csv" \
+        --post-report "$MERGE_TEST_CASES_DIR/postdeploy/cis_summary_report.csv"
 
