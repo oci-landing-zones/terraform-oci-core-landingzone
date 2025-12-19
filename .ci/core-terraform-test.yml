@@ -152,7 +152,7 @@ core-lz-cis-compliance-verification:
     - echo "--- Extracting CIS reports ---"
     - tar -xzvf $MERGE_PIPELINE_TAR
     - |
-      MERGE_TEST_CASES_DIR=$(basename $MERGE_PIPELINE_TAR .tar.gz)
+      MERGE_TEST_CASES_DIR="core-lz-apply-cases"
       echo "Reports directory: $MERGE_TEST_CASES_DIR"
     # Download comparison tools
     - echo "--- Downloading CIS compliance checker ---"
@@ -162,6 +162,6 @@ core-lz-cis-compliance-verification:
     - echo "--- Running CIS compliance verification ---"
     - |
       python3 tools/security_check.py \
-        --pre-report "$MERGE_TEST_CASES_DIR/predeploy/cis_summary_report.csv" \
-        --post-report "$MERGE_TEST_CASES_DIR/postdeploy/cis_summary_report.csv"
+        --pre-report "$MERGE_TEST_CASES_DIR/predeploy/${CI_PIPELINE_ID}/cis_summary_report.csv" \
+        --post-report "$MERGE_TEST_CASES_DIR/postdeploy/${CI_PIPELINE_ID}/cis_summary_report.csv"
 
