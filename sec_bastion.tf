@@ -1,17 +1,12 @@
 locals {
   #------------------------------------------------------------------------------------------------------
-  #-- Any of these local vars can be overriden in a _override.tf file
+  #-- Any of these local vars can be overridden in a _override.tf file
   #------------------------------------------------------------------------------------------------------
   #-- Bastion
   custom_bastion_service_type          = null
   custom_bastion_service_defined_tags  = null
   custom_bastion_service_freeform_tags = null
   # custom_bastion_target_compartments = null
-
-  jump_host_marketplace_image_map = {
-    "Oracle Linux 8 STIG (Free)"                          = "Oracle Linux 8 STIG",                         # default latest version
-    "CIS Hardened Image Level 1 on Oracle Linux 8 (Paid)" = "CIS Hardened Image Level 1 on Oracle Linux 8" # default latest version
-  }
 
   ### Bastion Service
   default_bastion_service_name          = "${var.service_label}-bastion-service"
@@ -41,7 +36,6 @@ locals {
   } : {}
 
   ### Bastion Jump Host
-
   jump_host_instances_configuration = {
     default_compartment_id      = local.security_compartment_id
     default_ssh_public_key_path = var.bastion_jump_host_ssh_public_key_path
@@ -62,16 +56,16 @@ locals {
           ocpus  = var.bastion_jump_host_flex_shape_cpu
         }
 
-        custom_image = var.bastion_jump_host_custom_image_ocid != null ? {
-          ocid = var.bastion_jump_host_custom_image_ocid
+        marketplace_image = coalesce(var.bastion_jump_host_marketplace_image_option,"null") != "null" ? {
+          name = trimspace(var.bastion_jump_host_marketplace_image_option)
         } : null
 
-        marketplace_image = var.cis_level == "1" && var.bastion_jump_host_marketplace_image_option != null ? {
-          name = local.jump_host_marketplace_image_map[var.bastion_jump_host_marketplace_image_option]
+        platform_image = coalesce(var.bastion_jump_host_platform_image_ocid,"null") != "null" ? {
+          ocid = trimspace(var.bastion_jump_host_platform_image_ocid)
         } : null
 
-        platform_image = var.cis_level == "2" && var.bastion_jump_host_custom_image_ocid == null ? {
-          ocid = data.oci_core_images.platform_oel_images.images[0].id
+        custom_image = coalesce(var.bastion_jump_host_custom_image_ocid,"null") != "null" ? {
+          ocid = trimspace(var.bastion_jump_host_custom_image_ocid)
         } : null
 
         security = local.enable_zpr == true ? { zpr_attributes = [{ namespace : "${local.zpr_namespace_name}", attr_name : "bastion", attr_value : local.zpr_label }] } : null
@@ -108,7 +102,7 @@ module "lz_bastion_jump_host" {
   count  = (local.hub_with_vcn == true && var.deploy_bastion_jump_host == true) ? 1 : 0
 
   providers = {
-    oci                                  = oci.home
+    oci                                  = oci
     oci.block_volumes_replication_region = oci.home
   }
 

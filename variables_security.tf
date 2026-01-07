@@ -169,16 +169,22 @@ variable "bastion_jump_host_flex_shape_cpu" {
   description = "The number of OCPUs for the selected flex shape. Applicable to flexible shapes only."
 }
 
-variable "bastion_jump_host_custom_image_ocid" {
-  type        = string
-  default     = null
-  description = "The custom image ocid of the user-provided bastion jump host instance. The custom image takes precedence over marketplace image."
-}
-
 variable "bastion_jump_host_marketplace_image_option" {
   type        = string
   default     = null
-  description = "Options to select a jump host marketplace image. Either `Oracle Linux 8 STIG (Free)`, or `CIS Hardened Image Level 1 on Oracle Linux 8 (Paid)`."
+  description = "The Marketplace image name for the jump host. It has precedence over platform image and custom image. Some available options are: 'Oracle Linux 8 STIG' (free), 'CIS Hardened Image Level 1 on Oracle Linux 8' (paid). See OCI Markeplace for more and make sure the spelling is exactly as it shows in OCI Marketplace."
+}
+
+variable "bastion_jump_host_platform_image_ocid" {
+  type        = string
+  default     = null
+  description = "The platform image ocid for the jump host. It has precedence over custom image. OCI platform images (along with their OCIDs per region) are described in https://docs.oracle.com/en-us/iaas/images/."
+}
+
+variable "bastion_jump_host_custom_image_ocid" {
+  type        = string
+  default     = null
+  description = "The custom image ocid for the jump host."
 }
 
 variable "deploy_bastion_jump_host" {
