@@ -115,8 +115,8 @@ locals {
         },
         (local.image_source) = local.image_options[local.image_source]
         placement = {
-          availability_domain = 2
-          fault_domain        = 1
+          availability_domain = length(data.oci_identity_availability_domains.ads.availability_domains) > 1 ? 2 : 1
+          fault_domain        = length(data.oci_identity_availability_domains.ads.availability_domains) > 1 ? 1 : 2
         }
         boot_volume = {
           size                          = var.net_appliance_boot_volume_size
@@ -264,7 +264,7 @@ module "lz_firewall_appliance" {
   source                  = "github.com/oci-landing-zones/terraform-oci-modules-workloads//cis-compute-storage?ref=v0.2.2"
   instances_configuration = local.instances_configuration
   providers = {
-    oci                                  = oci.home
+    oci                                  = oci
     oci.block_volumes_replication_region = oci.home
   }
   depends_on = [module.lz_vault]
