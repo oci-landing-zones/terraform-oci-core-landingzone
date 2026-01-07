@@ -17,7 +17,7 @@
     1. [Security Services](#security-services)
     1. [Deploying Lifecycle Environments](#deploying-lifecycle-environments)
     1. [Zero Trust Packet Routing (ZPR)](#zpr-use)
-    1. [Bastion Service](#bastion-use)
+    1. [Remote Access over SSH](#bastion-use)
     1. [Express Deployment](#express-use)
     1. [Customizing Compartments](#custom-cmp)
 1. [Ways to Deploy](#ways-to-deploy)
@@ -407,13 +407,13 @@ If updated in the stack this way, the new user policy is baked into the Network 
 
 #### Landing Zone Third Party Firewall Options
 
-Alternatively, Core Landing Zone supports use of a third party *network appliance* (VM instance) with either Palo Alto Networks VM-Series Next Generation Firewall or Fortinet FortiGate Next-Gen Firewall.  Both options leverage compute images available in the [OCI Marketplace](https://cloud.oracle.com/marketplace) with Bring Your Own Licensing (BYOL).
+Alternatively, Core Landing Zone supports use of a third party *network appliance* (VM instance) with either Palo Alto Networks VM-Series Next Generation Firewall or Fortinet FortiGate Next-Gen Firewall.  Both options leverage compute images available in the [OCI Marketplace](https://cloud.oracle.com/marketplace) with Bring Your Own License (BYOL) type.
 
 Both OCI and Third Party firewall options are provided separately in the deployment scenario templates above.
 
 #### Cross-VCN Connectivity Patterns
 
-The diagram below demonstrates Landing Zone *permitted routing* in a mixed VCN deployment by each **source VCN type** to any other three potential destinations by type.
+The diagram below shows Landing Zone *available routing* at the subnet level in a mixed VCN deployment by each **source VCN type** to any other three potential destinations by type.
 
 * **Three-Tier** - Web outbound are green lines, App outbound are blue lines and DB outbound are orange lines.
 * **OKE** - Web outbound are green lines, Workers outbound are blue lines and Pods outbound are orange lines.
@@ -662,22 +662,50 @@ in <zpr_namespace_name>.net:exa-vcn-1 VCN allow '10.1.2.0/24' to connect to <zpr
 ```
 in <zpr_namespace_name>.net:exa-vcn-1 VCN allow '<bastion service CIDR>/32' to connect to <zpr_namespace_name>.bastion:<service_label> endpoints with protocol='tcp/22'
 ```
-## <a name="bastion-use"></a>4.7 Bastion Service
+## <a name="bastion-use"></a>4.7 Remote Access over SSH
 
-OCI Core Landing Zone supports Bastions. Bastions provide restricted and time-limited access to target resources that don't have public endpoints.
-Bastions let authorized users connect from specific IP addresses to target resources using Secure Shell (SSH) sessions. When connected, users can interact with the target resource by using any software or protocol supported by SSH. For example, you can use the Remote Desktop Protocol (RDP) to connect to a Windows host, or use Oracle Net Services to connect to a database. Targets can include resources like compute instances , DB systems , and Autonomous Database for Transaction Processing and Mixed Workloads databases. Bastions are essential in tenancies with stricter resource controls. For example, you can use a bastion to access Compute instances in compartments that are associated with a security zone. Instances in a security zone cannot have public endpoints. Integration with Oracle Cloud Infrastructure Identity and Access Management (IAM) lets you control who can access a bastion or a session and what they can do with those resources.
+OCI Core Landing Zone enables remote access to private resources via a combination of a jump host with OCI Bastion service. The main idea is providing private access to the jump host via the Bastion service, and using the jump host as a bridge to resources in other VCNs. Both the Bastion service and the jump host are deployed in a specific "JumpHost" subnet within the Hub VCN. 
 
-The diagram below shows the OCI Core Landing Zone Bastion Pattern in Hub VCN:
+[OCI Bastion service](https://docs.oracle.com/en-us/iaas/Content/Bastion/home.htm) provides restricted and time-limited access to target resources that don't have public endpoints.
+It allows authorized users to connect from specific IP addresses to target resources using Secure Shell (SSH) sessions. When connected, users can interact with the target resource by using any software or protocol supported by SSH. For example, you can use the Remote Desktop Protocol (RDP) to connect to a Windows host, or use Oracle Net Services to connect to a database. Supported targets include resources like Compute instances and DB systems. Bastion service is important in environments with stricter resource controls, as in compartments associated with an OCI Security Zone that do not allow public endpoints. Additionally, integration with Oracle Cloud Infrastructure Identity and Access Management (IAM) allows controlling who can instantiate a Bastion service session.
+
+**Notice that OCI Core Landing Zone does not provision a Bastion service _session_. That is required to be manually created afterwards.**
+
+The diagram below shows Landing Zone's pattern for remote access over SSH. 
 
 <img src="images/arch_bastion.png" alt="Bastion Architecture" width="800"/>
 
-#### To deploy a bastion service, it must be enabled at the tenancy level.
+As depicted, there are two ways for SSH'ing into Landing Zone networks through the Hub VCN:
+- Directly from OnPrem hosts (see the blue arrow from "OnPrem")
+- Through a jump host, accessible via OCI Bastion Service managed SSH session (in yellow).
 
-- **deploy\_bastion\_service**: Whether a bastion service is enabled as part of this Landing Zone. By default, no bastion resources are created.
-- **bastion\_service\_name**: The name of the bastion service. The assigned value is <service_label>-bastion.
-- **bastion\_service\_allowed\_cidrs**: The list of the CIDR block(s) allowed to access the bastion service.
+The diagram shows three NSGs (Network Security Groups) with the Hub VCN that are relevant to this scenario: JumpHost NSG, Mgmt NSG and Indoor NSG (all in green):
+- **JumpHost NSG**: meant to be associated with jump hosts that provide access to Landing Zone VCNs.
+    - Ingress access is allowed from "OnPrem" and JumpHost subnet (required by OCI Bastion Service managed SSH session).
+    - If a firewall is deployed, SSH requests originating from the jump host are routed through the firewall (dashed red line leading to Indoor NSG). Otherwise, the SSH requests are routed directly through the DRG (whole red arrow leading to DRG).
+    - Firewall must be configured with proper routing.
+    - Egress access is provided to specific NSGs in three-tier (TT), OKE and Exa VCNs (red arrows leaving DRG).
 
-To enable the bastion service during deployment using OCI Resource Manager UI:
+- **Mgmt NSG**: meant for 3rd-party Firewall management interfaces only.
+    - Only ingress paths are allowed: from "OnPrem", from JumpHost NSG and from Mgmt subnet (required by OCI Bastion Service port forwarding session).
+    - As a rule of thumb, use the JumpHost for connecting over SSH in order to provide initial firewall configuration. Then deploy OCI Bastion Service port forwarding session (see **Note** below) for accessing the firewall admin interface over HTTP.
+
+- **Indoor NSG**: Landing Zone routes SSH requests from jump host for runtime packet inspection once Landing Zone is updated with Firewall network endpoints.        
+
+**Note:** The *OCI Bastion Service (port forwarding session)* associated with *FW Mgmt VNIC* (in white) is not deployed by the Landing Zone. It must be deployed separately for access to the firewall management interface over HTTP. 
+
+The landing zone key variables controlling jump host and Bastion service provisioning are shown next:
+
+- **deploy\_bastion\_jump\_host**: Whether a jump host is provisioned. It is false by default.
+- **bastion\_jump\_host\_marketplace\_image\_option**: The name of an **OCI Marketplace** Compute image for the jump host. Default is null. Some available options are: "Oracle Linux 8 STIG" (free), "CIS Hardened Image Level 1 on Oracle Linux 8" (paid). See OCI Markeplace for more and make sure the spelling is exactly as it shows in OCI Marketplace. It has precedence over platform and custom images.
+- **bastion\_jump\_host\_platform\_image\_ocid**: The OCID of an **OCI Platform** Comput image for the the jump host. Default is null. It has precedence over custom image.
+- **bastion\_jump\_host\_custom\_image\_ocid**: The OCID of a custom Compute image for the jump host. Default is null.
+- **deploy\_bastion\_service**: Whether OCI Bastion service is provisioned. It is false by default.
+- **bastion\_service\_allowed\_cidrs**: The list of the CIDR block(s) allowed to connect to OCI Bastion service. Avoid entering "0.0.0.0/0".
+
+See [VARIABLES.md](./VARIABLES.md#security) for the complete list of available variables.
+
+To enable the Bastion service during deployment using OCI Resource Manager UI:
 1) Check _"Define Networking?"_ in the General section
 2) Check _"Deploy a Jump Host for SSH access?"_ in the Networking - Hub & Spoke Topology section
 3) Check _"Deploy Bastion Service"_ in the Bastion Jump Host section
