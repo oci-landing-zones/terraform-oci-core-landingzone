@@ -81,25 +81,26 @@ locals {
         local.chosen_firewall_option != "NO" && local.chosen_firewall_option != "OCINFW" ? {
           "MGMT-SUB-SL" = {
             display_name  = "mgmt-subnet-security-list"
-            ingress_rules = []
+            ingress_rules = [
+              {
+                description  = "Ingress from ${coalesce(var.hub_vcn_mgmt_subnet_cidr, cidrsubnet(var.hub_vcn_cidrs[0], 3, 3))} on HTTP port. Required for inbound port forwarding connections from OCI Bastion service to FW management interface."
+                stateless    = false
+                protocol     = "TCP"
+                src          = coalesce(var.hub_vcn_mgmt_subnet_cidr, cidrsubnet(var.hub_vcn_cidrs[0], 3, 3))
+                src_type     = "CIDR_BLOCK"
+                dst_port_min = 443
+                dst_port_max = 443
+              }
+            ]
             egress_rules = [
               {
-                description  = "Egress to Mgmt subnet on SSH port. Required by Bastion service session."
+                description  = "Egress to ${coalesce(var.hub_vcn_mgmt_subnet_cidr, cidrsubnet(var.hub_vcn_cidrs[0], 3, 3))} on HTTP port. Required for outbound port forwarding connections from OCI Bastion service to FW management interface."
                 stateless    = false
                 protocol     = "TCP"
                 dst          = coalesce(var.hub_vcn_mgmt_subnet_cidr, cidrsubnet(var.hub_vcn_cidrs[0], 3, 3))
                 dst_type     = "CIDR_BLOCK"
-                dst_port_min = "22"
-                dst_port_max = "22"
-              },
-              {
-                description  = "Egress to Mgmt subnet on HTTP port. Required by Bastion service session."
-                stateless    = false
-                protocol     = "TCP"
-                dst          = coalesce(var.hub_vcn_mgmt_subnet_cidr, cidrsubnet(var.hub_vcn_cidrs[0], 3, 3))
-                dst_type     = "CIDR_BLOCK"
-                dst_port_min = "443"
-                dst_port_max = "443"
+                dst_port_min = 443
+                dst_port_max = 443
               }
             ]
           }
@@ -107,30 +108,28 @@ locals {
         var.deploy_bastion_jump_host == true ? {
           "JUMPHOST-SUB-SL" = {
             display_name = "jumphost-subnet-security-list"
-            ingress_rules = flatten([
-              [],
-              [],
-              [{
-                description  = "Ingress from ${coalesce(var.hub_vcn_jumphost_subnet_name, "${var.service_label}-hub-vcn-jumphost-subnet")} on SSH port. Required for connecting Bastion service endpoint to Bastion jump host."
+            ingress_rules = [
+              {
+                description  = "Ingress from ${coalesce(var.hub_vcn_jumphost_subnet_name, "${var.service_label}-hub-vcn-jumphost-subnet")} on SSH port. Required for inbound managed SSH connections from OCI Bastion service to jump host."
                 stateless    = false
                 protocol     = "TCP"
                 src          = coalesce(var.hub_vcn_jumphost_subnet_cidr, cidrsubnet(var.hub_vcn_cidrs[0], 3, 4))
                 src_type     = "CIDR_BLOCK"
                 dst_port_min = 22
                 dst_port_max = 22
-              }]
-            ])
-            egress_rules = flatten([
-              [{
-                description  = "Egress to ${coalesce(var.hub_vcn_jumphost_subnet_name, "${var.service_label}-hub-vcn-jumphost-subnet")} on SSH port. Required by Bastion service session."
+              }
+            ]
+            egress_rules = [
+              {
+                description  = "Egress to ${coalesce(var.hub_vcn_jumphost_subnet_name, "${var.service_label}-hub-vcn-jumphost-subnet")} on SSH port. Required for outbound managed SSH connections from OCI Bastion service to jump host."
                 stateless    = false
                 protocol     = "TCP"
                 dst          = coalesce(var.hub_vcn_jumphost_subnet_cidr, cidrsubnet(var.hub_vcn_cidrs[0], 3, 4))
                 dst_type     = "CIDR_BLOCK"
                 dst_port_min = 22
                 dst_port_max = 22
-              }]
-            ])
+              }
+            ]
           }
         } : {}
       ) # closing Security List merge function        
@@ -394,7 +393,7 @@ locals {
                 }
               },
               ## Traffic to DRG | Cross-VCN | NO FW
-              local.add_tt_vcn1 == true && var.tt_vcn1_attach_to_drg == true && local.hub_with_vcn == true && local.chosen_firewall_option == "NO" ? {
+              local.chosen_firewall_option == "NO" && local.add_tt_vcn1 == true && var.tt_vcn1_attach_to_drg == true && local.hub_with_vcn == true ? {
                 for cidr in var.tt_vcn1_cidrs : "TT-VCN-1-${replace(replace(cidr, ".", ""), "/", "")}-RULE" => {
                   network_entity_key = "HUB-DRG"
                   description        = "Traffic destined to ${coalesce(var.tt_vcn1_name, "${var.service_label}-tt-vcn-1")} CIDR ${cidr} goes to DRG."
@@ -402,7 +401,7 @@ locals {
                   destination_type   = "CIDR_BLOCK"
                 }
               } : {},
-              local.add_tt_vcn2 == true && var.tt_vcn2_attach_to_drg == true && local.hub_with_vcn == true && local.chosen_firewall_option == "NO" ? {
+              local.chosen_firewall_option == "NO" && local.add_tt_vcn2 == true && var.tt_vcn2_attach_to_drg == true && local.hub_with_vcn == true ? {
                 for cidr in var.tt_vcn2_cidrs : "TT-VCN-2-${replace(replace(cidr, ".", ""), "/", "")}-RULE" => {
                   network_entity_key = "HUB-DRG"
                   description        = "Traffic destined to ${coalesce(var.tt_vcn2_name, "${var.service_label}-tt-vcn-2")} CIDR ${cidr} goes to DRG."
@@ -410,7 +409,7 @@ locals {
                   destination_type   = "CIDR_BLOCK"
                 }
               } : {},
-              local.add_tt_vcn3 == true && var.tt_vcn3_attach_to_drg == true && local.hub_with_vcn == true && local.chosen_firewall_option == "NO" ? {
+              local.chosen_firewall_option == "NO" && local.add_tt_vcn3 == true && var.tt_vcn3_attach_to_drg == true && local.hub_with_vcn == true ? {
                 for cidr in var.tt_vcn3_cidrs : "TT-VCN-3-${replace(replace(cidr, ".", ""), "/", "")}-RULE" => {
                   network_entity_key = "HUB-DRG"
                   description        = "Traffic destined to ${coalesce(var.tt_vcn3_name, "${var.service_label}-tt-vcn-3")} CIDR ${cidr} goes to DRG."
@@ -418,7 +417,7 @@ locals {
                   destination_type   = "CIDR_BLOCK"
                 }
               } : {},
-              var.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true && local.hub_with_vcn == true && local.chosen_firewall_option == "NO" ? {
+              local.chosen_firewall_option == "NO" && var.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true && local.hub_with_vcn == true ? {
                 for cidr in var.oke_vcn1_cidrs : "OKE-VCN-1-${replace(replace(cidr, ".", ""), "/", "")}-RULE" => {
                   network_entity_key = "HUB-DRG"
                   description        = "Traffic destined to ${coalesce(var.oke_vcn1_name, "${var.service_label}-oke-vcn-1")} CIDR ${cidr} goes to DRG."
@@ -426,7 +425,7 @@ locals {
                   destination_type   = "CIDR_BLOCK"
                 }
               } : {},
-              var.add_oke_vcn2 == true && var.oke_vcn2_attach_to_drg == true && local.hub_with_vcn == true && local.chosen_firewall_option == "NO" ? {
+              local.chosen_firewall_option == "NO" && var.add_oke_vcn2 == true && var.oke_vcn2_attach_to_drg == true && local.hub_with_vcn == true ? {
                 for cidr in var.oke_vcn2_cidrs : "OKE-VCN-2-${replace(replace(cidr, ".", ""), "/", "")}-RULE" => {
                   network_entity_key = "HUB-DRG"
                   description        = "Traffic destined to ${coalesce(var.oke_vcn2_name, "${var.service_label}-oke-vcn-2")} CIDR ${cidr} goes to DRG."
@@ -434,7 +433,7 @@ locals {
                   destination_type   = "CIDR_BLOCK"
                 }
               } : {},
-              var.add_oke_vcn3 == true && var.oke_vcn3_attach_to_drg == true && local.hub_with_vcn == true && local.chosen_firewall_option == "NO" ? {
+              local.chosen_firewall_option == "NO" && var.add_oke_vcn3 == true && var.oke_vcn3_attach_to_drg == true && local.hub_with_vcn == true ? {
                 for cidr in var.oke_vcn3_cidrs : "OKE-VCN-3-${replace(replace(cidr, ".", ""), "/", "")}-RULE" => {
                   network_entity_key = "HUB-DRG"
                   description        = "Traffic destined to ${coalesce(var.oke_vcn3_name, "${var.service_label}-oke-vcn-3")} CIDR ${cidr} goes to DRG."
@@ -442,7 +441,7 @@ locals {
                   destination_type   = "CIDR_BLOCK"
                 }
               } : {},
-              var.add_exa_vcn1 == true && var.exa_vcn1_attach_to_drg == true && local.hub_with_vcn == true && local.chosen_firewall_option == "NO" ? {
+              local.chosen_firewall_option == "NO" && var.add_exa_vcn1 == true && var.exa_vcn1_attach_to_drg == true && local.hub_with_vcn == true ? {
                 for cidr in var.exa_vcn1_cidrs : "OKE-EXA-1-${replace(replace(cidr, ".", ""), "/", "")}-RULE" => {
                   network_entity_key = "HUB-DRG"
                   description        = "Traffic destined to ${coalesce(var.exa_vcn1_name, "${var.service_label}-exa-vcn-1")} CIDR ${cidr} goes to DRG."
@@ -450,7 +449,7 @@ locals {
                   destination_type   = "CIDR_BLOCK"
                 }
               } : {},
-              var.add_exa_vcn2 == true && var.exa_vcn2_attach_to_drg == true && local.hub_with_vcn == true && local.chosen_firewall_option == "NO" ? {
+              local.chosen_firewall_option == "NO" && var.add_exa_vcn2 == true && var.exa_vcn2_attach_to_drg == true && local.hub_with_vcn == true ? {
                 for cidr in var.exa_vcn2_cidrs : "OKE-EXA-2-${replace(replace(cidr, ".", ""), "/", "")}-RULE" => {
                   network_entity_key = "HUB-DRG"
                   description        = "Traffic destined to ${coalesce(var.exa_vcn2_name, "${var.service_label}-exa-vcn-2")} CIDR ${cidr} goes to DRG."
@@ -458,102 +457,119 @@ locals {
                   destination_type   = "CIDR_BLOCK"
                 }
               } : {},
-              var.add_exa_vcn3 == true && var.exa_vcn3_attach_to_drg == true && local.hub_with_vcn == true && local.chosen_firewall_option == "NO" ? {
-                for cidr in var.oke_vcn3_cidrs : "OKE-EXA-3-${replace(replace(cidr, ".", ""), "/", "")}-RULE" => {
+              local.chosen_firewall_option == "NO" && var.add_exa_vcn3 == true && var.exa_vcn3_attach_to_drg == true && local.hub_with_vcn == true ? {
+                for cidr in var.exa_vcn3_cidrs : "OKE-EXA-3-${replace(replace(cidr, ".", ""), "/", "")}-RULE" => {
                   network_entity_key = "HUB-DRG"
                   description        = "Traffic destined to ${coalesce(var.exa_vcn3_name, "${var.service_label}-exa-vcn-3")} CIDR ${cidr} goes to DRG."
                   destination        = cidr
                   destination_type   = "CIDR_BLOCK"
                 }
               } : {},
-              {
+              local.chosen_firewall_option == "NO" ? { 
+                for cidr in var.onprem_cidrs : "ON-PREM-${replace(replace(cidr, ".", ""), "/", "")}-RULE" => {
+                  network_entity_key = "HUB-DRG"
+                  description        = "Traffic destined to Workload CIDR ${cidr} goes to DRG."
+                  destination        = cidr
+                  destination_type   = "CIDR_BLOCK"
+                }
+              } : {},
+              local.chosen_firewall_option == "NO" ? {
                 for cidr in local.combined_workload_cidrs : "WORKLOAD-${replace(replace(cidr, ".", ""), "/", "")}-RULE" => {
                   network_entity_key = "HUB-DRG"
                   description        = "Traffic destined to Workload CIDR ${cidr} goes to DRG."
                   destination        = cidr
                   destination_type   = "CIDR_BLOCK"
-                } if local.chosen_firewall_option == "NO"
-              },
+                }
+              } : {},
               ## Traffic through firewall
-              local.chosen_firewall_option != "NO" && coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_east_west_entry_point_ocid, local.void) != local.void && local.add_tt_vcn1 == true && var.tt_vcn1_attach_to_drg == true ? { for cidr in var.tt_vcn1_cidrs : "TT-VCN-1-${replace(replace(cidr, ".", ""), "/", "")}}-RULE" => {
-                description       = "Traffic destined to ${coalesce(var.tt_vcn1_name, "${var.service_label}-three-tier-vcn-1")} CIDR ${cidr} goes to ${coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_east_west_entry_point_ocid, local.void)}."
-                destination       = "${cidr}"
-                destination_type  = "CIDR_BLOCK"
-                network_entity_id = coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_east_west_entry_point_ocid)
+              local.chosen_firewall_option != "NO" && coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_east_west_entry_point_ocid, local.void) != local.void && local.add_tt_vcn1 == true && var.tt_vcn1_attach_to_drg == true ? { 
+                for cidr in var.tt_vcn1_cidrs : "TT-VCN-1-${replace(replace(cidr, ".", ""), "/", "")}}-RULE" => {
+                  description       = "Traffic destined to ${coalesce(var.tt_vcn1_name, "${var.service_label}-three-tier-vcn-1")} CIDR ${cidr} goes to ${coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_east_west_entry_point_ocid, local.void)}."
+                  destination       = "${cidr}"
+                  destination_type  = "CIDR_BLOCK"
+                  network_entity_id = coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_east_west_entry_point_ocid)
                 }
               } : {},
-              local.chosen_firewall_option != "NO" && coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_east_west_entry_point_ocid, local.void) != local.void && local.add_tt_vcn2 == true && var.tt_vcn2_attach_to_drg == true ? { for cidr in var.tt_vcn2_cidrs : "TT-VCN-2-${replace(replace(cidr, ".", ""), "/", "")}-RULE" => {
-                description       = "Traffic destined to ${coalesce(var.tt_vcn2_name, "${var.service_label}-three-tier-vcn-2")} CIDR ${cidr} goes to ${coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_east_west_entry_point_ocid, local.void)}."
-                destination       = "${cidr}"
-                destination_type  = "CIDR_BLOCK"
-                network_entity_id = coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_east_west_entry_point_ocid)
+              local.chosen_firewall_option != "NO" && coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_east_west_entry_point_ocid, local.void) != local.void && local.add_tt_vcn2 == true && var.tt_vcn2_attach_to_drg == true ? { 
+                for cidr in var.tt_vcn2_cidrs : "TT-VCN-2-${replace(replace(cidr, ".", ""), "/", "")}-RULE" => {
+                  description       = "Traffic destined to ${coalesce(var.tt_vcn2_name, "${var.service_label}-three-tier-vcn-2")} CIDR ${cidr} goes to ${coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_east_west_entry_point_ocid, local.void)}."
+                  destination       = "${cidr}"
+                  destination_type  = "CIDR_BLOCK"
+                  network_entity_id = coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_east_west_entry_point_ocid)
                 }
               } : {},
-              local.chosen_firewall_option != "NO" && coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_east_west_entry_point_ocid, local.void) != local.void && local.add_tt_vcn3 == true && var.tt_vcn3_attach_to_drg == true ? { for cidr in var.tt_vcn3_cidrs : "TT-VCN-3-${replace(replace(cidr, ".", ""), "/", "")}-RULE" => {
-                description       = "Traffic destined to ${coalesce(var.tt_vcn3_name, "${var.service_label}-three-tier-vcn-3")} CIDR ${cidr} goes to ${coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_east_west_entry_point_ocid, local.void)}."
-                destination       = "${cidr}"
-                destination_type  = "CIDR_BLOCK"
-                network_entity_id = coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_east_west_entry_point_ocid)
+              local.chosen_firewall_option != "NO" && coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_east_west_entry_point_ocid, local.void) != local.void && local.add_tt_vcn3 == true && var.tt_vcn3_attach_to_drg == true ? { 
+                for cidr in var.tt_vcn3_cidrs : "TT-VCN-3-${replace(replace(cidr, ".", ""), "/", "")}-RULE" => {
+                  description       = "Traffic destined to ${coalesce(var.tt_vcn3_name, "${var.service_label}-three-tier-vcn-3")} CIDR ${cidr} goes to ${coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_east_west_entry_point_ocid, local.void)}."
+                  destination       = "${cidr}"
+                  destination_type  = "CIDR_BLOCK"
+                  network_entity_id = coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_east_west_entry_point_ocid)
                 }
               } : {},
-              local.chosen_firewall_option != "NO" && coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_east_west_entry_point_ocid, local.void) != local.void && local.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true ? { for cidr in var.oke_vcn1_cidrs : "OKE-VCN-1-${replace(replace(cidr, ".", ""), "/", "")}}-RULE" => {
-                description       = "Traffic destined to ${coalesce(var.oke_vcn1_name, "${var.service_label}-oke-vcn-1")} CIDR ${cidr} goes to ${coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_east_west_entry_point_ocid, local.void)}."
-                destination       = "${cidr}"
-                destination_type  = "CIDR_BLOCK"
-                network_entity_id = coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_east_west_entry_point_ocid)
+              local.chosen_firewall_option != "NO" && coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_east_west_entry_point_ocid, local.void) != local.void && local.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true ? { 
+                for cidr in var.oke_vcn1_cidrs : "OKE-VCN-1-${replace(replace(cidr, ".", ""), "/", "")}}-RULE" => {
+                  description       = "Traffic destined to ${coalesce(var.oke_vcn1_name, "${var.service_label}-oke-vcn-1")} CIDR ${cidr} goes to ${coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_east_west_entry_point_ocid, local.void)}."
+                  destination       = "${cidr}"
+                  destination_type  = "CIDR_BLOCK"
+                  network_entity_id = coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_east_west_entry_point_ocid)
                 }
               } : {},
-              local.chosen_firewall_option != "NO" && coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_east_west_entry_point_ocid, local.void) != local.void && local.add_oke_vcn2 == true && var.oke_vcn2_attach_to_drg == true ? { for cidr in var.oke_vcn2_cidrs : "OKE-VCN-2-${replace(replace(cidr, ".", ""), "/", "")}}-RULE" => {
-                description       = "Traffic destined to ${coalesce(var.oke_vcn2_name, "${var.service_label}-oke-vcn-2")} CIDR ${cidr} goes to ${coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_east_west_entry_point_ocid, local.void)}."
-                destination       = "${cidr}"
-                destination_type  = "CIDR_BLOCK"
-                network_entity_id = coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_east_west_entry_point_ocid)
+              local.chosen_firewall_option != "NO" && coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_east_west_entry_point_ocid, local.void) != local.void && local.add_oke_vcn2 == true && var.oke_vcn2_attach_to_drg == true ? { 
+                for cidr in var.oke_vcn2_cidrs : "OKE-VCN-2-${replace(replace(cidr, ".", ""), "/", "")}}-RULE" => {
+                  description       = "Traffic destined to ${coalesce(var.oke_vcn2_name, "${var.service_label}-oke-vcn-2")} CIDR ${cidr} goes to ${coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_east_west_entry_point_ocid, local.void)}."
+                  destination       = "${cidr}"
+                  destination_type  = "CIDR_BLOCK"
+                  network_entity_id = coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_east_west_entry_point_ocid)
                 }
               } : {},
-              local.chosen_firewall_option != "NO" && coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_east_west_entry_point_ocid, local.void) != local.void && local.add_oke_vcn3 == true && var.oke_vcn3_attach_to_drg == true ? { for cidr in var.oke_vcn3_cidrs : "OKE-VCN-3-${replace(replace(cidr, ".", ""), "/", "")}}-RULE" => {
-                description       = "Traffic destined to ${coalesce(var.oke_vcn3_name, "${var.service_label}-oke-vcn-3")} CIDR ${cidr} goes to ${coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_east_west_entry_point_ocid, local.void)}."
-                destination       = "${cidr}"
-                destination_type  = "CIDR_BLOCK"
-                network_entity_id = coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_east_west_entry_point_ocid)
+              local.chosen_firewall_option != "NO" && coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_east_west_entry_point_ocid, local.void) != local.void && local.add_oke_vcn3 == true && var.oke_vcn3_attach_to_drg == true ? { 
+                for cidr in var.oke_vcn3_cidrs : "OKE-VCN-3-${replace(replace(cidr, ".", ""), "/", "")}}-RULE" => {
+                  description       = "Traffic destined to ${coalesce(var.oke_vcn3_name, "${var.service_label}-oke-vcn-3")} CIDR ${cidr} goes to ${coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_east_west_entry_point_ocid, local.void)}."
+                  destination       = "${cidr}"
+                  destination_type  = "CIDR_BLOCK"
+                  network_entity_id = coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_east_west_entry_point_ocid)
                 }
               } : {},
-              local.chosen_firewall_option != "NO" && coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_east_west_entry_point_ocid, local.void) != local.void && local.add_exa_vcn1 == true && var.exa_vcn1_attach_to_drg == true ? { for cidr in var.exa_vcn1_cidrs : "EXA-VCN-1-${replace(replace(cidr, ".", ""), "/", "")}}-RULE" => {
-                description       = "Traffic destined to ${coalesce(var.exa_vcn1_name, "${var.service_label}-exa-vcn-1")} CIDR ${cidr} goes to ${coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_east_west_entry_point_ocid, local.void)}."
-                destination       = "${cidr}"
-                destination_type  = "CIDR_BLOCK"
-                network_entity_id = coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_east_west_entry_point_ocid)
+              local.chosen_firewall_option != "NO" && coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_east_west_entry_point_ocid, local.void) != local.void && local.add_exa_vcn1 == true && var.exa_vcn1_attach_to_drg == true ? { 
+                for cidr in var.exa_vcn1_cidrs : "EXA-VCN-1-${replace(replace(cidr, ".", ""), "/", "")}}-RULE" => {
+                  description       = "Traffic destined to ${coalesce(var.exa_vcn1_name, "${var.service_label}-exa-vcn-1")} CIDR ${cidr} goes to ${coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_east_west_entry_point_ocid, local.void)}."
+                  destination       = "${cidr}"
+                  destination_type  = "CIDR_BLOCK"
+                  network_entity_id = coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_east_west_entry_point_ocid)
                 }
               } : {},
-              local.chosen_firewall_option != "NO" && coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_east_west_entry_point_ocid, local.void) != local.void && local.add_exa_vcn2 == true && var.exa_vcn2_attach_to_drg == true ? { for cidr in var.exa_vcn2_cidrs : "EXA-VCN-2-${replace(replace(cidr, ".", ""), "/", "")}}-RULE" => {
-                description       = "Traffic destined to ${coalesce(var.exa_vcn2_name, "${var.service_label}-exa-vcn-2")} CIDR ${cidr} goes to ${coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_east_west_entry_point_ocid, local.void)}."
-                destination       = "${cidr}"
-                destination_type  = "CIDR_BLOCK"
-                network_entity_id = coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_east_west_entry_point_ocid)
+              local.chosen_firewall_option != "NO" && coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_east_west_entry_point_ocid, local.void) != local.void && local.add_exa_vcn2 == true && var.exa_vcn2_attach_to_drg == true ? { 
+                for cidr in var.exa_vcn2_cidrs : "EXA-VCN-2-${replace(replace(cidr, ".", ""), "/", "")}}-RULE" => {
+                  description       = "Traffic destined to ${coalesce(var.exa_vcn2_name, "${var.service_label}-exa-vcn-2")} CIDR ${cidr} goes to ${coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_east_west_entry_point_ocid, local.void)}."
+                  destination       = "${cidr}"
+                  destination_type  = "CIDR_BLOCK"
+                  network_entity_id = coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_east_west_entry_point_ocid)
                 }
               } : {},
-              local.chosen_firewall_option != "NO" && coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_east_west_entry_point_ocid, local.void) != local.void && local.add_exa_vcn3 == true && var.exa_vcn3_attach_to_drg == true ? { for cidr in var.exa_vcn3_cidrs : "EXA-VCN-3-${replace(replace(cidr, ".", ""), "/", "")}}-RULE" => {
-                description       = "Traffic destined to ${coalesce(var.exa_vcn3_name, "${var.service_label}-exa-vcn-3")} CIDR ${cidr} goes to ${coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_east_west_entry_point_ocid, local.void)}."
-                destination       = "${cidr}"
-                destination_type  = "CIDR_BLOCK"
-                network_entity_id = coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_east_west_entry_point_ocid)
+              local.chosen_firewall_option != "NO" && coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_east_west_entry_point_ocid, local.void) != local.void && local.add_exa_vcn3 == true && var.exa_vcn3_attach_to_drg == true ? { 
+                for cidr in var.exa_vcn3_cidrs : "EXA-VCN-3-${replace(replace(cidr, ".", ""), "/", "")}}-RULE" => {
+                  description       = "Traffic destined to ${coalesce(var.exa_vcn3_name, "${var.service_label}-exa-vcn-3")} CIDR ${cidr} goes to ${coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_east_west_entry_point_ocid, local.void)}."
+                  destination       = "${cidr}"
+                  destination_type  = "CIDR_BLOCK"
+                  network_entity_id = coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_east_west_entry_point_ocid)
                 }
               } : {},
-              {
+              local.chosen_firewall_option != "NO" && coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_east_west_entry_point_ocid, local.void) != local.void ? { 
                 for cidr in var.onprem_cidrs : "ON-PREM-${replace(replace(cidr, ".", ""), "/", "")}-RULE" => {
                   network_entity_id = coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_east_west_entry_point_ocid)
                   description       = "Traffic destined to on-premises CIDR ${cidr} goes to ${coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_east_west_entry_point_ocid)}."
                   destination       = cidr
                   destination_type  = "CIDR_BLOCK"
-                } if coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_east_west_entry_point_ocid, local.void) != local.void
-              },
-              {
+                }
+              } : {},
+              local.chosen_firewall_option != "NO" && coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_east_west_entry_point_ocid, local.void) != local.void ? {
                 for cidr in local.combined_workload_cidrs : "WORKLOAD-${replace(replace(cidr, ".", ""), "/", "")}-RULE" => {
                   network_entity_id = coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_east_west_entry_point_ocid)
                   description       = "Traffic destined to Workload CIDR ${cidr} goes to ${coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_east_west_entry_point_ocid)}."
                   destination       = cidr
                   destination_type  = "CIDR_BLOCK"
-                } if coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_east_west_entry_point_ocid, local.void) != local.void
-              }
+                }
+              } : {}
             )
           }
         } : {},
@@ -1039,25 +1055,8 @@ locals {
                   src_type     = "NETWORK_SECURITY_GROUP"
                   dst_port_min = 22
                   dst_port_max = 22
-              } } : {},
-              { "INGRESS-FROM-MGMT-SUBNET-SSH-RULE" = {
-                description  = "Ingress from Mgmt subnet to SSH port. Required by OCI Bastion Service port forwarding session."
-                stateless    = false
-                protocol     = "TCP"
-                src          = coalesce(var.hub_vcn_mgmt_subnet_cidr, cidrsubnet(var.hub_vcn_cidrs[0], 3, 3))
-                src_type     = "CIDR_BLOCK"
-                dst_port_min = 22
-                dst_port_max = 22
-              } },
-              { "INGRESS-FROM-MGMT-SUBNET-HTTP-RULE" = {
-                description  = "Ingress from Mgmt subnet to HTTP port. Required by OCI Bastion Service port forwarding session.",
-                stateless    = false
-                protocol     = "TCP"
-                src          = coalesce(var.hub_vcn_mgmt_subnet_cidr, cidrsubnet(var.hub_vcn_cidrs[0], 3, 3))
-                src_type     = "CIDR_BLOCK"
-                dst_port_min = 443
-                dst_port_max = 443
-            } }) # closing merge function.
+              } } : {}
+            ) # closing merge function.
           }
         } : {},
         var.deploy_bastion_jump_host == true ? {
@@ -1074,37 +1073,16 @@ locals {
                   dst_port_min = 22,
                   dst_port_max = 22
                 }
-              },
-              {
-                "INGRESS-FROM-JUMPHOST-SUBNET-SSH-RULE" = {
-                  description  = "Ingress from ${coalesce(var.hub_vcn_jumphost_subnet_name, "${var.service_label}-hub-vcn-jumphost-subnet")} on SSH port. Required for connecting Bastion service endpoint to Bastion jump host."
-                  stateless    = false
-                  protocol     = "TCP"
-                  src          = coalesce(var.hub_vcn_jumphost_subnet_cidr, cidrsubnet(var.hub_vcn_cidrs[0], 3, 4))
-                  dst_port_min = 22
-                  dst_port_max = 22
-                }
               }
             ),
             ## end merge function ingress rules
             egress_rules = merge(
-              local.chosen_firewall_option == "OCINFW" ?
-              {
-                "EGRESS-TO-OCI-FIREWALL-NSG-SSH-RULE" = {
-                  description  = "Egress to OCI Firewall NSG"
+              local.chosen_firewall_option != "NO" && local.chosen_firewall_option != "OCIFW" ? { # Only FW network appliances have management interfaces in the management NSG.
+                "EGRESS-TO-FW-MGMT-NSG-SSH-RULE" = {
+                  description  = "Egress to FW Mgmt NSG"
                   stateless    = false
                   protocol     = "TCP"
-                  dst          = "HUB-VCN-OCI-FIREWALL-NSG"
-                  dst_type     = "NETWORK_SECURITY_GROUP"
-                  dst_port_min = 22
-                  dst_port_max = 22
-                }
-                } : local.chosen_firewall_option != "NO" ? {
-                "EGRESS-TO-INDOOR-FW-NSG-SSH-RULE" = {
-                  description  = "Egress to Indoor FW NSG"
-                  stateless    = false
-                  protocol     = "TCP"
-                  dst          = "HUB-VCN-INDOOR-FW-NSG"
+                  dst          = "HUB-VCN-MGMT-NSG"
                   dst_type     = "NETWORK_SECURITY_GROUP"
                   dst_port_min = 22
                   dst_port_max = 22
@@ -1122,7 +1100,7 @@ locals {
                 }
               },
               ## Egress to TT-VCN - SSH traffic
-              local.add_tt_vcn1 == true && var.tt_vcn1_attach_to_drg == true && local.hub_with_vcn == true && (local.chosen_firewall_option == "NO" || local.chosen_firewall_option == "OCINFW") ? {
+              local.add_tt_vcn1 == true && var.tt_vcn1_attach_to_drg == true && local.hub_with_vcn == true ? {
                 "EGRESS-TO-TT-VCN-1-APP-SUBNET-RULE" = {
                   description  = "Egress to ${coalesce(var.tt_vcn1_app_subnet_name, "${var.service_label}-three-tier-vcn-1-app-subnet")}."
                   stateless    = false
@@ -1133,7 +1111,7 @@ locals {
                   dst_port_max = 22
                 }
               } : {},
-              local.add_tt_vcn2 == true && var.tt_vcn2_attach_to_drg == true && local.hub_with_vcn == true && (local.chosen_firewall_option == "NO" || local.chosen_firewall_option == "OCINFW") ? {
+              local.add_tt_vcn2 == true && var.tt_vcn2_attach_to_drg == true && local.hub_with_vcn == true ? {
                 "EGRESS-TO-TT-VCN-2-APP-SUBNET-RULE" = {
                   description  = "Egress to ${coalesce(var.tt_vcn2_app_subnet_name, "${var.service_label}-three-tier-vcn-2-app-subnet")}."
                   stateless    = false
@@ -1144,7 +1122,7 @@ locals {
                   dst_port_max = 22
                 }
               } : {},
-              local.add_tt_vcn3 == true && var.tt_vcn3_attach_to_drg == true && local.hub_with_vcn == true && (local.chosen_firewall_option == "NO" || local.chosen_firewall_option == "OCINFW") ? {
+              local.add_tt_vcn3 == true && var.tt_vcn3_attach_to_drg == true && local.hub_with_vcn == true ? {
                 "EGRESS-TO-TT-VCN-3-APP-SUBNET-RULE" = {
                   description  = "Egress to ${coalesce(var.tt_vcn3_app_subnet_name, "${var.service_label}-three-tier-vcn-3-app-subnet")}."
                   stateless    = false
@@ -1155,7 +1133,7 @@ locals {
                   dst_port_max = 22
                 }
               } : {},
-              local.add_tt_vcn1 == true && var.tt_vcn1_attach_to_drg == true && local.hub_with_vcn == true && (local.chosen_firewall_option == "NO" || local.chosen_firewall_option == "OCINFW") ? {
+              local.add_tt_vcn1 == true && var.tt_vcn1_attach_to_drg == true && local.hub_with_vcn == true ? {
                 "EGRESS-TO-TT-VCN-1-DB-SUBNET-RULE" = {
                   description  = "Egress to ${coalesce(var.tt_vcn1_db_subnet_name, "${var.service_label}-three-tier-vcn-1-db-subnet")}."
                   stateless    = false
@@ -1166,7 +1144,7 @@ locals {
                   dst_port_max = 22
                 }
               } : {},
-              local.add_tt_vcn2 == true && var.tt_vcn2_attach_to_drg == true && local.hub_with_vcn == true && (local.chosen_firewall_option == "NO" || local.chosen_firewall_option == "OCINFW") ? {
+              local.add_tt_vcn2 == true && var.tt_vcn2_attach_to_drg == true && local.hub_with_vcn == true ? {
                 "EGRESS-TO-TT-VCN-2-DB-SUBNET-RULE" = {
                   description  = "Egress to ${coalesce(var.tt_vcn2_db_subnet_name, "${var.service_label}-three-tier-vcn-2-db-subnet")}."
                   stateless    = false
@@ -1177,7 +1155,7 @@ locals {
                   dst_port_max = 22
                 }
               } : {},
-              local.add_tt_vcn3 == true && var.tt_vcn3_attach_to_drg == true && local.hub_with_vcn == true && (local.chosen_firewall_option == "NO" || local.chosen_firewall_option == "OCINFW") ? {
+              local.add_tt_vcn3 == true && var.tt_vcn3_attach_to_drg == true && local.hub_with_vcn == true ? {
                 "EGRESS-TO-TT-VCN-3-DB-SUBNET-RULE" = {
                   description  = "Egress to ${coalesce(var.tt_vcn3_db_subnet_name, "${var.service_label}-three-tier-vcn-3-db-subnet")}."
                   stateless    = false
@@ -1189,7 +1167,7 @@ locals {
                 }
               } : {},
               ## Egress to OKE VCN - SSH traffic
-              var.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true && local.hub_with_vcn == true && (local.chosen_firewall_option == "NO" || local.chosen_firewall_option == "OCINFW") ? {
+              var.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true && local.hub_with_vcn == true ? {
                 "EGRESS-TO-OKE-VCN-1-WORKERS-SUBNET-RULE" = {
                   description  = "Egress to ${coalesce(var.oke_vcn1_workers_subnet_name, "${var.service_label}-oke-vcn-1-workers-subnet")}."
                   stateless    = false
@@ -1200,7 +1178,7 @@ locals {
                   dst_port_max = 22
                 }
               } : {},
-              var.add_oke_vcn2 == true && var.oke_vcn2_attach_to_drg == true && local.hub_with_vcn == true && (local.chosen_firewall_option == "NO" || local.chosen_firewall_option == "OCINFW") ? {
+              var.add_oke_vcn2 == true && var.oke_vcn2_attach_to_drg == true && local.hub_with_vcn == true ? {
                 "EGRESS-TO-OKE-VCN-2-WORKERS-SUBNET-RULE" = {
                   description  = "Egress to ${coalesce(var.oke_vcn2_workers_subnet_name, "${var.service_label}-oke-vcn-2-workers-subnet")}."
                   stateless    = false
@@ -1211,7 +1189,7 @@ locals {
                   dst_port_max = 22
                 }
               } : {},
-              var.add_oke_vcn3 == true && var.oke_vcn3_attach_to_drg == true && local.hub_with_vcn == true && (local.chosen_firewall_option == "NO" || local.chosen_firewall_option == "OCINFW") ? {
+              var.add_oke_vcn3 == true && var.oke_vcn3_attach_to_drg == true && local.hub_with_vcn == true ? {
                 "EGRESS-TO-OKE-VCN-3-WORKERS-SUBNET-RULE" = {
                   description  = "Egress to ${coalesce(var.oke_vcn3_workers_subnet_name, "${var.service_label}-oke-vcn-3-workers-subnet")}."
                   description  = "Egress to ${coalesce(var.oke_vcn3_workers_subnet_name, "${var.service_label}-oke-vcn-3-workers-subnet")}."
@@ -1224,7 +1202,7 @@ locals {
                 }
               } : {},
               ## Egress to EXA-VCN - SSH traffic
-              var.add_exa_vcn1 == true && var.exa_vcn1_attach_to_drg == true && local.hub_with_vcn == true && (local.chosen_firewall_option == "NO" || local.chosen_firewall_option == "OCINFW") ? {
+              var.add_exa_vcn1 == true && var.exa_vcn1_attach_to_drg == true && local.hub_with_vcn == true ? {
                 "EGRESS-TO-EXA-VCN-1-CLIENT-SUBNET-RULE" = {
                   description  = "Egress to ${coalesce(var.exa_vcn1_client_subnet_name, "${var.service_label}-exadata-vcn-1-client-subnet")}."
                   stateless    = false
@@ -1235,7 +1213,7 @@ locals {
                   dst_port_max = 22
                 }
               } : {},
-              var.add_exa_vcn2 == true && var.exa_vcn2_attach_to_drg == true && local.hub_with_vcn == true && (local.chosen_firewall_option == "NO" || local.chosen_firewall_option == "OCINFW") ? {
+              var.add_exa_vcn2 == true && var.exa_vcn2_attach_to_drg == true && local.hub_with_vcn == true ? {
                 "EGRESS-TO-EXA-VCN-2-CLIENT-SUBNET-RULE" = {
                   description  = "Egress to ${coalesce(var.exa_vcn2_client_subnet_name, "${var.service_label}-exadata-vcn-2-client-subnet")}."
                   stateless    = false
@@ -1246,7 +1224,7 @@ locals {
                   dst_port_max = 22
                 }
               } : {},
-              var.add_exa_vcn3 == true && var.exa_vcn3_attach_to_drg == true && local.hub_with_vcn == true && (local.chosen_firewall_option == "NO" || local.chosen_firewall_option == "OCINFW") ? {
+              var.add_exa_vcn3 == true && var.exa_vcn3_attach_to_drg == true && local.hub_with_vcn == true ? {
                 "EGRESS-TO-EXA-VCN-3-CLIENT-SUBNET-RULE" = {
                   description  = "Egress to ${coalesce(var.exa_vcn3_client_subnet_name, "${var.service_label}-exadata-vcn-3-client-subnet")}."
                   stateless    = false
