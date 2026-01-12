@@ -158,10 +158,15 @@ core-lz-cis-compliance-verification:
     - echo "--- Downloading CIS compliance checker ---"
     - oci os object get -bn $BUCKET_NAME --file comparison-tools.zip --name comparison-tools.zip -ns $LZTEAM_NAMESPACE
     - unzip comparison-tools.zip
+    # Clean up of old files
+    - |
+      echo "--- Cleaning up old temporary files ---"
+      # Remove TAR files older than 5 days
+      find /tmp -name "*_cis_reports.tar.gz" -mtime +5 -type f -exec rm -f {} \; -print
+    - echo "✅ Old temporary files cleaned up"
     # Run compliance check
     - echo "--- Running CIS compliance verification ---"
     - |
       python3 tools/security_check.py \
         --pre-report "$MERGE_TEST_CASES_DIR/predeploy/${CI_PIPELINE_ID}/cis_summary_report.csv" \
         --post-report "$MERGE_TEST_CASES_DIR/postdeploy/${CI_PIPELINE_ID}/cis_summary_report.csv"
-
