@@ -16,7 +16,12 @@ workflow:
     - changes:
         - "**/*.tf" # triggers if any file ending in .tf in any dir is changed
       when: always
+    - if: '$CI_PIPELINE_SOURCE == "web"'
+      when: always
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+      when: always
     - when: never  # pipeline isn't triggered if conditions above aren't met
+
 
 core-lz-prep-test-cases-pull:
   stage: tf-prep-test-case-pull
@@ -81,8 +86,9 @@ core-lz-merge-test-case-1:
   stage: tf-merge-test-case-1
   rules:
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+      when: manual
     - if: '$CI_PIPELINE_SOURCE == "push"'
-  when: manual
+  
   script:
     - set -o pipefail
     - TIMESTAMP=$(date +"%Y-%m-%dT%H-%M")
