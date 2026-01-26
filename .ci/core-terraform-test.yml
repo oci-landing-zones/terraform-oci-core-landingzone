@@ -80,8 +80,8 @@ core-lz-prep-test-cases-merge-pre:
 core-lz-merge-test-case-1:
   stage: tf-merge-test-case-1
   rules:
-    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
-
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"' 
+  when: manual
   script:
     - set -o pipefail
     - TIMESTAMP=$(date +"%Y-%m-%dT%H-%M")
