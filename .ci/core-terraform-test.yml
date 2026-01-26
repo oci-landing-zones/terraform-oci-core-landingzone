@@ -103,6 +103,19 @@ core-lz-merge-test-case-1:
     - echo "  ----- BEGIN - Running Terraform Plan  -----  "
     - python3 /home/gitlab-runner/pipeline-tools/preprocessor_new.py $MERGE_TEST_CASES_DIR -f tfvars.template -d . --plan --merge
     - echo "  ----- SUCCESS - Running Terraform Plan  -----  "
+    - echo "  ----- BEGIN - Checkov scan on Terraform plan JSON -----  "
+    # If PATH is needed: export PATH="$HOME/.local/bin:$PATH"
+    - PLAN_JSON=$(ls -1 *_plan.json 2>/dev/null | head -n1)
+    - if [ -z "$PLAN_JSON" ]; then
+        echo "No *_plan.json found in $(pwd). Plan likely failed or was written elsewhere.";
+        exit 1;
+      fi
+    - CHECKOV_TXT="${CI_PIPELINE_ID}_checkov.txt"
+    - echo "Scanning $PLAN_JSON"
+    - checkov -f "$PLAN_JSON" --framework terraform_plan --output cli | tee "$CHECKOV_TXT"
+    # Move into test-cases dir so your tar/upload includes it
+    - mv "$CHECKOV_TXT" "$MERGE_TEST_CASES_DIR"/ || true
+    - echo "  ----- SUCCESS - Checkov scan on Terraform plan JSON -----  "
     - echo "  ----- BEGIN - Running Terraform Apply  -----  "
     - python3 /home/gitlab-runner/pipeline-tools/preprocessor_new.py $MERGE_TEST_CASES_DIR -f tfvars.template -d . --apply --merge
     - echo "  ----- SUCCESS - Running Terraform Apply  -----  "
