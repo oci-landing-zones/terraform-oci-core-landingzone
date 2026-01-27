@@ -387,22 +387,26 @@ See deployment scenarios under the [templates](./templates/) folder:
 
 OCI Network Firewall is a managed next-generation firewall and Intrusion Detection and Prevention Service (IDS/IPS) that is powered by Palo Alto Networks. It is an OCI cloud-native service, available with Core Landing Zone. The Landing Zone offers simple setup and deployment of the Network Firewall service, which gives you visibility into traffic entering your cloud environment (North-South) via IGW and traffic between subnets (East-West) via DRG routing. The Core Landing Zone implementation deploys a Hub & Spoke network topology with a Network Firewall in the Hub VCN.
 
-To use this service with Landing Zone, there must be two consecutive executions of `terraform apply`. The first pass sets up the Network Firewall instance with a single default policy to *reject all traffic*. The second pass configures the Network Firewall with information of OCIDs collected after the first pass, including a *user created network firewall policy* for your specific use case. In more detail:
+To use this service with Landing Zone, there must be two consecutive executions of *terraform apply*. The first pass sets up the Network Firewall instance with a single default policy to *reject all traffic*. The second pass configures route tables with the Network Firewall and configures the Network Firewall with a user provided policy. In more detail:
 
-- Run the first `terraform apply` (either from RMS or CLI).
-- Collect the Network Firewall forwarding IP OCID from the created instance.
-- Create a new firewall policy for your use case to replace the default `reject all` policy.
-- Edit the RMS stack to add the above information or, if using Terraform CLI, change the associated variable values named below.
-- Run the second `terraform apply` incorporating the Network Firewall forwarding IP address for routing rules, and if supplied, your firewall policy as the new default.
+- Run the first *terraform apply*.
+- Collect the OCID of Network Firewall IP address, available in the *oci_firewall_ip_ocid* output variable. 
+- Using the OCI Console, create a new firewall policy according to your use case requirements to replace the default *reject all traffic* policy. Record the policy OCID, as you will update the Terraform stack with it for the subsequent terraform execution.
+- Still using the OCI Console, associate your new policy with the Network Firewall.
+- Edit the Terraform configuration with Network Firewall OCID and the user provided policy OCID.
+- Run the second *terraform apply*. This execution destroys the default *reject all traffic* policy and persists the user provided policy in the Terraform configuration.
 
 This is where the collected information is used in the RMS stack:
+
 ![nfw_deploy_update.png](images/nfw_deploy_update.png)
-For Terraform CLI deployment, use these variables:
 
-- **oci\_firewall\_ip\_ocid**
-- **oci\_nfw\_policy\_ocid**
 
-If updated in the stack this way, the new user policy is baked into the Network Firewall configuration. Core Landing Zone doesn't manage your use case firewall policy - only the association of it with the Network Firewall.
+For Terraform CLI deployment, enter these variables for the second terraform execution:
+
+- **oci\_firewall\_ip\_ocid**: the OCID of OCI Firewall IP address, available in *oci_firewall_ip_ocid* output variable.
+- **oci\_nfw\_policy\_ocid**: the OCID of the policy associated to the Firewall.
+
+The new policy is baked into the Network Firewall configuration. Note that Core Landing Zone does not manage the user provided policy, only its association with the Network Firewall.
 
 
 #### Landing Zone Third Party Firewall Options
