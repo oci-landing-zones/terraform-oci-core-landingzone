@@ -122,7 +122,7 @@ locals {
         "EXA-VCN-2-CLIENT-NSG" = {
           display_name = "client-nsg"
           ingress_rules = merge(
-            local.hub_with_vcn == true && var.exa_vcn2_attach_to_drg == true && local.add_exa_vcn2 == true ? {
+            local.hub_with_vcn == true && var.exa_vcn2_attach_to_drg == true && local.add_exa_vcn2 == true && var.deploy_bastion_jump_host == true ? {
               "INGRESS-FROM-SSH-HUB-VCN-RULE" = {
                 description  = "Allows SSH connections from ${coalesce(var.hub_vcn_jumphost_subnet_cidr, cidrsubnet(var.hub_vcn_cidrs[0], 3, 4))} in Hub VCN Jumphost subnet."
                 stateless    = false
