@@ -80,6 +80,9 @@
 | rm\_existing\_database\_admin\_group\_name                  | Only applicable to RMS deployments. The existing group to which database management policies will be granted to. | string | "" | no |
 | rm\_existing\_exainfra\_admin\_group\_name                  | Only applicable to RMS deployments. The existing group to which Exadata Cloud Service infrastructure management policies will be granted to. | string | "" | no |
 | rm\_existing\_iam\_admin\_group\_name                       | Only applicable to RMS deployments. The existing group to which IAM management policies will be granted to. | string | "" | no |
+| rm\_existing\_network\_admin\_group\_name                   | Only applicable to RMS deployments. The existing group to which network management policies will be granted to. | string | "" | no |
+| rm\_existing\_security\_admin\_group\_name                  | Only applicable to RMS deployments. The existing group to which security policies will be granted to. | string | "" | no |
+| rm\_existing\_storage\_admin\_group\_name                   | Only applicable to RMS deployments. The existing group to which storage management policies will be granted to. | string | "" | no |
 | rm\_existing\_id\_domain\_ag\_admin\_group\_name            | The existing access governance admin group name in the existing identity domain. | list(string) | [] | no |
 | rm\_existing\_id\_domain\_announcement\_reader\_group\_name | The existing announcement readers group name in the existing identity domain. | list(string) | [] | no |
 | rm\_existing\_id\_domain\_appdev\_admin\_group\_name        | The existing applications admin group name in the existing identity domain. | list(string) | [] | no |
@@ -92,9 +95,6 @@
 | rm\_existing\_id\_domain\_network\_admin\_group\_name       | The existing network admin group name in the existing identity domain. | list(string) | [] | no |
 | rm\_existing\_id\_domain\_security\_admin\_group\_name      | The existing security admin group name in the existing identity domain. | list(string) | [] | no |
 | rm\_existing\_id\_domain\_storage\_admin\_group\_name       | The existing storage admin group name in the existing identity domain. | list(string) | [] | no |
-| rm\_existing\_network\_admin\_group\_name                   | Only applicable to RMS deployments. The existing group to which network management policies will be granted to. | string | "" | no |
-| rm\_existing\_security\_admin\_group\_name                  | Only applicable to RMS deployments. The existing group to which security policies will be granted to. | string | "" | no |
-| rm\_existing\_storage\_admin\_group\_name                   | Only applicable to RMS deployments. The existing group to which storage management policies will be granted to. | string | "" | no |
 
 ### <a name="security"></a> Security
 
@@ -345,7 +345,7 @@
 | hub\_vcn\_deploy\_net\_appliance\_option | The network appliance option for deploying in the Hub VCN. Valid values: 'Don't deploy any network appliance at this time' (default), 'Palo Alto Networks VM-Series Firewall', 'Fortinet FortiGate Firewall', 'User-Provided Virtual Network Appliance', and 'OCI Native Firewall'. Costs are incurred. | string | "Don't deploy any network appliance at this time" | no |
 | hub\_vcn\_dns | The Hub VCN DNS name. | string | null | no |
 | hub\_vcn\_enable\_internet\_gateway | When checked, access from the Internet is enabled into the Hub VCN via an Internet Gateway. When unchecked, an Internet Gateway is not deployed and access from Internet is blocked. | bool | true | no |
-| hub\_vcn\_east\_west\_entry\_point\_ocid | The OCID of a private address the Hub VCN routes traffic to for inbound internal cross-vcn traffic (East/West). This variable is to be assigned with the OCID of the indoor network load balancer's private IP address. | string | null | no |
+| hub\_vcn\_east\_west\_entry\_point\_ocid |The OCID of the private IP address of the Indoor Network Load Balancer, where inbound internal cross-vcn traffic (East/West) traffic is sent to in the Hub VCN. | string | null | no |
 | hub\_vcn\_indoor\_subnet\_cidr | The Hub VCN Indoor subnet CIDR block. It must be within the VCN CIDR blocks. | string | null | no |
 | hub\_vcn\_indoor\_subnet\_dns | The Hub VCN Indoor subnet DNS name. Use only letters and numbers, no special characters. | string | null | no |
 | hub\_vcn\_indoor\_subnet\_name | The Hub VCN Indoor subnet name. | string | null | no |
@@ -355,7 +355,7 @@
 | hub\_vcn\_mgmt\_subnet\_external\_allowed\_cidrs\_for\_ssh | List of CIDR blocks allowed to connect to Management subnet over SSH. Leave empty for no access. | list(string) | [] | no |
 | hub\_vcn\_mgmt\_subnet\_name | The Hub VCN Management subnet Name. | string | null | no |
 | hub\_vcn\_name | The Hub VCN name. | string | null | no |
-| hub\_vcn\_north\_south\_entry\_point\_ocid | The OCID of a private address the Hub VCN routes traffic to for inbound external traffic (North/South). This variable is to be assigned with the OCID of the outdoor network load balancer's private IP address. | string | null | no |
+| hub\_vcn\_north\_south\_entry\_point\_ocid | The OCID of the private IP address of the Outdoor Network Load Balancer, where all inbound Internet (North/South) traffic is sent to in the Hub VCN. | string | null | no |
 | hub\_vcn\_outdoor\_subnet\_cidr | The Hub VCN Outdoor subnet CIDR block. It must be within the VCN CIDR blocks. | string | null | no |
 | hub\_vcn\_outdoor\_subnet\_dns | The Hub VCN Outdoor subnet DNS name. Use only letters and numbers, no special characters. | string | null | no |
 | hub\_vcn\_outdoor\_subnet\_name | The Hub VCN Outdoor subnet name. | string | null | no |

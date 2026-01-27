@@ -32,12 +32,12 @@ variable "existing_drg_ocid" {
 variable "hub_vcn_east_west_entry_point_ocid" {
   type        = string
   default     = null
-  description = "The OCID of a private address the Hub VCN routes traffic to for inbound internal cross-vcn traffic (East/West). This variable is to be assigned with the OCID of the indoor network load balancer's private IP address."
+  description = "The OCID of the private IP address of the Indoor Network Load Balancer, where inbound internal cross-vcn traffic (East/West) traffic is sent to in the Hub VCN."
 }
 variable "hub_vcn_north_south_entry_point_ocid" {
   type        = string
   default     = null
-  description = "The OCID of a private address the Hub VCN routes traffic to for inbound external traffic (North/South). This variable is to be assigned with the OCID of the outdoor network load balancer's private IP address."
+  description = "The OCID of the private IP address of the Outdoor Network Load Balancer, where all inbound Internet (North/South) traffic is sent to in the Hub VCN."
 }
 variable "hub_vcn_name" {
   type        = string
