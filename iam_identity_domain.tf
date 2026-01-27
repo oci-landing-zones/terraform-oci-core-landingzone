@@ -31,11 +31,12 @@ locals {
 }
 
 module "lz_new_identity_domain" {
-  source                                       = "github.com/oci-landing-zones/terraform-oci-modules-iam//identity-domains?ref=v0.3.1"
+  source                                       = "github.com/oci-landing-zones/terraform-oci-modules-iam//identity-domains?ref=v0.3.2"
   count                                        = var.identity_domain_option == "New Identity Domain" ? 1 : 0
   providers                                    = { oci = oci.home }
   tenancy_ocid                                 = var.tenancy_ocid
   identity_domains_configuration               = local.identity_domains_configuration
   identity_domain_groups_configuration         = local.identity_domain_groups_configuration
   identity_domain_dynamic_groups_configuration = local.identity_domain_dynamic_groups_configuration
+  identity_domains_dependency                   = {}
 }
