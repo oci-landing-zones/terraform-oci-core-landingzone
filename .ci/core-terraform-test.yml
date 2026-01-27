@@ -18,6 +18,7 @@ workflow:
       when: always
     - when: never  # pipeline isn't triggered if conditions above aren't met
 
+
 core-lz-prep-test-cases-pull:
   stage: tf-prep-test-case-pull
   rules:
@@ -81,9 +82,9 @@ core-lz-merge-test-case-1:
   stage: tf-merge-test-case-1
   rules:
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
-
   script:
     - set -o pipefail
+    - export PATH="$HOME/.local/bin:$PATH"
     - TIMESTAMP=$(date +"%Y-%m-%dT%H-%M")
     - echo $TIMESTAMP
     - MERGE_PIPELINE_TAR=merge-$TIMESTAMP-$CI_PIPELINE_ID.tar.gz
@@ -103,6 +104,22 @@ core-lz-merge-test-case-1:
     - echo "  ----- BEGIN - Running Terraform Plan  -----  "
     - python3 /home/gitlab-runner/pipeline-tools/preprocessor_new.py $MERGE_TEST_CASES_DIR -f tfvars.template -d . --plan --merge
     - echo "  ----- SUCCESS - Running Terraform Plan  -----  "
+    - echo "  ----- BEGIN - Checkov scan on Terraform plan JSON -----  "
+    # If PATH is needed: export PATH="$HOME/.local/bin:$PATH"
+    - PLAN_JSON=$(ls -1 *_plan.json 2>/dev/null | head -n1)
+    - if [ -z "$PLAN_JSON" ]; then
+        echo "No *_plan.json found in $(pwd). Plan likely failed or was written elsewhere.";
+        exit 1;
+      fi
+    - CHECKOV_TXT="${CI_PIPELINE_ID}_checkov_results.txt"
+    - echo "Scanning $PLAN_JSON"
+    - echo "setting http schema to proxies"
+    - export http_proxy="http://$PROXY_SERVER:80";
+    - export https_proxy="http://$PROXY_SERVER:80";
+    - checkov -f "$PLAN_JSON" -o cli > "$CHECKOV_TXT" || true
+    # Move into test-cases dir so your tar/upload includes it
+    - mv "$CHECKOV_TXT" "$MERGE_TEST_CASES_DIR"/ || true
+    - echo "  ----- SUCCESS - Checkov scan on Terraform plan JSON -----  "
     - echo "  ----- BEGIN - Running Terraform Apply  -----  "
     - python3 /home/gitlab-runner/pipeline-tools/preprocessor_new.py $MERGE_TEST_CASES_DIR -f tfvars.template -d . --apply --merge
     - echo "  ----- SUCCESS - Running Terraform Apply  -----  "
