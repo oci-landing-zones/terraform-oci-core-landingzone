@@ -638,7 +638,7 @@ locals {
             } : {},
             (local.hub_with_vcn == true && var.deploy_bastion_jump_host == true) ? {
               "INGRESS-FROM-HUB-JUMPHOST-SUBNET-RULE" = {
-                description  = "Ingress from Hub VCN Jumphost Subnet. Required for deploying jump host instance access."
+                description  = "Ingress from Hub VCN Jumphost Subnet. Required for inbound connections from jump hosts."
                 stateless    = false
                 protocol     = "TCP"
                 src          = coalesce(var.hub_vcn_jumphost_subnet_cidr, cidrsubnet(var.hub_vcn_cidrs[0], 3, 4))
