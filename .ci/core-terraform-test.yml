@@ -91,6 +91,7 @@ core-lz-merge-test-case-1:
   
   script:
     - set -o pipefail
+    - export PATH="$HOME/.local/bin:$PATH"
     - TIMESTAMP=$(date +"%Y-%m-%dT%H-%M")
     - echo $TIMESTAMP
     - MERGE_PIPELINE_TAR=merge-$TIMESTAMP-$CI_PIPELINE_ID.tar.gz
@@ -117,9 +118,12 @@ core-lz-merge-test-case-1:
         echo "No *_plan.json found in $(pwd). Plan likely failed or was written elsewhere.";
         exit 1;
       fi
-    - CHECKOV_TXT="${CI_PIPELINE_ID}_checkov.txt"
+    - CHECKOV_TXT="${CI_PIPELINE_ID}_checkov_results.txt"
     - echo "Scanning $PLAN_JSON"
-    - checkov -f "$PLAN_JSON" --framework terraform_plan --output cli | tee "$CHECKOV_TXT"
+    - echo "setting http schema to proxies"
+    - export http_proxy="http://$PROXY_SERVER:80";
+    - export https_proxy="http://$PROXY_SERVER:80";
+    - checkov -f "$PLAN_JSON" -o cli > "$CHECKOV_TXT"
     # Move into test-cases dir so your tar/upload includes it
     - mv "$CHECKOV_TXT" "$MERGE_TEST_CASES_DIR"/ || true
     - echo "  ----- SUCCESS - Checkov scan on Terraform plan JSON -----  "
