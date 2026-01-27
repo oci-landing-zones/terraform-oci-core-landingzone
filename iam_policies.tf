@@ -58,7 +58,7 @@ locals {
     "allow group ${join(",", local.iam_admin_group_name)} to manage orm-stacks in tenancy",
     "allow group ${join(",", local.iam_admin_group_name)} to manage orm-jobs in tenancy",
     "allow group ${join(",", local.iam_admin_group_name)} to manage orm-config-source-providers in tenancy"],
-  var.identity_domain_option == "Use Custom Identity Domain" ? ["allow group ${join(",", local.iam_admin_group_name)} to manage groups in tenancy where all {target.domain.name = '${local.custom_id_domain_name}',${join(",", local.custom_id_domain_cred_admin_groups)}}"] : [])
+  var.identity_domain_option == "Use Custom Identity Domain" ? ["allow group ${join(",", local.iam_admin_group_name)} to manage groups in tenancy where all {target.resource.domain.name = '${local.custom_id_domain_name}',${join(",", local.custom_id_domain_cred_admin_groups)}}"] : [])
 
   ## IAM admin grants at the enclosing compartment level, which *can* be the root compartment
   iam_admin_grants_on_enclosing_cmp = [
@@ -727,7 +727,7 @@ locals {
 
 module "lz_root_policies" {
   depends_on             = [module.lz_top_compartment, module.lz_groups] ### Explicitly declaring dependencies on the group and compartments modules.
-  source                 = "github.com/oci-landing-zones/terraform-oci-modules-iam//policies?ref=v0.3.1"
+  source                 = "github.com/oci-landing-zones/terraform-oci-modules-iam//policies?ref=v0.3.2"
   providers              = { oci = oci.home }
   tenancy_ocid           = var.tenancy_ocid
   policies_configuration = var.extend_landing_zone_to_new_region == false /*&& var.enable_template_policies == false*/ ? (local.use_existing_root_cmp_grants == true ? local.empty_policies_configuration : local.root_policies_configuration) : local.empty_policies_configuration
@@ -735,7 +735,7 @@ module "lz_root_policies" {
 
 module "lz_policies" {
   depends_on             = [module.lz_compartments, module.lz_groups, module.lz_dynamic_groups]
-  source                 = "github.com/oci-landing-zones/terraform-oci-modules-iam//policies?ref=v0.3.1"
+  source                 = "github.com/oci-landing-zones/terraform-oci-modules-iam//policies?ref=v0.3.2"
   providers              = { oci = oci.home }
   tenancy_ocid           = var.tenancy_ocid
   policies_configuration = var.extend_landing_zone_to_new_region == false /*&& var.enable_template_policies == false*/ ? local.policies_configuration : local.empty_policies_configuration
