@@ -1,3 +1,7 @@
+# February 20, 2026 Release Notes - 1.5.5
+1. IAM module references updated to v0.3.3. Fixes bug when provisioning a new identity domain.
+2. Networking module references updated to v0.8.1.
+
 # November 17, 2025 Release Notes - 1.5.4
 1. Allowing access from the internet to the Hub VCN is now an optional variable. Set to true to enable access from the Internet via the Internet Gateway.
 2. Ability to add defined_tags and freeform_tags to Log Analytics Log Group.

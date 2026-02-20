@@ -12,7 +12,7 @@ locals {
 module "lz_services_policy" {
   depends_on             = [module.lz_compartments]
   count                  = var.extend_landing_zone_to_new_region == false /*&& var.enable_template_policies == false*/ && local.use_existing_root_cmp_grants == false ? 1 : 0
-  source                 = "github.com/oci-landing-zones/terraform-oci-modules-iam//policies?ref=v0.3.1"
+  source                 = "github.com/oci-landing-zones/terraform-oci-modules-iam//policies?ref=v0.3.3"
   providers              = { oci = oci.home }
   tenancy_ocid           = var.tenancy_ocid
   policies_configuration = local.services_policies_configuration
@@ -21,7 +21,7 @@ module "lz_services_policy" {
 module "lz_oke_clusters_policy" {
   depends_on             = [module.lz_compartments]
   count                  = var.extend_landing_zone_to_new_region == false /*&& var.enable_template_policies == false*/ ? 1 : 0
-  source                 = "github.com/oci-landing-zones/terraform-oci-modules-iam//policies?ref=v0.3.1"
+  source                 = "github.com/oci-landing-zones/terraform-oci-modules-iam//policies?ref=v0.3.3"
   providers              = { oci = oci.home }
   tenancy_ocid           = var.tenancy_ocid
   policies_configuration = length(local.oke_clusters_statements) > 0 ? local.oke_clusters_policy_configuration : local.empty_policies_configuration
