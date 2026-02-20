@@ -212,3 +212,18 @@ data "oci_core_images" "platform_oel_images" {
 data "oci_identity_availability_domains" "ads" {
   compartment_id = var.tenancy_ocid
 }
+
+data "oci_core_private_ip" "oci_firewall" {
+  count = var.oci_nfw_ip_ocid != null ? 1 : 0
+    private_ip_id = var.oci_nfw_ip_ocid
+}
+
+data "oci_core_private_ip" "indoor_nlb" {
+  count = var.hub_vcn_east_west_entry_point_ocid != null ? 1 : 0
+    private_ip_id = var.hub_vcn_east_west_entry_point_ocid
+}
+
+data "oci_core_private_ip" "outdoor_nlb" {
+  count = var.hub_vcn_north_south_entry_point_ocid != null ? 1 : 0
+    private_ip_id = var.hub_vcn_north_south_entry_point_ocid
+}
