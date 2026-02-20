@@ -37,6 +37,15 @@ variable "exa_vcn1_client_subnet_name" {
   default     = null
   description = "The Client subnet name."
 }
+variable "exa_vcn1_client_ingress_destination_ports" {
+  type        = list(string)
+  default     = ["TCP:1521","TCP:1522"]
+  description = "The list of protocols and destination ports allowed for ingress packets into Exadata VCN1 Client Network Security Group."
+  validation {
+    condition = alltrue([for v in var.exa_vcn1_client_ingress_destination_ports : can(regex("^[^:]+:[^:]+$", v))])
+    error_message = "Invalid value provided for exa_vcn1_client_ingress_destination_ports variable: all values must be in the form protocol:port, with exactly one ':' separating protocol and port values."
+  }
+}
 variable "exa_vcn1_backup_subnet_cidr" {
   type        = string
   default     = null
@@ -100,6 +109,15 @@ variable "exa_vcn2_client_subnet_name" {
   default     = null
   description = "The Client subnet name."
 }
+variable "exa_vcn2_client_ingress_destination_ports" {
+  type        = list(string)
+  default     = ["TCP:1521","TCP:1522"]
+  description = "The list of protocols and destination ports allowed for ingress packets into Exadata VCN2 Client Network Security Group."
+  validation {
+    condition = alltrue([for v in var.exa_vcn2_client_ingress_destination_ports : can(regex("^[^:]+:[^:]+$", v))])
+    error_message = "Invalid value provided for exa_vcn2_client_ingress_destination_ports variable: all values must be in the form protocol:port, with exactly one ':' separating protocol and port values."
+  }
+}
 variable "exa_vcn2_backup_subnet_cidr" {
   type        = string
   default     = null
@@ -162,6 +180,15 @@ variable "exa_vcn3_client_subnet_name" {
   type        = string
   default     = null
   description = "The Client subnet name."
+}
+variable "exa_vcn3_client_ingress_destination_ports" {
+  type        = list(string)
+  default     = ["TCP:1521","TCP:1522"]
+  description = "The list of protocols and destination ports allowed for ingress packets into Exadata VCN3 Client Network Security Group."
+  validation {
+    condition = alltrue([for v in var.exa_vcn3_client_ingress_destination_ports : can(regex("^[^:]+:[^:]+$", v))])
+    error_message = "Invalid value provided for exa_vcn3_client_ingress_destination_ports variable: all values must be in the form protocol:port, with exactly one ':' separating protocol and port values."
+  }
 }
 variable "exa_vcn3_backup_subnet_cidr" {
   type        = string

@@ -2,6 +2,7 @@
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl/
 
 locals {
+
   lz_network_configuration = {
     default_compartment_id = local.network_compartment_id
     network_configuration_categories = {
@@ -14,7 +15,7 @@ locals {
 }
 
 module "lz_network" {
-  source                = "github.com/oci-landing-zones/terraform-oci-modules-networking?ref=v0.7.8"
+  source                = "github.com/oci-landing-zones/terraform-oci-modules-networking?ref=v0.8.0"
   depends_on            = [module.lz_zpr]
   network_configuration = local.lz_network_configuration
   network_dependency = local.use_existing_drg ? {

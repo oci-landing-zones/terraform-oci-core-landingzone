@@ -34,6 +34,97 @@ locals {
 
   void = "__VOID__"
 
+  # Cross-vcn and on-prem routes
+  tt_vcn1_route_rule = local.hub_with_drg_only == true && var.add_tt_vcn1 == true && var.tt_vcn1_attach_to_drg == true ? {
+    for cidr in var.tt_vcn1_cidrs : "TT-VCN-1-${cidr}-RULE" => {
+      network_entity_key = "HUB-DRG"
+      description        = "Traffic destined for ${local.tt_vcn1_display_name} in routed through the DRG."
+      destination        = cidr
+      destination_type   = "CIDR_BLOCK"
+    } 
+  } : {}
+
+  tt_vcn2_route_rule = local.hub_with_drg_only == true && var.add_tt_vcn2 == true && var.tt_vcn2_attach_to_drg == true ? {
+    for cidr in var.tt_vcn2_cidrs : "TT-VCN-2-${cidr}-RULE" => {
+      network_entity_key = "HUB-DRG"
+      description        = "Traffic destined for ${local.tt_vcn2_display_name} in routed through the DRG."
+      destination        = cidr
+      destination_type   = "CIDR_BLOCK"
+    } 
+  } : {}
+
+  tt_vcn3_route_rule = local.hub_with_drg_only == true && var.add_tt_vcn3 == true && var.tt_vcn3_attach_to_drg == true ? {
+    for cidr in var.tt_vcn3_cidrs : "TT-VCN-3-${cidr}-RULE" => {
+      network_entity_key = "HUB-DRG"
+      description        = "Traffic destined for ${local.tt_vcn3_display_name} in routed through the DRG."
+      destination        = cidr
+      destination_type   = "CIDR_BLOCK"
+    }
+  } : {}
+
+  oke_vcn1_route_rule = local.hub_with_drg_only == true && var.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true ? {
+    for cidr in var.oke_vcn1_cidrs : "OKE-VCN-1-${cidr}-RULE" => {
+      network_entity_key = "HUB-DRG"
+      description        = "Traffic destined for ${local.oke_vcn1_display_name} in routed through the DRG."
+      destination        = cidr
+      destination_type   = "CIDR_BLOCK"
+    }
+  } : {}
+
+  oke_vcn2_route_rule = local.hub_with_drg_only == true && var.add_oke_vcn2 == true && var.oke_vcn2_attach_to_drg == true ? {
+    for cidr in var.oke_vcn2_cidrs : "OKE-VCN-2-${cidr}-RULE" => {
+      network_entity_key = "HUB-DRG"
+      description        = "Traffic destined for ${local.oke_vcn2_display_name} in routed through the DRG."
+      destination        = cidr
+      destination_type   = "CIDR_BLOCK"
+    }
+  } : {}
+
+  oke_vcn3_route_rule = local.hub_with_drg_only == true && var.add_oke_vcn3 == true && var.oke_vcn3_attach_to_drg == true ? {
+    for cidr in var.oke_vcn3_cidrs : "OKE-VCN-3-${cidr}-RULE" => {
+      network_entity_key = "HUB-DRG"
+      description        = "Traffic destined for ${local.oke_vcn3_display_name} in routed through the DRG."
+      destination        = cidr
+      destination_type   = "CIDR_BLOCK"
+    }
+  } : {}
+
+  exa_vcn1_route_rule = local.hub_with_drg_only == true && var.add_exa_vcn1 == true && var.exa_vcn1_attach_to_drg == true ? {
+    for cidr in var.exa_vcn1_cidrs : "EXA-VCN-1-${cidr}-RULE" => {
+      network_entity_key = "HUB-DRG"
+      description        = "Traffic destined for ${local.exa_vcn1_display_name} in routed through the DRG."
+      destination        = cidr
+      destination_type   = "CIDR_BLOCK"
+    }
+  } : {}
+
+  exa_vcn2_route_rule = local.hub_with_drg_only == true && var.add_exa_vcn2 == true && var.exa_vcn2_attach_to_drg == true ? {
+    for cidr in var.exa_vcn2_cidrs : "EXA-VCN-2-${cidr}-RULE" => {
+      network_entity_key = "HUB-DRG"
+      description        = "Traffic destined for ${local.exa_vcn2_display_name} in routed through the DRG."
+      destination        = cidr
+      destination_type   = "CIDR_BLOCK"
+    }
+  } : {}
+
+  exa_vcn3_route_rule = local.hub_with_drg_only == true && var.add_exa_vcn3 == true && var.exa_vcn3_attach_to_drg == true ? {
+    for cidr in var.exa_vcn3_cidrs : "EXA-VCN-3-${cidr}-RULE" => {
+      network_entity_key = "HUB-DRG"
+      description        = "Traffic destined for ${local.exa_vcn3_display_name} in routed through the DRG."
+      destination        = cidr
+      destination_type   = "CIDR_BLOCK"
+    }
+  } : {}
+
+  on_prem_route_rule = local.hub_with_drg_only == true ? {
+    for cidr in var.onprem_cidrs : "ONPREM-${cidr}-RULE" =>  {
+      network_entity_key = "HUB-DRG"
+      description        = "Traffic destined for on-premises ${cidr} CIDR range is routed through the DRG."
+      destination        = cidr
+      destination_type   = "CIDR_BLOCK"
+    }
+  } : {}
+
 }
 
 # resource "null_resource" "wait_on_compartments" {

@@ -20,8 +20,8 @@ variable "onprem_cidrs" {
   description = "List of on-premises CIDR blocks allowed to connect to the Landing Zone network via a DRG."
   default     = []
   validation {
-    condition     = length([for c in var.onprem_cidrs : c if length(regexall("^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/([0-9]|[1-2][0-9]|3[0-2]))?$", c)) > 0]) == length(var.onprem_cidrs)
-    error_message = "Validation failed for onprem_cidrs: values must be in CIDR notation."
+    condition     = alltrue([for v in var.onprem_cidrs : can(cidrhost(v, 0))])
+    error_message = "Invalid value provided for onprem_cidrs variable: all values must be in valid CIDR notation (e.g., 10.0.0.0/20)."
   }
 }
 variable "existing_drg_ocid" {
@@ -48,6 +48,10 @@ variable "hub_vcn_cidrs" {
   type        = list(string)
   default     = ["192.168.0.0/24"]
   description = "List of CIDR blocks for the Hub VCN."
+  validation {
+    condition     = alltrue([for v in var.hub_vcn_cidrs : can(cidrhost(v, 0))])
+    error_message = "Invalid value provided for hub_vcn_cidrs variable: all values must be in valid CIDR notation (e.g., 10.0.0.0/20)."
+  }
 }
 # ------------------------------------------------------
 # ----- Networking - Firewall settings
@@ -73,13 +77,19 @@ variable "enable_native_firewall_traffic_log" {
 variable "oci_nfw_ip_ocid" {
   type        = string
   default     = null
-  description = "Enter OCI Network Firewall's Forwarding Private IP OCID."
+  description = "The OCID of OCI Network Firewall private IP address."
+}
+
+variable "oci_nfw_ipv4_address" {
+  type    = string
+  default = null
+  description = "The IPv4 address of OCI Network Firewall."
 }
 
 variable "oci_nfw_policy_ocid" {
   type        = string
   default     = null
-  description = "Enter the OCI Network Firewall Policy OCID."
+  description = "The OCID of OCI Network Firewall policy."
 }
 
 variable "net_palo_alto_version" {
@@ -160,6 +170,10 @@ variable "hub_vcn_web_subnet_cidr" {
   type        = string
   default     = null
   description = "The Hub VCN Web subnet CIDR block. It must be within the VCN CIDR blocks."
+  validation {
+    condition     = var.hub_vcn_web_subnet_cidr == null || can(cidrhost(var.hub_vcn_web_subnet_cidr, 0))
+    error_message = "Invalid value provided for hub_vcn_web_subnet_cidr variable: value must be in valid CIDR notation (e.g., 192.168.0.0/24)."
+  }
 }
 variable "hub_vcn_web_subnet_is_private" {
   type        = bool
@@ -178,16 +192,28 @@ variable "hub_vcn_mgmt_subnet_cidr" {
   type        = string
   default     = null
   description = "The Hub VCN Management subnet CIDR block. It must be within the VCN CIDR blocks."
+  validation {
+    condition     = var.hub_vcn_mgmt_subnet_cidr == null || can(cidrhost(var.hub_vcn_mgmt_subnet_cidr, 0))
+    error_message = "Invalid value provided for hub_vcn_mgmt_subnet_cidr variable: value must be in valid CIDR notation (e.g., 192.168.0.0/24)."
+  }
 }
 variable "hub_vcn_mgmt_subnet_external_allowed_cidrs_for_http" {
   type        = list(string)
   default     = []
   description = "List of CIDR blocks allowed to connect to Management subnet over HTTP. Leave empty for no access."
+  validation {
+    condition     = alltrue([for v in var.hub_vcn_mgmt_subnet_external_allowed_cidrs_for_http : can(cidrhost(v, 0))])
+    error_message = "Invalid value provided for hub_vcn_mgmt_subnet_external_allowed_cidrs_for_http variable: all values must be in valid CIDR notation (e.g., 192.168.0.0/24)."
+  }
 }
 variable "hub_vcn_mgmt_subnet_external_allowed_cidrs_for_ssh" {
   type        = list(string)
   default     = []
   description = "List of CIDR blocks allowed to connect to Management subnet over SSH. Leave empty for no access."
+  validation {
+    condition     = alltrue([for v in var.hub_vcn_mgmt_subnet_external_allowed_cidrs_for_ssh : can(cidrhost(v, 0))])
+    error_message = "Invalid value provided for hub_vcn_mgmt_subnet_external_allowed_cidrs_for_ssh variable: all values must be in valid CIDR notation (e.g., 192.168.0.0/24)."
+  }
 }
 # -------------------------------------------
 # ----- Networking - Hub Outdoor Subnet
@@ -201,6 +227,10 @@ variable "hub_vcn_outdoor_subnet_cidr" {
   type        = string
   default     = null
   description = "The Hub VCN Outdoor subnet CIDR block. It must be within the VCN CIDR blocks."
+  validation {
+    condition     = var.hub_vcn_outdoor_subnet_cidr == null || can(cidrhost(var.hub_vcn_outdoor_subnet_cidr, 0))
+    error_message = "Invalid value provided for hub_vcn_outdoor_subnet_cidr variable: value must be in valid CIDR notation (e.g., 192.168.0.0/24)."
+  }
 }
 # -------------------------------------------
 # ----- Networking - Hub Indoor Subnet
@@ -214,6 +244,10 @@ variable "hub_vcn_indoor_subnet_cidr" {
   type        = string
   default     = null
   description = "The Hub VCN Indoor subnet CIDR block. It must be within the VCN CIDR blocks."
+  validation {
+    condition     = var.hub_vcn_indoor_subnet_cidr == null || can(cidrhost(var.hub_vcn_indoor_subnet_cidr, 0))
+    error_message = "Invalid value provided for hub_vcn_indoor_subnet_cidr variable: value must be in valid CIDR notation (e.g., 192.168.0.0/24)."
+  }
 }
 # -------------------------------------------
 # ----- Networking - Hub Jumphost Subnet
@@ -227,6 +261,10 @@ variable "hub_vcn_jumphost_subnet_cidr" {
   type        = string
   default     = null
   description = "The Hub VCN Jump Host subnet CIDR block. It must be within the VCN CIDR blocks."
+  validation {
+    condition     = var.hub_vcn_jumphost_subnet_cidr == null || can(cidrhost(var.hub_vcn_jumphost_subnet_cidr, 0))
+    error_message = "Invalid value provided for hub_vcn_jumphost_subnet_cidr variable: value must be in valid CIDR notation (e.g., 192.168.0.0/24)."
+  }
 }
 
 # -------------------------------------------

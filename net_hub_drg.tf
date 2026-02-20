@@ -13,11 +13,13 @@ locals {
     "No cross-VCN with on-premises connectivity using an existing DRG"                                                                                 = 6
   }
 
-  chosen_hub_option = var.hub_deployment_option == "" ? var.hub_deployment : local.hub_options[var.hub_deployment_option]
-  deploy_new_drg    = var.define_net == true && (local.chosen_hub_option == 1 || local.chosen_hub_option == 3 || local.chosen_hub_option == 5)
-  use_existing_drg  = var.define_net == true && (local.chosen_hub_option == 2 || local.chosen_hub_option == 4 || local.chosen_hub_option == 6)
-  hub_with_drg_only = var.define_net == true && ((local.chosen_hub_option == 1 || local.chosen_hub_option == 2) || ((local.chosen_hub_option == 3 || local.chosen_hub_option == 4) && local.chosen_firewall_option == "NO"))
-  hub_with_vcn      = var.define_net == true && (local.chosen_hub_option == 3 || local.chosen_hub_option == 4)
+  chosen_hub_option  = var.hub_deployment_option == "" ? var.hub_deployment : local.hub_options[var.hub_deployment_option]
+  deploy_new_drg     = var.define_net == true && (local.chosen_hub_option == 1 || local.chosen_hub_option == 3 || local.chosen_hub_option == 5)
+  use_existing_drg   = var.define_net == true && (local.chosen_hub_option == 2 || local.chosen_hub_option == 4 || local.chosen_hub_option == 6)
+  #hub_with_drg_only = var.define_net == true && ((local.chosen_hub_option == 1 || local.chosen_hub_option == 2 || local.chosen_hub_option == 5 || local.chosen_hub_option == 6) || ((local.chosen_hub_option == 3 || local.chosen_hub_option == 4) && local.chosen_firewall_option == "NO"))
+  hub_with_drg_only  = var.define_net == true && (local.chosen_hub_option == 1 || local.chosen_hub_option == 2 || local.chosen_hub_option == 5 || local.chosen_hub_option == 6)
+  hub_with_vcn       = var.define_net == true && (local.chosen_hub_option == 3 || local.chosen_hub_option == 4)
+  no_drg             = var.define_net == true && local.chosen_hub_option == 0
 
   drg = (local.chosen_hub_option != 0) ? {
     # "dynamic_routing_gateways" is for creating a new DRG.
@@ -30,7 +32,7 @@ locals {
         drg_attachments = merge(
           local.hub_with_vcn == true ? {
             "HUB-VCN-ATTACHMENT" = {
-              display_name = "${coalesce(var.hub_vcn_name, "${var.service_label}-hub-vcn")}-attachment"
+              display_name = "${local.hub_vcn_display_name}-attachment"
               # DRG route table for the Hub VCN attachment. It defines the next hop for traffic that enters the DRG via this attachment.
               drg_route_table_key = "HUB-VCN-DRG-ROUTE-TABLE"
               network_details = {
@@ -43,7 +45,7 @@ locals {
           } : {},
           (local.add_tt_vcn1 == true && var.tt_vcn1_attach_to_drg == true) ? {
             "TT-VCN-1-ATTACHMENT" = {
-              display_name = "${coalesce(var.tt_vcn1_name, "${var.service_label}-three-tier-vcn-1")}-attachment"
+              display_name = "${local.tt_vcn1_display_name}-attachment"
               # DRG route table for the VCN attachment. It defines the next hop for traffic that enters the DRG via this attachment.
               drg_route_table_key = "TT-VCN-1-DRG-ROUTE-TABLE"
               network_details = {
@@ -54,7 +56,7 @@ locals {
           } : {},
           (local.add_tt_vcn2 == true && var.tt_vcn2_attach_to_drg == true) ? {
             "TT-VCN-2-ATTACHMENT" = {
-              display_name = "${coalesce(var.tt_vcn2_name, "${var.service_label}-three-tier-vcn-2")}-attachment"
+              display_name = "${local.tt_vcn2_display_name}-attachment"
               # DRG route table for the VCN attachment. It defines the next hop for traffic that enters the DRG via this attachment.
               drg_route_table_key = "TT-VCN-2-DRG-ROUTE-TABLE"
               network_details = {
@@ -65,7 +67,7 @@ locals {
           } : {},
           (local.add_tt_vcn3 == true && var.tt_vcn3_attach_to_drg == true) ? {
             "TT-VCN-3-ATTACHMENT" = {
-              display_name = "${coalesce(var.tt_vcn3_name, "${var.service_label}-three-tier-vcn-3")}-attachment"
+              display_name = "${local.tt_vcn3_display_name}-attachment"
               # DRG route table for the VCN attachment. It defines the next hop for traffic that enters the DRG via this attachment.
               drg_route_table_key = "TT-VCN-3-DRG-ROUTE-TABLE"
               network_details = {
@@ -76,7 +78,7 @@ locals {
           } : {},
           (local.add_exa_vcn1 == true && var.exa_vcn1_attach_to_drg == true) ? {
             "EXA-VCN-1-ATTACHMENT" = {
-              display_name = "${coalesce(var.exa_vcn1_name, "${var.service_label}-exadata-vcn-1")}-attachment"
+              display_name = "${local.exa_vcn1_display_name}-attachment"
               # DRG route table for the VCN attachment. It defines the next hop for traffic that enters the DRG via this attachment.
               drg_route_table_key = "EXA-VCN-1-DRG-ROUTE-TABLE"
               network_details = {
@@ -87,7 +89,7 @@ locals {
           } : {},
           (local.add_exa_vcn2 == true && var.exa_vcn2_attach_to_drg == true) ? {
             "EXA-VCN-2-ATTACHMENT" = {
-              display_name = "${coalesce(var.exa_vcn2_name, "${var.service_label}-exadata-vcn-2")}-attachment"
+              display_name = "${local.exa_vcn2_display_name}-attachment"
               # DRG route table for the VCN attachment. It defines the next hop for traffic that enters the DRG via this attachment.
               drg_route_table_key = "EXA-VCN-2-DRG-ROUTE-TABLE"
               network_details = {
@@ -98,7 +100,7 @@ locals {
           } : {},
           (local.add_exa_vcn3 == true && var.exa_vcn3_attach_to_drg == true) ? {
             "EXA-VCN-3-ATTACHMENT" = {
-              display_name = "${coalesce(var.exa_vcn3_name, "${var.service_label}-exadata-vcn-3")}-attachment"
+              display_name = "${local.exa_vcn3_display_name}-attachment"
               # DRG route table for the VCN attachment. It defines the next hop for traffic that enters the DRG via this attachment.
               drg_route_table_key = "EXA-VCN-3-DRG-ROUTE-TABLE"
               network_details = {
@@ -109,7 +111,7 @@ locals {
           } : {},
           (local.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true) ? {
             "OKE-VCN-1-ATTACHMENT" = {
-              display_name = "${coalesce(var.oke_vcn1_name, "${var.service_label}-oke-vcn-1")}-attachment"
+              display_name = "${local.oke_vcn1_display_name}-attachment"
               # DRG route table for the VCN attachment. It defines the next hop for traffic that enters the DRG via this attachment.
               drg_route_table_key = "OKE-VCN-1-DRG-ROUTE-TABLE"
               network_details = {
@@ -120,7 +122,7 @@ locals {
           } : {},
           (local.add_oke_vcn2 == true && var.oke_vcn2_attach_to_drg == true) ? {
             "OKE-VCN-2-ATTACHMENT" = {
-              display_name = "${coalesce(var.oke_vcn2_name, "${var.service_label}-oke-vcn-2")}-attachment"
+              display_name = "${local. oke_vcn2_display_name}-attachment"
               # DRG route table for the VCN attachment. It defines the next hop for traffic that enters the DRG via this attachment.
               drg_route_table_key = "OKE-VCN-2-DRG-ROUTE-TABLE"
               network_details = {
@@ -131,7 +133,7 @@ locals {
           } : {},
           (local.add_oke_vcn3 == true && var.oke_vcn3_attach_to_drg == true) ? {
             "OKE-VCN-3-ATTACHMENT" = {
-              display_name = "${coalesce(var.oke_vcn3_name, "${var.service_label}-oke-vcn-3")}-attachment"
+              display_name = "${local.oke_vcn3_display_name}-attachment"
               # DRG route table for the VCN attachment. It defines the next hop for traffic that enters the DRG via this attachment.
               drg_route_table_key = "OKE-VCN-3-DRG-ROUTE-TABLE"
               network_details = {
@@ -175,61 +177,61 @@ locals {
         drg_route_tables = merge(
           (local.hub_with_vcn == true) ? {
             "HUB-VCN-DRG-ROUTE-TABLE" = {
-              display_name                      = "${coalesce(var.hub_vcn_name, "${var.service_label}-hub-vcn")}-drg-route-table"
+              display_name                      = "${local.hub_vcn_display_name}-drg-route-table"
               import_drg_route_distribution_key = "HUB-VCN-DRG-IMPORT-ROUTE-DISTRIBUTION"
             }
           } : {},
           (local.add_tt_vcn1 == true && var.tt_vcn1_attach_to_drg == true) ? {
             "TT-VCN-1-DRG-ROUTE-TABLE" = {
-              display_name                      = "${coalesce(var.tt_vcn1_name, "${var.service_label}-three-tier-vcn-1")}-drg-route-table"
+              display_name                      = "${local.tt_vcn1_display_name}-drg-route-table"
               import_drg_route_distribution_key = "TT-VCN-1-DRG-IMPORT-ROUTE-DISTRIBUTION"
             }
           } : {},
           (local.add_tt_vcn2 == true && var.tt_vcn2_attach_to_drg == true) ? {
             "TT-VCN-2-DRG-ROUTE-TABLE" = {
-              display_name                      = "${coalesce(var.tt_vcn2_name, "${var.service_label}-three-tier-vcn-2")}-drg-route-table"
+              display_name                      = "${local.tt_vcn2_display_name}-drg-route-table"
               import_drg_route_distribution_key = "TT-VCN-2-DRG-IMPORT-ROUTE-DISTRIBUTION"
             }
           } : {},
           (local.add_tt_vcn3 == true && var.tt_vcn3_attach_to_drg == true) ? {
             "TT-VCN-3-DRG-ROUTE-TABLE" = {
-              display_name                      = "${coalesce(var.tt_vcn3_name, "${var.service_label}-three-tier-vcn-3")}-drg-route-table"
+              display_name                      = "${local.tt_vcn3_display_name}-drg-route-table"
               import_drg_route_distribution_key = "TT-VCN-3-DRG-IMPORT-ROUTE-DISTRIBUTION"
             }
           } : {},
           (local.add_exa_vcn1 == true && var.exa_vcn1_attach_to_drg == true) ? {
             "EXA-VCN-1-DRG-ROUTE-TABLE" = {
-              display_name                      = "${coalesce(var.exa_vcn1_name, "${var.service_label}-exadata-vcn-1")}-drg-route-table"
+              display_name                      = "${local.exa_vcn1_display_name}-drg-route-table"
               import_drg_route_distribution_key = "EXA-VCN-1-DRG-IMPORT-ROUTE-DISTRIBUTION"
             }
           } : {},
           (local.add_exa_vcn2 == true && var.exa_vcn2_attach_to_drg == true) ? {
             "EXA-VCN-2-DRG-ROUTE-TABLE" = {
-              display_name                      = "${coalesce(var.exa_vcn2_name, "${var.service_label}-exadata-vcn-2")}-drg-route-table"
+              display_name                      = "${local.exa_vcn2_display_name}-drg-route-table"
               import_drg_route_distribution_key = "EXA-VCN-2-DRG-IMPORT-ROUTE-DISTRIBUTION"
             }
           } : {},
           (local.add_exa_vcn3 == true && var.exa_vcn3_attach_to_drg == true) ? {
             "EXA-VCN-3-DRG-ROUTE-TABLE" = {
-              display_name                      = "${coalesce(var.exa_vcn3_name, "${var.service_label}-exadata-vcn-3")}-drg-route-table"
+              display_name                      = "${local.exa_vcn3_display_name}-drg-route-table"
               import_drg_route_distribution_key = "EXA-VCN-3-DRG-IMPORT-ROUTE-DISTRIBUTION"
             }
           } : {},
           (local.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true) ? {
             "OKE-VCN-1-DRG-ROUTE-TABLE" = {
-              display_name                      = "${coalesce(var.oke_vcn1_name, "${var.service_label}-oke-vcn-1")}-drg-route-table"
+              display_name                      = "${local.oke_vcn1_display_name}-drg-route-table"
               import_drg_route_distribution_key = "OKE-VCN-1-DRG-IMPORT-ROUTE-DISTRIBUTION"
             }
           } : {},
           (local.add_oke_vcn2 == true && var.oke_vcn2_attach_to_drg == true) ? {
             "OKE-VCN-2-DRG-ROUTE-TABLE" = {
-              display_name                      = "${coalesce(var.oke_vcn2_name, "${var.service_label}-oke-vcn-2")}-drg-route-table"
+              display_name                      = "${local. oke_vcn2_display_name}-drg-route-table"
               import_drg_route_distribution_key = "OKE-VCN-2-DRG-IMPORT-ROUTE-DISTRIBUTION"
             }
           } : {},
           (local.add_oke_vcn3 == true && var.oke_vcn3_attach_to_drg == true) ? {
             "OKE-VCN-3-DRG-ROUTE-TABLE" = {
-              display_name                      = "${coalesce(var.oke_vcn3_name, "${var.service_label}-oke-vcn-3")}-drg-route-table"
+              display_name                      = "${local.oke_vcn3_display_name}-drg-route-table"
               import_drg_route_distribution_key = "OKE-VCN-3-DRG-IMPORT-ROUTE-DISTRIBUTION"
             }
           } : {},
@@ -536,7 +538,7 @@ locals {
             # This import distribution makes its importing DRG route tables to have the referred drg_attachment_key as the next-hop attachment.
             # In this case, since there's no "VCN ingress route table for the DRG", the VCN CIDRs and subnet CIDRs of the underlying VCN are imported by those DRG route tables.
             "HUB-VCN-DRG-IMPORT-ROUTE-DISTRIBUTION" = {
-              display_name      = "${coalesce(var.hub_vcn_name, "${var.service_label}-hub-vcn")}-drg-import-route-distribution" # TBD
+              display_name      = "${local.hub_vcn_display_name}-drg-import-route-distribution" # TBD
               distribution_type = "IMPORT"
               statements = {
                 "MATCH-ALL-STMT" = {
@@ -553,7 +555,7 @@ locals {
             # This import distribution makes its importing DRG route tables to have the referred drg_attachment_key as the next-hop attachment.
             # In this case, the "Hub VCN ingress route table for the DRG" is imported by those DRG route tables.
             "TT-VCN-1-DRG-IMPORT-ROUTE-DISTRIBUTION" = {
-              display_name      = "${coalesce(var.tt_vcn1_name, "${var.service_label}-three-tier-vcn-1")}-drg-import-route-distribution"
+              display_name      = "${local.tt_vcn1_display_name}-drg-import-route-distribution"
               distribution_type = "IMPORT"
               statements = merge(
                 local.hub_with_vcn == true ? {
@@ -682,7 +684,7 @@ locals {
             # This import distribution makes its importing DRG route tables to have the referred drg_attachment_key as the next-hop attachment.
             # In this case, the "Hub VCN ingress route table for the DRG" is imported by those DRG route tables.
             "TT-VCN-2-DRG-IMPORT-ROUTE-DISTRIBUTION" = {
-              display_name      = "${coalesce(var.tt_vcn2_name, "${var.service_label}-three-tier-vcn-2")}-drg-import-route-distribution"
+              display_name      = "${local.tt_vcn2_display_name}-drg-import-route-distribution"
               distribution_type = "IMPORT"
               statements = merge(
                 local.hub_with_vcn == true ? {
@@ -811,7 +813,7 @@ locals {
             # This import distribution makes its importing DRG route tables to have the referred drg_attachment_key as the next-hop attachment.
             # In this case, the "Hub VCN ingress route table for the DRG" is imported by those DRG route tables.
             "TT-VCN-3-DRG-IMPORT-ROUTE-DISTRIBUTION" = {
-              display_name      = "${coalesce(var.tt_vcn3_name, "${var.service_label}-three-tier-vcn-3")}-drg-import-route-distribution"
+              display_name      = "${local.tt_vcn3_display_name}-drg-import-route-distribution"
               distribution_type = "IMPORT"
               statements = merge(
                 local.hub_with_vcn == true ? {
@@ -940,7 +942,7 @@ locals {
             # This import distribution makes its importing DRG route tables to have the referred drg_attachment_key as the next-hop attachment.
             # In this case, the "Hub VCN ingress route table for the DRG" is imported by those DRG route tables.
             "EXA-VCN-1-DRG-IMPORT-ROUTE-DISTRIBUTION" = {
-              display_name      = "${coalesce(var.exa_vcn1_name, "${var.service_label}-exadata-vcn-1")}-drg-import-route-distribution"
+              display_name      = "${local.exa_vcn1_display_name}-drg-import-route-distribution"
               distribution_type = "IMPORT"
               statements = merge(
                 local.hub_with_vcn == true ? {
@@ -1069,7 +1071,7 @@ locals {
             # This import distribution makes its importing DRG route tables to have the referred drg_attachment_key as the next-hop attachment.
             # In this case, the "Hub VCN ingress route table for the DRG" is imported by those DRG route tables.
             "EXA-VCN-2-DRG-IMPORT-ROUTE-DISTRIBUTION" = {
-              display_name      = "${coalesce(var.exa_vcn2_name, "${var.service_label}-exadata-vcn-2")}-drg-import-route-distribution"
+              display_name      = "${local.exa_vcn2_display_name}-drg-import-route-distribution"
               distribution_type = "IMPORT"
               statements = merge(
                 local.hub_with_vcn == true ? {
@@ -1198,7 +1200,7 @@ locals {
             # This import distribution makes its importing DRG route tables to have the referred drg_attachment_key as the next-hop attachment.
             # In this case, the "Hub VCN ingress route table for the DRG" is imported by those DRG route tables.
             "EXA-VCN-3-DRG-IMPORT-ROUTE-DISTRIBUTION" = {
-              display_name      = "${coalesce(var.exa_vcn3_name, "${var.service_label}-exadata-vcn-3")}-drg-import-route-distribution"
+              display_name      = "${local.exa_vcn3_display_name}-drg-import-route-distribution"
               distribution_type = "IMPORT"
               statements = merge(
                 local.hub_with_vcn == true ? {
@@ -1327,11 +1329,11 @@ locals {
             # This import distribution makes its importing DRG route tables to have the referred drg_attachment_key as the next-hop attachment.
             # In this case, the "Hub VCN ingress route table for the DRG" is imported by those DRG route tables.
             "OKE-VCN-1-DRG-IMPORT-ROUTE-DISTRIBUTION" = {
-              display_name      = "${coalesce(var.oke_vcn1_name, "${var.service_label}-oke-vcn-1")}-drg-import-route-distribution"
+              display_name      = "${local.oke_vcn1_display_name}-drg-import-route-distribution"
               distribution_type = "IMPORT"
               statements = merge(
                 local.hub_with_vcn == true ? {
-                  "OKE-VCN-1-HUB-VCN-STMT" = {
+                  "OKE-VCN-1-TO-HUB-VCN-STMT" = {
                     action   = "ACCEPT",
                     priority = 1,
                     match_criteria = {
@@ -1456,7 +1458,7 @@ locals {
             # This import distribution makes its importing DRG route tables to have the referred drg_attachment_key as the next-hop attachment.
             # In this case, the "Hub VCN ingress route table for the DRG" is imported by those DRG route tables.
             "OKE-VCN-2-DRG-IMPORT-ROUTE-DISTRIBUTION" = {
-              display_name      = "${coalesce(var.oke_vcn2_name, "${var.service_label}-oke-vcn-2")}-drg-import-route-distribution"
+              display_name      = "${local. oke_vcn2_display_name}-drg-import-route-distribution"
               distribution_type = "IMPORT"
               statements = merge(
                 local.hub_with_vcn == true ? {
@@ -1585,7 +1587,7 @@ locals {
             # This import distribution makes its importing DRG route tables to have the referred drg_attachment_key as the next-hop attachment.
             # In this case, the "Hub VCN ingress route table for the DRG" is imported by those DRG route tables.
             "OKE-VCN-3-DRG-IMPORT-ROUTE-DISTRIBUTION" = {
-              display_name      = "${coalesce(var.oke_vcn3_name, "${var.service_label}-oke-vcn-3")}-drg-import-route-distribution"
+              display_name      = "${local.oke_vcn3_display_name}-drg-import-route-distribution"
               distribution_type = "IMPORT"
               statements = merge(
                 local.hub_with_vcn == true ? {
