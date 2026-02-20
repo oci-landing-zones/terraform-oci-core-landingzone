@@ -31,7 +31,7 @@ locals {
   net_fw_app_policy_name             = "${var.service_label}-net-firewall-app-policy"
 
   #iam_grants_condition = [for g in local.cred_admin_group_name : "target.group.name != ${g}"]
-  cred_admin_groups                  = var.identity_domain_option == "Default Domain" ? [for g in local.cred_admin_group_name : substr(g, 0, 1) == "'" && substr(g, length(g) - 1, 1) == "'" ? "target.group.name != ${g}" : "target.group.name != '${g}'"] : var.identity_domain_option == "New Identity Domain" ? [for g in local.cred_admin_group_name : "target.group.name != ${substr(g, length(var.new_identity_domain_name) + 3, -1)}"] : []
+  cred_admin_groups                  = var.identity_domain_option == "Default Domain" ? [for g in local.cred_admin_group_name : substr(g, 0, 1) == "'" && substr(g, length(g) - 1, 1) == "'" ? "target.group.name != ${g}" : "target.group.name != '${g}'"] : var.identity_domain_option == "New Identity Domain" ? [for g in local.cred_admin_group_name : "target.group.name != ${substr(g, length(local.new_identity_domain_name) + 3, -1)}"] : []
   custom_id_domain_cred_admin_groups = var.identity_domain_option == "Use Custom Identity Domain" ? [for g in local.cred_admin_group_name : "target.group.name != ${substr(g, length(local.custom_id_domain_name) + 3, -1)}"] : []
 
   ### User Group Policies ###
@@ -727,7 +727,7 @@ locals {
 
 module "lz_root_policies" {
   depends_on             = [module.lz_top_compartment, module.lz_groups] ### Explicitly declaring dependencies on the group and compartments modules.
-  source                 = "github.com/oci-landing-zones/terraform-oci-modules-iam//policies?ref=v0.3.1"
+  source                 = "github.com/oci-landing-zones/terraform-oci-modules-iam//policies?ref=v0.3.3"
   providers              = { oci = oci.home }
   tenancy_ocid           = var.tenancy_ocid
   policies_configuration = var.extend_landing_zone_to_new_region == false /*&& var.enable_template_policies == false*/ ? (local.use_existing_root_cmp_grants == true ? local.empty_policies_configuration : local.root_policies_configuration) : local.empty_policies_configuration
@@ -735,7 +735,7 @@ module "lz_root_policies" {
 
 module "lz_policies" {
   depends_on             = [module.lz_compartments, module.lz_groups, module.lz_dynamic_groups]
-  source                 = "github.com/oci-landing-zones/terraform-oci-modules-iam//policies?ref=v0.3.1"
+  source                 = "github.com/oci-landing-zones/terraform-oci-modules-iam//policies?ref=v0.3.3"
   providers              = { oci = oci.home }
   tenancy_ocid           = var.tenancy_ocid
   policies_configuration = var.extend_landing_zone_to_new_region == false /*&& var.enable_template_policies == false*/ ? local.policies_configuration : local.empty_policies_configuration

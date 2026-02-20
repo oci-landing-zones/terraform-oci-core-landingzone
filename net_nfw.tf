@@ -272,12 +272,12 @@ module "lz_firewall_appliance" {
 
 module "lz_nlb" {
   count             = local.chosen_firewall_option != "NO" && local.chosen_firewall_option != "OCINFW" ? 1 : 0
-  source            = "github.com/oci-landing-zones/terraform-oci-modules-networking//modules/nlb?ref=v0.7.8"
+  source            = "github.com/oci-landing-zones/terraform-oci-modules-networking//modules/nlb?ref=v0.8.1"
   nlb_configuration = local.nlb_configuration
 }
 
 module "native_oci_firewall" {
   count                 = local.chosen_firewall_option == "OCINFW" ? 1 : 0
-  source                = "github.com/oci-landing-zones/terraform-oci-modules-networking?ref=v0.7.8"
+  source                = "github.com/oci-landing-zones/terraform-oci-modules-networking?ref=v0.8.1"
   network_configuration = local.network_firewall_network_configuration
 }

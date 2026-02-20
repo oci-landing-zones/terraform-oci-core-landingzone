@@ -2,12 +2,13 @@
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl/
 
 locals {
+  new_identity_domain_name = coalesce(var.new_identity_domain_name, "${var.service_label}-identity-domain")
   identity_domains_configuration = {
     identity_domains : {
       NEW-DOMAIN : {
         compartment_id                   = local.enclosing_compartment_id
-        display_name                     = var.new_identity_domain_name
-        description                      = "identity domain for ${var.new_identity_domain_name}"
+        display_name                     = local.new_identity_domain_name
+        description                      = "identity domain for ${local.new_identity_domain_name}"
         license_type                     = var.new_identity_domain_license_type
         allow_signing_cert_public_access = false
       }
@@ -31,7 +32,7 @@ locals {
 }
 
 module "lz_new_identity_domain" {
-  source                                       = "github.com/oci-landing-zones/terraform-oci-modules-iam//identity-domains?ref=v0.3.1"
+  source                                       = "github.com/oci-landing-zones/terraform-oci-modules-iam//identity-domains?ref=v0.3.3"
   count                                        = var.identity_domain_option == "New Identity Domain" ? 1 : 0
   providers                                    = { oci = oci.home }
   tenancy_ocid                                 = var.tenancy_ocid

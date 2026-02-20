@@ -179,7 +179,7 @@ variable "identity_domain_option" {
 }
 variable "new_identity_domain_name" {
   type        = string
-  default     = ""
+  default     = null
   description = "The name of the new identity domain if the option to create a new identity domain is chosen."
 }
 variable "new_identity_domain_license_type" {
