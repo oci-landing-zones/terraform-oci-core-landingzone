@@ -761,14 +761,14 @@ locals {
               local.oke_vcn_1_to_workers_subnet_cross_vcn_egress,
               local.oke_vcn_1_to_pods_subnet_cross_vcn_egress
             ),
-            ingress_rules = { for cidr_port_pair in local.oke_vcn1_external_allowed_cidrs_to_ports_into_services_tier : "INGRESS-FROM-${replace(replace(split(",",cidr_port_pair)[0], ".", ""), "/", "")}-ON-${split(",",cidr_port_pair)[1]}-RULE" => {
-              description  = "Ingress from ${split(",",cidr_port_pair)[0]} on TCP port ${split(",",cidr_port_pair)[1]}."
+            ingress_rules = { for cidr_port_pair in local.oke_vcn1_external_allowed_cidrs_to_ports_into_services_tier : "INGRESS-FROM-${split(",",cidr_port_pair)[0]}-ON-${split(",",cidr_port_pair)[1]}-RULE" => {
+              description  = "Ingress from ${split(",",cidr_port_pair)[0]} over ${split(":",split(",",cidr_port_pair)[1])[0]} on port ${split(":",split(",",cidr_port_pair)[1])[1]}."
               stateless    = false
-              protocol     = "TCP"
+              protocol     = split(":",split(",",cidr_port_pair)[1])[0]
               src          = split(",",cidr_port_pair)[0]
               src_type     = "CIDR_BLOCK"
-              dst_port_min = tonumber(split(",",cidr_port_pair)[1])
-              dst_port_max = tonumber(split(",",cidr_port_pair)[1])
+              dst_port_min = split(":",split(",",cidr_port_pair)[1])[1] == "ALL" ? null : split(":",split(",",cidr_port_pair)[1])[1]
+              dst_port_max = split(":",split(",",cidr_port_pair)[1])[1] == "ALL" ? null : split(":",split(",",cidr_port_pair)[1])[1]
             }}
           }
         },  
