@@ -228,14 +228,14 @@ locals {
         }
       }
 
-      vcn_specific_gateways = (local.chosen_hub_option != 3 && local.chosen_hub_option != 4) ? {
+      vcn_specific_gateways = {
         service_gateways = {
           "EXA-VCN-3-SERVICE-GATEWAY" = {
             display_name = "service-gateway"
             services     = "all-services"
           }
         }
-      } : {}
+      }
     }
   } : {}
 
