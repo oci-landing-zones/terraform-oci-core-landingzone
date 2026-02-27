@@ -320,16 +320,23 @@ locals {
                 }
               },
               var.deploy_bastion_jump_host == true && coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_east_west_entry_point_ocid, local.void) != local.void ? { 
-                "JUMP-HOST-SUBNET-RULE" = { # Required for routing traffic destined to the jump host subnet in the Hub VCN. Without it, return traffic doesn't reach the source because local VCN routes kick in first.
-                  description       = "Traffic destined for networks outside the VCN is routed through the private IP address ${coalesce(var.oci_nfw_ip_ocid, local.void) != local.void ? data.oci_core_private_ip.oci_firewall[0].ip_address : data.oci_core_private_ip.indoor_nlb[0].ip_address}."
+                "JUMP-HOST-SUBNET-RULE" = { # Required for routing traffic destined to the jump host subnet in the Hub VCN. Without it, traffic doesn't reach the firewall because local VCN routes kick in first.
+                  description       = "Traffic destined for ${local.hub_vcn_jumphost_subnet_display_name} is routed through the private IP address ${coalesce(var.oci_nfw_ip_ocid, local.void) != local.void ? data.oci_core_private_ip.oci_firewall[0].ip_address : data.oci_core_private_ip.indoor_nlb[0].ip_address}."
                   destination       = local.hub_vcn_jumphost_subnet_cidr
                   destination_type  = "CIDR_BLOCK"
                   network_entity_id = coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_east_west_entry_point_ocid)
                 }
               } : {},
+              local.chosen_firewall_option != "OCINFW" && var.hub_vcn_east_west_entry_point_ocid != null ? {
+                "MGMT-SUBNET-RULE" = { # Required for routing traffic destined to the mgmt subnet in the Hub VCN. Without it, traffic doesn't reach the firewall because local VCN routes kick in first.
+                  description       = "Traffic destined for ${local.hub_vcn_mgmt_subnet_display_name} is routed through the private IP address ${data.oci_core_private_ip.indoor_nlb[0].ip_address}."
+                  destination       = local.hub_vcn_mgmt_subnet_cidr
+                  destination_type  = "CIDR_BLOCK"
+                  network_entity_id = var.hub_vcn_east_west_entry_point_ocid
+                }
+              } : {},
               coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_east_west_entry_point_ocid, local.void) != local.void ? {
                 "EVERYWHERE-ELSE-RULE" = {
-                  #description       = "Traffic destined for networks outside the VCN is routed through ${coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_east_west_entry_point_ocid)}."
                   description       = "Traffic destined for networks outside the VCN is routed through the private IP address ${coalesce(var.oci_nfw_ip_ocid, local.void) != local.void ? data.oci_core_private_ip.oci_firewall[0].ip_address : data.oci_core_private_ip.indoor_nlb[0].ip_address}."
                   destination       = "0.0.0.0/0"
                   destination_type  = "CIDR_BLOCK"
