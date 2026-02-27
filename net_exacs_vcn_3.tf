@@ -175,17 +175,15 @@ locals {
                 dst_port_max = 22
               }
             },
-            {
-              "EGRESS-TO-SQLNET-RULE" = {
-                description = "Allows SQLNet connections to hosts in Client NSG."
-                stateless   = false
-                protocol    = "TCP"
-                dst         = "EXA-VCN-3-CLIENT-NSG"
-                dst_type    = "NETWORK_SECURITY_GROUP"
-                dst_port_min : 1521
-                dst_port_max : 1522
-              }
-            },
+            { for port in var.exa_vcn3_client_ingress_destination_ports : "EGRESS-TO-CLIENT-NSG-ON-${port}-RULE" => {
+                description  = "Egress to Client NSG over ${split(":",port)[0]} on port ${split(":",port)[1]} (for SQLNet connections)"
+                stateless    = false
+                protocol     = split(":",port)[0]
+                dst          = "EXA-VCN-3-CLIENT-NSG"
+                dst_type     = "NETWORK_SECURITY_GROUP"
+                dst_port_min = split(":",port)[1]
+                dst_port_max = split(":",port)[1]
+            }},
             {
               "EGRESS-TO-ONS-RULE" = {
                 description = "Allows Oracle Notification Services (ONS) communication to hosts in Client NSG for Fast Application Notifications (FAN)."
@@ -239,260 +237,219 @@ locals {
     }
   } : {}
 
-  #### Cross VCN NSG Rules
-  ### EXA-VCN-3:
-  ## Egress Rules
+  ## Cross VCN Egress Rules for EXA_VCN_3
+  ### Cross VCN egress rules to other EXA VCNs' Clients subnets
   exa_vcn_3_to_client_subnet_cross_vcn_egress = merge(
     (local.add_exa_vcn3 == true && var.exa_vcn3_attach_to_drg == true && var.add_exa_vcn1 == true && var.exa_vcn1_attach_to_drg == true) &&
-    (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.exa_vcn3_routable_vcns) == 0 || contains(var.exa_vcn3_routable_vcns, "EXA-VCN-1")))) ? {
-      "EGRESS-TO-VCN-1-CLIENT-SUBNET-RULE" = {
-        description  = "Egress to ${local.exa_vcn1_client_subnet_display_name}."
-        stateless    = false
-        protocol     = "TCP"
-        dst          = local.exa_vcn1_client_subnet_cidr
-        dst_type     = "CIDR_BLOCK"
-        dst_port_min = 1521
-        dst_port_max = 1522
-      },
-    } : {},
+    (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.exa_vcn3_routable_vcns) == 0 || contains(var.exa_vcn3_routable_vcns, "EXA-VCN-1")))) ? { for port in var.exa_vcn1_client_ingress_destination_ports : "EGRESS-TO-EXA-VCN1-ON-${port}-RULE" => {
+      description  = "Egress to ${local.exa_vcn1_client_subnet_display_name} over ${split(":",port)[0]} on port ${split(":",port)[1]}."
+      stateless    = false
+      protocol     = split(":",port)[0]
+      dst          = local.exa_vcn1_client_subnet_cidr
+      dst_type     = "CIDR_BLOCK"
+      dst_port_min = split(":",port)[1]
+      dst_port_max = split(":",port)[1]
+    }} : {},
     (local.add_exa_vcn3 == true && var.exa_vcn3_attach_to_drg == true && var.add_exa_vcn2 == true && var.exa_vcn2_attach_to_drg == true) &&
-    (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.exa_vcn3_routable_vcns) == 0 || contains(var.exa_vcn3_routable_vcns, "EXA-VCN-2")))) ? {
-      "EGRESS-TO-VCN-2-CLIENT-SUBNET-RULE" = {
-        description  = "Egress to ${local.exa_vcn2_client_subnet_display_name}."
-        stateless    = false
-        protocol     = "TCP"
-        dst          = local.exa_vcn2_client_subnet_cidr
-        dst_type     = "CIDR_BLOCK"
-        dst_port_min = 1521
-        dst_port_max = 1522
-      },
-    } : {}
+    (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.exa_vcn3_routable_vcns) == 0 || contains(var.exa_vcn3_routable_vcns, "EXA-VCN-2")))) ? { for port in var.exa_vcn2_client_ingress_destination_ports : "EGRESS-TO-EXA-VCN2-ON-${port}-RULE" => {
+      description  = "Egress to ${local.exa_vcn2_client_subnet_display_name} over ${split(":",port)[0]} on port ${split(":",port)[1]}."
+      stateless    = false
+      protocol     = split(":",port)[0]
+      dst          = local.exa_vcn2_client_subnet_cidr
+      dst_type     = "CIDR_BLOCK"
+      dst_port_min = split(":",port)[1]
+      dst_port_max = split(":",port)[1]
+    }} : {},
   )
 
-  ## EXA-VCN-3 to TT-VCNs EGRESS
+  ### Cross VCN egress rules to Three-tier VCNs' db subnets
   exa_vcn_3_to_db_subnet_cross_vcn_egress = merge(
     (local.add_exa_vcn3 == true && var.exa_vcn3_attach_to_drg == true && var.add_tt_vcn1 == true && var.tt_vcn1_attach_to_drg == true) &&
-    (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.exa_vcn3_routable_vcns) == 0 || contains(var.exa_vcn3_routable_vcns, "TT-VCN-1")))) ? {
-      "EGRESS-TO-TT-VCN-1-DB-SUBNET-RULE" = {
-        description  = "Egress to ${local.tt_vcn1_db_subnet_display_name}."
-        stateless    = false
-        protocol     = "TCP"
-        dst          = local.tt_vcn1_db_subnet_cidr
-        dst_type     = "CIDR_BLOCK"
-        dst_port_min = 1521
-        dst_port_max = 1522
-      }
-    } : {},
+    (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.exa_vcn3_routable_vcns) == 0 || contains(var.exa_vcn3_routable_vcns, "TT-VCN-1")))) ? { for port in var.tt_vcn1_db_ingress_destination_ports : "EGRESS-TO-TT-VCN1-ON-${port}-RULE" => {
+      description  = "Egress to ${local.tt_vcn1_db_subnet_display_name} over ${split(":",port)[0]} on port ${split(":",port)[1]}."
+      stateless    = false
+      protocol     = split(":",port)[0]
+      dst          = local.tt_vcn1_db_subnet_cidr
+      dst_type     = "CIDR_BLOCK"
+      dst_port_min = split(":",port)[1]
+      dst_port_max = split(":",port)[1]
+    }} : {},
     (local.add_exa_vcn3 == true && var.exa_vcn3_attach_to_drg == true && var.add_tt_vcn2 == true && var.tt_vcn2_attach_to_drg == true) &&
-    (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.exa_vcn3_routable_vcns) == 0 || contains(var.exa_vcn3_routable_vcns, "TT-VCN-2")))) ? {
-      "EGRESS-TO-TT-VCN-2-DB-SUBNET-RULE" = {
-        description  = "Egress to ${local.tt_vcn2_db_subnet_display_name}."
-        stateless    = false
-        protocol     = "TCP"
-        dst          = local.tt_vcn2_db_subnet_cidr
-        dst_type     = "CIDR_BLOCK"
-        dst_port_min = 1521
-        dst_port_max = 1522
-      }
-    } : {},
+    (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.exa_vcn3_routable_vcns) == 0 || contains(var.exa_vcn3_routable_vcns, "TT-VCN-2")))) ? { for port in var.tt_vcn2_db_ingress_destination_ports : "EGRESS-TO-TT-VCN2-ON-${port}-RULE" => {
+      description  = "Egress to ${local.tt_vcn2_db_subnet_display_name} over ${split(":",port)[0]} on port ${split(":",port)[1]}."
+      stateless    = false
+      protocol     = split(":",port)[0]
+      dst          = local.tt_vcn2_db_subnet_cidr
+      dst_type     = "CIDR_BLOCK"
+      dst_port_min = split(":",port)[1]
+      dst_port_max = split(":",port)[1]
+    }} : {},
     (local.add_exa_vcn3 == true && var.exa_vcn3_attach_to_drg == true && var.add_tt_vcn3 == true && var.tt_vcn3_attach_to_drg == true) &&
-    (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.exa_vcn3_routable_vcns) == 0 || contains(var.exa_vcn3_routable_vcns, "TT-VCN-3")))) ? {
-      "EGRESS-TO-TT-VCN-3-DB-SUBNET-RULE" = {
-        description  = "Egress to ${local.tt_vcn3_db_subnet_display_name}."
-        stateless    = false
-        protocol     = "TCP"
-        dst          = local.tt_vcn3_db_subnet_cidr
-        dst_type     = "CIDR_BLOCK"
-        dst_port_min = 1521
-        dst_port_max = 1522
-      }
-    } : {}
+    (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.exa_vcn3_routable_vcns) == 0 || contains(var.exa_vcn3_routable_vcns, "TT-VCN-3")))) ? { for port in var.tt_vcn3_db_ingress_destination_ports : "EGRESS-TO-TT-VCN3-ON-${port}-RULE" => {
+      description  = "Egress to ${local.tt_vcn3_db_subnet_display_name} over ${split(":",port)[0]} on port ${split(":",port)[1]}."
+      stateless    = false
+      protocol     = split(":",port)[0]
+      dst          = local.tt_vcn3_db_subnet_cidr
+      dst_type     = "CIDR_BLOCK"
+      dst_port_min = split(":",port)[1]
+      dst_port_max = split(":",port)[1]
+    }} : {}
   )
 
-  ## EXA-VCN-3 ingress rules
+  ## Cross VCN Ingress rules for EXA_VCN_3
+  ### Cross VCN ingress rules from other VCNs' subnets
   exa_vcn_3_to_client_subnet_cross_vcn_ingress = merge(
     (local.add_exa_vcn3 == true && var.exa_vcn3_attach_to_drg == true && var.add_exa_vcn1 == true && var.exa_vcn1_attach_to_drg == true) &&
-    (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.exa_vcn3_routable_vcns) == 0 || contains(var.exa_vcn3_routable_vcns, "EXA-VCN-1")))) ? {
-      "INGRESS-FROM-EXA-VCN-1-CLIENT-SUBNET-RULE" = {
-        description  = "Ingress from ${local.exa_vcn1_client_subnet_display_name}."
-        stateless    = false
-        protocol     = "TCP"
-        src          = local.exa_vcn1_client_subnet_cidr
-        src_type     = "CIDR_BLOCK"
-        dst_port_min = 1521
-        dst_port_max = 1522
-      },
-    } : {},
+    (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.exa_vcn3_routable_vcns) == 0 || contains(var.exa_vcn3_routable_vcns, "EXA-VCN-1")))) ? { for port in var.exa_vcn3_client_ingress_destination_ports : "INGRESS-FROM-EXA-VCN1-ON-${port}-RULE" => {
+      description  = "Ingress from ${local.exa_vcn1_client_subnet_display_name} over ${split(":",port)[0]} on port ${split(":",port)[1]}."
+      stateless    = false
+      protocol     = split(":",port)[0]
+      src          = local.exa_vcn1_client_subnet_cidr
+      src_type     = "CIDR_BLOCK"
+      dst_port_min = split(":",port)[1]
+      dst_port_max = split(":",port)[1]
+    }} : {},
     (local.add_exa_vcn3 == true && var.exa_vcn3_attach_to_drg == true && var.add_exa_vcn2 == true && var.exa_vcn2_attach_to_drg == true) &&
-    (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.exa_vcn3_routable_vcns) == 0 || contains(var.exa_vcn3_routable_vcns, "EXA-VCN-2")))) ? {
-      "INGRESS-FROM-EXA-VCN-2-CLIENT-SUBNET-RULE" = {
-        description  = "Ingress from ${local.exa_vcn2_client_subnet_display_name}."
-        stateless    = false
-        protocol     = "TCP"
-        src          = local.exa_vcn2_client_subnet_cidr
-        src_type     = "CIDR_BLOCK"
-        dst_port_min = 1521
-        dst_port_max = 1522
-      },
-    } : {},
+    (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.exa_vcn3_routable_vcns) == 0 || contains(var.exa_vcn3_routable_vcns, "EXA-VCN-2")))) ? { for port in var.exa_vcn3_client_ingress_destination_ports : "INGRESS-FROM-EXA-VCN2-ON-${port}-RULE" => {
+      description  = "Ingress from ${local.exa_vcn2_client_subnet_display_name} over ${split(":",port)[0]} on port ${split(":",port)[1]}."
+      stateless    = false
+      protocol     = split(":",port)[0]
+      src          = local.exa_vcn2_client_subnet_cidr
+      src_type     = "CIDR_BLOCK"
+      dst_port_min = split(":",port)[1]
+      dst_port_max = split(":",port)[1]
+    }} : {},
     (local.add_exa_vcn3 == true && var.exa_vcn3_attach_to_drg == true && var.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true) &&
-    (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.exa_vcn3_routable_vcns) == 0 || contains(var.exa_vcn3_routable_vcns, "OKE-VCN-1")))) ? {
-      "INGRESS-FROM-OKE-VCN-1-WORKERS-SUBNET-RULE" = {
-        description  = "Ingress from ${local.oke_vcn1_workers_subnet_display_name}."
-        stateless    = false
-        protocol     = "TCP"
-        src          = local.oke_vcn1_workers_subnet_cidr
-        src_type     = "CIDR_BLOCK"
-        dst_port_min = 1521
-        dst_port_max = 1522
-      },
-    } : {},
+    (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.exa_vcn3_routable_vcns) == 0 || contains(var.exa_vcn3_routable_vcns, "OKE-VCN-1")))) ? { for port in var.exa_vcn3_client_ingress_destination_ports : "INGRESS-FROM-OKE-VCN1-WORKERS-ON-${port}-RULE" => {
+      description  = "Ingress from ${local.oke_vcn1_workers_subnet_display_name} over ${split(":",port)[0]} on port ${split(":",port)[1]}."
+      stateless    = false
+      protocol     = split(":",port)[0]
+      src          = local.oke_vcn1_workers_subnet_cidr
+      src_type     = "CIDR_BLOCK"
+      dst_port_min = split(":",port)[1]
+      dst_port_max = split(":",port)[1]
+    }} : {},
     (local.add_exa_vcn3 == true && var.exa_vcn3_attach_to_drg == true && var.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true) && (upper(var.oke_vcn1_cni_type) == "NATIVE") &&
-    (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.exa_vcn3_routable_vcns) == 0 || contains(var.exa_vcn3_routable_vcns, "OKE-VCN-1")))) ? {
-      "INGRESS-FROM-OKE-VCN-1-PODS-SUBNET-RULE" = {
-        description  = "Ingress from ${local.oke_vcn1_pods_subnet_display_name}."
-        stateless    = false
-        protocol     = "TCP"
-        src          = local.oke_vcn1_pods_subnet_cidr
-        src_type     = "CIDR_BLOCK"
-        dst_port_min = 1521
-        dst_port_max = 1522
-      }
-    } : {},
-
+    (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.exa_vcn3_routable_vcns) == 0 || contains(var.exa_vcn3_routable_vcns, "OKE-VCN-1")))) ? { for port in var.exa_vcn3_client_ingress_destination_ports : "INGRESS-FROM-OKE-VCN1-PODS-ON-${port}-RULE" => {
+      description  = "Ingress from ${local.oke_vcn1_pods_subnet_display_name} over ${split(":",port)[0]} on port ${split(":",port)[1]}."
+      stateless    = false
+      protocol     = split(":",port)[0]
+      src          = local.oke_vcn1_pods_subnet_cidr
+      src_type     = "CIDR_BLOCK"
+      dst_port_min = split(":",port)[1]
+      dst_port_max = split(":",port)[1]
+    }} : {},
     (local.add_exa_vcn3 == true && var.exa_vcn3_attach_to_drg == true && var.add_oke_vcn2 == true && var.oke_vcn2_attach_to_drg == true) &&
-    (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.exa_vcn3_routable_vcns) == 0 || contains(var.exa_vcn3_routable_vcns, "OKE-VCN-2")))) ? {
-      "INGRESS-FROM-OKE-VCN-2-WORKERS-SUBNET-RULE" = {
-        description  = "Ingress from ${local.oke_vcn2_workers_subnet_display_name}."
-        stateless    = false
-        protocol     = "TCP"
-        src          = local.oke_vcn2_workers_subnet_cidr
-        src_type     = "CIDR_BLOCK"
-        dst_port_min = 1521
-        dst_port_max = 1522
-      },
-    } : {},
+    (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.exa_vcn3_routable_vcns) == 0 || contains(var.exa_vcn3_routable_vcns, "OKE-VCN-2")))) ? { for port in var.exa_vcn3_client_ingress_destination_ports : "INGRESS-FROM-OKE-VCN2-WORKERS-ON-${port}-RULE" => {
+      description  = "Ingress from ${local.oke_vcn2_workers_subnet_display_name} over ${split(":",port)[0]} on port ${split(":",port)[1]}."
+      stateless    = false
+      protocol     = split(":",port)[0]
+      src          = local.oke_vcn2_workers_subnet_cidr
+      src_type     = "CIDR_BLOCK"
+      dst_port_min = split(":",port)[1]
+      dst_port_max = split(":",port)[1]
+    }} : {},
     (local.add_exa_vcn3 == true && var.exa_vcn3_attach_to_drg == true && var.add_oke_vcn2 == true && var.oke_vcn2_attach_to_drg == true) && (upper(var.oke_vcn2_cni_type) == "NATIVE") &&
-    (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.exa_vcn3_routable_vcns) == 0 || contains(var.exa_vcn3_routable_vcns, "OKE-VCN-2")))) ? {
-      "INGRESS-FROM-OKE-VCN-2-PODS-SUBNET-RULE" = {
-        description  = "Ingress from ${local.oke_vcn2_pods_subnet_display_name}."
-        stateless    = false
-        protocol     = "TCP"
-        src          = local.oke_vcn2_pods_subnet_cidr
-        src_type     = "CIDR_BLOCK"
-        dst_port_min = 1521
-        dst_port_max = 1522
-      }
-    } : {},
+    (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.exa_vcn3_routable_vcns) == 0 || contains(var.exa_vcn3_routable_vcns, "OKE-VCN-2")))) ? { for port in var.exa_vcn3_client_ingress_destination_ports : "INGRESS-FROM-OKE-VCN2-PODS-ON-${port}-RULE" => {
+      description  = "Ingress from ${local.oke_vcn2_pods_subnet_display_name} over ${split(":",port)[0]} on port ${split(":",port)[1]}."
+      stateless    = false
+      protocol     = split(":",port)[0]
+      src          = local.oke_vcn2_pods_subnet_cidr
+      src_type     = "CIDR_BLOCK"
+      dst_port_min = split(":",port)[1]
+      dst_port_max = split(":",port)[1]
+    }} : {},
     (local.add_exa_vcn3 == true && var.exa_vcn3_attach_to_drg == true && var.add_oke_vcn3 == true && var.oke_vcn3_attach_to_drg == true) &&
-    (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.exa_vcn3_routable_vcns) == 0 || contains(var.exa_vcn3_routable_vcns, "OKE-VCN-3")))) ? {
-      "INGRESS-FROM-OKE-VCN-3-WORKERS-SUBNET-RULE" = {
-        description  = "Ingress from ${local.oke_vcn3_workers_subnet_display_name}."
-        stateless    = false
-        protocol     = "TCP"
-        src          = local.oke_vcn3_workers_subnet_cidr
-        src_type     = "CIDR_BLOCK"
-        dst_port_min = 1521
-        dst_port_max = 1522
-      },
-    } : {},
+    (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.exa_vcn3_routable_vcns) == 0 || contains(var.exa_vcn3_routable_vcns, "OKE-VCN-3")))) ? { for port in var.exa_vcn3_client_ingress_destination_ports : "INGRESS-FROM-OKE-VCN3-WORKERS-ON-${port}-RULE" => {
+      description  = "Ingress from ${local.oke_vcn3_workers_subnet_display_name} over ${split(":",port)[0]} on port ${split(":",port)[1]}."
+      stateless    = false
+      protocol     = split(":",port)[0]
+      src          = coalesce(var.oke_vcn3_workers_subnet_cidr, cidrsubnet(var.oke_vcn3_cidrs[0], 8, 1))
+      src_type     = "CIDR_BLOCK"
+      dst_port_min = split(":",port)[1]
+      dst_port_max = split(":",port)[1]
+    }} : {},
     (local.add_exa_vcn3 == true && var.exa_vcn3_attach_to_drg == true && var.add_oke_vcn3 == true && var.oke_vcn3_attach_to_drg == true) && (upper(var.oke_vcn3_cni_type) == "NATIVE") &&
-    (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.exa_vcn3_routable_vcns) == 0 || contains(var.exa_vcn3_routable_vcns, "OKE-VCN-3")))) ? {
-      "INGRESS-FROM-OKE-VCN-3-PODS-SUBNET-RULE" = {
-        description  = "Ingress from ${local.oke_vcn3_pods_subnet_display_name}."
-        stateless    = false
-        protocol     = "TCP"
-        src          = local.oke_vcn3_pods_subnet_cidr
-        src_type     = "CIDR_BLOCK"
-        dst_port_min = 1521
-        dst_port_max = 1522
-      }
-    } : {},
+    (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.exa_vcn3_routable_vcns) == 0 || contains(var.exa_vcn3_routable_vcns, "OKE-VCN-3")))) ? { for port in var.exa_vcn3_client_ingress_destination_ports : "INGRESS-FROM-OKE-VCN3-PODS-ON-${port}-RULE" => {
+      description  = "Ingress from ${local.oke_vcn3_pods_subnet_display_name} over ${split(":",port)[0]} on port ${split(":",port)[1]}."
+      stateless    = false
+      protocol     = split(":",port)[0]
+      src          = local.oke_vcn3_pods_subnet_cidr
+      src_type     = "CIDR_BLOCK"
+      dst_port_min = split(":",port)[1]
+      dst_port_max = split(":",port)[1]
+    }} : {},
     (local.add_exa_vcn3 == true && var.exa_vcn3_attach_to_drg == true && var.add_tt_vcn1 == true && var.tt_vcn1_attach_to_drg == true) &&
-    (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.exa_vcn3_routable_vcns) == 0 || contains(var.exa_vcn3_routable_vcns, "TT-VCN-1")))) ? {
-      "INGRESS-FROM-TT-VCN-1-APP-SUBNET-RULE" = {
-        description  = "Ingress from ${local.tt_vcn1_app_subnet_display_name}."
-        stateless    = false
-        protocol     = "TCP"
-        src          = local.tt_vcn1_app_subnet_cidr
-        src_type     = "CIDR_BLOCK"
-        dst_port_min = 1521
-        dst_port_max = 1522
-      },
-    } : {},
+    (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.exa_vcn3_routable_vcns) == 0 || contains(var.exa_vcn3_routable_vcns, "TT-VCN-1")))) ? { for port in var.exa_vcn3_client_ingress_destination_ports : "INGRESS-FROM-TT-VCN1-APP-ON-${port}-RULE" => {
+      description  = "Ingress from ${local.tt_vcn1_app_subnet_display_name} over ${split(":",port)[0]} on port ${split(":",port)[1]}."
+      stateless    = false
+      protocol     = split(":",port)[0]
+      src          = local.tt_vcn1_app_subnet_cidr
+      src_type     = "CIDR_BLOCK"
+      dst_port_min = split(":",port)[1]
+      dst_port_max = split(":",port)[1]
+    }} : {},
     (local.add_exa_vcn3 == true && var.exa_vcn3_attach_to_drg == true && var.add_tt_vcn1 == true && var.tt_vcn1_attach_to_drg == true) &&
-    (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.exa_vcn3_routable_vcns) == 0 || contains(var.exa_vcn3_routable_vcns, "TT-VCN-1")))) ? {
-      "INGRESS-FROM-TT-VCN-1-DB-SUBNET-RULE" = {
-        description  = "Ingress from ${local.tt_vcn1_db_subnet_display_name}."
-        stateless    = false
-        protocol     = "TCP"
-        src          = local.tt_vcn1_db_subnet_cidr
-        src_type     = "CIDR_BLOCK"
-        dst_port_min = 1521
-        dst_port_max = 1522
-      }
-    } : {},
+    (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.exa_vcn3_routable_vcns) == 0 || contains(var.exa_vcn3_routable_vcns, "TT-VCN-1")))) ? { for port in var.exa_vcn3_client_ingress_destination_ports : "INGRESS-FROM-TT-VCN1-DB-ON-${port}-RULE" => {
+      description  = "Ingress from ${local.tt_vcn1_db_subnet_display_name} over ${split(":",port)[0]} on port ${split(":",port)[1]}."
+      stateless    = false
+      protocol     = split(":",port)[0]
+      src          = local.tt_vcn1_db_subnet_cidr
+      src_type     = "CIDR_BLOCK"
+      dst_port_min = split(":",port)[1]
+      dst_port_max = split(":",port)[1]
+    }} : {},
     (local.add_exa_vcn3 == true && var.exa_vcn3_attach_to_drg == true && var.add_tt_vcn2 == true && var.tt_vcn2_attach_to_drg == true) &&
-    (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.exa_vcn3_routable_vcns) == 0 || contains(var.exa_vcn3_routable_vcns, "TT-VCN-2")))) ? {
-      "INGRESS-FROM-TT-VCN-2-APP-SUBNET-RULE" = {
-        description  = "Ingress from ${local.tt_vcn2_app_subnet_display_name}."
-        stateless    = false
-        protocol     = "TCP"
-        src          = local.tt_vcn2_app_subnet_cidr
-        src_type     = "CIDR_BLOCK"
-        dst_port_min = 1521
-        dst_port_max = 1522
-      },
-    } : {},
+    (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.exa_vcn3_routable_vcns) == 0 || contains(var.exa_vcn3_routable_vcns, "TT-VCN-2")))) ? { for port in var.exa_vcn3_client_ingress_destination_ports : "INGRESS-FROM-TT-VCN2-APP-ON-${port}-RULE" => {
+      description  = "Ingress from ${local.tt_vcn2_app_subnet_display_name} over ${split(":",port)[0]} on port ${split(":",port)[1]}."
+      stateless    = false
+      protocol     = split(":",port)[0]
+      src          = local.tt_vcn2_app_subnet_cidr
+      src_type     = "CIDR_BLOCK"
+      dst_port_min = split(":",port)[1]
+      dst_port_max = split(":",port)[1]
+    }} : {},
     (local.add_exa_vcn3 == true && var.exa_vcn3_attach_to_drg == true && var.add_tt_vcn2 == true && var.tt_vcn2_attach_to_drg == true) &&
-    (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.exa_vcn3_routable_vcns) == 0 || contains(var.exa_vcn3_routable_vcns, "TT-VCN-2")))) ? {
-      "INGRESS-FROM-TT-VCN-2-DB-SUBNET-RULE" = {
-        description  = "Ingress from ${local.tt_vcn2_db_subnet_display_name}."
-        stateless    = false
-        protocol     = "TCP"
-        src          = local.tt_vcn2_db_subnet_cidr
-        src_type     = "CIDR_BLOCK"
-        dst_port_min = 1521
-        dst_port_max = 1522
-      }
-    } : {},
+    (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.exa_vcn3_routable_vcns) == 0 || contains(var.exa_vcn3_routable_vcns, "TT-VCN-2")))) ? { for port in var.exa_vcn3_client_ingress_destination_ports : "INGRESS-FROM-TT-VCN2-DB-ON-${port}-RULE" => {
+      description  = "Ingress from ${local.tt_vcn2_db_subnet_display_name} over ${split(":",port)[0]} on port ${split(":",port)[1]}."
+      stateless    = false
+      protocol     = split(":",port)[0]
+      src          = local.tt_vcn2_db_subnet_cidr
+      src_type     = "CIDR_BLOCK"
+      dst_port_min = split(":",port)[1]
+      dst_port_max = split(":",port)[1]
+    }} : {},
     (local.add_exa_vcn3 == true && var.exa_vcn3_attach_to_drg == true && var.add_tt_vcn3 == true && var.tt_vcn3_attach_to_drg == true) &&
-    (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.exa_vcn3_routable_vcns) == 0 || contains(var.exa_vcn3_routable_vcns, "TT-VCN-3")))) ? {
-      "INGRESS-FROM-TT-VCN-3-APP-SUBNET-RULE" = {
-        description  = "Ingress from ${local.tt_vcn3_app_subnet_display_name}."
-        stateless    = false
-        protocol     = "TCP"
-        src          = local.tt_vcn3_app_subnet_cidr
-        src_type     = "CIDR_BLOCK"
-        dst_port_min = 1521
-        dst_port_max = 1522
-      },
-    } : {},
+    (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.exa_vcn3_routable_vcns) == 0 || contains(var.exa_vcn3_routable_vcns, "TT-VCN-3")))) ? { for port in var.exa_vcn3_client_ingress_destination_ports : "INGRESS-FROM-TT-VCN3-APP-ON-${port}-RULE" => {
+      description  = "Ingress from ${local.tt_vcn3_app_subnet_display_name} over ${split(":",port)[0]} on port ${split(":",port)[1]}."
+      stateless    = false
+      protocol     = split(":",port)[0]
+      src          = local.tt_vcn3_app_subnet_cidr
+      src_type     = "CIDR_BLOCK"
+      dst_port_min = split(":",port)[1]
+      dst_port_max = split(":",port)[1]
+    }} : {},
     (local.add_exa_vcn3 == true && var.exa_vcn3_attach_to_drg == true && var.add_tt_vcn3 == true && var.tt_vcn3_attach_to_drg == true) &&
-    (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.exa_vcn3_routable_vcns) == 0 || contains(var.exa_vcn3_routable_vcns, "TT-VCN-3")))) ? {
-      "INGRESS-FROM-TT-VCN-3-DB-SUBNET-RULE" = {
-        description  = "Ingress from ${local.tt_vcn3_db_subnet_display_name}."
-        stateless    = false
-        protocol     = "TCP"
-        src          = local.tt_vcn3_db_subnet_cidr
-        src_type     = "CIDR_BLOCK"
-        dst_port_min = 1521
-        dst_port_max = 1522
-      }
-    } : {},
+    (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.exa_vcn3_routable_vcns) == 0 || contains(var.exa_vcn3_routable_vcns, "TT-VCN-3")))) ? { for port in var.exa_vcn3_client_ingress_destination_ports : "INGRESS-FROM-TT-VCN3-DB-ON-${port}-RULE" => {
+      description  = "Ingress from ${local.tt_vcn3_db_subnet_display_name} over ${split(":",port)[0]} on port ${split(":",port)[1]}."
+      stateless    = false
+      protocol     = split(":",port)[0]
+      src          = local.tt_vcn3_db_subnet_cidr
+      src_type     = "CIDR_BLOCK"
+      dst_port_min = split(":",port)[1]
+      dst_port_max = split(":",port)[1]
+    }} : {},
     ## Ingress from on-premises CIDRs
     (local.add_exa_vcn3 == true && (var.exa_vcn3_attach_to_drg == true && var.exa_vcn3_onprem_route_enable)) &&
-    (local.hub_with_vcn == true || local.hub_with_drg_only == true) ? {
-      for cidr in var.onprem_cidrs : "INGRESS-FROM-ONPREM--${replace(replace(cidr, ".", ""), "/", "")}-RULE" => {
-        description  = "Ingress from onprem ${cidr}"
-        stateless    = false
-        protocol     = "TCP"
-        src          = cidr
-        src_type     = "CIDR_BLOCK"
-        dst_port_min = 1521
-        dst_port_max = 1522
-      }
-    } : {}
+    (local.hub_with_vcn == true || local.hub_with_drg_only == true) ? { for cidr_port_pair in flatten([for cidr in var.onprem_cidrs : [for port in var.exa_vcn3_client_ingress_destination_ports : "${trimspace(cidr)},${trimspace(port)}" ]]) : "INGRESS-FROM-${split(",",cidr_port_pair)[0]}-ON-${split(",",cidr_port_pair)[1]}-RULE" => {
+      description  = "Ingress from onprem ${split(",",cidr_port_pair)[0]} over ${split(":",split(",",cidr_port_pair)[1])[0]} on port ${split(":",split(",",cidr_port_pair)[1])[1]}."
+      stateless    = false
+      protocol     = split(":",split(",",cidr_port_pair)[1])[0]
+      src          = split(",",cidr_port_pair)[0]
+      src_type     = "CIDR_BLOCK"
+      dst_port_min = split(":",split(",",cidr_port_pair)[1])[1]
+      dst_port_max = split(":",split(",",cidr_port_pair)[1])[1]
+    }} : {}
   )
 
   exa_vcn_3_drg_routing = (local.add_exa_vcn3 == true && var.exa_vcn3_attach_to_drg == true) ? merge(
@@ -506,99 +463,4 @@ locals {
     length(var.exa_vcn3_routable_vcns) == 0 || contains(var.exa_vcn3_routable_vcns, "EXA-VCN-2") ? local.exa_vcn2_route_rule : {},
     var.tt_vcn3_onprem_route_enable == true ? local.on_prem_route_rule : {}
   ) : {}
-
-  # exa_vcn_3_drg_routing = merge(
-  #   (local.add_exa_vcn3 == true && var.exa_vcn3_attach_to_drg == true && var.add_exa_vcn1 == true && var.exa_vcn1_attach_to_drg == true) &&
-  #   (local.hub_with_drg_only == true && (length(var.exa_vcn3_routable_vcns) == 0 || contains(var.exa_vcn3_routable_vcns, "EXA-VCN-1"))) ? {
-  #     for cidr in var.exa_vcn1_cidrs : "EXA-VCN-1-${replace(replace(cidr, ".", ""), "/", "")}-RULE" => {
-  #       network_entity_key = "HUB-DRG"
-  #       description        = "To DRG."
-  #       destination        = cidr
-  #       destination_type   = "CIDR_BLOCK"
-  #     }
-  #   } : {},
-
-  #   (local.add_exa_vcn3 == true && var.exa_vcn3_attach_to_drg == true && var.add_exa_vcn2 == true && var.exa_vcn2_attach_to_drg == true) &&
-  #   (local.hub_with_drg_only == true && (length(var.exa_vcn3_routable_vcns) == 0 || contains(var.exa_vcn3_routable_vcns, "EXA-VCN-2"))) ? {
-  #     for cidr in var.exa_vcn2_cidrs : "EXA-VCN-2-${replace(replace(cidr, ".", ""), "/", "")}-RULE" => {
-  #       network_entity_key = "HUB-DRG"
-  #       description        = "To DRG."
-  #       destination        = cidr
-  #       destination_type   = "CIDR_BLOCK"
-  #     }
-  #   } : {},
-
-  #   ## EXA-VCN-3 to TT-VCNs
-  #   (local.add_exa_vcn3 == true && var.exa_vcn3_attach_to_drg == true && var.add_tt_vcn1 == true && var.tt_vcn1_attach_to_drg == true) &&
-  #   (local.hub_with_drg_only == true && (length(var.exa_vcn3_routable_vcns) == 0 || contains(var.exa_vcn3_routable_vcns, "TT-VCN-1"))) ? {
-  #     for cidr in var.tt_vcn1_cidrs : "TT-VCN-1-${replace(replace(cidr, ".", ""), "/", "")}-RULE" => {
-  #       network_entity_key = "HUB-DRG"
-  #       description        = "To DRG."
-  #       destination        = cidr
-  #       destination_type   = "CIDR_BLOCK"
-  #     }
-  #   } : {},
-
-  #   (local.add_exa_vcn3 == true && var.exa_vcn3_attach_to_drg == true && var.add_tt_vcn2 == true && var.tt_vcn2_attach_to_drg == true) &&
-  #   (local.hub_with_drg_only == true && (length(var.exa_vcn3_routable_vcns) == 0 || contains(var.exa_vcn3_routable_vcns, "TT-VCN-2"))) ? {
-  #     for cidr in var.tt_vcn2_cidrs : "TT-VCN-2-${replace(replace(cidr, ".", ""), "/", "")}-RULE" => {
-  #       network_entity_key = "HUB-DRG"
-  #       description        = "To DRG."
-  #       destination        = cidr
-  #       destination_type   = "CIDR_BLOCK"
-  #     }
-  #   } : {},
-
-  #   (local.add_exa_vcn3 == true && var.exa_vcn3_attach_to_drg == true && var.add_tt_vcn3 == true && var.tt_vcn3_attach_to_drg == true) &&
-  #   (local.hub_with_drg_only == true && (length(var.exa_vcn3_routable_vcns) == 0 || contains(var.exa_vcn3_routable_vcns, "TT-VCN-3"))) ? {
-  #     for cidr in var.tt_vcn3_cidrs : "TT-VCN-3-${replace(replace(cidr, ".", ""), "/", "")}-RULE" => {
-  #       network_entity_key = "HUB-DRG"
-  #       description        = "To DRG."
-  #       destination        = cidr
-  #       destination_type   = "CIDR_BLOCK"
-  #     }
-  #   } : {},
-
-  #   ## EXA-VCN-3 to OKE-VCNs
-  #   (local.add_exa_vcn3 == true && var.exa_vcn3_attach_to_drg == true && var.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true) &&
-  #   (local.hub_with_drg_only == true && (length(var.exa_vcn3_routable_vcns) == 0 || contains(var.exa_vcn3_routable_vcns, "OKE-VCN-1"))) ? {
-  #     for cidr in var.oke_vcn1_cidrs : "OKE-VCN-1-${replace(replace(cidr, ".", ""), "/", "")}-RULE" => {
-  #       network_entity_key = "HUB-DRG"
-  #       description        = "To DRG."
-  #       destination        = cidr
-  #       destination_type   = "CIDR_BLOCK"
-  #     }
-  #   } : {},
-
-  #   (local.add_exa_vcn3 == true && var.exa_vcn3_attach_to_drg == true && var.add_oke_vcn2 == true && var.oke_vcn2_attach_to_drg == true) &&
-  #   (local.hub_with_drg_only == true && (length(var.exa_vcn3_routable_vcns) == 0 || contains(var.exa_vcn3_routable_vcns, "OKE-VCN-2"))) ? {
-  #     for cidr in var.oke_vcn2_cidrs : "OKE-VCN-2-${replace(replace(cidr, ".", ""), "/", "")}-RULE" => {
-  #       network_entity_key = "HUB-DRG"
-  #       description        = "To DRG."
-  #       destination        = cidr
-  #       destination_type   = "CIDR_BLOCK"
-  #     }
-  #   } : {},
-
-  #   (local.add_exa_vcn3 == true && var.exa_vcn3_attach_to_drg == true && var.add_oke_vcn3 == true && var.oke_vcn3_attach_to_drg == true) &&
-  #   (local.hub_with_drg_only == true && (length(var.exa_vcn3_routable_vcns) == 0 || contains(var.exa_vcn3_routable_vcns, "OKE-VCN-3"))) ? {
-  #     for cidr in var.oke_vcn3_cidrs : "OKE-VCN-3-${replace(replace(cidr, ".", ""), "/", "")}-RULE" => {
-  #       network_entity_key = "HUB-DRG"
-  #       description        = "To DRG."
-  #       destination        = cidr
-  #       destination_type   = "CIDR_BLOCK"
-  #     }
-  #   } : {},
-
-  #   ## Route to on-premises CIDRs
-  #   (local.add_exa_vcn3 == true && var.exa_vcn3_attach_to_drg == true && length(var.onprem_cidrs) > 0) &&
-  #   (local.hub_with_drg_only == true) ? {
-  #     for cidr in var.onprem_cidrs : "ONPREM-${replace(replace(cidr, ".", ""), "/", "")}-RULE" => {
-  #       network_entity_key = "HUB-DRG"
-  #       description        = "Traffic destined to on-premises ${cidr} CIDR range goes to DRG."
-  #       destination        = cidr
-  #       destination_type   = "CIDR_BLOCK"
-  #     }
-  #   } : {}
-  # )
 }
