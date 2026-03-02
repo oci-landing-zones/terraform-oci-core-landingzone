@@ -166,63 +166,7 @@ locals {
                   destination_type   = "CIDR_BLOCK"
                 }
               } : {},
-              local.add_tt_vcn1 == true && var.tt_vcn1_attach_to_drg == true ? { for cidr in var.tt_vcn1_cidrs : "TT-VCN-1-${cidr}-RULE" => {
-                #description        = "Traffic destined for ${local.tt_vcn1_display_name} CIDR ${cidr} is routed through ${coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_north_south_entry_point_ocid, "the DRG")}."
-                description = "Traffic destined for ${local.tt_vcn1_display_name} CIDR ${cidr} is routed through ${coalesce(var.oci_nfw_ip_ocid, local.void) != local.void ? "the private IP address ${data.oci_core_private_ip.oci_firewall[0].ip_address}" : coalesce(var.hub_vcn_north_south_entry_point_ocid, local.void) != local.void ? "the private IP address ${data.oci_core_private_ip.outdoor_nlb[0].ip_address}" : "the DRG"}."
-                destination        = "${cidr}"
-                destination_type   = "CIDR_BLOCK"
-                network_entity_id  = coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_north_south_entry_point_ocid, local.void) != local.void ? coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_north_south_entry_point_ocid) : null
-                network_entity_key = coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_north_south_entry_point_ocid, local.void) == local.void ? "HUB-DRG" : null
-                }
-              } : {},
-              local.add_tt_vcn2 == true && var.tt_vcn2_attach_to_drg == true ? { for cidr in var.tt_vcn2_cidrs : "TT-VCN-2-${cidr}-RULE" => {
-                description        = "Traffic destined for ${local.tt_vcn2_display_name} CIDR ${cidr} is routed through ${coalesce(var.oci_nfw_ip_ocid, local.void) != local.void ? "the private IP address ${data.oci_core_private_ip.oci_firewall[0].ip_address}" : coalesce(var.hub_vcn_north_south_entry_point_ocid, local.void) != local.void ? "the private IP address ${data.oci_core_private_ip.outdoor_nlb[0].ip_address}" : "the DRG"}."
-                destination        = "${cidr}"
-                destination_type   = "CIDR_BLOCK"
-                network_entity_id  = coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_north_south_entry_point_ocid, local.void) != local.void ? coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_north_south_entry_point_ocid) : null
-                network_entity_key = coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_north_south_entry_point_ocid, local.void) == local.void ? "HUB-DRG" : null
-                }
-              } : {},
-              local.add_tt_vcn3 == true && var.tt_vcn3_attach_to_drg == true ? { for cidr in var.tt_vcn3_cidrs : "TT-VCN-3-${cidr}-RULE" => {
-                description        = "Traffic destined for ${local.tt_vcn3_display_name} CIDR ${cidr} is routed through ${coalesce(var.oci_nfw_ip_ocid, local.void) != local.void ? "the private IP address ${data.oci_core_private_ip.oci_firewall[0].ip_address}" : coalesce(var.hub_vcn_north_south_entry_point_ocid, local.void) != local.void ? "the private IP address ${data.oci_core_private_ip.outdoor_nlb[0].ip_address}" : "the DRG"}."
-                destination        = "${cidr}"
-                destination_type   = "CIDR_BLOCK"
-                network_entity_id  = coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_north_south_entry_point_ocid, local.void) != local.void ? coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_north_south_entry_point_ocid) : null
-                network_entity_key = coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_north_south_entry_point_ocid, local.void) == local.void ? "HUB-DRG" : null
-                }
-              } : {},
-              local.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true ? { for cidr in var.oke_vcn1_cidrs : "OKE-VCN-1-${cidr}}-RULE" => {
-                description        = "Traffic destined for ${local.oke_vcn1_display_name} CIDR ${cidr} is routed through ${coalesce(var.oci_nfw_ip_ocid, local.void) != local.void ? "the private IP address ${data.oci_core_private_ip.oci_firewall[0].ip_address}" : coalesce(var.hub_vcn_north_south_entry_point_ocid, local.void) != local.void ? "the private IP address ${data.oci_core_private_ip.outdoor_nlb[0].ip_address}" : "the DRG"}."
-                destination        = "${cidr}"
-                destination_type   = "CIDR_BLOCK"
-                network_entity_id  = coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_north_south_entry_point_ocid, local.void) != local.void ? coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_north_south_entry_point_ocid) : null
-                network_entity_key = coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_north_south_entry_point_ocid, local.void) == local.void ? "HUB-DRG" : null
-                }
-              } : {},
-              local.add_oke_vcn2 == true && var.oke_vcn2_attach_to_drg == true ? { for cidr in var.oke_vcn2_cidrs : "OKE-VCN-2-${cidr}}-RULE" => {
-                description        = "Traffic destined for ${local. oke_vcn2_display_name} CIDR ${cidr} is routed through ${coalesce(var.oci_nfw_ip_ocid, local.void) != local.void ? "the private IP address ${data.oci_core_private_ip.oci_firewall[0].ip_address}" : coalesce(var.hub_vcn_north_south_entry_point_ocid, local.void) != local.void ? "the private IP address ${data.oci_core_private_ip.outdoor_nlb[0].ip_address}" : "the DRG"}."
-                destination        = "${cidr}"
-                destination_type   = "CIDR_BLOCK"
-                network_entity_id  = coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_north_south_entry_point_ocid, local.void) != local.void ? coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_north_south_entry_point_ocid) : null
-                network_entity_key = coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_north_south_entry_point_ocid, local.void) == local.void ? "HUB-DRG" : null
-                }
-              } : {},
-              local.add_oke_vcn3 == true && var.oke_vcn3_attach_to_drg == true ? { for cidr in var.oke_vcn3_cidrs : "OKE-VCN-3-${cidr}}-RULE" => {
-                description        = "Traffic destined for ${local.oke_vcn3_display_name} CIDR ${cidr} is routed through ${coalesce(var.oci_nfw_ip_ocid, local.void) != local.void ? "the private IP address ${data.oci_core_private_ip.oci_firewall[0].ip_address}" : coalesce(var.hub_vcn_north_south_entry_point_ocid, local.void) != local.void ? "the private IP address ${data.oci_core_private_ip.outdoor_nlb[0].ip_address}" : "the DRG"}."
-                destination        = "${cidr}"
-                destination_type   = "CIDR_BLOCK"
-                network_entity_id  = coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_north_south_entry_point_ocid, local.void) != local.void ? coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_north_south_entry_point_ocid) : null
-                network_entity_key = coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_north_south_entry_point_ocid, local.void) == local.void ? "HUB-DRG" : null
-                }
-              } : {},
-              local.workload_cidrs_public != null ? { for cidr in local.workload_cidrs_public : "PUBLIC-ACCESS-VCN-${cidr}}-RULE" => {
-                description        = "Traffic destined for additional networks public access CIDR ${cidr} is routed through ${coalesce(var.oci_nfw_ip_ocid, local.void) != local.void ? "the private IP address ${data.oci_core_private_ip.oci_firewall[0].ip_address}" : coalesce(var.hub_vcn_north_south_entry_point_ocid, local.void) != local.void ? "the private IP address ${data.oci_core_private_ip.outdoor_nlb[0].ip_address}" : "the DRG"}."
-                destination        = "${cidr}"
-                destination_type   = "CIDR_BLOCK"
-                network_entity_id  = coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_north_south_entry_point_ocid, local.void) != local.void ? coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_north_south_entry_point_ocid) : null
-                network_entity_key = coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_north_south_entry_point_ocid, local.void) == local.void ? "HUB-DRG" : null
-                }
-              } : {}
+              local.spoke_subnets_routing
             )
           }
         },
@@ -248,39 +192,48 @@ locals {
         {
           "INDOOR-SUBNET-ROUTE-TABLE" = {
             display_name = "indoor-subnet-route-table"
-            route_rules = {
-              "OSN-RULE" = {
-                network_entity_key = "HUB-VCN-SERVICE-GATEWAY"
-                description        = "Traffic destined for all OCI services in Oracle Services Network is routed through Service Gateway."
-                destination        = "all-services"
-                destination_type   = "SERVICE_CIDR_BLOCK"
+            route_rules = merge(
+              {
+                "OSN-RULE" = {
+                  network_entity_key = "HUB-VCN-SERVICE-GATEWAY"
+                  description        = "Traffic destined for all OCI services in Oracle Services Network is routed through Service Gateway."
+                  destination        = "all-services"
+                  destination_type   = "SERVICE_CIDR_BLOCK"
+                }
               },
-              "EVERYWHERE-ELSE-RULE" = {
-                network_entity_key = "HUB-DRG"
-                description        = "Traffic destined for networks outside the VCN is routed through the DRG."
-                destination        = "0.0.0.0/0"
-                destination_type   = "CIDR_BLOCK"
-              }
-            }
+              local.spoke_subnets_routing,
+              local.chosen_firewall_option == "OCINFW" || (local.chosen_firewall_option != "OCINFW" && local.hub_vcn_outdoor_subnet_private == true) ? {
+                "EVERYWHERE-ELSE-RULE" = {
+                  network_entity_key = "HUB-VCN-NAT-GATEWAY"
+                  description        = "Traffic destined for networks outside the VCN is routed through the NAT Gateway."
+                  destination        = "0.0.0.0/0"
+                  destination_type   = "CIDR_BLOCK"
+                }
+              } : {} 
+            )
           }
         },
         local.chosen_firewall_option != "OCINFW" ? {
           "MGMT-SUBNET-ROUTE-TABLE" = {
             display_name = "mgmt-subnet-route-table"
-            route_rules = {
-              "OSN-RULE" = {
-                network_entity_key = "HUB-VCN-SERVICE-GATEWAY"
-                description        = "Traffic destined for all OCI services in Oracle Services Network is routed through Service Gateway."
-                destination        = "all-services"
-                destination_type   = "SERVICE_CIDR_BLOCK"
+            route_rules = merge(
+              {
+                "OSN-RULE" = {
+                  network_entity_key = "HUB-VCN-SERVICE-GATEWAY"
+                  description        = "Traffic destined for all OCI services in Oracle Services Network is routed through Service Gateway."
+                  destination        = "all-services"
+                  destination_type   = "SERVICE_CIDR_BLOCK"
+                }
               },
-              "EVERYWHERE-ELSE-RULE" = {
-                network_entity_key = "HUB-VCN-NAT-GATEWAY"
-                description        = "Traffic destined for networks outside the VCN is routed through the NAT Gateway."
-                destination        = "0.0.0.0/0"
-                destination_type   = "CIDR_BLOCK"
-              }
-            }
+              local.hub_vcn_outdoor_subnet_private == true ? {
+                "EVERYWHERE-ELSE-RULE" = {
+                  network_entity_key = "HUB-VCN-NAT-GATEWAY"
+                  description        = "Traffic destined for networks outside the VCN is routed through the NAT Gateway."
+                  destination        = "0.0.0.0/0"
+                  destination_type   = "CIDR_BLOCK"
+                }  
+              } : {}  
+            )
           }
         } : {},
         var.deploy_bastion_jump_host == true ? {
@@ -359,72 +312,6 @@ locals {
             }
           }
         } : {},
-        # {
-        #   "HUB-VCN-SERVICE-GATEWAY-ROUTE-TABLE" = {
-        #     display_name = "service-gateway-route-table"
-        #     route_rules = merge(
-        #       local.add_tt_vcn1 == true && var.tt_vcn1_attach_to_drg == true ? { for cidr in var.tt_vcn1_cidrs : "TT-VCN-1-${cidr}-RULE" => {
-        #         network_entity_key = "HUB-DRG"
-        #         description        = "Traffic destined for ${local.tt_vcn1_display_name} CIDR ${cidr} is routed through the DRG."
-        #         destination        = "${cidr}"
-        #         destination_type   = "CIDR_BLOCK"
-        #       } } : {},
-        #       local.add_tt_vcn2 == true && var.tt_vcn2_attach_to_drg == true ? { for cidr in var.tt_vcn2_cidrs : "TT-VCN-2-${cidr}-RULE" => {
-        #         network_entity_key = "HUB-DRG"
-        #         description        = "Traffic destined for ${local.tt_vcn2_display_name} CIDR ${cidr} is routed through the DRG."
-        #         destination        = "${cidr}"
-        #         destination_type   = "CIDR_BLOCK"
-        #       } } : {},
-        #       local.add_tt_vcn3 == true && var.tt_vcn3_attach_to_drg == true ? { for cidr in var.tt_vcn3_cidrs : "TT-VCN-3-${cidr}-RULE" => {
-        #         network_entity_key = "HUB-DRG"
-        #         description        = "Traffic destined for ${local.tt_vcn3_display_name} CIDR ${cidr} is routed through the DRG."
-        #         destination        = "${cidr}"
-        #         destination_type   = "CIDR_BLOCK"
-        #       } } : {},
-        #       local.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true ? { for cidr in var.oke_vcn1_cidrs : "OKE-VCN-1-${cidr}}-RULE" => {
-        #         network_entity_key = "HUB-DRG"
-        #         description        = "Traffic destined for ${local.oke_vcn1_display_name} CIDR ${cidr} is routed through the DRG."
-        #         destination        = "${cidr}"
-        #         destination_type   = "CIDR_BLOCK"
-        #       } } : {},
-        #       local.add_oke_vcn2 == true && var.oke_vcn2_attach_to_drg == true ? { for cidr in var.oke_vcn2_cidrs : "OKE-VCN-2-${cidr}}-RULE" => {
-        #         network_entity_key = "HUB-DRG"
-        #         description        = "Traffic destined for ${local. oke_vcn2_display_name} CIDR ${cidr} is routed through the DRG."
-        #         destination        = "${cidr}"
-        #         destination_type   = "CIDR_BLOCK"
-        #       } } : {},
-        #       local.add_oke_vcn3 == true && var.oke_vcn3_attach_to_drg == true ? { for cidr in var.oke_vcn3_cidrs : "OKE-VCN-3-${cidr}}-RULE" => {
-        #         network_entity_key = "HUB-DRG"
-        #         description        = "Traffic destined for ${local.oke_vcn3_display_name} CIDR ${cidr} is routed through the DRG."
-        #         destination        = "${cidr}"
-        #         destination_type   = "CIDR_BLOCK"
-        #       } } : {},
-        #       local.add_exa_vcn1 == true && var.exa_vcn1_attach_to_drg == true ? { for cidr in var.exa_vcn1_cidrs : "EXA-VCN-1-${cidr}}-RULE" => {
-        #         network_entity_key = "HUB-DRG"
-        #         description        = "Traffic destined for ${local.exa_vcn1_display_name} CIDR ${cidr} is routed through the DRG."
-        #         destination        = "${cidr}"
-        #         destination_type   = "CIDR_BLOCK"
-        #       } } : {},
-        #       local.add_exa_vcn2 == true && var.exa_vcn2_attach_to_drg == true ? { for cidr in var.exa_vcn2_cidrs : "EXA-VCN-2-${cidr}}-RULE" => {
-        #         network_entity_key = "HUB-DRG"
-        #         description        = "Traffic destined for ${local.exa_vcn2_display_name} CIDR ${cidr} is routed through the DRG."
-        #         destination        = "${cidr}"
-        #         destination_type   = "CIDR_BLOCK"
-        #       } } : {},
-        #       local.add_exa_vcn3 == true && var.exa_vcn3_attach_to_drg == true ? { for cidr in var.exa_vcn3_cidrs : "EXA-VCN-3-${cidr}}-RULE" => {
-        #         network_entity_key = "HUB-DRG"
-        #         description        = "Traffic destined for ${local.exa_vcn3_display_name} CIDR ${cidr} is routed through the DRG."
-        #         destination        = "${cidr}"
-        #         destination_type   = "CIDR_BLOCK"
-        #       } } : {},
-        #       local.workload_cidrs_public != null ? { for cidr in local.workload_cidrs_public : "PUBLIC-ACCESS-VCN-${cidr}}-RULE" => {
-        #         network_entity_key = "HUB-DRG"
-        #         description        = "Traffic destined for to ${cidr} is routed through the DRG."
-        #         destination        = "${cidr}"
-        #         destination_type   = "CIDR_BLOCK"
-        #     } } : {})
-        #   }
-        # }
       ) # closing Route Table merge function
 
       network_security_groups = merge(
@@ -754,7 +641,9 @@ locals {
             }
           }
         } : {},
-        { 
+        # Deploys NAT Gateway if chosen firewall option is OCINFW or if chosen firewall option is not OCINFW and the firewall does not have public interfaces (outdoor subnet is private, as then the NAT Gateway is required to allow outbound internet access through the outdoor - untrust - subnet).
+        # When a 3rd-party firewall with public interface is deployed (outdoor subnet is public), there is no need for a NATGW, and the firewall talks to the Internet Gateway directly and virtually becomes a NAT Gateway.
+        local.chosen_firewall_option == "OCINFW" || (local.chosen_firewall_option != "OCINFW" && local.hub_vcn_outdoor_subnet_private == true) ? {
           nat_gateways = {
             "HUB-VCN-NAT-GATEWAY" = {
               block_traffic   = false
@@ -762,18 +651,70 @@ locals {
               route_table_key = coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_east_west_entry_point_ocid, local.void) != local.void ? "HUB-VCN-NAT-GATEWAY-ROUTE-TABLE" : null
             }
           }
+        } : {},
+        {
           service_gateways = {
             "HUB-VCN-SERVICE-GATEWAY" = {
               display_name    = "service-gateway"
               services        = "all-services"
-              #route_table_key = "HUB-VCN-SERVICE-GATEWAY-ROUTE-TABLE"
             }
           }
-        }
+        }  
       )
     }
   } : null
 
+  spoke_subnets_routing = merge(
+    local.add_tt_vcn1 == true && var.tt_vcn1_attach_to_drg == true ? { for cidr in var.tt_vcn1_cidrs : "TT-VCN-1-${cidr}-RULE" => {
+      description = "Traffic destined for ${local.tt_vcn1_display_name} CIDR ${cidr} is routed through ${coalesce(var.oci_nfw_ip_ocid, local.void) != local.void ? "the private IP address ${data.oci_core_private_ip.oci_firewall[0].ip_address}" : coalesce(var.hub_vcn_north_south_entry_point_ocid, local.void) != local.void ? "the private IP address ${data.oci_core_private_ip.outdoor_nlb[0].ip_address}" : "the DRG"}."
+      destination        = "${cidr}"
+      destination_type   = "CIDR_BLOCK"
+      network_entity_id  = coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_north_south_entry_point_ocid, local.void) != local.void ? coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_north_south_entry_point_ocid) : null
+      network_entity_key = coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_north_south_entry_point_ocid, local.void) == local.void ? "HUB-DRG" : null
+    }} : {},
+    local.add_tt_vcn2 == true && var.tt_vcn2_attach_to_drg == true ? { for cidr in var.tt_vcn2_cidrs : "TT-VCN-2-${cidr}-RULE" => {
+      description        = "Traffic destined for ${local.tt_vcn2_display_name} CIDR ${cidr} is routed through ${coalesce(var.oci_nfw_ip_ocid, local.void) != local.void ? "the private IP address ${data.oci_core_private_ip.oci_firewall[0].ip_address}" : coalesce(var.hub_vcn_north_south_entry_point_ocid, local.void) != local.void ? "the private IP address ${data.oci_core_private_ip.outdoor_nlb[0].ip_address}" : "the DRG"}."
+      destination        = "${cidr}"
+      destination_type   = "CIDR_BLOCK"
+      network_entity_id  = coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_north_south_entry_point_ocid, local.void) != local.void ? coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_north_south_entry_point_ocid) : null
+      network_entity_key = coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_north_south_entry_point_ocid, local.void) == local.void ? "HUB-DRG" : null
+    }} : {},
+    local.add_tt_vcn3 == true && var.tt_vcn3_attach_to_drg == true ? { for cidr in var.tt_vcn3_cidrs : "TT-VCN-3-${cidr}-RULE" => {
+      description        = "Traffic destined for ${local.tt_vcn3_display_name} CIDR ${cidr} is routed through ${coalesce(var.oci_nfw_ip_ocid, local.void) != local.void ? "the private IP address ${data.oci_core_private_ip.oci_firewall[0].ip_address}" : coalesce(var.hub_vcn_north_south_entry_point_ocid, local.void) != local.void ? "the private IP address ${data.oci_core_private_ip.outdoor_nlb[0].ip_address}" : "the DRG"}."
+      destination        = "${cidr}"
+      destination_type   = "CIDR_BLOCK"
+      network_entity_id  = coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_north_south_entry_point_ocid, local.void) != local.void ? coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_north_south_entry_point_ocid) : null
+      network_entity_key = coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_north_south_entry_point_ocid, local.void) == local.void ? "HUB-DRG" : null
+    }} : {},
+    local.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true ? { for cidr in var.oke_vcn1_cidrs : "OKE-VCN-1-${cidr}}-RULE" => {
+      description        = "Traffic destined for ${local.oke_vcn1_display_name} CIDR ${cidr} is routed through ${coalesce(var.oci_nfw_ip_ocid, local.void) != local.void ? "the private IP address ${data.oci_core_private_ip.oci_firewall[0].ip_address}" : coalesce(var.hub_vcn_north_south_entry_point_ocid, local.void) != local.void ? "the private IP address ${data.oci_core_private_ip.outdoor_nlb[0].ip_address}" : "the DRG"}."
+      destination        = "${cidr}"
+      destination_type   = "CIDR_BLOCK"
+      network_entity_id  = coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_north_south_entry_point_ocid, local.void) != local.void ? coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_north_south_entry_point_ocid) : null
+      network_entity_key = coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_north_south_entry_point_ocid, local.void) == local.void ? "HUB-DRG" : null
+    }} : {},
+    local.add_oke_vcn2 == true && var.oke_vcn2_attach_to_drg == true ? { for cidr in var.oke_vcn2_cidrs : "OKE-VCN-2-${cidr}}-RULE" => {
+      description        = "Traffic destined for ${local. oke_vcn2_display_name} CIDR ${cidr} is routed through ${coalesce(var.oci_nfw_ip_ocid, local.void) != local.void ? "the private IP address ${data.oci_core_private_ip.oci_firewall[0].ip_address}" : coalesce(var.hub_vcn_north_south_entry_point_ocid, local.void) != local.void ? "the private IP address ${data.oci_core_private_ip.outdoor_nlb[0].ip_address}" : "the DRG"}."
+      destination        = "${cidr}"
+      destination_type   = "CIDR_BLOCK"
+      network_entity_id  = coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_north_south_entry_point_ocid, local.void) != local.void ? coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_north_south_entry_point_ocid) : null
+      network_entity_key = coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_north_south_entry_point_ocid, local.void) == local.void ? "HUB-DRG" : null
+    }} : {},
+    local.add_oke_vcn3 == true && var.oke_vcn3_attach_to_drg == true ? { for cidr in var.oke_vcn3_cidrs : "OKE-VCN-3-${cidr}}-RULE" => {
+      description        = "Traffic destined for ${local.oke_vcn3_display_name} CIDR ${cidr} is routed through ${coalesce(var.oci_nfw_ip_ocid, local.void) != local.void ? "the private IP address ${data.oci_core_private_ip.oci_firewall[0].ip_address}" : coalesce(var.hub_vcn_north_south_entry_point_ocid, local.void) != local.void ? "the private IP address ${data.oci_core_private_ip.outdoor_nlb[0].ip_address}" : "the DRG"}."
+      destination        = "${cidr}"
+      destination_type   = "CIDR_BLOCK"
+      network_entity_id  = coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_north_south_entry_point_ocid, local.void) != local.void ? coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_north_south_entry_point_ocid) : null
+      network_entity_key = coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_north_south_entry_point_ocid, local.void) == local.void ? "HUB-DRG" : null
+    }} : {},
+    local.workload_cidrs_public != null ? { for cidr in local.workload_cidrs_public : "PUBLIC-ACCESS-VCN-${cidr}}-RULE" => {
+      description        = "Traffic destined for additional networks public access CIDR ${cidr} is routed through ${coalesce(var.oci_nfw_ip_ocid, local.void) != local.void ? "the private IP address ${data.oci_core_private_ip.oci_firewall[0].ip_address}" : coalesce(var.hub_vcn_north_south_entry_point_ocid, local.void) != local.void ? "the private IP address ${data.oci_core_private_ip.outdoor_nlb[0].ip_address}" : "the DRG"}."
+      destination        = "${cidr}"
+      destination_type   = "CIDR_BLOCK"
+      network_entity_id  = coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_north_south_entry_point_ocid, local.void) != local.void ? coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_north_south_entry_point_ocid) : null
+      network_entity_key = coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_north_south_entry_point_ocid, local.void) == local.void ? "HUB-DRG" : null
+    }} : {}
+  )  
 
   ## ------------------------------------------------------------------------------------------
   ## Locals for indoor NSG rules
