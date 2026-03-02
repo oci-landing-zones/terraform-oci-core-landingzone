@@ -13,7 +13,7 @@ locals {
   tt_vcn3_db_subnet_display_name      = coalesce(var.tt_vcn3_db_subnet_name, "${var.service_label}-three-tier-vcn-3-db-subnet")
   tt_vcn3_db_subnet_cidr              = coalesce(var.tt_vcn3_db_subnet_cidr, cidrsubnet(var.tt_vcn3_cidrs[0], 4, 2))
   tt_vcn3_bastion_subnet_display_name = coalesce(var.tt_vcn3_bastion_subnet_name, "${var.service_label}-three-tier-vcn-3-bastion-subnet")
-  tt_vcn3_bastion_subnet_cidr         = coalesce(var.tt_vcn3_bastion_subnet_cidr, cidrsubnet(var.tt_vcn3_cidrs[0], 9, 96))
+  tt_vcn3_bastion_subnet_cidr         = var.deploy_tt_vcn3_bastion_subnet == true ? coalesce(var.tt_vcn3_bastion_subnet_cidr, cidrsubnet(var.tt_vcn3_cidrs[0], 9, 96)) : null
 
   ## This variable defines the allowed CIDR and port combinations for ingress into the TT-VCN-3 web tier subnet.
   tt_vcn3_external_allowed_cidrs_to_ports_into_web_tier = local.add_tt_vcn3 == true ? flatten([for cidr in var.tt_vcn3_external_allowed_cidrs_into_web_tier : [for port in var.tt_vcn3_web_ingress_destination_ports : "${trimspace(cidr)},${trimspace(port)}" ]]) : []
