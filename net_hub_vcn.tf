@@ -15,6 +15,8 @@ locals {
   hub_vcn_jumphost_subnet_display_name = coalesce(var.hub_vcn_jumphost_subnet_name, "${var.service_label}-hub-vcn-jumphost-subnet")
   hub_vcn_jumphost_subnet_cidr         = coalesce(var.hub_vcn_jumphost_subnet_cidr, cidrsubnet(var.hub_vcn_cidrs[0], 3, 4))
 
+  fw_mgmt_external_allowed_cidrs_to_ports = local.chosen_firewall_option != "OCINFW" ? flatten([for cidr in var.allowed_onprem_cidrs_to_fw_mgmt_interface : [for port in var.fw_mgmt_interface_ports : "${trimspace(cidr)},${trimspace(port)}" ]]) : []
+
   hub_vcn = local.hub_with_vcn == true ? { # local variable hub_with_vcn is defined in net_hub_drg.tf.
     "HUB-VCN" = {
       enable_cis_checks                = local.hub_vcn_cis_checks_enabled
@@ -201,39 +203,44 @@ locals {
                   destination_type   = "SERVICE_CIDR_BLOCK"
                 }
               },
-              local.spoke_subnets_routing,
-              local.chosen_firewall_option == "OCINFW" || (local.chosen_firewall_option != "OCINFW" && local.hub_vcn_outdoor_subnet_private == true) ? {
+              local.chosen_firewall_option == "OCINFW" || (local.chosen_firewall_option != "OCINFW" && local.hub_vcn_outdoor_subnet_private == true) ? merge(
+                local.spoke_subnets_routing,
+                {
+                  "EVERYWHERE-ELSE-RULE" = {
+                    network_entity_key = "HUB-VCN-NAT-GATEWAY"
+                    description        = "Traffic destined for networks outside the VCN is routed through the NAT Gateway."
+                    destination        = "0.0.0.0/0"
+                    destination_type   = "CIDR_BLOCK"
+                  }
+                }  
+               ) : {
                 "EVERYWHERE-ELSE-RULE" = {
-                  network_entity_key = "HUB-VCN-NAT-GATEWAY"
-                  description        = "Traffic destined for networks outside the VCN is routed through the NAT Gateway."
+                  network_entity_key = "HUB-DRG"
+                  description        = "Traffic destined for networks outside the VCN is routed through the DRG."
                   destination        = "0.0.0.0/0"
                   destination_type   = "CIDR_BLOCK"
                 }
-              } : {} 
+              } 
             )
           }
         },
         local.chosen_firewall_option != "OCINFW" ? {
           "MGMT-SUBNET-ROUTE-TABLE" = {
             display_name = "mgmt-subnet-route-table"
-            route_rules = merge(
-              {
-                "OSN-RULE" = {
-                  network_entity_key = "HUB-VCN-SERVICE-GATEWAY"
-                  description        = "Traffic destined for all OCI services in Oracle Services Network is routed through Service Gateway."
-                  destination        = "all-services"
-                  destination_type   = "SERVICE_CIDR_BLOCK"
-                }
+            route_rules = {
+              "OSN-RULE" = {
+                network_entity_key = "HUB-VCN-SERVICE-GATEWAY"
+                description        = "Traffic destined for all OCI services in Oracle Services Network is routed through Service Gateway."
+                destination        = "all-services"
+                destination_type   = "SERVICE_CIDR_BLOCK"
               },
-              local.hub_vcn_outdoor_subnet_private == true ? {
-                "EVERYWHERE-ELSE-RULE" = {
-                  network_entity_key = "HUB-VCN-NAT-GATEWAY"
-                  description        = "Traffic destined for networks outside the VCN is routed through the NAT Gateway."
-                  destination        = "0.0.0.0/0"
-                  destination_type   = "CIDR_BLOCK"
-                }  
-              } : {}  
-            )
+              "EVERYWHERE-ELSE-RULE" = { # We don't route thru firewall because eventual problems with the firewall itself can lock admins out of mgmt interfaces.
+                network_entity_key = "HUB-DRG"
+                description        = "Traffic destined for networks outside the VCN is routed through the DRG."
+                destination        = "0.0.0.0/0"
+                destination_type   = "CIDR_BLOCK"
+              }  
+            }
           }
         } : {},
         var.deploy_bastion_jump_host == true ? {
@@ -278,14 +285,6 @@ locals {
                   destination       = local.hub_vcn_jumphost_subnet_cidr
                   destination_type  = "CIDR_BLOCK"
                   network_entity_id = coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_east_west_entry_point_ocid)
-                }
-              } : {},
-              local.chosen_firewall_option != "OCINFW" && var.hub_vcn_east_west_entry_point_ocid != null ? {
-                "MGMT-SUBNET-RULE" = { # Required for routing traffic destined to the mgmt subnet in the Hub VCN. Without it, traffic doesn't reach the firewall because local VCN routes kick in first.
-                  description       = "Traffic destined for ${local.hub_vcn_mgmt_subnet_display_name} is routed through the private IP address ${data.oci_core_private_ip.indoor_nlb[0].ip_address}."
-                  destination       = local.hub_vcn_mgmt_subnet_cidr
-                  destination_type  = "CIDR_BLOCK"
-                  network_entity_id = var.hub_vcn_east_west_entry_point_ocid
                 }
               } : {},
               coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_east_west_entry_point_ocid, local.void) != local.void ? {
@@ -397,24 +396,33 @@ locals {
           "HUB-VCN-MGMT-NSG" = {
             display_name = "mgmt-nsg"
             ingress_rules = merge(
-              { for cidr in var.hub_vcn_mgmt_subnet_external_allowed_cidrs_for_http : "INGRESS-FROM-${cidr}-HTTP-RULE" => {
-                description  = "Ingress from ${cidr} on port 443. Allows inbound HTTP access for on-prem IP addresses."
+              # { for cidr in var.hub_vcn_mgmt_subnet_external_allowed_cidrs_for_http : "INGRESS-FROM-${cidr}-HTTP-RULE" => {
+              #   description  = "Ingress from ${cidr} on port 443. Allows inbound HTTP access for on-prem IP addresses."
+              #   stateless    = false
+              #   protocol     = "TCP"
+              #   src          = cidr
+              #   src_type     = "CIDR_BLOCK"
+              #   dst_port_min = 443
+              #   dst_port_max = 443
+              # } },
+              # { for cidr in var.hub_vcn_mgmt_subnet_external_allowed_cidrs_for_ssh : "INGRESS-FROM-${cidr}-SSH-RULE" => {
+              #   description  = "Ingress from ${cidr} on port 22. Allows inbound SSH access for on-prem IP addresses."
+              #   stateless    = false
+              #   protocol     = "TCP"
+              #   src          = cidr
+              #   src_type     = "CIDR_BLOCK"
+              #   dst_port_min = 22
+              #   dst_port_max = 22
+              # } },
+              { for cidr_port_pair in local.fw_mgmt_external_allowed_cidrs_to_ports : "INGRESS-FROM-${split(",",cidr_port_pair)[0]}-ON-${split(",",cidr_port_pair)[1]}-RULE" => {
+                description  = "Ingress from ${split(",",cidr_port_pair)[0]} over ${split(":",split(",",cidr_port_pair)[1])[0]} on port ${split(":",split(",",cidr_port_pair)[1])[1]}."
                 stateless    = false
-                protocol     = "TCP"
-                src          = cidr
+                protocol     = split(":",split(",",cidr_port_pair)[1])[0]
+                src          = split(",",cidr_port_pair)[0]
                 src_type     = "CIDR_BLOCK"
-                dst_port_min = 443
-                dst_port_max = 443
-              } },
-              { for cidr in var.hub_vcn_mgmt_subnet_external_allowed_cidrs_for_ssh : "INGRESS-FROM-${cidr}-SSH-RULE" => {
-                description  = "Ingress from ${cidr} on port 22. Allows inbound SSH access for on-prem IP addresses."
-                stateless    = false
-                protocol     = "TCP"
-                src          = cidr
-                src_type     = "CIDR_BLOCK"
-                dst_port_min = 22
-                dst_port_max = 22
-              } },
+                dst_port_min = split(":",split(",",cidr_port_pair)[1])[1] == "ALL" ? null : split(":",split(",",cidr_port_pair)[1])[1]
+                dst_port_max = split(":",split(",",cidr_port_pair)[1])[1] == "ALL" ? null : split(":",split(",",cidr_port_pair)[1])[1]
+              }},
               var.deploy_bastion_jump_host ? {
                 "INGRESS-FROM-JUMP-HOST-NSG-SSH-RULE" = {
                   description  = "Ingress from Jump Host NSG to SSH port. Required by hosts deployed in the Jump Host NSG."
@@ -433,7 +441,7 @@ locals {
             display_name = "jump-host-nsg"
             ingress_rules = merge(
               {
-                for cidr in var.onprem_cidrs : "INGRESS-FROM-${cidr}-RULE" => {
+                for cidr in var.allowed_onprem_cidrs_to_jump_hosts : "INGRESS-FROM-${cidr}-RULE" => {
                   description  = "Ingress from ${cidr} on port 22. Allows inbound SSH access for on-prem IP addresses"
                   stateless    = false
                   protocol     = "TCP"
@@ -723,13 +731,13 @@ locals {
 
   ## Ingress rules:
   hub_vcn_indoor_nsg_ingress_rules = merge(
-    { for cidr in var.onprem_cidrs : "INGRESS-FROM-${cidr}-RULE" => {
-      description = "Ingress from on-premises CIDR."
-      stateless   = false
-      protocol    = "TCP"
-      src         = "${cidr}"
-      src_type    = "CIDR_BLOCK"
-    }},
+    # { for cidr in var.onprem_cidrs : "INGRESS-FROM-${cidr}-RULE" => {
+    #   description = "Ingress from on-premises CIDR."
+    #   stateless   = false
+    #   protocol    = "TCP"
+    #   src         = "${cidr}"
+    #   src_type    = "CIDR_BLOCK"
+    # }},
     { for cidr in var.hub_vcn_cidrs : "INGRESS-FROM-HUB-VCN-${cidr}-RULE" => {
       description = "Ingress from ${local.hub_vcn_display_name}."
       stateless   = false

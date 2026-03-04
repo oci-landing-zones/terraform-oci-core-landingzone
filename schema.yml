@@ -205,8 +205,10 @@ variableGroups:
       - "hub_vcn_mgmt_subnet_name"
       - "hub_vcn_mgmt_subnet_cidr"
       - "hub_vcn_mgmt_subnet_dns"
-      - "hub_vcn_mgmt_subnet_external_allowed_cidrs_for_http"
-      - "hub_vcn_mgmt_subnet_external_allowed_cidrs_for_ssh"
+      - "fw_mgmt_interface_ports"
+      - "allowed_onprem_cidrs_to_fw_mgmt_interface"
+      #- "hub_vcn_mgmt_subnet_external_allowed_cidrs_for_http"
+      #- "hub_vcn_mgmt_subnet_external_allowed_cidrs_for_ssh"
       - "hub_vcn_outdoor_subnet_name"
       - "hub_vcn_outdoor_subnet_cidr"
       - "hub_vcn_outdoor_subnet_dns"
@@ -235,6 +237,7 @@ variableGroups:
       - "customize_jumphost_subnet"
       - "hub_vcn_jumphost_subnet_name"
       - "hub_vcn_jumphost_subnet_cidr"
+      - "allowed_onprem_cidrs_to_jump_hosts"
 
     visible:
       and:
@@ -251,7 +254,7 @@ variableGroups:
   - title: "Network - On-Premise Connectivity"
     variables:
       - "on_premises_connection_option" 
-      - "onprem_cidrs"
+      - "allowed_onprem_cidrs_to_app_endpoints"
     visible: define_net
 
   - title: "Networking - FastConnect Virtual Circuit"
@@ -4103,7 +4106,7 @@ variables:
       - "Use Existing On-Premises Connection"
     default: "None"   
 
-  onprem_cidrs:
+  allowed_onprem_cidrs_to_app_endpoints:
     type: array
     items:
       type: string
@@ -4116,8 +4119,7 @@ variables:
          - eq:
             - ${on_premises_connection_option}
             - "None"
-    default: ""
-
+  
   fastconnect_virtual_circuit_name:
     type: string
     title: "Virtual Circuit Name"
@@ -4595,15 +4597,13 @@ variables:
             - ${hub_deployment_option}
             - "VCN or on-premises connectivity routed through DMZ VCN with Network Virtual Appliance existing DRG (DMZ VCN will be created and DRG ID required)"
 
-  hub_vcn_mgmt_subnet_external_allowed_cidrs_for_http:
+  fw_mgmt_interface_ports:
     type: array
     items:
       type: string
     uniqueItems: true
-    maxItems: 3
-    minItems: 1
-    title: "List of CIDR blocks allowed to connect to Mgmt Subnet over HTTP"
-    description: "Enter the CIDR blocks allowed to connect to Mgmt subnet over HTTP. Leave empty for no access."
+    title: "List of Protocols and Ports Allowed in the Firewall Management Interface"
+    description: "The list of protocols and ports allowed for ingress packets into the Firewall Management interface. Each element is a colon-separated entry like 'TCP:443', 'TCT:22'. The set of provided protocol:port pairs are allowed access from the CIDR blocks defined in the 'List of On-prem CIDR Blocks Allowed to Connect to the Firewall Management Interface' field below."
     required: false
     visible: 
       and:
@@ -4615,17 +4615,15 @@ variables:
             - "VCN or on-premises connectivity routing through DMZ VCN with Network Virtual Appliance (DRG and DMZ VCN will be created)"
           - eq:
             - ${hub_deployment_option}
-            - "VCN or on-premises connectivity routed through DMZ VCN with Network Virtual Appliance existing DRG (DMZ VCN will be created and DRG ID required)"          
+            - "VCN or on-premises connectivity routed through DMZ VCN with Network Virtual Appliance existing DRG (DMZ VCN will be created and DRG ID required)"
 
-  hub_vcn_mgmt_subnet_external_allowed_cidrs_for_ssh:
+  allowed_onprem_cidrs_to_fw_mgmt_interface:
     type: array
     items:
       type: string
     uniqueItems: true
-    maxItems: 3
-    minItems: 1
-    title: "List of CIDR blocks allowed to connect to Mgmt Subnet over SSH"
-    description: "Enter the CIDR blocks allowed to connect to Mgmt subnet over SSH. Leave empty for no access."
+    title: "List of On-prem CIDR Blocks Allowed to Connect to the Firewall Management Interface"
+    description: "Enter the on-prem CIDR blocks allowed to connect to the Firewall Management interface. Provide a valid CIDR and configure 'List of Protocols and Ports Allowed in the Firewall Management Interface' field above for enabling connectivity. Leave empty for no access."
     required: false
     visible: 
       and:
@@ -4637,7 +4635,55 @@ variables:
             - "VCN or on-premises connectivity routing through DMZ VCN with Network Virtual Appliance (DRG and DMZ VCN will be created)"
           - eq:
             - ${hub_deployment_option}
-            - "VCN or on-premises connectivity routed through DMZ VCN with Network Virtual Appliance existing DRG (DMZ VCN will be created and DRG ID required)"     
+            - "VCN or on-premises connectivity routed through DMZ VCN with Network Virtual Appliance existing DRG (DMZ VCN will be created and DRG ID required)"   
+        - not:
+          - eq:
+            - ${on_premises_connection_option}
+            - "None"          
+
+  # hub_vcn_mgmt_subnet_external_allowed_cidrs_for_http:
+  #   type: array
+  #   items:
+  #     type: string
+  #   uniqueItems: true
+  #   maxItems: 3
+  #   minItems: 1
+  #   title: "List of CIDR blocks allowed to connect to Mgmt Subnet over HTTP"
+  #   description: "Enter the CIDR blocks allowed to connect to Mgmt subnet over HTTP. Leave empty for no access."
+  #   required: false
+  #   visible: 
+  #     and:
+  #       - define_net
+  #       - customize_hub_vcn_subnets
+  #       - or:
+  #         - eq:
+  #           - ${hub_deployment_option}
+  #           - "VCN or on-premises connectivity routing through DMZ VCN with Network Virtual Appliance (DRG and DMZ VCN will be created)"
+  #         - eq:
+  #           - ${hub_deployment_option}
+  #           - "VCN or on-premises connectivity routed through DMZ VCN with Network Virtual Appliance existing DRG (DMZ VCN will be created and DRG ID required)"          
+
+  # hub_vcn_mgmt_subnet_external_allowed_cidrs_for_ssh:
+  #   type: array
+  #   items:
+  #     type: string
+  #   uniqueItems: true
+  #   maxItems: 3
+  #   minItems: 1
+  #   title: "List of CIDR blocks allowed to connect to Mgmt Subnet over SSH"
+  #   description: "Enter the CIDR blocks allowed to connect to Mgmt subnet over SSH. Leave empty for no access."
+  #   required: false
+  #   visible: 
+  #     and:
+  #       - define_net
+  #       - customize_hub_vcn_subnets
+  #       - or:
+  #         - eq:
+  #           - ${hub_deployment_option}
+  #           - "VCN or on-premises connectivity routing through DMZ VCN with Network Virtual Appliance (DRG and DMZ VCN will be created)"
+  #         - eq:
+  #           - ${hub_deployment_option}
+  #           - "VCN or on-premises connectivity routed through DMZ VCN with Network Virtual Appliance existing DRG (DMZ VCN will be created and DRG ID required)"     
 
 # -------------------------------------------
 # ----- Networking - Hub Outdoor Subnet
@@ -5203,9 +5249,7 @@ variables:
     title: "Custom Image OCID"
     description: "Enter the custom image OCID for the jump host (optional). It has precedence over 'Platform Image' and 'Marketplace Image Name' below."
     required: false
-    visible:
-      and:
-        - deploy_bastion_jump_host
+    visible: deploy_bastion_jump_host
 
   bastion_jump_host_platform_image_ocid:
     type: oci:core:image:id
@@ -5213,35 +5257,29 @@ variables:
     description: "Select the OCI platform image for the jump host (optional). It has precedence over 'Marketplace Image Name' below."
     required: false
     dependsOn: ${tenancy_ocid}
-    visible:
-      and:
-        - deploy_bastion_jump_host            
+    visible: deploy_bastion_jump_host            
 
   bastion_jump_host_marketplace_image_option:
     type: string
     title: "Marketplace Image Name"
     description: "Enter the OCI marketplace image name for the jump host. Some available options are: 'Oracle Linux 8 STIG' (free), 'CIS Hardened Image Level 1 on Oracle Linux 8' (paid). See OCI Markeplace for more and make sure the spelling is exactly as it shows in OCI Marketplace."
     required: false
-    visible:
-      and:
-        - deploy_bastion_jump_host
+    visible: deploy_bastion_jump_host
     
   deploy_bastion_service:
     type: boolean
-    title: "Deploy Bastion Service?"
-    description: "This will deploy a Bastion Service."
-    visible:
-      and:
-        -deploy_bastion_jump_host
+    title: "Deploy OCI Bastion Service?"
+    description: "Whether OCI Bastion Service is deployed."
+    visible: deploy_bastion_jump_host
 
   bastion_service_allowed_cidrs:
     type: array
     items:
       type: string
     uniqueItems: true
-    title: "Enter SSH CIDR Blocks"
+    title: "OCI Bastion Service Allowed CIDR Blocks"
     required: false
-    description: "List of CIDR blocks allowed to connect to the Bastion Service"
+    description: "Enter the CIDR blocks allowed to connect to OCI Bastion Service. Avoid 0.0.0.0/0 by all means."
     visible:
       and:
         - deploy_bastion_jump_host
@@ -5250,7 +5288,7 @@ variables:
   customize_bastion_service:
     type: boolean
     title: "Customize Bastion Service?"
-    description: "If checked, provide custom options for Bastion Service."
+    description: "Check to customize OCI Bastion Service deployment."
     visible:
       and:
         - deploy_bastion_jump_host
@@ -5258,9 +5296,9 @@ variables:
 
   bastion_service_name:
     type: string
-    title: "Bastion Service Name"
-    required: falseq
-    description: "Custom name to give to the Bastion Service"
+    title: "OCI Bastion Name"
+    required: false
+    description: "Enter a custom name for OCI Bastion Service instance"
     visible:
       and:
         - customize_bastion_service
@@ -5278,7 +5316,7 @@ variables:
 
   bastion_jump_host_ssh_public_key_path:
     type: oci:core:ssh:publickey
-    title: "Choose the public SSH Key for the Jump Host"
+    title: "Provide the public SSH Key for the Jump Host"
     required: false
     visible: deploy_bastion_jump_host
     description: "The public ssh key of the Jump Host Compute Instance"
@@ -5296,7 +5334,7 @@ variables:
     title: "Jump Host Name"
     required: false
     visible: customize_jump_host
-    description: "The name of the jump host. This will be appended to the service label."
+    description: "The name of the jump host. This is appended to the provided 'Service Label'."
 
   bastion_jump_host_instance_shape:
       type: oci:core:instanceshape:name
@@ -5349,6 +5387,22 @@ variables:
     required: false
     visible: customize_jumphost_subnet
 
+  allowed_onprem_cidrs_to_jump_hosts:
+    type: array
+    items:
+      type: string
+    uniqueItems: true
+    title: "List of on-prem CIDR Blocks Allowed to Connect to Jump Hosts"
+    description: "Enter the on-prem CIDR blocks allowed to connect to jump hosts in the Hub VCN over TCP port 22. Leave empty for no access."
+    required: false
+    visible: 
+      and:
+        - customize_jumphost_subnet
+        - not:
+          - eq:
+            - ${on_premises_connection_option}
+            - "None"          
+  
   enable_vault:
     type: boolean
     title: "Enable Vault?"

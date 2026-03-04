@@ -20,7 +20,7 @@ locals {
   bastion_service_freeform_tags = local.custom_bastion_service_freeform_tags != null ? merge(local.custom_bastion_service_freeform_tags, local.default_bastion_service_freeform_tags) : local.default_bastion_service_freeform_tags
   enable_bastion_proxy_status   = false
 
-  bastions_configuration = var.deploy_bastion_jump_host == true && var.deploy_bastion_service ? {
+  bastions_configuration = local.hub_with_vcn == true && var.deploy_bastion_jump_host == true && var.deploy_bastion_service ? {
     bastions = {
       LZ-BASTION = {
         bastion_type          = local.bastion_service_type

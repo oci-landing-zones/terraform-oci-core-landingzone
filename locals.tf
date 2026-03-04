@@ -34,6 +34,8 @@ locals {
 
   void = "__VOID__"
 
+  all_onprem_cidrs = distinct(concat(var.allowed_onprem_cidrs_to_app_endpoints, var.allowed_onprem_cidrs_to_fw_mgmt_interface, var.allowed_onprem_cidrs_to_jump_hosts))
+  
   # Cross-vcn and on-prem routes
   tt_vcn1_route_rule = local.hub_with_drg_only == true && var.add_tt_vcn1 == true && var.tt_vcn1_attach_to_drg == true ? {
     for cidr in var.tt_vcn1_cidrs : "TT-VCN-1-${cidr}-RULE" => {
@@ -117,7 +119,7 @@ locals {
   } : {}
 
   on_prem_route_rule = local.hub_with_drg_only == true ? {
-    for cidr in var.onprem_cidrs : "ONPREM-${cidr}-RULE" =>  {
+    for cidr in local.all_onprem_cidrs : "ONPREM-${cidr}-RULE" =>  {
       network_entity_key = "HUB-DRG"
       description        = "Traffic destined for on-premises ${cidr} CIDR range is routed through the DRG."
       destination        = cidr
@@ -125,7 +127,9 @@ locals {
     }
   } : {}
 
+
 }
+
 
 # resource "null_resource" "wait_on_compartments" {
 #   depends_on = [module.lz_compartments]

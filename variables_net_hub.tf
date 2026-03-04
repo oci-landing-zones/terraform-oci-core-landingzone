@@ -14,16 +14,6 @@ variable "hub_deployment" {
   default     = 0
   description = "The available options for hub deployment as an integer. 'No cross-VCN or on-premises connectivity' = 0, 'VCN or on-premises connectivity routing via DRG (DRG will be created)' = 1, 'VCN or on-premises connectivity routing via DRG (existing DRG)' = 2, 'VCN or on-premises connectivity routing through DMZ VCN with Network Virtual Appliance (DRG and DMZ VCN will be created)' = 3, 'VCN or on-premises connectivity routed through DMZ VCN with Network Virtual Appliance existing DRG (DMZ VCN will be created and DRG ID required)' = 4, 'No cross-VCN with on-premises connectivity using an existing DRG' = 5, 'No cross-VCN with on-premises connectivity using a new DRG' = 6"
 }
-
-variable "onprem_cidrs" {
-  type        = list(string)
-  description = "List of on-premises CIDR blocks allowed to connect to the Landing Zone network via a DRG."
-  default     = []
-  validation {
-    condition     = alltrue([for v in var.onprem_cidrs : can(cidrhost(v, 0))])
-    error_message = "Invalid value provided for onprem_cidrs variable: all values must be in valid CIDR notation (e.g., 10.0.0.0/20)."
-  }
-}
 variable "existing_drg_ocid" {
   type        = string
   default     = null
@@ -197,22 +187,31 @@ variable "hub_vcn_mgmt_subnet_cidr" {
     error_message = "Invalid value provided for hub_vcn_mgmt_subnet_cidr variable: value must be in valid CIDR notation (e.g., 192.168.0.0/24)."
   }
 }
-variable "hub_vcn_mgmt_subnet_external_allowed_cidrs_for_http" {
+# variable "hub_vcn_mgmt_subnet_external_allowed_cidrs_for_http" {
+#   type        = list(string)
+#   default     = []
+#   description = "List of CIDR blocks allowed to connect to Management subnet over HTTP. Leave empty for no access."
+#   validation {
+#     condition     = alltrue([for v in var.hub_vcn_mgmt_subnet_external_allowed_cidrs_for_http : can(cidrhost(v, 0))])
+#     error_message = "Invalid value provided for hub_vcn_mgmt_subnet_external_allowed_cidrs_for_http variable: all values must be in valid CIDR notation (e.g., 192.168.0.0/24)."
+#   }
+# }
+# variable "hub_vcn_mgmt_subnet_external_allowed_cidrs_for_ssh" {
+#   type        = list(string)
+#   default     = []
+#   description = "List of CIDR blocks allowed to connect to Management subnet over SSH. Leave empty for no access."
+#   validation {
+#     condition     = alltrue([for v in var.hub_vcn_mgmt_subnet_external_allowed_cidrs_for_ssh : can(cidrhost(v, 0))])
+#     error_message = "Invalid value provided for hub_vcn_mgmt_subnet_external_allowed_cidrs_for_ssh variable: all values must be in valid CIDR notation (e.g., 192.168.0.0/24)."
+#   }
+# }
+variable "fw_mgmt_interface_ports" {
   type        = list(string)
-  default     = []
-  description = "List of CIDR blocks allowed to connect to Management subnet over HTTP. Leave empty for no access."
+  default     = ["TCP:22","TCP:443"]
+  description = "The list of protocols and ports allowed into Firewall Management interface by the CIDRs provided in variable allowed_onprem_cidrs_to_fw_mgmt_interface. Each value is a colon-separated entry like \"TCP:22\"."
   validation {
-    condition     = alltrue([for v in var.hub_vcn_mgmt_subnet_external_allowed_cidrs_for_http : can(cidrhost(v, 0))])
-    error_message = "Invalid value provided for hub_vcn_mgmt_subnet_external_allowed_cidrs_for_http variable: all values must be in valid CIDR notation (e.g., 192.168.0.0/24)."
-  }
-}
-variable "hub_vcn_mgmt_subnet_external_allowed_cidrs_for_ssh" {
-  type        = list(string)
-  default     = []
-  description = "List of CIDR blocks allowed to connect to Management subnet over SSH. Leave empty for no access."
-  validation {
-    condition     = alltrue([for v in var.hub_vcn_mgmt_subnet_external_allowed_cidrs_for_ssh : can(cidrhost(v, 0))])
-    error_message = "Invalid value provided for hub_vcn_mgmt_subnet_external_allowed_cidrs_for_ssh variable: all values must be in valid CIDR notation (e.g., 192.168.0.0/24)."
+    condition = alltrue([for v in var.fw_mgmt_interface_ports : can(regex("^[^:]+:[^:]+$", v))])
+    error_message = "Invalid value provided for fw_mgmt_interface_ports variable: all values must be in the form protocol:port, with exactly one ':' separating protocol and port values."
   }
 }
 # -------------------------------------------

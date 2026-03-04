@@ -24,7 +24,7 @@ locals {
         drg_id  = local.use_existing_drg == true ? var.existing_drg_ocid : null
 
         display_name  = length(var.ipsec_vpn_name) > 0 ? var.ipsec_vpn_name : "${var.service_label}-oci-ipsec-vpn",
-        static_routes = var.onprem_cidrs
+        static_routes = local.all_onprem_cidrs
         tunnels_management = {
           tunnel_1 = {
             routing = "BGP",

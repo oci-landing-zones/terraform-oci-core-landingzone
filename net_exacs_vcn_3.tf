@@ -441,7 +441,7 @@ locals {
     }} : {},
     ## Ingress from on-premises CIDRs
     (local.add_exa_vcn3 == true && (var.exa_vcn3_attach_to_drg == true && var.exa_vcn3_onprem_route_enable)) &&
-    (local.hub_with_vcn == true || local.hub_with_drg_only == true) ? { for cidr_port_pair in flatten([for cidr in var.onprem_cidrs : [for port in var.exa_vcn3_client_ingress_destination_ports : "${trimspace(cidr)},${trimspace(port)}" ]]) : "INGRESS-FROM-${split(",",cidr_port_pair)[0]}-ON-${split(",",cidr_port_pair)[1]}-RULE" => {
+    (local.hub_with_vcn == true || local.hub_with_drg_only == true) ? { for cidr_port_pair in flatten([for cidr in var.allowed_onprem_cidrs_to_app_endpoints : [for port in var.exa_vcn3_client_ingress_destination_ports : "${trimspace(cidr)},${trimspace(port)}" ]]) : "INGRESS-FROM-${split(",",cidr_port_pair)[0]}-ON-${split(",",cidr_port_pair)[1]}-RULE" => {
       description  = "Ingress from onprem ${split(",",cidr_port_pair)[0]} over ${split(":",split(",",cidr_port_pair)[1])[0]} on port ${split(":",split(",",cidr_port_pair)[1])[1]}."
       stateless    = false
       protocol     = split(":",split(",",cidr_port_pair)[1])[0]

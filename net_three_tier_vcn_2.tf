@@ -861,7 +861,7 @@ locals {
     }} : {},
     ## Ingress from on-premises CIDRs into TT-VCN-2 web subnet
     (local.add_tt_vcn2 == true && (var.tt_vcn2_attach_to_drg == true && var.tt_vcn2_onprem_route_enable)) &&
-    (local.hub_with_vcn == true || local.hub_with_drg_only == true) ? { for cidr_port_pair in flatten([for cidr in var.onprem_cidrs : [for port in var.tt_vcn2_web_ingress_destination_ports : "${trimspace(cidr)},${trimspace(port)}" ]]) : "INGRESS-FROM-${split(",",cidr_port_pair)[0]}-ON-${split(",",cidr_port_pair)[1]}-RULE" => {
+    (local.hub_with_vcn == true || local.hub_with_drg_only == true) ? { for cidr_port_pair in flatten([for cidr in var.allowed_onprem_cidrs_to_app_endpoints : [for port in var.tt_vcn2_web_ingress_destination_ports : "${trimspace(cidr)},${trimspace(port)}" ]]) : "INGRESS-FROM-${split(",",cidr_port_pair)[0]}-ON-${split(",",cidr_port_pair)[1]}-RULE" => {
       description  = "Ingress from onprem ${split(",",cidr_port_pair)[0]} over ${split(":",split(",",cidr_port_pair)[1])[0]} on port ${split(":",split(",",cidr_port_pair)[1])[1]}."
       stateless    = false
       protocol     = split(":",split(",",cidr_port_pair)[1])[0]
@@ -953,97 +953,4 @@ locals {
     length(var.tt_vcn2_routable_vcns) == 0 || contains(var.tt_vcn2_routable_vcns, "EXA-VCN-3") ? local.exa_vcn3_route_rule : {},
     var.tt_vcn2_onprem_route_enable == true ? local.on_prem_route_rule : {}
   ) : {}
-
-  # tt_vcn_2_drg_routing = merge(
-  #   ## Route to TT-VCN-1
-  #   (local.add_tt_vcn2 == true && var.tt_vcn2_attach_to_drg == true && var.add_tt_vcn1 == true && var.tt_vcn1_attach_to_drg == true) &&
-  #   (local.hub_with_drg_only == true && (length(var.tt_vcn2_routable_vcns) == 0 || contains(var.tt_vcn2_routable_vcns, "TT-VCN-1"))) ? {
-  #     for cidr in var.tt_vcn1_cidrs : "TT-VCN-1-${cidr}-RULE" => {
-  #       network_entity_key = "HUB-DRG"
-  #       description        = "Traffic destined for ${local.tt_vcn1_display_name} in routed through the DRG."
-  #       destination        = cidr
-  #       destination_type   = "CIDR_BLOCK"
-  #     }
-  #   } : {},
-  #   ## Route to TT-VCN-3
-  #   (local.add_tt_vcn2 == true && var.tt_vcn2_attach_to_drg == true && var.add_tt_vcn3 == true && var.tt_vcn3_attach_to_drg == true) &&
-  #   (local.hub_with_drg_only == true && (length(var.tt_vcn2_routable_vcns) == 0 || contains(var.tt_vcn2_routable_vcns, "TT-VCN-3"))) ? {
-  #     for cidr in var.tt_vcn3_cidrs : "TT-VCN-3-${cidr}-RULE" => {
-  #       network_entity_key = "HUB-DRG"
-  #       description        = "Traffic destined for ${local.tt_vcn3_display_name} in routed through the DRG."
-  #       destination        = cidr
-  #       destination_type   = "CIDR_BLOCK"
-  #     }
-  #   } : {},
-  #   ## Route to OKE-VCN-1
-  #   (local.add_tt_vcn2 == true && var.tt_vcn2_attach_to_drg == true && var.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true) &&
-  #   (local.hub_with_drg_only == true && (length(var.tt_vcn2_routable_vcns) == 0 || contains(var.tt_vcn2_routable_vcns, "OKE-VCN-1"))) ? {
-  #     for cidr in var.oke_vcn1_cidrs : "OKE-VCN-1-${cidr}-RULE" => {
-  #       network_entity_key = "HUB-DRG"
-  #       description        = "Traffic destined for ${local.oke_vcn1_display_name} in routed through the DRG."
-  #       destination        = cidr
-  #       destination_type   = "CIDR_BLOCK"
-  #     }
-  #   } : {},
-  #   ## Route to OKE-VCN-2
-  #   (local.add_tt_vcn2 == true && var.tt_vcn2_attach_to_drg == true && var.add_oke_vcn2 == true && var.oke_vcn2_attach_to_drg == true) &&
-  #   (local.hub_with_drg_only == true && (length(var.tt_vcn2_routable_vcns) == 0 || contains(var.tt_vcn2_routable_vcns, "OKE-VCN-2"))) ? {
-  #     for cidr in var.oke_vcn2_cidrs : "OKE-VCN-2-${cidr}-RULE" => {
-  #       network_entity_key = "HUB-DRG"
-  #       description        = "Traffic destined for ${local. oke_vcn2_display_name} in routed through the DRG."
-  #       destination        = cidr
-  #       destination_type   = "CIDR_BLOCK"
-  #     }
-  #   } : {},
-  #   ## Route to OKE-VCN-3
-  #   (local.add_tt_vcn2 == true && var.tt_vcn2_attach_to_drg == true && var.add_oke_vcn3 == true && var.oke_vcn3_attach_to_drg == true) &&
-  #   (local.hub_with_drg_only == true && (length(var.tt_vcn2_routable_vcns) == 0 || contains(var.tt_vcn2_routable_vcns, "OKE-VCN-3"))) ? {
-  #     for cidr in var.oke_vcn3_cidrs : "OKE-VCN-3-${cidr}-RULE" => {
-  #       network_entity_key = "HUB-DRG"
-  #       description        = "Traffic destined for ${local.oke_vcn3_display_name} in routed through the DRG."
-  #       destination        = cidr
-  #       destination_type   = "CIDR_BLOCK"
-  #     }
-  #   } : {},
-  #   ## Route to EXA-VCN-1
-  #   (local.add_tt_vcn2 == true && var.tt_vcn2_attach_to_drg == true && var.add_exa_vcn1 == true && var.exa_vcn1_attach_to_drg == true) &&
-  #   (local.hub_with_drg_only == true && (length(var.tt_vcn2_routable_vcns) == 0 || contains(var.tt_vcn2_routable_vcns, "EXA-VCN-1"))) ? {
-  #     for cidr in var.exa_vcn1_cidrs : "EXA-VCN-1-${cidr}-RULE" => {
-  #       network_entity_key = "HUB-DRG"
-  #       description        = "Traffic destined for ${local.exa_vcn1_display_name} in routed through the DRG."
-  #       destination        = cidr
-  #       destination_type   = "CIDR_BLOCK"
-  #     }
-  #   } : {},
-  #   ## Route to EXA-VCN-2
-  #   (local.add_tt_vcn2 == true && var.tt_vcn2_attach_to_drg == true && var.add_exa_vcn2 == true && var.exa_vcn2_attach_to_drg == true) &&
-  #   (local.hub_with_drg_only == true && (length(var.tt_vcn2_routable_vcns) == 0 || contains(var.tt_vcn2_routable_vcns, "EXA-VCN-2"))) ? {
-  #     for cidr in var.exa_vcn2_cidrs : "EXA-VCN-2-${cidr}-RULE" => {
-  #       network_entity_key = "HUB-DRG"
-  #       description        = "Traffic destined for ${local.exa_vcn2_display_name} in routed through the DRG."
-  #       destination        = cidr
-  #       destination_type   = "CIDR_BLOCK"
-  #     }
-  #   } : {},
-  #   ## Route to EXA-VCN-3
-  #   (local.add_tt_vcn2 == true && var.tt_vcn2_attach_to_drg == true && var.add_exa_vcn3 == true && var.exa_vcn3_attach_to_drg == true) &&
-  #   (local.hub_with_drg_only == true && (length(var.tt_vcn2_routable_vcns) == 0 || contains(var.tt_vcn2_routable_vcns, "EXA-VCN-3"))) ? {
-  #     for cidr in var.exa_vcn3_cidrs : "EXA-VCN-3-${cidr}-RULE" => {
-  #       network_entity_key = "HUB-DRG"
-  #       description        = "Traffic destined for ${local.exa_vcn3_display_name} in routed through the DRG."
-  #       destination        = cidr
-  #       destination_type   = "CIDR_BLOCK"
-  #     }
-  #   } : {},
-  #   ## Route to on-premises CIDRs
-  #   (local.add_tt_vcn2 == true && var.tt_vcn2_attach_to_drg == true && length(var.onprem_cidrs) > 0) &&
-  #   (local.hub_with_drg_only == true && var.tt_vcn2_onprem_route_enable) ? {
-  #     for cidr in var.onprem_cidrs : "ONPREM-${cidr}-RULE" => {
-  #       network_entity_key = "HUB-DRG"
-  #       description        = "Traffic destined to on-premises ${cidr} CIDR range is routed through the DRG."
-  #       destination        = cidr
-  #       destination_type   = "CIDR_BLOCK"
-  #     }
-  #   } : {}
-  # )
 }
