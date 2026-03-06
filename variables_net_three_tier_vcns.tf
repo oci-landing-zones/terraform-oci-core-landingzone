@@ -33,7 +33,7 @@ variable "tt_vcn1_routable_vcns" {
   default     = []
   description = "The VCN labels that this VCN can send traffic to. Leave unassigned for sending traffic to all VCNs. Only applicable for Network topology where a DRG is deployed as the hub. Valid values: TT-VCN-2, TT-VCN-3, EXA-VCN-1, EXA-VCN-2, EXA-VCN3, OKE-VCN-1, OKE-VCN-2, OKE-VCN-3."
   validation {
-    condition = (length(var.tt_vcn1_routable_vcns) == 0 || alltrue([for label in var.tt_vcn1_routable_vcns : contains(["TT-VCN-2","TT-VCN-3","EXA-VCN-1","EXA-VCN-2","EXA-VCN-3","OKE-VCN-1","OKE-VCN-2","OKE-VCN-3"], label)]))
+    condition = length(var.tt_vcn1_routable_vcns) == 0 ? true : (length(var.tt_vcn1_routable_vcns) == 0 || alltrue([for label in var.tt_vcn1_routable_vcns : contains(["TT-VCN-2","TT-VCN-3","EXA-VCN-1","EXA-VCN-2","EXA-VCN-3","OKE-VCN-1","OKE-VCN-2","OKE-VCN-3"], label)]))
     error_message = "Invalid value provided for tt_vcn1_routable_vcns variable: it must be empty or contain only valid VCN labels: \"TT-VCN-2\",\"TT-VCN-3\",\"EXA-VCN-1\",\"EXA-VCN-2\",\"EXA-VCN-3\",\"OKE-VCN-1\",\"OKE-VCN-2\",\"OKE-VCN-3\"."
   }
 }
@@ -66,7 +66,7 @@ variable "tt_vcn1_external_allowed_cidrs_into_web_tier" {
   default     = ["0.0.0.0/0"]
   description = "The list of external CIDRs blocks allowed for ingress packets into tt_vcn1 VCN LBR Network Security Group. Use this to limit the range of IP addresses that can access the web tier."
   validation {
-    condition     = alltrue([for v in var.tt_vcn1_external_allowed_cidrs_into_web_tier : can(cidrhost(v, 0))])
+    condition     = length(var.tt_vcn1_external_allowed_cidrs_into_web_tier) == 0 ? true : alltrue([for v in var.tt_vcn1_external_allowed_cidrs_into_web_tier : can(cidrhost(v, 0))])
     error_message = "Invalid value provided for tt_vcn1_external_allowed_cidrs_into_web_tier variable: all values must be in valid CIDR notation (e.g., 178.231.15.71/32)."
   }
 }
@@ -75,7 +75,7 @@ variable "tt_vcn1_web_ingress_destination_ports" {
   default     = ["TCP:443"]
   description = "The list of protocols and destination ports allowed for ingress packets into LBR Network Security Group. Each list value is a colon-separated entry like 'TCP:443'."
   validation {
-    condition = alltrue([for v in var.tt_vcn1_web_ingress_destination_ports : can(regex("^[^:]+:[^:]+$", v))])
+    condition = length(var.tt_vcn1_web_ingress_destination_ports) == 0 ? true : alltrue([for v in var.tt_vcn1_web_ingress_destination_ports : can(regex("^[^:]+:[^:]+$", v))])
     error_message = "Invalid value provided for tt_vcn1_web_ingress_destination_ports variable: all values must be in the form protocol:port, with exactly one ':' separating protocol and port values."
   }
 }
@@ -98,7 +98,7 @@ variable "tt_vcn1_app_ingress_destination_ports" {
   default     = ["TCP:80"]
   description = "The list of protocols and destination ports allowed for ingress packets into App Network Security Group. Each list value is a colon-separated entry like 'TCP:80'."
   validation {
-    condition = alltrue([for v in var.tt_vcn1_app_ingress_destination_ports : can(regex("^[^:]+:[^:]+$", v))])
+    condition = length(var.tt_vcn1_app_ingress_destination_ports) == 0 ? true : alltrue([for v in var.tt_vcn1_app_ingress_destination_ports : can(regex("^[^:]+:[^:]+$", v))])
     error_message = "Invalid value provided for tt_vcn1_app_ingress_destination_ports variable: all values must be in the form protocol:port, with exactly one ':' separating protocol and port values."
   }
 }
@@ -121,7 +121,7 @@ variable "tt_vcn1_db_ingress_destination_ports" {
   default     = ["TCP:1521","TCP:1522"]
   description = "The list of protocols and destination ports allowed for ingress packets into DB Network Security Group. Each list value is a colon-separated entry like 'TCP:1521'."
   validation {
-    condition = alltrue([for v in var.tt_vcn1_db_ingress_destination_ports : can(regex("^[^:]+:[^:]+$", v))])
+    condition = length(var.tt_vcn1_db_ingress_destination_ports) == 0 ? true : alltrue([for v in var.tt_vcn1_db_ingress_destination_ports : can(regex("^[^:]+:[^:]+$", v))])
     error_message = "Invalid value provided for tt_vcn1_db_ingress_destination_ports variable: all values must be in the form protocol:port, with exactly one ':' separating protocol and port values."
   }
 }
@@ -154,7 +154,7 @@ variable "tt_vcn1_bastion_subnet_allowed_cidrs" {
   default     = []
   description = "List of CIDR blocks allowed to SSH into the the jump host that is eventually deployed in the public Bastion subnet. Leave it empty for no access."
   validation {
-    condition     = alltrue([for v in var.tt_vcn1_bastion_subnet_allowed_cidrs : can(cidrhost(v, 0))])
+    condition     = length(var.tt_vcn1_bastion_subnet_allowed_cidrs) == 0 ? true : alltrue([for v in var.tt_vcn1_bastion_subnet_allowed_cidrs : can(cidrhost(v, 0))])
     error_message = "Invalid value provided for tt_vcn1_bastion_subnet_allowed_cidrs variable: all values must be in valid CIDR notation (e.g., 10.0.0.0/20)."
   }
 }
@@ -196,7 +196,7 @@ variable "tt_vcn2_routable_vcns" {
   default     = []
   description = "The VCN labels that this VCN can send traffic to. Only applicable for Network topology where a DRG is deployed as the hub. Valid values: TT-VCN-1, TT-VCN-3, EXA-VCN-1, EXA-VCN-2, EXA-VCN3, OKE-VCN-1, OKE-VCN-2, OKE-VCN-3."
   validation {
-    condition = (length(var.tt_vcn2_routable_vcns) == 0 || alltrue([for label in var.tt_vcn2_routable_vcns : contains(["TT-VCN-1","TT-VCN-3","EXA-VCN-1","EXA-VCN-2","EXA-VCN-3","OKE-VCN-1","OKE-VCN-2","OKE-VCN-3"], label)]))
+    condition = length(var.tt_vcn2_routable_vcns) == 0 ? true : (length(var.tt_vcn2_routable_vcns) == 0 || alltrue([for label in var.tt_vcn2_routable_vcns : contains(["TT-VCN-1","TT-VCN-3","EXA-VCN-1","EXA-VCN-2","EXA-VCN-3","OKE-VCN-1","OKE-VCN-2","OKE-VCN-3"], label)]))
     error_message = "Invalid value provided for tt_vcn2_routable_vcns variable: it must be empty or contain only valid VCN labels: \"TT-VCN-1\",\"TT-VCN-3\",\"EXA-VCN-1\",\"EXA-VCN-2\",\"EXA-VCN-3\",\"OKE-VCN-1\",\"OKE-VCN-2\",\"OKE-VCN-3\"."
   }
 }
@@ -229,7 +229,7 @@ variable "tt_vcn2_external_allowed_cidrs_into_web_tier" {
   default     = ["0.0.0.0/0"]
   description = "The list of external CIDRs blocks allowed for ingress packets into tt_vcn2 VCN LBR Network Security Group. Use this to limit the range of IP addresses that can access the web tier."
   validation {
-    condition     = alltrue([for v in var.tt_vcn2_external_allowed_cidrs_into_web_tier : can(cidrhost(v, 0))])
+    condition     = length(var.tt_vcn2_external_allowed_cidrs_into_web_tier) == 0 ? true : alltrue([for v in var.tt_vcn2_external_allowed_cidrs_into_web_tier : can(cidrhost(v, 0))])
     error_message = "Invalid value provided for tt_vcn2_external_allowed_cidrs_into_web_tier variable: all values must be in valid CIDR notation (e.g., 178.231.15.71/32)."
   }
 }
@@ -238,7 +238,7 @@ variable "tt_vcn2_web_ingress_destination_ports" {
   default     = ["TCP:443"]
   description = "The list of protocols and destination ports allowed for ingress packets into LBR Network Security Group. Each list value is a colon-separated entry like 'TCP:443'."
   validation {
-    condition = alltrue([for v in var.tt_vcn2_web_ingress_destination_ports : can(regex("^[^:]+:[^:]+$", v))])
+    condition = length(var.tt_vcn2_web_ingress_destination_ports) == 0 ? true : alltrue([for v in var.tt_vcn2_web_ingress_destination_ports : can(regex("^[^:]+:[^:]+$", v))])
     error_message = "Invalid value provided for tt_vcn2_web_ingress_destination_ports variable: all values must be in the form protocol:port, with exactly one ':' separating protocol and port values."
   }
 }
@@ -261,7 +261,7 @@ variable "tt_vcn2_app_ingress_destination_ports" {
   default     = ["TCP:80"]
   description = "The list of protocols and destination ports allowed for ingress packets into App Network Security Group. Each list value is a colon-separated entry like 'TCP:80'."
   validation {
-    condition = alltrue([for v in var.tt_vcn2_app_ingress_destination_ports : can(regex("^[^:]+:[^:]+$", v))])
+    condition = length(var.tt_vcn2_app_ingress_destination_ports) == 0 ? true : alltrue([for v in var.tt_vcn2_app_ingress_destination_ports : can(regex("^[^:]+:[^:]+$", v))])
     error_message = "Invalid value provided for tt_vcn2_app_ingress_destination_ports variable: all values must be in the form protocol:port, with exactly one ':' separating protocol and port values."
   }
 }
@@ -284,7 +284,7 @@ variable "tt_vcn2_db_ingress_destination_ports" {
   default     = ["TCP:1521","TCP:1522"]
   description = "The list of protocols and destination ports allowed for ingress packets into DB Network Security Group. Each list value is a colon-separated entry like 'TCP:1521'."
   validation {
-    condition = alltrue([for v in var.tt_vcn2_db_ingress_destination_ports : can(regex("^[^:]+:[^:]+$", v))])
+    condition = length(var.tt_vcn2_db_ingress_destination_ports) == 0 ? true : alltrue([for v in var.tt_vcn2_db_ingress_destination_ports : can(regex("^[^:]+:[^:]+$", v))])
     error_message = "Invalid value provided for tt_vcn2_db_ingress_destination_ports variable: all values must be in the form protocol:port, with exactly one ':' separating protocol and port values."
   }
 }
@@ -317,7 +317,7 @@ variable "tt_vcn2_bastion_subnet_allowed_cidrs" {
   default     = []
   description = "List of CIDRs blocks allowed to SSH into the the jump host that is eventually deployed in the public Bastion subnet. Leave it empty for no access."
   validation {
-    condition     = alltrue([for v in var.tt_vcn2_bastion_subnet_allowed_cidrs : can(cidrhost(v, 0))])
+    condition     = length(var.tt_vcn2_bastion_subnet_allowed_cidrs) == 0 ? true : alltrue([for v in var.tt_vcn2_bastion_subnet_allowed_cidrs : can(cidrhost(v, 0))])
     error_message = "Invalid value provided for tt_vcn2_bastion_subnet_allowed_cidrs variable: all values must be in valid CIDR notation (e.g., 10.0.0.0/20)."
   }
 }
@@ -359,7 +359,7 @@ variable "tt_vcn3_routable_vcns" {
   default     = []
   description = "The VCN labels that this VCN can send traffic to. Only applicable for Network topology where a DRG is deployed as the hub. Valid values: TT-VCN-1, TT-VCN-2, EXA-VCN-1, EXA-VCN-2, EXA-VCN3, OKE-VCN-1, OKE-VCN-2, OKE-VCN-3."
   validation {
-    condition = (length(var.tt_vcn3_routable_vcns) == 0 || alltrue([for label in var.tt_vcn3_routable_vcns : contains(["TT-VCN-1","TT-VCN-2","EXA-VCN-1","EXA-VCN-2","EXA-VCN-3","OKE-VCN-1","OKE-VCN-2","OKE-VCN-3"], label)]))
+    condition = length(var.tt_vcn3_routable_vcns) == 0 ? true : (length(var.tt_vcn3_routable_vcns) == 0 || alltrue([for label in var.tt_vcn3_routable_vcns : contains(["TT-VCN-1","TT-VCN-2","EXA-VCN-1","EXA-VCN-2","EXA-VCN-3","OKE-VCN-1","OKE-VCN-2","OKE-VCN-3"], label)]))
     error_message = "Invalid value provided for tt_vcn3_routable_vcns variable: it must be empty or contain only valid VCN labels: \"TT-VCN-1\",\"TT-VCN-3\",\"EXA-VCN-1\",\"EXA-VCN-2\",\"EXA-VCN-3\",\"OKE-VCN-1\",\"OKE-VCN-2\",\"OKE-VCN-3\"."
   }
 }
@@ -392,7 +392,7 @@ variable "tt_vcn3_external_allowed_cidrs_into_web_tier" {
   default     = ["0.0.0.0/0"]
   description = "The list of external CIDRs blocks allowed for ingress packets into tt_vcn3 VCN LBR Network Security Group. Use this to limit the range of IP addresses that can access the web tier."
   validation {
-    condition     = alltrue([for v in var.tt_vcn3_external_allowed_cidrs_into_web_tier : can(cidrhost(v, 0))])
+    condition     = length(var.tt_vcn3_external_allowed_cidrs_into_web_tier) == 0 ? true : alltrue([for v in var.tt_vcn3_external_allowed_cidrs_into_web_tier : can(cidrhost(v, 0))])
     error_message = "Invalid value provided for tt_vcn3_external_allowed_cidrs_into_web_tier variable: all values must be in valid CIDR notation (e.g., 178.231.15.71/32)."
   }
 }
@@ -401,7 +401,7 @@ variable "tt_vcn3_web_ingress_destination_ports" {
   default     = ["TCP:443"]
   description = "The list of protocols and destination ports allowed for ingress packets into LBR Network Security Group. Each list value is a colon-separated entry like 'TCP:443'."
   validation {
-    condition = alltrue([for v in var.tt_vcn3_web_ingress_destination_ports : can(regex("^[^:]+:[^:]+$", v))])
+    condition = length(var.tt_vcn3_web_ingress_destination_ports) == 0 ? true : alltrue([for v in var.tt_vcn3_web_ingress_destination_ports : can(regex("^[^:]+:[^:]+$", v))])
     error_message = "Invalid value provided for tt_vcn3_web_ingress_destination_ports variable: all values must be in the form protocol:port, with exactly one ':' separating protocol and port values."
   }
 }
@@ -424,7 +424,7 @@ variable "tt_vcn3_app_ingress_destination_ports" {
   default     = ["TCP:80"]
   description = "The list of protocols and destination ports allowed for ingress packets into App Network Security Group. Each list value is a colon-separated entry like 'TCP:80'."
   validation {
-    condition = alltrue([for v in var.tt_vcn3_app_ingress_destination_ports : can(regex("^[^:]+:[^:]+$", v))])
+    condition = length(var.tt_vcn3_app_ingress_destination_ports) == 0 ? true : alltrue([for v in var.tt_vcn3_app_ingress_destination_ports : can(regex("^[^:]+:[^:]+$", v))])
     error_message = "Invalid value provided for tt_vcn3_app_ingress_destination_ports variable: all values must be in the form protocol:port, with exactly one ':' separating protocol and port values."
   }
 }
@@ -447,7 +447,7 @@ variable "tt_vcn3_db_ingress_destination_ports" {
   default     = ["TCP:1521","TCP:1522"]
   description = "The list of protocols and destination ports allowed for ingress packets into DB Network Security Group. Each list value is a colon-separated entry like 'TCP:1521'."
   validation {
-    condition = alltrue([for v in var.tt_vcn3_db_ingress_destination_ports : can(regex("^[^:]+:[^:]+$", v))])
+    condition = length(var.tt_vcn3_db_ingress_destination_ports) == 0 ? true : alltrue([for v in var.tt_vcn3_db_ingress_destination_ports : can(regex("^[^:]+:[^:]+$", v))])
     error_message = "Invalid value provided for tt_vcn3_db_ingress_destination_ports variable: all values must be in the form protocol:port, with exactly one ':' separating protocol and port values."
   }
 }
@@ -480,7 +480,7 @@ variable "tt_vcn3_bastion_subnet_allowed_cidrs" {
   default     = []
   description = "List of CIDRs allowed to SSH into the the jump host that is eventually deployed in the public Bastion subnet. Leave it empty for no access. 0.0.0.0/0 is not allowed."
   validation {
-    condition     = alltrue([for v in var.tt_vcn3_bastion_subnet_allowed_cidrs : can(cidrhost(v, 0))])
+    condition     = length(var.tt_vcn3_bastion_subnet_allowed_cidrs) == 0 ? true : alltrue([for v in var.tt_vcn3_bastion_subnet_allowed_cidrs : can(cidrhost(v, 0))])
     error_message = "Invalid value provided for tt_vcn3_bastion_subnet_allowed_cidrs variable: all values must be in valid CIDR notation (e.g., 10.0.0.0/20)."
   }
 }

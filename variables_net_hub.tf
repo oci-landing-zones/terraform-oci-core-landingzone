@@ -70,12 +70,6 @@ variable "oci_nfw_ip_ocid" {
   description = "The OCID of OCI Network Firewall private IP address."
 }
 
-variable "oci_nfw_ipv4_address" {
-  type    = string
-  default = null
-  description = "The IPv4 address of OCI Network Firewall."
-}
-
 variable "oci_nfw_policy_ocid" {
   type        = string
   default     = null
@@ -192,7 +186,7 @@ variable "hub_vcn_mgmt_subnet_cidr" {
 #   default     = []
 #   description = "List of CIDR blocks allowed to connect to Management subnet over HTTP. Leave empty for no access."
 #   validation {
-#     condition     = alltrue([for v in var.hub_vcn_mgmt_subnet_external_allowed_cidrs_for_http : can(cidrhost(v, 0))])
+#     condition     = length(var.hub_vcn_mgmt_subnet_cidr) == 0 ? true : alltrue([for v in var.hub_vcn_mgmt_subnet_external_allowed_cidrs_for_http : can(cidrhost(v, 0))])
 #     error_message = "Invalid value provided for hub_vcn_mgmt_subnet_external_allowed_cidrs_for_http variable: all values must be in valid CIDR notation (e.g., 192.168.0.0/24)."
 #   }
 # }
@@ -201,7 +195,7 @@ variable "hub_vcn_mgmt_subnet_cidr" {
 #   default     = []
 #   description = "List of CIDR blocks allowed to connect to Management subnet over SSH. Leave empty for no access."
 #   validation {
-#     condition     = alltrue([for v in var.hub_vcn_mgmt_subnet_external_allowed_cidrs_for_ssh : can(cidrhost(v, 0))])
+#     condition     = length(var.hub_vcn_mgmt_subnet_cidr) == 0 ? true : alltrue([for v in var.hub_vcn_mgmt_subnet_external_allowed_cidrs_for_ssh : can(cidrhost(v, 0))])
 #     error_message = "Invalid value provided for hub_vcn_mgmt_subnet_external_allowed_cidrs_for_ssh variable: all values must be in valid CIDR notation (e.g., 192.168.0.0/24)."
 #   }
 # }
@@ -210,7 +204,7 @@ variable "fw_mgmt_interface_ports" {
   default     = ["TCP:22","TCP:443"]
   description = "The list of protocols and ports allowed into Firewall Management interface by the CIDRs provided in variable allowed_onprem_cidrs_to_fw_mgmt_interface. Each value is a colon-separated entry like \"TCP:22\"."
   validation {
-    condition = alltrue([for v in var.fw_mgmt_interface_ports : can(regex("^[^:]+:[^:]+$", v))])
+    condition = length(var.fw_mgmt_interface_ports) == 0 ? true : alltrue([for v in var.fw_mgmt_interface_ports : can(regex("^[^:]+:[^:]+$", v))])
     error_message = "Invalid value provided for fw_mgmt_interface_ports variable: all values must be in the form protocol:port, with exactly one ':' separating protocol and port values."
   }
 }

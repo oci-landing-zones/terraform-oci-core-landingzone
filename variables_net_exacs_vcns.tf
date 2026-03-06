@@ -19,6 +19,10 @@ variable "exa_vcn1_cidrs" {
   type        = list(string)
   default     = ["172.16.0.0/20"]
   description = "The list of CIDR blocks for the VCN."
+  validation {
+    condition     = alltrue([for v in var.exa_vcn1_cidrs : can(cidrhost(v, 0))])
+    error_message = "Invalid value provided for exa_vcn1_cidrs variable: all values must be in valid CIDR notation (e.g., 172.16.0.0/20)."
+  }
 }
 
 variable "exa_vcn1_attach_to_drg" {
@@ -42,7 +46,7 @@ variable "exa_vcn1_client_ingress_destination_ports" {
   default     = ["TCP:1521","TCP:1522"]
   description = "The list of protocols and destination ports allowed for ingress packets into Exadata VCN1 Client Network Security Group."
   validation {
-    condition = alltrue([for v in var.exa_vcn1_client_ingress_destination_ports : can(regex("^[^:]+:[^:]+$", v))])
+    condition = length(var.exa_vcn1_client_ingress_destination_ports) == 0 ? true : alltrue([for v in var.exa_vcn1_client_ingress_destination_ports : can(regex("^[^:]+:[^:]+$", v))])
     error_message = "Invalid value provided for exa_vcn1_client_ingress_destination_ports variable: all values must be in the form protocol:port, with exactly one ':' separating protocol and port values."
   }
 }
@@ -86,6 +90,10 @@ variable "exa_vcn2_cidrs" {
   type        = list(string)
   default     = ["172.17.0.0/20"]
   description = "The list of CIDR blocks for the VCN."
+  validation {
+    condition     = alltrue([for v in var.exa_vcn2_cidrs : can(cidrhost(v, 0))])
+    error_message = "Invalid value provided for exa_vcn2_cidrs variable: all values must be in valid CIDR notation (e.g., 172.17.0.0/20)."
+  }
 }
 
 variable "exa_vcn2_attach_to_drg" {
@@ -114,7 +122,7 @@ variable "exa_vcn2_client_ingress_destination_ports" {
   default     = ["TCP:1521","TCP:1522"]
   description = "The list of protocols and destination ports allowed for ingress packets into Exadata VCN2 Client Network Security Group."
   validation {
-    condition = alltrue([for v in var.exa_vcn2_client_ingress_destination_ports : can(regex("^[^:]+:[^:]+$", v))])
+    condition = length(var.exa_vcn2_client_ingress_destination_ports) == 0 ? true : alltrue([for v in var.exa_vcn2_client_ingress_destination_ports : can(regex("^[^:]+:[^:]+$", v))])
     error_message = "Invalid value provided for exa_vcn2_client_ingress_destination_ports variable: all values must be in the form protocol:port, with exactly one ':' separating protocol and port values."
   }
 }
@@ -158,6 +166,10 @@ variable "exa_vcn3_cidrs" {
   type        = list(string)
   default     = ["172.18.0.0/20"]
   description = "The list of CIDR blocks for the VCN."
+  validation {
+    condition     = alltrue([for v in var.exa_vcn3_cidrs : can(cidrhost(v, 0))])
+    error_message = "Invalid value provided for exa_vcn3_cidrs variable: all values must be in valid CIDR notation (e.g., 172.18.0.0/20)."
+  }
 }
 
 variable "exa_vcn3_attach_to_drg" {
@@ -186,7 +198,7 @@ variable "exa_vcn3_client_ingress_destination_ports" {
   default     = ["TCP:1521","TCP:1522"]
   description = "The list of protocols and destination ports allowed for ingress packets into Exadata VCN3 Client Network Security Group."
   validation {
-    condition = alltrue([for v in var.exa_vcn3_client_ingress_destination_ports : can(regex("^[^:]+:[^:]+$", v))])
+    condition = length(var.exa_vcn3_client_ingress_destination_ports) == 0 ? true : alltrue([for v in var.exa_vcn3_client_ingress_destination_ports : can(regex("^[^:]+:[^:]+$", v))])
     error_message = "Invalid value provided for exa_vcn3_client_ingress_destination_ports variable: all values must be in the form protocol:port, with exactly one ':' separating protocol and port values."
   }
 }
