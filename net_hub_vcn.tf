@@ -4,18 +4,24 @@
 locals {
 
   hub_vcn_display_name                 = coalesce(var.hub_vcn_name, "${var.service_label}-hub-vcn")
+  hub_vcn_dns_label                    = substr(replace(coalesce(var.hub_vcn_name, "hub-vcn"), "/[^\\w]/", ""), 0, 14)
   hub_vcn_web_subnet_display_name      = coalesce(var.hub_vcn_web_subnet_name, "${var.service_label}-hub-vcn-web-subnet")
+  hub_vcn_web_subnet_dns_label         = substr(replace(coalesce(var.hub_vcn_web_subnet_name, "web-subnet"), "/[^\\w]/", ""), 0, 14)
   hub_vcn_web_subnet_cidr              = coalesce(var.hub_vcn_web_subnet_cidr, cidrsubnet(var.hub_vcn_cidrs[0], 3, 0))
   hub_vcn_outdoor_subnet_display_name  = coalesce(var.hub_vcn_outdoor_subnet_name, "${var.service_label}-hub-vcn-outdoor-subnet")
+  hub_vcn_outdoor_subnet_dns_label     = substr(replace(coalesce(var.hub_vcn_outdoor_subnet_name, "outdoor-subnet"), "/[^\\w]/", ""), 0, 14)
   hub_vcn_outdoor_subnet_cidr          = coalesce(var.hub_vcn_outdoor_subnet_cidr, cidrsubnet(var.hub_vcn_cidrs[0], 3, 1))
   hub_vcn_indoor_subnet_display_name   = coalesce(var.hub_vcn_indoor_subnet_name, "${var.service_label}-hub-vcn-indoor-subnet")
+  hub_vcn_indoor_subnet_dns_label      = substr(replace(coalesce(var.hub_vcn_indoor_subnet_name, "indoor-subnet"), "/[^\\w]/", ""), 0, 14)
   hub_vcn_indoor_subnet_cidr           = coalesce(var.hub_vcn_indoor_subnet_cidr, cidrsubnet(var.hub_vcn_cidrs[0], 3, 2))
   hub_vcn_mgmt_subnet_display_name     = coalesce(var.hub_vcn_mgmt_subnet_name, "${var.service_label}-hub-vcn-mgmt-subnet")
+  hub_vcn_mgmt_subnet_dns_label        = substr(replace(coalesce(var.hub_vcn_mgmt_subnet_name, "mgmt-subnet"), "/[^\\w]/", ""), 0, 14)
   hub_vcn_mgmt_subnet_cidr             = coalesce(var.hub_vcn_mgmt_subnet_cidr, cidrsubnet(var.hub_vcn_cidrs[0], 3, 3))
   hub_vcn_jumphost_subnet_display_name = coalesce(var.hub_vcn_jumphost_subnet_name, "${var.service_label}-hub-vcn-jumphost-subnet")
+  hub_vcn_jumphost_subnet_dns_label    = substr(replace(coalesce(var.hub_vcn_jumphost_subnet_name, "jumphost-subnet"), "/[^\\w]/", ""), 0, 14)
   hub_vcn_jumphost_subnet_cidr         = coalesce(var.hub_vcn_jumphost_subnet_cidr, cidrsubnet(var.hub_vcn_cidrs[0], 3, 4))
 
-  fw_mgmt_external_allowed_cidrs_to_ports = local.chosen_firewall_option != "OCINFW" ? flatten([for cidr in var.allowed_onprem_cidrs_to_fw_mgmt_interface : [for port in var.fw_mgmt_interface_ports : "${trimspace(cidr)},${trimspace(port)}" ]]) : []
+  fw_mgmt_external_allowed_cidrs_to_ports = local.chosen_firewall_option != "OCINFW" ? flatten([for cidr in var.allowed_onprem_cidrs_to_fw_mgmt_interface : [for port in var.fw_mgmt_interface_ports : "${trimspace(cidr)},${trimspace(port)}" ] if length(var.allowed_onprem_cidrs_to_fw_mgmt_interface) > 0 && length(var.fw_mgmt_interface_ports) > 0]) : []
 
   hub_vcn = local.hub_with_vcn == true ? { # local variable hub_with_vcn is defined in net_hub_drg.tf.
     "HUB-VCN" = {
@@ -24,7 +30,7 @@ locals {
       is_ipv6enabled                   = false
       is_oracle_gua_allocation_enabled = false
       cidr_blocks                      = var.hub_vcn_cidrs
-      dns_label                        = substr(replace(coalesce(var.hub_vcn_name, "hub-vcn"), "/[^\\w]/", ""), 0, 14)
+      dns_label                        = local.hub_vcn_dns_label
       block_nat_traffic                = false
       security                         = local.enable_zpr == true ? { zpr_attributes = [{ namespace : "${local.zpr_namespace_name}", attr_name : "net", attr_value : "hub-vcn" }] } : null
 
@@ -34,7 +40,7 @@ locals {
             cidr_block                = local.hub_vcn_web_subnet_cidr
             dhcp_options_key          = "default_dhcp_options"
             display_name              = local.hub_vcn_web_subnet_display_name
-            dns_label                 = substr(replace(coalesce(var.hub_vcn_web_subnet_name, "web-subnet"), "/[^\\w]/", ""), 0, 14)
+            dns_label                 = local.hub_vcn_web_subnet_dns_label
             ipv6cidr_blocks           = []
             prohibit_internet_ingress = false
             route_table_key           = "WEB-SUBNET-ROUTE-TABLE"
@@ -46,7 +52,7 @@ locals {
             cidr_block                = local.hub_vcn_outdoor_subnet_cidr
             dhcp_options_key          = "default_dhcp_options"
             display_name              = local.hub_vcn_outdoor_subnet_display_name
-            dns_label                 = substr(replace(coalesce(var.hub_vcn_outdoor_subnet_name, "outdoor-subnet"), "/[^\\w]/", ""), 0, 14)
+            dns_label                 = local.hub_vcn_outdoor_subnet_dns_label
             ipv6cidr_blocks           = []
             prohibit_internet_ingress = local.hub_vcn_outdoor_subnet_private
             route_table_key           = "OUTDOOR-SUBNET-ROUTE-TABLE"
@@ -58,7 +64,7 @@ locals {
             cidr_block                = local.hub_vcn_indoor_subnet_cidr
             dhcp_options_key          = "default_dhcp_options"
             display_name              = local.hub_vcn_indoor_subnet_display_name
-            dns_label                 = substr(replace(coalesce(var.hub_vcn_indoor_subnet_name, "indoor-subnet"), "/[^\\w]/", ""), 0, 14)
+            dns_label                 = local.hub_vcn_indoor_subnet_dns_label
             ipv6cidr_blocks           = []
             prohibit_internet_ingress = true
             route_table_key           = "INDOOR-SUBNET-ROUTE-TABLE"
@@ -70,7 +76,7 @@ locals {
             cidr_block                = local.hub_vcn_mgmt_subnet_cidr
             dhcp_options_key          = "default_dhcp_options"
             display_name              = local.hub_vcn_mgmt_subnet_display_name
-            dns_label                 = substr(replace(coalesce(var.hub_vcn_mgmt_subnet_name, "mgmt-subnet"), "/[^\\w]/", ""), 0, 14)
+            dns_label                 = local.hub_vcn_mgmt_subnet_dns_label
             ipv6cidr_blocks           = [],
             prohibit_internet_ingress = true
             route_table_key           = "MGMT-SUBNET-ROUTE-TABLE"
@@ -82,7 +88,7 @@ locals {
             cidr_block                = local.hub_vcn_jumphost_subnet_cidr
             dhcp_options_key          = "default_dhcp_options"
             display_name              = local.hub_vcn_jumphost_subnet_display_name
-            dns_label                 = substr(replace(coalesce(var.hub_vcn_jumphost_subnet_name, "jumphost-subnet"), "/[^\\w]/", ""), 0, 14)
+            dns_label                 = local.hub_vcn_jumphost_subnet_dns_label
             ipv6cidr_blocks           = [],
             prohibit_internet_ingress = true
             route_table_key           = "JUMPHOST-SUBNET-ROUTE-TABLE"
@@ -415,13 +421,15 @@ locals {
               #   dst_port_max = 22
               # } },
               { for cidr_port_pair in local.fw_mgmt_external_allowed_cidrs_to_ports : "INGRESS-FROM-${split(",",cidr_port_pair)[0]}-ON-${split(",",cidr_port_pair)[1]}-RULE" => {
-                description  = "Ingress from ${split(",",cidr_port_pair)[0]} over ${split(":",split(",",cidr_port_pair)[1])[0]} on port ${split(":",split(",",cidr_port_pair)[1])[1]}."
+                description  = "Ingress from ${split(",",cidr_port_pair)[0]} over ${split(":",split(",",cidr_port_pair)[1])[0]} on ${split(":",split(",",cidr_port_pair)[1])[0] == "ICMP" ? "type/code ${split(":",split(",",cidr_port_pair)[1])[1]}" : "port ${split(":",split(",",cidr_port_pair)[1])[1]}"}."
                 stateless    = false
                 protocol     = split(":",split(",",cidr_port_pair)[1])[0]
                 src          = split(",",cidr_port_pair)[0]
                 src_type     = "CIDR_BLOCK"
-                dst_port_min = split(":",split(",",cidr_port_pair)[1])[1] == "ALL" ? null : split(":",split(",",cidr_port_pair)[1])[1]
-                dst_port_max = split(":",split(",",cidr_port_pair)[1])[1] == "ALL" ? null : split(":",split(",",cidr_port_pair)[1])[1]
+                dst_port_min = split(":",split(",",cidr_port_pair)[1])[0] != "ICMP" ? (split(":",split(",",cidr_port_pair)[1])[1] == "ALL" ? null : split(":",split(",",cidr_port_pair)[1])[1]) : null
+                dst_port_max = split(":",split(",",cidr_port_pair)[1])[0] != "ICMP" ? (split(":",split(",",cidr_port_pair)[1])[1] == "ALL" ? null : split(":",split(",",cidr_port_pair)[1])[1]) : null
+                icmp_type    = split(":",split(",",cidr_port_pair)[1])[0] == "ICMP" ? split("/", split(":",split(",",cidr_port_pair)[1])[1])[0] : null
+                icmp_code    = split(":",split(",",cidr_port_pair)[1])[0] == "ICMP" ? (length(split("/", split(":",split(",",cidr_port_pair)[1])[1])) > 1 ? split("/", split(":",split(",",cidr_port_pair)[1])[1])[1] : null) : null
               }},
               var.deploy_bastion_jump_host ? {
                 "INGRESS-FROM-JUMP-HOST-NSG-SSH-RULE" = {
@@ -637,7 +645,8 @@ locals {
             ingress_rules = local.app_load_balancer_nsg_ingress_rules
             egress_rules  = local.app_load_balancer_nsg_egress_rules
           }
-        }
+        },
+        local.hub_vcn_additional_nsgs
       ) # closing NSG merge function  
 
       vcn_specific_gateways = merge(
@@ -831,7 +840,7 @@ locals {
   ## Locals for HUB VCN app load balancer NSG rules
   ## TT_VCN1
   ## For ingress rules: allowed CIDRs to ports into the HUB VCN web tier from external sources for TT_VCN1. We take the same values defined for TT_VCN1 web tier, but here we check if TT_VCN1 VCN is attached to the DRG.
-  tt_vcn1_external_allowed_cidrs_to_ports_into_hub_web_tier = (local.add_tt_vcn1 == true && var.tt_vcn1_attach_to_drg == true)  ? flatten([for cidr in var.tt_vcn1_external_allowed_cidrs_into_web_tier : [for port in var.tt_vcn1_web_ingress_destination_ports : "${trimspace(cidr)},${trimspace(port)}" ]]) : []
+  tt_vcn1_external_allowed_cidrs_to_ports_into_hub_web_tier = (local.add_tt_vcn1 == true && var.tt_vcn1_attach_to_drg == true)  ? flatten([for cidr in var.tt_vcn1_external_allowed_cidrs_into_web_tier : [for port in var.tt_vcn1_web_ingress_destination_ports : "${trimspace(cidr)},${trimspace(port)}" ] if length(var.tt_vcn1_external_allowed_cidrs_into_web_tier) > 0 && length(var.tt_vcn1_web_ingress_destination_ports) > 0]) : []
   ## For egress rules: CIDR and ports pairs for egress from HUB VCN web tier to TT_VCN1 app subnet. We check if TT_VCN1 VCN is attached to the DRG.
   hub_vcn_egress_to_tt_vcn1_app_tier = var.tt_vcn1_attach_to_drg == true ? [for port in var.tt_vcn1_app_ingress_destination_ports : "${coalesce(var.tt_vcn1_app_subnet_cidr, cidrsubnet(trimspace(var.tt_vcn1_cidrs[0]), 4, 1))},${trimspace(port)}" ] : []
 
@@ -853,24 +862,28 @@ locals {
 
   ## Override this variable to define ingress rules for the HUB VCN app load balancer NSG. By default, it allows ingress from user-provided allowed CIDRs and ports of all spoke VCNs' web subnets (local.tt_vcn*_external_allowed_cidrs_to_ports_into_web_tier).
   app_load_balancer_nsg_ingress_rules = { for cidr_port_pair in local.all_spoke_vcns_allowed_cidrs_to_ports_into_hub_web_tier : "INGRESS-FROM-${split(",",cidr_port_pair)[0]}-ON-${split(",",cidr_port_pair)[1]}-RULE" => {
-    description  = "Ingress from ${split(",",cidr_port_pair)[0]} over ${split(":",split(",",cidr_port_pair)[1])[0]} on port ${split(":",split(",",cidr_port_pair)[1])[1]}."
+    description  = "Ingress from ${split(",",cidr_port_pair)[0]} over ${split(":",split(",",cidr_port_pair)[1])[0]} on ${split(":",split(",",cidr_port_pair)[1])[0] == "ICMP" ? "type/code ${split(":",split(",",cidr_port_pair)[1])[1]}" : "port ${split(":",split(",",cidr_port_pair)[1])[1]}"}."
     stateless    = false
     protocol     = split(":",split(",",cidr_port_pair)[1])[0]
     src          = split(",",cidr_port_pair)[0]
     src_type     = "CIDR_BLOCK"
-    dst_port_min = split(":",split(",",cidr_port_pair)[1])[1] == "ALL" ? null : split(":",split(",",cidr_port_pair)[1])[1]
-    dst_port_max = split(":",split(",",cidr_port_pair)[1])[1] == "ALL" ? null : split(":",split(",",cidr_port_pair)[1])[1]
+    dst_port_min = split(":",split(",",cidr_port_pair)[1])[0] != "ICMP" ? (split(":",split(",",cidr_port_pair)[1])[1] == "ALL" ? null : split(":",split(",",cidr_port_pair)[1])[1]) : null
+    dst_port_max = split(":",split(",",cidr_port_pair)[1])[0] != "ICMP" ? (split(":",split(",",cidr_port_pair)[1])[1] == "ALL" ? null : split(":",split(",",cidr_port_pair)[1])[1]) : null
+    icmp_type    = split(":",split(",",cidr_port_pair)[1])[0] == "ICMP" ? split("/", split(":",split(",",cidr_port_pair)[1])[1])[0] : null
+    icmp_code    = split(":",split(",",cidr_port_pair)[1])[0] == "ICMP" ? (length(split("/", split(":",split(",",cidr_port_pair)[1])[1])) > 1 ? split("/", split(":",split(",",cidr_port_pair)[1])[1])[1] : null) : null
   }}
   
   ## Override this variable to define egress rules for the HUB VCN app load balancer NSG. By default, it allows egress to all spoke VCNs' app subnets on the user-provided ingress destination app tier ports (var.tt_vcn*_app_ingress_destination_ports)
   app_load_balancer_nsg_egress_rules = { for cidr_port_pair in local.hub_vcn_egress_to_all_spoke_vcns_app_tier : "EGRESS-TO-${split(",",cidr_port_pair)[0]}-ON-${split(",",cidr_port_pair)[1]}-RULE" => {
-    description  = "Egress to ${split(",",cidr_port_pair)[0]} over ${split(":",split(",",cidr_port_pair)[1])[0]} on port ${split(":",split(",",cidr_port_pair)[1])[1]}."
+    description  = "Egress to ${split(",",cidr_port_pair)[0]} over ${split(":",split(",",cidr_port_pair)[1])[0]} on ${split(":",split(",",cidr_port_pair)[1])[0] == "ICMP" ? "type/code ${split(":",split(",",cidr_port_pair)[1])[1]}" : "port ${split(":",split(",",cidr_port_pair)[1])[1]}"}."
     stateless    = false
     protocol     = "TCP"
     dst          = split(",",cidr_port_pair)[0]
     dst_type     = "CIDR_BLOCK"
-    dst_port_min = split(":",split(",",cidr_port_pair)[1])[1]
-    dst_port_max = split(":",split(",",cidr_port_pair)[1])[1]
+    dst_port_min = split(":",split(",",cidr_port_pair)[1])[0] != "ICMP" ? (split(":",split(",",cidr_port_pair)[1])[1] == "ALL" ? null : split(":",split(",",cidr_port_pair)[1])[1]) : null
+    dst_port_max = split(":",split(",",cidr_port_pair)[1])[0] != "ICMP" ? (split(":",split(",",cidr_port_pair)[1])[1] == "ALL" ? null : split(":",split(",",cidr_port_pair)[1])[1]) : null
+    icmp_type    = split(":",split(",",cidr_port_pair)[1])[0] == "ICMP" ? split("/", split(":",split(",",cidr_port_pair)[1])[1])[0] : null
+    icmp_code    = split(":",split(",",cidr_port_pair)[1])[0] == "ICMP" ? (length(split("/", split(":",split(",",cidr_port_pair)[1])[1])) > 1 ? split("/", split(":",split(",",cidr_port_pair)[1])[1])[1] : null) : null
   }}
   ## ------------------------------------------------------------------------------------------
 }

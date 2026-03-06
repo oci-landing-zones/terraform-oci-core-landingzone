@@ -6,27 +6,34 @@ locals {
   add_oke_vcn2 = var.define_net == true && var.add_oke_vcn2 == true
 
   oke_vcn2_display_name                 = coalesce(var.oke_vcn2_name, "${var.service_label}-oke-vcn-2")
+  oke_vcn2_dns_label                    = substr(replace(coalesce(var.oke_vcn2_name, "oke-vcn-2"), "/[^\\w]/", ""), 0, 14)
   oke_vcn2_api_subnet_display_name      = coalesce(var.oke_vcn2_api_subnet_name, "${var.service_label}-oke-vcn-2-api-subnet")
+  oke_vcn2_api_subnet_dns_label         = substr(replace(coalesce(var.oke_vcn2_api_subnet_name, "api-subnet"), "/[^\\w]/", ""), 0, 14)
   oke_vcn2_api_subnet_cidr              = coalesce(var.oke_vcn2_api_subnet_cidr, cidrsubnet(var.oke_vcn2_cidrs[0], 8, 0))
   oke_vcn2_workers_subnet_display_name  = coalesce(var.oke_vcn2_workers_subnet_name, "${var.service_label}-oke-vcn-2-workers-subnet")
+  oke_vcn2_workers_subnet_dns_label     = substr(replace(coalesce(var.oke_vcn2_workers_subnet_name, "workers-subnet"), "/[^\\w]/", ""), 0, 14)
   oke_vcn2_workers_subnet_cidr          = coalesce(var.oke_vcn2_workers_subnet_cidr, cidrsubnet(var.oke_vcn2_cidrs[0], 8, 1))
   oke_vcn2_services_subnet_display_name = coalesce(var.oke_vcn2_services_subnet_name, "${var.service_label}-oke-vcn-2-services-subnet")
+  oke_vcn2_services_subnet_dns_label    = substr(replace(coalesce(var.oke_vcn2_services_subnet_name, "services-subnet"), "/[^\\w]/", ""), 0, 14)
   oke_vcn2_services_subnet_cidr         = coalesce(var.oke_vcn2_services_subnet_cidr, cidrsubnet(var.oke_vcn2_cidrs[0], 8, 2))
   oke_vcn2_mgmt_subnet_display_name     = coalesce(var.oke_vcn2_mgmt_subnet_name, "${var.service_label}-oke-vcn-2-mgmt-subnet")
+  oke_vcn2_mgmt_subnet_dns_label        = substr(replace(coalesce(var.oke_vcn2_mgmt_subnet_name, "mgmt-subnet"), "/[^\\w]/", ""), 0, 14)
   oke_vcn2_mgmt_subnet_cidr             = coalesce(var.oke_vcn2_mgmt_subnet_cidr, cidrsubnet(var.oke_vcn2_cidrs[0], 12, 48))
   oke_vcn2_pods_subnet_display_name     = coalesce(var.oke_vcn2_pods_subnet_name, "${var.service_label}-oke-vcn-2-pods-subnet")
+  oke_vcn2_pods_subnet_dns_label        = substr(replace(coalesce(var.oke_vcn2_pods_subnet_name, "pods-subnet"), "/[^\\w]/", ""), 0, 14)
   oke_vcn2_pods_subnet_cidr             = coalesce(var.oke_vcn2_pods_subnet_cidr, cidrsubnet(var.oke_vcn2_cidrs[0], 3, 1))
 
   ## This variable defines the allowed CIDR and port combinations for ingress into the OKE-VCN-2 services tier subnet when the subnet is public.  
-  oke_vcn2_external_allowed_cidrs_to_ports_into_services_tier = local.add_oke_vcn2 == true ? flatten([for cidr in var.oke_vcn2_external_allowed_cidrs_into_services_tier : [for port in var.oke_vcn2_services_ingress_destination_ports : "${trimspace(cidr)},${trimspace(port)}" ]]) : []
+  oke_vcn2_external_allowed_cidrs_to_ports_into_services_tier = local.add_oke_vcn2 == true ? flatten([for cidr in var.oke_vcn2_external_allowed_cidrs_into_services_tier : [for port in var.oke_vcn2_services_ingress_destination_ports : "${trimspace(cidr)},${trimspace(port)}" ] if length(var.oke_vcn2_external_allowed_cidrs_into_services_tier) > 0 && length(var.oke_vcn2_services_ingress_destination_ports) > 0]) : []
   
   oke_vcn_2 = local.add_oke_vcn2 == true ? {
     "OKE-VCN-2" = {
+      enable_cis_checks                = local.oke_vcn2_cis_checks_enabled
       display_name                     = local. oke_vcn2_display_name
       is_ipv6enabled                   = false
       is_oracle_gua_allocation_enabled = false
       cidr_blocks                      = var.oke_vcn2_cidrs,
-      dns_label                        = substr(replace(coalesce(var.oke_vcn2_name, "oke-vcn-2"), "/[^\\w]/", ""), 0, 14)
+      dns_label                        = local.oke_vcn2_dns_label
       block_nat_traffic                = false
 
       subnets = merge(
@@ -35,10 +42,11 @@ locals {
             cidr_block                = local.oke_vcn2_api_subnet_cidr
             dhcp_options_key          = "default_dhcp_options"
             display_name              = local.oke_vcn2_api_subnet_display_name
-            dns_label                 = substr(replace(coalesce(var.oke_vcn2_api_subnet_name, "api-subnet"), "/[^\\w]/", ""), 0, 14)
+            dns_label                 = local.oke_vcn2_api_subnet_dns_label
             ipv6cidr_blocks           = []
             prohibit_internet_ingress = true
             route_table_key           = "OKE-VCN-2-API-SUBNET-ROUTE-TABLE"
+            security_list_keys        = local.oke_vcn2_api_subnet_security_list != null && (local.hub_with_vcn == true && var.oke_vcn2_attach_to_drg == true) ? ["CUSTOM-OKE-VCN-2-API-SUBNET-SL"] : []
           }
         },
         {
@@ -46,11 +54,11 @@ locals {
             cidr_block                = local.oke_vcn2_workers_subnet_cidr
             dhcp_options_key          = "default_dhcp_options"
             display_name              = local.oke_vcn2_workers_subnet_display_name
-            dns_label                 = substr(replace(coalesce(var.oke_vcn2_workers_subnet_name, "workers-subnet"), "/[^\\w]/", ""), 0, 14)
+            dns_label                 = local.oke_vcn2_workers_subnet_dns_label
             ipv6cidr_blocks           = []
             prohibit_internet_ingress = true
             route_table_key           = "OKE-VCN-2-WORKERS-SUBNET-ROUTE-TABLE"
-            security_list_keys        = ["OKE-VCN-2-WORKERS-SUBNET-SL"]
+            security_list_keys        = local.oke_vcn2_workers_subnet_security_list != null && (local.hub_with_vcn == true && var.oke_vcn2_attach_to_drg == true) ? ["CUSTOM-OKE-VCN-2-WORKERS-SUBNET-SL"] : ["OKE-VCN-2-WORKERS-SUBNET-SL"]
           }
         },
         {
@@ -58,11 +66,11 @@ locals {
             cidr_block                = local.oke_vcn2_services_subnet_cidr
             dhcp_options_key          = "default_dhcp_options"
             display_name              = local.oke_vcn2_services_subnet_display_name
-            dns_label                 = substr(replace(coalesce(var.oke_vcn2_services_subnet_name, "services-subnet"), "/[^\\w]/", ""), 0, 14)
+            dns_label                 = local.oke_vcn2_services_subnet_dns_label
             ipv6cidr_blocks           = []
             prohibit_internet_ingress = var.oke_vcn2_services_subnet_is_private
             route_table_key           = "OKE-VCN-2-SERVICES-SUBNET-ROUTE-TABLE"
-            security_list_keys        = ["OKE-VCN-2-SERVICES-SUBNET-SL"]
+            security_list_keys        = local.oke_vcn2_services_subnet_security_list != null && (local.hub_with_vcn == true && var.oke_vcn2_attach_to_drg == true) ? ["CUSTOM-OKE-VCN-2-SERVICES-SUBNET-SL"] : ["OKE-VCN-2-SERVICES-SUBNET-SL"]
           }
         },
         var.add_oke_vcn2_mgmt_subnet ? {
@@ -70,11 +78,11 @@ locals {
             cidr_block                = local.oke_vcn2_mgmt_subnet_cidr
             dhcp_options_key          = "default_dhcp_options"
             display_name              = local.oke_vcn2_mgmt_subnet_display_name
-            dns_label                 = substr(replace(coalesce(var.oke_vcn2_mgmt_subnet_name, "mgmt-subnet"), "/[^\\w]/", ""), 0, 14)
+            dns_label                 = local.oke_vcn2_mgmt_subnet_dns_label
             ipv6cidr_blocks           = []
             prohibit_internet_ingress = true
             route_table_key           = "OKE-VCN-2-MGMT-SUBNET-ROUTE-TABLE"
-            security_list_keys        = ["OKE-VCN-2-MGMT-SUBNET-SL"]
+            security_list_keys        = local.oke_vcn2_mgmt_subnet_security_list != null && var.add_oke_vcn2_mgmt_subnet && (local.hub_with_vcn == true && var.oke_vcn2_attach_to_drg == true) ? ["CUSTOM-OKE-VCN-2-MGMT-SUBNET-SL"] : ["OKE-VCN-2-MGMT-SUBNET-SL"]
           }
         } : {},
         upper(var.oke_vcn2_cni_type) == "NATIVE" ? {
@@ -82,11 +90,11 @@ locals {
             cidr_block                = local.oke_vcn2_pods_subnet_cidr
             dhcp_options_key          = "default_dhcp_options"
             display_name              = local.oke_vcn2_pods_subnet_display_name
-            dns_label                 = substr(replace(coalesce(var.oke_vcn2_pods_subnet_name, "pods-subnet"), "/[^\\w]/", ""), 0, 14)
+            dns_label                 = local.oke_vcn2_pods_subnet_dns_label
             ipv6cidr_blocks           = []
             prohibit_internet_ingress = true
             route_table_key           = "OKE-VCN-2-PODS-SUBNET-ROUTE-TABLE"
-            security_list_keys        = ["OKE-VCN-2-PODS-SUBNET-SL"]
+            security_list_keys        = local.oke_vcn2_pods_subnet_security_list != null && upper(var.oke_vcn2_cni_type) == "NATIVE" && (local.hub_with_vcn == true && var.oke_vcn2_attach_to_drg == true) ? ["CUSTOM-OKE-VCN-2-PODS-SUBNET-SL"] : ["OKE-VCN-2-PODS-SUBNET-SL"]
           }
         } : {}
       )
@@ -103,33 +111,12 @@ locals {
                 destination_type   = "SERVICE_CIDR_BLOCK"
               },
               "NATGW-RULE" = {
-                  network_entity_key = "OKE-VCN-2-NAT-GATEWAY"
-                  description        = "Traffic destined for networks outside the VCN is routed through the NAT Gateway."
-                  destination        = "0.0.0.0/0"
-                  destination_type   = "CIDR_BLOCK"
-              }
-            } : {
-              "SGW-RULE" = {
-                network_entity_key = "OKE-VCN-2-SERVICE-GATEWAY"
-                description        = "Traffic destined for all OCI services in Oracle Services Network is routed through the Service Gateway."
-                destination        = "all-services"
-                destination_type   = "SERVICE_CIDR_BLOCK"
-              },  
-              "HUB-DRG-RULE" = {
-                network_entity_key = "HUB-DRG"
-                description        =  "Traffic destined for networks outside the VCN is routed through the DRG."
+                network_entity_key = "OKE-VCN-2-NAT-GATEWAY"
+                description        = "Traffic destined for networks outside the VCN is routed through the NAT Gateway."
                 destination        = "0.0.0.0/0"
                 destination_type   = "CIDR_BLOCK"
               }
-            }
-          )
-        }
-        },
-        {
-          "OKE-VCN-2-WORKERS-SUBNET-ROUTE-TABLE" = {
-            display_name = "workers-subnet-route-table"
-            route_rules = merge(
-            local.hub_with_vcn == false ? merge( # Case when there is no Hub VCN. The routes use VCN own gateways, but there can be cross VCN and on-prem connectivity through the DRG.
+            } : merge(
               {
                 "SGW-RULE" = {
                   network_entity_key = "OKE-VCN-2-SERVICE-GATEWAY"
@@ -138,30 +125,111 @@ locals {
                   destination_type   = "SERVICE_CIDR_BLOCK"
                 }
               },
-              {  
-                "NATGW-RULE" = {
-                   network_entity_key = "OKE-VCN-2-NAT-GATEWAY"
-                   description        = "Traffic destined for networks outside the VCN is routed through the NAT Gateway."
-                   destination        = "0.0.0.0/0"
-                   destination_type   = "CIDR_BLOCK"
+              {
+                "HUB-DRG-RULE" = {
+                  network_entity_key = "HUB-DRG"
+                  description        =  "Traffic destined for networks outside the VCN is routed through the DRG."
+                  destination        = "0.0.0.0/0"
+                  destination_type   = "CIDR_BLOCK"
                 }
               },
-              local.oke_vcn_2_drg_routing # There can be cross VCN and on-prem connectivity through the DRG.
-            ) : {
-              "SGW-RULE" = {
-                network_entity_key = "OKE-VCN-2-SERVICE-GATEWAY"
-                description        = "Traffic destined for all OCI services in Oracle Services Network is routed through the Service Gateway."
-                destination        = "all-services"
-                destination_type   = "SERVICE_CIDR_BLOCK"
-              },  
-              "HUB-DRG-RULE" = {
-                network_entity_key = "HUB-DRG"
-                description        =  "Traffic destined for networks outside the VCN is routed through the DRG."
-                destination        = "0.0.0.0/0"
-                destination_type   = "CIDR_BLOCK"
-              }
-            }
+              local.oke_vcn2_enable_intra_vcn_drg_route == true && var.oke_vcn2_attach_to_drg == true ? merge(
+                {
+                  "WORKERS-SUBNET-RULE" = {
+                    network_entity_key = "HUB-DRG"
+                    description        = "Traffic destined for ${local.oke_vcn2_workers_subnet_display_name} is routed through the DRG."
+                    destination        = local.oke_vcn2_workers_subnet_cidr
+                    destination_type   = "CIDR_BLOCK"
+                  }
+                },
+                var.add_oke_vcn2_mgmt_subnet ? {
+                  "MGMT-SUBNET-RULE" = {
+                    network_entity_key = "HUB-DRG"
+                    description        = "Traffic destined for ${local.oke_vcn2_mgmt_subnet_display_name} is routed through the DRG."
+                    destination        = local.oke_vcn2_mgmt_subnet_cidr
+                    destination_type   = "CIDR_BLOCK"
+                  }
+                } : {},
+                upper(var.oke_vcn2_cni_type) == "NATIVE" ? {
+                  "PODS-SUBNET-RULE" = {
+                    network_entity_key = "HUB-DRG"
+                    description        = "Traffic destined for ${local.oke_vcn2_pods_subnet_display_name} is routed through the DRG."
+                    destination        = local.oke_vcn2_pods_subnet_cidr
+                    destination_type   = "CIDR_BLOCK"
+                  }
+                } : {}
+              ) : {}
+            )
           )
+        }
+        },
+        {
+          "OKE-VCN-2-WORKERS-SUBNET-ROUTE-TABLE" = {
+            display_name = "workers-subnet-route-table"
+            route_rules = merge(
+              local.hub_with_vcn == false ? merge( # Case when there is no Hub VCN. The routes use VCN own gateways, but there can be cross VCN and on-prem connectivity through the DRG.
+                {
+                  "SGW-RULE" = {
+                    network_entity_key = "OKE-VCN-2-SERVICE-GATEWAY"
+                    description        = "Traffic destined for all OCI services in Oracle Services Network is routed through the Service Gateway."
+                    destination        = "all-services"
+                    destination_type   = "SERVICE_CIDR_BLOCK"
+                  }
+                },
+                {
+                  "NATGW-RULE" = {
+                    network_entity_key = "OKE-VCN-2-NAT-GATEWAY"
+                    description        = "Traffic destined for networks outside the VCN is routed through the NAT Gateway."
+                    destination        = "0.0.0.0/0"
+                    destination_type   = "CIDR_BLOCK"
+                  }
+                },
+                local.oke_vcn_2_drg_routing # There can be cross VCN and on-prem connectivity through the DRG.
+              ) : merge(
+                {
+                  "SGW-RULE" = {
+                    network_entity_key = "OKE-VCN-2-SERVICE-GATEWAY"
+                    description        = "Traffic destined for all OCI services in Oracle Services Network is routed through the Service Gateway."
+                    destination        = "all-services"
+                    destination_type   = "SERVICE_CIDR_BLOCK"
+                  }
+                },
+                {
+                  "HUB-DRG-RULE" = {
+                    network_entity_key = "HUB-DRG"
+                    description        =  "Traffic destined for networks outside the VCN is routed through the DRG."
+                    destination        = "0.0.0.0/0"
+                    destination_type   = "CIDR_BLOCK"
+                  }
+                },
+                local.oke_vcn2_enable_intra_vcn_drg_route == true && var.oke_vcn2_attach_to_drg == true ? merge(
+                  {
+                    "SERVICES-SUBNET-RULE" = {
+                      network_entity_key = "HUB-DRG"
+                      description        = "Traffic destined for ${local.oke_vcn2_services_subnet_display_name} is routed through the DRG."
+                      destination        = local.oke_vcn2_services_subnet_cidr
+                      destination_type   = "CIDR_BLOCK"
+                    }
+                  },
+                  {
+                    "API-SUBNET-RULE" = {
+                      network_entity_key = "HUB-DRG"
+                      description        = "Traffic destined for ${local.oke_vcn2_api_subnet_display_name} is routed through the DRG."
+                      destination        = local.oke_vcn2_api_subnet_cidr
+                      destination_type   = "CIDR_BLOCK"
+                    }
+                  },
+                  var.add_oke_vcn2_mgmt_subnet ? {
+                    "MGMT-SUBNET-RULE" = {
+                      network_entity_key = "HUB-DRG"
+                      description        = "Traffic destined for ${local.oke_vcn2_mgmt_subnet_display_name} is routed through the DRG."
+                      destination        = local.oke_vcn2_mgmt_subnet_cidr
+                      destination_type   = "CIDR_BLOCK"
+                    }
+                  } : {}
+                ) : {}
+              )
+            )  
           }
         },
         {
@@ -184,21 +252,51 @@ locals {
                   destination_type   = "SERVICE_CIDR_BLOCK"
                 }
               },
-              local.oke_vcn_2_drg_routing # There can be cross VCN and on-prem connectivity through the DRG.  
-             ) : {
-              "HUB-DRG-RULE" = {
-                network_entity_key = "HUB-DRG" # Case when there is a Hub VCN. All traffic is routed through the DRG.
-                description        = "Traffic destined for networks outside the VCN is routed through the DRG."
-                destination        = "0.0.0.0/0"
-                destination_type   = "CIDR_BLOCK"
+              local.oke_vcn_2_drg_routing # There can be cross VCN and on-prem connectivity through the DRG.
+             ) : merge(
+              {
+                "HUB-DRG-RULE" = {
+                  network_entity_key = "HUB-DRG" # Case when there is a Hub VCN. All traffic is routed through the DRG.
+                  description        = "Traffic destined for networks outside the VCN is routed through the DRG."
+                  destination        = "0.0.0.0/0"
+                  destination_type   = "CIDR_BLOCK"
+                }
               },
-              "SGW-RULE" = {
-                network_entity_key = "OKE-VCN-2-SERVICE-GATEWAY"
-                description        = "Traffic destined for all OCI services in Oracle Services Network is routed through the Service Gateway."
-                destination        = "all-services"
-                destination_type   = "SERVICE_CIDR_BLOCK"
-              }
-            }
+              {
+                "SGW-RULE" = {
+                  network_entity_key = "OKE-VCN-2-SERVICE-GATEWAY"
+                  description        = "Traffic destined for all OCI services in Oracle Services Network is routed through the Service Gateway."
+                  destination        = "all-services"
+                  destination_type   = "SERVICE_CIDR_BLOCK"
+                }
+              },
+              local.oke_vcn2_enable_intra_vcn_drg_route == true && var.oke_vcn2_attach_to_drg == true ? merge(
+                {
+                  "WORKERS-SUBNET-RULE" = {
+                    network_entity_key = "HUB-DRG"
+                    description        = "Traffic destined for ${local.oke_vcn2_workers_subnet_display_name} is routed through the DRG."
+                    destination        = local.oke_vcn2_workers_subnet_cidr
+                    destination_type   = "CIDR_BLOCK"
+                  }
+                },
+                var.add_oke_vcn2_mgmt_subnet ? {
+                  "MGMT-SUBNET-RULE" = {
+                    network_entity_key = "HUB-DRG"
+                    description        = "Traffic destined for ${local.oke_vcn2_mgmt_subnet_display_name} is routed through the DRG."
+                    destination        = local.oke_vcn2_mgmt_subnet_cidr
+                    destination_type   = "CIDR_BLOCK"
+                  }
+                } : {},
+                upper(var.oke_vcn2_cni_type) == "NATIVE" ? {
+                  "PODS-SUBNET-RULE" = {
+                    network_entity_key = "HUB-DRG"
+                    description        = "Traffic destined for ${local.oke_vcn2_pods_subnet_display_name} is routed through the DRG."
+                    destination        = local.oke_vcn2_pods_subnet_cidr
+                    destination_type   = "CIDR_BLOCK"
+                  }
+                } : {}
+              ) : {}
+            )
           }
         },
         var.add_oke_vcn2_mgmt_subnet ? {
@@ -222,20 +320,58 @@ locals {
                 }
               },  
               local.oke_vcn_2_drg_routing # There can be cross VCN and on-prem connectivity through the DRG.
-             ) : {
-              "HUB-DRG-RULE" = {
-                network_entity_key = "HUB-DRG"
-                description        = "Traffic destined for networks outside the VCN is routed through the DRG."
-                destination        = "0.0.0.0/0"
-                destination_type   = "CIDR_BLOCK"
-              }
-              "SGW-RULE" = {
-                network_entity_key = "OKE-VCN-2-SERVICE-GATEWAY"
-                description        = "Traffic destined for all OCI services in Oracle Services Network is routed through the Service Gateway."
-                destination        = "all-services"
-                destination_type   = "SERVICE_CIDR_BLOCK"
-              }
-            }
+             ) : merge(
+              {
+                "HUB-DRG-RULE" = {
+                  network_entity_key = "HUB-DRG"
+                  description        = "Traffic destined for networks outside the VCN is routed through the DRG."
+                  destination        = "0.0.0.0/0"
+                  destination_type   = "CIDR_BLOCK"
+                }
+              },
+              {
+                "SGW-RULE" = {
+                  network_entity_key = "OKE-VCN-2-SERVICE-GATEWAY"
+                  description        = "Traffic destined for all OCI services in Oracle Services Network is routed through the Service Gateway."
+                  destination        = "all-services"
+                  destination_type   = "SERVICE_CIDR_BLOCK"
+                }
+              },
+              local.oke_vcn2_enable_intra_vcn_drg_route == true && var.oke_vcn2_attach_to_drg == true ? merge(
+                {
+                  "WORKERS-SUBNET-RULE" = {
+                    network_entity_key = "HUB-DRG"
+                    description        = "Traffic destined for ${local.oke_vcn2_workers_subnet_display_name} is routed through the DRG."
+                    destination        = local.oke_vcn2_workers_subnet_cidr
+                    destination_type   = "CIDR_BLOCK"
+                  }
+                },
+                {
+                  "SERVICES-SUBNET-RULE" = {
+                    network_entity_key = "HUB-DRG"
+                    description        = "Traffic destined for ${local.oke_vcn2_services_subnet_display_name} is routed through the DRG."
+                    destination        = local.oke_vcn2_services_subnet_cidr
+                    destination_type   = "CIDR_BLOCK"
+                  }
+                },
+                {
+                  "API-SUBNET-RULE" = {
+                    network_entity_key = "HUB-DRG"
+                    description        = "Traffic destined for ${local.oke_vcn2_api_subnet_display_name} is routed through the DRG."
+                    destination        = local.oke_vcn2_api_subnet_cidr
+                    destination_type   = "CIDR_BLOCK"
+                  }
+                },
+                upper(var.oke_vcn2_cni_type) == "NATIVE" ? {
+                  "PODS-SUBNET-RULE" = {
+                    network_entity_key = "HUB-DRG"
+                    description        = "Traffic destined for ${local.oke_vcn2_pods_subnet_display_name} is routed through the DRG."
+                    destination        = local.oke_vcn2_pods_subnet_cidr
+                    destination_type   = "CIDR_BLOCK"
+                  }
+                } : {}
+              ) : {}
+            )
           }
         } : {},
         upper(var.oke_vcn2_cni_type) == "NATIVE" ? {
@@ -260,26 +396,59 @@ locals {
                 }
               },
               local.oke_vcn_2_drg_routing # There can be cross VCN and on-prem connectivity through the DRG.
-            ) : {
-              "SGW-RULE" = {
-                network_entity_key = "OKE-VCN-2-SERVICE-GATEWAY"
-                description        = "Traffic destined for all OCI services in Oracle Services Network is routed through the Service Gateway."
-                destination        = "all-services"
-                destination_type   = "SERVICE_CIDR_BLOCK"
-              },  
-              "HUB-DRG-RULE" = {
-                network_entity_key = "HUB-DRG"
-                description        =  "Traffic destined for networks outside the VCN is routed through the DRG."
-                destination        = "0.0.0.0/0"
-                destination_type   = "CIDR_BLOCK"
-              }
-            }
+            ) : merge(
+              {
+                "SGW-RULE" = {
+                  network_entity_key = "OKE-VCN-2-SERVICE-GATEWAY"
+                  description        = "Traffic destined for all OCI services in Oracle Services Network is routed through the Service Gateway."
+                  destination        = "all-services"
+                  destination_type   = "SERVICE_CIDR_BLOCK"
+                }
+              },
+              {
+                "HUB-DRG-RULE" = {
+                  network_entity_key = "HUB-DRG"
+                  description        =  "Traffic destined for networks outside the VCN is routed through the DRG."
+                  destination        = "0.0.0.0/0"
+                  destination_type   = "CIDR_BLOCK"
+                }
+              },
+              local.oke_vcn2_enable_intra_vcn_drg_route == true && var.oke_vcn2_attach_to_drg == true ? merge(
+                {
+                  "SERVICES-SUBNET-RULE" = {
+                    network_entity_key = "HUB-DRG"
+                    description        = "Traffic destined for ${local.oke_vcn2_services_subnet_display_name} is routed through the DRG."
+                    destination        = local.oke_vcn2_services_subnet_cidr
+                    destination_type   = "CIDR_BLOCK"
+                  }
+                },
+                {
+                  "API-SUBNET-RULE" = {
+                    network_entity_key = "HUB-DRG"
+                    description        = "Traffic destined for ${local.oke_vcn2_api_subnet_display_name} is routed through the DRG."
+                    destination        = local.oke_vcn2_api_subnet_cidr
+                    destination_type   = "CIDR_BLOCK"
+                  }
+                },
+                var.add_oke_vcn2_mgmt_subnet ? {
+                  "MGMT-SUBNET-RULE" = {
+                    network_entity_key = "HUB-DRG"
+                    description        = "Traffic destined for ${local.oke_vcn2_mgmt_subnet_display_name} is routed through the DRG."
+                    destination        = local.oke_vcn2_mgmt_subnet_cidr
+                    destination_type   = "CIDR_BLOCK"
+                  }
+                } : {}
+              ) : {}
+            )
             )
           }
         } : {}
       )
 
       security_lists = merge(
+        local.oke_vcn2_api_subnet_security_list != null && (local.hub_with_vcn == true && var.oke_vcn2_attach_to_drg == true) ? {
+          "CUSTOM-OKE-VCN-2-API-SUBNET-SL" = local.oke_vcn2_api_subnet_security_list
+        } : {},
         {
           "OKE-VCN-2-WORKERS-SUBNET-SL" = {
             display_name = "${local.oke_vcn2_workers_subnet_display_name}-security-list"
@@ -384,6 +553,18 @@ locals {
               }
             ]
           }
+        } : {},
+        local.oke_vcn2_workers_subnet_security_list != null && (local.hub_with_vcn == true && var.oke_vcn2_attach_to_drg == true) ? {
+          "CUSTOM-OKE-VCN-2-WORKERS-SUBNET-SL" = local.oke_vcn2_workers_subnet_security_list
+        } : {},
+        local.oke_vcn2_services_subnet_security_list != null && (local.hub_with_vcn == true && var.oke_vcn2_attach_to_drg == true) ? {
+          "CUSTOM-OKE-VCN-2-SERVICES-SUBNET-SL" = local.oke_vcn2_services_subnet_security_list
+        } : {},
+        local.oke_vcn2_mgmt_subnet_security_list != null && var.add_oke_vcn2_mgmt_subnet && (local.hub_with_vcn == true && var.oke_vcn2_attach_to_drg == true) ? {
+          "CUSTOM-OKE-VCN-2-MGMT-SUBNET-SL" = local.oke_vcn2_mgmt_subnet_security_list
+        } : {},
+        local.oke_vcn2_pods_subnet_security_list != null && upper(var.oke_vcn2_cni_type) == "NATIVE" && (local.hub_with_vcn == true && var.oke_vcn2_attach_to_drg == true) ? {
+          "CUSTOM-OKE-VCN-2-PODS-SUBNET-SL" = local.oke_vcn2_pods_subnet_security_list
         } : {}
       )
 
@@ -759,13 +940,15 @@ locals {
               }
             }),
             ingress_rules = { for cidr_port_pair in local.oke_vcn2_external_allowed_cidrs_to_ports_into_services_tier : "INGRESS-FROM-${split(",",cidr_port_pair)[0]}-ON-${split(",",cidr_port_pair)[1]}-RULE" => {
-              description  = "Ingress from ${split(",",cidr_port_pair)[0]} over ${split(":",split(",",cidr_port_pair)[1])[0]} on port ${split(":",split(",",cidr_port_pair)[1])[1]}."
+              description  = "Ingress from ${split(",",cidr_port_pair)[0]} over ${split(":",split(",",cidr_port_pair)[1])[0]} on ${split(":",split(",",cidr_port_pair)[1])[0] == "ICMP" ? "type/code ${split(":",split(",",cidr_port_pair)[1])[1]}" : "port ${split(":",split(",",cidr_port_pair)[1])[1]}"}."
               stateless    = false
               protocol     = split(":",split(",",cidr_port_pair)[1])[0]
               src          = split(",",cidr_port_pair)[0]
               src_type     = "CIDR_BLOCK"
-              dst_port_min = split(":",split(",",cidr_port_pair)[1])[1] == "ALL" ? null : split(":",split(",",cidr_port_pair)[1])[1]
-              dst_port_max = split(":",split(",",cidr_port_pair)[1])[1] == "ALL" ? null : split(":",split(",",cidr_port_pair)[1])[1]
+              dst_port_min = split(":",split(",",cidr_port_pair)[1])[0] != "ICMP" ? (split(":",split(",",cidr_port_pair)[1])[1]) : null
+              dst_port_max = split(":",split(",",cidr_port_pair)[1])[0] != "ICMP" ? (split(":",split(",",cidr_port_pair)[1])[1]) : null
+              icmp_type    = split(":",split(",",cidr_port_pair)[1])[0] == "ICMP" ? split("/", split(":",split(",",cidr_port_pair)[1])[1])[0] : null
+              icmp_code    = split(":",split(",",cidr_port_pair)[1])[0] == "ICMP" ? (length(split("/", split(":",split(",",cidr_port_pair)[1])[1])) > 1 ? split("/", split(":",split(",",cidr_port_pair)[1])[1])[1] : null) : null
             }}
           }
         },  
@@ -907,7 +1090,8 @@ locals {
               local.oke_vcn_2_to_pods_subnet_cross_vcn_ingress
             )
           }
-        } : {}
+        } : {},
+        local.oke_vcn2_additional_nsgs
       )
 
       vcn_specific_gateways = merge(
@@ -970,23 +1154,27 @@ locals {
   oke_vcn_2_to_services_subnet_cross_vcn_egress = merge(
     (local.add_oke_vcn2 == true && var.oke_vcn2_attach_to_drg == true && var.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true) &&
     (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.oke_vcn2_routable_vcns) == 0 || contains(var.oke_vcn2_routable_vcns, "OKE-VCN-1")))) ? { for port in var.oke_vcn1_services_ingress_destination_ports : "EGRESS-TO-OKE-VCN1-ON-${port}-RULE" => {
-      description  = "Egress to ${local.oke_vcn1_services_subnet_display_name} over ${split(":",port)[0]} on port ${split(":",port)[1]}."
+      description  = "Egress to ${local.oke_vcn1_services_subnet_display_name} over ${split(":",port)[0]} on ${split(":", port)[0] == "ICMP" ? "type/code ${split(":", port)[1]}" : "port ${split(":", port)[1]}"}."
       stateless    = false
       protocol     = split(":",port)[0]
       dst          = local.oke_vcn1_services_subnet_cidr
       dst_type     = "CIDR_BLOCK"
-      dst_port_min = split(":",port)[1]
-      dst_port_max = split(":",port)[1]
+      dst_port_min = split(":", port)[0] != "ICMP" ? (split(":", port)[1]) : null
+      dst_port_max = split(":", port)[0] != "ICMP" ? (split(":", port)[1]) : null
+      icmp_type    = split(":", port)[0] == "ICMP" ? split("/", split(":", port)[1])[0] : null
+      icmp_code    = split(":", port)[0] == "ICMP" ? (length(split("/", split(":", port)[1])) > 1 ? split("/", split(":", port)[1])[1] : null) : null
     }} : {},
     (local.add_oke_vcn2 == true && var.oke_vcn2_attach_to_drg == true && var.add_oke_vcn3 == true && var.oke_vcn3_attach_to_drg == true) &&
     (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.oke_vcn2_routable_vcns) == 0 || contains(var.oke_vcn2_routable_vcns, "OKE-VCN-3")))) ? { for port in var.oke_vcn3_services_ingress_destination_ports : "EGRESS-TO-OKE-VCN3-ON-${port}-RULE" => {
-     description  = "Egress to ${local.oke_vcn3_services_subnet_display_name} over ${split(":",port)[0]} on port ${split(":",port)[1]}."
+     description  = "Egress to ${local.oke_vcn3_services_subnet_display_name} over ${split(":",port)[0]} on ${split(":", port)[0] == "ICMP" ? "type/code ${split(":", port)[1]}" : "port ${split(":", port)[1]}"}."
       stateless    = false
       protocol     = split(":",port)[0]
       dst          = local.oke_vcn3_services_subnet_cidr
       dst_type     = "CIDR_BLOCK"
-      dst_port_min = split(":",port)[1]
-      dst_port_max = split(":",port)[1]
+      dst_port_min = split(":", port)[0] != "ICMP" ? (split(":", port)[1]) : null
+      dst_port_max = split(":", port)[0] != "ICMP" ? (split(":", port)[1]) : null
+      icmp_type    = split(":", port)[0] == "ICMP" ? split("/", split(":", port)[1])[0] : null
+      icmp_code    = split(":", port)[0] == "ICMP" ? (length(split("/", split(":", port)[1])) > 1 ? split("/", split(":", port)[1])[1] : null) : null
     }} : {}
   )
 
@@ -1018,33 +1206,39 @@ locals {
   oke_vcn_2_to_client_subnet_cross_vcn_egress = merge(
     (local.add_oke_vcn2 == true && var.oke_vcn2_attach_to_drg == true && var.add_exa_vcn1 == true && var.exa_vcn1_attach_to_drg == true) &&
     (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.oke_vcn2_routable_vcns) == 0 || contains(var.oke_vcn2_routable_vcns, "EXA-VCN-1")))) ? { for port in var.exa_vcn1_client_ingress_destination_ports : "EGRESS-TO-EXA-VCN1-ON-${port}-RULE" => {
-      description  = "Egress to ${local.exa_vcn1_client_subnet_display_name} over ${split(":",port)[0]} on port ${split(":",port)[1]}."
+      description  = "Egress to ${local.exa_vcn1_client_subnet_display_name} over ${split(":",port)[0]} on ${split(":", port)[0] == "ICMP" ? "type/code ${split(":", port)[1]}" : "port ${split(":", port)[1]}"}."
       stateless    = false
       protocol     = split(":",port)[0]
       dst          = local.exa_vcn1_client_subnet_cidr
       dst_type     = "CIDR_BLOCK"
-      dst_port_min = split(":",port)[1]
-      dst_port_max = split(":",port)[1]
+      dst_port_min = split(":", port)[0] != "ICMP" ? (split(":", port)[1]) : null
+      dst_port_max = split(":", port)[0] != "ICMP" ? (split(":", port)[1]) : null
+      icmp_type    = split(":", port)[0] == "ICMP" ? split("/", split(":", port)[1])[0] : null
+      icmp_code    = split(":", port)[0] == "ICMP" ? (length(split("/", split(":", port)[1])) > 1 ? split("/", split(":", port)[1])[1] : null) : null
     }} : {},
     (local.add_oke_vcn2 == true && var.oke_vcn2_attach_to_drg == true && var.add_exa_vcn2 == true && var.exa_vcn2_attach_to_drg == true) &&
     (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.oke_vcn2_routable_vcns) == 0 || contains(var.oke_vcn2_routable_vcns, "EXA-VCN-2")))) ? { for port in var.exa_vcn2_client_ingress_destination_ports : "EGRESS-TO-EXA-VCN2-ON-${port}-RULE" => {
-      description  = "Egress to ${local.exa_vcn2_client_subnet_display_name} over ${split(":",port)[0]} on port ${split(":",port)[1]}."
+      description  = "Egress to ${local.exa_vcn2_client_subnet_display_name} over ${split(":",port)[0]} on ${split(":", port)[0] == "ICMP" ? "type/code ${split(":", port)[1]}" : "port ${split(":", port)[1]}"}."
       stateless    = false
       protocol     = split(":",port)[0]
       dst          = local.exa_vcn2_client_subnet_cidr
       dst_type     = "CIDR_BLOCK"
-      dst_port_min = split(":",port)[1]
-      dst_port_max = split(":",port)[1]
+      dst_port_min = split(":", port)[0] != "ICMP" ? (split(":", port)[1]) : null
+      dst_port_max = split(":", port)[0] != "ICMP" ? (split(":", port)[1]) : null
+      icmp_type    = split(":", port)[0] == "ICMP" ? split("/", split(":", port)[1])[0] : null
+      icmp_code    = split(":", port)[0] == "ICMP" ? (length(split("/", split(":", port)[1])) > 1 ? split("/", split(":", port)[1])[1] : null) : null
     }} : {},
     (local.add_oke_vcn2 == true && var.oke_vcn2_attach_to_drg == true && var.add_exa_vcn3 == true && var.exa_vcn3_attach_to_drg == true) &&
     (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.oke_vcn2_routable_vcns) == 0 || contains(var.oke_vcn2_routable_vcns, "EXA-VCN-3")))) ? { for port in var.exa_vcn3_client_ingress_destination_ports : "EGRESS-TO-EXA-VCN3-ON-${port}-RULE" => {
-      description  = "Egress to ${local.exa_vcn3_client_subnet_display_name} over ${split(":",port)[0]} on port ${split(":",port)[1]}."
+      description  = "Egress to ${local.exa_vcn3_client_subnet_display_name} over ${split(":",port)[0]} on ${split(":", port)[0] == "ICMP" ? "type/code ${split(":", port)[1]}" : "port ${split(":", port)[1]}"}."
       stateless    = false
       protocol     = split(":",port)[0]
       dst          = local.exa_vcn3_client_subnet_cidr
       dst_type     = "CIDR_BLOCK"
-      dst_port_min = split(":",port)[1]
-      dst_port_max = split(":",port)[1]
+      dst_port_min = split(":", port)[0] != "ICMP" ? (split(":", port)[1]) : null
+      dst_port_max = split(":", port)[0] != "ICMP" ? (split(":", port)[1]) : null
+      icmp_type    = split(":", port)[0] == "ICMP" ? split("/", split(":", port)[1])[0] : null
+      icmp_code    = split(":", port)[0] == "ICMP" ? (length(split("/", split(":", port)[1])) > 1 ? split("/", split(":", port)[1])[1] : null) : null
     }} : {}
   )
 
@@ -1052,33 +1246,39 @@ locals {
   oke_vcn_2_to_web_subnet_cross_vcn_egress = merge(
     (local.add_oke_vcn2 == true && var.oke_vcn2_attach_to_drg == true && var.add_tt_vcn1 == true && var.tt_vcn1_attach_to_drg == true) &&
     (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.oke_vcn2_routable_vcns) == 0 || contains(var.oke_vcn2_routable_vcns, "TT-VCN-1")))) ? { for port in var.tt_vcn1_web_ingress_destination_ports : "EGRESS-TO-TT-VCN1-ON-${port}-RULE" => {
-      description  = "Egress to ${local.tt_vcn1_web_subnet_display_name} over ${split(":",port)[0]} on port ${split(":",port)[1]}."
+      description  = "Egress to ${local.tt_vcn1_web_subnet_display_name} over ${split(":",port)[0]} on ${split(":", port)[0] == "ICMP" ? "type/code ${split(":", port)[1]}" : "port ${split(":", port)[1]}"}."
       stateless    = false
       protocol     = split(":",port)[0]
       dst          = local.tt_vcn1_web_subnet_cidr
       dst_type     = "CIDR_BLOCK"
-      dst_port_min = split(":",port)[1]
-      dst_port_max = split(":",port)[1]
+      dst_port_min = split(":", port)[0] != "ICMP" ? (split(":", port)[1]) : null
+      dst_port_max = split(":", port)[0] != "ICMP" ? (split(":", port)[1]) : null
+      icmp_type    = split(":", port)[0] == "ICMP" ? split("/", split(":", port)[1])[0] : null
+      icmp_code    = split(":", port)[0] == "ICMP" ? (length(split("/", split(":", port)[1])) > 1 ? split("/", split(":", port)[1])[1] : null) : null
     }} : {},
     (local.add_oke_vcn2 == true && var.oke_vcn2_attach_to_drg == true && var.add_tt_vcn2 == true && var.tt_vcn2_attach_to_drg == true) &&
     (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.oke_vcn2_routable_vcns) == 0 || contains(var.oke_vcn2_routable_vcns, "TT-VCN-2")))) ? { for port in var.tt_vcn2_web_ingress_destination_ports : "EGRESS-TO-TT-VCN2-ON-${port}-RULE" => {
-      description  = "Egress to ${local.tt_vcn2_web_subnet_display_name} over ${split(":",port)[0]} on port ${split(":",port)[1]}."
+      description  = "Egress to ${local.tt_vcn2_web_subnet_display_name} over ${split(":",port)[0]} on ${split(":", port)[0] == "ICMP" ? "type/code ${split(":", port)[1]}" : "port ${split(":", port)[1]}"}."
       stateless    = false
       protocol     = split(":",port)[0]
       dst          = local.tt_vcn2_web_subnet_cidr
       dst_type     = "CIDR_BLOCK"
-      dst_port_min = split(":",port)[1]
-      dst_port_max = split(":",port)[1]
+      dst_port_min = split(":", port)[0] != "ICMP" ? (split(":", port)[1]) : null
+      dst_port_max = split(":", port)[0] != "ICMP" ? (split(":", port)[1]) : null
+      icmp_type    = split(":", port)[0] == "ICMP" ? split("/", split(":", port)[1])[0] : null
+      icmp_code    = split(":", port)[0] == "ICMP" ? (length(split("/", split(":", port)[1])) > 1 ? split("/", split(":", port)[1])[1] : null) : null
     }} : {},
     (local.add_oke_vcn2 == true && var.oke_vcn2_attach_to_drg == true && var.add_tt_vcn3 == true && var.tt_vcn3_attach_to_drg == true) &&
     (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.oke_vcn2_routable_vcns) == 0 || contains(var.oke_vcn2_routable_vcns, "TT-VCN-3")))) ? { for port in var.tt_vcn3_web_ingress_destination_ports : "EGRESS-TO-TT-VCN3-ON-${port}-RULE" => {
-      description  = "Egress to ${local.tt_vcn3_web_subnet_display_name} over ${split(":",port)[0]} on port ${split(":",port)[1]}."
+      description  = "Egress to ${local.tt_vcn3_web_subnet_display_name} over ${split(":",port)[0]} on ${split(":", port)[0] == "ICMP" ? "type/code ${split(":", port)[1]}" : "port ${split(":", port)[1]}"}."
       stateless    = false
       protocol     = split(":",port)[0]
       dst          = local.tt_vcn3_web_subnet_cidr
       dst_type     = "CIDR_BLOCK"
-      dst_port_min = split(":",port)[1]
-      dst_port_max = split(":",port)[1]
+      dst_port_min = split(":", port)[0] != "ICMP" ? (split(":", port)[1]) : null
+      dst_port_max = split(":", port)[0] != "ICMP" ? (split(":", port)[1]) : null
+      icmp_type    = split(":", port)[0] == "ICMP" ? split("/", split(":", port)[1])[0] : null
+      icmp_code    = split(":", port)[0] == "ICMP" ? (length(split("/", split(":", port)[1])) > 1 ? split("/", split(":", port)[1])[1] : null) : null
     }} : {}
   )
 
@@ -1087,64 +1287,76 @@ locals {
   oke_vcn_2_to_services_subnet_cross_vcn_ingress = merge(
     (local.add_oke_vcn2 == true && var.oke_vcn2_attach_to_drg == true && var.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true) &&
     (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.oke_vcn2_routable_vcns) == 0 || contains(var.oke_vcn2_routable_vcns, "OKE-VCN-1")))) ? { for port in var.oke_vcn2_services_ingress_destination_ports : "INGRESS-FROM-OKE-VCN1-ON-${port}-RULE" => {
-      description  = "Ingress from ${local.oke_vcn1_workers_subnet_display_name} over ${split(":",port)[0]} on port ${split(":",port)[1]}."
+      description  = "Ingress from ${local.oke_vcn1_workers_subnet_display_name} over ${split(":",port)[0]} on ${split(":", port)[0] == "ICMP" ? "type/code ${split(":", port)[1]}" : "port ${split(":", port)[1]}"}."
       stateless    = false
       protocol     = split(":",port)[0]
       src          = local.oke_vcn1_workers_subnet_cidr
       src_type     = "CIDR_BLOCK"
-      dst_port_min = split(":",port)[1]
-      dst_port_max = split(":",port)[1]
+      dst_port_min = split(":", port)[0] != "ICMP" ? (split(":", port)[1]) : null
+      dst_port_max = split(":", port)[0] != "ICMP" ? (split(":", port)[1]) : null
+      icmp_type    = split(":", port)[0] == "ICMP" ? split("/", split(":", port)[1])[0] : null
+      icmp_code    = split(":", port)[0] == "ICMP" ? (length(split("/", split(":", port)[1])) > 1 ? split("/", split(":", port)[1])[1] : null) : null
     }} : {},
     (local.add_oke_vcn2 == true && var.oke_vcn2_attach_to_drg == true && var.add_oke_vcn3 == true && var.oke_vcn3_attach_to_drg == true) &&
     (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.oke_vcn2_routable_vcns) == 0 || contains(var.oke_vcn2_routable_vcns, "OKE-VCN-3")))) ? { for port in var.oke_vcn2_services_ingress_destination_ports : "INGRESS-FROM-OKE-VCN3-ON-${port}-RULE" => {
-      description  = "Ingress from ${local.oke_vcn3_workers_subnet_display_name} over ${split(":",port)[0]} on port ${split(":",port)[1]}."
+      description  = "Ingress from ${local.oke_vcn3_workers_subnet_display_name} over ${split(":",port)[0]} on ${split(":", port)[0] == "ICMP" ? "type/code ${split(":", port)[1]}" : "port ${split(":", port)[1]}"}."
       stateless    = false
       protocol     = split(":",port)[0]
       src          = local.oke_vcn3_workers_subnet_cidr
       src_type     = "CIDR_BLOCK"
-      dst_port_min = split(":",port)[1]
-      dst_port_max = split(":",port)[1]
+      dst_port_min = split(":", port)[0] != "ICMP" ? (split(":", port)[1]) : null
+      dst_port_max = split(":", port)[0] != "ICMP" ? (split(":", port)[1]) : null
+      icmp_type    = split(":", port)[0] == "ICMP" ? split("/", split(":", port)[1])[0] : null
+      icmp_code    = split(":", port)[0] == "ICMP" ? (length(split("/", split(":", port)[1])) > 1 ? split("/", split(":", port)[1])[1] : null) : null
     }} : {},
     (local.add_oke_vcn2 == true && var.oke_vcn2_attach_to_drg == true && var.add_tt_vcn1 == true && var.tt_vcn1_attach_to_drg == true) &&
     (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.oke_vcn2_routable_vcns) == 0 || contains(var.oke_vcn2_routable_vcns, "TT-VCN-1")))) ? { for port in var.oke_vcn2_services_ingress_destination_ports : "INGRESS-FROM-TT-VCN1-ON-${port}-RULE" => {
-      description  = "Ingress from ${local.tt_vcn1_app_subnet_display_name} over ${split(":",port)[0]} on port ${split(":",port)[1]}."
+      description  = "Ingress from ${local.tt_vcn1_app_subnet_display_name} over ${split(":",port)[0]} on ${split(":", port)[0] == "ICMP" ? "type/code ${split(":", port)[1]}" : "port ${split(":", port)[1]}"}."
       stateless    = false
       protocol     = split(":",port)[0]
       src          = local.tt_vcn1_app_subnet_cidr
       src_type     = "CIDR_BLOCK"
-      dst_port_min = split(":",port)[1]
-      dst_port_max = split(":",port)[1]
+      dst_port_min = split(":", port)[0] != "ICMP" ? (split(":", port)[1]) : null
+      dst_port_max = split(":", port)[0] != "ICMP" ? (split(":", port)[1]) : null
+      icmp_type    = split(":", port)[0] == "ICMP" ? split("/", split(":", port)[1])[0] : null
+      icmp_code    = split(":", port)[0] == "ICMP" ? (length(split("/", split(":", port)[1])) > 1 ? split("/", split(":", port)[1])[1] : null) : null
     }} : {},
     (local.add_oke_vcn2 == true && var.oke_vcn2_attach_to_drg == true && var.add_tt_vcn2 == true && var.tt_vcn2_attach_to_drg == true) &&
     (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.oke_vcn2_routable_vcns) == 0 || contains(var.oke_vcn2_routable_vcns, "TT-VCN-2")))) ? { for port in var.oke_vcn2_services_ingress_destination_ports : "INGRESS-FROM-TT-VCN2-ON-${port}-RULE" => {
-      description  = "Ingress from ${local.tt_vcn2_app_subnet_display_name} over ${split(":",port)[0]} on port ${split(":",port)[1]}."
+      description  = "Ingress from ${local.tt_vcn2_app_subnet_display_name} over ${split(":",port)[0]} on ${split(":", port)[0] == "ICMP" ? "type/code ${split(":", port)[1]}" : "port ${split(":", port)[1]}"}."
       stateless    = false
       protocol     = split(":",port)[0]
       src          = local.tt_vcn2_app_subnet_cidr
       src_type     = "CIDR_BLOCK"
-      dst_port_min = split(":",port)[1]
-      dst_port_max = split(":",port)[1]
+      dst_port_min = split(":", port)[0] != "ICMP" ? (split(":", port)[1]) : null
+      dst_port_max = split(":", port)[0] != "ICMP" ? (split(":", port)[1]) : null
+      icmp_type    = split(":", port)[0] == "ICMP" ? split("/", split(":", port)[1])[0] : null
+      icmp_code    = split(":", port)[0] == "ICMP" ? (length(split("/", split(":", port)[1])) > 1 ? split("/", split(":", port)[1])[1] : null) : null
     }} : {},
     (local.add_oke_vcn2 == true && var.oke_vcn2_attach_to_drg == true && var.add_tt_vcn3 == true && var.tt_vcn3_attach_to_drg == true) &&
     (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.oke_vcn2_routable_vcns) == 0 || contains(var.oke_vcn2_routable_vcns, "TT-VCN-3")))) ? { for port in var.oke_vcn2_services_ingress_destination_ports : "INGRESS-FROM-TT-VCN3-ON-${port}-RULE" => {
-      description  = "Ingress from ${local.tt_vcn3_app_subnet_display_name} over ${split(":",port)[0]} on port ${split(":",port)[1]}."
+      description  = "Ingress from ${local.tt_vcn3_app_subnet_display_name} over ${split(":",port)[0]} on ${split(":", port)[0] == "ICMP" ? "type/code ${split(":", port)[1]}" : "port ${split(":", port)[1]}"}."
       stateless    = false
       protocol     = split(":",port)[0]
       src          = local.tt_vcn3_app_subnet_cidr
       src_type     = "CIDR_BLOCK"
-      dst_port_min = split(":",port)[1]
-      dst_port_max = split(":",port)[1]
+      dst_port_min = split(":", port)[0] != "ICMP" ? (split(":", port)[1]) : null
+      dst_port_max = split(":", port)[0] != "ICMP" ? (split(":", port)[1]) : null
+      icmp_type    = split(":", port)[0] == "ICMP" ? split("/", split(":", port)[1])[0] : null
+      icmp_code    = split(":", port)[0] == "ICMP" ? (length(split("/", split(":", port)[1])) > 1 ? split("/", split(":", port)[1])[1] : null) : null
     }} : {},
     ## Ingress from on-premises CIDRs
     (local.add_oke_vcn2 == true && (var.oke_vcn2_attach_to_drg == true && var.oke_vcn2_onprem_route_enable)) &&
-    (local.hub_with_vcn == true || local.hub_with_drg_only == true) ? { for cidr_port_pair in flatten([for cidr in var.allowed_onprem_cidrs_to_app_endpoints : [for port in var.oke_vcn2_services_ingress_destination_ports : "${trimspace(cidr)},${trimspace(port)}" ]]) : "INGRESS-FROM-${split(",",cidr_port_pair)[0]}-ON-${split(",",cidr_port_pair)[1]}-RULE" => {
-      description  = "Ingress from onprem ${split(",",cidr_port_pair)[0]} over ${split(":",split(",",cidr_port_pair)[1])[0]} on port ${split(":",split(",",cidr_port_pair)[1])[1]}."
+    (local.hub_with_vcn == true || local.hub_with_drg_only == true) ? { for cidr_port_pair in flatten([for cidr in var.allowed_onprem_cidrs_to_app_endpoints : [for port in var.oke_vcn2_services_ingress_destination_ports : "${trimspace(cidr)},${trimspace(port)}" ] if length(var.allowed_onprem_cidrs_to_app_endpoints) > 0 && length(var.oke_vcn2_services_ingress_destination_ports) > 0]) : "INGRESS-FROM-${split(",",cidr_port_pair)[0]}-ON-${split(",",cidr_port_pair)[1]}-RULE" => {
+      description  = "Ingress from onprem ${split(",",cidr_port_pair)[0]} over ${split(":",split(",",cidr_port_pair)[1])[0]} on ${split(":",split(",",cidr_port_pair)[1])[0] == "ICMP" ? "type/code ${split(":",split(",",cidr_port_pair)[1])[1]}" : "port ${split(":",split(",",cidr_port_pair)[1])[1]}"}."
       stateless    = false
       protocol     = split(":",split(",",cidr_port_pair)[1])[0]
       src          = split(",",cidr_port_pair)[0]
       src_type     = "CIDR_BLOCK"
-      dst_port_min = split(":",split(",",cidr_port_pair)[1])[1]
-      dst_port_max = split(":",split(",",cidr_port_pair)[1])[1]
+      dst_port_min = split(":",split(",",cidr_port_pair)[1])[0] != "ICMP" ? (split(":",split(",",cidr_port_pair)[1])[1]) : null
+      dst_port_max = split(":",split(",",cidr_port_pair)[1])[0] != "ICMP" ? (split(":",split(",",cidr_port_pair)[1])[1]) : null
+      icmp_type    = split(":",split(",",cidr_port_pair)[1])[0] == "ICMP" ? split("/", split(":",split(",",cidr_port_pair)[1])[1])[0] : null
+      icmp_code    = split(":",split(",",cidr_port_pair)[1])[0] == "ICMP" ? (length(split("/", split(":",split(",",cidr_port_pair)[1])[1])) > 1 ? split("/", split(":",split(",",cidr_port_pair)[1])[1])[1] : null) : null
     }} : {}
   )
 
@@ -1284,3 +1496,4 @@ locals {
     var.oke_vcn2_onprem_route_enable == true ? local.on_prem_route_rule : {}
   ) : {}
 }
+

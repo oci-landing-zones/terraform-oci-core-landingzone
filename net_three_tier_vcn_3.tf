@@ -6,17 +6,22 @@ locals {
   add_tt_vcn3 = var.define_net == true && var.add_tt_vcn3 == true
 
   tt_vcn3_display_name                = coalesce(var.tt_vcn3_name, "${var.service_label}-three-tier-vcn-3")
+  tt_vcn3_dns_label                   = substr(replace(coalesce(var.tt_vcn3_name, "three-tier-vcn-3"), "/[^\\w]/", ""), 0, 14)
   tt_vcn3_web_subnet_display_name     = coalesce(var.tt_vcn3_web_subnet_name, "${var.service_label}-three-tier-vcn-3-web-subnet")
+  tt_vcn3_web_subnet_dns_label        = substr(replace(coalesce(var.tt_vcn3_web_subnet_name, "web-subnet"), "/[^\\w]/", ""), 0, 14)
   tt_vcn3_web_subnet_cidr             = coalesce(var.tt_vcn3_web_subnet_cidr, cidrsubnet(var.tt_vcn3_cidrs[0], 4, 0))
   tt_vcn3_app_subnet_display_name     = coalesce(var.tt_vcn3_app_subnet_name, "${var.service_label}-three-tier-vcn-3-app-subnet")
+  tt_vcn3_app_subnet_dns_label        = substr(replace(coalesce(var.tt_vcn3_app_subnet_name, "app-subnet"), "/[^\\w]/", ""), 0, 14)
   tt_vcn3_app_subnet_cidr             = coalesce(var.tt_vcn3_app_subnet_cidr, cidrsubnet(var.tt_vcn3_cidrs[0], 4, 1))
   tt_vcn3_db_subnet_display_name      = coalesce(var.tt_vcn3_db_subnet_name, "${var.service_label}-three-tier-vcn-3-db-subnet")
+  tt_vcn3_db_subnet_dns_label         = substr(replace(coalesce(var.tt_vcn3_db_subnet_name, "db-subnet"), "/[^\\w]/", ""), 0, 14)
   tt_vcn3_db_subnet_cidr              = coalesce(var.tt_vcn3_db_subnet_cidr, cidrsubnet(var.tt_vcn3_cidrs[0], 4, 2))
   tt_vcn3_bastion_subnet_display_name = coalesce(var.tt_vcn3_bastion_subnet_name, "${var.service_label}-three-tier-vcn-3-bastion-subnet")
+  tt_vcn3_bastion_subnet_dns_label    = substr(replace(coalesce(var.tt_vcn3_bastion_subnet_name, "bastion-subnet"), "/[^\\w]/", ""), 0, 14)
   tt_vcn3_bastion_subnet_cidr         = var.deploy_tt_vcn3_bastion_subnet == true ? coalesce(var.tt_vcn3_bastion_subnet_cidr, cidrsubnet(var.tt_vcn3_cidrs[0], 9, 96)) : null
 
   ## This variable defines the allowed CIDR and port combinations for ingress into the TT-VCN-3 web tier subnet.
-  tt_vcn3_external_allowed_cidrs_to_ports_into_web_tier = local.add_tt_vcn3 == true ? flatten([for cidr in var.tt_vcn3_external_allowed_cidrs_into_web_tier : [for port in var.tt_vcn3_web_ingress_destination_ports : "${trimspace(cidr)},${trimspace(port)}" ]]) : []
+  tt_vcn3_external_allowed_cidrs_to_ports_into_web_tier = local.add_tt_vcn3 == true ? flatten([for cidr in var.tt_vcn3_external_allowed_cidrs_into_web_tier : [for port in var.tt_vcn3_web_ingress_destination_ports : "${trimspace(cidr)},${trimspace(port)}" ] if length(var.tt_vcn3_external_allowed_cidrs_into_web_tier) > 0 && length(var.tt_vcn3_web_ingress_destination_ports) > 0]) : []
 
   tt_vcn_3 = local.add_tt_vcn3 == true ? {
     "TT-VCN-3" = {
@@ -25,7 +30,7 @@ locals {
       is_ipv6enabled                   = false
       is_oracle_gua_allocation_enabled = false
       cidr_blocks                      = var.tt_vcn3_cidrs,
-      dns_label                        = substr(replace(coalesce(var.tt_vcn3_name, "three-tier-vcn-3"), "/[^\\w]/", ""), 0, 14)
+      dns_label                        = local.tt_vcn3_dns_label
       block_nat_traffic                = false
       security                         = local.enable_zpr == true ? { zpr_attributes = [{ namespace : "${local.zpr_namespace_name}", attr_name : "net", attr_value : "tt-vcn-3" }] } : null
 
@@ -35,7 +40,7 @@ locals {
             cidr_block                = local.tt_vcn3_web_subnet_cidr
             dhcp_options_key          = "default_dhcp_options"
             display_name              = local.tt_vcn3_web_subnet_display_name
-            dns_label                 = substr(replace(coalesce(var.tt_vcn3_web_subnet_name, "web-subnet"), "/[^\\w]/", ""), 0, 14)
+            dns_label                 = local.tt_vcn3_web_subnet_dns_label
             ipv6cidr_blocks           = []
             prohibit_internet_ingress = var.tt_vcn3_web_subnet_is_private
             route_table_key           = "TT-VCN-3-WEB-SUBNET-ROUTE-TABLE"
@@ -47,7 +52,7 @@ locals {
             cidr_block                = local.tt_vcn3_app_subnet_cidr
             dhcp_options_key          = "default_dhcp_options"
             display_name              = local.tt_vcn3_app_subnet_display_name
-            dns_label                 = substr(replace(coalesce(var.tt_vcn3_app_subnet_name, "app-subnet"), "/[^\\w]/", ""), 0, 14)
+            dns_label                 = local.tt_vcn3_app_subnet_dns_label
             ipv6cidr_blocks           = []
             prohibit_internet_ingress = true
             route_table_key           = "TT-VCN-3-APP-SUBNET-ROUTE-TABLE"
@@ -59,7 +64,7 @@ locals {
             cidr_block                = local.tt_vcn3_db_subnet_cidr
             dhcp_options_key          = "default_dhcp_options"
             display_name              = local.tt_vcn3_db_subnet_display_name
-            dns_label                 = substr(replace(coalesce(var.tt_vcn3_db_subnet_name, "db-subnet"), "/[^\\w]/", ""), 0, 14)
+            dns_label                 = local.tt_vcn3_db_subnet_dns_label
             ipv6cidr_blocks           = []
             prohibit_internet_ingress = true
             route_table_key           = "TT-VCN-3-DB-SUBNET-ROUTE-TABLE"
@@ -71,7 +76,7 @@ locals {
             cidr_block                = local.tt_vcn3_bastion_subnet_cidr
             dhcp_options_key          = "default_dhcp_options"
             display_name              = local.tt_vcn3_bastion_subnet_display_name
-            dns_label                 = substr(replace(coalesce(var.tt_vcn3_bastion_subnet_name, "bastion-subnet"), "/[^\\w]/", ""), 0, 14)
+            dns_label                 = local.tt_vcn3_bastion_subnet_dns_label
             ipv6cidr_blocks           = []
             prohibit_internet_ingress = var.tt_vcn3_bastion_is_access_via_public_endpoint == true ? false : true
             route_table_key           = "TT-VCN-3-BASTION-SUBNET-ROUTE-TABLE"
@@ -109,6 +114,7 @@ locals {
             ]
           }
         } : {},
+        # Security lists overrides
         local.tt_vcn3_web_subnet_security_list != null && ((local.hub_with_vcn == true && var.tt_vcn3_attach_to_drg == true) || var.tt_vcn3_web_subnet_is_private) ? {
           "TT-VCN-3-WEB-SUBNET-SL" = local.tt_vcn3_web_subnet_security_list
         } : {},
@@ -400,13 +406,15 @@ locals {
             display_name = "lbr-nsg"
             ingress_rules = merge(
               { for cidr_port_pair in local.tt_vcn3_external_allowed_cidrs_to_ports_into_web_tier : "INGRESS-FROM-${split(",",cidr_port_pair)[0]}-ON-${split(",",cidr_port_pair)[1]}-RULE" => {
-                description  = "Ingress from ${split(",",cidr_port_pair)[0]} over ${split(":",split(",",cidr_port_pair)[1])[0]} on port ${split(":",split(",",cidr_port_pair)[1])[1]}."
+                description  = "Ingress from ${split(",",cidr_port_pair)[0]} over ${split(":",split(",",cidr_port_pair)[1])[0]} on ${split(":",split(",",cidr_port_pair)[1])[0] == "ICMP" ? "type/code ${split(":",split(",",cidr_port_pair)[1])[1]}" : "port ${split(":",split(",",cidr_port_pair)[1])[1]}"}."
                 stateless    = false
                 protocol     = split(":",split(",",cidr_port_pair)[1])[0]
                 src          = split(",",cidr_port_pair)[0]
                 src_type     = "CIDR_BLOCK"
-                dst_port_min = split(":",split(",",cidr_port_pair)[1])[1] == "ALL" ? null : split(":",split(",",cidr_port_pair)[1])[1]
-                dst_port_max = split(":",split(",",cidr_port_pair)[1])[1] == "ALL" ? null : split(":",split(",",cidr_port_pair)[1])[1]
+                dst_port_min = split(":",split(",",cidr_port_pair)[1])[0] != "ICMP" ? (split(":",split(",",cidr_port_pair)[1])[1]) : null
+                dst_port_max = split(":",split(",",cidr_port_pair)[1])[0] != "ICMP" ? (split(":",split(",",cidr_port_pair)[1])[1]) : null
+                icmp_type    = split(":",split(",",cidr_port_pair)[1])[0] == "ICMP" ? split("/", split(":",split(",",cidr_port_pair)[1])[1])[0] : null
+                icmp_code    = split(":",split(",",cidr_port_pair)[1])[0] == "ICMP" ? (length(split("/", split(":",split(",",cidr_port_pair)[1])[1])) > 1 ? split("/", split(":",split(",",cidr_port_pair)[1])[1])[1] : null) : null
               }},
               var.deploy_tt_vcn3_bastion_subnet == true ? {
                 "INGRESS-FROM-BASTION-NSG-RULE" = {
@@ -423,13 +431,15 @@ locals {
             ),
             egress_rules = merge(
               { for port in var.tt_vcn3_app_ingress_destination_ports : "EGRESS-TO-APP-NSG-ON-${port}-RULE" => {
-                  description  = "Egress to App NSG over ${split(":",port)[0]} on port ${split(":",port)[1]}."
+                  description  = "Egress to App NSG over ${split(":",port)[0]} on ${split(":", port)[0] == "ICMP" ? "type/code ${split(":", port)[1]}" : "port ${split(":", port)[1]}"}."
                   stateless    = false
                   protocol     = split(":",port)[0]
                   dst          = "TT-VCN-3-APP-NSG"
                   dst_type     = "NETWORK_SECURITY_GROUP"
-                  dst_port_min = split(":",port)[1]
-                  dst_port_max = split(":",port)[1]
+                  dst_port_min = split(":", port)[0] != "ICMP" ? (split(":", port)[1]) : null
+                  dst_port_max = split(":", port)[0] != "ICMP" ? (split(":", port)[1]) : null
+                  icmp_type    = split(":", port)[0] == "ICMP" ? split("/", split(":", port)[1])[0] : null
+                  icmp_code    = split(":", port)[0] == "ICMP" ? (length(split("/", split(":", port)[1])) > 1 ? split("/", split(":", port)[1])[1] : null) : null
               }},
               {
                 "EGRESS-TO-OSN-RULE" = {
@@ -451,13 +461,15 @@ locals {
             display_name = "app-nsg"
             ingress_rules = merge(
               { for port in var.tt_vcn3_app_ingress_destination_ports : "INGRESS-FROM-LBR-NSG-ON-${port}-RULE" => {
-                description  = "Ingress from LBR NSG over ${split(":",port)[0]} on port ${split(":",port)[1]}."
+                description  = "Ingress from LBR NSG over ${split(":",port)[0]} on ${split(":", port)[0] == "ICMP" ? "type/code ${split(":", port)[1]}" : "port ${split(":", port)[1]}"}."
                 stateless    = false
                 protocol     = split(":",port)[0]
                 src          = "TT-VCN-3-LBR-NSG"
                 src_type     = "NETWORK_SECURITY_GROUP"
-                dst_port_min = split(":",port)[1]
-                dst_port_max = split(":",port)[1]
+                dst_port_min = split(":", port)[0] != "ICMP" ? (split(":", port)[1]) : null
+                dst_port_max = split(":", port)[0] != "ICMP" ? (split(":", port)[1]) : null
+                icmp_type    = split(":", port)[0] == "ICMP" ? split("/", split(":", port)[1])[0] : null
+                icmp_code    = split(":", port)[0] == "ICMP" ? (length(split("/", split(":", port)[1])) > 1 ? split("/", split(":", port)[1])[1] : null) : null
               }},
               var.deploy_tt_vcn3_bastion_subnet == true ? {
                 "INGRESS-FROM-BASTION-NSG-RULE" = {
@@ -486,13 +498,15 @@ locals {
             ),
             egress_rules = merge(
               { for port in var.tt_vcn3_db_ingress_destination_ports : "EGRESS-TO-DB-NSG-ON-${port}-RULE" => {
-                description  = "Egress to DB NSG over ${split(":",port)[0]} on port ${split(":",port)[1]}"
+                description  = "Egress to DB NSG over ${split(":",port)[0]} on ${split(":", port)[0] == "ICMP" ? "type/code ${split(":", port)[1]}" : "port ${split(":", port)[1]}"}"
                 stateless    = false
                 protocol     = split(":",port)[0]
                 dst          = "TT-VCN-3-DB-NSG"
                 dst_type     = "NETWORK_SECURITY_GROUP"
-                dst_port_min = split(":",port)[1]
-                dst_port_max = split(":",port)[1]
+                dst_port_min = split(":", port)[0] != "ICMP" ? (split(":", port)[1]) : null
+                dst_port_max = split(":", port)[0] != "ICMP" ? (split(":", port)[1]) : null
+                icmp_type    = split(":", port)[0] == "ICMP" ? split("/", split(":", port)[1])[0] : null
+                icmp_code    = split(":", port)[0] == "ICMP" ? (length(split("/", split(":", port)[1])) > 1 ? split("/", split(":", port)[1])[1] : null) : null
               }},
               {
                 "EGRESS-TO-OSN-RULE" = {
@@ -528,13 +542,15 @@ locals {
             display_name = "db-nsg"
             ingress_rules = merge(
               { for port in var.tt_vcn3_db_ingress_destination_ports : "INGRESS-FROM-APP-NSG-ON-${port}-RULE" => {
-                description  = "Ingress from App NSG over ${split(":",port)[0]} on port ${split(":",port)[1]}"
+                description  = "Ingress from App NSG over ${split(":",port)[0]} on ${split(":", port)[0] == "ICMP" ? "type/code ${split(":", port)[1]}" : "port ${split(":", port)[1]}"}"
                 stateless    = false
                 protocol     = split(":",port)[0]
                 src          = "TT-VCN-3-APP-NSG"
                 src_type     = "NETWORK_SECURITY_GROUP"
-                dst_port_min = split(":",port)[1]
-                dst_port_max = split(":",port)[1]
+                dst_port_min = split(":", port)[0] != "ICMP" ? (split(":", port)[1]) : null
+                dst_port_max = split(":", port)[0] != "ICMP" ? (split(":", port)[1]) : null
+                icmp_type    = split(":", port)[0] == "ICMP" ? split("/", split(":", port)[1])[0] : null
+                icmp_code    = split(":", port)[0] == "ICMP" ? (length(split("/", split(":", port)[1])) > 1 ? split("/", split(":", port)[1])[1] : null) : null
               }},
               var.deploy_tt_vcn3_bastion_subnet == true ? {
                 "INGRESS-FROM-BASTION-RULE" = {
@@ -636,7 +652,8 @@ locals {
               } # Ingress rule only for jump hosts later deployed in the bastion public subnet.
             )   # inner merge function
           }
-        } : {}
+        } : {},
+      local.tt_vcn3_additional_nsgs  
       ) # merge function
 
        vcn_specific_gateways = merge(
@@ -687,23 +704,27 @@ locals {
   vcn_3_to_web_subnet_cross_vcn_egress = merge(
     (local.add_tt_vcn3 == true && var.tt_vcn3_attach_to_drg == true && var.add_tt_vcn1 == true && var.tt_vcn1_attach_to_drg == true) &&
     (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.tt_vcn3_routable_vcns) == 0 || contains(var.tt_vcn3_routable_vcns, "TT-VCN-1")))) ? { for port in var.tt_vcn1_web_ingress_destination_ports : "EGRESS-TO-TT-VCN1-ON-${port}-RULE" => {
-      description  = "Egress to ${local.tt_vcn1_web_subnet_display_name} over ${split(":",port)[0]} on port ${split(":",port)[1]}."
+      description  = "Egress to ${local.tt_vcn1_web_subnet_display_name} over ${split(":",port)[0]} on ${split(":", port)[0] == "ICMP" ? "type/code ${split(":", port)[1]}" : "port ${split(":", port)[1]}"}."
       stateless    = false
       protocol     = split(":",port)[0]
       dst          = coalesce(var.tt_vcn1_web_subnet_cidr, cidrsubnet(var.tt_vcn1_cidrs[0], 4, 0))
       dst_type     = "CIDR_BLOCK"
-      dst_port_min = split(":",port)[1]
-      dst_port_max = split(":",port)[1]
+      dst_port_min = split(":", port)[0] != "ICMP" ? (split(":", port)[1]) : null
+      dst_port_max = split(":", port)[0] != "ICMP" ? (split(":", port)[1]) : null
+      icmp_type    = split(":", port)[0] == "ICMP" ? split("/", split(":", port)[1])[0] : null
+      icmp_code    = split(":", port)[0] == "ICMP" ? (length(split("/", split(":", port)[1])) > 1 ? split("/", split(":", port)[1])[1] : null) : null
     }} : {},
     (local.add_tt_vcn3 == true && var.tt_vcn3_attach_to_drg == true && var.add_tt_vcn2 == true && var.tt_vcn2_attach_to_drg == true) &&
     (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.tt_vcn3_routable_vcns) == 0 || contains(var.tt_vcn3_routable_vcns, "TT-VCN-2")))) ? { for port in var.tt_vcn2_web_ingress_destination_ports : "EGRESS-TO-TT-VCN2-ON-${port}-RULE" => {
-      description  = "Egress to ${local.tt_vcn2_web_subnet_display_name} over ${split(":",port)[0]} on port ${split(":",port)[1]}."
+      description  = "Egress to ${local.tt_vcn2_web_subnet_display_name} over ${split(":",port)[0]} on ${split(":", port)[0] == "ICMP" ? "type/code ${split(":", port)[1]}" : "port ${split(":", port)[1]}"}."
       stateless    = false
       protocol     = split(":",port)[0]
       dst          = local.tt_vcn2_web_subnet_cidr
       dst_type     = "CIDR_BLOCK"
-      dst_port_min = split(":",port)[1]
-      dst_port_max = split(":",port)[1]
+      dst_port_min = split(":", port)[0] != "ICMP" ? (split(":", port)[1]) : null
+      dst_port_max = split(":", port)[0] != "ICMP" ? (split(":", port)[1]) : null
+      icmp_type    = split(":", port)[0] == "ICMP" ? split("/", split(":", port)[1])[0] : null
+      icmp_code    = split(":", port)[0] == "ICMP" ? (length(split("/", split(":", port)[1])) > 1 ? split("/", split(":", port)[1])[1] : null) : null
     }} : {}
   )
   ## Egress to VCN-1 and VCN-2 db subnets
@@ -715,18 +736,22 @@ locals {
       protocol     = split(":",port)[0]
       dst          = local.tt_vcn1_db_subnet_cidr
       dst_type     = "CIDR_BLOCK"
-      dst_port_min = split(":",port)[1]
-      dst_port_max = split(":",port)[1]
+      dst_port_min = split(":", port)[0] != "ICMP" ? (split(":", port)[1]) : null
+      dst_port_max = split(":", port)[0] != "ICMP" ? (split(":", port)[1]) : null
+      icmp_type    = split(":", port)[0] == "ICMP" ? split("/", split(":", port)[1])[0] : null
+      icmp_code    = split(":", port)[0] == "ICMP" ? (length(split("/", split(":", port)[1])) > 1 ? split("/", split(":", port)[1])[1] : null) : null
     }} : {},
     (local.add_tt_vcn3 == true && var.tt_vcn3_attach_to_drg == true && var.add_tt_vcn2 == true && var.tt_vcn2_attach_to_drg == true) &&
     (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.tt_vcn3_routable_vcns) == 0 || contains(var.tt_vcn3_routable_vcns, "TT-VCN-2")))) ? { for port in var.tt_vcn2_db_ingress_destination_ports : "EGRESS-TO-TT-VCN2-ON-${port}-RULE" => {
-      description  = "Egress to ${local.tt_vcn2_db_subnet_display_name} over ${split(":",port)[0]} on port ${split(":",port)[1]}."
+      description  = "Egress to ${local.tt_vcn2_db_subnet_display_name} over ${split(":",port)[0]} on ${split(":", port)[0] == "ICMP" ? "type/code ${split(":", port)[1]}" : "port ${split(":", port)[1]}"}."
       stateless    = false
       protocol     = split(":",port)[0]
       dst          = local.tt_vcn2_db_subnet_cidr
       dst_type     = "CIDR_BLOCK"
-      dst_port_min = split(":",port)[1]
-      dst_port_max = split(":",port)[1]
+      dst_port_min = split(":", port)[0] != "ICMP" ? (split(":", port)[1]) : null
+      dst_port_max = split(":", port)[0] != "ICMP" ? (split(":", port)[1]) : null
+      icmp_type    = split(":", port)[0] == "ICMP" ? split("/", split(":", port)[1])[0] : null
+      icmp_code    = split(":", port)[0] == "ICMP" ? (length(split("/", split(":", port)[1])) > 1 ? split("/", split(":", port)[1])[1] : null) : null
     }} : {}
   )
   ## Egress to OKE-VCNs:
@@ -734,35 +759,41 @@ locals {
     ## Egress to OKE-VCN-1
     (local.add_tt_vcn3 == true && var.tt_vcn3_attach_to_drg == true && var.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true) &&
     (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.tt_vcn3_routable_vcns) == 0 || contains(var.tt_vcn3_routable_vcns, "OKE-VCN-1")))) ? { for port in var.oke_vcn1_services_ingress_destination_ports : "EGRESS-TO-OKE-VCN1-ON-${port}-RULE" => {
-      description  = "Egress to ${local.oke_vcn1_services_subnet_display_name} over ${split(":",port)[0]} on port ${split(":",port)[1]}."
+      description  = "Egress to ${local.oke_vcn1_services_subnet_display_name} over ${split(":",port)[0]} on ${split(":", port)[0] == "ICMP" ? "type/code ${split(":", port)[1]}" : "port ${split(":", port)[1]}"}."
       stateless    = false
       protocol     = split(":",port)[0]
       dst          = local.oke_vcn1_services_subnet_cidr
       dst_type     = "CIDR_BLOCK"
-      dst_port_min = split(":",port)[1]
-      dst_port_max = split(":",port)[1]
+      dst_port_min = split(":", port)[0] != "ICMP" ? (split(":", port)[1]) : null
+      dst_port_max = split(":", port)[0] != "ICMP" ? (split(":", port)[1]) : null
+      icmp_type    = split(":", port)[0] == "ICMP" ? split("/", split(":", port)[1])[0] : null
+      icmp_code    = split(":", port)[0] == "ICMP" ? (length(split("/", split(":", port)[1])) > 1 ? split("/", split(":", port)[1])[1] : null) : null
     }} : {},
     ## Egress to OKE-VCN-2
     (local.add_tt_vcn3 == true && var.tt_vcn3_attach_to_drg == true && var.add_oke_vcn2 == true && var.oke_vcn2_attach_to_drg == true) &&
     (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.tt_vcn3_routable_vcns) == 0 || contains(var.tt_vcn3_routable_vcns, "OKE-VCN-2")))) ? { for port in var.oke_vcn2_services_ingress_destination_ports : "EGRESS-TO-OKE-VCN2-ON-${port}-RULE" => {
-      description  = "Egress to ${local.oke_vcn2_services_subnet_display_name} over ${split(":",port)[0]} on port ${split(":",port)[1]}."
+      description  = "Egress to ${local.oke_vcn2_services_subnet_display_name} over ${split(":",port)[0]} on ${split(":", port)[0] == "ICMP" ? "type/code ${split(":", port)[1]}" : "port ${split(":", port)[1]}"}."
       stateless    = false
       protocol     = split(":",port)[0]
       dst          = local.oke_vcn2_services_subnet_cidr
       dst_type     = "CIDR_BLOCK"
-      dst_port_min = split(":",port)[1]
-      dst_port_max = split(":",port)[1]
+      dst_port_min = split(":", port)[0] != "ICMP" ? (split(":", port)[1]) : null
+      dst_port_max = split(":", port)[0] != "ICMP" ? (split(":", port)[1]) : null
+      icmp_type    = split(":", port)[0] == "ICMP" ? split("/", split(":", port)[1])[0] : null
+      icmp_code    = split(":", port)[0] == "ICMP" ? (length(split("/", split(":", port)[1])) > 1 ? split("/", split(":", port)[1])[1] : null) : null
     }} : {},
     ## Egress to OKE-VCN-3
     (local.add_tt_vcn3 == true && var.tt_vcn3_attach_to_drg == true && var.add_oke_vcn3 == true && var.oke_vcn3_attach_to_drg == true) &&
     (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.tt_vcn3_routable_vcns) == 0 || contains(var.tt_vcn3_routable_vcns, "OKE-VCN-3")))) ? { for port in var.oke_vcn3_services_ingress_destination_ports : "EGRESS-TO-OKE-VCN3-ON-${port}-RULE" => {
-      description  = "Egress to ${local.oke_vcn3_services_subnet_display_name} over ${split(":",port)[0]} on port ${split(":",port)[1]}."
+      description  = "Egress to ${local.oke_vcn3_services_subnet_display_name} over ${split(":",port)[0]} on ${split(":", port)[0] == "ICMP" ? "type/code ${split(":", port)[1]}" : "port ${split(":", port)[1]}"}."
       stateless    = false
       protocol     = split(":",port)[0]
       dst          = local.oke_vcn3_services_subnet_cidr
       dst_type     = "CIDR_BLOCK"
-      dst_port_min = split(":",port)[1]
-      dst_port_max = split(":",port)[1]
+      dst_port_min = split(":", port)[0] != "ICMP" ? (split(":", port)[1]) : null
+      dst_port_max = split(":", port)[0] != "ICMP" ? (split(":", port)[1]) : null
+      icmp_type    = split(":", port)[0] == "ICMP" ? split("/", split(":", port)[1])[0] : null
+      icmp_code    = split(":", port)[0] == "ICMP" ? (length(split("/", split(":", port)[1])) > 1 ? split("/", split(":", port)[1])[1] : null) : null
     }} : {}
   )
   ## Egress to EXA-VCNs
@@ -770,35 +801,41 @@ locals {
     ## Egress to EXA-VCN-1
     (local.add_tt_vcn3 == true && var.tt_vcn3_attach_to_drg == true && var.add_exa_vcn1 == true && var.exa_vcn1_attach_to_drg == true) &&
     (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.tt_vcn3_routable_vcns) == 0 || contains(var.tt_vcn3_routable_vcns, "EXA-VCN-1")))) ? { for port in var.exa_vcn1_client_ingress_destination_ports : "EGRESS-TO-EXA-VCN1-ON-${port}-RULE" => {
-      description  = "Egress to ${local.exa_vcn1_client_subnet_display_name} over ${split(":",port)[0]} on port ${split(":",port)[1]}."
+      description  = "Egress to ${local.exa_vcn1_client_subnet_display_name} over ${split(":",port)[0]} on ${split(":", port)[0] == "ICMP" ? "type/code ${split(":", port)[1]}" : "port ${split(":", port)[1]}"}."
       stateless    = false
       protocol     = split(":",port)[0]
       dst          = local.exa_vcn1_client_subnet_cidr
       dst_type     = "CIDR_BLOCK"
-      dst_port_min = split(":",port)[1]
-      dst_port_max = split(":",port)[1]
+      dst_port_min = split(":", port)[0] != "ICMP" ? (split(":", port)[1]) : null
+      dst_port_max = split(":", port)[0] != "ICMP" ? (split(":", port)[1]) : null
+      icmp_type    = split(":", port)[0] == "ICMP" ? split("/", split(":", port)[1])[0] : null
+      icmp_code    = split(":", port)[0] == "ICMP" ? (length(split("/", split(":", port)[1])) > 1 ? split("/", split(":", port)[1])[1] : null) : null
     }} : {},
     ## Egress to EXA-VCN-2
     (local.add_tt_vcn3 == true && var.tt_vcn3_attach_to_drg == true && var.add_exa_vcn2 == true && var.exa_vcn2_attach_to_drg == true) &&
     (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.tt_vcn3_routable_vcns) == 0 || contains(var.tt_vcn3_routable_vcns, "EXA-VCN-2")))) ? { for port in var.exa_vcn2_client_ingress_destination_ports : "EGRESS-TO-EXA-VCN2-ON-${port}-RULE" => {
-      description  = "Egress to ${local.exa_vcn2_client_subnet_display_name} over ${split(":",port)[0]} on port ${split(":",port)[1]}."
+      description  = "Egress to ${local.exa_vcn2_client_subnet_display_name} over ${split(":",port)[0]} on ${split(":", port)[0] == "ICMP" ? "type/code ${split(":", port)[1]}" : "port ${split(":", port)[1]}"}."
       stateless    = false
       protocol     = split(":",port)[0]
       dst          = local.exa_vcn2_client_subnet_cidr
       dst_type     = "CIDR_BLOCK"
-      dst_port_min = split(":",port)[1]
-      dst_port_max = split(":",port)[1]
+      dst_port_min = split(":", port)[0] != "ICMP" ? (split(":", port)[1]) : null
+      dst_port_max = split(":", port)[0] != "ICMP" ? (split(":", port)[1]) : null
+      icmp_type    = split(":", port)[0] == "ICMP" ? split("/", split(":", port)[1])[0] : null
+      icmp_code    = split(":", port)[0] == "ICMP" ? (length(split("/", split(":", port)[1])) > 1 ? split("/", split(":", port)[1])[1] : null) : null
     }} : {},
     ## Egress to EXA-VCN-3
     (local.add_tt_vcn3 == true && var.tt_vcn3_attach_to_drg == true && var.add_exa_vcn3 == true && var.exa_vcn3_attach_to_drg == true) &&
     (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.tt_vcn3_routable_vcns) == 0 || contains(var.tt_vcn3_routable_vcns, "EXA-VCN-3")))) ? { for port in var.exa_vcn3_client_ingress_destination_ports : "EGRESS-TO-EXA-VCN3-ON-${port}-RULE" => {
-      description  = "Egress to ${local.exa_vcn3_client_subnet_display_name} over ${split(":",port)[0]} on port ${split(":",port)[1]}."
+      description  = "Egress to ${local.exa_vcn3_client_subnet_display_name} over ${split(":",port)[0]} on ${split(":", port)[0] == "ICMP" ? "type/code ${split(":", port)[1]}" : "port ${split(":", port)[1]}"}."
       stateless    = false
       protocol     = split(":",port)[0]
       dst          = local.exa_vcn3_client_subnet_cidr
       dst_type     = "CIDR_BLOCK"
-      dst_port_min = split(":",port)[1]
-      dst_port_max = split(":",port)[1]
+      dst_port_min = split(":", port)[0] != "ICMP" ? (split(":", port)[1]) : null
+      dst_port_max = split(":", port)[0] != "ICMP" ? (split(":", port)[1]) : null
+      icmp_type    = split(":", port)[0] == "ICMP" ? split("/", split(":", port)[1])[0] : null
+      icmp_code    = split(":", port)[0] == "ICMP" ? (length(split("/", split(":", port)[1])) > 1 ? split("/", split(":", port)[1])[1] : null) : null
     }} : {}
   )
 
@@ -807,68 +844,80 @@ locals {
     ## Ingress from TT-VCN-1
     (local.add_tt_vcn3 == true && var.tt_vcn3_attach_to_drg == true && var.add_tt_vcn1 == true && var.tt_vcn1_attach_to_drg == true) &&
     (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.tt_vcn1_routable_vcns) == 0 || contains(var.tt_vcn1_routable_vcns, "TT-VCN-3")))) ? { for port in var.tt_vcn3_web_ingress_destination_ports : "INGRESS-FROM-TT-VCN1-ON-${port}-RULE" => {
-      description  = "Ingress from ${local.tt_vcn1_app_subnet_display_name} over ${split(":",port)[0]} on port ${split(":",port)[1]}."
+      description  = "Ingress from ${local.tt_vcn1_app_subnet_display_name} over ${split(":",port)[0]} on ${split(":", port)[0] == "ICMP" ? "type/code ${split(":", port)[1]}" : "port ${split(":", port)[1]}"}."
       stateless    = false
       protocol     = split(":",port)[0]
       src          = coalesce(var.tt_vcn1_app_subnet_cidr, cidrsubnet(var.tt_vcn1_cidrs[0], 4, 1))
       src_type     = "CIDR_BLOCK"
-      dst_port_min = split(":",port)[1]
-      dst_port_max = split(":",port)[1]
+      dst_port_min = split(":", port)[0] != "ICMP" ? (split(":", port)[1]) : null
+      dst_port_max = split(":", port)[0] != "ICMP" ? (split(":", port)[1]) : null
+      icmp_type    = split(":", port)[0] == "ICMP" ? split("/", split(":", port)[1])[0] : null
+      icmp_code    = split(":", port)[0] == "ICMP" ? (length(split("/", split(":", port)[1])) > 1 ? split("/", split(":", port)[1])[1] : null) : null
     }} : {},
     ## Ingress from TT-VCN-2
     (local.add_tt_vcn3 == true && var.tt_vcn3_attach_to_drg == true && var.add_tt_vcn2 == true && var.tt_vcn2_attach_to_drg == true) &&
     (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.tt_vcn2_routable_vcns) == 0 || contains(var.tt_vcn2_routable_vcns, "TT-VCN-3")))) ? { for port in var.tt_vcn3_web_ingress_destination_ports : "INGRESS-FROM-TT-VCN2-ON-${port}-RULE" => {
-      description  = "Ingress from ${local.tt_vcn2_app_subnet_display_name} over ${split(":",port)[0]} on port ${split(":",port)[1]}."
+      description  = "Ingress from ${local.tt_vcn2_app_subnet_display_name} over ${split(":",port)[0]} on ${split(":", port)[0] == "ICMP" ? "type/code ${split(":", port)[1]}" : "port ${split(":", port)[1]}"}."
       stateless    = false
       protocol     = split(":",port)[0]
       src          = local.tt_vcn2_app_subnet_cidr
       src_type     = "CIDR_BLOCK"
-      dst_port_min = split(":",port)[1]
-      dst_port_max = split(":",port)[1]
+      dst_port_min = split(":", port)[0] != "ICMP" ? (split(":", port)[1]) : null
+      dst_port_max = split(":", port)[0] != "ICMP" ? (split(":", port)[1]) : null
+      icmp_type    = split(":", port)[0] == "ICMP" ? split("/", split(":", port)[1])[0] : null
+      icmp_code    = split(":", port)[0] == "ICMP" ? (length(split("/", split(":", port)[1])) > 1 ? split("/", split(":", port)[1])[1] : null) : null
     }} : {},
     ## Ingress from OKE-VCN-1
     (local.add_tt_vcn3 == true && var.tt_vcn3_attach_to_drg == true && var.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true) &&
     (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.oke_vcn1_routable_vcns) == 0 || contains(var.oke_vcn1_routable_vcns, "TT-VCN-3")))) ? { for port in var.tt_vcn3_web_ingress_destination_ports : "INGRESS-FROM-OKE-VCN1-ON-${port}RULE" => {
-      description  = "Ingress from ${local.oke_vcn1_workers_subnet_display_name} over ${split(":",port)[0]} on port ${split(":",port)[1]}."
+      description  = "Ingress from ${local.oke_vcn1_workers_subnet_display_name} over ${split(":",port)[0]} on ${split(":", port)[0] == "ICMP" ? "type/code ${split(":", port)[1]}" : "port ${split(":", port)[1]}"}."
       stateless    = false
       protocol     = split(":",port)[0]
       src          = local.oke_vcn1_workers_subnet_cidr
       src_type     = "CIDR_BLOCK"
-     dst_port_min = split(":",port)[1]
-      dst_port_max = split(":",port)[1]
+     dst_port_min = split(":", port)[0] != "ICMP" ? (split(":", port)[1]) : null
+      dst_port_max = split(":", port)[0] != "ICMP" ? (split(":", port)[1]) : null
+      icmp_type    = split(":", port)[0] == "ICMP" ? split("/", split(":", port)[1])[0] : null
+      icmp_code    = split(":", port)[0] == "ICMP" ? (length(split("/", split(":", port)[1])) > 1 ? split("/", split(":", port)[1])[1] : null) : null
     }} : {},
     ## Ingress from OKE-VCN-2
     (local.add_tt_vcn3 == true && var.tt_vcn3_attach_to_drg == true && var.add_oke_vcn2 == true && var.oke_vcn2_attach_to_drg == true) &&
     (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.oke_vcn2_routable_vcns) == 0 || contains(var.oke_vcn2_routable_vcns, "TT-VCN-3")))) ? { for port in var.tt_vcn3_web_ingress_destination_ports : "INGRESS-FROM-OKE-VCN2-ON-${port}-RULE" => {
-      description  = "Ingress from ${local.oke_vcn2_workers_subnet_display_name} over ${split(":",port)[0]} on port ${split(":",port)[1]}."
+      description  = "Ingress from ${local.oke_vcn2_workers_subnet_display_name} over ${split(":",port)[0]} on ${split(":", port)[0] == "ICMP" ? "type/code ${split(":", port)[1]}" : "port ${split(":", port)[1]}"}."
       stateless    = false
       protocol     = split(":",port)[0]
       src          = local.oke_vcn2_workers_subnet_cidr
       src_type     = "CIDR_BLOCK"
-      dst_port_min = split(":",port)[1]
-      dst_port_max = split(":",port)[1]
+      dst_port_min = split(":", port)[0] != "ICMP" ? (split(":", port)[1]) : null
+      dst_port_max = split(":", port)[0] != "ICMP" ? (split(":", port)[1]) : null
+      icmp_type    = split(":", port)[0] == "ICMP" ? split("/", split(":", port)[1])[0] : null
+      icmp_code    = split(":", port)[0] == "ICMP" ? (length(split("/", split(":", port)[1])) > 1 ? split("/", split(":", port)[1])[1] : null) : null
     }} : {},
     ## Ingress from OKE-VCN-3
     (local.add_tt_vcn3 == true && var.tt_vcn3_attach_to_drg == true && var.add_oke_vcn3 == true && var.oke_vcn3_attach_to_drg == true) &&
     (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.oke_vcn3_routable_vcns) == 0 || contains(var.oke_vcn3_routable_vcns, "TT-VCN-3")))) ? { for port in var.tt_vcn3_web_ingress_destination_ports : "INGRESS-FROM-OKE-VCN3-ON-${port}-RULE" => {
-      description  = "Ingress from ${local.oke_vcn3_workers_subnet_display_name} over ${split(":",port)[0]} on port ${split(":",port)[1]}."
+      description  = "Ingress from ${local.oke_vcn3_workers_subnet_display_name} over ${split(":",port)[0]} on ${split(":", port)[0] == "ICMP" ? "type/code ${split(":", port)[1]}" : "port ${split(":", port)[1]}"}."
       stateless    = false
       protocol     = split(":",port)[0]
       src          = local.oke_vcn3_workers_subnet_cidr
       src_type     = "CIDR_BLOCK"
-      dst_port_min = split(":",port)[1]
-      dst_port_max = split(":",port)[1]
+      dst_port_min = split(":", port)[0] != "ICMP" ? (split(":", port)[1]) : null
+      dst_port_max = split(":", port)[0] != "ICMP" ? (split(":", port)[1]) : null
+      icmp_type    = split(":", port)[0] == "ICMP" ? split("/", split(":", port)[1])[0] : null
+      icmp_code    = split(":", port)[0] == "ICMP" ? (length(split("/", split(":", port)[1])) > 1 ? split("/", split(":", port)[1])[1] : null) : null
     }} : {},
     ## Ingress from on-premises CIDRs into TT-VCN-3 web subnet
     (local.add_tt_vcn3 == true && (var.tt_vcn3_attach_to_drg == true && var.tt_vcn3_onprem_route_enable)) &&
-    (local.hub_with_vcn == true || local.hub_with_drg_only == true) ? { for cidr_port_pair in flatten([for cidr in var.allowed_onprem_cidrs_to_app_endpoints : [for port in var.tt_vcn3_web_ingress_destination_ports : "${trimspace(cidr)},${trimspace(port)}" ]]) : "INGRESS-FROM-${split(",",cidr_port_pair)[0]}-ON-${split(",",cidr_port_pair)[1]}-RULE" => {
-      description  = "Ingress from onprem ${split(",",cidr_port_pair)[0]} over ${split(":",split(",",cidr_port_pair)[1])[0]} on port ${split(":",split(",",cidr_port_pair)[1])[1]}."
+    (local.hub_with_vcn == true || local.hub_with_drg_only == true) ? { for cidr_port_pair in flatten([for cidr in var.allowed_onprem_cidrs_to_app_endpoints : [for port in var.tt_vcn3_web_ingress_destination_ports : "${trimspace(cidr)},${trimspace(port)}" ] if length(var.allowed_onprem_cidrs_to_app_endpoints) > 0 && length(var.tt_vcn3_web_ingress_destination_ports) > 0]) : "INGRESS-FROM-${split(",",cidr_port_pair)[0]}-ON-${split(",",cidr_port_pair)[1]}-RULE" => {
+      description  = "Ingress from onprem ${split(",",cidr_port_pair)[0]} over ${split(":",split(",",cidr_port_pair)[1])[0]} on ${split(":",split(",",cidr_port_pair)[1])[0] == "ICMP" ? "type/code ${split(":",split(",",cidr_port_pair)[1])[1]}" : "port ${split(":",split(",",cidr_port_pair)[1])[1]}"}."
       stateless    = false
       protocol     = split(":",split(",",cidr_port_pair)[1])[0]
       src          = split(",",cidr_port_pair)[0]
       src_type     = "CIDR_BLOCK"
-      dst_port_min = split(":",split(",",cidr_port_pair)[1])[1]
-      dst_port_max = split(":",split(",",cidr_port_pair)[1])[1]
+      dst_port_min = split(":",split(",",cidr_port_pair)[1])[0] != "ICMP" ? (split(":",split(",",cidr_port_pair)[1])[1]) : null
+      dst_port_max = split(":",split(",",cidr_port_pair)[1])[0] != "ICMP" ? (split(":",split(",",cidr_port_pair)[1])[1]) : null
+      icmp_type    = split(":",split(",",cidr_port_pair)[1])[0] == "ICMP" ? split("/", split(":",split(",",cidr_port_pair)[1])[1])[0] : null
+      icmp_code    = split(":",split(",",cidr_port_pair)[1])[0] == "ICMP" ? (length(split("/", split(":",split(",",cidr_port_pair)[1])[1])) > 1 ? split("/", split(":",split(",",cidr_port_pair)[1])[1])[1] : null) : null
     }} : {}
   )
   ## Ingress rules into TT-VCN-3 db subnet
@@ -876,46 +925,54 @@ locals {
     ## Ingress from TT-VCN-1
     (local.add_tt_vcn3 == true && var.tt_vcn3_attach_to_drg == true && var.add_tt_vcn1 == true && var.tt_vcn1_attach_to_drg == true) &&
     (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.tt_vcn1_routable_vcns) == 0 || contains(var.tt_vcn1_routable_vcns, "TT-VCN-3")))) ? { for port in var.tt_vcn3_db_ingress_destination_ports : "INGRESS-FROM-TT-VCN1-ON-${port}-RULE" => {
-      description  = "Ingress from ${local.tt_vcn1_db_subnet_display_name} over ${split(":",port)[0]} on port ${split(":",port)[1]}."
+      description  = "Ingress from ${local.tt_vcn1_db_subnet_display_name} over ${split(":",port)[0]} on ${split(":", port)[0] == "ICMP" ? "type/code ${split(":", port)[1]}" : "port ${split(":", port)[1]}"}."
       stateless    = false
       protocol     = split(":",port)[0]
       src          = local.tt_vcn1_db_subnet_cidr
       src_type     = "CIDR_BLOCK"
-      dst_port_min = split(":",port)[1]
-      dst_port_max = split(":",port)[1]
+      dst_port_min = split(":", port)[0] != "ICMP" ? (split(":", port)[1]) : null
+      dst_port_max = split(":", port)[0] != "ICMP" ? (split(":", port)[1]) : null
+      icmp_type    = split(":", port)[0] == "ICMP" ? split("/", split(":", port)[1])[0] : null
+      icmp_code    = split(":", port)[0] == "ICMP" ? (length(split("/", split(":", port)[1])) > 1 ? split("/", split(":", port)[1])[1] : null) : null
     }} : {},
     ## Ingress from TT-VCN-2
     (local.add_tt_vcn3 == true && var.tt_vcn3_attach_to_drg == true && var.add_tt_vcn2 == true && var.tt_vcn2_attach_to_drg == true) &&
     (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.tt_vcn2_routable_vcns) == 0 || contains(var.tt_vcn2_routable_vcns, "TT-VCN-3")))) ? { for port in var.tt_vcn3_db_ingress_destination_ports : "INGRESS-FROM-TT-VCN2-ON-${port}-RULE" => {
-      description  = "Ingress from ${local.tt_vcn2_db_subnet_display_name} over ${split(":",port)[0]} on port ${split(":",port)[1]}."
+      description  = "Ingress from ${local.tt_vcn2_db_subnet_display_name} over ${split(":",port)[0]} on ${split(":", port)[0] == "ICMP" ? "type/code ${split(":", port)[1]}" : "port ${split(":", port)[1]}"}."
       stateless    = false
       protocol     = split(":",port)[0]
       src          = local.tt_vcn2_db_subnet_cidr
       src_type     = "CIDR_BLOCK"
-      dst_port_min = split(":",port)[1]
-      dst_port_max = split(":",port)[1]
+      dst_port_min = split(":", port)[0] != "ICMP" ? (split(":", port)[1]) : null
+      dst_port_max = split(":", port)[0] != "ICMP" ? (split(":", port)[1]) : null
+      icmp_type    = split(":", port)[0] == "ICMP" ? split("/", split(":", port)[1])[0] : null
+      icmp_code    = split(":", port)[0] == "ICMP" ? (length(split("/", split(":", port)[1])) > 1 ? split("/", split(":", port)[1])[1] : null) : null
     }} : {},
     ## Ingress from EXA-VCN-1
     (local.add_tt_vcn3 == true && var.tt_vcn3_attach_to_drg == true && var.add_exa_vcn1 == true && var.exa_vcn1_attach_to_drg == true) &&
     (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.exa_vcn1_routable_vcns) == 0 || contains(var.exa_vcn1_routable_vcns, "TT-VCN-3")))) ? { for port in var.tt_vcn3_db_ingress_destination_ports : "INGRESS-FROM-EXA-VCN1-ON-${port}-RULE" => {
-      description  = "Ingress from ${local.exa_vcn1_client_subnet_display_name} over ${split(":",port)[0]} on port ${split(":",port)[1]}."
+      description  = "Ingress from ${local.exa_vcn1_client_subnet_display_name} over ${split(":",port)[0]} on ${split(":", port)[0] == "ICMP" ? "type/code ${split(":", port)[1]}" : "port ${split(":", port)[1]}"}."
       stateless    = false
       protocol     = split(":",port)[0]
       src          = local.exa_vcn1_client_subnet_cidr
       src_type     = "CIDR_BLOCK"
-      dst_port_min = split(":",port)[1]
-      dst_port_max = split(":",port)[1]
+      dst_port_min = split(":", port)[0] != "ICMP" ? (split(":", port)[1]) : null
+      dst_port_max = split(":", port)[0] != "ICMP" ? (split(":", port)[1]) : null
+      icmp_type    = split(":", port)[0] == "ICMP" ? split("/", split(":", port)[1])[0] : null
+      icmp_code    = split(":", port)[0] == "ICMP" ? (length(split("/", split(":", port)[1])) > 1 ? split("/", split(":", port)[1])[1] : null) : null
     }} : {},
     ## Ingress from EXA-VCN-2
     (local.add_tt_vcn3 == true && var.tt_vcn3_attach_to_drg == true && var.add_exa_vcn2 == true && var.exa_vcn2_attach_to_drg == true) &&
     (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.exa_vcn2_routable_vcns) == 0 || contains(var.exa_vcn2_routable_vcns, "TT-VCN-3")))) ? { for port in var.tt_vcn3_db_ingress_destination_ports : "INGRESS-FROM-EXA-VCN2-ON-${port}-RULE" => {
-      description  = "Ingress from ${local.exa_vcn2_client_subnet_display_name} over ${split(":",port)[0]} on port ${split(":",port)[1]}."
+      description  = "Ingress from ${local.exa_vcn2_client_subnet_display_name} over ${split(":",port)[0]} on ${split(":", port)[0] == "ICMP" ? "type/code ${split(":", port)[1]}" : "port ${split(":", port)[1]}"}."
       stateless    = false
       protocol     = split(":",port)[0]
       src          = local.exa_vcn2_client_subnet_cidr
       src_type     = "CIDR_BLOCK"
-      dst_port_min = split(":",port)[1]
-      dst_port_max = split(":",port)[1]
+      dst_port_min = split(":", port)[0] != "ICMP" ? (split(":", port)[1]) : null
+      dst_port_max = split(":", port)[0] != "ICMP" ? (split(":", port)[1]) : null
+      icmp_type    = split(":", port)[0] == "ICMP" ? split("/", split(":", port)[1])[0] : null
+      icmp_code    = split(":", port)[0] == "ICMP" ? (length(split("/", split(":", port)[1])) > 1 ? split("/", split(":", port)[1])[1] : null) : null
     }} : {},
     ## Ingress from EXA-VCN-3
     (local.add_tt_vcn3 == true && var.tt_vcn3_attach_to_drg == true && var.add_exa_vcn3 == true && var.exa_vcn3_attach_to_drg == true) &&
@@ -925,8 +982,10 @@ locals {
       protocol     = split(":",port)[0]
       src          = local.exa_vcn3_client_subnet_cidr
       src_type     = "CIDR_BLOCK"
-      dst_port_min = split(":",port)[1]
-      dst_port_max = split(":",port)[1]
+      dst_port_min = split(":", port)[0] != "ICMP" ? (split(":", port)[1]) : null
+      dst_port_max = split(":", port)[0] != "ICMP" ? (split(":", port)[1]) : null
+      icmp_type    = split(":", port)[0] == "ICMP" ? split("/", split(":", port)[1])[0] : null
+      icmp_code    = split(":", port)[0] == "ICMP" ? (length(split("/", split(":", port)[1])) > 1 ? split("/", split(":", port)[1])[1] : null) : null
     }} : {},
     ## Ingress from jump host in Hub Jumphost Subnet into TT-VCN-3 DB Subnet if hub with vcn is true
     (local.add_tt_vcn3 == true && var.tt_vcn3_attach_to_drg == true) && (local.hub_with_vcn == true && var.deploy_bastion_jump_host) ? {
@@ -954,3 +1013,4 @@ locals {
     var.tt_vcn3_onprem_route_enable == true ? local.on_prem_route_rule : {}
   ) : {}
 }
+
