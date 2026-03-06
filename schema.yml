@@ -443,6 +443,7 @@ variableGroups:
       - "customize_oke_vcn1_subnets"
       - "oke_vcn1_services_subnet_name"
       - "oke_vcn1_services_subnet_cidr"
+      - "oke_vcn1_services_subnet_is_private"
       - "oke_vcn1_external_allowed_cidrs_into_services_tier"
       - "oke_vcn1_services_ingress_destination_ports"
       - "oke_vcn1_workers_subnet_name"
@@ -464,6 +465,7 @@ variableGroups:
       - "customize_oke_vcn2_subnets"
       - "oke_vcn2_services_subnet_name"
       - "oke_vcn2_services_subnet_cidr"
+      - "oke_vcn2_services_subnet_is_private"
       - "oke_vcn2_external_allowed_cidrs_into_services_tier"
       - "oke_vcn2_services_ingress_destination_ports"
       - "oke_vcn2_workers_subnet_name"
@@ -485,6 +487,7 @@ variableGroups:
       - "customize_oke_vcn3_subnets"
       - "oke_vcn3_services_subnet_name"
       - "oke_vcn3_services_subnet_cidr"
+      - "oke_vcn3_services_subnet_is_private"
       - "oke_vcn3_external_allowed_cidrs_into_services_tier"
       - "oke_vcn3_services_ingress_destination_ports"
       - "oke_vcn3_workers_subnet_name"
@@ -1491,17 +1494,7 @@ variables:
         - define_net
         - customize_tt_vcn1_subnets
         - add_tt_vcn1
-        - or:
-          - eq:
-            - ${hub_deployment_option}
-            - "No cross-VCN or on-premises connectivity"
-          - eq:
-            - ${hub_deployment_option}
-            - "VCN or on-premises connectivity routing via DRG (DRG will be created)"
-          - eq:
-            - ${hub_deployment_option}
-            - "VCN or on-premises connectivity routing via DRG (existing DRG)"  
-
+  
   tt_vcn1_external_allowed_cidrs_into_web_tier:
     type: array
     items:
@@ -1797,17 +1790,7 @@ variables:
         - define_net
         - customize_tt_vcn2_subnets
         - add_tt_vcn2
-        - or:
-          - eq:
-            - ${hub_deployment_option}
-            - "No cross-VCN or on-premises connectivity"
-          - eq:
-            - ${hub_deployment_option}
-            - "VCN or on-premises connectivity routing via DRG (DRG will be created)"
-          - eq:
-            - ${hub_deployment_option}
-            - "VCN or on-premises connectivity routing via DRG (existing DRG)"
-
+  
   tt_vcn2_external_allowed_cidrs_into_web_tier:
     type: array
     items:
@@ -2102,17 +2085,7 @@ variables:
         - define_net
         - customize_tt_vcn3_subnets
         - add_tt_vcn3
-        - or:
-          - eq:
-            - ${hub_deployment_option}
-            - "No cross-VCN or on-premises connectivity"
-          - eq:
-            - ${hub_deployment_option}
-            - "VCN or on-premises connectivity routing via DRG (DRG will be created)"
-          - eq:
-            - ${hub_deployment_option}
-            - "VCN or on-premises connectivity routing via DRG (existing DRG)"
-
+  
   tt_vcn3_external_allowed_cidrs_into_web_tier:
     type: array
     items:
@@ -2932,6 +2905,16 @@ variables:
         - customize_oke_vcn1_subnets
         - add_oke_vcn1
 
+  oke_vcn1_services_subnet_is_private:
+    type: boolean
+    title: "Is Services Subnet Private?"
+    description: "Check to make the Services subnet private. It is public by default."
+    visible: 
+      and:
+        - define_net
+        - customize_oke_vcn1_subnets
+        - add_oke_vcn1
+
   oke_vcn1_external_allowed_cidrs_into_services_tier:
     type: array
     items:
@@ -3201,6 +3184,16 @@ variables:
         - define_net
         - customize_oke_vcn2_subnets
         - add_oke_vcn2
+
+  oke_vcn2_services_subnet_is_private:
+    type: boolean
+    title: "Is Services Subnet Private?"
+    description: "Check to make the Services subnet private. It is public by default."
+    visible: 
+      and:
+        - define_net
+        - customize_oke_vcn2_subnets
+        - add_oke_vcn2      
 
   oke_vcn2_external_allowed_cidrs_into_services_tier:
     type: array
@@ -3472,6 +3465,16 @@ variables:
         - customize_oke_vcn3_subnets
         - add_oke_vcn3
 
+  oke_vcn3_services_subnet_is_private:
+    type: boolean
+    title: "Is Services Subnet Private?"
+    description: "Check to make the Services subnet private. It is public by default."
+    visible: 
+      and:
+        - define_net
+        - customize_oke_vcn3_subnets
+        - add_oke_vcn3      
+
   oke_vcn3_external_allowed_cidrs_into_services_tier:
     type: array
     items:
@@ -3673,7 +3676,7 @@ variables:
 
   oci_nfw_ip_ocid:
     type: string
-    title: "OCI Network Firewall Forwarding IP OCID"
+    title: "OCI Network Firewall IP OCID"
     description: "Enter the OCID of Native Firewall IP address, where all outbound traffic from the spoke VCNs is sent to in the Hub VCN."
     visible:
       and:
