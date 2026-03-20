@@ -14,6 +14,19 @@ variable "hub_deployment" {
   default     = 0
   description = "The available options for hub deployment as an integer. 'No cross-VCN or on-premises connectivity' = 0, 'VCN or on-premises connectivity routing via DRG (DRG will be created)' = 1, 'VCN or on-premises connectivity routing via DRG (existing DRG)' = 2, 'VCN or on-premises connectivity routing through DMZ VCN with Network Virtual Appliance (DRG and DMZ VCN will be created)' = 3, 'VCN or on-premises connectivity routed through DMZ VCN with Network Virtual Appliance existing DRG (DMZ VCN will be created and DRG ID required)' = 4, 'No cross-VCN with on-premises connectivity using an existing DRG' = 5, 'No cross-VCN with on-premises connectivity using a new DRG' = 6"
 }
+
+variable "enable_cross_vcn_constrained_nsgs" {
+  type = bool
+  default = true
+  description = "When true, Landing Zone provisions NSGs that enable DRG-attached and routable VCNs to connect with each other according to Landing Zone provided rules."
+}
+
+variable "enable_cross_vcn_open_nsg" {
+  type = bool
+  default = false
+  description = "When true, Landing Zone provisions a NSG that enables DRG-attached and routable VCNs to fully connect with each other."
+}
+
 variable "existing_drg_ocid" {
   type        = string
   default     = null

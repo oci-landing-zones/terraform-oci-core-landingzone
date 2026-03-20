@@ -168,6 +168,11 @@
 #       ingress_rules = local.security_lists_default_ingress_rules
 #       egress_rules  = local.security_lists_default_egress_rules
 #     }
+#     oke_vcn1_db_subnet_security_list       = {
+#       display_name = "db-subnet-security-list"
+#       ingress_rules = local.security_lists_default_ingress_rules
+#       egress_rules  = local.security_lists_default_egress_rules
+#     }
 #     # OKE VCN1 additional NSGs.
 #     oke_vcn1_additional_nsgs = {
 #       "OKE-VCN-1-CUSTOM-NSG" = {

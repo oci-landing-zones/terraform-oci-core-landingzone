@@ -123,6 +123,39 @@ variable "oke_vcn1_services_ingress_destination_ports" {
   }
 }
 
+
+variable "add_oke_vcn1_db_subnet" {
+  type        = bool
+  default     = false
+  description = "Whether to add an optional private database subnet for workloads running in OKE VCN 1."
+}
+
+variable "oke_vcn1_db_subnet_cidr" {
+  type        = string
+  default     = null
+  description = "The Database subnet CIDR block. It must be within the VCN CIDR blocks."
+  validation {
+    condition     = var.oke_vcn1_db_subnet_cidr == null || can(cidrhost(var.oke_vcn1_db_subnet_cidr, 0))
+    error_message = "Invalid value provided for oke_vcn1_db_subnet_cidr variable: value must be in valid CIDR notation (e.g., 10.3.0.0/28)."
+  }
+}
+
+variable "oke_vcn1_db_subnet_name" {
+  type        = string
+  default     = null
+  description = "The Database subnet name."
+}
+
+variable "oke_vcn1_db_ingress_destination_ports" {
+  type        = list(string)
+  default     = ["TCP:1521"]
+  description = "Protocols and destination ports allowed for ingress packets into the OKE VCN1 database Network Security Group. Each value must be in the form protocol:port (e.g., 'TCP:1521')."
+  validation {
+    condition = length(var.oke_vcn1_db_ingress_destination_ports) == 0 ? true : alltrue([for v in var.oke_vcn1_db_ingress_destination_ports : can(regex("^[^:]+:[^:]+$", v))])
+    error_message = "Invalid value provided for oke_vcn1_db_ingress_destination_ports variable: all values must be in the form protocol:port, with exactly one ':' separating protocol and port values."
+  }
+}
+
 variable "add_oke_vcn1_mgmt_subnet" {
   type        = bool
   default     = false
@@ -294,6 +327,38 @@ variable "oke_vcn2_services_ingress_destination_ports" {
   }
 }
 
+variable "add_oke_vcn2_db_subnet" {
+  type        = bool
+  default     = false
+  description = "Whether to add an optional private database subnet for workloads running in OKE VCN 2."
+}
+
+variable "oke_vcn2_db_subnet_cidr" {
+  type        = string
+  default     = null
+  description = "The Database subnet CIDR block. It must be within the VCN CIDR blocks."
+  validation {
+    condition     = var.oke_vcn2_db_subnet_cidr == null || can(cidrhost(var.oke_vcn2_db_subnet_cidr, 0))
+    error_message = "Invalid value provided for oke_vcn2_db_subnet_cidr variable: value must be in valid CIDR notation (e.g., 10.4.0.0/28)."
+  }
+}
+
+variable "oke_vcn2_db_subnet_name" {
+  type        = string
+  default     = null
+  description = "The Database subnet name."
+}
+
+variable "oke_vcn2_db_ingress_destination_ports" {
+  type        = list(string)
+  default     = ["TCP:1521"]
+  description = "Protocols and destination ports allowed for ingress packets into the OKE VCN2 database Network Security Group. Each value must be in the form protocol:port (e.g., 'TCP:1521')."
+  validation {
+    condition = length(var.oke_vcn2_db_ingress_destination_ports) == 0 ? true : alltrue([for v in var.oke_vcn2_db_ingress_destination_ports : can(regex("^[^:]+:[^:]+$", v))])
+    error_message = "Invalid value provided for oke_vcn2_db_ingress_destination_ports variable: all values must be in the form protocol:port, with exactly one ':' separating protocol and port values."
+  }
+}
+
 variable "add_oke_vcn2_mgmt_subnet" {
   type        = bool
   default     = false
@@ -462,6 +527,38 @@ variable "oke_vcn3_services_ingress_destination_ports" {
   validation {
     condition = length(var.oke_vcn3_services_ingress_destination_ports) == 0 ? true : alltrue([for v in var.oke_vcn3_services_ingress_destination_ports : can(regex("^[^:]+:[^:]+$", v))])
     error_message = "Invalid value provided for oke_vcn3_services_ingress_destination_ports variable: all values must be in the form protocol:port, with exactly one ':' separating protocol and port values."
+  }
+}
+
+variable "add_oke_vcn3_db_subnet" {
+  type        = bool
+  default     = false
+  description = "Whether to add an optional private database subnet for workloads running in OKE VCN 3."
+}
+
+variable "oke_vcn3_db_subnet_cidr" {
+  type        = string
+  default     = null
+  description = "The Database subnet CIDR block. It must be within the VCN CIDR blocks."
+  validation {
+    condition     = var.oke_vcn3_db_subnet_cidr == null || can(cidrhost(var.oke_vcn3_db_subnet_cidr, 0))
+    error_message = "Invalid value provided for oke_vcn3_db_subnet_cidr variable: value must be in valid CIDR notation (e.g., 10.5.0.0/28)."
+  }
+}
+
+variable "oke_vcn3_db_subnet_name" {
+  type        = string
+  default     = null
+  description = "The Database subnet name."
+}
+
+variable "oke_vcn3_db_ingress_destination_ports" {
+  type        = list(string)
+  default     = ["TCP:1521"]
+  description = "Protocols and destination ports allowed for ingress packets into the OKE VCN3 database Network Security Group. Each value must be in the form protocol:port (e.g., 'TCP:1521')."
+  validation {
+    condition = length(var.oke_vcn3_db_ingress_destination_ports) == 0 ? true : alltrue([for v in var.oke_vcn3_db_ingress_destination_ports : can(regex("^[^:]+:[^:]+$", v))])
+    error_message = "Invalid value provided for oke_vcn3_db_ingress_destination_ports variable: all values must be in the form protocol:port, with exactly one ':' separating protocol and port values."
   }
 }
 

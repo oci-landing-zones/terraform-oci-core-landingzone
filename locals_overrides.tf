@@ -1,7 +1,7 @@
 # Copyright (c) 2023, 2026, Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl/
 
-# The variables in this file can be overridden for advanced customization use cases.
+# The variables in this file can be overridden for advanced network customization use cases.
 # For overriding a variable, redefine the variable within net_override.tf file. DO NOT CHANGE ANY VALUES IN THIS FILE DIRECTLY as it may cause issues with future upgrades.
 
 locals {
@@ -81,6 +81,7 @@ locals {
     oke_vcn1_services_subnet_security_list = null
     oke_vcn1_mgmt_subnet_security_list     = null
     oke_vcn1_pods_subnet_security_list     = null
+    oke_vcn1_db_subnet_security_list       = null
     # OKE VCN1 additional NSGs:
     oke_vcn1_additional_nsgs = {}
     # Whether CIS checks for oke_vcn1 VCN are enabled.
@@ -97,6 +98,7 @@ locals {
     oke_vcn2_services_subnet_security_list = null
     oke_vcn2_mgmt_subnet_security_list     = null
     oke_vcn2_pods_subnet_security_list     = null
+    oke_vcn2_db_subnet_security_list       = null
     # OKE VCN2 additional NSGs:
     oke_vcn2_additional_nsgs = {}
     # Whether CIS checks for oke_vcn2 VCN are enabled.
@@ -113,6 +115,7 @@ locals {
     oke_vcn3_services_subnet_security_list = null
     oke_vcn3_mgmt_subnet_security_list     = null
     oke_vcn3_pods_subnet_security_list     = null
+    oke_vcn3_db_subnet_security_list       = null
     # OKE VCN3 additional NSGs:
     oke_vcn3_additional_nsgs = {}
     # Whether CIS checks for oke_vcn3 VCN are enabled.

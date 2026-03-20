@@ -118,120 +118,121 @@ locals {
         }
       }
 
-      network_security_groups = {
-        "EXA-VCN-3-CLIENT-NSG" = {
-          display_name = "client-nsg"
-          ingress_rules = merge(
-            local.hub_with_vcn == true && var.exa_vcn3_attach_to_drg == true && local.add_exa_vcn3 == true && var.deploy_bastion_jump_host == true ? {
-              "INGRESS-FROM-SSH-HUB-VCN-RULE" = {
-                description  = "Allows SSH connections from ${local.hub_vcn_jumphost_subnet_cidr} in Hub VCN Jumphost subnet."
-                stateless    = false
-                protocol     = "TCP"
-                src          = local.hub_vcn_jumphost_subnet_cidr
-                src_type     = "CIDR_BLOCK"
-                dst_port_min = 22
-                dst_port_max = 22
+      network_security_groups = merge(
+        {
+          "EXA-VCN-3-CLIENT-NSG" = {
+            display_name = "client-nsg"
+            ingress_rules = merge(
+              local.hub_with_vcn == true && var.exa_vcn3_attach_to_drg == true && local.add_exa_vcn3 == true && var.deploy_bastion_jump_host == true ? {
+                "INGRESS-FROM-SSH-HUB-VCN-RULE" = {
+                  description  = "Allows SSH connections from ${local.hub_vcn_jumphost_subnet_cidr} in Hub VCN Jumphost subnet."
+                  stateless    = false
+                  protocol     = "TCP"
+                  src          = local.hub_vcn_jumphost_subnet_cidr
+                  src_type     = "CIDR_BLOCK"
+                  dst_port_min = 22
+                  dst_port_max = 22
+                }
+              } : {},
+              {
+                "INGRESS-FROM-SSH-CLIENT-RULE" = {
+                  description  = "Allows SSH connections from hosts in Client NSG."
+                  stateless    = false
+                  protocol     = "TCP"
+                  src          = "EXA-VCN-3-CLIENT-NSG"
+                  src_type     = "NETWORK_SECURITY_GROUP"
+                  dst_port_min = 22
+                  dst_port_max = 22
+                }
+              },
+              { for port in var.exa_vcn3_client_ingress_destination_ports : "INGRESS-FROM-CLIENT-NSG-ON-${port}-RULE" => {
+                  description  = "Ingress from Client NSG over ${split(":",port)[0]} on ${split(":", port)[0] == "ICMP" ? "type/code ${split(":", port)[1]}" : "port ${split(":", port)[1]}"} (for SQLNet connections)"
+                  stateless    = false
+                  protocol     = split(":",port)[0]
+                  src          = "EXA-VCN-3-CLIENT-NSG"
+                  src_type     = "NETWORK_SECURITY_GROUP"
+                  dst_port_min = split(":", port)[0] != "ICMP" ? (split(":", port)[1]) : null
+                  dst_port_max = split(":", port)[0] != "ICMP" ? (split(":", port)[1]) : null
+                  icmp_type    = split(":", port)[0] == "ICMP" ? split("/", split(":", port)[1])[0] : null
+                  icmp_code    = split(":", port)[0] == "ICMP" ? (length(split("/", split(":", port)[1])) > 1 ? split("/", split(":", port)[1])[1] : null) : null
+              }},
+              {
+                "INGRESS-FROM-ONS-CLIENT-RULE" = {
+                  description = "Allows Oracle Notification Services (ONS) communication from hosts in Client NSG for Fast Application Notifications (FAN)."
+                  stateless   = false
+                  protocol    = "TCP"
+                  src         = "EXA-VCN-3-CLIENT-NSG"
+                  src_type    = "NETWORK_SECURITY_GROUP"
+                  dst_port_min : 6200
+                  dst_port_max : 6200
+                }
               }
-            } : {},
-            {
-              "INGRESS-FROM-SSH-CLIENT-RULE" = {
-                description  = "Allows SSH connections from hosts in Client NSG."
-                stateless    = false
-                protocol     = "TCP"
-                src          = "EXA-VCN-3-CLIENT-NSG"
-                src_type     = "NETWORK_SECURITY_GROUP"
-                dst_port_min = 22
-                dst_port_max = 22
+            )
+            egress_rules = merge(
+              {
+                "EGRESS-TO-SSH-RULE" = {
+                  description  = "Allows SSH connections to hosts in Client NSG."
+                  stateless    = false
+                  protocol     = "TCP"
+                  dst          = "EXA-VCN-3-CLIENT-NSG"
+                  dst_type     = "NETWORK_SECURITY_GROUP"
+                  dst_port_min = 22
+                  dst_port_max = 22
+                }
+              },
+              { for port in var.exa_vcn3_client_ingress_destination_ports : "EGRESS-TO-CLIENT-NSG-ON-${port}-RULE" => {
+                  description  = "Egress to Client NSG over ${split(":",port)[0]} on ${split(":", port)[0] == "ICMP" ? "type/code ${split(":", port)[1]}" : "port ${split(":", port)[1]}"} (for SQLNet connections)"
+                  stateless    = false
+                  protocol     = split(":",port)[0]
+                  dst          = "EXA-VCN-3-CLIENT-NSG"
+                  dst_type     = "NETWORK_SECURITY_GROUP"
+                  dst_port_min = split(":", port)[0] != "ICMP" ? (split(":", port)[1]) : null
+                  dst_port_max = split(":", port)[0] != "ICMP" ? (split(":", port)[1]) : null
+                  icmp_type    = split(":", port)[0] == "ICMP" ? split("/", split(":", port)[1])[0] : null
+                  icmp_code    = split(":", port)[0] == "ICMP" ? (length(split("/", split(":", port)[1])) > 1 ? split("/", split(":", port)[1])[1] : null) : null
+              }},
+              {
+                "EGRESS-TO-ONS-RULE" = {
+                  description = "Allows Oracle Notification Services (ONS) communication to hosts in Client NSG for Fast Application Notifications (FAN)."
+                  stateless   = false
+                  protocol    = "TCP"
+                  dst         = "EXA-VCN-3-CLIENT-NSG"
+                  dst_type    = "NETWORK_SECURITY_GROUP"
+                  dst_port_min : 6200
+                  dst_port_max : 6200
+                }
+              },
+              {
+                "EGRESS-TO-OSN-RULE" = {
+                  description = "Allows HTTPS connections to Oracle Services Network (OSN)."
+                  stateless   = false
+                  protocol    = "TCP"
+                  dst         = "all-services"
+                  dst_type    = "SERVICE_CIDR_BLOCK"
+                  dst_port_min : 443
+                  dst_port_max : 443
+                }
               }
-            },
-            { for port in var.exa_vcn3_client_ingress_destination_ports : "INGRESS-FROM-CLIENT-NSG-ON-${port}-RULE" => {
-                description  = "Ingress from Client NSG over ${split(":",port)[0]} on ${split(":", port)[0] == "ICMP" ? "type/code ${split(":", port)[1]}" : "port ${split(":", port)[1]}"} (for SQLNet connections)"
-                stateless    = false
-                protocol     = split(":",port)[0]
-                src          = "EXA-VCN-3-CLIENT-NSG"
-                src_type     = "NETWORK_SECURITY_GROUP"
-                dst_port_min = split(":", port)[0] != "ICMP" ? (split(":", port)[1]) : null
-                dst_port_max = split(":", port)[0] != "ICMP" ? (split(":", port)[1]) : null
-                icmp_type    = split(":", port)[0] == "ICMP" ? split("/", split(":", port)[1])[0] : null
-                icmp_code    = split(":", port)[0] == "ICMP" ? (length(split("/", split(":", port)[1])) > 1 ? split("/", split(":", port)[1])[1] : null) : null
-            }},
-            {
-              "INGRESS-FROM-ONS-CLIENT-RULE" = {
-                description = "Allows Oracle Notification Services (ONS) communication from hosts in Client NSG for Fast Application Notifications (FAN)."
-                stateless   = false
-                protocol    = "TCP"
-                src         = "EXA-VCN-3-CLIENT-NSG"
-                src_type    = "NETWORK_SECURITY_GROUP"
-                dst_port_min : 6200
-                dst_port_max : 6200
-              }
-            },
-            local.exa_vcn_3_to_client_subnet_cross_vcn_ingress
-          )
-          egress_rules = merge(
-            {
-              "EGRESS-TO-SSH-RULE" = {
-                description  = "Allows SSH connections to hosts in Client NSG."
-                stateless    = false
-                protocol     = "TCP"
-                dst          = "EXA-VCN-3-CLIENT-NSG"
-                dst_type     = "NETWORK_SECURITY_GROUP"
-                dst_port_min = 22
-                dst_port_max = 22
-              }
-            },
-            { for port in var.exa_vcn3_client_ingress_destination_ports : "EGRESS-TO-CLIENT-NSG-ON-${port}-RULE" => {
-                description  = "Egress to Client NSG over ${split(":",port)[0]} on ${split(":", port)[0] == "ICMP" ? "type/code ${split(":", port)[1]}" : "port ${split(":", port)[1]}"} (for SQLNet connections)"
-                stateless    = false
-                protocol     = split(":",port)[0]
-                dst          = "EXA-VCN-3-CLIENT-NSG"
-                dst_type     = "NETWORK_SECURITY_GROUP"
-                dst_port_min = split(":", port)[0] != "ICMP" ? (split(":", port)[1]) : null
-                dst_port_max = split(":", port)[0] != "ICMP" ? (split(":", port)[1]) : null
-                icmp_type    = split(":", port)[0] == "ICMP" ? split("/", split(":", port)[1])[0] : null
-                icmp_code    = split(":", port)[0] == "ICMP" ? (length(split("/", split(":", port)[1])) > 1 ? split("/", split(":", port)[1])[1] : null) : null
-            }},
-            {
-              "EGRESS-TO-ONS-RULE" = {
-                description = "Allows Oracle Notification Services (ONS) communication to hosts in Client NSG for Fast Application Notifications (FAN)."
-                stateless   = false
-                protocol    = "TCP"
-                dst         = "EXA-VCN-3-CLIENT-NSG"
-                dst_type    = "NETWORK_SECURITY_GROUP"
-                dst_port_min : 6200
-                dst_port_max : 6200
-              }
-            },
-            {
+            )
+          }
+          "EXA-VCN-3-BACKUP-NSG" = {
+            display_name = "backup-nsg"
+            egress_rules = {
               "EGRESS-TO-OSN-RULE" = {
                 description = "Allows HTTPS connections to Oracle Services Network (OSN)."
                 stateless   = false
                 protocol    = "TCP"
-                dst         = "all-services"
+                dst         = "objectstorage"
                 dst_type    = "SERVICE_CIDR_BLOCK"
-                dst_port_min : 443
+                dst_port_min : 443,
                 dst_port_max : 443
               }
-            },
-            local.exa_vcn_3_to_client_subnet_cross_vcn_egress,
-            local.exa_vcn_3_to_db_subnet_cross_vcn_egress
-          )
-        }
-        "EXA-VCN-3-BACKUP-NSG" = {
-          display_name = "backup-nsg"
-          egress_rules = {
-            "EGRESS-TO-OSN-RULE" = {
-              description = "Allows HTTPS connections to Oracle Services Network (OSN)."
-              stateless   = false
-              protocol    = "TCP"
-              dst         = "objectstorage"
-              dst_type    = "SERVICE_CIDR_BLOCK"
-              dst_port_min : 443,
-              dst_port_max : 443
             }
           }
-        }
-      }
+        },
+        local.exa_vcn3_cross_vcn_open_nsg,
+        local.exa_vcn3_cross_vcn_client_nsg
+      )
 
       vcn_specific_gateways = {
         service_gateways = {
@@ -244,261 +245,6 @@ locals {
     }
   } : {}
 
-  ## Cross VCN Egress Rules for EXA_VCN_3
-  ### Cross VCN egress rules to other EXA VCNs' Clients subnets
-  exa_vcn_3_to_client_subnet_cross_vcn_egress = merge(
-    (local.add_exa_vcn3 == true && var.exa_vcn3_attach_to_drg == true && var.add_exa_vcn1 == true && var.exa_vcn1_attach_to_drg == true) &&
-    (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.exa_vcn3_routable_vcns) == 0 || contains(var.exa_vcn3_routable_vcns, "EXA-VCN-1")))) ? { for port in var.exa_vcn1_client_ingress_destination_ports : "EGRESS-TO-EXA-VCN1-ON-${port}-RULE" => {
-      description  = "Egress to ${local.exa_vcn1_client_subnet_display_name} over ${split(":",port)[0]} on ${split(":", port)[0] == "ICMP" ? "type/code ${split(":", port)[1]}" : "port ${split(":", port)[1]}"}."
-      stateless    = false
-      protocol     = split(":",port)[0]
-      dst          = local.exa_vcn1_client_subnet_cidr
-      dst_type     = "CIDR_BLOCK"
-      dst_port_min = split(":", port)[0] != "ICMP" ? (split(":", port)[1]) : null
-      dst_port_max = split(":", port)[0] != "ICMP" ? (split(":", port)[1]) : null
-      icmp_type    = split(":", port)[0] == "ICMP" ? split("/", split(":", port)[1])[0] : null
-      icmp_code    = split(":", port)[0] == "ICMP" ? (length(split("/", split(":", port)[1])) > 1 ? split("/", split(":", port)[1])[1] : null) : null
-    }} : {},
-    (local.add_exa_vcn3 == true && var.exa_vcn3_attach_to_drg == true && var.add_exa_vcn2 == true && var.exa_vcn2_attach_to_drg == true) &&
-    (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.exa_vcn3_routable_vcns) == 0 || contains(var.exa_vcn3_routable_vcns, "EXA-VCN-2")))) ? { for port in var.exa_vcn2_client_ingress_destination_ports : "EGRESS-TO-EXA-VCN2-ON-${port}-RULE" => {
-      description  = "Egress to ${local.exa_vcn2_client_subnet_display_name} over ${split(":",port)[0]} on ${split(":", port)[0] == "ICMP" ? "type/code ${split(":", port)[1]}" : "port ${split(":", port)[1]}"}."
-      stateless    = false
-      protocol     = split(":",port)[0]
-      dst          = local.exa_vcn2_client_subnet_cidr
-      dst_type     = "CIDR_BLOCK"
-      dst_port_min = split(":", port)[0] != "ICMP" ? (split(":", port)[1]) : null
-      dst_port_max = split(":", port)[0] != "ICMP" ? (split(":", port)[1]) : null
-      icmp_type    = split(":", port)[0] == "ICMP" ? split("/", split(":", port)[1])[0] : null
-      icmp_code    = split(":", port)[0] == "ICMP" ? (length(split("/", split(":", port)[1])) > 1 ? split("/", split(":", port)[1])[1] : null) : null
-    }} : {},
-  )
-
-  ### Cross VCN egress rules to Three-tier VCNs' db subnets
-  exa_vcn_3_to_db_subnet_cross_vcn_egress = merge(
-    (local.add_exa_vcn3 == true && var.exa_vcn3_attach_to_drg == true && var.add_tt_vcn1 == true && var.tt_vcn1_attach_to_drg == true) &&
-    (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.exa_vcn3_routable_vcns) == 0 || contains(var.exa_vcn3_routable_vcns, "TT-VCN-1")))) ? { for port in var.tt_vcn1_db_ingress_destination_ports : "EGRESS-TO-TT-VCN1-ON-${port}-RULE" => {
-      description  = "Egress to ${local.tt_vcn1_db_subnet_display_name} over ${split(":",port)[0]} on ${split(":", port)[0] == "ICMP" ? "type/code ${split(":", port)[1]}" : "port ${split(":", port)[1]}"}."
-      stateless    = false
-      protocol     = split(":",port)[0]
-      dst          = local.tt_vcn1_db_subnet_cidr
-      dst_type     = "CIDR_BLOCK"
-      dst_port_min = split(":", port)[0] != "ICMP" ? (split(":", port)[1]) : null
-      dst_port_max = split(":", port)[0] != "ICMP" ? (split(":", port)[1]) : null
-      icmp_type    = split(":", port)[0] == "ICMP" ? split("/", split(":", port)[1])[0] : null
-      icmp_code    = split(":", port)[0] == "ICMP" ? (length(split("/", split(":", port)[1])) > 1 ? split("/", split(":", port)[1])[1] : null) : null
-    }} : {},
-    (local.add_exa_vcn3 == true && var.exa_vcn3_attach_to_drg == true && var.add_tt_vcn2 == true && var.tt_vcn2_attach_to_drg == true) &&
-    (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.exa_vcn3_routable_vcns) == 0 || contains(var.exa_vcn3_routable_vcns, "TT-VCN-2")))) ? { for port in var.tt_vcn2_db_ingress_destination_ports : "EGRESS-TO-TT-VCN2-ON-${port}-RULE" => {
-      description  = "Egress to ${local.tt_vcn2_db_subnet_display_name} over ${split(":",port)[0]} on ${split(":", port)[0] == "ICMP" ? "type/code ${split(":", port)[1]}" : "port ${split(":", port)[1]}"}."
-      stateless    = false
-      protocol     = split(":",port)[0]
-      dst          = local.tt_vcn2_db_subnet_cidr
-      dst_type     = "CIDR_BLOCK"
-      dst_port_min = split(":", port)[0] != "ICMP" ? (split(":", port)[1]) : null
-      dst_port_max = split(":", port)[0] != "ICMP" ? (split(":", port)[1]) : null
-      icmp_type    = split(":", port)[0] == "ICMP" ? split("/", split(":", port)[1])[0] : null
-      icmp_code    = split(":", port)[0] == "ICMP" ? (length(split("/", split(":", port)[1])) > 1 ? split("/", split(":", port)[1])[1] : null) : null
-    }} : {},
-    (local.add_exa_vcn3 == true && var.exa_vcn3_attach_to_drg == true && var.add_tt_vcn3 == true && var.tt_vcn3_attach_to_drg == true) &&
-    (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.exa_vcn3_routable_vcns) == 0 || contains(var.exa_vcn3_routable_vcns, "TT-VCN-3")))) ? { for port in var.tt_vcn3_db_ingress_destination_ports : "EGRESS-TO-TT-VCN3-ON-${port}-RULE" => {
-      description  = "Egress to ${local.tt_vcn3_db_subnet_display_name} over ${split(":",port)[0]} on ${split(":", port)[0] == "ICMP" ? "type/code ${split(":", port)[1]}" : "port ${split(":", port)[1]}"}."
-      stateless    = false
-      protocol     = split(":",port)[0]
-      dst          = local.tt_vcn3_db_subnet_cidr
-      dst_type     = "CIDR_BLOCK"
-      dst_port_min = split(":", port)[0] != "ICMP" ? (split(":", port)[1]) : null
-      dst_port_max = split(":", port)[0] != "ICMP" ? (split(":", port)[1]) : null
-      icmp_type    = split(":", port)[0] == "ICMP" ? split("/", split(":", port)[1])[0] : null
-      icmp_code    = split(":", port)[0] == "ICMP" ? (length(split("/", split(":", port)[1])) > 1 ? split("/", split(":", port)[1])[1] : null) : null
-    }} : {}
-  )
-
-  ## Cross VCN Ingress rules for EXA_VCN_3
-  ### Cross VCN ingress rules from other VCNs' subnets
-  exa_vcn_3_to_client_subnet_cross_vcn_ingress = merge(
-    (local.add_exa_vcn3 == true && var.exa_vcn3_attach_to_drg == true && var.add_exa_vcn1 == true && var.exa_vcn1_attach_to_drg == true) &&
-    (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.exa_vcn3_routable_vcns) == 0 || contains(var.exa_vcn3_routable_vcns, "EXA-VCN-1")))) ? { for port in var.exa_vcn3_client_ingress_destination_ports : "INGRESS-FROM-EXA-VCN1-ON-${port}-RULE" => {
-      description  = "Ingress from ${local.exa_vcn1_client_subnet_display_name} over ${split(":",port)[0]} on ${split(":", port)[0] == "ICMP" ? "type/code ${split(":", port)[1]}" : "port ${split(":", port)[1]}"}."
-      stateless    = false
-      protocol     = split(":",port)[0]
-      src          = local.exa_vcn1_client_subnet_cidr
-      src_type     = "CIDR_BLOCK"
-      dst_port_min = split(":", port)[0] != "ICMP" ? (split(":", port)[1]) : null
-      dst_port_max = split(":", port)[0] != "ICMP" ? (split(":", port)[1]) : null
-      icmp_type    = split(":", port)[0] == "ICMP" ? split("/", split(":", port)[1])[0] : null
-      icmp_code    = split(":", port)[0] == "ICMP" ? (length(split("/", split(":", port)[1])) > 1 ? split("/", split(":", port)[1])[1] : null) : null
-    }} : {},
-    (local.add_exa_vcn3 == true && var.exa_vcn3_attach_to_drg == true && var.add_exa_vcn2 == true && var.exa_vcn2_attach_to_drg == true) &&
-    (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.exa_vcn3_routable_vcns) == 0 || contains(var.exa_vcn3_routable_vcns, "EXA-VCN-2")))) ? { for port in var.exa_vcn3_client_ingress_destination_ports : "INGRESS-FROM-EXA-VCN2-ON-${port}-RULE" => {
-      description  = "Ingress from ${local.exa_vcn2_client_subnet_display_name} over ${split(":",port)[0]} on ${split(":", port)[0] == "ICMP" ? "type/code ${split(":", port)[1]}" : "port ${split(":", port)[1]}"}."
-      stateless    = false
-      protocol     = split(":",port)[0]
-      src          = local.exa_vcn2_client_subnet_cidr
-      src_type     = "CIDR_BLOCK"
-      dst_port_min = split(":", port)[0] != "ICMP" ? (split(":", port)[1]) : null
-      dst_port_max = split(":", port)[0] != "ICMP" ? (split(":", port)[1]) : null
-      icmp_type    = split(":", port)[0] == "ICMP" ? split("/", split(":", port)[1])[0] : null
-      icmp_code    = split(":", port)[0] == "ICMP" ? (length(split("/", split(":", port)[1])) > 1 ? split("/", split(":", port)[1])[1] : null) : null
-    }} : {},
-    (local.add_exa_vcn3 == true && var.exa_vcn3_attach_to_drg == true && var.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true) &&
-    (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.exa_vcn3_routable_vcns) == 0 || contains(var.exa_vcn3_routable_vcns, "OKE-VCN-1")))) ? { for port in var.exa_vcn3_client_ingress_destination_ports : "INGRESS-FROM-OKE-VCN1-WORKERS-ON-${port}-RULE" => {
-      description  = "Ingress from ${local.oke_vcn1_workers_subnet_display_name} over ${split(":",port)[0]} on ${split(":", port)[0] == "ICMP" ? "type/code ${split(":", port)[1]}" : "port ${split(":", port)[1]}"}."
-      stateless    = false
-      protocol     = split(":",port)[0]
-      src          = local.oke_vcn1_workers_subnet_cidr
-      src_type     = "CIDR_BLOCK"
-      dst_port_min = split(":", port)[0] != "ICMP" ? (split(":", port)[1]) : null
-      dst_port_max = split(":", port)[0] != "ICMP" ? (split(":", port)[1]) : null
-      icmp_type    = split(":", port)[0] == "ICMP" ? split("/", split(":", port)[1])[0] : null
-      icmp_code    = split(":", port)[0] == "ICMP" ? (length(split("/", split(":", port)[1])) > 1 ? split("/", split(":", port)[1])[1] : null) : null
-    }} : {},
-    (local.add_exa_vcn3 == true && var.exa_vcn3_attach_to_drg == true && var.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true) && (upper(var.oke_vcn1_cni_type) == "NATIVE") &&
-    (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.exa_vcn3_routable_vcns) == 0 || contains(var.exa_vcn3_routable_vcns, "OKE-VCN-1")))) ? { for port in var.exa_vcn3_client_ingress_destination_ports : "INGRESS-FROM-OKE-VCN1-PODS-ON-${port}-RULE" => {
-      description  = "Ingress from ${local.oke_vcn1_pods_subnet_display_name} over ${split(":",port)[0]} on ${split(":", port)[0] == "ICMP" ? "type/code ${split(":", port)[1]}" : "port ${split(":", port)[1]}"}."
-      stateless    = false
-      protocol     = split(":",port)[0]
-      src          = local.oke_vcn1_pods_subnet_cidr
-      src_type     = "CIDR_BLOCK"
-      dst_port_min = split(":", port)[0] != "ICMP" ? (split(":", port)[1]) : null
-      dst_port_max = split(":", port)[0] != "ICMP" ? (split(":", port)[1]) : null
-      icmp_type    = split(":", port)[0] == "ICMP" ? split("/", split(":", port)[1])[0] : null
-      icmp_code    = split(":", port)[0] == "ICMP" ? (length(split("/", split(":", port)[1])) > 1 ? split("/", split(":", port)[1])[1] : null) : null
-    }} : {},
-    (local.add_exa_vcn3 == true && var.exa_vcn3_attach_to_drg == true && var.add_oke_vcn2 == true && var.oke_vcn2_attach_to_drg == true) &&
-    (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.exa_vcn3_routable_vcns) == 0 || contains(var.exa_vcn3_routable_vcns, "OKE-VCN-2")))) ? { for port in var.exa_vcn3_client_ingress_destination_ports : "INGRESS-FROM-OKE-VCN2-WORKERS-ON-${port}-RULE" => {
-      description  = "Ingress from ${local.oke_vcn2_workers_subnet_display_name} over ${split(":",port)[0]} on ${split(":", port)[0] == "ICMP" ? "type/code ${split(":", port)[1]}" : "port ${split(":", port)[1]}"}."
-      stateless    = false
-      protocol     = split(":",port)[0]
-      src          = local.oke_vcn2_workers_subnet_cidr
-      src_type     = "CIDR_BLOCK"
-      dst_port_min = split(":", port)[0] != "ICMP" ? (split(":", port)[1]) : null
-      dst_port_max = split(":", port)[0] != "ICMP" ? (split(":", port)[1]) : null
-      icmp_type    = split(":", port)[0] == "ICMP" ? split("/", split(":", port)[1])[0] : null
-      icmp_code    = split(":", port)[0] == "ICMP" ? (length(split("/", split(":", port)[1])) > 1 ? split("/", split(":", port)[1])[1] : null) : null
-    }} : {},
-    (local.add_exa_vcn3 == true && var.exa_vcn3_attach_to_drg == true && var.add_oke_vcn2 == true && var.oke_vcn2_attach_to_drg == true) && (upper(var.oke_vcn2_cni_type) == "NATIVE") &&
-    (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.exa_vcn3_routable_vcns) == 0 || contains(var.exa_vcn3_routable_vcns, "OKE-VCN-2")))) ? { for port in var.exa_vcn3_client_ingress_destination_ports : "INGRESS-FROM-OKE-VCN2-PODS-ON-${port}-RULE" => {
-      description  = "Ingress from ${local.oke_vcn2_pods_subnet_display_name} over ${split(":",port)[0]} on ${split(":", port)[0] == "ICMP" ? "type/code ${split(":", port)[1]}" : "port ${split(":", port)[1]}"}."
-      stateless    = false
-      protocol     = split(":",port)[0]
-      src          = local.oke_vcn2_pods_subnet_cidr
-      src_type     = "CIDR_BLOCK"
-      dst_port_min = split(":", port)[0] != "ICMP" ? (split(":", port)[1]) : null
-      dst_port_max = split(":", port)[0] != "ICMP" ? (split(":", port)[1]) : null
-      icmp_type    = split(":", port)[0] == "ICMP" ? split("/", split(":", port)[1])[0] : null
-      icmp_code    = split(":", port)[0] == "ICMP" ? (length(split("/", split(":", port)[1])) > 1 ? split("/", split(":", port)[1])[1] : null) : null
-    }} : {},
-    (local.add_exa_vcn3 == true && var.exa_vcn3_attach_to_drg == true && var.add_oke_vcn3 == true && var.oke_vcn3_attach_to_drg == true) &&
-    (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.exa_vcn3_routable_vcns) == 0 || contains(var.exa_vcn3_routable_vcns, "OKE-VCN-3")))) ? { for port in var.exa_vcn3_client_ingress_destination_ports : "INGRESS-FROM-OKE-VCN3-WORKERS-ON-${port}-RULE" => {
-      description  = "Ingress from ${local.oke_vcn3_workers_subnet_display_name} over ${split(":",port)[0]} on ${split(":", port)[0] == "ICMP" ? "type/code ${split(":", port)[1]}" : "port ${split(":", port)[1]}"}."
-      stateless    = false
-      protocol     = split(":",port)[0]
-      src          = coalesce(var.oke_vcn3_workers_subnet_cidr, cidrsubnet(var.oke_vcn3_cidrs[0], 8, 1))
-      src_type     = "CIDR_BLOCK"
-      dst_port_min = split(":", port)[0] != "ICMP" ? (split(":", port)[1]) : null
-      dst_port_max = split(":", port)[0] != "ICMP" ? (split(":", port)[1]) : null
-      icmp_type    = split(":", port)[0] == "ICMP" ? split("/", split(":", port)[1])[0] : null
-      icmp_code    = split(":", port)[0] == "ICMP" ? (length(split("/", split(":", port)[1])) > 1 ? split("/", split(":", port)[1])[1] : null) : null
-    }} : {},
-    (local.add_exa_vcn3 == true && var.exa_vcn3_attach_to_drg == true && var.add_oke_vcn3 == true && var.oke_vcn3_attach_to_drg == true) && (upper(var.oke_vcn3_cni_type) == "NATIVE") &&
-    (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.exa_vcn3_routable_vcns) == 0 || contains(var.exa_vcn3_routable_vcns, "OKE-VCN-3")))) ? { for port in var.exa_vcn3_client_ingress_destination_ports : "INGRESS-FROM-OKE-VCN3-PODS-ON-${port}-RULE" => {
-      description  = "Ingress from ${local.oke_vcn3_pods_subnet_display_name} over ${split(":",port)[0]} on ${split(":", port)[0] == "ICMP" ? "type/code ${split(":", port)[1]}" : "port ${split(":", port)[1]}"}."
-      stateless    = false
-      protocol     = split(":",port)[0]
-      src          = local.oke_vcn3_pods_subnet_cidr
-      src_type     = "CIDR_BLOCK"
-      dst_port_min = split(":", port)[0] != "ICMP" ? (split(":", port)[1]) : null
-      dst_port_max = split(":", port)[0] != "ICMP" ? (split(":", port)[1]) : null
-      icmp_type    = split(":", port)[0] == "ICMP" ? split("/", split(":", port)[1])[0] : null
-      icmp_code    = split(":", port)[0] == "ICMP" ? (length(split("/", split(":", port)[1])) > 1 ? split("/", split(":", port)[1])[1] : null) : null
-    }} : {},
-    (local.add_exa_vcn3 == true && var.exa_vcn3_attach_to_drg == true && var.add_tt_vcn1 == true && var.tt_vcn1_attach_to_drg == true) &&
-    (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.exa_vcn3_routable_vcns) == 0 || contains(var.exa_vcn3_routable_vcns, "TT-VCN-1")))) ? { for port in var.exa_vcn3_client_ingress_destination_ports : "INGRESS-FROM-TT-VCN1-APP-ON-${port}-RULE" => {
-      description  = "Ingress from ${local.tt_vcn1_app_subnet_display_name} over ${split(":",port)[0]} on ${split(":", port)[0] == "ICMP" ? "type/code ${split(":", port)[1]}" : "port ${split(":", port)[1]}"}."
-      stateless    = false
-      protocol     = split(":",port)[0]
-      src          = local.tt_vcn1_app_subnet_cidr
-      src_type     = "CIDR_BLOCK"
-      dst_port_min = split(":", port)[0] != "ICMP" ? (split(":", port)[1]) : null
-      dst_port_max = split(":", port)[0] != "ICMP" ? (split(":", port)[1]) : null
-      icmp_type    = split(":", port)[0] == "ICMP" ? split("/", split(":", port)[1])[0] : null
-      icmp_code    = split(":", port)[0] == "ICMP" ? (length(split("/", split(":", port)[1])) > 1 ? split("/", split(":", port)[1])[1] : null) : null
-    }} : {},
-    (local.add_exa_vcn3 == true && var.exa_vcn3_attach_to_drg == true && var.add_tt_vcn1 == true && var.tt_vcn1_attach_to_drg == true) &&
-    (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.exa_vcn3_routable_vcns) == 0 || contains(var.exa_vcn3_routable_vcns, "TT-VCN-1")))) ? { for port in var.exa_vcn3_client_ingress_destination_ports : "INGRESS-FROM-TT-VCN1-DB-ON-${port}-RULE" => {
-      description  = "Ingress from ${local.tt_vcn1_db_subnet_display_name} over ${split(":",port)[0]} on ${split(":", port)[0] == "ICMP" ? "type/code ${split(":", port)[1]}" : "port ${split(":", port)[1]}"}."
-      stateless    = false
-      protocol     = split(":",port)[0]
-      src          = local.tt_vcn1_db_subnet_cidr
-      src_type     = "CIDR_BLOCK"
-      dst_port_min = split(":", port)[0] != "ICMP" ? (split(":", port)[1]) : null
-      dst_port_max = split(":", port)[0] != "ICMP" ? (split(":", port)[1]) : null
-      icmp_type    = split(":", port)[0] == "ICMP" ? split("/", split(":", port)[1])[0] : null
-      icmp_code    = split(":", port)[0] == "ICMP" ? (length(split("/", split(":", port)[1])) > 1 ? split("/", split(":", port)[1])[1] : null) : null
-    }} : {},
-    (local.add_exa_vcn3 == true && var.exa_vcn3_attach_to_drg == true && var.add_tt_vcn2 == true && var.tt_vcn2_attach_to_drg == true) &&
-    (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.exa_vcn3_routable_vcns) == 0 || contains(var.exa_vcn3_routable_vcns, "TT-VCN-2")))) ? { for port in var.exa_vcn3_client_ingress_destination_ports : "INGRESS-FROM-TT-VCN2-APP-ON-${port}-RULE" => {
-      description  = "Ingress from ${local.tt_vcn2_app_subnet_display_name} over ${split(":",port)[0]} on ${split(":", port)[0] == "ICMP" ? "type/code ${split(":", port)[1]}" : "port ${split(":", port)[1]}"}."
-      stateless    = false
-      protocol     = split(":",port)[0]
-      src          = local.tt_vcn2_app_subnet_cidr
-      src_type     = "CIDR_BLOCK"
-      dst_port_min = split(":", port)[0] != "ICMP" ? (split(":", port)[1]) : null
-      dst_port_max = split(":", port)[0] != "ICMP" ? (split(":", port)[1]) : null
-      icmp_type    = split(":", port)[0] == "ICMP" ? split("/", split(":", port)[1])[0] : null
-      icmp_code    = split(":", port)[0] == "ICMP" ? (length(split("/", split(":", port)[1])) > 1 ? split("/", split(":", port)[1])[1] : null) : null
-    }} : {},
-    (local.add_exa_vcn3 == true && var.exa_vcn3_attach_to_drg == true && var.add_tt_vcn2 == true && var.tt_vcn2_attach_to_drg == true) &&
-    (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.exa_vcn3_routable_vcns) == 0 || contains(var.exa_vcn3_routable_vcns, "TT-VCN-2")))) ? { for port in var.exa_vcn3_client_ingress_destination_ports : "INGRESS-FROM-TT-VCN2-DB-ON-${port}-RULE" => {
-      description  = "Ingress from ${local.tt_vcn2_db_subnet_display_name} over ${split(":",port)[0]} on ${split(":", port)[0] == "ICMP" ? "type/code ${split(":", port)[1]}" : "port ${split(":", port)[1]}"}."
-      stateless    = false
-      protocol     = split(":",port)[0]
-      src          = local.tt_vcn2_db_subnet_cidr
-      src_type     = "CIDR_BLOCK"
-      dst_port_min = split(":", port)[0] != "ICMP" ? (split(":", port)[1]) : null
-      dst_port_max = split(":", port)[0] != "ICMP" ? (split(":", port)[1]) : null
-      icmp_type    = split(":", port)[0] == "ICMP" ? split("/", split(":", port)[1])[0] : null
-      icmp_code    = split(":", port)[0] == "ICMP" ? (length(split("/", split(":", port)[1])) > 1 ? split("/", split(":", port)[1])[1] : null) : null
-    }} : {},
-    (local.add_exa_vcn3 == true && var.exa_vcn3_attach_to_drg == true && var.add_tt_vcn3 == true && var.tt_vcn3_attach_to_drg == true) &&
-    (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.exa_vcn3_routable_vcns) == 0 || contains(var.exa_vcn3_routable_vcns, "TT-VCN-3")))) ? { for port in var.exa_vcn3_client_ingress_destination_ports : "INGRESS-FROM-TT-VCN3-APP-ON-${port}-RULE" => {
-      description  = "Ingress from ${local.tt_vcn3_app_subnet_display_name} over ${split(":",port)[0]} on ${split(":", port)[0] == "ICMP" ? "type/code ${split(":", port)[1]}" : "port ${split(":", port)[1]}"}."
-      stateless    = false
-      protocol     = split(":",port)[0]
-      src          = local.tt_vcn3_app_subnet_cidr
-      src_type     = "CIDR_BLOCK"
-      dst_port_min = split(":", port)[0] != "ICMP" ? (split(":", port)[1]) : null
-      dst_port_max = split(":", port)[0] != "ICMP" ? (split(":", port)[1]) : null
-      icmp_type    = split(":", port)[0] == "ICMP" ? split("/", split(":", port)[1])[0] : null
-      icmp_code    = split(":", port)[0] == "ICMP" ? (length(split("/", split(":", port)[1])) > 1 ? split("/", split(":", port)[1])[1] : null) : null
-    }} : {},
-    (local.add_exa_vcn3 == true && var.exa_vcn3_attach_to_drg == true && var.add_tt_vcn3 == true && var.tt_vcn3_attach_to_drg == true) &&
-    (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.exa_vcn3_routable_vcns) == 0 || contains(var.exa_vcn3_routable_vcns, "TT-VCN-3")))) ? { for port in var.exa_vcn3_client_ingress_destination_ports : "INGRESS-FROM-TT-VCN3-DB-ON-${port}-RULE" => {
-      description  = "Ingress from ${local.tt_vcn3_db_subnet_display_name} over ${split(":",port)[0]} on ${split(":", port)[0] == "ICMP" ? "type/code ${split(":", port)[1]}" : "port ${split(":", port)[1]}"}."
-      stateless    = false
-      protocol     = split(":",port)[0]
-      src          = local.tt_vcn3_db_subnet_cidr
-      src_type     = "CIDR_BLOCK"
-      dst_port_min = split(":", port)[0] != "ICMP" ? (split(":", port)[1]) : null
-      dst_port_max = split(":", port)[0] != "ICMP" ? (split(":", port)[1]) : null
-      icmp_type    = split(":", port)[0] == "ICMP" ? split("/", split(":", port)[1])[0] : null
-      icmp_code    = split(":", port)[0] == "ICMP" ? (length(split("/", split(":", port)[1])) > 1 ? split("/", split(":", port)[1])[1] : null) : null
-    }} : {},
-    ## Ingress from on-premises CIDRs
-    (local.add_exa_vcn3 == true && (var.exa_vcn3_attach_to_drg == true && var.exa_vcn3_onprem_route_enable)) &&
-    (local.hub_with_vcn == true || local.hub_with_drg_only == true) ? { for cidr_port_pair in flatten([for cidr in var.allowed_onprem_cidrs_to_app_endpoints : [for port in var.exa_vcn3_client_ingress_destination_ports : "${trimspace(cidr)},${trimspace(port)}" ] if length(var.allowed_onprem_cidrs_to_app_endpoints) > 0 && length(var.exa_vcn3_client_ingress_destination_ports) > 0]) : "INGRESS-FROM-${split(",",cidr_port_pair)[0]}-ON-${split(",",cidr_port_pair)[1]}-RULE" => {
-      description  = "Ingress from onprem ${split(",",cidr_port_pair)[0]} over ${split(":",split(",",cidr_port_pair)[1])[0]} on ${split(":",split(",",cidr_port_pair)[1])[0] == "ICMP" ? "type/code ${split(":",split(",",cidr_port_pair)[1])[1]}" : "port ${split(":",split(",",cidr_port_pair)[1])[1]}"}."
-      stateless    = false
-      protocol     = split(":",split(",",cidr_port_pair)[1])[0]
-      src          = split(",",cidr_port_pair)[0]
-      src_type     = "CIDR_BLOCK"
-      dst_port_min = split(":",split(",",cidr_port_pair)[1])[0] != "ICMP" ? (split(":",split(",",cidr_port_pair)[1])[1]) : null
-      dst_port_max = split(":",split(",",cidr_port_pair)[1])[0] != "ICMP" ? (split(":",split(",",cidr_port_pair)[1])[1]) : null
-      icmp_type    = split(":",split(",",cidr_port_pair)[1])[0] == "ICMP" ? split("/", split(":",split(",",cidr_port_pair)[1])[1])[0] : null
-      icmp_code    = split(":",split(",",cidr_port_pair)[1])[0] == "ICMP" ? (length(split("/", split(":",split(",",cidr_port_pair)[1])[1])) > 1 ? split("/", split(":",split(",",cidr_port_pair)[1])[1])[1] : null) : null
-    }} : {}
-  )
-
   exa_vcn_3_drg_routing = (local.add_exa_vcn3 == true && var.exa_vcn3_attach_to_drg == true) ? merge(
     length(var.exa_vcn3_routable_vcns) == 0 || contains(var.exa_vcn3_routable_vcns, "TT-VCN-1") ? local.tt_vcn1_route_rule : {},
     length(var.exa_vcn3_routable_vcns) == 0 || contains(var.exa_vcn3_routable_vcns, "TT-VCN-2") ? local.tt_vcn2_route_rule : {},
@@ -510,5 +256,74 @@ locals {
     length(var.exa_vcn3_routable_vcns) == 0 || contains(var.exa_vcn3_routable_vcns, "EXA-VCN-2") ? local.exa_vcn2_route_rule : {},
     var.tt_vcn3_onprem_route_enable == true ? local.on_prem_route_rule : {}
   ) : {}
+
+  #-------------------------------------------------------------
+  # Cross VCN Open NSG
+  #-------------------------------------------------------------
+  exa_vcn3_cross_vcn_open_nsg = (local.add_exa_vcn3 == true && var.exa_vcn3_attach_to_drg == true && var.enable_cross_vcn_open_nsg == true) ? {
+    "EXA-VCN-3-CROSS-VCN-OPEN-NSG" = {
+      display_name = "cross-vcn-open-nsg"
+      ingress_rules = merge(local.exa_vcn3_cross_vcn_open_nsg_ingress_security_rules, local.ingress_from_hub_jumphost_subnet_security_rule)
+      egress_rules  = local.exa_vcn3_cross_vcn_open_nsg_egress_security_rules
+    }
+  } : {}
+
+  exa_vcn3_cross_vcn_open_nsg_ingress_security_rules = merge(
+    (var.add_tt_vcn1 == true && var.tt_vcn1_attach_to_drg == true) && (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.tt_vcn1_routable_vcns) == 0 || contains(var.tt_vcn1_routable_vcns, "EXA-VCN-3")))) ? local.from_tt_vcn_1_ingress_security_rules : {},
+    (var.add_tt_vcn2 == true && var.tt_vcn2_attach_to_drg == true) && (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.tt_vcn2_routable_vcns) == 0 || contains(var.tt_vcn2_routable_vcns, "EXA-VCN-3")))) ? local.from_tt_vcn_2_ingress_security_rules : {},
+    (var.add_tt_vcn3 == true && var.tt_vcn3_attach_to_drg == true) && (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.tt_vcn3_routable_vcns) == 0 || contains(var.tt_vcn3_routable_vcns, "EXA-VCN-3")))) ? local.from_tt_vcn_3_ingress_security_rules : {},
+    (var.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true) && (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.oke_vcn1_routable_vcns) == 0 || contains(var.oke_vcn1_routable_vcns, "EXA-VCN-3")))) ? local.from_oke_vcn_1_ingress_security_rules : {},
+    (var.add_oke_vcn2 == true && var.oke_vcn2_attach_to_drg == true) && (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.oke_vcn2_routable_vcns) == 0 || contains(var.oke_vcn2_routable_vcns, "EXA-VCN-3")))) ? local.from_oke_vcn_2_ingress_security_rules : {},
+    (var.add_oke_vcn3 == true && var.oke_vcn3_attach_to_drg == true) && (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.oke_vcn3_routable_vcns) == 0 || contains(var.oke_vcn3_routable_vcns, "EXA-VCN-3")))) ? local.from_oke_vcn_3_ingress_security_rules : {},
+    (var.add_exa_vcn1 == true && var.exa_vcn1_attach_to_drg == true) && (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.exa_vcn1_routable_vcns) == 0 || contains(var.exa_vcn1_routable_vcns, "EXA-VCN-3")))) ? local.from_exa_vcn_1_ingress_security_rules : {},
+    (var.add_exa_vcn2 == true && var.exa_vcn2_attach_to_drg == true) && (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.exa_vcn2_routable_vcns) == 0 || contains(var.exa_vcn2_routable_vcns, "EXA-VCN-3")))) ? local.from_exa_vcn_2_ingress_security_rules : {},
+    (var.exa_vcn3_onprem_route_enable == true) && (local.hub_with_vcn == true || local.hub_with_drg_only == true) ? local.from_onprem_ingress_security_rules : {}
+  )
+
+  exa_vcn3_cross_vcn_open_nsg_egress_security_rules = merge(
+    (var.add_tt_vcn1 == true && var.tt_vcn1_attach_to_drg == true) && (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.exa_vcn3_routable_vcns) == 0 || contains(var.exa_vcn3_routable_vcns, "TT-VCN-1")))) ? local.to_tt_vcn_1_egress_security_rules : {},
+    (var.add_tt_vcn2 == true && var.tt_vcn2_attach_to_drg == true) && (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.exa_vcn3_routable_vcns) == 0 || contains(var.exa_vcn3_routable_vcns, "TT-VCN-2")))) ? local.to_tt_vcn_2_egress_security_rules : {},
+    (var.add_tt_vcn3 == true && var.tt_vcn3_attach_to_drg == true) && (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.exa_vcn3_routable_vcns) == 0 || contains(var.exa_vcn3_routable_vcns, "TT-VCN-3")))) ? local.to_tt_vcn_3_egress_security_rules : {},
+    (var.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true) && (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.exa_vcn3_routable_vcns) == 0 || contains(var.exa_vcn3_routable_vcns, "OKE-VCN-1")))) ? local.to_oke_vcn_1_egress_security_rules : {},
+    (var.add_oke_vcn2 == true && var.oke_vcn2_attach_to_drg == true) && (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.exa_vcn3_routable_vcns) == 0 || contains(var.exa_vcn3_routable_vcns, "OKE-VCN-2")))) ? local.to_oke_vcn_2_egress_security_rules : {},
+    (var.add_oke_vcn3 == true && var.oke_vcn3_attach_to_drg == true) && (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.exa_vcn3_routable_vcns) == 0 || contains(var.exa_vcn3_routable_vcns, "OKE-VCN-3")))) ? local.to_oke_vcn_3_egress_security_rules : {},
+    (var.add_exa_vcn1 == true && var.exa_vcn1_attach_to_drg == true) && (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.exa_vcn3_routable_vcns) == 0 || contains(var.exa_vcn3_routable_vcns, "EXA-VCN-1")))) ? local.to_exa_vcn_1_egress_security_rules : {},
+    (var.add_exa_vcn2 == true && var.exa_vcn2_attach_to_drg == true) && (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.exa_vcn3_routable_vcns) == 0 || contains(var.exa_vcn3_routable_vcns, "EXA-VCN-2")))) ? local.to_exa_vcn_2_egress_security_rules : {},
+    (var.exa_vcn3_onprem_route_enable == true) && (local.hub_with_vcn == true || local.hub_with_drg_only == true) ? local.to_onprem_egress_security_rules : {}
+  )
+
+  #-------------------------------------------------------------
+  # Cross VCN Constrained NSG
+  #-------------------------------------------------------------
+  exa_vcn3_cross_vcn_client_nsg = (local.add_exa_vcn3 == true && var.exa_vcn3_attach_to_drg == true && var.enable_cross_vcn_constrained_nsgs == true) ? {
+    "EXA-VCN-3-CROSS-VCN-CLIENT-NSG" = {
+      display_name = "cross-vcn-client-nsg"
+      ingress_rules = merge(local.exa_vcn3_cross_vcn_client_nsg_ingress_security_rules, local.ingress_from_hub_jumphost_subnet_security_rule)
+      egress_rules  = local.exa_vcn3_cross_vcn_client_nsg_egress_security_rules
+    }
+  } : {}
+
+  exa_vcn3_cross_vcn_client_nsg_ingress_security_rules = merge(
+    (var.add_tt_vcn1 == true && var.tt_vcn1_attach_to_drg == true) && (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.tt_vcn1_routable_vcns) == 0 || contains(var.tt_vcn1_routable_vcns, "EXA-VCN-3")))) ? local.exa_vcn_3_client_subnet_ingress_from_tt_vcn1_security_rules : {},
+    (var.add_tt_vcn2 == true && var.tt_vcn2_attach_to_drg == true) && (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.tt_vcn2_routable_vcns) == 0 || contains(var.tt_vcn2_routable_vcns, "EXA-VCN-3")))) ? local.exa_vcn_3_client_subnet_ingress_from_tt_vcn2_security_rules : {},
+    (var.add_tt_vcn3 == true && var.tt_vcn3_attach_to_drg == true) && (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.tt_vcn3_routable_vcns) == 0 || contains(var.tt_vcn3_routable_vcns, "EXA-VCN-3")))) ? local.exa_vcn_3_client_subnet_ingress_from_tt_vcn3_security_rules : {},
+    (var.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true) && (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.oke_vcn1_routable_vcns) == 0 || contains(var.oke_vcn1_routable_vcns, "EXA-VCN-3")))) ? merge(local.exa_vcn_3_client_subnet_ingress_from_oke_vcn1_workers_security_rules, local.exa_vcn_3_client_subnet_ingress_from_oke_vcn1_pods_security_rules, local.exa_vcn_3_client_subnet_ingress_from_oke_vcn1_db_security_rules) : {},
+    (var.add_oke_vcn2 == true && var.oke_vcn2_attach_to_drg == true) && (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.oke_vcn2_routable_vcns) == 0 || contains(var.oke_vcn2_routable_vcns, "EXA-VCN-3")))) ? merge(local.exa_vcn_3_client_subnet_ingress_from_oke_vcn2_workers_security_rules, local.exa_vcn_3_client_subnet_ingress_from_oke_vcn2_pods_security_rules, local.exa_vcn_3_client_subnet_ingress_from_oke_vcn2_db_security_rules) : {},
+    (var.add_oke_vcn3 == true && var.oke_vcn3_attach_to_drg == true) && (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.oke_vcn3_routable_vcns) == 0 || contains(var.oke_vcn3_routable_vcns, "EXA-VCN-3")))) ? merge(local.exa_vcn_3_client_subnet_ingress_from_oke_vcn3_workers_security_rules, local.exa_vcn_3_client_subnet_ingress_from_oke_vcn3_pods_security_rules, local.exa_vcn_3_client_subnet_ingress_from_oke_vcn3_db_security_rules) : {},
+    (var.add_exa_vcn1 == true && var.exa_vcn1_attach_to_drg == true) && (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.exa_vcn1_routable_vcns) == 0 || contains(var.exa_vcn1_routable_vcns, "EXA-VCN-3")))) ? local.exa_vcn_3_client_subnet_ingress_from_exa_vcn1_security_rules : {},
+    (var.add_exa_vcn2 == true && var.exa_vcn2_attach_to_drg == true) && (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.exa_vcn2_routable_vcns) == 0 || contains(var.exa_vcn2_routable_vcns, "EXA-VCN-3")))) ? local.exa_vcn_3_client_subnet_ingress_from_exa_vcn2_security_rules : {},
+    (var.exa_vcn3_onprem_route_enable == true) && (local.hub_with_vcn == true || local.hub_with_drg_only == true) ? local.exa_vcn_3_client_subnet_ingress_from_onprem_security_rules : {}
+  )
+
+  exa_vcn3_cross_vcn_client_nsg_egress_security_rules = merge(
+    (var.add_tt_vcn1 == true && var.tt_vcn1_attach_to_drg == true) && (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.exa_vcn3_routable_vcns) == 0 || contains(var.exa_vcn3_routable_vcns, "TT-VCN-1")))) ? local.tt_vcn_1_db_subnet_egress_security_rules : {},
+    (var.add_tt_vcn2 == true && var.tt_vcn2_attach_to_drg == true) && (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.exa_vcn3_routable_vcns) == 0 || contains(var.exa_vcn3_routable_vcns, "TT-VCN-2")))) ? local.tt_vcn_2_db_subnet_egress_security_rules : {},
+    (var.add_tt_vcn3 == true && var.tt_vcn3_attach_to_drg == true) && (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.exa_vcn3_routable_vcns) == 0 || contains(var.exa_vcn3_routable_vcns, "TT-VCN-3")))) ? local.tt_vcn_3_db_subnet_egress_security_rules : {},
+    (var.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true) && (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.exa_vcn3_routable_vcns) == 0 || contains(var.exa_vcn3_routable_vcns, "OKE-VCN-1")))) ? local.oke_vcn_1_db_subnet_egress_security_rules : {},
+    (var.add_oke_vcn2 == true && var.oke_vcn2_attach_to_drg == true) && (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.exa_vcn3_routable_vcns) == 0 || contains(var.exa_vcn3_routable_vcns, "OKE-VCN-2")))) ? local.oke_vcn_2_db_subnet_egress_security_rules : {},
+    (var.add_oke_vcn3 == true && var.oke_vcn3_attach_to_drg == true) && (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.exa_vcn3_routable_vcns) == 0 || contains(var.exa_vcn3_routable_vcns, "OKE-VCN-3")))) ? local.oke_vcn_3_db_subnet_egress_security_rules : {},
+    (var.add_exa_vcn1 == true && var.exa_vcn1_attach_to_drg == true) && (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.exa_vcn3_routable_vcns) == 0 || contains(var.exa_vcn3_routable_vcns, "EXA-VCN-1")))) ? local.exa_vcn_1_client_subnet_egress_security_rules : {},
+    (var.add_exa_vcn2 == true && var.exa_vcn2_attach_to_drg == true) && (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.exa_vcn3_routable_vcns) == 0 || contains(var.exa_vcn3_routable_vcns, "EXA-VCN-2")))) ? local.exa_vcn_2_client_subnet_egress_security_rules : {}
+  )
 }
 

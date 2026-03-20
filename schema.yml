@@ -176,6 +176,8 @@ variableGroups:
     variables:
       - "hub_deployment_option"
       - "existing_drg_ocid"
+      - "enable_cross_vcn_constrained_nsgs"
+      - "enable_cross_vcn_open_nsg"
       - "hub_vcn_enable_internet_gateway"
       - "hub_vcn_name"
       - "hub_vcn_cidrs"
@@ -237,7 +239,6 @@ variableGroups:
       - "customize_jumphost_subnet"
       - "hub_vcn_jumphost_subnet_name"
       - "hub_vcn_jumphost_subnet_cidr"
-      - "allowed_onprem_cidrs_to_jump_hosts"
 
     visible:
       and:
@@ -254,7 +255,7 @@ variableGroups:
   - title: "Network - On-Premise Connectivity"
     variables:
       - "on_premises_connection_option" 
-      - "allowed_onprem_cidrs_to_app_endpoints"
+      - "onprem_cidrs"
     visible: define_net
 
   - title: "Networking - FastConnect Virtual Circuit"
@@ -455,6 +456,10 @@ variableGroups:
       - "add_oke_vcn1_mgmt_subnet"
       - "oke_vcn1_mgmt_subnet_name"
       - "oke_vcn1_mgmt_subnet_cidr"
+      - "add_oke_vcn1_db_subnet"
+      - "oke_vcn1_db_subnet_name"
+      - "oke_vcn1_db_subnet_cidr"
+      - "oke_vcn1_db_ingress_destination_ports"
       - "add_oke_vcn2"
       - "oke_vcn2_onprem_route_enable"
       - "oke_vcn2_cni_type"
@@ -477,6 +482,10 @@ variableGroups:
       - "add_oke_vcn2_mgmt_subnet"
       - "oke_vcn2_mgmt_subnet_name"
       - "oke_vcn2_mgmt_subnet_cidr"
+      - "add_oke_vcn2_db_subnet"
+      - "oke_vcn2_db_subnet_name"
+      - "oke_vcn2_db_subnet_cidr"
+      - "oke_vcn2_db_ingress_destination_ports"
       - "add_oke_vcn3"
       - "oke_vcn3_onprem_route_enable"
       - "oke_vcn3_cni_type"
@@ -500,6 +509,10 @@ variableGroups:
       - "oke_vcn3_mgmt_subnet_name"
       - "oke_vcn3_mgmt_subnet_cidr"
       - "oke_vcn3_mgmt_subnet_dns"
+      - "add_oke_vcn3_db_subnet"
+      - "oke_vcn3_db_subnet_name"
+      - "oke_vcn3_db_subnet_cidr"
+      - "oke_vcn3_db_ingress_destination_ports"
     visible: define_net
 
   - title: "Networking - Externally Managed VCNs"
@@ -2977,6 +2990,55 @@ variables:
         - add_oke_vcn1
         - add_oke_vcn1_mgmt_subnet
 
+  add_oke_vcn1_db_subnet:
+    type: boolean
+    title: "Add Database Subnet?"
+    description: "Check to add a private subnet for database deployment."
+    visible:
+      and:
+        - define_net
+        - customize_oke_vcn1_subnets
+        - add_oke_vcn1
+
+  oke_vcn1_db_subnet_name:
+    type: string
+    title: "Database Subnet Name"
+    description: "The database subnet name."
+    required: false
+    visible:
+      and:
+        - define_net
+        - customize_oke_vcn1_subnets
+        - add_oke_vcn1
+        - add_oke_vcn1_db_subnet
+
+  oke_vcn1_db_subnet_cidr:
+    type: string
+    title: "Database Subnet CIDR block"
+    description: "It must be within the VCN CIDR blocks."
+    required: false
+    visible:
+      and:
+        - define_net
+        - customize_oke_vcn1_subnets
+        - add_oke_vcn1
+        - add_oke_vcn1_db_subnet
+
+  oke_vcn1_db_ingress_destination_ports:
+    type: array
+    items:
+      type: string
+    uniqueItems: true
+    title: "List of destination ports allowed to be accessed in the Database NSG"
+    description: "Enter the protocols and ports (for example, TCP:1521 or ICMP:3/4) that can reach the database subnet."
+    required: false
+    visible:
+      and:
+        - define_net
+        - customize_oke_vcn1_subnets
+        - add_oke_vcn1
+        - add_oke_vcn1_db_subnet
+
   oke_vcn1_pods_subnet_name:
     type: string
     title: "Pods Subnet Name"
@@ -3612,6 +3674,50 @@ variables:
             - ${hub_deployment_option}
             - "No cross-VCN with on-premises connectivity using an existing DRG"
 
+  enable_cross_vcn_constrained_nsgs:
+    type: boolean
+    title: "Enable Cross-VCN Constrained NSGs?"
+    description: "When true, Landing Zone provisions NSGs that enable DRG-attached and routable VCNs to connect with each other according to Landing Zone provided rules. If a firewall is deployed, you may want to set this to false, set 'Enable Cross-VCN Open NSG?' to true and have the network security rules implemented in the firewall. If you are just connecting the VCNs through a DRG without a firewall, you may want ot set this to true. Or alternatively, provide your own security rules via '*_additional_nsgs' variables override for your specifying your own controls."
+    required: false
+    visible: 
+      and:
+        - define_net
+        - or:
+          - eq:
+            - ${hub_deployment_option}
+            - "VCN or on-premises connectivity routing via DRG (existing DRG)"
+          -eq:
+            - ${hub_deployment_option}
+            - "VCN or on-premises connectivity routing via DRG (DRG will be created)"  
+          - eq:
+            - ${hub_deployment_option}
+            - "VCN or on-premises connectivity routing through DMZ VCN with Network Virtual Appliance (DRG and DMZ VCN will be created)"
+          - eq:
+            - ${hub_deployment_option}
+            - "VCN or on-premises connectivity routed through DMZ VCN with Network Virtual Appliance existing DRG (DMZ VCN will be created and DRG ID required)"
+
+  enable_cross_vcn_open_nsg:
+    type: boolean
+    title: "Enable Cross-VCN Open NSG?"
+    description: "When true, Landing Zone provisions a NSG that enables DRG-attached and routable VCNs to fully connect with each other. If a firewall is deployed, leave this as true and have the network security controls implemented in the firewall. If you are just connecting the VCNs through a DRG without a firewall, you may want to set this to false and set 'Enable Cross-VCN Constrained NSGs?' to true. Or alternatively, provide your own security rules via '*_additional_nsgs' variables override for your specifying your own controls."
+    required: false
+    visible: 
+      and:
+        - define_net
+        - or:
+          - eq:
+            - ${hub_deployment_option}
+            - "VCN or on-premises connectivity routing via DRG (existing DRG)"
+          -eq:
+            - ${hub_deployment_option}
+            - "VCN or on-premises connectivity routing via DRG (DRG will be created)"  
+          - eq:
+            - ${hub_deployment_option}
+            - "VCN or on-premises connectivity routing through DMZ VCN with Network Virtual Appliance (DRG and DMZ VCN will be created)"
+          - eq:
+            - ${hub_deployment_option}
+            - "VCN or on-premises connectivity routed through DMZ VCN with Network Virtual Appliance existing DRG (DMZ VCN will be created and DRG ID required)"
+
   hub_vcn_name:
     type: string
     title: "Hub VCN Name"
@@ -4109,7 +4215,7 @@ variables:
       - "Use Existing On-Premises Connection"
     default: "None"   
 
-  allowed_onprem_cidrs_to_app_endpoints:
+  onprem_cidrs:
     type: array
     items:
       type: string
@@ -5390,22 +5496,6 @@ variables:
     required: false
     visible: customize_jumphost_subnet
 
-  allowed_onprem_cidrs_to_jump_hosts:
-    type: array
-    items:
-      type: string
-    uniqueItems: true
-    title: "List of on-prem CIDR Blocks Allowed to Connect to Jump Hosts"
-    description: "Enter the on-prem CIDR blocks allowed to connect to jump hosts in the Hub VCN over TCP port 22. Leave empty for no access."
-    required: false
-    visible: 
-      and:
-        - customize_jumphost_subnet
-        - not:
-          - eq:
-            - ${on_premises_connection_option}
-            - "None"          
-  
   enable_vault:
     type: boolean
     title: "Enable Vault?"

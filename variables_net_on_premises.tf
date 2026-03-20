@@ -4,31 +4,24 @@
 # --------------------------------------------------------------------------
 # ----- Networking - On-Premises CIDR ranges
 #---------------------------------------------------------------------------
-variable "allowed_onprem_cidrs_to_app_endpoints" {
+
+variable "onprem_cidrs" {
   type        = list(string)
-  description = "List of on-premises CIDR blocks allowed to connect to application endpoints in the Landing Zone network. Provided CIDRs are allowed to connect to web tier in three-tier VCNs, service tier in OKE VCNs and client tier in Exadata VCNs. Leave empty for no access."
+  description = "List of on-premises CIDR blocks allowed to connect to the Landing Zone network via a DRG."
   default     = []
   validation {
-    condition     = alltrue([for v in var.allowed_onprem_cidrs_to_app_endpoints : can(cidrhost(v, 0))])
-    error_message = "Invalid value provided for allowed_onprem_cidrs_to_app_endpoints variable: all values must be in valid CIDR notation (e.g., 10.0.0.0/20)."
+    condition     = length(var.onprem_cidrs) == 0 ? true : alltrue([for v in var.onprem_cidrs : can(cidrhost(v, 0))])
+    error_message = "Validation failed for onprem_cidrs: all values must be in CIDR notation (e.g., 10.0.0.0/24)."
   }
 }
+
 variable "allowed_onprem_cidrs_to_fw_mgmt_interface" {
   type        = list(string)
   default     = []
   description = "List of on-prem CIDR blocks allowed to connect to Firewall Management interface. Provide a valid CIDR and configure variable fw_mgmt_interface_ports for enabling access.  Leave empty for no access."
   validation {
-    condition     = alltrue([for v in var.allowed_onprem_cidrs_to_fw_mgmt_interface : can(cidrhost(v, 0))])
-    error_message = "Invalid value provided for allowed_onprem_cidrs_to_fw_mgmt_interface variable: all values must be in valid CIDR notation (e.g., 192.168.0.0/24)."
-  }
-}
-variable "allowed_onprem_cidrs_to_jump_hosts" {
-  type        = list(string)
-  default     = []
-  description = "List of on-prem CIDR blocks allowed to connect to jump hosts. Leave empty for no access."
-  validation {
-    condition     = alltrue([for v in var.allowed_onprem_cidrs_to_jump_hosts : can(cidrhost(v, 0))])
-    error_message = "Invalid value provided for allowed_onprem_cidrs_to_jump_hosts variable: all values must be in valid CIDR notation (e.g., 192.168.0.0/24)."
+    condition     = length(var.allowed_onprem_cidrs_to_fw_mgmt_interface) == 0 ? true : alltrue([for v in var.allowed_onprem_cidrs_to_fw_mgmt_interface : can(cidrhost(v, 0))])
+    error_message = "Invalid value provided for allowed_onprem_cidrs_to_fw_mgmt_interface variable: all values must be in valid CIDR notation (e.g., 10.0.0.0/24)."
   }
 }
 # --------------------------------------------------------------------------
