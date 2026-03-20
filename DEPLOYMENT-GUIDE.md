@@ -253,7 +253,7 @@ Core Landing Zone routing is opinionated to keep tenancy-wide guardrails intact 
 #### 1. Isolated Spoke VCNs (no DRG attachment)
 
 - Three-tier, OKE, and Exadata spokes can be provisioned with *_attach_to_drg = false* (default). In this mode each VCN routes northbound directly to its Internet Gateway. No inter-VCN routes exist and the DRG is not aware of the spoke CIDRs, effectively creating siloed landing pads for workloads that must remain isolated.
-- Internet ingress/egress is controlled per subnet: public subnets route to spoke's local Internet Gateway, whereas private subnets either have no default route or target the NAT Gateway.
+- Internet ingress/egress is controlled per subnet: public subnets route to spoke's local Internet Gateway, whereas private subnets target the NAT Gateway.
 - Access to Oracle Services Network (OSN) endpoints (Object Storage, Autonomous Database, etc.) is handled through service gateways that are local to each isolated VCN, keeping traffic on the Oracle backbone without traversing the public internet.
 
 #### 2. Spokes attached to DRG without a Hub VCN
