@@ -238,17 +238,13 @@ Core Landing Zone provides a flexible network configuration, ranging from isolat
 
 - **Oracle Kubernetes Engine (OKE) VCN**: designed for Kubernetes-based workloads, up to six subnets are provisioned, according to OKE requirements: Services subnet (public or private), where service like load balancers are expected to be deployed; Workers, API, Management, Pods (available for Native Pod Networking CNI) and Database subnets. Route rules and network security rules are configured based on OKE requirements.
 
-Three VCNs of each type are supported.
+Three VCNs of each type are supported. All VCNs can be configured with no Internet connectivity or for on-premises connectivity. Inbound SSH access (TCP port 22) from 0.0.0.0/0 IP range is prohibited, but Core Landing Zone may be configured to leverage OCI Bastion Service for secure, restricted access from the Internet, an on-premises CIDR block, or both.
+
+In addition to these managed VCNs, Core Landing Zone allows for integrating externally managed VCNs into its managed Hub/Spoke topology. These VCNs are brought into the topology as spokes, having their connectivity into landing zone networking managed by Core Landing Zone. In essence, they are integrated as any other Core Landing Zone managed VCN, but are managed independently. This unlocks the integration of specific workload types not covered by Core Landing Zone. 
 
 - **Hub (aka DMZ) VCN**: a single VCN designed for the deployment of OCI Network Firewall or third-party network firewall appliances to control/secure all inbound and outbound traffic in the spoke VCNs. Core Landing Zone leverages OCI DRG service when implementing Hub/Spoke topology.
 
-In addition to these managed VCNs, Core Landing Zone allows for integrating externally managed VCNs into its managed Hub/Spoke topology. These VCNs are brought into the topology as spokes, having their connectivity into landing zone networking managed by Core Landing Zone. In essence, they are integrated as any other Core Landing Zone managed VCN, but are managed independently, This unlocks the integration of specific workload types not covered by Core Landing Zone. 
-
-<img src="images/External_VCN1.png" alt="External VCN" width="800"/>
-
-All VCNs can be configured with no Internet connectivity or for on-premises connectivity. Inbound SSH access (TCP port 22) from 0.0.0.0/0 IP range is prohibited, but Core Landing Zone may be configured to leverage OCI Bastion Service for secure, restricted access from the Internet, an on-premises CIDR block, or both.
-
-Due to the very nature of Terraform, VCNs can be add, modified and deleted on-demand. Core Landing Zone allows for switching back and forth between isolated and Hub/Spoke, however it is recommended to plan for a specific design, as manual actions might be needed when switching.
+Due to the very nature of Terraform, VCNs can be add, modified and deleted on-demand. Core Landing Zone allows for switching back and forth between isolated and Hub/Spoke, however it is recommended to plan the target design and avoid switching, as manual actions might be needed.
 
 ### Routing Patterns
 
