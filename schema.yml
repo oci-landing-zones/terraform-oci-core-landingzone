@@ -5518,13 +5518,8 @@ variables:
     title: "Vault Replica Region"
     description: "The replica region of the vault. Applicable to VIRTUAL_PRIVATE vault only."
     required: false
-    visible:
-      and:
-        - eq:
-          - ${vault_type}
-          - "VIRTUAL_PRIVATE"
-        - enable_vault
-
+    visible: enable_vault
+    
   hub_vcn_enable_internet_gateway:
     type: boolean
     title: "Enable Access from the Internet?"

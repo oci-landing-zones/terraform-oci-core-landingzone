@@ -251,5 +251,5 @@ variable "vault_type" {
 variable "vault_replica_region" {
   type        = string
   default     = null
-  description = "The replica region where the vault backup is located. Only applicable when vault_type is VIRTUAL_PRIVATE."
+  description = "The replica region where the vault backup is located."
 }
