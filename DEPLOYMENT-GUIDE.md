@@ -282,13 +282,13 @@ Core Landing Zone favors NSGs (Network Security Groups) over security lists. Sec
 
 Security lists are deployed by Core Landing Zone only for very generic rules in some cases, or to satisfy some services that still do not support NSGs (like OCI Bastion service) or if explicitly requested by users through Terraform overrides.
 
-**NSGs require that network-aware resources (with a VNIC) further deployed on Core Landing Zone network are properly associated with Core Landing Zone managed NSGs.**.
+**Since NSGs are not inherited by resources, they must explicitly associated by customers on a per-resource basis.**.
 
-Core Landing Zone NSGs enforce opinionated north/south and east/west connectivity for each workload type, so that every subnet only talks to the tiers it actually depends on. The sections below summarize the intent of each NSG family together with the default ingress and egress flows they enable.
+Core Landing Zone native NSGs enforce opinionated connectivity for each workload type. The following three sections describe the default NSGs controlling traffic inside each VCN. When the VCNs are connected and on-premises connectivity is configured, another set of cross-vcn NSGs is deployed (see section **Cross-VCN Network Security Rules**). Customers can also bring their own NSGs through *\*_additional_nsgs* variable overrides.
 
 #### Three-Tier VCN NSGs
 
-The NSGs in Three-tier VCNs enforces the classic load balancer → application layer → database path. It also provides for SSH connectivity into servers eventually deployed in the VCN.
+The NSGs in Three-tier VCNs enforce the classic load balancer → application layer → database path. They also enable SSH connectivity into servers eventually deployed in the VCN.
 
 - **lbr-nsg**
   - **ingress**: from the list of external CIDRs/protocols/ports defined by the combination of *tt_vcn\*_external_allowed_cidrs_into_web_tier* and *tt_vcn\*_web_ingress_destination_ports*.
@@ -307,38 +307,42 @@ The NSGs in Three-tier VCNs enforces the classic load balancer → application l
 
 #### OKE VCN NSGs
 
-- **api-nsg**
-  - **ingress:** TCP/6443 and TCP/12250 from *workers-nsg* (plus *pods-nsg* when using Native Pod Networking); optional TCP/6443 from *mgmt-nsg* and the Hub VCN Jump Host subnet; ICMP from *workers-nsg* for path discovery.
-  - **egress:** ICMP to *workers-nsg*; HTTPS (443) to OSN; control-plane TCP flows back to *workers-nsg* (Flannel = all TCP, Native = TCP/10250); all protocols to *pods-nsg* when Native CNI is enabled.
-- **workers-nsg**
-  - **ingress:** All protocols from itself (node-to-node); from *api-nsg* (all protocols + TCP/10250 + ICMP); from *services-nsg* on TCP/10256 and NodePorts 30000‑32767; optional all protocols from *pods-nsg* (Native CNI), SSH from *mgmt-nsg*, and SSH from the Hub VCN Jump Host subnet.
-  - **egress:** All protocols to *workers-nsg*; HTTPS to OSN; TCP/6443, TCP/10250, TCP/12250 to *api-nsg*; ICMP and TCP to 0.0.0.0/0 (via NAT); all protocols to *pods-nsg* (Native CNI); optional database ports to *db-nsg*.
-- **services-nsg**
-  - **ingress:** From client CIDRs defined in *oke_vcn\*_external_allowed_cidrs_into_services_tier* on the specified protocols/ports (typically NodePorts and health checks).
-  - **egress:** TCP/30000‑32767, TCP/10256, and ICMP back to *workers-nsg* for load balancer health checks and traffic steering.
-- **mgmt-nsg** (optional)
-  - **ingress:** none (management hosts initiate outbound sessions only).
-  - **egress:** TCP/6443 to *api-nsg*, TCP/22 to *workers-nsg*, HTTPS to OSN, and general TCP to 0.0.0.0/0 for patching.
-- **pods-nsg** (only when *cni_type = "NATIVE"*)
-  - **ingress:** All protocols from *workers-nsg*, *api-nsg*, and itself (pod-to-pod).
-  - **egress:** All protocols to other pods; ICMP/TCP to OSN; TCP/6443 and TCP/12250 to *api-nsg*; TCP to 0.0.0.0/0; optional database ports to *db-nsg*.
-- **db-nsg** (optional)
-  - **ingress:** Protocols/ports defined in *oke_vcn\*_db_ingress_destination_ports* from *workers-nsg* and (when Native CNI) from *pods-nsg*.
-  - **egress:** HTTPS to OSN and general TCP to 0.0.0.0/0 for maintenance traffic.
+The NSGs in OKE VCNs enforce the load balancer(services) → workers/pods layer → database path. They also connectivity to OKE API endpoint across the cluster and SSH connectivity into servers eventually deployed in the VCN.
 
-#### Exadata VCN NSGs
+- **services-nsg**
+  - **ingress:** from the list of external CIDRs/protocols/ports defined by the combination of *oke_vcn\*_external_allowed_cidrs_into_services_tier* and *oke_vcn\*_services_ingress_destination_ports*. 
+  - **egress:** to *workers-nsg*.
+- **workers-nsg**
+  - **ingress:** from *services-nsg*; from itself (for node-to-node connectivity); from *api-nsg*; from *pods-nsg* (Native CNI).
+  - **egress:** to itself (for node-to-node connectivity); to *api-nsg*; to *pods-nsg* (Native CNI); to *db-nsg* on the protocols/ports defined by *oke_vcn\*_db_ingress_destination_ports*; to Oracle Services Network (OSN) over HTTPS port 443; to other destinations for satisfying Internet-bound traffic over NAT gateway.
+- **pods-nsg** (when *\*_cni_type = "NATIVE"*)
+  - **ingress:** from *workers-nsg*; from *api-nsg*, from itself (for pod-to-pod connectivity).
+  - **egress:** to itself (for pod-to-pod connectivity); to *api-nsg*; to *db-nsg* on the protocols/ports defined by *oke_vcn\*_db_ingress_destination_ports*; to Oracle Services Network (OSN) over HTTPS port 443; to other destinations for satisfying Internet-bound traffic over NAT gateway.
+- **api-nsg**
+  - **ingress:** from *workers-nsg*; from *pods-nsg*; from *mgmt-nsg*; from Hub VCN Jump Host subnet;.
+  - **egress:** to *workers-nsg*; to *pods-nsg*; to Oracle Services Network (OSN) over HTTPS port 443.
+- **mgmt-nsg** (optional)
+  - **ingress:** none.
+  - **egress:** to *api-nsg*; to *workers-nsg*; to Oracle Services Network (OSN) over HTTPS port 443; to other destinations for satisfying Internet-bound traffic over NAT gateway.
+- **db-nsg** (optional)
+  - **ingress:** ingress from *workers-nsg* and *pods-nsg* on the protocols/ports defined by *oke_vcn\*_db_ingress_destination_ports*.
+  - **egress:** to Oracle Services Network (OSN) over HTTPS port 443; to other destinations for satisfying Internet-bound traffic over NAT gateway.
+
+**Note 1**: *workers_nsg* optionally provide ingress security rules for SSH connectivity from *mgmt_nsg* and Hub VCN Jump Host subnet over port 22.
+**Note 2**: *api_nsg* optionally provides ingress security rules for cluster management from *mgmt_nsg* and Hub VCN Jump Host subnet over port 6443.
+ 
+#### Exadata Cloud Service VCN NSGs
 
 - **client-nsg**
-  - **ingress:** SSH (TCP/22) from itself; SQLNet ports defined in *exa_vcn\*_client_ingress_destination_ports* from itself; optional SSH from the Hub VCN Jump Host subnet; TCP/6200 from itself for Oracle Notification Service (FAN/ONS).
-  - **egress:** Mirrors ingress (SSH/SQLNet/ONS) back to *client-nsg* peers, plus HTTPS (443) to OSN for diagnostics.
+  - **ingress:** from itself on protocols/ports defined in *exa_vcn\*_client_ingress_destination_ports*, on TCP:22 for SSH, and on TCP:6200 for Oracle Notification Service (FAN/ONS); from the Hub VCN Jump Host subnet;
+  - **egress:** to itself on protocols/ports defined in *exa_vcn\*_client_ingress_destination_ports*, on TCP:22 for SSH, and on TCP:6200 for Oracle Notification Service (FAN/ONS); to Oracle Services Network (OSN) over HTTPS port 443.
 - **backup-nsg**
-  - **ingress:** none (backup appliances originate outbound transfers).
-  - **egress:** HTTPS (443) to *objectstorage*.
+  - **ingress:** none.
+  - **egress:** to Oracle Services Network (OSN) over HTTPS port 443.
 
 #### Cross-VCN Network Security Rules
 
-In addition to proper routing, cross-VCN connectivity is subject to network security rules.
-Core Landing Zone provides two sets of Network Security Groups (NSGs), allowing for open connectivity and/or constrained connectivity for cross-vcn communication.
+Core Landing Zone provides two sets of Network Security Groups (NSGs) for on-premises and cross-VCN connectivity, allowing for open and/or constrained connectivity.
 
 ##### Cross-VCN Open NSGs
 
