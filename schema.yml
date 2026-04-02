@@ -400,11 +400,17 @@ variableGroups:
       - "exa_vcn1_attach_to_drg"
       - "exa_vcn1_routable_vcns"
       - "customize_exa_vcn1_subnets"
+      - "add_exa_vcn1_integration_subnet"
       - "exa_vcn1_client_subnet_cidr"
       - "exa_vcn1_client_subnet_name"
+      - "exa_vcn1_external_allowed_cidrs_into_client_tier"
       - "exa_vcn1_client_ingress_destination_ports"
       - "exa_vcn1_backup_subnet_cidr"
       - "exa_vcn1_backup_subnet_name"
+      - "exa_vcn1_integration_subnet_cidr"
+      - "exa_vcn1_integration_subnet_name"
+      - "exa_vcn1_external_allowed_cidrs_into_integration_tier"
+      - "exa_vcn1_integration_ingress_destination_ports"
       - "add_exa_vcn2"
       - "exa_vcn2_onprem_route_enable"
       - "exa_vcn2_name"
@@ -412,11 +418,17 @@ variableGroups:
       - "exa_vcn2_attach_to_drg"
       - "exa_vcn2_routable_vcns"
       - "customize_exa_vcn2_subnets"
+      - "add_exa_vcn2_integration_subnet"
       - "exa_vcn2_client_subnet_cidr"
       - "exa_vcn2_client_subnet_name"
+      - "exa_vcn2_external_allowed_cidrs_into_client_tier"
       - "exa_vcn2_client_ingress_destination_ports"
       - "exa_vcn2_backup_subnet_cidr"
       - "exa_vcn2_backup_subnet_name"
+      - "exa_vcn2_integration_subnet_cidr"
+      - "exa_vcn2_integration_subnet_name"
+      - "exa_vcn2_external_allowed_cidrs_into_integration_tier"
+      - "exa_vcn2_integration_ingress_destination_ports"
       - "add_exa_vcn3"
       - "exa_vcn3_onprem_route_enable"
       - "exa_vcn3_cidrs"
@@ -424,9 +436,15 @@ variableGroups:
       - "exa_vcn3_attach_to_drg"
       - "exa_vcn3_routable_vcns"
       - "customize_exa_vcn3_subnets"
+      - "add_exa_vcn3_integration_subnet"
       - "exa_vcn3_client_subnet_cidr"
       - "exa_vcn3_client_subnet_name"
+      - "exa_vcn3_external_allowed_cidrs_into_client_tier"
       - "exa_vcn3_client_ingress_destination_ports"
+      - "exa_vcn3_integration_subnet_cidr"
+      - "exa_vcn3_integration_subnet_name"
+      - "exa_vcn3_external_allowed_cidrs_into_integration_tier"
+      - "exa_vcn3_integration_ingress_destination_ports"
       - "exa_vcn3_backup_subnet_cidr"
       - "exa_vcn3_backup_subnet_name"
       - "exa_vcn3_backup_subnet_dns"
@@ -2361,6 +2379,15 @@ variables:
         - define_net
         - add_exa_vcn1
 
+  add_exa_vcn1_integration_subnet:
+    type: boolean
+    title: "Add Integration Subnet?"
+    description: "Check to add an optional Integration subnet to Exadata VCN 1."
+    visible:
+      and:
+        - define_net
+        - add_exa_vcn1
+
   exa_vcn1_client_subnet_name:
     type: string
     title: "Client Subnet Name"
@@ -2376,6 +2403,20 @@ variables:
     type: string
     title: "Client Subnet CIDR block"
     description: "Enter the Client subnet CIDR block. It must be within the VCN CIDR blocks."
+    required: false
+    visible:
+      and:
+        - define_net
+        - customize_exa_vcn1_subnets
+        - add_exa_vcn1
+
+  exa_vcn1_external_allowed_cidrs_into_client_tier:
+    type: array
+    items:
+      type: string
+    uniqueItems: true
+    title: "The list of external CIDRs allowed for ingress packets into Exadata VCN Client Network Security Group."
+    description: "Use this to allow external client CIDRs into the Exadata client tier. Enter CIDRs in valid notation, e.g. 203.0.113.10/32"
     required: false
     visible:
       and:
@@ -2418,6 +2459,60 @@ variables:
         - define_net
         - customize_exa_vcn1_subnets
         - add_exa_vcn1
+
+  exa_vcn1_integration_subnet_name:
+    type: string
+    title: "Integration Subnet Name"
+    description: "Enter the Integration subnet name."
+    required: false
+    visible:
+      and:
+        - define_net
+        - customize_exa_vcn1_subnets
+        - add_exa_vcn1
+        - add_exa_vcn1_integration_subnet
+
+  exa_vcn1_integration_subnet_cidr:
+    type: string
+    title: "Integration Subnet CIDR block"
+    description: "Enter the Integration subnet CIDR block. It must be within the VCN CIDR blocks."
+    required: false
+    visible:
+      and:
+        - define_net
+        - customize_exa_vcn1_subnets
+        - add_exa_vcn1
+        - add_exa_vcn1_integration_subnet
+
+  exa_vcn1_external_allowed_cidrs_into_integration_tier:
+    type: array
+    items:
+      type: string
+    uniqueItems: true
+    title: "The list of external CIDRs allowed for ingress packets into Exadata VCN Integration Network Security Group."
+    description: "Use this to allow external middleware or client CIDRs into the Exadata integration tier. Enter CIDRs in valid notation, e.g. 203.0.113.10/32"
+    required: false
+    visible:
+      and:
+        - define_net
+        - customize_exa_vcn1_subnets
+        - add_exa_vcn1
+        - add_exa_vcn1_integration_subnet
+
+  exa_vcn1_integration_ingress_destination_ports:
+    type: array
+    items:
+      type: string
+    uniqueItems: true
+    title: "The list of protocols and destination ports allowed for ingress packets into Exadata VCN Integration Network Security Group."
+    description: "Use this for integration middleware listener ports. Enter the values in the format protocol:port, with exactly one ':' separating protocol and port values, e.g. TCP:7809"
+    required: false
+    visible:
+      and:
+        - define_net
+        - customize_exa_vcn1_subnets
+        - add_exa_vcn1
+        - add_exa_vcn1_integration_subnet
 
   # ------------------------------------------------------
   # ----- Networking - Exadata Cloud Service VCN 2
@@ -2542,6 +2637,15 @@ variables:
         - customize_exa_vcn2_subnets
         - add_exa_vcn2
 
+  add_exa_vcn2_integration_subnet:
+    type: boolean
+    title: "Add Integration Subnet?"
+    description: "Check to add an optional Integration subnet to Exadata VCN 2."
+    visible:
+      and:
+        - define_net
+        - add_exa_vcn2
+
   exa_vcn2_client_ingress_destination_ports:
     type: array
     items:
@@ -2551,6 +2655,20 @@ variables:
     description: "Use this primarily for database listener ports. Enter the values in the format protocol:port, with exactly one ':' separating protocol and port values, e.g. TCP:1521"
     required: false
     visible: 
+      and:
+        - define_net
+        - customize_exa_vcn2_subnets
+        - add_exa_vcn2
+
+  exa_vcn2_external_allowed_cidrs_into_client_tier:
+    type: array
+    items:
+      type: string
+    uniqueItems: true
+    title: "The list of external CIDRs allowed for ingress packets into Exadata VCN Client Network Security Group."
+    description: "Use this to allow external client CIDRs into the Exadata client tier. Enter CIDRs in valid notation, e.g. 203.0.113.10/32"
+    required: false
+    visible:
       and:
         - define_net
         - customize_exa_vcn2_subnets
@@ -2577,6 +2695,60 @@ variables:
         - define_net
         - customize_exa_vcn2_subnets
         - add_exa_vcn2
+
+  exa_vcn2_integration_subnet_name:
+    type: string
+    title: "Integration Subnet Name"
+    description: "Enter the Integration subnet name."
+    required: false
+    visible:
+      and:
+        - define_net
+        - customize_exa_vcn2_subnets
+        - add_exa_vcn2
+        - add_exa_vcn2_integration_subnet
+
+  exa_vcn2_integration_subnet_cidr:
+    type: string
+    title: "Integration Subnet CIDR block"
+    description: "Enter the Integration subnet CIDR block. It must be within the VCN CIDR blocks."
+    required: false
+    visible:
+      and:
+        - define_net
+        - customize_exa_vcn2_subnets
+        - add_exa_vcn2
+        - add_exa_vcn2_integration_subnet
+
+  exa_vcn2_external_allowed_cidrs_into_integration_tier:
+    type: array
+    items:
+      type: string
+    uniqueItems: true
+    title: "The list of external CIDRs allowed for ingress packets into Exadata VCN Integration Network Security Group."
+    description: "Use this to allow external middleware or client CIDRs into the Exadata integration tier. Enter CIDRs in valid notation, e.g. 203.0.113.10/32"
+    required: false
+    visible:
+      and:
+        - define_net
+        - customize_exa_vcn2_subnets
+        - add_exa_vcn2
+        - add_exa_vcn2_integration_subnet
+
+  exa_vcn2_integration_ingress_destination_ports:
+    type: array
+    items:
+      type: string
+    uniqueItems: true
+    title: "The list of protocols and destination ports allowed for ingress packets into Exadata VCN Integration Network Security Group."
+    description: "Use this for integration middleware listener ports. Enter the values in the format protocol:port, with exactly one ':' separating protocol and port values, e.g. TCP:7809"
+    required: false
+    visible:
+      and:
+        - define_net
+        - customize_exa_vcn2_subnets
+        - add_exa_vcn2
+        - add_exa_vcn2_integration_subnet
 
   # ------------------------------------------------------
   # ----- Networking - Exadata Cloud Service VCN 3
@@ -2701,6 +2873,15 @@ variables:
         - customize_exa_vcn3_subnets
         - add_exa_vcn3
 
+  add_exa_vcn3_integration_subnet:
+    type: boolean
+    title: "Add Integration Subnet?"
+    description: "Check to add an optional Integration subnet to Exadata VCN 3."
+    visible:
+      and:
+        - define_net
+        - add_exa_vcn3
+
   exa_vcn3_client_ingress_destination_ports:
     type: array
     items:
@@ -2714,6 +2895,20 @@ variables:
         - define_net
         - customize_exa_vcn3_subnets
         - add_exa_vcn3      
+
+  exa_vcn3_external_allowed_cidrs_into_client_tier:
+    type: array
+    items:
+      type: string
+    uniqueItems: true
+    title: "The list of external CIDRs allowed for ingress packets into Exadata VCN Client Network Security Group."
+    description: "Use this to allow external client CIDRs into the Exadata client tier. Enter CIDRs in valid notation, e.g. 203.0.113.10/32"
+    required: false
+    visible:
+      and:
+        - define_net
+        - customize_exa_vcn3_subnets
+        - add_exa_vcn3
 
   exa_vcn3_backup_subnet_name:
     type: string
@@ -2736,6 +2931,60 @@ variables:
         - define_net
         - customize_exa_vcn3_subnets
         - add_exa_vcn3
+
+  exa_vcn3_integration_subnet_name:
+    type: string
+    title: "Integration Subnet Name"
+    description: "Enter the Integration subnet name."
+    required: false
+    visible:
+      and:
+        - define_net
+        - customize_exa_vcn3_subnets
+        - add_exa_vcn3
+        - add_exa_vcn3_integration_subnet
+
+  exa_vcn3_integration_subnet_cidr:
+    type: string
+    title: "Integration Subnet CIDR block"
+    description: "Enter the Integration subnet CIDR block. It must be within the VCN CIDR blocks."
+    required: false
+    visible:
+      and:
+        - define_net
+        - customize_exa_vcn3_subnets
+        - add_exa_vcn3
+        - add_exa_vcn3_integration_subnet
+
+  exa_vcn3_external_allowed_cidrs_into_integration_tier:
+    type: array
+    items:
+      type: string
+    uniqueItems: true
+    title: "The list of external CIDRs allowed for ingress packets into Exadata VCN Integration Network Security Group."
+    description: "Use this to allow external middleware or client CIDRs into the Exadata integration tier. Enter CIDRs in valid notation, e.g. 203.0.113.10/32"
+    required: false
+    visible:
+      and:
+        - define_net
+        - customize_exa_vcn3_subnets
+        - add_exa_vcn3
+        - add_exa_vcn3_integration_subnet
+
+  exa_vcn3_integration_ingress_destination_ports:
+    type: array
+    items:
+      type: string
+    uniqueItems: true
+    title: "The list of protocols and destination ports allowed for ingress packets into Exadata VCN Integration Network Security Group."
+    description: "Use this for integration middleware listener ports. Enter the values in the format protocol:port, with exactly one ':' separating protocol and port values, e.g. TCP:7809"
+    required: false
+    visible:
+      and:
+        - define_net
+        - customize_exa_vcn3_subnets
+        - add_exa_vcn3
+        - add_exa_vcn3_integration_subnet
 
 # ------------------------------------------------------
 # ----- Networking - OKE VCN 1

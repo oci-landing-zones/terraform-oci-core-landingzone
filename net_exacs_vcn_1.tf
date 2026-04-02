@@ -3,16 +3,22 @@
 
 locals {
 
-  add_exa_vcn1 = var.define_net == true && var.add_exa_vcn1 == true
+  add_exa_vcn1                    = var.define_net == true && var.add_exa_vcn1 == true
+  add_exa_vcn1_integration_subnet = local.add_exa_vcn1 == true && var.add_exa_vcn1_integration_subnet == true
 
-  exa_vcn1_display_name               = coalesce(var.exa_vcn1_name, "${var.service_label}-exadata-vcn-1")
-  exa_vcn1_dns_label                  = substr(replace(coalesce(var.exa_vcn1_name, "exadata-vcn-1"), "/[^\\w]/", ""), 0, 14)
-  exa_vcn1_client_subnet_display_name = coalesce(var.exa_vcn1_client_subnet_name, "${var.service_label}-exadata-vcn-1-client-subnet")
-  exa_vcn1_client_subnet_dns_label    = substr(replace(coalesce(var.exa_vcn1_client_subnet_name, "client-subnet"), "/[^\\w]/", ""), 0, 14)
-  exa_vcn1_client_subnet_cidr         = coalesce(var.exa_vcn1_client_subnet_cidr, cidrsubnet(var.exa_vcn1_cidrs[0], 4, 0))
-  exa_vcn1_backup_subnet_display_name = coalesce(var.exa_vcn1_backup_subnet_name, "${var.service_label}-exadata-vcn-1-backup-subnet")
-  exa_vcn1_backup_subnet_dns_label    = substr(replace(coalesce(var.exa_vcn1_backup_subnet_name, "backup-subnet"), "/[^\\w]/", ""), 0, 14)
-  exa_vcn1_backup_subnet_cidr         = coalesce(var.exa_vcn1_backup_subnet_cidr, cidrsubnet(var.exa_vcn1_cidrs[0], 4, 1))
+  exa_vcn1_display_name                                          = coalesce(var.exa_vcn1_name, "${var.service_label}-exadata-vcn-1")
+  exa_vcn1_dns_label                                             = substr(replace(coalesce(var.exa_vcn1_name, "exadata-vcn-1"), "/[^\\w]/", ""), 0, 14)
+  exa_vcn1_client_subnet_display_name                            = coalesce(var.exa_vcn1_client_subnet_name, "${var.service_label}-exadata-vcn-1-client-subnet")
+  exa_vcn1_client_subnet_dns_label                               = substr(replace(coalesce(var.exa_vcn1_client_subnet_name, "client-subnet"), "/[^\\w]/", ""), 0, 14)
+  exa_vcn1_client_subnet_cidr                                    = coalesce(var.exa_vcn1_client_subnet_cidr, cidrsubnet(var.exa_vcn1_cidrs[0], 4, 0))
+  exa_vcn1_external_allowed_cidrs_to_ports_into_client_tier      = local.add_exa_vcn1 == true ? flatten([for cidr in var.exa_vcn1_external_allowed_cidrs_into_client_tier : [for port in var.exa_vcn1_client_ingress_destination_ports : "${trimspace(cidr)},${trimspace(port)}"] if length(var.exa_vcn1_external_allowed_cidrs_into_client_tier) > 0 && length(var.exa_vcn1_client_ingress_destination_ports) > 0]) : []
+  exa_vcn1_backup_subnet_display_name                            = coalesce(var.exa_vcn1_backup_subnet_name, "${var.service_label}-exadata-vcn-1-backup-subnet")
+  exa_vcn1_backup_subnet_dns_label                               = substr(replace(coalesce(var.exa_vcn1_backup_subnet_name, "backup-subnet"), "/[^\\w]/", ""), 0, 14)
+  exa_vcn1_backup_subnet_cidr                                    = coalesce(var.exa_vcn1_backup_subnet_cidr, cidrsubnet(var.exa_vcn1_cidrs[0], 4, 1))
+  exa_vcn1_integration_subnet_display_name                       = coalesce(var.exa_vcn1_integration_subnet_name, "${var.service_label}-exadata-vcn-1-integration-subnet")
+  exa_vcn1_integration_subnet_dns_label                          = substr(replace(coalesce(var.exa_vcn1_integration_subnet_name, "integration"), "/[^\\w]/", ""), 0, 14)
+  exa_vcn1_integration_subnet_cidr                               = coalesce(var.exa_vcn1_integration_subnet_cidr, cidrsubnet(var.exa_vcn1_cidrs[0], 4, 2))
+  exa_vcn1_external_allowed_cidrs_to_ports_into_integration_tier = local.add_exa_vcn1_integration_subnet == true ? flatten([for cidr in var.exa_vcn1_external_allowed_cidrs_into_integration_tier : [for port in var.exa_vcn1_integration_ingress_destination_ports : "${trimspace(cidr)},${trimspace(port)}"] if length(var.exa_vcn1_external_allowed_cidrs_into_integration_tier) > 0 && length(var.exa_vcn1_integration_ingress_destination_ports) > 0]) : []
 
   exa_vcn_1 = local.add_exa_vcn1 == true ? {
     "EXA-VCN-1" = {
@@ -24,62 +30,100 @@ locals {
       block_nat_traffic                = false
       security                         = local.enable_zpr == true ? { zpr_attributes = [{ namespace : "${local.zpr_namespace_name}", attr_name : "net", attr_value : "exa-vcn-1" }] } : null
 
-      subnets = {
-        "EXA-VCN-1-CLIENT-SUBNET" = {
-          cidr_block                = local.exa_vcn1_client_subnet_cidr
-          dhcp_options_key          = "default_dhcp_options"
-          display_name              = local.exa_vcn1_client_subnet_display_name
-          dns_label                 = local.exa_vcn1_client_subnet_dns_label
-          ipv6cidr_blocks           = []
-          prohibit_internet_ingress = true
-          route_table_key           = "EXA-VCN-1-CLIENT-SUBNET-ROUTE-TABLE"
-          security_list_keys        = ["EXA-VCN-1-CLIENT-SUBNET-SL"]
-        }
-        "EXA-VCN-1-BACKUP-SUBNET" = {
-          cidr_block                = local.exa_vcn1_backup_subnet_cidr
-          dhcp_options_key          = "default_dhcp_options"
-          display_name              = local.exa_vcn1_backup_subnet_display_name
-          dns_label                 = local.exa_vcn1_backup_subnet_dns_label
-          ipv6cidr_blocks           = []
-          prohibit_internet_ingress = true
-          route_table_key           = "EXA-VCN-1-BACKUP-SUBNET-ROUTE-TABLE"
-        }
-      }
+      subnets = merge(
+        {
+          "EXA-VCN-1-CLIENT-SUBNET" = {
+            cidr_block                = local.exa_vcn1_client_subnet_cidr
+            dhcp_options_key          = "default_dhcp_options"
+            display_name              = local.exa_vcn1_client_subnet_display_name
+            dns_label                 = local.exa_vcn1_client_subnet_dns_label
+            ipv6cidr_blocks           = []
+            prohibit_internet_ingress = true
+            route_table_key           = "EXA-VCN-1-CLIENT-SUBNET-ROUTE-TABLE"
+            security_list_keys        = ["EXA-VCN-1-CLIENT-SUBNET-SL"]
+          }
+          "EXA-VCN-1-BACKUP-SUBNET" = {
+            cidr_block                = local.exa_vcn1_backup_subnet_cidr
+            dhcp_options_key          = "default_dhcp_options"
+            display_name              = local.exa_vcn1_backup_subnet_display_name
+            dns_label                 = local.exa_vcn1_backup_subnet_dns_label
+            ipv6cidr_blocks           = []
+            prohibit_internet_ingress = true
+            route_table_key           = "EXA-VCN-1-BACKUP-SUBNET-ROUTE-TABLE"
+          }
+        },
+        local.add_exa_vcn1_integration_subnet == true ? {
+          "EXA-VCN-1-INTEGRATION-SUBNET" = {
+            cidr_block                = local.exa_vcn1_integration_subnet_cidr
+            dhcp_options_key          = "default_dhcp_options"
+            display_name              = local.exa_vcn1_integration_subnet_display_name
+            dns_label                 = local.exa_vcn1_integration_subnet_dns_label
+            ipv6cidr_blocks           = []
+            prohibit_internet_ingress = true
+            route_table_key           = "EXA-VCN-1-INTEGRATION-SUBNET-ROUTE-TABLE"
+          }
+        } : {}
+      )
 
-      route_tables = {
-        "EXA-VCN-1-CLIENT-SUBNET-ROUTE-TABLE" = {
-          display_name = "client-subnet-route-table"
-          route_rules = merge(
-            {
+      route_tables = merge(
+        {
+          "EXA-VCN-1-CLIENT-SUBNET-ROUTE-TABLE" = {
+            display_name = "client-subnet-route-table"
+            route_rules = merge(
+              {
+                "OSN-RULE" = {
+                  network_entity_key = "EXA-VCN-1-SERVICE-GATEWAY"
+                  description        = "Traffic destined for all OCI services in Oracle Services Network is routed through the Service Gateway."
+                  destination        = "all-services"
+                  destination_type   = "SERVICE_CIDR_BLOCK"
+                }
+              },
+              (local.hub_with_vcn == false) ? local.exa_vcn_1_drg_routing : {
+                "HUB-DRG-RULE" = { # Case when there is a Hub VCN. All traffic is routed through the DRG.
+                  network_entity_key = "HUB-DRG"
+                  description        = "Traffic destined for networks outside the VCN is routed through the DRG."
+                  destination        = "0.0.0.0/0"
+                  destination_type   = "CIDR_BLOCK"
+                }
+              }
+            )
+          },
+          "EXA-VCN-1-BACKUP-SUBNET-ROUTE-TABLE" = {
+            display_name = "backup-subnet-route-table"
+            route_rules = {
               "OSN-RULE" = {
                 network_entity_key = "EXA-VCN-1-SERVICE-GATEWAY"
                 description        = "Traffic destined for all OCI services in Oracle Services Network is routed through the Service Gateway."
                 destination        = "all-services"
                 destination_type   = "SERVICE_CIDR_BLOCK"
               }
-            },  
-            (local.hub_with_vcn == false) ? local.exa_vcn_1_drg_routing : { 
-              "HUB-DRG-RULE" = { # Case when there is a Hub VCN. All traffic is routed through the DRG.
-                network_entity_key = "HUB-DRG"
-                description        = "Traffic destined for networks outside the VCN is routed through the DRG."
-                destination        = "0.0.0.0/0"
-                destination_type   = "CIDR_BLOCK"
-              }
-            }
-          )
-        },
-        "EXA-VCN-1-BACKUP-SUBNET-ROUTE-TABLE" = {
-          display_name = "backup-subnet-route-table"
-          route_rules = {
-            "OSN-RULE" = {
-              network_entity_key = "EXA-VCN-1-SERVICE-GATEWAY"
-              description        = "Traffic destined for all OCI services in Oracle Services Network is routed through the Service Gateway."
-              destination        = "all-services"
-              destination_type   = "SERVICE_CIDR_BLOCK"
             }
           }
-        }
-      }
+        },
+        local.add_exa_vcn1_integration_subnet == true ? {
+          "EXA-VCN-1-INTEGRATION-SUBNET-ROUTE-TABLE" = {
+            display_name = "integration-subnet-route-table"
+            route_rules = merge(
+              {
+                "OSN-RULE" = {
+                  network_entity_key = "EXA-VCN-1-SERVICE-GATEWAY"
+                  description        = "Traffic destined for all OCI services in Oracle Services Network is routed through the Service Gateway."
+                  destination        = "all-services"
+                  destination_type   = "SERVICE_CIDR_BLOCK"
+                }
+              },
+              (local.hub_with_vcn == false) ? local.exa_vcn_1_drg_routing : {
+                "HUB-DRG-RULE" = {
+                  network_entity_key = "HUB-DRG"
+                  description        = "Traffic destined for networks outside the VCN is routed through the DRG."
+                  destination        = "0.0.0.0/0"
+                  destination_type   = "CIDR_BLOCK"
+                }
+              }
+            )
+          }
+        } : {}
+      )
 
       security_lists = {
         "EXA-VCN-1-CLIENT-SUBNET-SL" = {
@@ -145,17 +189,41 @@ locals {
                   dst_port_max = 22
                 }
               },
-              { for port in var.exa_vcn1_client_ingress_destination_ports : "INGRESS-FROM-CLIENT-NSG-ON-${port}-RULE" => {
-                  description  = "Ingress from Client NSG over ${split(":",port)[0]} on ${split(":", port)[0] == "ICMP" ? "type/code ${split(":", port)[1]}" : "port ${split(":", port)[1]}"} (for SQLNet connections)"
+              local.add_exa_vcn1_integration_subnet == true ? {
+                for port in var.exa_vcn1_client_ingress_destination_ports : "INGRESS-FROM-INTEGRATION-NSG-ON-${port}-RULE" => {
+                  description  = "Ingress from Integration NSG over ${split(":", port)[0]} on ${split(":", port)[0] == "ICMP" ? "type/code ${split(":", port)[1]}" : "port ${split(":", port)[1]}"}."
                   stateless    = false
-                  protocol     = split(":",port)[0]
-                  src          = "EXA-VCN-1-CLIENT-NSG"
+                  protocol     = split(":", port)[0]
+                  src          = "EXA-VCN-1-INTEGRATION-NSG"
                   src_type     = "NETWORK_SECURITY_GROUP"
                   dst_port_min = split(":", port)[0] != "ICMP" ? (split(":", port)[1]) : null
                   dst_port_max = split(":", port)[0] != "ICMP" ? (split(":", port)[1]) : null
                   icmp_type    = split(":", port)[0] == "ICMP" ? split("/", split(":", port)[1])[0] : null
                   icmp_code    = split(":", port)[0] == "ICMP" ? (length(split("/", split(":", port)[1])) > 1 ? split("/", split(":", port)[1])[1] : null) : null
-              }},
+                }
+              } : {},
+              { for port in var.exa_vcn1_client_ingress_destination_ports : "INGRESS-FROM-CLIENT-NSG-ON-${port}-RULE" => {
+                description  = "Ingress from Client NSG over ${split(":", port)[0]} on ${split(":", port)[0] == "ICMP" ? "type/code ${split(":", port)[1]}" : "port ${split(":", port)[1]}"} (for SQLNet connections)"
+                stateless    = false
+                protocol     = split(":", port)[0]
+                src          = "EXA-VCN-1-CLIENT-NSG"
+                src_type     = "NETWORK_SECURITY_GROUP"
+                dst_port_min = split(":", port)[0] != "ICMP" ? (split(":", port)[1]) : null
+                dst_port_max = split(":", port)[0] != "ICMP" ? (split(":", port)[1]) : null
+                icmp_type    = split(":", port)[0] == "ICMP" ? split("/", split(":", port)[1])[0] : null
+                icmp_code    = split(":", port)[0] == "ICMP" ? (length(split("/", split(":", port)[1])) > 1 ? split("/", split(":", port)[1])[1] : null) : null
+              } },
+              { for cidr_port_pair in local.exa_vcn1_external_allowed_cidrs_to_ports_into_client_tier : "INGRESS-FROM-${split(",", cidr_port_pair)[0]}-ON-${split(",", cidr_port_pair)[1]}-RULE" => {
+                description  = "Ingress from ${split(",", cidr_port_pair)[0]} over ${split(":", split(",", cidr_port_pair)[1])[0]} on ${split(":", split(",", cidr_port_pair)[1])[0] == "ICMP" ? "type/code ${split(":", split(",", cidr_port_pair)[1])[1]}" : "port ${split(":", split(",", cidr_port_pair)[1])[1]}"}."
+                stateless    = false
+                protocol     = split(":", split(",", cidr_port_pair)[1])[0]
+                src          = split(",", cidr_port_pair)[0]
+                src_type     = "CIDR_BLOCK"
+                dst_port_min = split(":", split(",", cidr_port_pair)[1])[0] != "ICMP" ? split(":", split(",", cidr_port_pair)[1])[1] : null
+                dst_port_max = split(":", split(",", cidr_port_pair)[1])[0] != "ICMP" ? split(":", split(",", cidr_port_pair)[1])[1] : null
+                icmp_type    = split(":", split(",", cidr_port_pair)[1])[0] == "ICMP" ? split("/", split(":", split(",", cidr_port_pair)[1])[1])[0] : null
+                icmp_code    = split(":", split(",", cidr_port_pair)[1])[0] == "ICMP" ? (length(split("/", split(":", split(",", cidr_port_pair)[1])[1])) > 1 ? split("/", split(":", split(",", cidr_port_pair)[1])[1])[1] : null) : null
+              } },
               {
                 "INGRESS-FROM-ONS-CLIENT-RULE" = {
                   description = "Allows Oracle Notification Services (ONS) communication from hosts in Client NSG for Fast Application Notifications (FAN)."
@@ -180,17 +248,30 @@ locals {
                   dst_port_max = 22
                 }
               },
-              { for port in var.exa_vcn1_client_ingress_destination_ports : "EGRESS-TO-CLIENT-NSG-ON-${port}-RULE" => {
-                  description  = "Egress to Client NSG over ${split(":",port)[0]} on ${split(":", port)[0] == "ICMP" ? "type/code ${split(":", port)[1]}" : "port ${split(":", port)[1]}"} (for SQLNet connections)"
+              local.add_exa_vcn1_integration_subnet == true ? {
+                for port in var.exa_vcn1_integration_ingress_destination_ports : "EGRESS-TO-INTEGRATION-NSG-ON-${port}-RULE" => {
+                  description  = "Egress to Integration NSG over ${split(":", port)[0]} on ${split(":", port)[0] == "ICMP" ? "type/code ${split(":", port)[1]}" : "port ${split(":", port)[1]}"}."
                   stateless    = false
-                  protocol     = split(":",port)[0]
-                  dst          = "EXA-VCN-1-CLIENT-NSG"
+                  protocol     = split(":", port)[0]
+                  dst          = "EXA-VCN-1-INTEGRATION-NSG"
                   dst_type     = "NETWORK_SECURITY_GROUP"
                   dst_port_min = split(":", port)[0] != "ICMP" ? (split(":", port)[1]) : null
                   dst_port_max = split(":", port)[0] != "ICMP" ? (split(":", port)[1]) : null
                   icmp_type    = split(":", port)[0] == "ICMP" ? split("/", split(":", port)[1])[0] : null
                   icmp_code    = split(":", port)[0] == "ICMP" ? (length(split("/", split(":", port)[1])) > 1 ? split("/", split(":", port)[1])[1] : null) : null
-              }},
+                }
+              } : {},
+              { for port in var.exa_vcn1_client_ingress_destination_ports : "EGRESS-TO-CLIENT-NSG-ON-${port}-RULE" => {
+                description  = "Egress to Client NSG over ${split(":", port)[0]} on ${split(":", port)[0] == "ICMP" ? "type/code ${split(":", port)[1]}" : "port ${split(":", port)[1]}"} (for SQLNet connections)"
+                stateless    = false
+                protocol     = split(":", port)[0]
+                dst          = "EXA-VCN-1-CLIENT-NSG"
+                dst_type     = "NETWORK_SECURITY_GROUP"
+                dst_port_min = split(":", port)[0] != "ICMP" ? (split(":", port)[1]) : null
+                dst_port_max = split(":", port)[0] != "ICMP" ? (split(":", port)[1]) : null
+                icmp_type    = split(":", port)[0] == "ICMP" ? split("/", split(":", port)[1])[0] : null
+                icmp_code    = split(":", port)[0] == "ICMP" ? (length(split("/", split(":", port)[1])) > 1 ? split("/", split(":", port)[1])[1] : null) : null
+              } },
               {
                 "EGRESS-TO-ONS-RULE" = {
                   description = "Allows Oracle Notification Services (ONS) communication to hosts in Client NSG for Fast Application Notifications (FAN)."
@@ -230,8 +311,55 @@ locals {
             }
           }
         },
+        local.add_exa_vcn1_integration_subnet == true ? {
+          "EXA-VCN-1-INTEGRATION-NSG" = {
+            display_name = "integration-nsg"
+            ingress_rules = merge(
+              {
+                for port in var.exa_vcn1_integration_ingress_destination_ports : "INGRESS-FROM-CLIENT-NSG-ON-${port}-RULE" => {
+                  description  = "Ingress from Client NSG over ${split(":", port)[0]} on ${split(":", port)[0] == "ICMP" ? "type/code ${split(":", port)[1]}" : "port ${split(":", port)[1]}"}."
+                  stateless    = false
+                  protocol     = split(":", port)[0]
+                  src          = "EXA-VCN-1-CLIENT-NSG"
+                  src_type     = "NETWORK_SECURITY_GROUP"
+                  dst_port_min = split(":", port)[0] != "ICMP" ? split(":", port)[1] : null
+                  dst_port_max = split(":", port)[0] != "ICMP" ? split(":", port)[1] : null
+                  icmp_type    = split(":", port)[0] == "ICMP" ? split("/", split(":", port)[1])[0] : null
+                  icmp_code    = split(":", port)[0] == "ICMP" ? (length(split("/", split(":", port)[1])) > 1 ? split("/", split(":", port)[1])[1] : null) : null
+                }
+              },
+              {
+                for cidr_port_pair in local.exa_vcn1_external_allowed_cidrs_to_ports_into_integration_tier : "INGRESS-FROM-${split(",", cidr_port_pair)[0]}-ON-${split(",", cidr_port_pair)[1]}-RULE" => {
+                  description  = "Ingress from ${split(",", cidr_port_pair)[0]} over ${split(":", split(",", cidr_port_pair)[1])[0]} on ${split(":", split(",", cidr_port_pair)[1])[0] == "ICMP" ? "type/code ${split(":", split(",", cidr_port_pair)[1])[1]}" : "port ${split(":", split(",", cidr_port_pair)[1])[1]}"}."
+                  stateless    = false
+                  protocol     = split(":", split(",", cidr_port_pair)[1])[0]
+                  src          = split(",", cidr_port_pair)[0]
+                  src_type     = "CIDR_BLOCK"
+                  dst_port_min = split(":", split(",", cidr_port_pair)[1])[0] != "ICMP" ? split(":", split(",", cidr_port_pair)[1])[1] : null
+                  dst_port_max = split(":", split(",", cidr_port_pair)[1])[0] != "ICMP" ? split(":", split(",", cidr_port_pair)[1])[1] : null
+                  icmp_type    = split(":", split(",", cidr_port_pair)[1])[0] == "ICMP" ? split("/", split(":", split(",", cidr_port_pair)[1])[1])[0] : null
+                  icmp_code    = split(":", split(",", cidr_port_pair)[1])[0] == "ICMP" ? (length(split("/", split(":", split(",", cidr_port_pair)[1])[1])) > 1 ? split("/", split(":", split(",", cidr_port_pair)[1])[1])[1] : null) : null
+                }
+              }
+            )
+            egress_rules = {
+              for port in var.exa_vcn1_client_ingress_destination_ports : "EGRESS-TO-CLIENT-NSG-ON-${port}-RULE" => {
+                description  = "Egress to Client NSG over ${split(":", port)[0]} on ${split(":", port)[0] == "ICMP" ? "type/code ${split(":", port)[1]}" : "port ${split(":", port)[1]}"}."
+                stateless    = false
+                protocol     = split(":", port)[0]
+                dst          = "EXA-VCN-1-CLIENT-NSG"
+                dst_type     = "NETWORK_SECURITY_GROUP"
+                dst_port_min = split(":", port)[0] != "ICMP" ? split(":", port)[1] : null
+                dst_port_max = split(":", port)[0] != "ICMP" ? split(":", port)[1] : null
+                icmp_type    = split(":", port)[0] == "ICMP" ? split("/", split(":", port)[1])[0] : null
+                icmp_code    = split(":", port)[0] == "ICMP" ? (length(split("/", split(":", port)[1])) > 1 ? split("/", split(":", port)[1])[1] : null) : null
+              }
+            }
+          }
+        } : {},
         local.exa_vcn1_cross_vcn_open_nsg,
-        local.exa_vcn1_cross_vcn_client_nsg
+        local.exa_vcn1_cross_vcn_client_nsg,
+        local.exa_vcn1_cross_vcn_integration_nsg
       )
 
       vcn_specific_gateways = {
@@ -262,7 +390,7 @@ locals {
   #-------------------------------------------------------------
   exa_vcn1_cross_vcn_open_nsg = (local.add_exa_vcn1 == true && var.exa_vcn1_attach_to_drg == true && var.enable_cross_vcn_open_nsg == true) ? {
     "EXA-VCN-1-CROSS-VCN-OPEN-NSG" = {
-      display_name = "cross-vcn-open-nsg"
+      display_name  = "cross-vcn-open-nsg"
       ingress_rules = merge(local.exa_vcn1_cross_vcn_open_nsg_ingress_security_rules, local.ingress_from_hub_jumphost_subnet_security_rule)
       egress_rules  = local.exa_vcn1_cross_vcn_open_nsg_egress_security_rules
     }
@@ -297,7 +425,7 @@ locals {
   #-------------------------------------------------------------
   exa_vcn1_cross_vcn_client_nsg = (local.add_exa_vcn1 == true && var.exa_vcn1_attach_to_drg == true && var.enable_cross_vcn_constrained_nsgs == true) ? {
     "EXA-VCN-1-CROSS-VCN-CLIENT-NSG" = {
-      display_name = "cross-vcn-client-nsg"
+      display_name  = "cross-vcn-client-nsg"
       ingress_rules = merge(local.exa_vcn1_cross_vcn_client_nsg_ingress_security_rules, local.ingress_from_hub_jumphost_subnet_security_rule)
       egress_rules  = local.exa_vcn1_cross_vcn_client_nsg_egress_security_rules
     }
@@ -325,5 +453,16 @@ locals {
     (var.add_exa_vcn2 == true && var.exa_vcn2_attach_to_drg == true) && (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.exa_vcn1_routable_vcns) == 0 || contains(var.exa_vcn1_routable_vcns, "EXA-VCN-2")))) ? local.exa_vcn_2_client_subnet_egress_security_rules : {},
     (var.add_exa_vcn3 == true && var.exa_vcn3_attach_to_drg == true) && (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.exa_vcn1_routable_vcns) == 0 || contains(var.exa_vcn1_routable_vcns, "EXA-VCN-3")))) ? local.exa_vcn_3_client_subnet_egress_security_rules : {}
   )
-}
 
+  exa_vcn1_cross_vcn_integration_nsg = (local.add_exa_vcn1_integration_subnet == true && var.exa_vcn1_attach_to_drg == true && var.enable_cross_vcn_constrained_nsgs == true) ? {
+    "EXA-VCN-1-CROSS-VCN-INTEGRATION-NSG" = {
+      display_name  = "cross-vcn-integration-nsg"
+      ingress_rules = merge(local.exa_vcn1_cross_vcn_integration_nsg_ingress_security_rules, local.ingress_from_hub_jumphost_subnet_security_rule)
+      egress_rules  = {}
+    }
+  } : {}
+
+  exa_vcn1_cross_vcn_integration_nsg_ingress_security_rules = (
+    (var.exa_vcn1_onprem_route_enable == true) && (local.hub_with_vcn == true || local.hub_with_drg_only == true)
+  ) ? local.exa_vcn_1_integration_subnet_ingress_from_onprem_security_rules : {}
+}

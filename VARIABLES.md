@@ -215,6 +215,7 @@
 | Variable Name | Description | Type | Default | Required |
 |---------------|-------------|------|---------|----------|
 | add\_exa\_vcn1 | Whether to add a VCN configured for Exadata Cloud Service deployment, with two subnets: client (private) and backup (private). The added VCN is labelled 'EXA-VCN-1'. The label should be used in the '*\_routable\_vcns' fields of other VCNs for constraining network traffic to those respective VCNs in a Hub/Spoke topology. | bool | false | no |
+| add\_exa\_vcn1\_integration\_subnet | Whether to add an optional Integration subnet to Exadata VCN 1. | bool | false | no |
 | add\_exa\_vcn2 | Whether to add a second VCN configured for Exadata Cloud Service deployment, with two subnets: client (private) and backup (private). The added VCN is labelled 'EXA-VCN-2'. The label should be used in the '*\_routable\_vcns' fields of other VCNs for constraining network traffic to those respective VCNs in a Hub/Spoke topology. | bool | false | no |
 | add\_exa\_vcn3 | Whether to add a third VCN configured for Exadata Cloud Service deployment, with two subnets: client (private) and backup (private). The added VCN is labelled 'EXA-VCN-3'. The label should be used in the '*\_routable\_vcns' fields of other VCNs for constraining network traffic to those respective VCNs in a Hub/Spoke topology. | bool | false | no |
 | exa\_vcn1\_attach\_to\_drg | If true, the VCN is attached to a DRG, enabling cross-vcn traffic routing. | bool | false | no |
@@ -225,6 +226,12 @@
 | exa\_vcn1\_client\_subnet\_cidr | The Client subnet CIDR block. It must be within the VCN CIDR blocks. | string | null | no |
 | exa\_vcn1\_client\_subnet\_dns | The Client subnet DNS name. Use only letters and numbers, no special characters. | string | null | no |
 | exa\_vcn1\_client\_subnet\_name | The Client subnet name. | string | null | no |
+| exa\_vcn1\_client\_ingress\_destination\_ports | The list of protocols and destination ports allowed for ingress packets into Exadata VCN1 Client Network Security Group. | list(string) | ["TCP:1521","TCP:1522"] | no |
+| exa\_vcn1\_external\_allowed\_cidrs\_into\_client\_tier | The list of external CIDR blocks allowed for ingress packets into Exadata VCN1 Client Network Security Group. Use this to limit the range of IP addresses that can access the client tier. | list(string) | [] | no |
+| exa\_vcn1\_external\_allowed\_cidrs\_into\_integration\_tier | The list of external CIDR blocks allowed for ingress packets into Exadata VCN1 Integration Network Security Group. Use this to limit the range of IP addresses that can access the integration tier. | list(string) | [] | no |
+| exa\_vcn1\_integration\_ingress\_destination\_ports | The list of protocols and destination ports allowed for ingress packets into Exadata VCN1 Integration Network Security Group. | list(string) | [] | no |
+| exa\_vcn1\_integration\_subnet\_cidr | The Integration subnet CIDR block. It must be within the VCN CIDR blocks. | string | null | no |
+| exa\_vcn1\_integration\_subnet\_name | The Integration subnet name. | string | null | no |
 | exa\_vcn1\_dns | The VCN DNS name. | string | null | no |
 | exa\_vcn1\_name | The VCN name. If unassigned, a default name is provided. VCN label: EXA-VCN-1. | string | null | no |
 | exa\_vcn1\_onprem\_route\_enable | This will drive the creation of the routes and security list rules. | bool | false | no |
@@ -237,6 +244,13 @@
 | exa\_vcn2\_client\_subnet\_cidr | The Client subnet CIDR block. It must be within the VCN CIDR blocks. | string | null | no |
 | exa\_vcn2\_client\_subnet\_dns | The Client subnet DNS name. Use only letters and numbers, no special characters. | string | null | no |
 | exa\_vcn2\_client\_subnet\_name | The Client subnet name. | string | null | no |
+| exa\_vcn2\_client\_ingress\_destination\_ports | The list of protocols and destination ports allowed for ingress packets into Exadata VCN2 Client Network Security Group. | list(string) | ["TCP:1521", "TCP:1522"] | no |
+| exa\_vcn2\_external\_allowed\_cidrs\_into\_client\_tier | The list of external CIDR blocks allowed for ingress packets into Exadata VCN2 Client Network Security Group. Use this to limit the range of IP addresses that can access the client tier. | list(string) | [] | no |
+| add\_exa\_vcn2\_integration\_subnet | Whether to add an optional Integration subnet to Exadata VCN 2. | bool | false | no |
+| exa\_vcn2\_integration\_subnet\_cidr | The Integration subnet CIDR block. It must be within the VCN CIDR blocks. | string | null | no |
+| exa\_vcn2\_integration\_subnet\_name | The Integration subnet name. | string | null | no |
+| exa\_vcn2\_external\_allowed\_cidrs\_into\_integration\_tier | The list of external CIDR blocks allowed for ingress packets into Exadata VCN2 Integration Network Security Group. Use this to limit the range of IP addresses that can access the integration tier. | list(string) | [] | no |
+| exa\_vcn2\_integration\_ingress\_destination\_ports | The list of protocols and destination ports allowed for ingress packets into Exadata VCN2 Integration Network Security Group. | list(string) | [] | no |
 | exa\_vcn2\_dns | The VCN DNS name. | string | null | no |
 | exa\_vcn2\_name | The VCN name. If unassigned, a default name is provided. VCN label: EXA-VCN-2 | string | null | no |
 | exa\_vcn2\_onprem\_route\_enable | This will drive the creation of the routes and security list rules. | bool | false | no |
@@ -249,6 +263,13 @@
 | exa\_vcn3\_client\_subnet\_cidr | The Client subnet CIDR block. It must be within the VCN CIDR blocks. | string | null | no |
 | exa\_vcn3\_client\_subnet\_dns | The Client subnet DNS name. Use only letters and numbers, no special characters. | string | null | no |
 | exa\_vcn3\_client\_subnet\_name | The Client subnet name. | string | null | no |
+| exa\_vcn3\_client\_ingress\_destination\_ports | The list of protocols and destination ports allowed for ingress packets into Exadata VCN3 Client Network Security Group. | list(string) | ["TCP:1521", "TCP:1522"] | no |
+| exa\_vcn3\_external\_allowed\_cidrs\_into\_client\_tier | The list of external CIDR blocks allowed for ingress packets into Exadata VCN3 Client Network Security Group. Use this to limit the range of IP addresses that can access the client tier. | list(string) | [] | no |
+| add\_exa\_vcn3\_integration\_subnet | Whether to add an optional Integration subnet to Exadata VCN 3. | bool | false | no |
+| exa\_vcn3\_integration\_subnet\_cidr | The Integration subnet CIDR block. It must be within the VCN CIDR blocks. | string | null | no |
+| exa\_vcn3\_integration\_subnet\_name | The Integration subnet name. | string | null | no |
+| exa\_vcn3\_external\_allowed\_cidrs\_into\_integration\_tier | The list of external CIDR blocks allowed for ingress packets into Exadata VCN3 Integration Network Security Group. Use this to limit the range of IP addresses that can access the integration tier. | list(string) | [] | no |
+| exa\_vcn3\_integration\_ingress\_destination\_ports | The list of protocols and destination ports allowed for ingress packets into Exadata VCN3 Integration Network Security Group. | list(string) | [] | no |
 | exa\_vcn3\_dns | The VCN DNS name. | string | null | no |
 | exa\_vcn3\_name | The VCN name. If unassigned, a default name is provided. Label: EXA-VCN-3. | string | null | no |
 | exa\_vcn3\_onprem\_route\_enable | This will drive the creation of the routes and security list rules. | bool | false | no |
