@@ -9,6 +9,7 @@ locals {
       display_name     = "${var.service_label}-${split(":", peer)[0]}-${split(":", peer)[1]}-remote-peering-connection"
       peer_id          = split(":", peer)[0]
       peer_region_name = split(":", peer)[1]
+      peer_key         = "__VOID__"
     }
   }
 }  
