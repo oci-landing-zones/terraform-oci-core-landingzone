@@ -8,6 +8,7 @@ data "oci_core_vcn" "additional_vcns" {
 
 locals {
 
+  ## Additional VCNs
   additional_vcns = {
     for k, v in data.oci_core_vcn.additional_vcns : k => {
       id           = v.id

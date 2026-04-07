@@ -400,15 +400,15 @@ variableGroups:
       - "exa_vcn1_attach_to_drg"
       - "exa_vcn1_routable_vcns"
       - "customize_exa_vcn1_subnets"
-      - "add_exa_vcn1_integration_subnet"
-      - "exa_vcn1_client_subnet_cidr"
       - "exa_vcn1_client_subnet_name"
+      - "exa_vcn1_client_subnet_cidr"
       - "exa_vcn1_external_allowed_cidrs_into_client_tier"
       - "exa_vcn1_client_ingress_destination_ports"
-      - "exa_vcn1_backup_subnet_cidr"
       - "exa_vcn1_backup_subnet_name"
-      - "exa_vcn1_integration_subnet_cidr"
+      - "exa_vcn1_backup_subnet_cidr"
+      - "add_exa_vcn1_integration_subnet"
       - "exa_vcn1_integration_subnet_name"
+      - "exa_vcn1_integration_subnet_cidr"
       - "exa_vcn1_external_allowed_cidrs_into_integration_tier"
       - "exa_vcn1_integration_ingress_destination_ports"
       - "add_exa_vcn2"
@@ -418,15 +418,15 @@ variableGroups:
       - "exa_vcn2_attach_to_drg"
       - "exa_vcn2_routable_vcns"
       - "customize_exa_vcn2_subnets"
-      - "add_exa_vcn2_integration_subnet"
-      - "exa_vcn2_client_subnet_cidr"
       - "exa_vcn2_client_subnet_name"
+      - "exa_vcn2_client_subnet_cidr"
       - "exa_vcn2_external_allowed_cidrs_into_client_tier"
       - "exa_vcn2_client_ingress_destination_ports"
-      - "exa_vcn2_backup_subnet_cidr"
       - "exa_vcn2_backup_subnet_name"
-      - "exa_vcn2_integration_subnet_cidr"
+      - "exa_vcn2_backup_subnet_cidr"
+      - "add_exa_vcn2_integration_subnet"
       - "exa_vcn2_integration_subnet_name"
+      - "exa_vcn2_integration_subnet_cidr"
       - "exa_vcn2_external_allowed_cidrs_into_integration_tier"
       - "exa_vcn2_integration_ingress_destination_ports"
       - "add_exa_vcn3"
@@ -436,18 +436,17 @@ variableGroups:
       - "exa_vcn3_attach_to_drg"
       - "exa_vcn3_routable_vcns"
       - "customize_exa_vcn3_subnets"
-      - "add_exa_vcn3_integration_subnet"
-      - "exa_vcn3_client_subnet_cidr"
       - "exa_vcn3_client_subnet_name"
+      - "exa_vcn3_client_subnet_cidr"
       - "exa_vcn3_external_allowed_cidrs_into_client_tier"
       - "exa_vcn3_client_ingress_destination_ports"
-      - "exa_vcn3_integration_subnet_cidr"
+      - "exa_vcn3_backup_subnet_name"
+      - "exa_vcn3_backup_subnet_cidr"
+      - "add_exa_vcn3_integration_subnet"
       - "exa_vcn3_integration_subnet_name"
+      - "exa_vcn3_integration_subnet_cidr"
       - "exa_vcn3_external_allowed_cidrs_into_integration_tier"
       - "exa_vcn3_integration_ingress_destination_ports"
-      - "exa_vcn3_backup_subnet_cidr"
-      - "exa_vcn3_backup_subnet_name"
-      - "exa_vcn3_backup_subnet_dns"
     visible: define_net
 
   - title: "Networking - OKE VCNs"
@@ -2386,6 +2385,7 @@ variables:
     visible:
       and:
         - define_net
+        - customize_exa_vcn1_subnets
         - add_exa_vcn1
 
   exa_vcn1_client_subnet_name:
@@ -2644,6 +2644,7 @@ variables:
     visible:
       and:
         - define_net
+        - customize_exa_vcn2_subnets
         - add_exa_vcn2
 
   exa_vcn2_client_ingress_destination_ports:
@@ -2880,6 +2881,7 @@ variables:
     visible:
       and:
         - define_net
+        - customize_exa_vcn3_subnets
         - add_exa_vcn3
 
   exa_vcn3_client_ingress_destination_ports:
@@ -3568,6 +3570,55 @@ variables:
         - add_oke_vcn2
         - add_oke_vcn2_mgmt_subnet
 
+  add_oke_vcn2_db_subnet:
+    type: boolean
+    title: "Add Database Subnet?"
+    description: "Check to add a private subnet for database deployment."
+    visible:
+      and:
+        - define_net
+        - customize_oke_vcn2_subnets
+        - add_oke_vcn2
+
+  oke_vcn2_db_subnet_name:
+    type: string
+    title: "Database Subnet Name"
+    description: "The database subnet name."
+    required: false
+    visible:
+      and:
+        - define_net
+        - customize_oke_vcn2_subnets
+        - add_oke_vcn2
+        - add_oke_vcn2_db_subnet
+
+  oke_vcn2_db_subnet_cidr:
+    type: string
+    title: "Database Subnet CIDR block"
+    description: "It must be within the VCN CIDR blocks."
+    required: false
+    visible:
+      and:
+        - define_net
+        - customize_oke_vcn2_subnets
+        - add_oke_vcn2
+        - add_oke_vcn2_db_subnet
+
+  oke_vcn2_db_ingress_destination_ports:
+    type: array
+    items:
+      type: string
+    uniqueItems: true
+    title: "List of destination ports allowed to be accessed in the Database NSG"
+    description: "Enter the protocols and ports (for example, TCP:1521 or ICMP:3/4) that can reach the database subnet."
+    required: false
+    visible:
+      and:
+        - define_net
+        - customize_oke_vcn2_subnets
+        - add_oke_vcn2
+        - add_oke_vcn2_db_subnet
+
   oke_vcn2_pods_subnet_name:
     type: string
     title: "Pods Subnet Name"
@@ -3848,6 +3899,55 @@ variables:
         - add_oke_vcn3
         - add_oke_vcn3_mgmt_subnet
 
+  add_oke_vcn3_db_subnet:
+    type: boolean
+    title: "Add Database Subnet?"
+    description: "Check to add a private subnet for database deployment."
+    visible:
+      and:
+        - define_net
+        - customize_oke_vcn3_subnets
+        - add_oke_vcn3
+
+  oke_vcn3_db_subnet_name:
+    type: string
+    title: "Database Subnet Name"
+    description: "The database subnet name."
+    required: false
+    visible:
+      and:
+        - define_net
+        - customize_oke_vcn3_subnets
+        - add_oke_vcn3
+        - add_oke_vcn3_db_subnet
+
+  oke_vcn3_db_subnet_cidr:
+    type: string
+    title: "Database Subnet CIDR block"
+    description: "It must be within the VCN CIDR blocks."
+    required: false
+    visible:
+      and:
+        - define_net
+        - customize_oke_vcn3_subnets
+        - add_oke_vcn3
+        - add_oke_vcn3_db_subnet
+
+  oke_vcn3_db_ingress_destination_ports:
+    type: array
+    items:
+      type: string
+    uniqueItems: true
+    title: "List of destination ports allowed to be accessed in the Database NSG"
+    description: "Enter the protocols and ports (for example, TCP:1521 or ICMP:3/4) that can reach the database subnet."
+    required: false
+    visible:
+      and:
+        - define_net
+        - customize_oke_vcn3_subnets
+        - add_oke_vcn3
+        - add_oke_vcn3_db_subnet
+
   oke_vcn3_pods_subnet_name:
     type: string
     title: "Pods Subnet Name"
@@ -3935,7 +4035,7 @@ variables:
           - eq:
             - ${hub_deployment_option}
             - "VCN or on-premises connectivity routing via DRG (existing DRG)"
-          -eq:
+          - eq:
             - ${hub_deployment_option}
             - "VCN or on-premises connectivity routing via DRG (DRG will be created)"  
           - eq:
@@ -3957,7 +4057,7 @@ variables:
           - eq:
             - ${hub_deployment_option}
             - "VCN or on-premises connectivity routing via DRG (existing DRG)"
-          -eq:
+          - eq:
             - ${hub_deployment_option}
             - "VCN or on-premises connectivity routing via DRG (DRG will be created)"  
           - eq:

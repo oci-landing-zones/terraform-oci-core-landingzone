@@ -154,13 +154,15 @@ locals {
   local.security_admin_grants_on_appdev_cmp, local.security_admin_grants_on_database_cmp, local.security_admin_grants_on_exainfra_cmp)
 
   ## Network admin permissions to be created always at the root compartment
-  network_admin_grants_on_root_cmp = [
+  network_admin_grants_on_root_cmp = concat([
     "allow group ${join(",", local.network_admin_group_name)} to read zpr-configuration in tenancy",
     "allow group ${join(",", local.network_admin_group_name)} to read zpr-policy in tenancy",
-  "allow group ${join(",", local.network_admin_group_name)} to read security-attribute-namespace in tenancy"]
+    "allow group ${join(",", local.network_admin_group_name)} to read security-attribute-namespace in tenancy"],
+    flatten([for peer in var.rpc_peers : ["define tenancy Acceptor as ${trimspace(split(":", peer)[2])}", "define group remote-group-${trimspace(split(":", peer)[3])} as ${trimspace(split(":", peer)[3])}", "endorse group ${join(",", local.network_admin_group_name)} to manage drg-attachment in tenancy Acceptor"] if try(split(":", peer)[2],"__VOID__") != "__VOID__" && try(split(":", peer)[3],"__VOID__") != "__VOID__"])
+  )  
 
   ## Network admin grants on Network compartment
-  network_admin_grants_on_network_cmp = local.enable_network_compartment ? [
+  network_admin_grants_on_network_cmp = local.enable_network_compartment ? concat([
     "allow group ${join(",", local.network_admin_group_name)} to read all-resources in compartment ${local.network_compartment_name}",
     "allow group ${join(",", local.network_admin_group_name)} to manage virtual-network-family in compartment ${local.network_compartment_name}",
     "allow group ${join(",", local.network_admin_group_name)} to manage dns in compartment ${local.network_compartment_name}",
@@ -187,7 +189,10 @@ locals {
     "allow group ${join(",", local.network_admin_group_name)} to manage keys in compartment ${local.network_compartment_name}",
     "allow group ${join(",", local.network_admin_group_name)} to use key-delegate in compartment ${local.network_compartment_name}",
     "allow group ${join(",", local.network_admin_group_name)} to manage secret-family in compartment ${local.network_compartment_name}",
-  "allow group ${join(",", local.network_admin_group_name)} to manage network-firewall-family in compartment ${local.network_compartment_name}"] : []
+    "allow group ${join(",", local.network_admin_group_name)} to manage network-firewall-family in compartment ${local.network_compartment_name}"],
+    # Cross-tenancy admit grants for RPC.
+    [for peer in var.rpc_peers : "admit group remote-group-${trimspace(split(":", peer)[3])} of tenancy Acceptor to manage drg in compartment ${local.network_compartment_name}" if try(split(":", peer)[3],"__VOID__") != "__VOID__"]
+  ) : []  
 
   ## Network admin grants on Security compartment
   network_admin_grants_on_security_cmp = local.enable_security_compartment ? [
@@ -613,7 +618,7 @@ locals {
       description    = "${var.lz_provenant_label} root compartment policy for ${join(",", local.network_admin_group_name)} group."
       defined_tags   = local.policies_defined_tags
       freeform_tags  = local.policies_freeform_tags
-      statements     = local.network_admin_grants_on_root_cmp
+      statements     = concat(local.network_admin_grants_on_root_cmp)
     }
   } : {}
 
@@ -720,8 +725,7 @@ locals {
   }
 
   root_policies = merge(local.basic_root_policy, local.appdev_admin_root_policy, local.security_admin_root_policy, local.network_admin_root_policy,
-    local.iam_admin_root_policy, local.auditor_policy, local.announcement_reader_policy, local.cred_admin_policy,
-  local.cost_admin_policy, local.governance_root_policy)
+                        local.iam_admin_root_policy, local.auditor_policy, local.announcement_reader_policy, local.cred_admin_policy, local.cost_admin_policy, local.governance_root_policy)
 
 }
 

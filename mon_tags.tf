@@ -22,19 +22,19 @@ locals {
     default_defined_tags   = local.tags_defined_tags,
     default_freeform_tags  = local.tags_freeform_tags
 
-    namespaces = {
-      ARCH-CENTER-NAMESPACE = {
-        name        = "ArchitectureCenter\\oci-core-landing-zone-${var.service_label}"
-        description = "${var.lz_provenant_label} tag namespace for OCI Architecture Center."
-        is_retired  = false
-        tags = {
-          ARCH-CENTER-TAG = {
-            name        = "release"
-            description = "${var.lz_provenant_label} tag for OCI Architecture Center."
-          }
-        }
-      }
-    }
+    # namespaces = {
+    #   ARCH-CENTER-NAMESPACE = {
+    #     name        = "ArchitectureCenter\\oci-core-landing-zone-${var.service_label}"
+    #     description = "${var.lz_provenant_label} tag namespace for OCI Architecture Center."
+    #     is_retired  = false
+    #     tags = {
+    #       ARCH-CENTER-TAG = {
+    #         name        = "release"
+    #         description = "${var.lz_provenant_label} tag for OCI Architecture Center."
+    #       }
+    #     }
+    #   }
+    # }
   }
 
   ##### DON'T TOUCH ANYTHING BELOW #####

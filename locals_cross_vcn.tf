@@ -1,7 +1,7 @@
 locals {
   all_onprem_cidrs = distinct(concat(var.onprem_cidrs, var.allowed_onprem_cidrs_to_fw_mgmt_interface))
 
-  # Cross-vcn and on-prem routes
+  # Cross-VCN, on-prem, external network routes
   tt_vcn1_route_rule = local.hub_with_drg_only == true && var.add_tt_vcn1 == true && var.tt_vcn1_attach_to_drg == true ? {
     for cidr in var.tt_vcn1_cidrs : "TT-VCN-1-${cidr}-RULE" => {
       network_entity_key = "HUB-DRG"
@@ -65,6 +65,15 @@ locals {
     }
   } : {}
 
+  exa_vcn1_external_networks_route_rule = local.hub_with_drg_only == true && var.add_exa_vcn1 == true && var.exa_vcn1_attach_to_drg == true ? {
+    for cidr in concat(var.exa_vcn1_external_allowed_cidrs_into_client_tier, var.exa_vcn1_external_allowed_cidrs_into_integration_tier) : "EXA-VCN-1-EXTERNAL-NETWORK-${cidr}-RULE" => {
+      network_entity_key = "HUB-DRG"
+      description        = "Traffic destined for external network ${cidr} is routed through the DRG."
+      destination        = cidr
+      destination_type   = "CIDR_BLOCK"
+    }
+  } : {}
+
   exa_vcn2_route_rule = local.hub_with_drg_only == true && var.add_exa_vcn2 == true && var.exa_vcn2_attach_to_drg == true ? {
     for cidr in var.exa_vcn2_cidrs : "EXA-VCN-2-${cidr}-RULE" => {
       network_entity_key = "HUB-DRG"
@@ -74,10 +83,28 @@ locals {
     }
   } : {}
 
+  exa_vcn2_external_networks_route_rule = local.hub_with_drg_only == true && var.add_exa_vcn2 == true && var.exa_vcn2_attach_to_drg == true ? {
+    for cidr in concat(var.exa_vcn2_external_allowed_cidrs_into_client_tier, var.exa_vcn2_external_allowed_cidrs_into_integration_tier) : "EXA-VCN-2-EXTERNAL-NETWORK-${cidr}-RULE" => {
+      network_entity_key = "HUB-DRG"
+      description        = "Traffic destined for external network ${cidr} is routed through the DRG."
+      destination        = cidr
+      destination_type   = "CIDR_BLOCK"
+    }
+  } : {}
+
   exa_vcn3_route_rule = local.hub_with_drg_only == true && var.add_exa_vcn3 == true && var.exa_vcn3_attach_to_drg == true ? {
     for cidr in var.exa_vcn3_cidrs : "EXA-VCN-3-${cidr}-RULE" => {
       network_entity_key = "HUB-DRG"
       description        = "Traffic destined for ${local.exa_vcn3_display_name} in routed through the DRG."
+      destination        = cidr
+      destination_type   = "CIDR_BLOCK"
+    }
+  } : {}
+
+  exa_vcn3_external_networks_route_rule = local.hub_with_drg_only == true && var.add_exa_vcn3 == true && var.exa_vcn3_attach_to_drg == true ? {
+    for cidr in concat(var.exa_vcn3_external_allowed_cidrs_into_client_tier, var.exa_vcn3_external_allowed_cidrs_into_integration_tier) : "EXA-VCN-3-EXTERNAL-NETWORK-${cidr}-RULE" => {
+      network_entity_key = "HUB-DRG"
+      description        = "Traffic destined for external network ${cidr} is routed through the DRG."
       destination        = cidr
       destination_type   = "CIDR_BLOCK"
     }

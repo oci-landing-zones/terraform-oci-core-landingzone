@@ -382,7 +382,8 @@ locals {
     length(var.exa_vcn1_routable_vcns) == 0 || contains(var.exa_vcn1_routable_vcns, "OKE-VCN-3") ? local.oke_vcn3_route_rule : {},
     length(var.exa_vcn1_routable_vcns) == 0 || contains(var.exa_vcn1_routable_vcns, "EXA-VCN-2") ? local.exa_vcn2_route_rule : {},
     length(var.exa_vcn1_routable_vcns) == 0 || contains(var.exa_vcn1_routable_vcns, "EXA-VCN-3") ? local.exa_vcn3_route_rule : {},
-    var.tt_vcn1_onprem_route_enable == true ? local.on_prem_route_rule : {}
+    var.tt_vcn1_onprem_route_enable == true ? local.on_prem_route_rule : {},
+    local.exa_vcn1_external_networks_route_rule
   ) : {}
 
   #-------------------------------------------------------------
@@ -423,7 +424,7 @@ locals {
   #-------------------------------------------------------------
   # Cross VCN Constrained NSG
   #-------------------------------------------------------------
-  exa_vcn1_cross_vcn_client_nsg = (local.add_exa_vcn1 == true && var.exa_vcn1_attach_to_drg == true && var.enable_cross_vcn_constrained_nsgs == true) ? {
+  exa_vcn1_cross_vcn_client_nsg = (local.add_exa_vcn1 == true && var.exa_vcn1_attach_to_drg == true && var.enable_cross_vcn_constrained_nsgs == true && (length(local.exa_vcn1_cross_vcn_client_nsg_ingress_security_rules) > 0 || length(local.exa_vcn1_cross_vcn_client_nsg_egress_security_rules) > 0)) ? {
     "EXA-VCN-1-CROSS-VCN-CLIENT-NSG" = {
       display_name  = "cross-vcn-client-nsg"
       ingress_rules = merge(local.exa_vcn1_cross_vcn_client_nsg_ingress_security_rules, local.ingress_from_hub_jumphost_subnet_security_rule)
@@ -454,7 +455,7 @@ locals {
     (var.add_exa_vcn3 == true && var.exa_vcn3_attach_to_drg == true) && (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.exa_vcn1_routable_vcns) == 0 || contains(var.exa_vcn1_routable_vcns, "EXA-VCN-3")))) ? local.exa_vcn_3_client_subnet_egress_security_rules : {}
   )
 
-  exa_vcn1_cross_vcn_integration_nsg = (local.add_exa_vcn1_integration_subnet == true && var.exa_vcn1_attach_to_drg == true && var.enable_cross_vcn_constrained_nsgs == true) ? {
+  exa_vcn1_cross_vcn_integration_nsg = (local.add_exa_vcn1_integration_subnet == true && var.exa_vcn1_attach_to_drg == true && var.enable_cross_vcn_constrained_nsgs == true && length(local.exa_vcn1_cross_vcn_integration_nsg_ingress_security_rules) > 0) ? {
     "EXA-VCN-1-CROSS-VCN-INTEGRATION-NSG" = {
       display_name  = "cross-vcn-integration-nsg"
       ingress_rules = merge(local.exa_vcn1_cross_vcn_integration_nsg_ingress_security_rules, local.ingress_from_hub_jumphost_subnet_security_rule)
@@ -462,7 +463,5 @@ locals {
     }
   } : {}
 
-  exa_vcn1_cross_vcn_integration_nsg_ingress_security_rules = (
-    (var.exa_vcn1_onprem_route_enable == true) && (local.hub_with_vcn == true || local.hub_with_drg_only == true)
-  ) ? local.exa_vcn_1_integration_subnet_ingress_from_onprem_security_rules : {}
+  exa_vcn1_cross_vcn_integration_nsg_ingress_security_rules = (var.exa_vcn1_onprem_route_enable == true) && (local.hub_with_vcn == true || local.hub_with_drg_only == true) ? local.exa_vcn_1_integration_subnet_ingress_from_onprem_security_rules : {}
 }
