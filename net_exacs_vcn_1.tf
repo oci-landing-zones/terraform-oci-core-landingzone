@@ -383,7 +383,7 @@ locals {
     length(var.exa_vcn1_routable_vcns) == 0 || contains(var.exa_vcn1_routable_vcns, "EXA-VCN-2") ? local.exa_vcn2_route_rule : {},
     length(var.exa_vcn1_routable_vcns) == 0 || contains(var.exa_vcn1_routable_vcns, "EXA-VCN-3") ? local.exa_vcn3_route_rule : {},
     var.tt_vcn1_onprem_route_enable == true ? local.on_prem_route_rule : {},
-    local.exa_vcn1_external_networks_route_rule
+    local.exa_vcn1_external_networks_into_client_route_rule, local.exa_vcn1_external_networks_into_integration_route_rule
   ) : {}
 
   #-------------------------------------------------------------
