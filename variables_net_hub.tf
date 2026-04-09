@@ -286,9 +286,9 @@ variable "workloadvcn_ocids_onprem_access" {
   description = "A list of externally-managed VCN OCIDs that require on-premises connectivity. The VCNs provided here attach to the DRG as a spoke and are routeable from the on-premises network."
   default     = []
 }
-variable "rpc_peers" {
-  type        = list(string) # list of peer-ocid:peer-region-name:peer-tenancy-ocid:peer-group-ocid for remote peering connections. peer-tenancy-ocid:peer-group-ocid are optional and only required when the RPC peer is in a different tenancy. If the RPC peer is in the same tenancy, the format is 'peer-ocid:peer-region-name'.
-  description = "A list of peer-ocid:peer-region-name:peer-tenancy-ocid:peer-group-ocid requiring RPC (Remote Peering Connection) connectivity to Core LZ DRG (new or existing). Core LZ acts an RPC peer requestor. Each element must be in format of 'ocid1.remotepeeringconnection.oc1.iad.aaaaaaaaexampleocid:us-ashburn-1:ocid1.tenancy.oc1.iad.aaaaaaaaexampleocid:ocid1.group.oc1.iad.aaaaaaaaexampleocid'."
+variable "rpc_requestor_peers" {
+  type        = list(string) 
+  description = "A list of RPC requestor peers in the format PEER-NAME:PEER-TENANCY-OCID:PEER-GROUP-OCID requiring RPC (Remote Peering Connection) connectivity to Core LZ DRG (new or existing). Core LZ DRG acts an RPC peer acceptor. PEER-TENANCY-OCID and PEER-GROUP-OCID are optional and only required when the RPC peer is in a different tenancy, for cross-tenancy policy. If the RPC peer is in the same tenancy, provide PEER-NAME only. PEER-NAME is just an identifier for the RPC peer and can be any string without colon (:)."
   default     = []
 }
 # -------------------------------------------

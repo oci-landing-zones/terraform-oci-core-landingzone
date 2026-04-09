@@ -29,6 +29,7 @@ locals {
   storage_admin_policy_name          = "${var.service_label}-storage-admin-policy"
   access_governance_root_policy_name = "${var.service_label}-access-governance-root-policy"
   net_fw_app_policy_name             = "${var.service_label}-net-firewall-app-policy"
+  rpc_root_policy_name               = "${var.service_label}-rpc-root-policy"
 
   #iam_grants_condition = [for g in local.cred_admin_group_name : "target.group.name != ${g}"]
   cred_admin_groups                  = var.identity_domain_option == "Default Domain" ? [for g in local.cred_admin_group_name : substr(g, 0, 1) == "'" && substr(g, length(g) - 1, 1) == "'" ? "target.group.name != ${g}" : "target.group.name != '${g}'"] : var.identity_domain_option == "New Identity Domain" ? [for g in local.cred_admin_group_name : "target.group.name != ${substr(g, length(local.new_identity_domain_name) + 3, -1)}"] : []
@@ -153,16 +154,24 @@ locals {
   security_admin_grants = concat(local.security_admin_grants_on_enclosing_cmp, local.security_admin_grants_on_security_cmp, local.security_admin_grants_on_network_cmp,
   local.security_admin_grants_on_appdev_cmp, local.security_admin_grants_on_database_cmp, local.security_admin_grants_on_exainfra_cmp)
 
+   # Cross-tenancy RPC grants. Core Landing Zone is an RPC **acceptor** peer.
+  rpc_define_grants_on_root_cmp = flatten([for peer in var.rpc_requestor_peers : [
+                              "define tenancy requestor-${substr(trimspace(split(":", peer)[1]), -10, 10)} as ${trimspace(split(":", peer)[1])}", 
+                              "define group requestor-${substr(trimspace(split(":", peer)[2]), -10, 10)}-group as ${trimspace(split(":", peer)[2])}"] 
+                             if try(split(":", peer)[1],"__VOID__") != "__VOID__" && try(split(":", peer)[2],"__VOID__") != "__VOID__"])
+
+  rpc_admit_grants_on_root_cmp = flatten([for peer in var.rpc_requestor_peers : [
+                              "admit group requestor-${substr(trimspace(split(":", peer)[2]), -10, 10)}-group of tenancy requestor-${substr(trimspace(split(":", peer)[1]), -10, 10)} to manage remote-peering-to in tenancy"] 
+                             if try(split(":", peer)[1],"__VOID__") != "__VOID__" && try(split(":", peer)[2],"__VOID__") != "__VOID__"])                           
+
   ## Network admin permissions to be created always at the root compartment
-  network_admin_grants_on_root_cmp = concat([
+  network_admin_grants_on_root_cmp = [
     "allow group ${join(",", local.network_admin_group_name)} to read zpr-configuration in tenancy",
     "allow group ${join(",", local.network_admin_group_name)} to read zpr-policy in tenancy",
-    "allow group ${join(",", local.network_admin_group_name)} to read security-attribute-namespace in tenancy"],
-    flatten([for peer in var.rpc_peers : ["define tenancy Acceptor as ${trimspace(split(":", peer)[2])}", "define group remote-group-${trimspace(split(":", peer)[3])} as ${trimspace(split(":", peer)[3])}", "endorse group ${join(",", local.network_admin_group_name)} to manage drg-attachment in tenancy Acceptor"] if try(split(":", peer)[2],"__VOID__") != "__VOID__" && try(split(":", peer)[3],"__VOID__") != "__VOID__"])
-  )  
+    "allow group ${join(",", local.network_admin_group_name)} to read security-attribute-namespace in tenancy"] 
 
   ## Network admin grants on Network compartment
-  network_admin_grants_on_network_cmp = local.enable_network_compartment ? concat([
+  network_admin_grants_on_network_cmp = local.enable_network_compartment ? [
     "allow group ${join(",", local.network_admin_group_name)} to read all-resources in compartment ${local.network_compartment_name}",
     "allow group ${join(",", local.network_admin_group_name)} to manage virtual-network-family in compartment ${local.network_compartment_name}",
     "allow group ${join(",", local.network_admin_group_name)} to manage dns in compartment ${local.network_compartment_name}",
@@ -189,10 +198,7 @@ locals {
     "allow group ${join(",", local.network_admin_group_name)} to manage keys in compartment ${local.network_compartment_name}",
     "allow group ${join(",", local.network_admin_group_name)} to use key-delegate in compartment ${local.network_compartment_name}",
     "allow group ${join(",", local.network_admin_group_name)} to manage secret-family in compartment ${local.network_compartment_name}",
-    "allow group ${join(",", local.network_admin_group_name)} to manage network-firewall-family in compartment ${local.network_compartment_name}"],
-    # Cross-tenancy admit grants for RPC.
-    [for peer in var.rpc_peers : "admit group remote-group-${trimspace(split(":", peer)[3])} of tenancy Acceptor to manage drg in compartment ${local.network_compartment_name}" if try(split(":", peer)[3],"__VOID__") != "__VOID__"]
-  ) : []  
+    "allow group ${join(",", local.network_admin_group_name)} to manage network-firewall-family in compartment ${local.network_compartment_name}"] : []  
 
   ## Network admin grants on Security compartment
   network_admin_grants_on_security_cmp = local.enable_security_compartment ? [
@@ -589,6 +595,17 @@ locals {
     }
   }
 
+  rpc_root_policy = length(local.rpc_define_grants_on_root_cmp) > 0 ? {
+    (local.rpc_root_policy_name) = {
+      compartment_id = var.tenancy_ocid
+      name           = local.rpc_root_policy_name
+      description    = "${var.lz_provenant_label} root compartment policy for Remote Peering Connections."
+      defined_tags   = local.policies_defined_tags
+      freeform_tags  = local.policies_freeform_tags
+      statements     = concat(local.rpc_define_grants_on_root_cmp, local.rpc_admit_grants_on_root_cmp)
+    }
+  } : {}
+
   appdev_admin_root_policy = local.enable_app_compartment ? {
     (local.appdev_admin_root_policy_name) = {
       compartment_id = var.tenancy_ocid
@@ -725,7 +742,8 @@ locals {
   }
 
   root_policies = merge(local.basic_root_policy, local.appdev_admin_root_policy, local.security_admin_root_policy, local.network_admin_root_policy,
-                        local.iam_admin_root_policy, local.auditor_policy, local.announcement_reader_policy, local.cred_admin_policy, local.cost_admin_policy, local.governance_root_policy)
+                        local.iam_admin_root_policy, local.auditor_policy, local.announcement_reader_policy, local.cred_admin_policy, local.cost_admin_policy, 
+                        local.governance_root_policy, local.rpc_root_policy)
 
 }
 

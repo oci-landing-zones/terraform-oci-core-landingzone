@@ -59,6 +59,11 @@ output "oci_firewall" {
   value = local.chosen_firewall_option == "OCINFW" ? module.native_oci_firewall[0].provisioned_networking_resources.oci_network_firewall_network_firewalls["OCI-NFW-KEY"] : null
 }
 
+output "remote_peering_connections" {
+  description = "The deployed remote peering connections."
+  value       = var.display_output && length(module.lz_network.provisioned_networking_resources) > 0 ? { for k, v in module.lz_network.provisioned_networking_resources.remote_peering_connections : k => { name : v.display_name, id : v.id } } : null
+}
+
 # ## Budget outputs
 # output "created_budgets" {
 #   description = "Budgets created by Landing Zone."
