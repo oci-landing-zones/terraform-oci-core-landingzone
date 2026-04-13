@@ -5,6 +5,7 @@ locals {
 
   add_exa_vcn1                    = var.define_net == true && var.add_exa_vcn1 == true
   add_exa_vcn1_integration_subnet = local.add_exa_vcn1 == true && var.add_exa_vcn1_integration_subnet == true
+  add_exa_vcn1_backup_subnet      = local.add_exa_vcn1 == true && var.add_exa_vcn1_backup_subnet == true
 
   exa_vcn1_display_name                                          = coalesce(var.exa_vcn1_name, "${var.service_label}-exadata-vcn-1")
   exa_vcn1_dns_label                                             = substr(replace(coalesce(var.exa_vcn1_name, "exadata-vcn-1"), "/[^\\w]/", ""), 0, 14)
@@ -42,6 +43,8 @@ locals {
             route_table_key           = "EXA-VCN-1-CLIENT-SUBNET-ROUTE-TABLE"
             security_list_keys        = ["EXA-VCN-1-CLIENT-SUBNET-SL"]
           }
+        },
+        local.add_exa_vcn1_backup_subnet == true ? {
           "EXA-VCN-1-BACKUP-SUBNET" = {
             cidr_block                = local.exa_vcn1_backup_subnet_cidr
             dhcp_options_key          = "default_dhcp_options"
@@ -51,7 +54,7 @@ locals {
             prohibit_internet_ingress = true
             route_table_key           = "EXA-VCN-1-BACKUP-SUBNET-ROUTE-TABLE"
           }
-        },
+        } : {},
         local.add_exa_vcn1_integration_subnet == true ? {
           "EXA-VCN-1-INTEGRATION-SUBNET" = {
             cidr_block                = local.exa_vcn1_integration_subnet_cidr
@@ -87,7 +90,9 @@ locals {
                 }
               }
             )
-          },
+          }
+        },
+        local.add_exa_vcn1_backup_subnet == true ? {  
           "EXA-VCN-1-BACKUP-SUBNET-ROUTE-TABLE" = {
             display_name = "backup-subnet-route-table"
             route_rules = {
@@ -99,7 +104,7 @@ locals {
               }
             }
           }
-        },
+        } : {},
         local.add_exa_vcn1_integration_subnet == true ? {
           "EXA-VCN-1-INTEGRATION-SUBNET-ROUTE-TABLE" = {
             display_name = "integration-subnet-route-table"
@@ -128,57 +133,47 @@ locals {
       security_lists = {
         "EXA-VCN-1-CLIENT-SUBNET-SL" = {
           display_name = "${local.exa_vcn1_client_subnet_display_name}-security-list"
-          ingress_rules = flatten([
-            [
-              {
-                description  = "Allows SSH connections from hosts in client subnet."
-                stateless    = false
-                protocol     = "TCP"
-                src          = local.exa_vcn1_client_subnet_cidr
-                src_type     = "CIDR_BLOCK"
-                dst_port_min = 22
-                dst_port_max = 22
-              }
-            ],
-            [  
-              {
-                description  = "Allows external ICMP connections for path MTU discovery."
-                stateless    = false
-                protocol     = "ICMP"
-                src          = "0.0.0.0/0"
-                src_type     = "CIDR_BLOCK"
-                icmp_type   = 3
-                icmp_code   = 4
-              }
-            ],  
-            [for cidr in var.exa_vcn1_cidrs : {
-              description  = "Allows ICMP connections from VCN CIDR block ${cidr} for connectivity error messages."
+          ingress_rules = [
+            {
+              description  = "Allows TCP traffic from hosts in client subnet."
               stateless    = false
-              protocol     = "ICMP"
-              src          = cidr
+              protocol     = "TCP"
+              src          = local.exa_vcn1_client_subnet_cidr
               src_type     = "CIDR_BLOCK"
-            }]
-          ])
-          egress_rules = flatten([
-            [
-              {
-                description  = "Allows SSH connections to hosts in client subnet."
-                stateless    = false
-                protocol     = "TCP"
-                dst          = local.exa_vcn1_client_subnet_cidr
-                dst_type     = "CIDR_BLOCK"
-                dst_port_min = 22
-                dst_port_max = 22
-              }
-            ],  
-            [for cidr in var.exa_vcn1_cidrs : {
-              description  = "Allows ICMP connections to VCN CIDR block ${cidr} for connectivity error messages."
+            },
+            {
+              description  = "Allows ICMP traffic from hosts in client subnet."
               stateless    = false
               protocol     = "ICMP"
-              dst          = cidr
+              src          = local.exa_vcn1_client_subnet_cidr
+              src_type     = "CIDR_BLOCK"
+            },
+            {
+              description  = "Allows external ICMP connections for path MTU discovery."
+              stateless    = false
+              protocol     = "ICMP"
+              src          = "0.0.0.0/0"
+              src_type     = "CIDR_BLOCK"
+              icmp_type   = 3
+              icmp_code   = 4
+            }
+          ]
+          egress_rules = [
+            {
+              description  = "Allows TCP traffic to hosts in client subnet."
+              stateless    = false
+              protocol     = "TCP"
+              dst          = local.exa_vcn1_client_subnet_cidr
               dst_type     = "CIDR_BLOCK"
-            }]
-          ])
+            },
+            {
+              description  = "Allows ICMP traffic to hosts in client subnet."
+              stateless    = false
+              protocol     = "ICMP"
+              dst          = local.exa_vcn1_client_subnet_cidr
+              dst_type     = "CIDR_BLOCK"
+            }
+          ]
         }
       }
 
@@ -294,6 +289,8 @@ locals {
               }
             )
           }
+        },
+        local.add_exa_vcn1_backup_subnet == true ? {  
           "EXA-VCN-1-BACKUP-NSG" = {
             display_name = "backup-nsg"
             egress_rules = {
@@ -308,7 +305,7 @@ locals {
               }
             }
           }
-        },
+        } : {},
         local.add_exa_vcn1_integration_subnet == true ? {
           "EXA-VCN-1-INTEGRATION-NSG" = {
             display_name = "integration-nsg"

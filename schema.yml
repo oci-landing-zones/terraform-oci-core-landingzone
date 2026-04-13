@@ -404,6 +404,7 @@ variableGroups:
       - "exa_vcn1_client_subnet_cidr"
       - "exa_vcn1_external_allowed_cidrs_into_client_tier"
       - "exa_vcn1_client_ingress_destination_ports"
+      - "add_exa_vcn1_backup_subnet"
       - "exa_vcn1_backup_subnet_name"
       - "exa_vcn1_backup_subnet_cidr"
       - "add_exa_vcn1_integration_subnet"
@@ -422,6 +423,7 @@ variableGroups:
       - "exa_vcn2_client_subnet_cidr"
       - "exa_vcn2_external_allowed_cidrs_into_client_tier"
       - "exa_vcn2_client_ingress_destination_ports"
+      - "add_exa_vcn2_backup_subnet"
       - "exa_vcn2_backup_subnet_name"
       - "exa_vcn2_backup_subnet_cidr"
       - "add_exa_vcn2_integration_subnet"
@@ -440,6 +442,7 @@ variableGroups:
       - "exa_vcn3_client_subnet_cidr"
       - "exa_vcn3_external_allowed_cidrs_into_client_tier"
       - "exa_vcn3_client_ingress_destination_ports"
+      - "add_exa_vcn3_backup_subnet"
       - "exa_vcn3_backup_subnet_name"
       - "exa_vcn3_backup_subnet_cidr"
       - "add_exa_vcn3_integration_subnet"
@@ -2378,16 +2381,6 @@ variables:
         - define_net
         - add_exa_vcn1
 
-  add_exa_vcn1_integration_subnet:
-    type: boolean
-    title: "Add Integration Subnet?"
-    description: "Check to add an optional Integration subnet to Exadata VCN 1."
-    visible:
-      and:
-        - define_net
-        - customize_exa_vcn1_subnets
-        - add_exa_vcn1
-
   exa_vcn1_client_subnet_name:
     type: string
     title: "Client Subnet Name"
@@ -2438,6 +2431,16 @@ variables:
         - customize_exa_vcn1_subnets
         - add_exa_vcn1      
 
+  add_exa_vcn1_backup_subnet:
+    type: boolean
+    title: "Add Backup Subnet?"
+    description: "Check to add an optional Backup subnet to Exadata VCN 1."
+    visible:
+      and:
+        - define_net
+        - customize_exa_vcn1_subnets
+        - add_exa_vcn1
+
   exa_vcn1_backup_subnet_name:
     type: string
     title: "Backup Subnet Name"
@@ -2448,12 +2451,24 @@ variables:
         - define_net
         - customize_exa_vcn1_subnets
         - add_exa_vcn1
+        - add_exa_vcn1_backup_subnet
 
   exa_vcn1_backup_subnet_cidr:
     type: string
     title: "Backup Subnet CIDR block"
     description: "Enter the Backup subnet CIDR block. It must be within the VCN CIDR blocks."
     required: false
+    visible:
+      and:
+        - define_net
+        - customize_exa_vcn1_subnets
+        - add_exa_vcn1
+        - add_exa_vcn1_backup_subnet
+
+  add_exa_vcn1_integration_subnet:
+    type: boolean
+    title: "Add Integration Subnet?"
+    description: "Check to add an optional Integration subnet to Exadata VCN 1."
     visible:
       and:
         - define_net
@@ -2637,16 +2652,6 @@ variables:
         - customize_exa_vcn2_subnets
         - add_exa_vcn2
 
-  add_exa_vcn2_integration_subnet:
-    type: boolean
-    title: "Add Integration Subnet?"
-    description: "Check to add an optional Integration subnet to Exadata VCN 2."
-    visible:
-      and:
-        - define_net
-        - customize_exa_vcn2_subnets
-        - add_exa_vcn2
-
   exa_vcn2_client_ingress_destination_ports:
     type: array
     items:
@@ -2675,6 +2680,16 @@ variables:
         - customize_exa_vcn2_subnets
         - add_exa_vcn2
 
+  add_exa_vcn2_backup_subnet:
+    type: boolean
+    title: "Add Backup Subnet?"
+    description: "Check to add an optional Backup subnet to Exadata VCN 2."
+    visible:
+      and:
+        - define_net
+        - customize_exa_vcn2_subnets
+        - add_exa_vcn2
+
   exa_vcn2_backup_subnet_name:
     type: string
     title: "Backup Subnet Name"
@@ -2685,12 +2700,24 @@ variables:
         - define_net
         - customize_exa_vcn2_subnets
         - add_exa_vcn2
+        - add_exa_vcn2_backup_subnet
 
   exa_vcn2_backup_subnet_cidr:
     type: string
     title: "Backup Subnet CIDR block"
     description: "Enter the Backup subnet CIDR block. It must be within the VCN CIDR blocks."
     required: false
+    visible:
+      and:
+        - define_net
+        - customize_exa_vcn2_subnets
+        - add_exa_vcn2
+        - add_exa_vcn2_backup_subnet
+
+  add_exa_vcn2_integration_subnet:
+    type: boolean
+    title: "Add Integration Subnet?"
+    description: "Check to add an optional Integration subnet to Exadata VCN 2."
     visible:
       and:
         - define_net
@@ -2874,16 +2901,6 @@ variables:
         - customize_exa_vcn3_subnets
         - add_exa_vcn3
 
-  add_exa_vcn3_integration_subnet:
-    type: boolean
-    title: "Add Integration Subnet?"
-    description: "Check to add an optional Integration subnet to Exadata VCN 3."
-    visible:
-      and:
-        - define_net
-        - customize_exa_vcn3_subnets
-        - add_exa_vcn3
-
   exa_vcn3_client_ingress_destination_ports:
     type: array
     items:
@@ -2912,6 +2929,16 @@ variables:
         - customize_exa_vcn3_subnets
         - add_exa_vcn3
 
+  add_exa_vcn3_backup_subnet:
+    type: boolean
+    title: "Add Backup Subnet?"
+    description: "Check to add an optional Backup subnet to Exadata VCN 2."
+    visible:
+      and:
+        - define_net
+        - customize_exa_vcn3_subnets
+        - add_exa_vcn3
+
   exa_vcn3_backup_subnet_name:
     type: string
     title: "Backup Subnet Name"
@@ -2922,12 +2949,24 @@ variables:
         - define_net
         - customize_exa_vcn3_subnets
         - add_exa_vcn3
+        - add_exa_vcn3_backup_subnet
 
   exa_vcn3_backup_subnet_cidr:
     type: string
     title: "Backup Subnet CIDR block"
     description: "Enter the Backup subnet CIDR block. It must be within the VCN CIDR blocks."
     required: false
+    visible:
+      and:
+        - define_net
+        - customize_exa_vcn3_subnets
+        - add_exa_vcn3
+        - add_exa_vcn3_backup_subnet
+
+  add_exa_vcn3_integration_subnet:
+    type: boolean
+    title: "Add Integration Subnet?"
+    description: "Check to add an optional Integration subnet to Exadata VCN 3."
     visible:
       and:
         - define_net
