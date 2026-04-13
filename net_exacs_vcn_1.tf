@@ -128,37 +128,57 @@ locals {
       security_lists = {
         "EXA-VCN-1-CLIENT-SUBNET-SL" = {
           display_name = "${local.exa_vcn1_client_subnet_display_name}-security-list"
-          ingress_rules = [
-            {
-              description  = "Allows SSH connections from hosts in Exadata client subnet."
+          ingress_rules = flatten([
+            [
+              {
+                description  = "Allows SSH connections from hosts in client subnet."
+                stateless    = false
+                protocol     = "TCP"
+                src          = local.exa_vcn1_client_subnet_cidr
+                src_type     = "CIDR_BLOCK"
+                dst_port_min = 22
+                dst_port_max = 22
+              }
+            ],
+            [  
+              {
+                description  = "Allows external ICMP connections for path MTU discovery."
+                stateless    = false
+                protocol     = "ICMP"
+                src          = "0.0.0.0/0"
+                src_type     = "CIDR_BLOCK"
+                icmp_type   = 3
+                icmp_code   = 4
+              }
+            ],  
+            [for cidr in var.exa_vcn1_cidrs : {
+              description  = "Allows ICMP connections from VCN CIDR block ${cidr} for connectivity error messages."
               stateless    = false
-              protocol     = "TCP"
-              src          = local.exa_vcn1_client_subnet_cidr
+              protocol     = "ICMP"
+              src          = cidr
               src_type     = "CIDR_BLOCK"
-              dst_port_min = 22
-              dst_port_max = 22
-            }
-          ]
-          egress_rules = [
-            {
-              description  = "Allows SSH connections to hosts in Exadata client subnet."
+            }]
+          ])
+          egress_rules = flatten([
+            [
+              {
+                description  = "Allows SSH connections to hosts in client subnet."
+                stateless    = false
+                protocol     = "TCP"
+                dst          = local.exa_vcn1_client_subnet_cidr
+                dst_type     = "CIDR_BLOCK"
+                dst_port_min = 22
+                dst_port_max = 22
+              }
+            ],  
+            [for cidr in var.exa_vcn1_cidrs : {
+              description  = "Allows ICMP connections to VCN CIDR block ${cidr} for connectivity error messages."
               stateless    = false
-              protocol     = "TCP"
-              dst          = local.exa_vcn1_client_subnet_cidr
+              protocol     = "ICMP"
+              dst          = cidr
               dst_type     = "CIDR_BLOCK"
-              dst_port_min = 22
-              dst_port_max = 22
-            },
-            {
-              description = "Allows the initiation of ICMP connections to hosts in Exadata VCN."
-              stateless   = false
-              protocol    = "UDP"
-              dst         = local.exa_vcn1_client_subnet_cidr
-              dst_type    = "CIDR_BLOCK"
-              icmp_type   = 3
-              icmp_code   = 4
-            }
-          ]
+            }]
+          ])
         }
       }
 
@@ -178,17 +198,6 @@ locals {
                   dst_port_max = 22
                 }
               } : {},
-              {
-                "INGRESS-FROM-SSH-CLIENT-RULE" = {
-                  description  = "Allows SSH connections from hosts in Client NSG."
-                  stateless    = false
-                  protocol     = "TCP"
-                  src          = "EXA-VCN-1-CLIENT-NSG"
-                  src_type     = "NETWORK_SECURITY_GROUP"
-                  dst_port_min = 22
-                  dst_port_max = 22
-                }
-              },
               local.add_exa_vcn1_integration_subnet == true ? {
                 for port in var.exa_vcn1_client_ingress_destination_ports : "INGRESS-FROM-INTEGRATION-NSG-ON-${port}-RULE" => {
                   description  = "Ingress from Integration NSG over ${split(":", port)[0]} on ${split(":", port)[0] == "ICMP" ? "type/code ${split(":", port)[1]}" : "port ${split(":", port)[1]}"}."
@@ -237,17 +246,6 @@ locals {
               }
             )
             egress_rules = merge(
-              {
-                "EGRESS-TO-SSH-RULE" = {
-                  description  = "Allows SSH connections to hosts in Client NSG."
-                  stateless    = false
-                  protocol     = "TCP"
-                  dst          = "EXA-VCN-1-CLIENT-NSG"
-                  dst_type     = "NETWORK_SECURITY_GROUP"
-                  dst_port_min = 22
-                  dst_port_max = 22
-                }
-              },
               local.add_exa_vcn1_integration_subnet == true ? {
                 for port in var.exa_vcn1_integration_ingress_destination_ports : "EGRESS-TO-INTEGRATION-NSG-ON-${port}-RULE" => {
                   description  = "Egress to Integration NSG over ${split(":", port)[0]} on ${split(":", port)[0] == "ICMP" ? "type/code ${split(":", port)[1]}" : "port ${split(":", port)[1]}"}."
