@@ -2,6 +2,7 @@
 **/.terraform/*
 *.lock.hcl
 *.out
+.worktrees/
 
 # .tfstate files
 *.tfstate
@@ -256,3 +257,5 @@ $RECYCLE.BIN/
 *.txt
 *.pkl
 *_config
+
+**/superpowers/*
