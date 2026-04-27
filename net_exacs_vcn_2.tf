@@ -5,6 +5,7 @@ locals {
 
   add_exa_vcn2                    = var.define_net == true && var.add_exa_vcn2 == true
   add_exa_vcn2_integration_subnet = local.add_exa_vcn2 == true && var.add_exa_vcn2_integration_subnet == true
+  add_exa_vcn2_backup_subnet      = local.add_exa_vcn2 == true && var.add_exa_vcn2_backup_subnet == true
 
   exa_vcn2_display_name                                          = coalesce(var.exa_vcn2_name, "${var.service_label}-exadata-vcn-2")
   exa_vcn2_dns_label                                             = substr(replace(coalesce(var.exa_vcn2_name, "exadata-vcn-2"), "/[^\\w]/", ""), 0, 14)
@@ -22,6 +23,7 @@ locals {
 
   exa_vcn_2 = local.add_exa_vcn2 == true ? {
     "EXA-VCN-2" = {
+      enable_cis_checks                = local.exa_vcn2_cis_checks_enabled
       display_name                     = local.exa_vcn2_display_name
       is_ipv6enabled                   = false
       is_oracle_gua_allocation_enabled = false
@@ -40,8 +42,10 @@ locals {
             ipv6cidr_blocks           = []
             prohibit_internet_ingress = true
             route_table_key           = "EXA-VCN-2-CLIENT-SUBNET-ROUTE-TABLE"
-            security_list_keys        = ["EXA-VCN-2-CLIENT-SUBNET-SL"]
+            security_list_keys        = local.exa_vcn2_client_subnet_security_list != null && (local.hub_with_vcn == true && var.exa_vcn2_attach_to_drg == true) ? ["CUSTOM-EXA-VCN-2-CLIENT-SUBNET-SL"] : ["EXA-VCN-2-CLIENT-SUBNET-SL"]
           }
+        },
+        local.add_exa_vcn2_backup_subnet == true ? {
           "EXA-VCN-2-BACKUP-SUBNET" = {
             cidr_block                = local.exa_vcn2_backup_subnet_cidr
             dhcp_options_key          = "default_dhcp_options"
@@ -50,8 +54,9 @@ locals {
             ipv6cidr_blocks           = []
             prohibit_internet_ingress = true
             route_table_key           = "EXA-VCN-2-BACKUP-SUBNET-ROUTE-TABLE"
+            security_list_keys        = local.exa_vcn2_backup_subnet_security_list != null && local.add_exa_vcn2_backup_subnet == true && (local.hub_with_vcn == true && var.exa_vcn2_attach_to_drg == true) ? ["CUSTOM-EXA-VCN-2-BACKUP-SUBNET-SL"] : []
           }
-        },
+        } : {},
         local.add_exa_vcn2_integration_subnet == true ? {
           "EXA-VCN-2-INTEGRATION-SUBNET" = {
             cidr_block                = local.exa_vcn2_integration_subnet_cidr
@@ -61,6 +66,7 @@ locals {
             ipv6cidr_blocks           = []
             prohibit_internet_ingress = true
             route_table_key           = "EXA-VCN-2-INTEGRATION-SUBNET-ROUTE-TABLE"
+            security_list_keys        = local.exa_vcn2_integration_subnet_security_list != null && local.add_exa_vcn2_integration_subnet == true && (local.hub_with_vcn == true && var.exa_vcn2_attach_to_drg == true) ? ["CUSTOM-EXA-VCN-2-INTEGRATION-SUBNET-SL"] : []
           }
         } : {}
       )
@@ -78,16 +84,38 @@ locals {
                   destination_type   = "SERVICE_CIDR_BLOCK"
                 }
               },
-              (local.hub_with_vcn == false) ? local.exa_vcn_2_drg_routing : {
-                "HUB-DRG-RULE" = {
-                  network_entity_key = "HUB-DRG"
-                  description        = "Traffic destined for networks outside the VCN is routed through the DRG."
-                  destination        = "0.0.0.0/0"
-                  destination_type   = "CIDR_BLOCK"
-                }
-              }
+              (local.hub_with_vcn == false) ? merge(
+                local.exa_vcn_2_drg_routing,
+                local.add_exa_vcn2_integration_subnet == true && local.exa_vcn2_enable_intra_vcn_drg_route == true && var.exa_vcn2_attach_to_drg == true ? {
+                  "INTEGRATION-SUBNET-RULE" = {
+                    network_entity_key = "HUB-DRG"
+                    description        = "Traffic destined for ${local.exa_vcn2_integration_subnet_display_name} is routed through the DRG."
+                    destination        = local.exa_vcn2_integration_subnet_cidr
+                    destination_type   = "CIDR_BLOCK"
+                  }
+                } : {}
+              ) : merge(
+                {
+                  "HUB-DRG-RULE" = {
+                    network_entity_key = "HUB-DRG"
+                    description        = "Traffic destined for networks outside the VCN is routed through the DRG."
+                    destination        = "0.0.0.0/0"
+                    destination_type   = "CIDR_BLOCK"
+                  }
+                },
+                local.add_exa_vcn2_integration_subnet == true && local.exa_vcn2_enable_intra_vcn_drg_route == true && var.exa_vcn2_attach_to_drg == true ? {
+                  "INTEGRATION-SUBNET-RULE" = {
+                    network_entity_key = "HUB-DRG"
+                    description        = "Traffic destined for ${local.exa_vcn2_integration_subnet_display_name} is routed through the DRG."
+                    destination        = local.exa_vcn2_integration_subnet_cidr
+                    destination_type   = "CIDR_BLOCK"
+                  }
+                } : {}
+              )
             )
-          },
+          }
+        },
+        local.add_exa_vcn2_backup_subnet == true ? {
           "EXA-VCN-2-BACKUP-SUBNET-ROUTE-TABLE" = {
             display_name = "backup-subnet-route-table"
             route_rules = {
@@ -99,7 +127,7 @@ locals {
               }
             }
           }
-        },
+        } : {},
         local.add_exa_vcn2_integration_subnet == true ? {
           "EXA-VCN-2-INTEGRATION-SUBNET-ROUTE-TABLE" = {
             display_name = "integration-subnet-route-table"
@@ -112,55 +140,96 @@ locals {
                   destination_type   = "SERVICE_CIDR_BLOCK"
                 }
               },
-              (local.hub_with_vcn == false) ? local.exa_vcn_2_drg_routing : {
-                "HUB-DRG-RULE" = {
-                  network_entity_key = "HUB-DRG"
-                  description        = "Traffic destined for networks outside the VCN is routed through the DRG."
-                  destination        = "0.0.0.0/0"
-                  destination_type   = "CIDR_BLOCK"
-                }
-              }
+              (local.hub_with_vcn == false) ? merge(
+                local.exa_vcn_2_drg_routing,
+                local.exa_vcn2_enable_intra_vcn_drg_route == true && var.exa_vcn2_attach_to_drg == true ? {
+                  "CLIENT-SUBNET-RULE" = {
+                    network_entity_key = "HUB-DRG"
+                    description        = "Traffic destined for ${local.exa_vcn2_client_subnet_display_name} is routed through the DRG."
+                    destination        = local.exa_vcn2_client_subnet_cidr
+                    destination_type   = "CIDR_BLOCK"
+                  }
+                } : {}
+              ) : merge(
+                {
+                  "HUB-DRG-RULE" = {
+                    network_entity_key = "HUB-DRG"
+                    description        = "Traffic destined for networks outside the VCN is routed through the DRG."
+                    destination        = "0.0.0.0/0"
+                    destination_type   = "CIDR_BLOCK"
+                  }
+                },
+                local.exa_vcn2_enable_intra_vcn_drg_route == true && var.exa_vcn2_attach_to_drg == true ? {
+                  "CLIENT-SUBNET-RULE" = {
+                    network_entity_key = "HUB-DRG"
+                    description        = "Traffic destined for ${local.exa_vcn2_client_subnet_display_name} is routed through the DRG."
+                    destination        = local.exa_vcn2_client_subnet_cidr
+                    destination_type   = "CIDR_BLOCK"
+                  }
+                } : {}
+              )
             )
           }
         } : {}
       )
 
-      security_lists = {
-        "EXA-VCN-2-CLIENT-SUBNET-SL" = {
-          display_name = "${local.exa_vcn2_client_subnet_display_name}-security-list"
-          ingress_rules = [
-            {
-              description  = "Allows SSH connections from hosts in Exadata client subnet."
-              stateless    = false
-              protocol     = "TCP"
-              src          = local.exa_vcn2_client_subnet_cidr
-              src_type     = "CIDR_BLOCK"
-              dst_port_min = 22
-              dst_port_max = 22
-            }
-          ]
-          egress_rules = [
-            {
-              description  = "Allows SSH connections to hosts in Exadata client subnet."
-              stateless    = false
-              protocol     = "TCP"
-              dst          = local.exa_vcn2_client_subnet_cidr
-              dst_type     = "CIDR_BLOCK"
-              dst_port_min = 22
-              dst_port_max = 22
-            },
-            {
-              description = "Allows the initiation of ICMP connections to hosts in Exadata VCN."
-              stateless   = false
-              protocol    = "UDP"
-              dst         = local.exa_vcn2_client_subnet_cidr
-              dst_type    = "CIDR_BLOCK"
-              icmp_type   = 3
-              icmp_code   = 4
-            }
-          ]
-        }
-      }
+      security_lists = merge(
+        {
+          "EXA-VCN-2-CLIENT-SUBNET-SL" = {
+            display_name = "${local.exa_vcn2_client_subnet_display_name}-security-list"
+            ingress_rules = [
+              {
+                description = "Allows TCP traffic from hosts in client subnet."
+                stateless   = false
+                protocol    = "TCP"
+                src         = local.exa_vcn2_client_subnet_cidr
+                src_type    = "CIDR_BLOCK"
+              },
+              {
+                description = "Allows ICMP traffic from hosts in client subnet."
+                stateless   = false
+                protocol    = "ICMP"
+                src         = local.exa_vcn2_client_subnet_cidr
+                src_type    = "CIDR_BLOCK"
+              },
+              {
+                description = "Allows external ICMP connections for path MTU discovery."
+                stateless   = false
+                protocol    = "ICMP"
+                src         = "0.0.0.0/0"
+                src_type    = "CIDR_BLOCK"
+                icmp_type   = 3
+                icmp_code   = 4
+              }
+            ]
+            egress_rules = [
+              {
+                description = "Allows TCP traffic to hosts in client subnet."
+                stateless   = false
+                protocol    = "TCP"
+                dst         = local.exa_vcn2_client_subnet_cidr
+                dst_type    = "CIDR_BLOCK"
+              },
+              {
+                description = "Allows ICMP traffic to hosts in client subnet."
+                stateless   = false
+                protocol    = "ICMP"
+                dst         = local.exa_vcn2_client_subnet_cidr
+                dst_type    = "CIDR_BLOCK"
+              }
+            ]
+          }
+        },
+        local.exa_vcn2_client_subnet_security_list != null && (local.hub_with_vcn == true && var.exa_vcn2_attach_to_drg == true) ? {
+          "CUSTOM-EXA-VCN-2-CLIENT-SUBNET-SL" = local.exa_vcn2_client_subnet_security_list
+        } : {},
+        local.exa_vcn2_backup_subnet_security_list != null && local.add_exa_vcn2_backup_subnet == true && (local.hub_with_vcn == true && var.exa_vcn2_attach_to_drg == true) ? {
+          "CUSTOM-EXA-VCN-2-BACKUP-SUBNET-SL" = local.exa_vcn2_backup_subnet_security_list
+        } : {},
+        local.exa_vcn2_integration_subnet_security_list != null && local.add_exa_vcn2_integration_subnet == true && (local.hub_with_vcn == true && var.exa_vcn2_attach_to_drg == true) ? {
+          "CUSTOM-EXA-VCN-2-INTEGRATION-SUBNET-SL" = local.exa_vcn2_integration_subnet_security_list
+        } : {}
+      )
 
       network_security_groups = merge(
         {
@@ -178,17 +247,6 @@ locals {
                   dst_port_max = 22
                 }
               } : {},
-              {
-                "INGRESS-FROM-SSH-CLIENT-RULE" = {
-                  description  = "Allows SSH connections from hosts in Client NSG."
-                  stateless    = false
-                  protocol     = "TCP"
-                  src          = "EXA-VCN-2-CLIENT-NSG"
-                  src_type     = "NETWORK_SECURITY_GROUP"
-                  dst_port_min = 22
-                  dst_port_max = 22
-                }
-              },
               local.add_exa_vcn2_integration_subnet == true ? {
                 for port in var.exa_vcn2_client_ingress_destination_ports : "INGRESS-FROM-INTEGRATION-NSG-ON-${port}-RULE" => {
                   description  = "Ingress from Integration NSG over ${split(":", port)[0]} on ${split(":", port)[0] == "ICMP" ? "type/code ${split(":", port)[1]}" : "port ${split(":", port)[1]}"}."
@@ -237,17 +295,6 @@ locals {
               }
             )
             egress_rules = merge(
-              {
-                "EGRESS-TO-SSH-RULE" = {
-                  description  = "Allows SSH connections to hosts in Client NSG."
-                  stateless    = false
-                  protocol     = "TCP"
-                  dst          = "EXA-VCN-2-CLIENT-NSG"
-                  dst_type     = "NETWORK_SECURITY_GROUP"
-                  dst_port_min = 22
-                  dst_port_max = 22
-                }
-              },
               local.add_exa_vcn2_integration_subnet == true ? {
                 for port in var.exa_vcn2_integration_ingress_destination_ports : "EGRESS-TO-INTEGRATION-NSG-ON-${port}-RULE" => {
                   description  = "Egress to Integration NSG over ${split(":", port)[0]} on ${split(":", port)[0] == "ICMP" ? "type/code ${split(":", port)[1]}" : "port ${split(":", port)[1]}"}."
@@ -296,6 +343,8 @@ locals {
               }
             )
           }
+        },
+        local.add_exa_vcn2_backup_subnet == true ? {
           "EXA-VCN-2-BACKUP-NSG" = {
             display_name = "backup-nsg"
             egress_rules = {
@@ -310,7 +359,7 @@ locals {
               }
             }
           }
-        },
+        } : {},
         local.add_exa_vcn2_integration_subnet == true ? {
           "EXA-VCN-2-INTEGRATION-NSG" = {
             display_name = "integration-nsg"
@@ -359,7 +408,8 @@ locals {
         } : {},
         local.exa_vcn2_cross_vcn_open_nsg,
         local.exa_vcn2_cross_vcn_client_nsg,
-        local.exa_vcn2_cross_vcn_integration_nsg
+        local.exa_vcn2_cross_vcn_integration_nsg,
+        local.exa_vcn2_additional_nsgs
       )
 
       vcn_specific_gateways = {
@@ -382,7 +432,7 @@ locals {
     length(var.exa_vcn2_routable_vcns) == 0 || contains(var.exa_vcn2_routable_vcns, "OKE-VCN-3") ? local.oke_vcn3_route_rule : {},
     length(var.exa_vcn2_routable_vcns) == 0 || contains(var.exa_vcn2_routable_vcns, "EXA-VCN-1") ? local.exa_vcn1_route_rule : {},
     length(var.exa_vcn2_routable_vcns) == 0 || contains(var.exa_vcn2_routable_vcns, "EXA-VCN-3") ? local.exa_vcn3_route_rule : {},
-    var.tt_vcn2_onprem_route_enable == true ? local.on_prem_route_rule : {},
+    var.exa_vcn2_onprem_route_enable == true ? local.on_prem_route_rule : {},
     local.exa_vcn2_external_networks_into_client_route_rule, local.exa_vcn2_external_networks_into_integration_route_rule
   ) : {}
 

@@ -23,6 +23,7 @@ locals {
 
   exa_vcn_1 = local.add_exa_vcn1 == true ? {
     "EXA-VCN-1" = {
+      enable_cis_checks                = local.exa_vcn1_cis_checks_enabled
       display_name                     = local.exa_vcn1_display_name
       is_ipv6enabled                   = false
       is_oracle_gua_allocation_enabled = false
@@ -41,7 +42,7 @@ locals {
             ipv6cidr_blocks           = []
             prohibit_internet_ingress = true
             route_table_key           = "EXA-VCN-1-CLIENT-SUBNET-ROUTE-TABLE"
-            security_list_keys        = ["EXA-VCN-1-CLIENT-SUBNET-SL"]
+            security_list_keys        = local.exa_vcn1_client_subnet_security_list != null && (local.hub_with_vcn == true && var.exa_vcn1_attach_to_drg == true) ? ["CUSTOM-EXA-VCN-1-CLIENT-SUBNET-SL"] : ["EXA-VCN-1-CLIENT-SUBNET-SL"]
           }
         },
         local.add_exa_vcn1_backup_subnet == true ? {
@@ -53,6 +54,7 @@ locals {
             ipv6cidr_blocks           = []
             prohibit_internet_ingress = true
             route_table_key           = "EXA-VCN-1-BACKUP-SUBNET-ROUTE-TABLE"
+            security_list_keys        = local.exa_vcn1_backup_subnet_security_list != null && local.add_exa_vcn1_backup_subnet == true && (local.hub_with_vcn == true && var.exa_vcn1_attach_to_drg == true) ? ["CUSTOM-EXA-VCN-1-BACKUP-SUBNET-SL"] : []
           }
         } : {},
         local.add_exa_vcn1_integration_subnet == true ? {
@@ -64,6 +66,7 @@ locals {
             ipv6cidr_blocks           = []
             prohibit_internet_ingress = true
             route_table_key           = "EXA-VCN-1-INTEGRATION-SUBNET-ROUTE-TABLE"
+            security_list_keys        = local.exa_vcn1_integration_subnet_security_list != null && local.add_exa_vcn1_integration_subnet == true && (local.hub_with_vcn == true && var.exa_vcn1_attach_to_drg == true) ? ["CUSTOM-EXA-VCN-1-INTEGRATION-SUBNET-SL"] : []
           }
         } : {}
       )
@@ -81,18 +84,38 @@ locals {
                   destination_type   = "SERVICE_CIDR_BLOCK"
                 }
               },
-              (local.hub_with_vcn == false) ? local.exa_vcn_1_drg_routing : {
-                "HUB-DRG-RULE" = { # Case when there is a Hub VCN. All traffic is routed through the DRG.
-                  network_entity_key = "HUB-DRG"
-                  description        = "Traffic destined for networks outside the VCN is routed through the DRG."
-                  destination        = "0.0.0.0/0"
-                  destination_type   = "CIDR_BLOCK"
-                }
-              }
+              (local.hub_with_vcn == false) ? merge(
+                local.exa_vcn_1_drg_routing,
+                local.add_exa_vcn1_integration_subnet == true && local.exa_vcn1_enable_intra_vcn_drg_route == true && var.exa_vcn1_attach_to_drg == true ? {
+                  "INTEGRATION-SUBNET-RULE" = {
+                    network_entity_key = "HUB-DRG"
+                    description        = "Traffic destined for ${local.exa_vcn1_integration_subnet_display_name} is routed through the DRG."
+                    destination        = local.exa_vcn1_integration_subnet_cidr
+                    destination_type   = "CIDR_BLOCK"
+                  }
+                } : {}
+              ) : merge(
+                {
+                  "HUB-DRG-RULE" = { # Case when there is a Hub VCN. All traffic is routed through the DRG.
+                    network_entity_key = "HUB-DRG"
+                    description        = "Traffic destined for networks outside the VCN is routed through the DRG."
+                    destination        = "0.0.0.0/0"
+                    destination_type   = "CIDR_BLOCK"
+                  }
+                },
+                local.add_exa_vcn1_integration_subnet == true && local.exa_vcn1_enable_intra_vcn_drg_route == true && var.exa_vcn1_attach_to_drg == true ? {
+                  "INTEGRATION-SUBNET-RULE" = {
+                    network_entity_key = "HUB-DRG"
+                    description        = "Traffic destined for ${local.exa_vcn1_integration_subnet_display_name} is routed through the DRG."
+                    destination        = local.exa_vcn1_integration_subnet_cidr
+                    destination_type   = "CIDR_BLOCK"
+                  }
+                } : {}
+              )
             )
           }
         },
-        local.add_exa_vcn1_backup_subnet == true ? {  
+        local.add_exa_vcn1_backup_subnet == true ? {
           "EXA-VCN-1-BACKUP-SUBNET-ROUTE-TABLE" = {
             display_name = "backup-subnet-route-table"
             route_rules = {
@@ -117,65 +140,96 @@ locals {
                   destination_type   = "SERVICE_CIDR_BLOCK"
                 }
               },
-              (local.hub_with_vcn == false) ? local.exa_vcn_1_drg_routing : {
-                "HUB-DRG-RULE" = {
-                  network_entity_key = "HUB-DRG"
-                  description        = "Traffic destined for networks outside the VCN is routed through the DRG."
-                  destination        = "0.0.0.0/0"
-                  destination_type   = "CIDR_BLOCK"
-                }
-              }
+              (local.hub_with_vcn == false) ? merge(
+                local.exa_vcn_1_drg_routing,
+                local.exa_vcn1_enable_intra_vcn_drg_route == true && var.exa_vcn1_attach_to_drg == true ? {
+                  "CLIENT-SUBNET-RULE" = {
+                    network_entity_key = "HUB-DRG"
+                    description        = "Traffic destined for ${local.exa_vcn1_client_subnet_display_name} is routed through the DRG."
+                    destination        = local.exa_vcn1_client_subnet_cidr
+                    destination_type   = "CIDR_BLOCK"
+                  }
+                } : {}
+              ) : merge(
+                {
+                  "HUB-DRG-RULE" = {
+                    network_entity_key = "HUB-DRG"
+                    description        = "Traffic destined for networks outside the VCN is routed through the DRG."
+                    destination        = "0.0.0.0/0"
+                    destination_type   = "CIDR_BLOCK"
+                  }
+                },
+                local.exa_vcn1_enable_intra_vcn_drg_route == true && var.exa_vcn1_attach_to_drg == true ? {
+                  "CLIENT-SUBNET-RULE" = {
+                    network_entity_key = "HUB-DRG"
+                    description        = "Traffic destined for ${local.exa_vcn1_client_subnet_display_name} is routed through the DRG."
+                    destination        = local.exa_vcn1_client_subnet_cidr
+                    destination_type   = "CIDR_BLOCK"
+                  }
+                } : {}
+              )
             )
           }
         } : {}
       )
 
-      security_lists = {
-        "EXA-VCN-1-CLIENT-SUBNET-SL" = {
-          display_name = "${local.exa_vcn1_client_subnet_display_name}-security-list"
-          ingress_rules = [
-            {
-              description  = "Allows TCP traffic from hosts in client subnet."
-              stateless    = false
-              protocol     = "TCP"
-              src          = local.exa_vcn1_client_subnet_cidr
-              src_type     = "CIDR_BLOCK"
-            },
-            {
-              description  = "Allows ICMP traffic from hosts in client subnet."
-              stateless    = false
-              protocol     = "ICMP"
-              src          = local.exa_vcn1_client_subnet_cidr
-              src_type     = "CIDR_BLOCK"
-            },
-            {
-              description  = "Allows external ICMP connections for path MTU discovery."
-              stateless    = false
-              protocol     = "ICMP"
-              src          = "0.0.0.0/0"
-              src_type     = "CIDR_BLOCK"
-              icmp_type   = 3
-              icmp_code   = 4
-            }
-          ]
-          egress_rules = [
-            {
-              description  = "Allows TCP traffic to hosts in client subnet."
-              stateless    = false
-              protocol     = "TCP"
-              dst          = local.exa_vcn1_client_subnet_cidr
-              dst_type     = "CIDR_BLOCK"
-            },
-            {
-              description  = "Allows ICMP traffic to hosts in client subnet."
-              stateless    = false
-              protocol     = "ICMP"
-              dst          = local.exa_vcn1_client_subnet_cidr
-              dst_type     = "CIDR_BLOCK"
-            }
-          ]
-        }
-      }
+      security_lists = merge(
+        {
+          "EXA-VCN-1-CLIENT-SUBNET-SL" = {
+            display_name = "${local.exa_vcn1_client_subnet_display_name}-security-list"
+            ingress_rules = [
+              {
+                description = "Allows TCP traffic from hosts in client subnet."
+                stateless   = false
+                protocol    = "TCP"
+                src         = local.exa_vcn1_client_subnet_cidr
+                src_type    = "CIDR_BLOCK"
+              },
+              {
+                description = "Allows ICMP traffic from hosts in client subnet."
+                stateless   = false
+                protocol    = "ICMP"
+                src         = local.exa_vcn1_client_subnet_cidr
+                src_type    = "CIDR_BLOCK"
+              },
+              {
+                description = "Allows external ICMP connections for path MTU discovery."
+                stateless   = false
+                protocol    = "ICMP"
+                src         = "0.0.0.0/0"
+                src_type    = "CIDR_BLOCK"
+                icmp_type   = 3
+                icmp_code   = 4
+              }
+            ]
+            egress_rules = [
+              {
+                description = "Allows TCP traffic to hosts in client subnet."
+                stateless   = false
+                protocol    = "TCP"
+                dst         = local.exa_vcn1_client_subnet_cidr
+                dst_type    = "CIDR_BLOCK"
+              },
+              {
+                description = "Allows ICMP traffic to hosts in client subnet."
+                stateless   = false
+                protocol    = "ICMP"
+                dst         = local.exa_vcn1_client_subnet_cidr
+                dst_type    = "CIDR_BLOCK"
+              }
+            ]
+          }
+        },
+        local.exa_vcn1_client_subnet_security_list != null && (local.hub_with_vcn == true && var.exa_vcn1_attach_to_drg == true) ? {
+          "CUSTOM-EXA-VCN-1-CLIENT-SUBNET-SL" = local.exa_vcn1_client_subnet_security_list
+        } : {},
+        local.exa_vcn1_backup_subnet_security_list != null && local.add_exa_vcn1_backup_subnet == true && (local.hub_with_vcn == true && var.exa_vcn1_attach_to_drg == true) ? {
+          "CUSTOM-EXA-VCN-1-BACKUP-SUBNET-SL" = local.exa_vcn1_backup_subnet_security_list
+        } : {},
+        local.exa_vcn1_integration_subnet_security_list != null && local.add_exa_vcn1_integration_subnet == true && (local.hub_with_vcn == true && var.exa_vcn1_attach_to_drg == true) ? {
+          "CUSTOM-EXA-VCN-1-INTEGRATION-SUBNET-SL" = local.exa_vcn1_integration_subnet_security_list
+        } : {}
+      )
 
       network_security_groups = merge(
         {
@@ -290,7 +344,7 @@ locals {
             )
           }
         },
-        local.add_exa_vcn1_backup_subnet == true ? {  
+        local.add_exa_vcn1_backup_subnet == true ? {
           "EXA-VCN-1-BACKUP-NSG" = {
             display_name = "backup-nsg"
             egress_rules = {
@@ -354,7 +408,8 @@ locals {
         } : {},
         local.exa_vcn1_cross_vcn_open_nsg,
         local.exa_vcn1_cross_vcn_client_nsg,
-        local.exa_vcn1_cross_vcn_integration_nsg
+        local.exa_vcn1_cross_vcn_integration_nsg,
+        local.exa_vcn1_additional_nsgs
       )
 
       vcn_specific_gateways = {
@@ -377,7 +432,7 @@ locals {
     length(var.exa_vcn1_routable_vcns) == 0 || contains(var.exa_vcn1_routable_vcns, "OKE-VCN-3") ? local.oke_vcn3_route_rule : {},
     length(var.exa_vcn1_routable_vcns) == 0 || contains(var.exa_vcn1_routable_vcns, "EXA-VCN-2") ? local.exa_vcn2_route_rule : {},
     length(var.exa_vcn1_routable_vcns) == 0 || contains(var.exa_vcn1_routable_vcns, "EXA-VCN-3") ? local.exa_vcn3_route_rule : {},
-    var.tt_vcn1_onprem_route_enable == true ? local.on_prem_route_rule : {},
+    var.exa_vcn1_onprem_route_enable == true ? local.on_prem_route_rule : {},
     local.exa_vcn1_external_networks_into_client_route_rule, local.exa_vcn1_external_networks_into_integration_route_rule
   ) : {}
 

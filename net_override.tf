@@ -5,7 +5,7 @@
 # Uncomment the variables and assign them appropriate values per your use case requirements.
 
 # locals {
-    
+
 #     #-----------------------------------------------
 #     # Hub VCB overrides:
 #     #-----------------------------------------------
@@ -300,6 +300,106 @@
 #     oke_vcn3_cis_checks_enabled = false
 #     # Whether traffic between subnets of oke_vcn3 is routed through DRG.
 #     oke_vcn3_enable_intra_vcn_drg_route = true
+
+#     #-----------------------------------------------
+#     # EXA VCN1 overrides:
+#     #-----------------------------------------------
+#     # EXA VCN1 security lists.
+#     exa_vcn1_client_subnet_security_list = {
+#       display_name  = "client-subnet-security-list"
+#       ingress_rules = local.security_lists_default_ingress_rules
+#       egress_rules  = local.security_lists_default_egress_rules
+#     }
+#     # Only applied when add_exa_vcn1_backup_subnet = true.
+#     exa_vcn1_backup_subnet_security_list = {
+#       display_name  = "backup-subnet-security-list"
+#       ingress_rules = local.security_lists_default_ingress_rules
+#       egress_rules  = local.security_lists_default_egress_rules
+#     }
+#     # Only applied when add_exa_vcn1_integration_subnet = true.
+#     exa_vcn1_integration_subnet_security_list = {
+#       display_name  = "integration-subnet-security-list"
+#       ingress_rules = local.security_lists_default_ingress_rules
+#       egress_rules  = local.security_lists_default_egress_rules
+#     }
+#     # EXA VCN1 additional NSGs.
+#     exa_vcn1_additional_nsgs = {
+#       "EXA-VCN-1-CUSTOM-NSG" = {
+#         display_name = "exa-vcn-1-custom-nsg"
+#         ingress_rules = {
+#           "INGRESS-FROM-CIDR-TCP-RULE" = {
+#             description  = "Ingress from 10.10.0.0/24 on SSH."
+#             stateless    = false
+#             protocol     = "TCP"
+#             src          = "10.10.0.0/24"
+#             src_type     = "CIDR_BLOCK"
+#             dst_port_min = 22
+#             dst_port_max = 22
+#           }
+#         }
+#         egress_rules = {}
+#       }
+#     }
+#     # Whether CIS checks for exa_vcn1 VCN are enabled.
+#     exa_vcn1_cis_checks_enabled = false
+#     # Whether traffic between EXA VCN1 client and integration subnets is routed through DRG.
+#     exa_vcn1_enable_intra_vcn_drg_route = true
+#
+#     #-----------------------------------------------
+#     # EXA VCN2 overrides:
+#     #-----------------------------------------------
+#     # EXA VCN2 security lists.
+#     exa_vcn2_client_subnet_security_list = {
+#       display_name  = "client-subnet-security-list"
+#       ingress_rules = local.security_lists_default_ingress_rules
+#       egress_rules  = local.security_lists_default_egress_rules
+#     }
+#     # Only applied when add_exa_vcn2_backup_subnet = true.
+#     exa_vcn2_backup_subnet_security_list = {
+#       display_name  = "backup-subnet-security-list"
+#       ingress_rules = local.security_lists_default_ingress_rules
+#       egress_rules  = local.security_lists_default_egress_rules
+#     }
+#     # Only applied when add_exa_vcn2_integration_subnet = true.
+#     exa_vcn2_integration_subnet_security_list = {
+#       display_name  = "integration-subnet-security-list"
+#       ingress_rules = local.security_lists_default_ingress_rules
+#       egress_rules  = local.security_lists_default_egress_rules
+#     }
+#     # EXA VCN2 additional NSGs.
+#     exa_vcn2_additional_nsgs = {}
+#     # Whether CIS checks for exa_vcn2 VCN are enabled.
+#     exa_vcn2_cis_checks_enabled = false
+#     # Whether traffic between EXA VCN2 client and integration subnets is routed through DRG.
+#     exa_vcn2_enable_intra_vcn_drg_route = true
+#
+#     #-----------------------------------------------
+#     # EXA VCN3 overrides:
+#     #-----------------------------------------------
+#     # EXA VCN3 security lists.
+#     exa_vcn3_client_subnet_security_list = {
+#       display_name  = "client-subnet-security-list"
+#       ingress_rules = local.security_lists_default_ingress_rules
+#       egress_rules  = local.security_lists_default_egress_rules
+#     }
+#     # Only applied when add_exa_vcn3_backup_subnet = true.
+#     exa_vcn3_backup_subnet_security_list = {
+#       display_name  = "backup-subnet-security-list"
+#       ingress_rules = local.security_lists_default_ingress_rules
+#       egress_rules  = local.security_lists_default_egress_rules
+#     }
+#     # Only applied when add_exa_vcn3_integration_subnet = true.
+#     exa_vcn3_integration_subnet_security_list = {
+#       display_name  = "integration-subnet-security-list"
+#       ingress_rules = local.security_lists_default_ingress_rules
+#       egress_rules  = local.security_lists_default_egress_rules
+#     }
+#     # EXA VCN3 additional NSGs.
+#     exa_vcn3_additional_nsgs = {}
+#     # Whether CIS checks for exa_vcn3 VCN are enabled.
+#     exa_vcn3_cis_checks_enabled = false
+#     # Whether traffic between EXA VCN3 client and integration subnets is routed through DRG.
+#     exa_vcn3_enable_intra_vcn_drg_route = true
 
 #     #-----------------------------------------------
 #     # Default security lists rules. 
