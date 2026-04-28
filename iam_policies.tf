@@ -30,6 +30,7 @@ locals {
   access_governance_root_policy_name = "${var.service_label}-access-governance-root-policy"
   net_fw_app_policy_name             = "${var.service_label}-net-firewall-app-policy"
   rpc_root_policy_name               = "${var.service_label}-rpc-root-policy"
+  custom_policy_name                 = "${var.service_label}-custom-policy"
 
   #iam_grants_condition = [for g in local.cred_admin_group_name : "target.group.name != ${g}"]
   cred_admin_groups                  = var.identity_domain_option == "Default Domain" ? [for g in local.cred_admin_group_name : substr(g, 0, 1) == "'" && substr(g, length(g) - 1, 1) == "'" ? "target.group.name != ${g}" : "target.group.name != '${g}'"] : var.identity_domain_option == "New Identity Domain" ? [for g in local.cred_admin_group_name : "target.group.name != ${substr(g, length(local.new_identity_domain_name) + 3, -1)}"] : []
@@ -569,9 +570,20 @@ locals {
     } : null
   } : {}
 
+  custom_policy = local.enclosing_compartment_name != "tenancy" && length(local.custom_policy_statements) > 0 ? {
+    (local.custom_policy_name) = {
+      compartment_id = local.enclosing_compartment_id
+      name           = local.custom_policy_name
+      description    = "${var.lz_provenant_label} custom policy with user defined statements (through Terraform overrides)."
+      defined_tags   = local.policies_defined_tags
+      freeform_tags  = local.policies_freeform_tags
+      statements     = local.custom_policy_statements
+    }
+  } : {}
+
   policies = merge(local.compute_agent_policy, local.database_dyn_group_policy, local.network_admin_policy, local.security_admin_policy,
-    local.database_admin_policy, local.appdev_admin_policy, local.iam_admin_policy, local.storage_admin_policy,
-  local.exainfra_policy, local.net_fw_app_policy)
+                   local.database_admin_policy, local.appdev_admin_policy, local.iam_admin_policy, local.storage_admin_policy,
+                   local.exainfra_policy, local.net_fw_app_policy, local.custom_policy)
 
   #-- Basic grants on Root compartment
   basic_grants_default_grantees = concat(local.security_admin_group_name, local.network_admin_group_name, local.appdev_admin_group_name, local.database_admin_group_name, local.storage_admin_group_name)

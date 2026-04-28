@@ -7,6 +7,13 @@
 locals {
 
   #-----------------------------------------------
+  # IAM overrides:
+  #-----------------------------------------------
+  # Custom policy statements to be added to the default policies created for the landing zone. A separate policy is created at the enclosing compartment of the landing zone, and only when the enclosing compartment is not the Root compartment.
+  # Use this with extreme caution as it may introduce security risks if not used properly. Make sure to follow the principle of least privilege when defining custom policies, and only grant the necessary permissions required for your use case.
+  custom_policy_statements = []
+
+  #-----------------------------------------------
   # Hub VCN overrides:
   #-----------------------------------------------
   # Whether HUB VCN Outdoor subnet is private (default) or public.
