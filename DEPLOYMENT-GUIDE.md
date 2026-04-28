@@ -467,17 +467,161 @@ Core Landing Zone supports many networking scenarios through its global variable
 
 #### Three-tier Spokes with Bespoke East-West Controls
 
+The three-tier spoke overrides are Terraform local overrides. Define them in a *\*_override.tf* file, using the provided *net_override.tf* sample as the starting point, so that the base Landing Zone files can still be upgraded safely.
+
 - Override any of the web, app, or database subnet security lists per VCN (*tt_vcn\*_web_subnet_security_list*, *tt_vcn\*_app_subnet_security_list*, *tt_vcn\*_db_subnet_security_list*) to align with workload-specific port matrices or allow all ingress/egress traffic in the VCNs, delegating the fine-grained controls to a firewall.
 - Attach workload-specific NSGs on a per-spoke basis through *tt_vcn\*_additional_nsgs*, supplementing the global constrained/open NSGs without modifying the core module.
 - Force every intra-VCN flow through the DRG for centralized inspection by enabling *tt_vcn\*_enable_intra_vcn_drg_route*, which is useful when a Hub firewall must see even subnet-to-subnet traffic.
-- Relax governance by toggling *tt_vcn\*_cis_checks_enabled*, if a deviation from CIS networking guardrails is absolutely required. This is common when VCN security rules are open and control is enforced by a firewall. **Use this with extreme caution, ensuring your custom network security rules (in NSGs and security lists) do not expose SSH port to Internet**.
+- Relax governance by toggling *tt_vcn\*_cis_checks_enabled*, if a deviation from CIS networking guardrails is absolutely required. This is common when VCN security rules are open and control is enforced by a firewall. **Use this with extreme caution, ensuring your custom network security rules (in NSGs and security lists) do not expose sensitive ports to Internet**.
+
+For example, the following *net_override.tf* pattern replaces the web, app, and database subnet security lists for *TT-VCN-1*, adds a custom NSG, disables CIS checks for that VCN, and routes intra-VCN traffic through the DRG:
+
+```hcl
+locals {
+  tt_vcn1_web_subnet_security_list = {
+    display_name  = "web-subnet-security-list"
+    ingress_rules = local.security_lists_default_ingress_rules
+    egress_rules  = local.security_lists_default_egress_rules
+  }
+
+  tt_vcn1_app_subnet_security_list = {
+    display_name  = "app-subnet-security-list"
+    ingress_rules = local.security_lists_default_ingress_rules
+    egress_rules  = local.security_lists_default_egress_rules
+  }
+
+  tt_vcn1_db_subnet_security_list = {
+    display_name  = "db-subnet-security-list"
+    ingress_rules = local.security_lists_default_ingress_rules
+    egress_rules  = local.security_lists_default_egress_rules
+  }
+
+  tt_vcn1_additional_nsgs = {
+    "TT-VCN-1-CUSTOM-NSG" = {
+      display_name  = "tt-vcn-1-custom-nsg"
+      ingress_rules = {}
+      egress_rules  = {}
+    }
+  }
+
+  tt_vcn1_cis_checks_enabled         = false
+  tt_vcn1_enable_intra_vcn_drg_route = true
+}
+```
+
+Use the same pattern for *TT-VCN-2* and *TT-VCN-3* by replacing the prefix with *tt_vcn2_* or *tt_vcn3_*.
 
 #### OKE Spokes with Bespoke East-West Controls
+
+The OKE spoke overrides are Terraform local overrides. Define them in a *\*_override.tf* file, using the provided *net_override.tf* sample as the starting point, so that the base Landing Zone files can still be upgraded safely.
 
 - Override any of the api, workers, pods, services, mgmt, or database subnet security lists per VCN (*oke_vcn\*_api_subnet_security_list*, *oke_vcn\*_workers_subnet_security_list*, *oke_vcn\*_pods_subnet_security_list*, *oke_vcn\*_services_subnet_security_list*, *oke_vcn\*_mgmt_subnet_security_list*, *oke_vcn\*_db_subnet_security_list*) to align with workload-specific port matrices or allow all ingress/egress traffic in the VCNs, delegating the fine-grained controls to a firewall.
 - Attach workload-specific NSGs on a per-spoke basis through *oke_vcn\*_additional_nsgs*, supplementing the global constrained/open NSGs without modifying the core module.
 - Force every intra-VCN flow through the DRG for centralized inspection by enabling *oke_vcn\*_enable_intra_vcn_drg_route*, which is useful when a Hub firewall must see even subnet-to-subnet traffic.
-- Relax governance by toggling *oke_vcn\*_cis_checks_enabled*, if a deviation from CIS networking guardrails is absolutely required. This is common when VCN security rules are open and control is enforced by a firewall. **Use this with extreme caution, ensuring your custom network security rules (in NSGs and security lists) do not expose SSH port to Internet**.
+- Relax governance by toggling *oke_vcn\*_cis_checks_enabled*, if a deviation from CIS networking guardrails is absolutely required. This is common when VCN security rules are open and control is enforced by a firewall. **Use this with extreme caution, ensuring your custom network security rules (in NSGs and security lists) do not expose sensitive ports to Internet**.
+
+For example, the following *net_override.tf* pattern replaces the API, workers, pods, services, management, and database subnet security lists for *OKE-VCN-1*, adds a custom NSG, disables CIS checks for that VCN, and routes intra-VCN traffic through the DRG:
+
+```hcl
+locals {
+  oke_vcn1_api_subnet_security_list = {
+    display_name  = "api-subnet-security-list"
+    ingress_rules = local.security_lists_default_ingress_rules
+    egress_rules  = local.security_lists_default_egress_rules
+  }
+
+  oke_vcn1_workers_subnet_security_list = {
+    display_name  = "workers-subnet-security-list"
+    ingress_rules = local.security_lists_default_ingress_rules
+    egress_rules  = local.security_lists_default_egress_rules
+  }
+
+  oke_vcn1_pods_subnet_security_list = {
+    display_name  = "pods-subnet-security-list"
+    ingress_rules = local.security_lists_default_ingress_rules
+    egress_rules  = local.security_lists_default_egress_rules
+  }
+
+  oke_vcn1_services_subnet_security_list = {
+    display_name  = "services-subnet-security-list"
+    ingress_rules = local.security_lists_default_ingress_rules
+    egress_rules  = local.security_lists_default_egress_rules
+  }
+
+  oke_vcn1_mgmt_subnet_security_list = {
+    display_name  = "mgmt-subnet-security-list"
+    ingress_rules = local.security_lists_default_ingress_rules
+    egress_rules  = local.security_lists_default_egress_rules
+  }
+
+  oke_vcn1_db_subnet_security_list = {
+    display_name  = "db-subnet-security-list"
+    ingress_rules = local.security_lists_default_ingress_rules
+    egress_rules  = local.security_lists_default_egress_rules
+  }
+
+  oke_vcn1_additional_nsgs = {
+    "OKE-VCN-1-CUSTOM-NSG" = {
+      display_name  = "oke-vcn-1-custom-nsg"
+      ingress_rules = {}
+      egress_rules  = {}
+    }
+  }
+
+  oke_vcn1_cis_checks_enabled         = false
+  oke_vcn1_enable_intra_vcn_drg_route = true
+}
+```
+
+Use the same pattern for *OKE-VCN-2* and *OKE-VCN-3* by replacing the prefix with *oke_vcn2_* or *oke_vcn3_*.
+
+### Exadata Cloud Service Spokes with Bespoke East-West Controls
+
+The Exadata Cloud Service (ExaCS) spoke overrides are Terraform local overrides. Define them in a *\*_override.tf* file, using the provided *net_override.tf* sample as the starting point, so that the base Landing Zone files can still be upgraded safely.
+
+- Override Exadata client, backup, or integration subnet security lists per VCN (*exa_vcn\*_client_subnet_security_list*, *exa_vcn\*_backup_subnet_security_list*, *exa_vcn\*_integration_subnet_security_list*) to align with workload-specific routing inspection patterns or to delegate fine-grained subnet controls to a firewall. These overrides are available for *EXA-VCN-1*, *EXA-VCN-2*, and *EXA-VCN-3*.
+- Custom Exadata subnet security lists are applied when the Exadata spoke is attached to the DRG in a Hub VCN topology. In standalone or DRG-as-hub deployments, the default Exadata security list behavior is preserved.
+- Backup subnet security list overrides are only used when the matching *add_exa_vcn\*_backup_subnet* toggle is enabled. Integration subnet security list overrides are only used when the matching *add_exa_vcn\*_integration_subnet* toggle is enabled.
+- Attach workload-specific NSGs on a per-spoke basis through *exa_vcn\*_additional_nsgs*, supplementing the native client, integration, and cross-VCN NSGs without modifying the core module.
+- Force client-to-integration and integration-to-client flows through the DRG for centralized inspection by enabling *exa_vcn\*_enable_intra_vcn_drg_route*. This only adds the client and integration subnet route rules when the Exadata VCN is attached to the DRG, and it is most useful when a Hub firewall must inspect traffic between those two Exadata subnets.
+- Relax governance by toggling *exa_vcn\*_cis_checks_enabled*, if a deviation from CIS networking guardrails is absolutely required. This is common when Exadata subnet security rules are intentionally opened and control is enforced by a firewall. **Use this with extreme caution, ensuring your custom network security rules (in NSGs and security lists) do not expose sensitive ports to Internet**.
+
+For example, the following *net_override.tf* pattern replaces the client, backup, and integration subnet security lists for *EXA-VCN-1*, adds a custom NSG, disables CIS checks for that VCN, and routes client/integration subnet traffic through the DRG:
+
+```hcl
+locals {
+  exa_vcn1_client_subnet_security_list = {
+    display_name  = "client-subnet-security-list"
+    ingress_rules = local.security_lists_default_ingress_rules
+    egress_rules  = local.security_lists_default_egress_rules
+  }
+
+  exa_vcn1_backup_subnet_security_list = {
+    display_name  = "backup-subnet-security-list"
+    ingress_rules = local.security_lists_default_ingress_rules
+    egress_rules  = local.security_lists_default_egress_rules
+  }
+
+  exa_vcn1_integration_subnet_security_list = {
+    display_name  = "integration-subnet-security-list"
+    ingress_rules = local.security_lists_default_ingress_rules
+    egress_rules  = local.security_lists_default_egress_rules
+  }
+
+  exa_vcn1_additional_nsgs = {
+    "EXA-VCN-1-CUSTOM-NSG" = {
+      display_name  = "exa-vcn-1-custom-nsg"
+      ingress_rules = {}
+      egress_rules  = {}
+    }
+  }
+
+  exa_vcn1_cis_checks_enabled         = false
+  exa_vcn1_enable_intra_vcn_drg_route = true
+}
+```
+
+Use the same pattern for *EXA-VCN-2* and *EXA-VCN-3* by replacing the prefix with *exa_vcn2_* or *exa_vcn3_*.
 
 #### Shared Security List Templates
 - Populate *security_lists_default_ingress_rules* and *security_lists_default_egress_rules* with reusable rule blocks, then reference them from any override to keep rule definitions consistent across spokes without copying identical ingress/egress statements.
