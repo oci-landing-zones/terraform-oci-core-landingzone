@@ -145,7 +145,7 @@ locals {
           } : {},
           (local.deploy_new_ipsec) ? {
             "IPSEC-TUNNEL-1-ATTACHMENT" = {
-              display_name        = "${coalesce(var.ipsec_vpn_name, "${var.service_label}-oci-ipsec")}-tunnel-1-attachment"
+              display_name        = "${coalesce(var.ipsec_vpn_name, "${var.service_label}-ipsec-vpn")}-tunnel-1-attachment"
               drg_route_table_key = "IPSEC-TUNNEL-DRG-ROUTE-TABLE"
               network_details = {
                 attached_resource_key = "LZ-IPSEC-VPN-TUNNEL-1-KEY"
@@ -153,7 +153,7 @@ locals {
               }
             },
             "IPSEC-TUNNEL-2-ATTACHMENT" = {
-              display_name        = "${coalesce(var.ipsec_vpn_name, "${var.service_label}-oci-ipsec")}-tunnel-2-attachment"
+              display_name        = "${coalesce(var.ipsec_vpn_name, "${var.service_label}-ipsec-vpn")}-tunnel-2-attachment"
               drg_route_table_key = "IPSEC-TUNNEL-DRG-ROUTE-TABLE"
               network_details = {
                 attached_resource_key = "LZ-IPSEC-VPN-TUNNEL-2-KEY"
@@ -162,8 +162,8 @@ locals {
             }
           } : {},
           (local.deploy_fastconnect) ? {
-            "FC-VIRTUAL-CIRCUIT-ATTACHMENT" = {
-              display_name        = "${coalesce(var.fastconnect_virtual_circuit_name, "${var.service_label}-fastconnect-virtual-circuit")}-attachment"
+            "FC-VIRTUAL-CIRCUIT-1-ATTACHMENT" = {
+              display_name        = "${coalesce(var.fastconnect_virtual_circuit_name, "${var.service_label}-fastconnect-virtual-circuit-1")}-attachment"
               drg_route_table_key = "FC-VIRTUAL-CIRCUIT-DRG-ROUTE-TABLE"
               network_details = {
                 attached_resource_key = "FASTCONNECT"
@@ -248,7 +248,7 @@ locals {
           } : {},
           (local.deploy_new_ipsec) ? {
             "IPSEC-TUNNEL-DRG-ROUTE-TABLE" = {
-              display_name = "${coalesce(var.ipsec_vpn_name, "${var.service_label}-oci-ipsec")}-tunnel-drg-route-table"
+              display_name = "${coalesce(var.ipsec_vpn_name, "${var.service_label}-ipsec-vpn")}-tunnel-drg-route-table"
               route_rules = merge(
                 local.hub_with_vcn == true ? {
                   for cidr in var.hub_vcn_cidrs : "IPSEC-HUB-VCN-${cidr}-RULE" => {
@@ -433,7 +433,7 @@ locals {
               #     }
               #   }
               # }
-              statements = merge(
+              statements = merge( # Here we make the Hub VCN attachment aware of all other LZ managed DRG attachments, including LZ managed VCNs, IPSec tunnels, FastConnect virtual circuit, and externally managed VCN. This is needed to make sure the traffic from the Hub VCN can route to those attachments via the DRG. 
                 (local.add_tt_vcn1 == true && var.tt_vcn1_attach_to_drg == true) ? {"HUB-VCN-TO-TT-VCN-1-STMT" = local.tt_vcn1_statement} : {},
                 (local.add_tt_vcn2 == true && var.tt_vcn2_attach_to_drg == true) ? {"HUB-VCN-TO-TT-VCN-2-STMT" = local.tt_vcn2_statement} : {},
                 (local.add_tt_vcn3 == true && var.tt_vcn3_attach_to_drg == true) ? {"HUB-VCN-TO-TT-VCN-3-STMT" = local.tt_vcn3_statement} : {},
@@ -443,8 +443,9 @@ locals {
                 (local.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true) ? {"HUB-VCN-TO-OKE-VCN-1-STMT" = local.oke_vcn1_statement} : {},
                 (local.add_oke_vcn2 == true && var.oke_vcn2_attach_to_drg == true) ? {"HUB-VCN-TO-OKE-VCN-2-STMT" = local.oke_vcn2_statement} : {},
                 (local.add_oke_vcn3 == true && var.oke_vcn3_attach_to_drg == true) ? {"HUB-VCN-TO-OKE-VCN-3-STMT" = local.oke_vcn3_statement} : {},
-                (local.deploy_new_ipsec == true) ? {"HUB-VCN-TO-IPSEC-1-STMT" = local.ipsec_tunnel_1_statement, "HUB-VCN-TO-IPSEC-2-STMT" = local.ipsec_tunnel_2_statement} : {},
-                (local.deploy_fastconnect == true) ? {"HUB-VCN-TO-FASTCONNECT-STMT" = local.fc_vc_1_statement} : {}
+                (local.deploy_new_ipsec == true) ? {"HUB-VCN-TO-IPSEC-STMT" = merge(local.ipsec_tunnel_1_statement, local.ipsec_tunnel_2_statement)} : {},
+                (local.deploy_fastconnect == true) ? {"HUB-VCN-TO-FASTCONNECT-STMT" = local.fc_vc_1_statement} : {},
+                local.external_vcn_statements
               )
             }
           } : {},
@@ -473,7 +474,7 @@ locals {
                 (length(var.tt_vcn1_routable_vcns) == 0 || contains(var.tt_vcn1_routable_vcns, "OKE-VCN-1")) && var.oke_vcn1_attach_to_drg == true && local.hub_with_drg_only == true ? {"TT-VCN-1-TO-OKE-VCN-1-STMT" = local.oke_vcn1_statement} : {},
                 (length(var.tt_vcn1_routable_vcns) == 0 || contains(var.tt_vcn1_routable_vcns, "OKE-VCN-2")) && var.oke_vcn2_attach_to_drg == true && local.hub_with_drg_only == true ? {"TT-VCN-1-TO-OKE-VCN-2-STMT" = local.oke_vcn2_statement} : {},
                 (length(var.tt_vcn1_routable_vcns) == 0 || contains(var.tt_vcn1_routable_vcns, "OKE-VCN-3")) && var.oke_vcn3_attach_to_drg == true && local.hub_with_drg_only == true ? {"TT-VCN-1-TO-OKE-VCN-3-STMT" = local.oke_vcn3_statement} : {},
-                var.tt_vcn1_onprem_route_enable == true && var.tt_vcn1_attach_to_drg && local.hub_with_drg_only == true && local.deploy_new_ipsec == true ? {"TT-VCN-1-TO-IPSEC-1-STMT" = local.ipsec_tunnel_1_statement, "TT-VCN-1-TO-IPSEC-2-STMT" = local.ipsec_tunnel_2_statement} : {},
+                var.tt_vcn1_onprem_route_enable == true && var.tt_vcn1_attach_to_drg && local.hub_with_drg_only == true && local.deploy_new_ipsec == true ? {"TT-VCN-1-TO-IPSEC-STMT" = merge(local.ipsec_tunnel_1_statement, local.ipsec_tunnel_2_statement)} : {},
                 var.tt_vcn1_onprem_route_enable == true && var.tt_vcn1_attach_to_drg && local.hub_with_drg_only == true && local.deploy_fastconnect == true ? {"TT-VCN-1-TO-FASTCONNECT-STMT" = local.fc_vc_1_statement} : {}
               )
             }
@@ -503,7 +504,7 @@ locals {
                 (length(var.tt_vcn2_routable_vcns) == 0 || contains(var.tt_vcn2_routable_vcns, "OKE-VCN-1")) && var.oke_vcn1_attach_to_drg == true && local.hub_with_drg_only == true ? {"TT-VCN-2-TO-OKE-VCN-1-STMT" = local.oke_vcn1_statement} : {},
                 (length(var.tt_vcn2_routable_vcns) == 0 || contains(var.tt_vcn2_routable_vcns, "OKE-VCN-2")) && var.oke_vcn2_attach_to_drg == true && local.hub_with_drg_only == true ? {"TT-VCN-2-TO-OKE-VCN-2-STMT" = local.oke_vcn2_statement} : {},
                 (length(var.tt_vcn2_routable_vcns) == 0 || contains(var.tt_vcn2_routable_vcns, "OKE-VCN-3")) && var.oke_vcn3_attach_to_drg == true && local.hub_with_drg_only == true ? {"TT-VCN-2-TO-OKE-VCN-3-STMT" = local.oke_vcn3_statement} : {},
-                var.tt_vcn2_onprem_route_enable == true && var.tt_vcn2_attach_to_drg && local.hub_with_drg_only == true && local.deploy_new_ipsec == true ? {"TT-VCN-2-TO-IPSEC-1-STMT" = local.ipsec_tunnel_1_statement, "TT-VCN-2-TO-IPSEC-2-STMT" = local.ipsec_tunnel_2_statement} : {},
+                var.tt_vcn2_onprem_route_enable == true && var.tt_vcn2_attach_to_drg && local.hub_with_drg_only == true && local.deploy_new_ipsec == true ? {"TT-VCN-2-TO-IPSEC-STMT" = merge(local.ipsec_tunnel_1_statement, local.ipsec_tunnel_2_statement)} : {},
                 var.tt_vcn2_onprem_route_enable == true && var.tt_vcn2_attach_to_drg && local.hub_with_drg_only == true && local.deploy_fastconnect == true ? {"TT-VCN-2-TO-FASTCONNECT-STMT" = local.fc_vc_1_statement} : {}
               )
             }
@@ -533,7 +534,7 @@ locals {
                 (length(var.tt_vcn3_routable_vcns) == 0 || contains(var.tt_vcn3_routable_vcns, "OKE-VCN-1")) && var.oke_vcn1_attach_to_drg == true && local.hub_with_drg_only == true ? {"TT-VCN-3-TO-OKE-VCN1-STMT" = local.oke_vcn1_statement} : {},
                 (length(var.tt_vcn3_routable_vcns) == 0 || contains(var.tt_vcn3_routable_vcns, "OKE-VCN-2")) && var.oke_vcn2_attach_to_drg == true && local.hub_with_drg_only == true ? {"TT-VCN-3-TO-OKE-VCN2-STMT" = local.oke_vcn2_statement} : {},
                 (length(var.tt_vcn3_routable_vcns) == 0 || contains(var.tt_vcn3_routable_vcns, "OKE-VCN-3")) && var.oke_vcn3_attach_to_drg == true && local.hub_with_drg_only == true ? {"TT-VCN-3-TO-OKE-VCN3-STMT" = local.oke_vcn3_statement} : {},
-                var.tt_vcn3_onprem_route_enable == true && var.tt_vcn3_attach_to_drg && local.hub_with_drg_only == true && local.deploy_new_ipsec == true ? {"TT-VCN-3-TO-IPSEC-1-STMT" = local.ipsec_tunnel_1_statement, "TT-VCN-3-TO-IPSEC-2-STMT" = local.ipsec_tunnel_2_statement} : {},
+                var.tt_vcn3_onprem_route_enable == true && var.tt_vcn3_attach_to_drg && local.hub_with_drg_only == true && local.deploy_new_ipsec == true ? {"TT-VCN-3-TO-IPSEC-STMT" = merge(local.ipsec_tunnel_1_statement, local.ipsec_tunnel_2_statement)} : {},
                 var.tt_vcn3_onprem_route_enable == true && var.tt_vcn3_attach_to_drg && local.hub_with_drg_only == true && local.deploy_fastconnect == true ? {"TT-VCN-3-TO-FASTCONNECT-STMT" = local.fc_vc_1_statement} : {}
               )
             }
@@ -563,7 +564,7 @@ locals {
                 (length(var.exa_vcn1_routable_vcns) == 0 || contains(var.exa_vcn1_routable_vcns, "OKE-VCN-1")) && var.oke_vcn1_attach_to_drg == true && local.hub_with_drg_only == true ? {"EXA-VCN-1-TO-OKE-VCN-1-STMT" = local.oke_vcn1_statement} : {},
                 (length(var.exa_vcn1_routable_vcns) == 0 || contains(var.exa_vcn1_routable_vcns, "OKE-VCN-2")) && var.oke_vcn2_attach_to_drg == true && local.hub_with_drg_only == true ? {"EXA-VCN-1-TO-OKE-VCN-2-STMT" = local.oke_vcn2_statement} : {},
                 (length(var.exa_vcn1_routable_vcns) == 0 || contains(var.exa_vcn1_routable_vcns, "OKE-VCN-3")) && var.oke_vcn3_attach_to_drg == true && local.hub_with_drg_only == true ? {"EXA-VCN-1-TO-OKE-VCN-3-STMT" = local.oke_vcn3_statement} : {},
-                var.exa_vcn1_onprem_route_enable == true && var.exa_vcn1_attach_to_drg && local.hub_with_drg_only == true && local.deploy_new_ipsec == true ? {"EXA-VCN-1-TO-IPSEC-1-STMT" = local.ipsec_tunnel_1_statement, "EXA-VCN-1-TO-IPSEC-2-STMT" = local.ipsec_tunnel_2_statement} : {},
+                var.exa_vcn1_onprem_route_enable == true && var.exa_vcn1_attach_to_drg && local.hub_with_drg_only == true && local.deploy_new_ipsec == true ? {"EXA-VCN-1-TO-IPSEC-STMT" = merge(local.ipsec_tunnel_1_statement, local.ipsec_tunnel_2_statement)} : {},
                 var.exa_vcn1_onprem_route_enable == true && var.exa_vcn1_attach_to_drg && local.hub_with_drg_only == true && local.deploy_fastconnect == true ? {"EXA-VCN-1-TO-FASTCONNECT-STMT" = local.fc_vc_1_statement} : {}
               )
             }
@@ -593,7 +594,7 @@ locals {
                 (length(var.exa_vcn2_routable_vcns) == 0 || contains(var.exa_vcn2_routable_vcns, "OKE-VCN-1")) && var.oke_vcn1_attach_to_drg == true && local.hub_with_drg_only == true ? {"EXA-VCN-2-TO-OKE-VCN-1-STMT" = local.oke_vcn1_statement} : {},
                 (length(var.exa_vcn2_routable_vcns) == 0 || contains(var.exa_vcn2_routable_vcns, "OKE-VCN-2")) && var.oke_vcn2_attach_to_drg == true && local.hub_with_drg_only == true ? {"EXA-VCN-2-TO-OKE-VCN-2-STMT" = local.oke_vcn2_statement} : {},
                 (length(var.exa_vcn2_routable_vcns) == 0 || contains(var.exa_vcn2_routable_vcns, "OKE-VCN-3")) && var.oke_vcn3_attach_to_drg == true && local.hub_with_drg_only == true ? {"EXA-VCN-2-TO-OKE-VCN-3-STMT" = local.oke_vcn3_statement} : {},
-                var.exa_vcn2_onprem_route_enable == true && var.exa_vcn2_attach_to_drg && local.hub_with_drg_only == true && local.deploy_new_ipsec == true ? {"EXA-VCN-2-TO-IPSEC-1-STMT" = local.ipsec_tunnel_1_statement, "EXA-VCN-2-TO-IPSEC-2-STMT" = local.ipsec_tunnel_2_statement} : {},
+                var.exa_vcn2_onprem_route_enable == true && var.exa_vcn2_attach_to_drg && local.hub_with_drg_only == true && local.deploy_new_ipsec == true ? {"EXA-VCN-2-TO-IPSEC-STMT" = merge(local.ipsec_tunnel_1_statement, local.ipsec_tunnel_2_statement)} : {},
                 var.exa_vcn2_onprem_route_enable == true && var.exa_vcn2_attach_to_drg && local.hub_with_drg_only == true && local.deploy_fastconnect == true ? {"EXA-VCN-2-TO-FASTCONNECT-STMT" = local.fc_vc_1_statement} : {}
               )
             }
@@ -624,7 +625,7 @@ locals {
                 (length(var.exa_vcn3_routable_vcns) == 0 || contains(var.exa_vcn3_routable_vcns, "OKE-VCN-1")) && var.oke_vcn1_attach_to_drg == true && local.hub_with_drg_only == true ? {"EXA-VCN-3-TO-OKE-VCN-1-STMT" = local.oke_vcn1_statement} : {},
                 (length(var.exa_vcn3_routable_vcns) == 0 || contains(var.exa_vcn3_routable_vcns, "OKE-VCN-2")) && var.oke_vcn2_attach_to_drg == true && local.hub_with_drg_only == true ? {"EXA-VCN-3-TO-OKE-VCN-2-STMT" = local.oke_vcn2_statement} : {},
                 (length(var.exa_vcn3_routable_vcns) == 0 || contains(var.exa_vcn3_routable_vcns, "OKE-VCN-3")) && var.oke_vcn3_attach_to_drg == true && local.hub_with_drg_only == true ?  {"EXA-VCN-3-TO-OKE-VCN-3-STMT" = local.oke_vcn3_statement} : {},
-                var.exa_vcn3_onprem_route_enable == true && var.exa_vcn3_attach_to_drg && local.hub_with_drg_only == true && local.deploy_new_ipsec == true ? {"EXA-VCN-3-TO-IPSEC-1-STMT" = local.ipsec_tunnel_1_statement, "EXA-VCN-3-TO-IPSEC-2-STMT" = local.ipsec_tunnel_2_statement} : {},
+                var.exa_vcn3_onprem_route_enable == true && var.exa_vcn3_attach_to_drg && local.hub_with_drg_only == true && local.deploy_new_ipsec == true ? {"EXA-VCN-3-TO-IPSEC-STMT" = merge(local.ipsec_tunnel_1_statement, local.ipsec_tunnel_2_statement)} : {},
                 var.exa_vcn3_onprem_route_enable == true && var.exa_vcn3_attach_to_drg && local.hub_with_drg_only == true && local.deploy_fastconnect == true ? {"EXA-VCN-3-TO-FASTCONNECT-STMT" = local.fc_vc_1_statement} : {}
               )
             }
@@ -654,7 +655,7 @@ locals {
                 (length(var.oke_vcn1_routable_vcns) == 0 || contains(var.oke_vcn1_routable_vcns, "TT-VCN-1")) && var.tt_vcn1_attach_to_drg == true && local.hub_with_drg_only == true ? {"OKE-VCN-1-TO-TT-VCN-1-STMT" = local.tt_vcn1_statement} : {},
                 (length(var.oke_vcn1_routable_vcns) == 0 || contains(var.oke_vcn1_routable_vcns, "TT-VCN-2")) && var.tt_vcn2_attach_to_drg == true && local.hub_with_drg_only == true ? {"OKE-VCN-1-TO-TT-VCN-2-STMT" = local.tt_vcn2_statement} : {},
                 (length(var.oke_vcn1_routable_vcns) == 0 || contains(var.oke_vcn1_routable_vcns, "TT-VCN-3")) && var.tt_vcn3_attach_to_drg == true && local.hub_with_drg_only == true ? {"OKE-VCN-1-TO-TT-VCN-3-STMT" = local.tt_vcn3_statement} : {},
-                var.oke_vcn1_onprem_route_enable == true && var.oke_vcn1_attach_to_drg && local.hub_with_drg_only == true && local.deploy_new_ipsec == true ? {"OKE-VCN-1-TO-IPSEC-1-STMT" = local.ipsec_tunnel_1_statement, "OKE-VCN-1-TO-IPSEC-2-STMT" = local.ipsec_tunnel_2_statement} : {},
+                var.oke_vcn1_onprem_route_enable == true && var.oke_vcn1_attach_to_drg && local.hub_with_drg_only == true && local.deploy_new_ipsec == true ? {"OKE-VCN-1-TO-IPSEC-STMT" = merge(local.ipsec_tunnel_1_statement, local.ipsec_tunnel_2_statement)} : {},
                 var.oke_vcn1_onprem_route_enable == true && var.oke_vcn1_attach_to_drg && local.hub_with_drg_only == true && local.deploy_fastconnect == true ? {"OKE-VCN-1-TO-FASTCONNECT-STMT" = local.fc_vc_1_statement} : {}
               )
             }
@@ -684,7 +685,7 @@ locals {
                 (length(var.oke_vcn2_routable_vcns) == 0 || contains(var.oke_vcn2_routable_vcns, "TT-VCN-1")) && var.tt_vcn1_attach_to_drg == true && local.hub_with_drg_only == true ? {"OKE-VCN-2-TO-TT-VCN-1-STMT" = local.tt_vcn1_statement} : {},
                 (length(var.oke_vcn2_routable_vcns) == 0 || contains(var.oke_vcn2_routable_vcns, "TT-VCN-2")) && var.tt_vcn2_attach_to_drg == true && local.hub_with_drg_only == true ? {"OKE-VCN-2-TO-TT-VCN-2-STMT" = local.tt_vcn2_statement} : {},
                 (length(var.oke_vcn2_routable_vcns) == 0 || contains(var.oke_vcn2_routable_vcns, "TT-VCN-3")) && var.tt_vcn3_attach_to_drg == true && local.hub_with_drg_only == true ? {"OKE-VCN-2-TO-TT-VCN-3-STMT" = local.tt_vcn3_statement} : {},
-                var.oke_vcn2_onprem_route_enable == true && var.oke_vcn2_attach_to_drg && local.hub_with_drg_only == true && local.deploy_new_ipsec == true ? {"OKE-VCN-2-TO-IPSEC-1-STMT" = local.ipsec_tunnel_1_statement, "OKE-VCN-2-TO-IPSEC-2-STMT" = local.ipsec_tunnel_2_statement} : {},
+                var.oke_vcn2_onprem_route_enable == true && var.oke_vcn2_attach_to_drg && local.hub_with_drg_only == true && local.deploy_new_ipsec == true ? {"OKE-VCN-2-TO-IPSEC-STMT" = merge(local.ipsec_tunnel_1_statement, local.ipsec_tunnel_2_statement)} : {},
                 var.oke_vcn2_onprem_route_enable == true && var.oke_vcn2_attach_to_drg && local.hub_with_drg_only == true && local.deploy_fastconnect == true ? {"OKE-VCN-2-TO-FASTCONNECT-STMT" = local.fc_vc_1_statement} : {}
               )
             }
@@ -714,7 +715,7 @@ locals {
                 (length(var.oke_vcn3_routable_vcns) == 0 || contains(var.oke_vcn3_routable_vcns, "TT-VCN-1")) && var.tt_vcn1_attach_to_drg == true && local.hub_with_drg_only == true ? {"OKE-VCN-3-TO-TT-VCN-1-STMT" = local.tt_vcn1_statement} : {},
                 (length(var.oke_vcn3_routable_vcns) == 0 || contains(var.oke_vcn3_routable_vcns, "TT-VCN-2")) && var.tt_vcn2_attach_to_drg == true && local.hub_with_drg_only == true ? {"OKE-VCN-3-TO-TT-VCN-2-STMT" = local.tt_vcn2_statement} : {},
                 (length(var.oke_vcn3_routable_vcns) == 0 || contains(var.oke_vcn3_routable_vcns, "TT-VCN-3")) && var.tt_vcn3_attach_to_drg == true && local.hub_with_drg_only == true ? {"OKE-VCN-3-TO-TT-VCN-3-STMT" = local.tt_vcn3_statement} : {},
-                var.oke_vcn3_onprem_route_enable == true && var.oke_vcn3_attach_to_drg && local.hub_with_drg_only == true && local.deploy_new_ipsec == true ? {"OKE-VCN-3-TO-IPSEC-1-STMT" = local.ipsec_tunnel_1_statement, "OKE-VCN-3-TO-IPSEC-2-STMT" = local.ipsec_tunnel_2_statement} : {},
+                var.oke_vcn3_onprem_route_enable == true && var.oke_vcn3_attach_to_drg && local.hub_with_drg_only == true && local.deploy_new_ipsec == true ? {"OKE-VCN-3-TO-IPSEC-STMT" = merge(local.ipsec_tunnel_1_statement, local.ipsec_tunnel_2_statement)} : {},
                 var.oke_vcn3_onprem_route_enable == true && var.oke_vcn3_attach_to_drg && local.hub_with_drg_only == true && local.deploy_fastconnect == true ? {"OKE-VCN-3-TO-FASTCONNECT-STMT" = local.fc_vc_1_statement} : {}
               )
             }
@@ -831,7 +832,7 @@ locals {
     match_criteria = {
       match_type      = "DRG_ATTACHMENT_TYPE",
       attachment_type = "IPSEC_TUNNEL",
-      drg_attachment_key = "IPSEC-TUNNEL-1-ATTACHMENT"
+      #drg_attachment_key = "IPSEC-TUNNEL-1-ATTACHMENT"
     }
   }
 
@@ -841,7 +842,7 @@ locals {
     match_criteria = {
       match_type      = "DRG_ATTACHMENT_TYPE",
       attachment_type = "IPSEC_TUNNEL",
-       drg_attachment_key = "IPSEC-TUNNEL-2-ATTACHMENT"
+      #drg_attachment_key = "IPSEC-TUNNEL-2-ATTACHMENT"
     }
   }
 
@@ -851,7 +852,30 @@ locals {
     match_criteria = {
       match_type      = "DRG_ATTACHMENT_TYPE",
       attachment_type = "VIRTUAL_CIRCUIT",
+      #drg_attachment_key = "FC-VIRTUAL-CIRCUIT-1-ATTACHMENT"
+    }
+  }
+
+  # Not used, reserved for the second FastConnect virtual circuit if needed in the future.
+  fc_vc_2_statement = {
+    action   = "ACCEPT",
+    priority = 130,
+    match_criteria = {
+      match_type      = "DRG_ATTACHMENT_ID",
+      attachment_type = "VIRTUAL_CIRCUIT",
       drg_attachment_key = "FC-VIRTUAL-CIRCUIT-ATTACHMENT"
+    }
+  }
+
+  external_vcn_statements = { for ocid in local.combined_workload_ocids : 
+    "EXTERNAL-VCN-${ocid}-STMT" => {
+      action   = "ACCEPT"
+      priority = 300 + index(local.combined_workload_ocids, ocid)
+      match_criteria = {
+        match_type         = "DRG_ATTACHMENT_ID"
+        attachment_type    = "VCN"
+        drg_attachment_key = "VCN-${upper(substr(ocid, -10, 10))}-ATTACHMENT"
+      }
     }
   }
 }
