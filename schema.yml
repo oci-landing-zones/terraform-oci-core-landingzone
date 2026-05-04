@@ -4838,7 +4838,7 @@ variables:
   ipsec_tunnel1_customer_interface_ip:
     type: string
     title: "IPSec Tunnel 1 Customer Border Gateway Protocol (BGP) IP Address"
-    description: "Enter the first IP CIDR block for the Customer-Premises Equipment (CPE) for BGP peering for IPSec Tunnel 1."
+    description: "Enter the IP CIDR block used on the CPE side for BGP peering in IPSec Tunnel 1. Must be /30 or /31."
     visible:
       or:
         - eq:
@@ -4852,7 +4852,7 @@ variables:
   ipsec_tunnel1_oracle_interface_ip:
     type: string
     title: "IPSec Tunnel 1 OCI Border Gateway Protocol (BGP) IP Address"
-    description: "Enter the first IP CIDR block for Oracle for BGP peering for IPSec Tunnel 1."
+    description: "Enter the IP CIDR block used on the OCI side for BGP peering in IPSec Tunnel 1. Must be /30 or /31."
     visible:
       or:
         - eq:
@@ -4892,7 +4892,7 @@ variables:
   ipsec_tunnel2_customer_interface_ip:
     type: string
     title: "IPSec Tunnel 2 Customer Border Gateway Protocol (BGP) IP Address"
-    description: "Enter the second IP CIDR block for the Customer-Premises Equipment (CPE) for BGP peering for IPSec Tunnel 2."
+    description: "Enter the IP CIDR block used on the CPE side for BGP peering in IPSec Tunnel 2. Must be /30 or /31."
     visible:
       or:
         - eq:
@@ -4906,7 +4906,7 @@ variables:
   ipsec_tunnel2_oracle_interface_ip:
     type: string
     title: "IPSec Tunnel 2 OCI Border Gateway Protocol (BGP) IP Address"
-    description: "Enter the second IP CIDR block for Oracle for BGP peering for IPSec Tunnel 2."
+    description: "Enter the IP CIDR block used on the OCI side for BGP peering in IPSec Tunnel 2. Must be /30 or /31."
     visible:
       or:
         - eq:

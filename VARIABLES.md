@@ -419,13 +419,13 @@
 | fastconnect\_virtual\_circuit\_type | The type of IP addresses used in the Fast Connect virtual circuit. Accepted values are PRIVATE, PUBLIC. | string | "PRIVATE" | no |
 | fastconnect\_virtual\_circuit\_vlan | The number of the specific VLAN (on the cross-connect or cross-connect group) that is assigned to FastConnect virtual circuit. | string | null | no |
 | ipsec\_customer\_bgp\_asn | Customer-premises networks Autonomous System Number. | string | null | no |
-| ipsec\_tunnel1\_customer\_interface\_ip | The first IP CIDR block used on the customer side for BGP peering for IPSec Tunnel 1. | string | null | no |
+| ipsec\_tunnel1\_customer\_interface\_ip | Customer provided IP CIDR block used on the CPE side for BGP peering in IPSec Tunnel 1. Must be /30 or /31. | string | null | no |
 | ipsec\_tunnel1\_ike\_version | Version of the internet key exchange (IKE), if using a CPE IKE identifier. Supported values are "V1" or "V2". | string | null | no |
-| ipsec\_tunnel1\_oracle\_interface\_ip | The first IP CIDR block provided by OCI for BGP peering for IPSec Tunnel 1. | string | null | no |
+| ipsec\_tunnel1\_oracle\_interface\_ip | Customer provided IP CIDR block used on the OCI side for BGP peering in IPSec Tunnel 1. Must be /30 or /31. | string | null | no |
 | ipsec\_tunnel1\_shared\_secret | The IPSec Tunnel 1 shared secret (pre-shared key). If not provided, Oracle will generate one automatically. | string | null | no |
-| ipsec\_tunnel2\_customer\_interface\_ip | The second IP CIDR block used on the customer side for BGP peering for IPSec Tunnel 2. | string | null | no |
+| ipsec\_tunnel2\_customer\_interface\_ip | Customer provided IP CIDR block used on the CPE side for BGP peering in IPSec Tunnel 2. Must be /30 or /31. | string | null | no |
 | ipsec\_tunnel2\_ike\_version | Version of the internet key exchange (IKE), if using a CPE IKE identifier. Supported values are "V1" or "V2". | string | null | no |
-| ipsec\_tunnel2\_oracle\_interface\_ip | The second IP CIDR block provided by OCI for BGP peering for IPSec Tunnel 2. | string | null | no |
+| ipsec\_tunnel2\_oracle\_interface\_ip | Customer provided IP CIDR block used on the OCI side for BGP peering in IPSec Tunnel 2. Must be /30 or /31. | string | null | no |
 | ipsec\_tunnel2\_shared\_secret | The IPSec Tunnel 2 shared secret (pre-shared key). If not provided, Oracle will generate one automatically. | string | null | no |
 | ipsec\_vpn\_name | Display name of the IPSec VPN. | string | null | no |
 | on\_premises\_connection\_option | The options for connecting to on-premises. Valid options are 'None', 'Create New FastConnect Virtual Circuit', 'Create New IPSec VPN', 'Create New FastConnect Virtual Circuit and IPSec VPN', or 'Use Existing On-Premises Connectivity' | string | "None" | no |
