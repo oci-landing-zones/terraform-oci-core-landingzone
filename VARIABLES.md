@@ -400,7 +400,7 @@
 
 | Variable Name | Description | Type | Default | Required |
 |---------------|-------------|------|---------|----------|
-| cpe\_device\_shape\_vendor | Name of the device shape vendor used by the customer-premises equipment (CPE). See the list of verified CPE devices for more information. | string | null | no |
+| cpe\_device\_shape\_vendor | Name of CPE device vendor. Valid values: "Fortinet", "Cisco", "Juniper", "Furukawa", "Check Point", "Palo Alto", "Yamaha", "Libreswan", "NEC", "WatchGuard", "Other". See list of [verified CPE devices](https://docs.oracle.com/en-us/iaas/Content/Network/Reference/CPElist.htm) for more information. | string | null | no |
 | cpe\_ip\_address | Public IP address used by the customer-premises equipment (CPE) so that a VPN connection can be established. | string | null | no |
 | cpe\_name | Display name of the customer-premises equipment (CPE). | string | null | no |
 | fastconnect\_virtual\_circuit\_bandwidth\_custom\_shape | Custom bandwidth level (shape) of the FastConnect virtual circuit. For example: "5 Gbps" | string | "1 Gbps" | no |

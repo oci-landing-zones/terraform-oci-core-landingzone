@@ -38,7 +38,7 @@ module "core_lz" {
   on_premises_connection_option       = "Create New IPSec VPN"
   onprem_cidrs                        = ["x.x.x.x/x"]             ## Replace with the CIDR range of on-premises network
   cpe_ip_address                      = "x.x.x.x"                 ## Replace with the IP address of CPE public IP
-  cpe_device_shape_vendor             = "Libreswan"
+  cpe_device_shape_vendor             = "Libreswan" # Valid names are: "Fortinet", "Cisco", "Juniper", "Furukawa", "Check Point", "Palo Alto", "Yamaha", "Libreswan", "NEC", "WatchGuard", "Other".
   ipsec_customer_bgp_asn              = "65000"
   ipsec_tunnel1_customer_interface_ip = "10.10.10.1/30"
   ipsec_tunnel1_oracle_interface_ip   = "10.10.10.2/30"

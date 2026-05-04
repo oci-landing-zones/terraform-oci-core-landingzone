@@ -17,7 +17,7 @@ This template has the following parameters set:
 | on\_premises\_connection\_option | The options for connecting to on-premises. Valid options are 'None', 'Create New FastConnect Virtual Circuit', 'Create New IPSec VPN', 'Create New FastConnect Virtual Circuit and IPSec VPN', or 'Use Existing On-Premises Connectivity' | "Create New IPSec VPN" |
 | onprem\_cidrs | List of on-premises CIDR blocks allowed to connect to the Landing Zone network via a DRG. | ["x.x.x.x/x"] |
 | cpe\_ip\_address | Public IP address used by the Customer-Premises Equipment (CPE) so that a VPN connection can be established. | "x.x.x.x" |
-| cpe\_device\_shape\_vendor | Name of the device shape vendor used by the Customer-Premises Equipment (CPE). | "Libreswan" |
+| cpe\_device\_shape\_vendor | Name of the CPE device vendor. | "Libreswan". Valid names are: "Fortinet", "Cisco", "Juniper", "Furukawa", "Check Point", "Palo Alto", "Yamaha", "Libreswan", "NEC", "WatchGuard", "Other". |
 | ipsec\_customer\_bgp\_asn | Customer on-premises networks Autonomous System Number. | "65000" |
 | ipsec\_tunnel1\_customer\_interface\_ip | The first IP CIDR block used on the customer side for BGP peering for IPSec Tunnel 1. | "10.10.10.1/30" |
 | ipsec\_tunnel1\_oracle\_interface\_ip | The first IP CIDR block provided by OCI for BGP peering for IPSec Tunnel 1. | "10.10.10.2/30" |

@@ -4971,8 +4971,8 @@ variables:
 
   cpe_device_shape_vendor:
     type: string
-    title: "Customer-Premises Equipment (CPE) Device Shape Vendor"
-    description: "Name of the device shape vendor used by the CPE. See <a href=\"https://docs.oracle.com/en-us/iaas/Content/Network/Reference/CPElist.htm\">documentation</a> for verified CPE devices for more information."
+    title: "Customer-Premises Equipment (CPE) Device Vendor"
+    description: "Name of the CPE device vendor. Use one of the following names: \"Fortinet\", \"Cisco\", \"Juniper\", \"Furukawa\", \"Check Point\", \"Palo Alto\", \"Yamaha\", \"Libreswan\", \"NEC\", \"WatchGuard\", \"Other\". See <a href=\"https://docs.oracle.com/en-us/iaas/Content/Network/Reference/CPElist.htm\">documentation</a> for information on verified CPE devices."
     visible:
       or:
         - eq:
