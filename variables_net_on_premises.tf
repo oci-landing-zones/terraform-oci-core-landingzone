@@ -1,5 +1,29 @@
 # Copyright (c) 2025 Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+
+# --------------------------------------------------------------------------
+# ----- Networking - On-Premises CIDR ranges
+#---------------------------------------------------------------------------
+
+variable "onprem_cidrs" {
+  type        = list(string)
+  description = "List of on-premises CIDR blocks allowed to connect to the Landing Zone network via a DRG."
+  default     = []
+  validation {
+    condition     = length(var.onprem_cidrs) == 0 ? true : alltrue([for v in var.onprem_cidrs : can(cidrhost(v, 0))])
+    error_message = "Validation failed for onprem_cidrs: all values must be in CIDR notation (e.g., 10.0.0.0/24)."
+  }
+}
+
+variable "allowed_onprem_cidrs_to_fw_mgmt_interface" {
+  type        = list(string)
+  default     = []
+  description = "List of on-prem CIDR blocks allowed to connect to Firewall Management interface. Provide a valid CIDR and configure variable fw_mgmt_interface_ports for enabling access.  Leave empty for no access."
+  validation {
+    condition     = length(var.allowed_onprem_cidrs_to_fw_mgmt_interface) == 0 ? true : alltrue([for v in var.allowed_onprem_cidrs_to_fw_mgmt_interface : can(cidrhost(v, 0))])
+    error_message = "Invalid value provided for allowed_onprem_cidrs_to_fw_mgmt_interface variable: all values must be in valid CIDR notation (e.g., 10.0.0.0/24)."
+  }
+}
 # --------------------------------------------------------------------------
 # ----- Networking - On-Premises Connectivity - CPE
 #---------------------------------------------------------------------------

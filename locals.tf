@@ -36,6 +36,7 @@ locals {
 
 }
 
+
 # resource "null_resource" "wait_on_compartments" {
 #   depends_on = [module.lz_compartments]
 #   provisioner "local-exec" {
