@@ -252,13 +252,13 @@ Core Landing Zone routing is opinionated to keep tenancy-wide guardrails intact 
 
 #### 1. Isolated Spoke VCNs (no DRG attachment)
 
-- Three-tier, OKE, and Exadata spokes can be provisioned with *_attach_to_drg = false* (default). In this mode each VCN routes northbound directly to its Internet Gateway. No inter-VCN routes exist and the DRG is not aware of the spoke CIDRs, effectively creating siloed landing pads for workloads that must remain isolated.
+- Three-tier, OKE, and Exadata spokes can be provisioned with *\*_attach_to_drg = false* (default). In this mode each VCN routes northbound directly to its Internet Gateway. No inter-VCN routes exist and the DRG is not aware of the spoke CIDRs, effectively creating siloed landing pads for workloads that must remain isolated.
 - Internet ingress/egress is controlled per subnet: public subnets route to spoke's local Internet Gateway, whereas private subnets target the NAT Gateway.
 - Access to Oracle Services Network (OSN) endpoints (Object Storage, Autonomous Database, etc.) is handled through service gateways that are local to each isolated VCN, keeping traffic on the Oracle backbone without traversing the public internet.
 
 #### 2. Spokes attached to DRG without a Hub VCN
 
-- When *_attach_to_drg = true* but no Hub VCN is deployed, the DRG becomes the common hub. Route tables in each spoke point specific CIDRs to the DRG, enabling east-west connectivity still subject to network security rules.
+- When *\*_attach_to_drg = true* but no Hub VCN is deployed, the DRG becomes the common hub. Route tables in each spoke point specific CIDRs to the DRG, enabling east-west connectivity still subject to network security rules.
 - Internet egress still goes through each spoke’s local Internet or NAT gateway, and OSN access uses local service gateways. Because there is no centralized Hub VCN, ingress filtering is handled by NSGs and security lists on each VCN boundary.
 - Access to Oracle Services Network (OSN) endpoints (Object Storage, Autonomous Database, etc.) is handled through service gateways that are local to each isolated VCN, keeping traffic on the Oracle backbone without traversing the public internet.
 
@@ -268,7 +268,7 @@ Core Landing Zone routing is opinionated to keep tenancy-wide guardrails intact 
 - Internet-bound routes in the spokes target the DRG, which in turn forwards traffic to the Hub VCN’s NAT Gateway only after passing through the firewall/appliance endpoints. 
 - Internet ingress traffic follows the inverse path (IGW -> firewall/appliance -> DRG -> spoke).
 - Connectivity to Oracle Services Network stays local on each spoke VCN.
-- Hub deployments support both OCI Native Network Firewall and Fortinet/Palo Alto appliances. In both cases, two-pass Terraform applies ensure the firewall OCID (OCI Native Firewall) or network load balancer private IP OCIDs (third-party network appliances) are captured and fed back into *hub_vcn_*_entry_point_ocid* variables so DRG route tables remain consistent.
+- Core Landing Zone supports OCI Native Network Firewall and 3rd-party network appliances. In both cases, two-pass Terraform applies ensure the firewall OCID (OCI Native Firewall) or network load balancer private IP OCIDs (third-party network appliances) are captured and fed back into *hub_vcn_\*_entry_point_ocid* variables so DRG route tables remain consistent.
 
 #### Cross-VCN Routing
 
@@ -736,13 +736,50 @@ Landing Zone resources can be managed by user groups and leverage dynamic groups
 
 ### Extending Landing Zone to a New Region
 
-When you run Landing Zone's Terraform, some resources are created in the home region, while others are created in a region of choice. Among home region resources are compartments, groups, dynamic groups, policies, tag defaults and an infrastructure for IAM related notifications (including events, topics and subscriptions). Among resources created in the region of choice are VCNs, Log Groups, and those pertaining to security services like Vault Service, Vulnerability Scanning, Service Connector Hub, Bastion. The home region resources are automatically made available by OCI in all subscribed regions.
+When you run Core Landing Zone's Terraform, some resources are created in the home region, while others are created in a region of choice. Among home region resources are compartments, groups, dynamic groups, policies, tag defaults and an infrastructure for IAM related notifications (including events, topics and subscriptions). Among resources created in the region of choice are VCNs, Log Groups, and those pertaining to security services like Vault Service, Vulnerability Scanning, Service Connector Hub, Bastion. The home region resources are automatically made available by OCI in all subscribed regions.
 
 Some customers want to extend their Landing Zone to more than one region of choice, while reusing the home region resources. One typical use case is setting up a second region of choice for disaster recovery, reusing the same home region Landing Zone resources. A more broad use case is implementing a single global Landing Zone across all subscribed regions. The configuration variable controlling this Landing Zone behavior is self explanatory:
 
-- **extend\_landing\_zone\_to\_new\_region**: whether Landing Zone is being extended to a new region. When set to true, compartments, groups, dynamic groups, policies and resources pertaining to home region are not provisioned.
+- **extend\_landing\_zone\_to\_new\_region**: whether Core Landing Zone is being extended to a new region. When set to true, compartments, groups, dynamic groups, policies and resources pertaining to home region are not provisioned.
 
-> **_NOTE:_** when extending the Landing Zone, the Terraform code has to be deployed in a new region. Therefore, a distinct set of configuration variables is needed. If using Terraform CLI, use Terraform workspaces. If using OCI Resource Manager, use a separate Stack. Check [Ways to Deploy](#ways-to-deploy) section for more details.
+Two other mandatory aspects are the service label and compartment names. When extending, the same *service_label* value must be used in the extended region deployment.  If compartment names were customized in the primary region deployment, those same compartment names must be used in the extended region deployment as well.
+
+> **_NOTE:_** when extending Core Landing Zone, the Terraform code has to be deployed in a new region. In other words, a new Terraform configuration is required. Check [Ways to Deploy](#ways-to-deploy) section for more details.
+
+The example below illustrates the relevant Core Landing Zone configuration variables for the primary and extended regions:
+
+#### Primary Region Configuration
+```
+region               = "us-phoenix-1"  
+service_label        = "corelz"        
+
+custom_enclosing_compartment_name = "my-custom-top-cmp"
+custom_network_compartment_name   = "my-custom-network-cmp"
+custom_app_compartment_name       = "my-custom-app-cmp"
+custom_database_compartment_name  = "my-custom-database-cmp"
+custom_security_compartment_name  = "my-custom-security-cmp"
+
+# Other variables
+...
+```
+
+#### Extended Region Configuration
+```
+extend_landing_zone_to_new_region = true
+
+region               = "us-chicago-1"  # extended region
+service_label        = "corelz"        # same value as in the primary region configuration
+
+# If compartment names are customized in the primary region configuration, they must have the same values in this configuration. Otherwise, this block MUST NOT be added.
+custom_enclosing_compartment_name = "my-custom-top-cmp"
+custom_network_compartment_name   = "my-custom-network-cmp"
+custom_app_compartment_name       = "my-custom-app-cmp"
+custom_database_compartment_name  = "my-custom-database-cmp"
+custom_security_compartment_name  = "my-custom-security-cmp"
+
+# Other variables
+...
+```
 
 ## <a name="networking-4"></a>4.2 Networking
 
