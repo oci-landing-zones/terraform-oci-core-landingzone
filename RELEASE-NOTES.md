@@ -12,7 +12,7 @@
 
 1. The Web subnet in Three-Tier VCNs is no longer automatically made private when the VCN is attached to DRG. It now must be explicitly made private through **tt_vcn\*_web_subnet_is_private** variables. 
 2. Newly added global variables for capturing external CIDRs allowed into application endpoints in Three-Tier Web subnets:
-    - **tt_vcn\*_external_allowed_cidrs_into_web_tier**: the list of external CIDRs blocks allowed ingress access on LBR NSG (*lbr-nsg*) of **tt_vcn\*** VCN . Use this to limit the range of IP addresses that can access the web tier. (the previously hardcoded value (0.0.0.0/0) is now the default.)
+    - **tt_vcn\*_external_allowed_cidrs_into_web_tier**: the list of external CIDRs blocks allowed ingress access on LBR NSG (**lbr-nsg**) of **tt_vcn\*** VCN . Use this to limit the range of IP addresses that can access the web tier. (the previously hardcoded value (0.0.0.0/0) is now the default.)
 3. Newly added global variables for capturing protocols and ports in NSG ingress rules (previously hardcoded), allowing for easier management of application listening ports at OCI network security rules level (previously hardcoded values are now the default.):
     - **tt_vcn\*_web_ingress_destination_ports**: the list of protocols and destination ports allowed for ingress packets into LBR NSG (**lbr-nsg**). Each value is a colon-separated pair like "TCP:443".
     - **tt_vcn\*_app_ingress_destination_ports**: the list of protocols and destination ports allowed for ingress packets into App NSG (**app-nsg**). Each value is a colon-separated pair like "TCP:80".
@@ -31,7 +31,7 @@
 ### Exadata VCNs
 
 1. The Backup subnet is now optional through newly added **add_exa_vcn\*_backup_subnet** variables (default is true), improving Core Landing Zone coverage for Autonomous Database on Exadata Dedicated Infrastructure.
-2. Exadata VCNs can now be optionally deployed with an integration subnet, enhancing Core Landing Zone support for integration solutions like GoldenGate and Oracle DataGuard. The following global variables have been introduced: 
+2. Exadata VCNs can now be optionally deployed with an integration subnet, enhancing Core Landing Zone support for integration solutions like Oracle GoldenGate. The following global variables have been introduced: 
     - **add_exa_vcn\*_integration_subnet**: whether to add an optional Integration subnet to the VCN.
     - **exa_vcn\*_integration_subnet_cidr**: the Integration subnet CIDR block.
     - **exa_vcn\*_integration_subnet_name**: the Integration subnet name.
