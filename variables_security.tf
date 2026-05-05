@@ -227,12 +227,6 @@ variable "customize_jump_host" {
   description = "Set to true to set custom options for jump host."
 }
 
-variable "customize_jumphost_subnet" {
-  type        = bool
-  default     = false
-  description = "Set to true to set custom options for jump host subnet."
-}
-
 # ------------------------------------------------------
 # ----- Vault
 # ------------------------------------------------------

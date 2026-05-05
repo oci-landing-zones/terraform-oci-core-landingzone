@@ -194,24 +194,6 @@ variable "hub_vcn_mgmt_subnet_cidr" {
     error_message = "Invalid value provided for hub_vcn_mgmt_subnet_cidr variable: value must be in valid CIDR notation (e.g., 192.168.0.0/24)."
   }
 }
-# variable "hub_vcn_mgmt_subnet_external_allowed_cidrs_for_http" {
-#   type        = list(string)
-#   default     = []
-#   description = "List of CIDR blocks allowed to connect to Management subnet over HTTP. Leave empty for no access."
-#   validation {
-#     condition     = length(var.hub_vcn_mgmt_subnet_cidr) == 0 ? true : alltrue([for v in var.hub_vcn_mgmt_subnet_external_allowed_cidrs_for_http : can(cidrhost(v, 0))])
-#     error_message = "Invalid value provided for hub_vcn_mgmt_subnet_external_allowed_cidrs_for_http variable: all values must be in valid CIDR notation (e.g., 192.168.0.0/24)."
-#   }
-# }
-# variable "hub_vcn_mgmt_subnet_external_allowed_cidrs_for_ssh" {
-#   type        = list(string)
-#   default     = []
-#   description = "List of CIDR blocks allowed to connect to Management subnet over SSH. Leave empty for no access."
-#   validation {
-#     condition     = length(var.hub_vcn_mgmt_subnet_cidr) == 0 ? true : alltrue([for v in var.hub_vcn_mgmt_subnet_external_allowed_cidrs_for_ssh : can(cidrhost(v, 0))])
-#     error_message = "Invalid value provided for hub_vcn_mgmt_subnet_external_allowed_cidrs_for_ssh variable: all values must be in valid CIDR notation (e.g., 192.168.0.0/24)."
-#   }
-# }
 variable "fw_mgmt_interface_ports" {
   type        = list(string)
   default     = ["TCP:22","TCP:443"]
@@ -258,6 +240,11 @@ variable "hub_vcn_indoor_subnet_cidr" {
 # -------------------------------------------
 # ----- Networking - Hub Jumphost Subnet
 #--------------------------------------------
+variable "add_hub_vcn_jumphost_subnet" {
+  type        = bool
+  default     = false
+  description = "Whether to add an optional private subnet for jump hosts. The subnet is also used for Bastion Service deployment (when enabled by deploy_bastion_service variable)."
+}
 variable "hub_vcn_jumphost_subnet_name" {
   type        = string
   default     = null

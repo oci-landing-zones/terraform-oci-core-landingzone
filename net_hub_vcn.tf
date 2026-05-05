@@ -83,7 +83,7 @@ locals {
             security_list_keys        = ["MGMT-SUB-SL"]
           }
         } : {},
-        var.deploy_bastion_jump_host == true ? {
+        var.add_hub_vcn_jumphost_subnet == true ? {
           "JUMPHOST-SUBNET" = {
             cidr_block                = local.hub_vcn_jumphost_subnet_cidr
             dhcp_options_key          = "default_dhcp_options"
@@ -125,7 +125,7 @@ locals {
             ]
           }
         } : {},
-        var.deploy_bastion_jump_host == true ? {
+        var.add_hub_vcn_jumphost_subnet == true ? {
           "JUMPHOST-SUB-SL" = {
             display_name = "jumphost-subnet-security-list"
             ingress_rules = [
@@ -249,7 +249,7 @@ locals {
             }
           }
         } : {},
-        var.deploy_bastion_jump_host == true ? {
+        var.add_hub_vcn_jumphost_subnet == true ? {
           "JUMPHOST-SUBNET-ROUTE-TABLE" = {
             display_name = "jumphost-subnet-route-table"
             route_rules = merge(
@@ -285,7 +285,7 @@ locals {
                   destination_type   = "SERVICE_CIDR_BLOCK"
                 }
               },
-              var.deploy_bastion_jump_host == true && coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_east_west_entry_point_ocid, local.void) != local.void ? { 
+              var.add_hub_vcn_jumphost_subnet == true && coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_east_west_entry_point_ocid, local.void) != local.void ? { 
                 "JUMP-HOST-SUBNET-RULE" = { # Required for routing traffic destined to the jump host subnet in the Hub VCN. Without it, traffic doesn't reach the firewall because local VCN routes kick in first.
                   description       = "Traffic destined for ${local.hub_vcn_jumphost_subnet_display_name} is routed through the private IP address ${coalesce(var.oci_nfw_ip_ocid, local.void) != local.void ? coalesce(data.oci_core_private_ip.oci_firewall[0].ip_address, "undetermined") : coalesce(data.oci_core_private_ip.indoor_nlb[0].ip_address, "undetermined")}."
                   destination       = local.hub_vcn_jumphost_subnet_cidr
@@ -431,7 +431,7 @@ locals {
                 icmp_type    = split(":",split(",",cidr_port_pair)[1])[0] == "ICMP" ? split("/", split(":",split(",",cidr_port_pair)[1])[1])[0] : null
                 icmp_code    = split(":",split(",",cidr_port_pair)[1])[0] == "ICMP" ? (length(split("/", split(":",split(",",cidr_port_pair)[1])[1])) > 1 ? split("/", split(":",split(",",cidr_port_pair)[1])[1])[1] : null) : null
               }},
-              var.deploy_bastion_jump_host ? {
+              var.add_hub_vcn_jumphost_subnet == true ? {
                 "INGRESS-FROM-JUMP-HOST-NSG-SSH-RULE" = {
                   description  = "Ingress from Jump Host NSG to SSH port. Required by hosts deployed in the Jump Host NSG."
                   stateless    = false
@@ -444,7 +444,7 @@ locals {
             )
           }
         } : {},
-        var.deploy_bastion_jump_host == true ? {
+        var.add_hub_vcn_jumphost_subnet == true ? {
           "HUB-VCN-JUMP-HOST-NSG" = {
             display_name = "jump-host-nsg"
             ingress_rules = merge(

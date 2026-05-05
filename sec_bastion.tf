@@ -20,7 +20,7 @@ locals {
   bastion_service_freeform_tags = local.custom_bastion_service_freeform_tags != null ? merge(local.custom_bastion_service_freeform_tags, local.default_bastion_service_freeform_tags) : local.default_bastion_service_freeform_tags
   enable_bastion_proxy_status   = false
 
-  bastions_configuration = local.hub_with_vcn == true && var.deploy_bastion_jump_host == true && var.deploy_bastion_service ? {
+  bastions_configuration = local.hub_with_vcn == true && var.add_hub_vcn_jumphost_subnet && var.deploy_bastion_service ? {
     bastions = {
       LZ-BASTION = {
         bastion_type          = local.bastion_service_type
@@ -36,7 +36,7 @@ locals {
   } : {}
 
   ### Bastion Jump Host
-  jump_host_instances_configuration = {
+  jump_host_instances_configuration = (local.hub_with_vcn == true && var.add_hub_vcn_jumphost_subnet && var.deploy_bastion_jump_host == true) ? {
     default_compartment_id      = local.security_compartment_id
     default_ssh_public_key_path = var.bastion_jump_host_ssh_public_key_path
 
@@ -72,8 +72,8 @@ locals {
 
         networking = {
           hostname                = "${var.service_label}-jump-host-instance"
-          subnet_id               = var.deploy_bastion_jump_host ? module.lz_network.provisioned_networking_resources.subnets["JUMPHOST-SUBNET"].id : null
-          network_security_groups = var.deploy_bastion_jump_host ? [module.lz_network.flat_map_of_provisioned_networking_resources["HUB-VCN-JUMP-HOST-NSG"].id] : null
+          subnet_id               = module.lz_network.provisioned_networking_resources.subnets["JUMPHOST-SUBNET"].id
+          network_security_groups = [module.lz_network.flat_map_of_provisioned_networking_resources["HUB-VCN-JUMP-HOST-NSG"].id]
         }
 
         cloud_agent = var.deploy_bastion_service == true ? { plugins = [{ name : "Bastion", enabled : true }] } : null
@@ -87,19 +87,19 @@ locals {
         platform_type                 = var.cis_level == "2" ? (length(regexall("VM.Standard", var.bastion_jump_host_instance_shape)) > 0 ? (length(regexall("VM.Standard.E", var.bastion_jump_host_instance_shape)) > 0 ? "AMD_VM" : "INTEL_VM") : null) : null ## VM.Standard.E[0-9] = AMD_VM ### VM.Standard[0-9] = INTEL_VM
       }
     }
-  }
+  } : {}
 }
 
 module "lz_bastion" {
   source                 = "github.com/oci-landing-zones/terraform-oci-modules-security//bastion?ref=v0.2.3"
   bastions_configuration = local.bastions_configuration
-  count                  = var.deploy_bastion_service ? 1 : 0
+  count                  = (local.hub_with_vcn == true && var.add_hub_vcn_jumphost_subnet && var.deploy_bastion_service == true) ? 1 : 0
 }
 
 module "lz_bastion_jump_host" {
 
   source = "github.com/oci-landing-zones/terraform-oci-modules-workloads//cis-compute-storage?ref=v0.2.2"
-  count  = (local.hub_with_vcn == true && var.deploy_bastion_jump_host == true) ? 1 : 0
+  count  = (local.hub_with_vcn == true && var.add_hub_vcn_jumphost_subnet && var.deploy_bastion_jump_host == true) ? 1 : 0
 
   providers = {
     oci                                  = oci
