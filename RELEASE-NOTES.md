@@ -5,7 +5,8 @@
 ### Generic
 
 1. Network route rules and security rules have been updated. Existing customers who uptake this release must be aware that route rules and security rules are going to be refreshed.
-2. Configuration overrides are introduced for advanced networking and IAM customization scenarios. The available overridable variables are defined and described in [locals_overrides.tf](./locals_overrides.tf). Sample overrides are provided in [net_override.tf](./net_override.tf) for networking and in [iam_override.tf](./iam_override.tf) for IAM. Terraform overrides are useful for preserving customizations in face of future code updates to Core Landing Zone.
+2. Cross-VCN security rules are now defined in separate Network Security Groups. Core Landing Zone supports two modes for cross-VCN NSGs: constrained or open. Constrained NSGs are opinionated and useful in Hub/Spoke topologies where the Hub is the DRG. Open NSGs are useful in Hub/Spoke topologies where the Hub is a VCN with a firewall that enforces security rules. See [Cross-VCN Network Security Rules](./DEPLOYMENT-GUIDE.md#cross-vcn-network-security-rules) for details.
+3. Configuration overrides are introduced for advanced networking and IAM customization scenarios. The available overridable variables are defined and described in [locals_overrides.tf](./locals_overrides.tf). Sample overrides are provided in [net_override.tf](./net_override.tf) for networking and in [iam_override.tf](./iam_override.tf) for IAM. Terraform overrides are useful for preserving customizations in face of future code updates to Core Landing Zone.
 
 ### Three-Tier VCNs
 
@@ -50,6 +51,7 @@
     - **allowed_onprem_cidrs_to_fw_mgmt_interface**: the list of on-premises CIDR blocks allowed access to Firewall management NSG (*mgmt-nsg*).
     - **fw_mgmt_interface_ports**: the list of protocols and ports allowed into Firewall Management NSG (mgmt-nsg) by the CIDRs provided in variable *allowed_onprem_cidrs_to_fw_mgmt_interface*. Each value is a colon-separated entry like \"TCP:22\".
 4. Application Load Balancer NSG (*app-load-balancer-nsg*) automatically populated with combined values provided in *tt_vcn\*_external_allowed_cidrs_into_web_tier* and *tt_vcn\*_web_ingress_destination_ports* for access to Three-Tier VCN workloads through Hub VCN.	
+5. Bastion/Jump Host subnet is now provisioned based on newly added *add_hub_vcn_jumphost_subnet* variable. OCI Bastion deployment is based on **deploy_bastion_service** variable and Jump host deployment is based on **deploy_bastion_jump_host** variable.
 
 
 # February 20, 2026 Release Notes - 1.5.5
