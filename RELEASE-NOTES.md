@@ -12,21 +12,21 @@
 
 1. The Web subnet in Three-Tier VCNs is no longer automatically made private when the VCN is attached to DRG. It now must be explicitly made private through **tt_vcn\*_web_subnet_is_private** variables. 
 2. Newly added global variables for capturing external CIDRs allowed into application endpoints in Three-Tier Web subnets:
-    - **tt_vcn\*_external_allowed_cidrs_into_web_tier**: the list of external CIDRs blocks allowed ingress access on LBR NSG (*lbr-nsg*) of *tt_vcn\** VCN . Use this to limit the range of IP addresses that can access the web tier. (*the previously hardcoded value (0.0.0.0/0) is now the default.*)
-3. Newly added global variables for capturing protocols and ports in NSG ingress rules (previously hardcoded), allowing for easier management of application listening ports at OCI network security rules level (*previously hardcoded values are now the default.*):
-    - **tt_vcn\*_web_ingress_destination_ports**: the list of protocols and destination ports allowed for ingress packets into LBR NSG (*lbr-nsg*). Each value is a colon-separated pair like "TCP:443".
-    - **tt_vcn\*_app_ingress_destination_ports**: the list of protocols and destination ports allowed for ingress packets into App NSG (*app-nsg*). Each value is a colon-separated pair like "TCP:80".
-    - **tt_vcn\*_db_ingress_destination_ports**: the list of protocols and destination ports allowed for ingress packets into DB NSG (*db-nsg*). Each value is a colon-separated pair like "TCP:1521".    
+    - **tt_vcn\*_external_allowed_cidrs_into_web_tier**: the list of external CIDRs blocks allowed ingress access on LBR NSG (*lbr-nsg*) of **tt_vcn\*** VCN . Use this to limit the range of IP addresses that can access the web tier. (the previously hardcoded value (0.0.0.0/0) is now the default.)
+3. Newly added global variables for capturing protocols and ports in NSG ingress rules (previously hardcoded), allowing for easier management of application listening ports at OCI network security rules level (previously hardcoded values are now the default.):
+    - **tt_vcn\*_web_ingress_destination_ports**: the list of protocols and destination ports allowed for ingress packets into LBR NSG (**lbr-nsg**). Each value is a colon-separated pair like "TCP:443".
+    - **tt_vcn\*_app_ingress_destination_ports**: the list of protocols and destination ports allowed for ingress packets into App NSG (**app-nsg**). Each value is a colon-separated pair like "TCP:80".
+    - **tt_vcn\*_db_ingress_destination_ports**: the list of protocols and destination ports allowed for ingress packets into DB NSG (**db-nsg**). Each value is a colon-separated pair like "TCP:1521".    
 
 ### OKE VCNs
 
 1. The Service subnet in OKE VCNs can now be made private through newly added **oke_vcn\*_services_subnet_is_private** variables.
 2. A DB subnet can now be optionally deployed within OKE VCNs through newly added **add_oke_vcn\*_db_subnet** variables, and further qualified with newly added **oke_vcn\*_db_subnet_cidr**, **oke_vcn\*_db_subnet_name** and **oke_vcn\*_db_ingress_destination_ports** variables.
 3. Newly added global variables for capturing external CIDRs allowed into application endpoints in OKE Services subnets:
-    - **oke_vcn\*_external_allowed_cidrs_into_services_tier**: the list of external CIDRs blocks allowed ingress access on Services NSG (*services-nsg*) of *oke_vcn\** VCN. Use this to limit the range of IP addresses that can access the services tier. (*the previously hardcoded value (0.0.0.0/0) is now the default.*)
-4. Newly added global variables for capturing protocols and ports in NSG ingress rules (previously hardcoded), allowing for easier management of application listening ports at OCI network security rules level (*previously hardcoded values are now the default.*):
-    - **oke_vcn\*_services_ingress_destination_ports**: the list of protocols and destination ports allowed for ingress packets into Services NSG (*services-nsg*). Each value is a colon-separated pair like "TCP:443".
-    - **oke_vcn\*_db_ingress_destination_ports**: the list of protocols and destination ports allowed for ingress packets into DB NSG (db-nsg*). Each value is a colon-separated pair like "TCP:1521".    
+    - **oke_vcn\*_external_allowed_cidrs_into_services_tier**: the list of external CIDRs blocks allowed ingress access on Services NSG (**services-nsg**) of **oke_vcn\*** VCN. Use this to limit the range of IP addresses that can access the services tier. (the previously hardcoded value (0.0.0.0/0) is now the default.)
+4. Newly added global variables for capturing protocols and ports in NSG ingress rules (previously hardcoded), allowing for easier management of application listening ports at OCI network security rules level (previously hardcoded values are now the default.):
+    - **oke_vcn\*_services_ingress_destination_ports**: the list of protocols and destination ports allowed for ingress packets into Services NSG (**services-nsg**). Each value is a colon-separated pair like "TCP:443".
+    - **oke_vcn\*_db_ingress_destination_ports**: the list of protocols and destination ports allowed for ingress packets into DB NSG (**db-nsg**). Each value is a colon-separated pair like "TCP:1521".    
 
 ### Exadata VCNs
 
@@ -35,23 +35,23 @@
     - **add_exa_vcn\*_integration_subnet**: whether to add an optional Integration subnet to the VCN.
     - **exa_vcn\*_integration_subnet_cidr**: the Integration subnet CIDR block.
     - **exa_vcn\*_integration_subnet_name**: the Integration subnet name.
-    - **exa_vcn\*_external_allowed_cidrs_into_integration_tier**: the list of external CIDR blocks allowed ingress access on Integration NSG (*integration-nsg*) of *exa_vcn\** VCN . Use this to limit the range of IP addresses that can access the integration tier.
-    - **exa_vcn\*_integration_ingress_destination_ports**: the list of protocols and destination ports allowed for ingress packets into newly added Integration NSG (*integration-nsg*). Each value is a colon-separated pair like "TCP:443". 
+    - **exa_vcn\*_external_allowed_cidrs_into_integration_tier**: the list of external CIDR blocks allowed ingress access on Integration NSG (**integration-nsg**) of **exa_vcn\*** VCN . Use this to limit the range of IP addresses that can access the integration tier.
+    - **exa_vcn\*_integration_ingress_destination_ports**: the list of protocols and destination ports allowed for ingress packets into newly added Integration NSG (**integration-nsg**). Each value is a colon-separated pair like "TCP:443". 
 3. Newly added global variables for capturing external CIDRs allowed into application endpoints in Exadata Client subnets:
-    - **exa_vcn\*_external_allowed_cidrs_into_client_tier**:  the list of external CIDRs blocks allowed ingress access on Client NSG (*client-nsg*) in *exa_vcn\** VCN. Use this to limit the range of IP addresses that can access the client tier.
-4. Newly added global variables for capturing protocols and ports in NSG ingress rules (previously hardcoded), allowing for easier management of application listening ports at OCI network security rules level (*previously hardcoded values are now the default.*):
-    - **exa_vcn\*_client_ingress_destination_ports**: the list of protocols and destination ports allowed for ingress packets into Client NSG (*client-nsg*). Each value is a colon-separated pair like "TCP:1521". 
-    - **exa_vcn\*_integration_ingress_destination_ports**: the list of protocols and destination ports allowed for ingress packets into newly added Integration NSG (*integration-nsg*). Each value is a colon-separated pair like "TCP:443". 
+    - **exa_vcn\*_external_allowed_cidrs_into_client_tier**:  the list of external CIDRs blocks allowed ingress access on Client NSG (*client-nsg*) in **exa_vcn\*** VCN. Use this to limit the range of IP addresses that can access the client tier.
+4. Newly added global variables for capturing protocols and ports in NSG ingress rules (previously hardcoded), allowing for easier management of application listening ports at OCI network security rules level (previously hardcoded values are now the default.):
+    - **exa_vcn\*_client_ingress_destination_ports**: the list of protocols and destination ports allowed for ingress packets into Client NSG (**client-nsg**). Each value is a colon-separated pair like "TCP:1521". 
+    - **exa_vcn\*_integration_ingress_destination_ports**: the list of protocols and destination ports allowed for ingress packets into newly added Integration NSG (**integration-nsg**). Each value is a colon-separated pair like "TCP:443". 
 
 ### Hub VCN
 
 1. Cross-VCN routing: in cross-vcn and on-premises connectivity scenarios, the subnet route tables in a spoke VCN always target the DRG. The DRG route tables of spoke VCN attachments are now configured either with dynamic routes to other attached spokes and on-premises when a Hub VCN is not deployed, or with a single static route targeting the Hub VCN attachment when a Hub VCN is deployed. The DRG route tables of Hub VCN attachment is always configured with dynamic routes.
-2. Infrastructure (subnets, NSGs, routing) for 3rd-party firewall is now always deployed whenever Hub VCN is deployed, even when *hub_vcn_deploy_net_appliance_option="Don\'t deploy any network appliance at this time"*. This helps with a separate stack for the deployment of a 3r-party firewall with OCI networking already in place.
-3. Variables *hub_vcn_mgmt_subnet_external_allowed_cidrs_for_http* and *hub_vcn_mgmt_subnet_external_allowed_cidrs_for_ssh* are replaced by newly added *allowed_onprem_cidrs_to_fw_mgmt_interface*, that works in conjunction with newly added *fw_mgmt_interface_ports*:
-    - **allowed_onprem_cidrs_to_fw_mgmt_interface**: the list of on-premises CIDR blocks allowed access to Firewall management NSG (*mgmt-nsg*).
-    - **fw_mgmt_interface_ports**: the list of protocols and ports allowed into Firewall Management NSG (mgmt-nsg) by the CIDRs provided in variable *allowed_onprem_cidrs_to_fw_mgmt_interface*. Each value is a colon-separated entry like \"TCP:22\".
-4. Application Load Balancer NSG (*app-load-balancer-nsg*) automatically populated with combined values provided in *tt_vcn\*_external_allowed_cidrs_into_web_tier* and *tt_vcn\*_web_ingress_destination_ports* for access to Three-Tier VCN workloads through Hub VCN.	
-5. Bastion/Jump Host subnet is now provisioned based on newly added *add_hub_vcn_jumphost_subnet* variable. OCI Bastion deployment is based on **deploy_bastion_service** variable and Jump host deployment is based on **deploy_bastion_jump_host** variable.
+2. Infrastructure (subnets, NSGs, routing) for 3rd-party firewall is now always deployed whenever Hub VCN is deployed, even when **hub_vcn_deploy_net_appliance_option="Don\'t deploy any network appliance at this time"**. This helps with a separate stack for the deployment of a 3r-party firewall with OCI networking already in place.
+3. Variables **hub_vcn_mgmt_subnet_external_allowed_cidrs_for_http** and **hub_vcn_mgmt_subnet_external_allowed_cidrs_for_ssh** are replaced by newly added **allowed_onprem_cidrs_to_fw_mgmt_interface**, that works in conjunction with newly added **fw_mgmt_interface_ports**:
+    - **allowed_onprem_cidrs_to_fw_mgmt_interface**: the list of on-premises CIDR blocks allowed access to Firewall management NSG (**mgmt-nsg**).
+    - **fw_mgmt_interface_ports**: the list of protocols and ports allowed into Firewall Management NSG (**mgmt-nsg**) by the CIDRs provided in variable **allowed_onprem_cidrs_to_fw_mgmt_interface**. Each value is a colon-separated entry like \"TCP:22\".
+4. Application Load Balancer NSG (**app-load-balancer-nsg**) automatically populated with combined values provided in **tt_vcn\*_external_allowed_cidrs_into_web_tier** and **tt_vcn\*_web_ingress_destination_ports** for access to Three-Tier VCN workloads through Hub VCN.	
+5. Bastion/Jump Host subnet is now provisioned based on newly added **add_hub_vcn_jumphost_subnet** variable. OCI Bastion deployment is based on **deploy_bastion_service** variable and Jump host deployment is based on **deploy_bastion_jump_host** variable.
 
 
 # February 20, 2026 Release Notes - 1.5.5
