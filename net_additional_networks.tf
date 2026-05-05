@@ -8,6 +8,7 @@ data "oci_core_vcn" "additional_vcns" {
 
 locals {
 
+  ## Additional VCNs
   additional_vcns = {
     for k, v in data.oci_core_vcn.additional_vcns : k => {
       id           = v.id
@@ -21,8 +22,7 @@ locals {
   workload_cidrs_public   = compact([for ocid in var.workloadvcn_ocids_public_access : local.additional_vcns[ocid].cidr_block]) ## list of workload vcn cidrs allowed public access
   combined_workload_cidrs = distinct(concat(local.workload_cidrs_onprem, local.workload_cidrs_public))                          ## combined list of all workload vcn cidrs (onprem + public)
 
-  additional_vcns_attachments = {
-    for ocid in local.combined_workload_ocids :
+  additional_vcns_attachments = { for ocid in local.combined_workload_ocids : 
     "VCN-${upper(substr(ocid, -10, 10))}-ATTACHMENT" => {
       display_name        = "${local.additional_vcns[ocid].display_name}-${substr(ocid, -10, 10)}-attachment"
       drg_route_table_key = "VCN-${upper(substr(ocid, -10, 10))}-DRG-ROUTE-TABLE"
@@ -33,38 +33,34 @@ locals {
     }
   }
 
-  additional_vcns_drg_route_tables = {
-    for ocid in local.combined_workload_ocids :
+  additional_vcns_drg_route_tables = { for ocid in local.combined_workload_ocids : 
     "VCN-${upper(substr(ocid, -10, 10))}-DRG-ROUTE-TABLE" => {
       display_name                      = "${local.additional_vcns[ocid].display_name}-${substr(ocid, -10, 10)}-drg-route-table"
-      import_drg_route_distribution_key = "VCN-${upper(substr(ocid, -10, 10))}-DRG-IMPORT-ROUTE-DISTRIBUTION"
+      import_drg_route_distribution_key = local.hub_with_vcn == false ? "VCN-${upper(substr(ocid, -10, 10))}-DRG-IMPORT-ROUTE-DISTRIBUTION" : null # Dynamic routes only when there's no Hub VCN.
+      route_rules = local.hub_with_vcn == true ? {"VCN-${upper(substr(ocid, -10, 10))}-TO-ANYWHERE-ROUTE-RULE" = local.anywhere_drg_route_rule} : null # Static routes when there's a Hub VCN.
     }
   }
 
-  additional_vcns_drg_route_distributions = {
-    for ocid in local.combined_workload_ocids :
+  additional_vcns_drg_route_distributions = local.hub_with_vcn == false ? { for ocid in local.combined_workload_ocids : # Dynamic routes only when there's no Hub VCN.
     "VCN-${upper(substr(ocid, -10, 10))}-DRG-IMPORT-ROUTE-DISTRIBUTION" => {
       display_name      = "${local.additional_vcns[ocid].display_name}-${substr(ocid, -10, 10)}-drg-import-route-distribution"
       distribution_type = "IMPORT"
-      statements = merge(
-        local.hub_with_vcn == true ? {
-          "VCN-${upper(substr(ocid, -10, 10))}-TO-HUB-VCN-STMT" = {
-            action   = "ACCEPT",
-            priority = 1,
-            match_criteria = {
-              match_type         = "DRG_ATTACHMENT_ID",
-              attachment_type    = "VCN",
-              drg_attachment_key = "HUB-VCN-ATTACHMENT"
-            }
+      statements = merge({
+        "VCN-${upper(substr(ocid, -10, 10))}-TO-ALL-VCN-STMT" = {
+          action   = "ACCEPT",
+          priority = 1,
+          match_criteria = {
+            match_type      = "DRG_ATTACHMENT_TYPE",
+            attachment_type = "VCN"
           }
-        } : {},
+        }},
         contains(local.workload_cidrs_onprem, local.additional_vcns[ocid].cidr_block) && local.hub_with_drg_only == true && (length(regexall("FASTCONNECT", upper(var.on_premises_connection_option))) > 0) ? {
           "VCN-${upper(substr(ocid, -10, 10))}-TO-FC-VIRTUAL-CIRCUIT-STMT" = {
             action   = "ACCEPT",
             priority = 2,
             match_criteria = {
               match_type      = "DRG_ATTACHMENT_ID",
-              attachment_type = "VIRTUAL_CIRCUIT",
+              attachment_type = "VIRTUAL_CIRCUIT"
             }
           }
         } : {},
@@ -74,11 +70,11 @@ locals {
             priority = 3,
             match_criteria = {
               match_type      = "DRG_ATTACHMENT_ID",
-              attachment_type = "IPSEC_TUNNEL",
+              attachment_type = "IPSEC_TUNNEL"
             }
           }
         } : {}
       )
     }
-  }
+  } : {}
 }

@@ -1,0 +1,17 @@
+# Copyright (c) 2023, 2026, Oracle and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl/
+
+# SAMPLE DUMMY override values
+# Uncomment the variables and assign them appropriate values per your use case requirements.
+
+#locals {
+
+#-----------------------------------------------
+# IAM overrides:
+#-----------------------------------------------
+# Custom policy statements to be added to the default policies created for the landing zone. A separate policy is created at the enclosing compartment of the landing zone, and only when the enclosing compartment is not the Root compartment.
+# Use this with extreme caution as it may introduce security risks if not used properly. Make sure to follow the principle of least privilege when defining custom policies, and only grant the necessary permissions required for your use case.
+
+#  custom_policy_statements = ["allow group ${join(",", local.appdev_admin_group_name)} to manage sddcs in compartment ${local.app_compartment_name}"]
+
+#}  

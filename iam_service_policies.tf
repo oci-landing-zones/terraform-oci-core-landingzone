@@ -12,7 +12,7 @@ locals {
 module "lz_services_policy" {
   depends_on             = [module.lz_compartments]
   count                  = var.extend_landing_zone_to_new_region == false /*&& var.enable_template_policies == false*/ && local.use_existing_root_cmp_grants == false ? 1 : 0
-  source                 = "github.com/oci-landing-zones/terraform-oci-modules-iam//policies?ref=v0.3.3"
+  source                 = "github.com/oci-landing-zones/terraform-oci-modules-iam//policies?ref=v0.3.4"
   providers              = { oci = oci.home }
   tenancy_ocid           = var.tenancy_ocid
   policies_configuration = local.services_policies_configuration
@@ -21,7 +21,7 @@ module "lz_services_policy" {
 module "lz_oke_clusters_policy" {
   depends_on             = [module.lz_compartments]
   count                  = var.extend_landing_zone_to_new_region == false /*&& var.enable_template_policies == false*/ ? 1 : 0
-  source                 = "github.com/oci-landing-zones/terraform-oci-modules-iam//policies?ref=v0.3.3"
+  source                 = "github.com/oci-landing-zones/terraform-oci-modules-iam//policies?ref=v0.3.4"
   providers              = { oci = oci.home }
   tenancy_ocid           = var.tenancy_ocid
   policies_configuration = length(local.oke_clusters_statements) > 0 ? local.oke_clusters_policy_configuration : local.empty_policies_configuration
@@ -46,9 +46,7 @@ locals {
     "Allow service vulnerability-scanning-service to read vnics in tenancy",
   "Allow service vulnerability-scanning-service to read vnic-attachments in tenancy"]
 
-  os_mgmt_statements = ["Allow service osms to read instances in tenancy"]
-
-  # The name of the File Storage service user depends on your realm . 
+    # The name of the File Storage service user depends on your realm . 
   # For realms with realm key numbers of 10 or less, the pattern for the File Storage service user is FssOc<n>Prod, where n is the realm key number. 
   # Realms with a realm key number greater than 10 have a service user of fssocprod.
   # https://docs.oracle.com/en-us/iaas/Content/File/Tasks/encrypt-file-system.htm
@@ -64,7 +62,7 @@ locals {
       compartment_id = var.tenancy_ocid
       name           = "${var.service_label}-services-policy"
       description    = "${var.lz_provenant_label} policy for OCI services."
-      statements     = concat(local.cloud_guard_statements, local.vss_statements, local.os_mgmt_statements, local.keys_access_statements)
+      statements     = concat(local.cloud_guard_statements, local.vss_statements, local.keys_access_statements)
       defined_tags   = local.service_policy_defined_tags
       freeform_tags  = local.service_policy_freeform_tags
     }

@@ -2,6 +2,7 @@
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl/
 
 locals {
+
   lz_network_configuration = {
     default_compartment_id = local.network_compartment_id
     network_configuration_categories = {
@@ -20,7 +21,8 @@ module "lz_network" {
   network_dependency = local.use_existing_drg ? {
     "dynamic_routing_gateways" = {
       "HUB-DRG" = { "id" : trimspace(var.existing_drg_ocid) }
-    }
+    },
+    "remote_peering_connections" = {}
   } : null
   tenancy_ocid = var.tenancy_ocid
 }

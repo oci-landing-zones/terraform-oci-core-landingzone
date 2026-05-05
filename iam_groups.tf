@@ -25,7 +25,7 @@ locals {
 }
 
 module "lz_groups" {
-  source               = "github.com/oci-landing-zones/terraform-oci-modules-iam//groups?ref=v0.3.3"
+  source               = "github.com/oci-landing-zones/terraform-oci-modules-iam//groups?ref=v0.3.4"
   count                = var.identity_domain_option == "Default Domain" ? 1 : 0
   providers            = { oci = oci.home }
   tenancy_ocid         = var.tenancy_ocid
@@ -33,11 +33,12 @@ module "lz_groups" {
 }
 
 module "lz_custom_domain_groups" {
-  source                               = "github.com/oci-landing-zones/terraform-oci-modules-iam//identity-domains?ref=v0.3.3"
+  source                               = "github.com/oci-landing-zones/terraform-oci-modules-iam//identity-domains?ref=v0.3.4"
   count                                = var.identity_domain_option == "Use Custom Identity Domain" && var.deploy_custom_domain_groups ? 1 : 0
   providers                            = { oci = oci.home }
   tenancy_ocid                         = var.tenancy_ocid
   identity_domain_groups_configuration = var.extend_landing_zone_to_new_region == false && var.identity_domain_option == "Use Custom Identity Domain" ? local.custom_domain_groups_configuration : local.empty_groups_configuration
+  identity_domains_dependency          = {}
 }
 
 locals {

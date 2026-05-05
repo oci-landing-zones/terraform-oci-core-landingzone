@@ -176,6 +176,8 @@ variableGroups:
     variables:
       - "hub_deployment_option"
       - "existing_drg_ocid"
+      - "enable_cross_vcn_constrained_nsgs"
+      - "enable_cross_vcn_open_nsg"
       - "hub_vcn_enable_internet_gateway"
       - "hub_vcn_name"
       - "hub_vcn_cidrs"
@@ -205,8 +207,10 @@ variableGroups:
       - "hub_vcn_mgmt_subnet_name"
       - "hub_vcn_mgmt_subnet_cidr"
       - "hub_vcn_mgmt_subnet_dns"
-      - "hub_vcn_mgmt_subnet_external_allowed_cidrs_for_http"
-      - "hub_vcn_mgmt_subnet_external_allowed_cidrs_for_ssh"
+      - "fw_mgmt_interface_ports"
+      - "allowed_onprem_cidrs_to_fw_mgmt_interface"
+      #- "hub_vcn_mgmt_subnet_external_allowed_cidrs_for_http"
+      #- "hub_vcn_mgmt_subnet_external_allowed_cidrs_for_ssh"
       - "hub_vcn_outdoor_subnet_name"
       - "hub_vcn_outdoor_subnet_cidr"
       - "hub_vcn_outdoor_subnet_dns"
@@ -218,8 +222,9 @@ variableGroups:
 
   - title: "Bastion Jump Host"
     variables:
-      - "bastion_jump_host_custom_image_ocid"
       - "bastion_jump_host_marketplace_image_option"
+      - "bastion_jump_host_platform_image_ocid"
+      - "bastion_jump_host_custom_image_ocid"
       - "bastion_jump_host_ssh_public_key_path"
       - "customize_jump_host"
       - "bastion_jump_host_instance_name"
@@ -325,10 +330,14 @@ variableGroups:
       - "tt_vcn1_web_subnet_name"
       - "tt_vcn1_web_subnet_cidr"
       - "tt_vcn1_web_subnet_is_private"
+      - "tt_vcn1_external_allowed_cidrs_into_web_tier"
+      - "tt_vcn1_web_ingress_destination_ports"
       - "tt_vcn1_app_subnet_name"
       - "tt_vcn1_app_subnet_cidr"
+      - "tt_vcn1_app_ingress_destination_ports"
       - "tt_vcn1_db_subnet_name"
       - "tt_vcn1_db_subnet_cidr"
+      - "tt_vcn1_db_ingress_destination_ports"
       - "deploy_tt_vcn1_bastion_subnet"
       - "tt_vcn1_bastion_subnet_name"
       - "tt_vcn1_bastion_subnet_cidr"
@@ -344,10 +353,14 @@ variableGroups:
       - "tt_vcn2_web_subnet_name"
       - "tt_vcn2_web_subnet_cidr"
       - "tt_vcn2_web_subnet_is_private"
+      - "tt_vcn2_external_allowed_cidrs_into_web_tier"
+      - "tt_vcn2_web_ingress_destination_ports"
       - "tt_vcn2_app_subnet_name"
       - "tt_vcn2_app_subnet_cidr"
+      - "tt_vcn2_app_ingress_destination_ports"
       - "tt_vcn2_db_subnet_name"
       - "tt_vcn2_db_subnet_cidr"
+      - "tt_vcn2_db_ingress_destination_ports"
       - "deploy_tt_vcn2_bastion_subnet"
       - "tt_vcn2_bastion_subnet_name"
       - "tt_vcn2_bastion_subnet_cidr"
@@ -363,10 +376,14 @@ variableGroups:
       - "tt_vcn3_web_subnet_name"
       - "tt_vcn3_web_subnet_cidr"
       - "tt_vcn3_web_subnet_is_private"
+      - "tt_vcn3_external_allowed_cidrs_into_web_tier"
+      - "tt_vcn3_web_ingress_destination_ports"
       - "tt_vcn3_app_subnet_name"
       - "tt_vcn3_app_subnet_cidr"
+      - "tt_vcn3_app_ingress_destination_ports"
       - "tt_vcn3_db_subnet_name"
       - "tt_vcn3_db_subnet_cidr"
+      - "tt_vcn3_db_ingress_destination_ports"
       - "deploy_tt_vcn3_bastion_subnet"
       - "tt_vcn3_bastion_subnet_name"
       - "tt_vcn3_bastion_subnet_cidr"
@@ -383,10 +400,18 @@ variableGroups:
       - "exa_vcn1_attach_to_drg"
       - "exa_vcn1_routable_vcns"
       - "customize_exa_vcn1_subnets"
-      - "exa_vcn1_client_subnet_cidr"
       - "exa_vcn1_client_subnet_name"
-      - "exa_vcn1_backup_subnet_cidr"
+      - "exa_vcn1_client_subnet_cidr"
+      - "exa_vcn1_external_allowed_cidrs_into_client_tier"
+      - "exa_vcn1_client_ingress_destination_ports"
+      - "add_exa_vcn1_backup_subnet"
       - "exa_vcn1_backup_subnet_name"
+      - "exa_vcn1_backup_subnet_cidr"
+      - "add_exa_vcn1_integration_subnet"
+      - "exa_vcn1_integration_subnet_name"
+      - "exa_vcn1_integration_subnet_cidr"
+      - "exa_vcn1_external_allowed_cidrs_into_integration_tier"
+      - "exa_vcn1_integration_ingress_destination_ports"
       - "add_exa_vcn2"
       - "exa_vcn2_onprem_route_enable"
       - "exa_vcn2_name"
@@ -394,10 +419,18 @@ variableGroups:
       - "exa_vcn2_attach_to_drg"
       - "exa_vcn2_routable_vcns"
       - "customize_exa_vcn2_subnets"
-      - "exa_vcn2_client_subnet_cidr"
       - "exa_vcn2_client_subnet_name"
-      - "exa_vcn2_backup_subnet_cidr"
+      - "exa_vcn2_client_subnet_cidr"
+      - "exa_vcn2_external_allowed_cidrs_into_client_tier"
+      - "exa_vcn2_client_ingress_destination_ports"
+      - "add_exa_vcn2_backup_subnet"
       - "exa_vcn2_backup_subnet_name"
+      - "exa_vcn2_backup_subnet_cidr"
+      - "add_exa_vcn2_integration_subnet"
+      - "exa_vcn2_integration_subnet_name"
+      - "exa_vcn2_integration_subnet_cidr"
+      - "exa_vcn2_external_allowed_cidrs_into_integration_tier"
+      - "exa_vcn2_integration_ingress_destination_ports"
       - "add_exa_vcn3"
       - "exa_vcn3_onprem_route_enable"
       - "exa_vcn3_cidrs"
@@ -405,11 +438,18 @@ variableGroups:
       - "exa_vcn3_attach_to_drg"
       - "exa_vcn3_routable_vcns"
       - "customize_exa_vcn3_subnets"
-      - "exa_vcn3_client_subnet_cidr"
       - "exa_vcn3_client_subnet_name"
-      - "exa_vcn3_backup_subnet_cidr"
+      - "exa_vcn3_client_subnet_cidr"
+      - "exa_vcn3_external_allowed_cidrs_into_client_tier"
+      - "exa_vcn3_client_ingress_destination_ports"
+      - "add_exa_vcn3_backup_subnet"
       - "exa_vcn3_backup_subnet_name"
-      - "exa_vcn3_backup_subnet_dns"
+      - "exa_vcn3_backup_subnet_cidr"
+      - "add_exa_vcn3_integration_subnet"
+      - "exa_vcn3_integration_subnet_name"
+      - "exa_vcn3_integration_subnet_cidr"
+      - "exa_vcn3_external_allowed_cidrs_into_integration_tier"
+      - "exa_vcn3_integration_ingress_destination_ports"
     visible: define_net
 
   - title: "Networking - OKE VCNs"
@@ -424,6 +464,9 @@ variableGroups:
       - "customize_oke_vcn1_subnets"
       - "oke_vcn1_services_subnet_name"
       - "oke_vcn1_services_subnet_cidr"
+      - "oke_vcn1_services_subnet_is_private"
+      - "oke_vcn1_external_allowed_cidrs_into_services_tier"
+      - "oke_vcn1_services_ingress_destination_ports"
       - "oke_vcn1_workers_subnet_name"
       - "oke_vcn1_workers_subnet_cidr"
       - "oke_vcn1_api_subnet_name"
@@ -433,6 +476,10 @@ variableGroups:
       - "add_oke_vcn1_mgmt_subnet"
       - "oke_vcn1_mgmt_subnet_name"
       - "oke_vcn1_mgmt_subnet_cidr"
+      - "add_oke_vcn1_db_subnet"
+      - "oke_vcn1_db_subnet_name"
+      - "oke_vcn1_db_subnet_cidr"
+      - "oke_vcn1_db_ingress_destination_ports"
       - "add_oke_vcn2"
       - "oke_vcn2_onprem_route_enable"
       - "oke_vcn2_cni_type"
@@ -443,6 +490,9 @@ variableGroups:
       - "customize_oke_vcn2_subnets"
       - "oke_vcn2_services_subnet_name"
       - "oke_vcn2_services_subnet_cidr"
+      - "oke_vcn2_services_subnet_is_private"
+      - "oke_vcn2_external_allowed_cidrs_into_services_tier"
+      - "oke_vcn2_services_ingress_destination_ports"
       - "oke_vcn2_workers_subnet_name"
       - "oke_vcn2_workers_subnet_cidr"
       - "oke_vcn2_api_subnet_name"
@@ -452,6 +502,10 @@ variableGroups:
       - "add_oke_vcn2_mgmt_subnet"
       - "oke_vcn2_mgmt_subnet_name"
       - "oke_vcn2_mgmt_subnet_cidr"
+      - "add_oke_vcn2_db_subnet"
+      - "oke_vcn2_db_subnet_name"
+      - "oke_vcn2_db_subnet_cidr"
+      - "oke_vcn2_db_ingress_destination_ports"
       - "add_oke_vcn3"
       - "oke_vcn3_onprem_route_enable"
       - "oke_vcn3_cni_type"
@@ -462,6 +516,9 @@ variableGroups:
       - "customize_oke_vcn3_subnets"
       - "oke_vcn3_services_subnet_name"
       - "oke_vcn3_services_subnet_cidr"
+      - "oke_vcn3_services_subnet_is_private"
+      - "oke_vcn3_external_allowed_cidrs_into_services_tier"
+      - "oke_vcn3_services_ingress_destination_ports"
       - "oke_vcn3_workers_subnet_name"
       - "oke_vcn3_workers_subnet_cidr"
       - "oke_vcn3_api_subnet_name"
@@ -472,6 +529,10 @@ variableGroups:
       - "oke_vcn3_mgmt_subnet_name"
       - "oke_vcn3_mgmt_subnet_cidr"
       - "oke_vcn3_mgmt_subnet_dns"
+      - "add_oke_vcn3_db_subnet"
+      - "oke_vcn3_db_subnet_name"
+      - "oke_vcn3_db_subnet_cidr"
+      - "oke_vcn3_db_ingress_destination_ports"
     visible: define_net
 
   - title: "Networking - Externally Managed VCNs"
@@ -1466,16 +1527,34 @@ variables:
         - define_net
         - customize_tt_vcn1_subnets
         - add_tt_vcn1
-        - or:
-          - eq:
-            - ${hub_deployment_option}
-            - "No cross-VCN or on-premises connectivity"
-          - eq:
-            - ${hub_deployment_option}
-            - "VCN or on-premises connectivity routing via DRG (DRG will be created)"
-          - eq:
-            - ${hub_deployment_option}
-            - "VCN or on-premises connectivity routing via DRG (existing DRG)"  
+  
+  tt_vcn1_external_allowed_cidrs_into_web_tier:
+    type: array
+    items:
+      type: string
+    uniqueItems: true
+    title: "List of external CIDR blocks allowed to access the Web tier"
+    description: "Enter the CIDR blocks allowed to access resources deployed in the Web tier. Typically the IP addresses of application clients."
+    required: false
+    visible: 
+      and:
+        - define_net
+        - customize_tt_vcn1_subnets
+        - add_tt_vcn1          
+
+  tt_vcn1_web_ingress_destination_ports:
+    type: array
+    items:
+      type: string
+    uniqueItems: true
+    title: "List of destination ports allowed to be accessed in the Web tier"
+    description: "Enter the TCP ports allowed to be accessed in the Web tier by the CIDR blocks provided in 'List of external CIDR blocks allowed to access the Web tier' field above."
+    required: false
+    visible: 
+      and:
+        - define_net
+        - customize_tt_vcn1_subnets
+        - add_tt_vcn1
 
   tt_vcn1_app_subnet_name:
     type: string
@@ -1499,6 +1578,20 @@ variables:
         - customize_tt_vcn1_subnets
         - add_tt_vcn1
 
+  tt_vcn1_app_ingress_destination_ports:
+    type: array
+    items:
+      type: string
+    uniqueItems: true
+    title: "List of destination ports allowed to be accessed in the Application tier"
+    description: "Enter the TCP ports allowed to be accessed in the Application tier from the Web tier. Typically the application server listener ports."
+    required: false
+    visible: 
+      and:
+        - define_net
+        - customize_tt_vcn1_subnets
+        - add_tt_vcn1
+
   tt_vcn1_db_subnet_name:
     type: string
     title: "Database Subnet Name"
@@ -1514,6 +1607,20 @@ variables:
     type: string
     title: "Database Subnet CIDR Block"
     description: "Enter the Database subnet CIDR block. It must be within the VCN CIDR blocks."
+    required: false
+    visible: 
+      and:
+        - define_net
+        - customize_tt_vcn1_subnets
+        - add_tt_vcn1
+
+  tt_vcn1_db_ingress_destination_ports:
+    type: array
+    items:
+      type: string
+    uniqueItems: true
+    title: "List of destination ports allowed to be accessed in the Database tier"
+    description: "Enter the TCP ports allowed to be accessed in the Database tier from the Application tier. Typically the database listener ports."
     required: false
     visible: 
       and:
@@ -1716,16 +1823,34 @@ variables:
         - define_net
         - customize_tt_vcn2_subnets
         - add_tt_vcn2
-        - or:
-          - eq:
-            - ${hub_deployment_option}
-            - "No cross-VCN or on-premises connectivity"
-          - eq:
-            - ${hub_deployment_option}
-            - "VCN or on-premises connectivity routing via DRG (DRG will be created)"
-          - eq:
-            - ${hub_deployment_option}
-            - "VCN or on-premises connectivity routing via DRG (existing DRG)"
+  
+  tt_vcn2_external_allowed_cidrs_into_web_tier:
+    type: array
+    items:
+      type: string
+    uniqueItems: true
+    title: "List of external CIDR blocks allowed to access the Web tier"
+    description: "Enter the CIDR blocks allowed to access resources deployed in the Web tier. Typically the IP addresses of application clients."
+    required: false
+    visible: 
+      and:
+        - define_net
+        - customize_tt_vcn2_subnets
+        - add_tt_vcn2          
+
+  tt_vcn2_web_ingress_destination_ports:
+    type: array
+    items:
+      type: string
+    uniqueItems: true
+    title: "List of destination ports allowed to be accessed in the Web tier"
+    description: "Enter the TCP ports allowed to be accessed in the Web tier by the CIDR blocks provided in 'List of external CIDR blocks allowed to access the Web tier' field above."
+    required: false
+    visible: 
+      and:
+        - define_net
+        - customize_tt_vcn2_subnets
+        - add_tt_vcn2
 
   tt_vcn2_app_subnet_name:
     type: string
@@ -1749,6 +1874,20 @@ variables:
         - customize_tt_vcn2_subnets
         - add_tt_vcn2
 
+  tt_vcn2_app_ingress_destination_ports:
+    type: array
+    items:
+      type: string
+    uniqueItems: true
+    title: "List of destination ports allowed to be accessed in the Application tier"
+    description: "Enter the TCP ports allowed to be accessed in the Application tier from the Web tier. Typically the application server listener ports."
+    required: false
+    visible: 
+      and:
+        - define_net
+        - customize_tt_vcn2_subnets
+        - add_tt_vcn2
+
   tt_vcn2_db_subnet_name:
     type: string
     title: "Database Subnet Name"
@@ -1764,6 +1903,20 @@ variables:
     type: string
     title: "Database Subnet CIDR Block"
     description: "It must be within the VCN CIDR blocks."
+    required: false
+    visible: 
+      and:
+        - define_net
+        - customize_tt_vcn2_subnets
+        - add_tt_vcn2
+
+  tt_vcn2_db_ingress_destination_ports:
+    type: array
+    items:
+      type: string
+    uniqueItems: true
+    title: "List of destination ports allowed to be accessed in the Database tier"
+    description: "Enter the TCP ports allowed to be accessed in the Database tier from the Application tier. Typically the database listener ports."
     required: false
     visible: 
       and:
@@ -1965,16 +2118,34 @@ variables:
         - define_net
         - customize_tt_vcn3_subnets
         - add_tt_vcn3
-        - or:
-          - eq:
-            - ${hub_deployment_option}
-            - "No cross-VCN or on-premises connectivity"
-          - eq:
-            - ${hub_deployment_option}
-            - "VCN or on-premises connectivity routing via DRG (DRG will be created)"
-          - eq:
-            - ${hub_deployment_option}
-            - "VCN or on-premises connectivity routing via DRG (existing DRG)"
+  
+  tt_vcn3_external_allowed_cidrs_into_web_tier:
+    type: array
+    items:
+      type: string
+    uniqueItems: true
+    title: "List of external CIDR blocks allowed to access the Web tier"
+    description: "Enter the CIDR blocks allowed to access resources deployed in the Web tier. Typically the IP addresses of application clients."
+    required: false
+    visible: 
+      and:
+        - define_net
+        - customize_tt_vcn3_subnets
+        - add_tt_vcn3          
+
+  tt_vcn3_web_ingress_destination_ports:
+    type: array
+    items:
+      type: string
+    uniqueItems: true
+    title: "List of destination ports allowed to be accessed in the Web tier"
+    description: "Enter the TCP ports allowed to be accessed in the Web tier by the CIDR blocks provided in 'List of external CIDR blocks allowed to access the Web tier' field above."
+    required: false
+    visible: 
+      and:
+        - define_net
+        - customize_tt_vcn3_subnets
+        - add_tt_vcn3
 
   tt_vcn3_app_subnet_name:
     type: string
@@ -1998,6 +2169,20 @@ variables:
         - customize_tt_vcn3_subnets
         - add_tt_vcn3
 
+  tt_vcn3_app_ingress_destination_ports:
+    type: array
+    items:
+      type: string
+    uniqueItems: true
+    title: "List of destination ports allowed to be accessed in the Application tier"
+    description: "Enter the TCP ports allowed to be accessed in the Application tier from the Web tier. Typically the application server listener ports."
+    required: false
+    visible: 
+      and:
+        - define_net
+        - customize_tt_vcn3_subnets
+        - add_tt_vcn3
+
   tt_vcn3_db_subnet_name:
     type: string
     title: "Database Subnet Name"
@@ -2013,6 +2198,20 @@ variables:
     type: string
     title: "Database Subnet CIDR Block"
     description: "It must be within the VCN CIDR blocks."
+    required: false
+    visible: 
+      and:
+        - define_net
+        - customize_tt_vcn3_subnets
+        - add_tt_vcn3
+
+  tt_vcn3_db_ingress_destination_ports:
+    type: array
+    items:
+      type: string
+    uniqueItems: true
+    title: "List of destination ports allowed to be accessed in the Database tier"
+    description: "Enter the TCP ports allowed to be accessed in the Database tier from the Application tier. Typically the database listener ports."
     required: false
     visible: 
       and:
@@ -2204,6 +2403,44 @@ variables:
         - customize_exa_vcn1_subnets
         - add_exa_vcn1
 
+  exa_vcn1_external_allowed_cidrs_into_client_tier:
+    type: array
+    items:
+      type: string
+    uniqueItems: true
+    title: "The list of external CIDRs allowed for ingress packets into Exadata VCN Client Network Security Group."
+    description: "Use this to allow external client CIDRs into the Exadata client tier. Enter CIDRs in valid notation, e.g. 203.0.113.10/32"
+    required: false
+    visible:
+      and:
+        - define_net
+        - customize_exa_vcn1_subnets
+        - add_exa_vcn1
+
+  exa_vcn1_client_ingress_destination_ports:
+    type: array
+    items:
+      type: string
+    uniqueItems: true
+    title: "The list of protocols and destination ports allowed for ingress packets into Exadata VCN Client Network Security Group."
+    description: "Use this primarily for database listener ports. Enter the values in the format protocol:port, with exactly one ':' separating protocol and port values, e.g. TCP:1521"
+    required: false
+    visible: 
+      and:
+        - define_net
+        - customize_exa_vcn1_subnets
+        - add_exa_vcn1      
+
+  add_exa_vcn1_backup_subnet:
+    type: boolean
+    title: "Add Backup Subnet?"
+    description: "Check to add an optional Backup subnet to Exadata VCN 1."
+    visible:
+      and:
+        - define_net
+        - customize_exa_vcn1_subnets
+        - add_exa_vcn1
+
   exa_vcn1_backup_subnet_name:
     type: string
     title: "Backup Subnet Name"
@@ -2214,6 +2451,7 @@ variables:
         - define_net
         - customize_exa_vcn1_subnets
         - add_exa_vcn1
+        - add_exa_vcn1_backup_subnet
 
   exa_vcn1_backup_subnet_cidr:
     type: string
@@ -2225,6 +2463,71 @@ variables:
         - define_net
         - customize_exa_vcn1_subnets
         - add_exa_vcn1
+        - add_exa_vcn1_backup_subnet
+
+  add_exa_vcn1_integration_subnet:
+    type: boolean
+    title: "Add Integration Subnet?"
+    description: "Check to add an optional Integration subnet to Exadata VCN 1."
+    visible:
+      and:
+        - define_net
+        - customize_exa_vcn1_subnets
+        - add_exa_vcn1
+
+  exa_vcn1_integration_subnet_name:
+    type: string
+    title: "Integration Subnet Name"
+    description: "Enter the Integration subnet name."
+    required: false
+    visible:
+      and:
+        - define_net
+        - customize_exa_vcn1_subnets
+        - add_exa_vcn1
+        - add_exa_vcn1_integration_subnet
+
+  exa_vcn1_integration_subnet_cidr:
+    type: string
+    title: "Integration Subnet CIDR block"
+    description: "Enter the Integration subnet CIDR block. It must be within the VCN CIDR blocks."
+    required: false
+    visible:
+      and:
+        - define_net
+        - customize_exa_vcn1_subnets
+        - add_exa_vcn1
+        - add_exa_vcn1_integration_subnet
+
+  exa_vcn1_external_allowed_cidrs_into_integration_tier:
+    type: array
+    items:
+      type: string
+    uniqueItems: true
+    title: "The list of external CIDRs allowed for ingress packets into Exadata VCN Integration Network Security Group."
+    description: "Use this to allow external middleware or client CIDRs into the Exadata integration tier. Enter CIDRs in valid notation, e.g. 203.0.113.10/32"
+    required: false
+    visible:
+      and:
+        - define_net
+        - customize_exa_vcn1_subnets
+        - add_exa_vcn1
+        - add_exa_vcn1_integration_subnet
+
+  exa_vcn1_integration_ingress_destination_ports:
+    type: array
+    items:
+      type: string
+    uniqueItems: true
+    title: "The list of protocols and destination ports allowed for ingress packets into Exadata VCN Integration Network Security Group."
+    description: "Use this for integration middleware listener ports. Enter the values in the format protocol:port, with exactly one ':' separating protocol and port values, e.g. TCP:7809"
+    required: false
+    visible:
+      and:
+        - define_net
+        - customize_exa_vcn1_subnets
+        - add_exa_vcn1
+        - add_exa_vcn1_integration_subnet
 
   # ------------------------------------------------------
   # ----- Networking - Exadata Cloud Service VCN 2
@@ -2349,6 +2652,44 @@ variables:
         - customize_exa_vcn2_subnets
         - add_exa_vcn2
 
+  exa_vcn2_client_ingress_destination_ports:
+    type: array
+    items:
+      type: string
+    uniqueItems: true
+    title: "The list of protocols and destination ports allowed for ingress packets into Exadata VCN Client Network Security Group."
+    description: "Use this primarily for database listener ports. Enter the values in the format protocol:port, with exactly one ':' separating protocol and port values, e.g. TCP:1521"
+    required: false
+    visible: 
+      and:
+        - define_net
+        - customize_exa_vcn2_subnets
+        - add_exa_vcn2
+
+  exa_vcn2_external_allowed_cidrs_into_client_tier:
+    type: array
+    items:
+      type: string
+    uniqueItems: true
+    title: "The list of external CIDRs allowed for ingress packets into Exadata VCN Client Network Security Group."
+    description: "Use this to allow external client CIDRs into the Exadata client tier. Enter CIDRs in valid notation, e.g. 203.0.113.10/32"
+    required: false
+    visible:
+      and:
+        - define_net
+        - customize_exa_vcn2_subnets
+        - add_exa_vcn2
+
+  add_exa_vcn2_backup_subnet:
+    type: boolean
+    title: "Add Backup Subnet?"
+    description: "Check to add an optional Backup subnet to Exadata VCN 2."
+    visible:
+      and:
+        - define_net
+        - customize_exa_vcn2_subnets
+        - add_exa_vcn2
+
   exa_vcn2_backup_subnet_name:
     type: string
     title: "Backup Subnet Name"
@@ -2359,6 +2700,7 @@ variables:
         - define_net
         - customize_exa_vcn2_subnets
         - add_exa_vcn2
+        - add_exa_vcn2_backup_subnet
 
   exa_vcn2_backup_subnet_cidr:
     type: string
@@ -2370,6 +2712,71 @@ variables:
         - define_net
         - customize_exa_vcn2_subnets
         - add_exa_vcn2
+        - add_exa_vcn2_backup_subnet
+
+  add_exa_vcn2_integration_subnet:
+    type: boolean
+    title: "Add Integration Subnet?"
+    description: "Check to add an optional Integration subnet to Exadata VCN 2."
+    visible:
+      and:
+        - define_net
+        - customize_exa_vcn2_subnets
+        - add_exa_vcn2
+
+  exa_vcn2_integration_subnet_name:
+    type: string
+    title: "Integration Subnet Name"
+    description: "Enter the Integration subnet name."
+    required: false
+    visible:
+      and:
+        - define_net
+        - customize_exa_vcn2_subnets
+        - add_exa_vcn2
+        - add_exa_vcn2_integration_subnet
+
+  exa_vcn2_integration_subnet_cidr:
+    type: string
+    title: "Integration Subnet CIDR block"
+    description: "Enter the Integration subnet CIDR block. It must be within the VCN CIDR blocks."
+    required: false
+    visible:
+      and:
+        - define_net
+        - customize_exa_vcn2_subnets
+        - add_exa_vcn2
+        - add_exa_vcn2_integration_subnet
+
+  exa_vcn2_external_allowed_cidrs_into_integration_tier:
+    type: array
+    items:
+      type: string
+    uniqueItems: true
+    title: "The list of external CIDRs allowed for ingress packets into Exadata VCN Integration Network Security Group."
+    description: "Use this to allow external middleware or client CIDRs into the Exadata integration tier. Enter CIDRs in valid notation, e.g. 203.0.113.10/32"
+    required: false
+    visible:
+      and:
+        - define_net
+        - customize_exa_vcn2_subnets
+        - add_exa_vcn2
+        - add_exa_vcn2_integration_subnet
+
+  exa_vcn2_integration_ingress_destination_ports:
+    type: array
+    items:
+      type: string
+    uniqueItems: true
+    title: "The list of protocols and destination ports allowed for ingress packets into Exadata VCN Integration Network Security Group."
+    description: "Use this for integration middleware listener ports. Enter the values in the format protocol:port, with exactly one ':' separating protocol and port values, e.g. TCP:7809"
+    required: false
+    visible:
+      and:
+        - define_net
+        - customize_exa_vcn2_subnets
+        - add_exa_vcn2
+        - add_exa_vcn2_integration_subnet
 
   # ------------------------------------------------------
   # ----- Networking - Exadata Cloud Service VCN 3
@@ -2494,6 +2901,44 @@ variables:
         - customize_exa_vcn3_subnets
         - add_exa_vcn3
 
+  exa_vcn3_client_ingress_destination_ports:
+    type: array
+    items:
+      type: string
+    uniqueItems: true
+    title: "The list of protocols and destination ports allowed for ingress packets into Exadata VCN Client Network Security Group."
+    description: "Use this primarily for database listener ports. Enter the values in the format protocol:port, with exactly one ':' separating protocol and port values, e.g. TCP:1521"
+    required: false
+    visible: 
+      and:
+        - define_net
+        - customize_exa_vcn3_subnets
+        - add_exa_vcn3      
+
+  exa_vcn3_external_allowed_cidrs_into_client_tier:
+    type: array
+    items:
+      type: string
+    uniqueItems: true
+    title: "The list of external CIDRs allowed for ingress packets into Exadata VCN Client Network Security Group."
+    description: "Use this to allow external client CIDRs into the Exadata client tier. Enter CIDRs in valid notation, e.g. 203.0.113.10/32"
+    required: false
+    visible:
+      and:
+        - define_net
+        - customize_exa_vcn3_subnets
+        - add_exa_vcn3
+
+  add_exa_vcn3_backup_subnet:
+    type: boolean
+    title: "Add Backup Subnet?"
+    description: "Check to add an optional Backup subnet to Exadata VCN 2."
+    visible:
+      and:
+        - define_net
+        - customize_exa_vcn3_subnets
+        - add_exa_vcn3
+
   exa_vcn3_backup_subnet_name:
     type: string
     title: "Backup Subnet Name"
@@ -2504,6 +2949,7 @@ variables:
         - define_net
         - customize_exa_vcn3_subnets
         - add_exa_vcn3
+        - add_exa_vcn3_backup_subnet
 
   exa_vcn3_backup_subnet_cidr:
     type: string
@@ -2515,6 +2961,71 @@ variables:
         - define_net
         - customize_exa_vcn3_subnets
         - add_exa_vcn3
+        - add_exa_vcn3_backup_subnet
+
+  add_exa_vcn3_integration_subnet:
+    type: boolean
+    title: "Add Integration Subnet?"
+    description: "Check to add an optional Integration subnet to Exadata VCN 3."
+    visible:
+      and:
+        - define_net
+        - customize_exa_vcn3_subnets
+        - add_exa_vcn3
+
+  exa_vcn3_integration_subnet_name:
+    type: string
+    title: "Integration Subnet Name"
+    description: "Enter the Integration subnet name."
+    required: false
+    visible:
+      and:
+        - define_net
+        - customize_exa_vcn3_subnets
+        - add_exa_vcn3
+        - add_exa_vcn3_integration_subnet
+
+  exa_vcn3_integration_subnet_cidr:
+    type: string
+    title: "Integration Subnet CIDR block"
+    description: "Enter the Integration subnet CIDR block. It must be within the VCN CIDR blocks."
+    required: false
+    visible:
+      and:
+        - define_net
+        - customize_exa_vcn3_subnets
+        - add_exa_vcn3
+        - add_exa_vcn3_integration_subnet
+
+  exa_vcn3_external_allowed_cidrs_into_integration_tier:
+    type: array
+    items:
+      type: string
+    uniqueItems: true
+    title: "The list of external CIDRs allowed for ingress packets into Exadata VCN Integration Network Security Group."
+    description: "Use this to allow external middleware or client CIDRs into the Exadata integration tier. Enter CIDRs in valid notation, e.g. 203.0.113.10/32"
+    required: false
+    visible:
+      and:
+        - define_net
+        - customize_exa_vcn3_subnets
+        - add_exa_vcn3
+        - add_exa_vcn3_integration_subnet
+
+  exa_vcn3_integration_ingress_destination_ports:
+    type: array
+    items:
+      type: string
+    uniqueItems: true
+    title: "The list of protocols and destination ports allowed for ingress packets into Exadata VCN Integration Network Security Group."
+    description: "Use this for integration middleware listener ports. Enter the values in the format protocol:port, with exactly one ':' separating protocol and port values, e.g. TCP:7809"
+    required: false
+    visible:
+      and:
+        - define_net
+        - customize_exa_vcn3_subnets
+        - add_exa_vcn3
+        - add_exa_vcn3_integration_subnet
 
 # ------------------------------------------------------
 # ----- Networking - OKE VCN 1
@@ -2697,6 +3208,44 @@ variables:
         - customize_oke_vcn1_subnets
         - add_oke_vcn1
 
+  oke_vcn1_services_subnet_is_private:
+    type: boolean
+    title: "Is Services Subnet Private?"
+    description: "Check to make the Services subnet private. It is public by default."
+    visible: 
+      and:
+        - define_net
+        - customize_oke_vcn1_subnets
+        - add_oke_vcn1
+
+  oke_vcn1_external_allowed_cidrs_into_services_tier:
+    type: array
+    items:
+      type: string
+    uniqueItems: true
+    title: "List of external CIDR blocks allowed to access the Services tier"
+    description: "Enter the CIDR blocks allowed to access resources deployed in the Services tier. Typically the IP addresses of application clients."
+    required: false
+    visible: 
+      and:
+        - define_net
+        - customize_oke_vcn1_subnets
+        - add_oke_vcn1
+
+  oke_vcn1_services_ingress_destination_ports:
+    type: array
+    items:
+      type: string
+    uniqueItems: true
+    title: "List of destination ports allowed to be accessed in the Services tier"
+    description: "Enter the TCP ports allowed to be accessed in the Services tier by the CIDR blocks provided in 'List of external CIDR blocks allowed to access the Services tier' field above."
+    required: false
+    visible: 
+      and:
+        - define_net
+        - customize_oke_vcn1_subnets
+        - add_oke_vcn1
+
   add_oke_vcn1_mgmt_subnet:
     type: boolean
     title: "Add Management Subnet?"
@@ -2730,6 +3279,55 @@ variables:
         - customize_oke_vcn1_subnets
         - add_oke_vcn1
         - add_oke_vcn1_mgmt_subnet
+
+  add_oke_vcn1_db_subnet:
+    type: boolean
+    title: "Add Database Subnet?"
+    description: "Check to add a private subnet for database deployment."
+    visible:
+      and:
+        - define_net
+        - customize_oke_vcn1_subnets
+        - add_oke_vcn1
+
+  oke_vcn1_db_subnet_name:
+    type: string
+    title: "Database Subnet Name"
+    description: "The database subnet name."
+    required: false
+    visible:
+      and:
+        - define_net
+        - customize_oke_vcn1_subnets
+        - add_oke_vcn1
+        - add_oke_vcn1_db_subnet
+
+  oke_vcn1_db_subnet_cidr:
+    type: string
+    title: "Database Subnet CIDR block"
+    description: "It must be within the VCN CIDR blocks."
+    required: false
+    visible:
+      and:
+        - define_net
+        - customize_oke_vcn1_subnets
+        - add_oke_vcn1
+        - add_oke_vcn1_db_subnet
+
+  oke_vcn1_db_ingress_destination_ports:
+    type: array
+    items:
+      type: string
+    uniqueItems: true
+    title: "List of destination ports allowed to be accessed in the Database NSG"
+    description: "Enter the protocols and ports (for example, TCP:1521 or ICMP:3/4) that can reach the database subnet."
+    required: false
+    visible:
+      and:
+        - define_net
+        - customize_oke_vcn1_subnets
+        - add_oke_vcn1
+        - add_oke_vcn1_db_subnet
 
   oke_vcn1_pods_subnet_name:
     type: string
@@ -2939,6 +3537,44 @@ variables:
         - customize_oke_vcn2_subnets
         - add_oke_vcn2
 
+  oke_vcn2_services_subnet_is_private:
+    type: boolean
+    title: "Is Services Subnet Private?"
+    description: "Check to make the Services subnet private. It is public by default."
+    visible: 
+      and:
+        - define_net
+        - customize_oke_vcn2_subnets
+        - add_oke_vcn2      
+
+  oke_vcn2_external_allowed_cidrs_into_services_tier:
+    type: array
+    items:
+      type: string
+    uniqueItems: true
+    title: "List of external CIDR blocks allowed to access the Services tier"
+    description: "Enter the CIDR blocks allowed to access resources deployed in the Services tier. Typically the IP addresses of application clients."
+    required: false
+    visible: 
+      and:
+        - define_net
+        - customize_oke_vcn2_subnets
+        - add_oke_vcn2
+
+  oke_vcn2_services_ingress_destination_ports:
+    type: array
+    items:
+      type: string
+    uniqueItems: true
+    title: "List of destination ports allowed to be accessed in the Services tier"
+    description: "Enter the TCP ports allowed to be accessed in the Services tier by the CIDR blocks provided in 'List of external CIDR blocks allowed to access the Services tier' field above."
+    required: false
+    visible: 
+      and:
+        - define_net
+        - customize_oke_vcn2_subnets
+        - add_oke_vcn2
+
   add_oke_vcn2_mgmt_subnet:
     type: boolean
     title: "Add Management Subnet?"
@@ -2972,6 +3608,55 @@ variables:
         - customize_oke_vcn2_subnets
         - add_oke_vcn2
         - add_oke_vcn2_mgmt_subnet
+
+  add_oke_vcn2_db_subnet:
+    type: boolean
+    title: "Add Database Subnet?"
+    description: "Check to add a private subnet for database deployment."
+    visible:
+      and:
+        - define_net
+        - customize_oke_vcn2_subnets
+        - add_oke_vcn2
+
+  oke_vcn2_db_subnet_name:
+    type: string
+    title: "Database Subnet Name"
+    description: "The database subnet name."
+    required: false
+    visible:
+      and:
+        - define_net
+        - customize_oke_vcn2_subnets
+        - add_oke_vcn2
+        - add_oke_vcn2_db_subnet
+
+  oke_vcn2_db_subnet_cidr:
+    type: string
+    title: "Database Subnet CIDR block"
+    description: "It must be within the VCN CIDR blocks."
+    required: false
+    visible:
+      and:
+        - define_net
+        - customize_oke_vcn2_subnets
+        - add_oke_vcn2
+        - add_oke_vcn2_db_subnet
+
+  oke_vcn2_db_ingress_destination_ports:
+    type: array
+    items:
+      type: string
+    uniqueItems: true
+    title: "List of destination ports allowed to be accessed in the Database NSG"
+    description: "Enter the protocols and ports (for example, TCP:1521 or ICMP:3/4) that can reach the database subnet."
+    required: false
+    visible:
+      and:
+        - define_net
+        - customize_oke_vcn2_subnets
+        - add_oke_vcn2
+        - add_oke_vcn2_db_subnet
 
   oke_vcn2_pods_subnet_name:
     type: string
@@ -3181,6 +3866,44 @@ variables:
         - customize_oke_vcn3_subnets
         - add_oke_vcn3
 
+  oke_vcn3_services_subnet_is_private:
+    type: boolean
+    title: "Is Services Subnet Private?"
+    description: "Check to make the Services subnet private. It is public by default."
+    visible: 
+      and:
+        - define_net
+        - customize_oke_vcn3_subnets
+        - add_oke_vcn3      
+
+  oke_vcn3_external_allowed_cidrs_into_services_tier:
+    type: array
+    items:
+      type: string
+    uniqueItems: true
+    title: "List of external CIDR blocks allowed to access the Services tier"
+    description: "Enter the CIDR blocks allowed to access resources deployed in the Services tier. Typically the IP addresses of application clients."
+    required: false
+    visible: 
+      and:
+        - define_net
+        - customize_oke_vcn3_subnets
+        - add_oke_vcn3
+
+  oke_vcn3_services_ingress_destination_ports:
+    type: array
+    items:
+      type: string
+    uniqueItems: true
+    title: "List of destination ports allowed to be accessed in the Services tier"
+    description: "Enter the TCP ports allowed to be accessed in the Services tier by the CIDR blocks provided in 'List of external CIDR blocks allowed to access the Services tier' field above."
+    required: false
+    visible: 
+      and:
+        - define_net
+        - customize_oke_vcn3_subnets
+        - add_oke_vcn3
+
   add_oke_vcn3_mgmt_subnet:
     type: boolean
     title: "Add Management Subnet?"
@@ -3214,6 +3937,55 @@ variables:
         - customize_oke_vcn3_subnets
         - add_oke_vcn3
         - add_oke_vcn3_mgmt_subnet
+
+  add_oke_vcn3_db_subnet:
+    type: boolean
+    title: "Add Database Subnet?"
+    description: "Check to add a private subnet for database deployment."
+    visible:
+      and:
+        - define_net
+        - customize_oke_vcn3_subnets
+        - add_oke_vcn3
+
+  oke_vcn3_db_subnet_name:
+    type: string
+    title: "Database Subnet Name"
+    description: "The database subnet name."
+    required: false
+    visible:
+      and:
+        - define_net
+        - customize_oke_vcn3_subnets
+        - add_oke_vcn3
+        - add_oke_vcn3_db_subnet
+
+  oke_vcn3_db_subnet_cidr:
+    type: string
+    title: "Database Subnet CIDR block"
+    description: "It must be within the VCN CIDR blocks."
+    required: false
+    visible:
+      and:
+        - define_net
+        - customize_oke_vcn3_subnets
+        - add_oke_vcn3
+        - add_oke_vcn3_db_subnet
+
+  oke_vcn3_db_ingress_destination_ports:
+    type: array
+    items:
+      type: string
+    uniqueItems: true
+    title: "List of destination ports allowed to be accessed in the Database NSG"
+    description: "Enter the protocols and ports (for example, TCP:1521 or ICMP:3/4) that can reach the database subnet."
+    required: false
+    visible:
+      and:
+        - define_net
+        - customize_oke_vcn3_subnets
+        - add_oke_vcn3
+        - add_oke_vcn3_db_subnet
 
   oke_vcn3_pods_subnet_name:
     type: string
@@ -3290,6 +4062,50 @@ variables:
             - ${hub_deployment_option}
             - "No cross-VCN with on-premises connectivity using an existing DRG"
 
+  enable_cross_vcn_constrained_nsgs:
+    type: boolean
+    title: "Enable Cross-VCN Constrained NSGs?"
+    description: "When true, Landing Zone provisions NSGs that enable DRG-attached and routable VCNs to connect with each other according to Landing Zone provided rules. If a firewall is deployed, you may want to set this to false, set 'Enable Cross-VCN Open NSG?' to true and have the network security rules implemented in the firewall. If you are just connecting the VCNs through a DRG without a firewall, you may want ot set this to true. Or alternatively, provide your own security rules via '*_additional_nsgs' variables override for your specifying your own controls."
+    required: false
+    visible: 
+      and:
+        - define_net
+        - or:
+          - eq:
+            - ${hub_deployment_option}
+            - "VCN or on-premises connectivity routing via DRG (existing DRG)"
+          - eq:
+            - ${hub_deployment_option}
+            - "VCN or on-premises connectivity routing via DRG (DRG will be created)"  
+          - eq:
+            - ${hub_deployment_option}
+            - "VCN or on-premises connectivity routing through DMZ VCN with Network Virtual Appliance (DRG and DMZ VCN will be created)"
+          - eq:
+            - ${hub_deployment_option}
+            - "VCN or on-premises connectivity routed through DMZ VCN with Network Virtual Appliance existing DRG (DMZ VCN will be created and DRG ID required)"
+
+  enable_cross_vcn_open_nsg:
+    type: boolean
+    title: "Enable Cross-VCN Open NSG?"
+    description: "When true, Landing Zone provisions a NSG that enables DRG-attached and routable VCNs to fully connect with each other. If a firewall is deployed, leave this as true and have the network security controls implemented in the firewall. If you are just connecting the VCNs through a DRG without a firewall, you may want to set this to false and set 'Enable Cross-VCN Constrained NSGs?' to true. Or alternatively, provide your own security rules via '*_additional_nsgs' variables override for your specifying your own controls."
+    required: false
+    visible: 
+      and:
+        - define_net
+        - or:
+          - eq:
+            - ${hub_deployment_option}
+            - "VCN or on-premises connectivity routing via DRG (existing DRG)"
+          - eq:
+            - ${hub_deployment_option}
+            - "VCN or on-premises connectivity routing via DRG (DRG will be created)"  
+          - eq:
+            - ${hub_deployment_option}
+            - "VCN or on-premises connectivity routing through DMZ VCN with Network Virtual Appliance (DRG and DMZ VCN will be created)"
+          - eq:
+            - ${hub_deployment_option}
+            - "VCN or on-premises connectivity routed through DMZ VCN with Network Virtual Appliance existing DRG (DMZ VCN will be created and DRG ID required)"
+
   hub_vcn_name:
     type: string
     title: "Hub VCN Name"
@@ -3354,7 +4170,7 @@ variables:
 
   oci_nfw_ip_ocid:
     type: string
-    title: "OCI Network Firewall Forwarding IP OCID"
+    title: "OCI Network Firewall IP OCID"
     description: "Enter the OCID of Native Firewall IP address, where all outbound traffic from the spoke VCNs is sent to in the Hub VCN."
     visible:
       and:
@@ -3512,6 +4328,7 @@ variables:
     title: "Fortinet Fortigate Firewall Version."
     description: "Fortinet Fortigate Firewall Version."
     enum:
+      - "7.6.4_(_X64_)"
       - "7.2.11_(_X64_)"
       - "7.2.9_(_X64_)"
       - "7.4.4_(_X64_)"
@@ -3704,7 +4521,7 @@ variables:
   hub_vcn_north_south_entry_point_ocid:
     type: string
     title: "Hub VCN North/South Traffic Destination OCID (Outdoor Network Load Balancer)"
-    description: "Enter the private OCID of the Outdoor Network Load Balancer, where all inbound Internet (North/South) traffic is sent to in the Hub VCN."
+    description: "Enter the OCID of the private IP address of the Outdoor Network Load Balancer, where all inbound Internet (North/South) traffic is sent to in the Hub VCN."
     required: false
     visible:
       and:
@@ -3729,7 +4546,7 @@ variables:
   hub_vcn_east_west_entry_point_ocid:
     type: string
     title: "Hub VCN East/West Traffic Destination OCID (Indoor Network Load Balancer)"
-    description: "Enter the private OCID of the Indoor Network Load Balancer, where all inter-VCN (East/West) traffic is sent to in the Hub VCN."
+    description: "Enter the OCID of the private IP address of the Indoor Network Load Balancer, where all inter-VCN (East/West) traffic is sent to in the Hub VCN."
     required: false
     visible:
       and:
@@ -3799,8 +4616,7 @@ variables:
          - eq:
             - ${on_premises_connection_option}
             - "None"
-    default: ""
-
+  
   fastconnect_virtual_circuit_name:
     type: string
     title: "Virtual Circuit Name"
@@ -4022,7 +4838,7 @@ variables:
   ipsec_tunnel1_customer_interface_ip:
     type: string
     title: "IPSec Tunnel 1 Customer Border Gateway Protocol (BGP) IP Address"
-    description: "Enter the first IP CIDR block for the Customer-Premises Equipment (CPE) for BGP peering for IPSec Tunnel 1."
+    description: "Enter the IP CIDR block used on the CPE side for BGP peering in IPSec Tunnel 1. Must be /30 or /31."
     visible:
       or:
         - eq:
@@ -4036,7 +4852,7 @@ variables:
   ipsec_tunnel1_oracle_interface_ip:
     type: string
     title: "IPSec Tunnel 1 OCI Border Gateway Protocol (BGP) IP Address"
-    description: "Enter the first IP CIDR block for Oracle for BGP peering for IPSec Tunnel 1."
+    description: "Enter the IP CIDR block used on the OCI side for BGP peering in IPSec Tunnel 1. Must be /30 or /31."
     visible:
       or:
         - eq:
@@ -4076,7 +4892,7 @@ variables:
   ipsec_tunnel2_customer_interface_ip:
     type: string
     title: "IPSec Tunnel 2 Customer Border Gateway Protocol (BGP) IP Address"
-    description: "Enter the second IP CIDR block for the Customer-Premises Equipment (CPE) for BGP peering for IPSec Tunnel 2."
+    description: "Enter the IP CIDR block used on the CPE side for BGP peering in IPSec Tunnel 2. Must be /30 or /31."
     visible:
       or:
         - eq:
@@ -4090,7 +4906,7 @@ variables:
   ipsec_tunnel2_oracle_interface_ip:
     type: string
     title: "IPSec Tunnel 2 OCI Border Gateway Protocol (BGP) IP Address"
-    description: "Enter the second IP CIDR block for Oracle for BGP peering for IPSec Tunnel 2."
+    description: "Enter the IP CIDR block used on the OCI side for BGP peering in IPSec Tunnel 2. Must be /30 or /31."
     visible:
       or:
         - eq:
@@ -4155,8 +4971,8 @@ variables:
 
   cpe_device_shape_vendor:
     type: string
-    title: "Customer-Premises Equipment (CPE) Device Shape Vendor"
-    description: "Name of the device shape vendor used by the CPE. See <a href=\"https://docs.oracle.com/en-us/iaas/Content/Network/Reference/CPElist.htm\">documentation</a> for verified CPE devices for more information."
+    title: "Customer-Premises Equipment (CPE) Device Vendor"
+    description: "Name of the CPE device vendor. Use one of the following names: \"Fortinet\", \"Cisco\", \"Juniper\", \"Furukawa\", \"Check Point\", \"Palo Alto\", \"Yamaha\", \"Libreswan\", \"NEC\", \"WatchGuard\", \"Other\". See <a href=\"https://docs.oracle.com/en-us/iaas/Content/Network/Reference/CPElist.htm\">documentation</a> for information on verified CPE devices."
     visible:
       or:
         - eq:
@@ -4278,15 +5094,13 @@ variables:
             - ${hub_deployment_option}
             - "VCN or on-premises connectivity routed through DMZ VCN with Network Virtual Appliance existing DRG (DMZ VCN will be created and DRG ID required)"
 
-  hub_vcn_mgmt_subnet_external_allowed_cidrs_for_http:
+  fw_mgmt_interface_ports:
     type: array
     items:
       type: string
     uniqueItems: true
-    maxItems: 3
-    minItems: 1
-    title: "List of CIDR blocks allowed to connect to Mgmt Subnet over HTTP"
-    description: "Enter the CIDR blocks allowed to connect to Mgmt subnet over HTTP. Leave empty for no access."
+    title: "List of Protocols and Ports Allowed in the Firewall Management Interface"
+    description: "The list of protocols and ports allowed for ingress packets into the Firewall Management interface. Each element is a colon-separated entry like 'TCP:443', 'TCT:22'. The set of provided protocol:port pairs are allowed access from the CIDR blocks defined in the 'List of On-prem CIDR Blocks Allowed to Connect to the Firewall Management Interface' field below."
     required: false
     visible: 
       and:
@@ -4298,17 +5112,15 @@ variables:
             - "VCN or on-premises connectivity routing through DMZ VCN with Network Virtual Appliance (DRG and DMZ VCN will be created)"
           - eq:
             - ${hub_deployment_option}
-            - "VCN or on-premises connectivity routed through DMZ VCN with Network Virtual Appliance existing DRG (DMZ VCN will be created and DRG ID required)"          
+            - "VCN or on-premises connectivity routed through DMZ VCN with Network Virtual Appliance existing DRG (DMZ VCN will be created and DRG ID required)"
 
-  hub_vcn_mgmt_subnet_external_allowed_cidrs_for_ssh:
+  allowed_onprem_cidrs_to_fw_mgmt_interface:
     type: array
     items:
       type: string
     uniqueItems: true
-    maxItems: 3
-    minItems: 1
-    title: "List of CIDR blocks allowed to connect to Mgmt Subnet over SSH"
-    description: "Enter the CIDR blocks allowed to connect to Mgmt subnet over SSH. Leave empty for no access."
+    title: "List of On-prem CIDR Blocks Allowed to Connect to the Firewall Management Interface"
+    description: "Enter the on-prem CIDR blocks allowed to connect to the Firewall Management interface. Provide a valid CIDR and configure 'List of Protocols and Ports Allowed in the Firewall Management Interface' field above for enabling connectivity. Leave empty for no access."
     required: false
     visible: 
       and:
@@ -4320,7 +5132,55 @@ variables:
             - "VCN or on-premises connectivity routing through DMZ VCN with Network Virtual Appliance (DRG and DMZ VCN will be created)"
           - eq:
             - ${hub_deployment_option}
-            - "VCN or on-premises connectivity routed through DMZ VCN with Network Virtual Appliance existing DRG (DMZ VCN will be created and DRG ID required)"     
+            - "VCN or on-premises connectivity routed through DMZ VCN with Network Virtual Appliance existing DRG (DMZ VCN will be created and DRG ID required)"   
+        - not:
+          - eq:
+            - ${on_premises_connection_option}
+            - "None"          
+
+  # hub_vcn_mgmt_subnet_external_allowed_cidrs_for_http:
+  #   type: array
+  #   items:
+  #     type: string
+  #   uniqueItems: true
+  #   maxItems: 3
+  #   minItems: 1
+  #   title: "List of CIDR blocks allowed to connect to Mgmt Subnet over HTTP"
+  #   description: "Enter the CIDR blocks allowed to connect to Mgmt subnet over HTTP. Leave empty for no access."
+  #   required: false
+  #   visible: 
+  #     and:
+  #       - define_net
+  #       - customize_hub_vcn_subnets
+  #       - or:
+  #         - eq:
+  #           - ${hub_deployment_option}
+  #           - "VCN or on-premises connectivity routing through DMZ VCN with Network Virtual Appliance (DRG and DMZ VCN will be created)"
+  #         - eq:
+  #           - ${hub_deployment_option}
+  #           - "VCN or on-premises connectivity routed through DMZ VCN with Network Virtual Appliance existing DRG (DMZ VCN will be created and DRG ID required)"          
+
+  # hub_vcn_mgmt_subnet_external_allowed_cidrs_for_ssh:
+  #   type: array
+  #   items:
+  #     type: string
+  #   uniqueItems: true
+  #   maxItems: 3
+  #   minItems: 1
+  #   title: "List of CIDR blocks allowed to connect to Mgmt Subnet over SSH"
+  #   description: "Enter the CIDR blocks allowed to connect to Mgmt subnet over SSH. Leave empty for no access."
+  #   required: false
+  #   visible: 
+  #     and:
+  #       - define_net
+  #       - customize_hub_vcn_subnets
+  #       - or:
+  #         - eq:
+  #           - ${hub_deployment_option}
+  #           - "VCN or on-premises connectivity routing through DMZ VCN with Network Virtual Appliance (DRG and DMZ VCN will be created)"
+  #         - eq:
+  #           - ${hub_deployment_option}
+  #           - "VCN or on-premises connectivity routed through DMZ VCN with Network Virtual Appliance existing DRG (DMZ VCN will be created and DRG ID required)"     
 
 # -------------------------------------------
 # ----- Networking - Hub Outdoor Subnet
@@ -4873,45 +5733,50 @@ variables:
             - ${hub_deployment_option}
             - "VCN or on-premises connectivity routed through DMZ VCN with Network Virtual Appliance existing DRG (DMZ VCN will be created and DRG ID required)"
 
+  #bastion_jump_host_custom_image_ocid:
+  #  type: string
+  #  title: "Jump Host Custom Image OCID"
+  #  description: "Enter the Custom Image OCID for the Jump Host (optional)."
+  #  visible:
+  #    and:
+  #      - deploy_bastion_jump_host
+
   bastion_jump_host_custom_image_ocid:
     type: string
-    title: "Jump Host Custom Image OCID"
-    description: "Enter the Custom Image OCID for the Jump Host (optional)."
-    visible:
-      and:
-        - deploy_bastion_jump_host
+    title: "Custom Image OCID"
+    description: "Enter the custom image OCID for the jump host (optional). It has precedence over 'Platform Image' and 'Marketplace Image Name' below."
+    required: false
+    visible: deploy_bastion_jump_host
+
+  bastion_jump_host_platform_image_ocid:
+    type: oci:core:image:id
+    title: "Platform Image"
+    description: "Select the OCI platform image for the jump host (optional). It has precedence over 'Marketplace Image Name' below."
+    required: false
+    dependsOn: ${tenancy_ocid}
+    visible: deploy_bastion_jump_host            
 
   bastion_jump_host_marketplace_image_option:
-    type: enum
-    title: "Marketplace Image Options"
-    description: "Choose a marketplace image for jump host deployment. This is required if no custom image OCID is provided above."
+    type: string
+    title: "Marketplace Image Name"
+    description: "Enter the OCI marketplace image name for the jump host. Some available options are: 'Oracle Linux 8 STIG' (free), 'CIS Hardened Image Level 1 on Oracle Linux 8' (paid). See OCI Markeplace for more and make sure the spelling is exactly as it shows in OCI Marketplace."
     required: false
-    enum:
-      - "Oracle Linux 8 STIG (Free)"
-      - "CIS Hardened Image Level 1 on Oracle Linux 8 (Paid)"
-    visible:
-      and:
-        - deploy_bastion_jump_host
-        - eq:
-          - cis_level
-          - "1"
-
+    visible: deploy_bastion_jump_host
+    
   deploy_bastion_service:
     type: boolean
-    title: "Deploy Bastion Service?"
-    description: "This will deploy a Bastion Service."
-    visible:
-      and:
-        -deploy_bastion_jump_host
+    title: "Deploy OCI Bastion Service?"
+    description: "Whether OCI Bastion Service is deployed."
+    visible: deploy_bastion_jump_host
 
   bastion_service_allowed_cidrs:
     type: array
     items:
       type: string
     uniqueItems: true
-    title: "Enter SSH CIDR Blocks"
+    title: "OCI Bastion Service Allowed CIDR Blocks"
     required: false
-    description: "List of CIDR blocks allowed to connect to the Bastion Service"
+    description: "Enter the CIDR blocks allowed to connect to OCI Bastion Service. Avoid 0.0.0.0/0 by all means."
     visible:
       and:
         - deploy_bastion_jump_host
@@ -4920,7 +5785,7 @@ variables:
   customize_bastion_service:
     type: boolean
     title: "Customize Bastion Service?"
-    description: "If checked, provide custom options for Bastion Service."
+    description: "Check to customize OCI Bastion Service deployment."
     visible:
       and:
         - deploy_bastion_jump_host
@@ -4928,9 +5793,9 @@ variables:
 
   bastion_service_name:
     type: string
-    title: "Bastion Service Name"
-    required: falseq
-    description: "Custom name to give to the Bastion Service"
+    title: "OCI Bastion Name"
+    required: false
+    description: "Enter a custom name for OCI Bastion Service instance"
     visible:
       and:
         - customize_bastion_service
@@ -4948,7 +5813,7 @@ variables:
 
   bastion_jump_host_ssh_public_key_path:
     type: oci:core:ssh:publickey
-    title: "Choose the public SSH Key for the Jump Host"
+    title: "Provide the public SSH Key for the Jump Host"
     required: false
     visible: deploy_bastion_jump_host
     description: "The public ssh key of the Jump Host Compute Instance"
@@ -4966,7 +5831,7 @@ variables:
     title: "Jump Host Name"
     required: false
     visible: customize_jump_host
-    description: "The name of the jump host. This will be appended to the service label."
+    description: "The name of the jump host. This is appended to the provided 'Service Label'."
 
   bastion_jump_host_instance_shape:
       type: oci:core:instanceshape:name
@@ -5041,13 +5906,8 @@ variables:
     title: "Vault Replica Region"
     description: "The replica region of the vault. Applicable to VIRTUAL_PRIVATE vault only."
     required: false
-    visible:
-      and:
-        - eq:
-          - ${vault_type}
-          - "VIRTUAL_PRIVATE"
-        - enable_vault
-
+    visible: enable_vault
+    
   hub_vcn_enable_internet_gateway:
     type: boolean
     title: "Enable Access from the Internet?"
