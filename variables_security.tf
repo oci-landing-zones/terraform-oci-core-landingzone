@@ -215,12 +215,6 @@ variable "bastion_service_allowed_cidrs" {
   }
 }
 
-variable "customize_bastion_service" {
-  type        = bool
-  default     = false
-  description = "Set to true to set custom options for Bastion Service."
-}
-
 variable "customize_jump_host" {
   type        = bool
   default     = false

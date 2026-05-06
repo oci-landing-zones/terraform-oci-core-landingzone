@@ -219,7 +219,6 @@ variableGroups:
   - title: "OCI Bastion Service Settings" 
     variables:   
       - "bastion_service_allowed_cidrs"
-      - "customize_bastion_service"
       - "bastion_service_name"
     visible:
       and:
@@ -5766,21 +5765,12 @@ variables:
     description: "Enter the CIDR blocks allowed to connect to OCI Bastion Service. Avoid 0.0.0.0/0 by all means."
     visible: deploy_bastion_service
     
-  customize_bastion_service:
-    type: boolean
-    title: "Customize Bastion Service?"
-    description: "Check to customize OCI Bastion Service deployment."
-    visible: deploy_bastion_service
-
   bastion_service_name:
     type: string
     title: "OCI Bastion Name"
     required: false
     description: "Enter a custom name for OCI Bastion Service instance"
-    visible:
-      and:
-        - customize_bastion_service
-        - deploy_bastion_service
+    visible: deploy_bastion_service
 
   bastion_jump_host_ssh_public_key_path:
     type: oci:core:ssh:publickey
