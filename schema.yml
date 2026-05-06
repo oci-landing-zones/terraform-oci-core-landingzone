@@ -236,9 +236,9 @@ variableGroups:
 
   - title: "Jump Host Settings"
     variables:
-      - "bastion_jump_host_custom_image_ocid"
-      - "bastion_jump_host_platform_image_ocid"
       - "bastion_jump_host_marketplace_image_option"
+      - "bastion_jump_host_platform_image_ocid"
+      - "bastion_jump_host_custom_image_ocid"
       - "bastion_jump_host_ssh_public_key_path"
       - "customize_jump_host"
       - "bastion_jump_host_instance_name"
@@ -4503,9 +4503,9 @@ variables:
               - "OCI Native Firewall"
 
   net_appliance_public_rsa_key:
-    type: string
+    type: oci:core:ssh:publickey
     title: "Network Appliance Instance public SSH Key"
-    description: "Enter a Public SSH Key to Login to Compute Instance."
+    description: "Provide the Public SSH Key for the network appliance."
     required: false
     visible:
       and:
@@ -4528,8 +4528,8 @@ variables:
 
   hub_vcn_north_south_entry_point_ocid:
     type: string
-    title: "Hub VCN North/South Traffic Destination OCID (Outdoor Network Load Balancer)"
-    description: "Enter the OCID of the private IP address of the Outdoor Network Load Balancer, where all inbound Internet (North/South) traffic is sent to in the Hub VCN."
+    title: "Hub VCN North/South Traffic Destination OCID - Outdoor (aka Untrust) Network Load Balancer"
+    description: "Enter the OCID of the private IP address of the Outdoor (aka Untrust) Network Load Balancer, where all inbound Internet (North/South) traffic is sent to in the Hub VCN. In other words, this is the firewall entry point for traffic coming from the Internet to the Hub VCN and then to the spoke VCNs through the DRG. The value is available after the first apply of this stack in the output variable \"nlb_private_ip_address.OUTDOOR-NLB.id\". It gets also displayed in the Output tab of the apply job in OCI Resource Manager. Look for output \"nlb_private_ip_addresses\"."
     required: false
     visible:
       and:
@@ -4553,8 +4553,8 @@ variables:
 
   hub_vcn_east_west_entry_point_ocid:
     type: string
-    title: "Hub VCN East/West Traffic Destination OCID (Indoor Network Load Balancer)"
-    description: "Enter the OCID of the private IP address of the Indoor Network Load Balancer, where all inter-VCN (East/West) traffic is sent to in the Hub VCN."
+    title: "Hub VCN East/West Traffic Destination OCID - Indoor (aka Trust) Network Load Balancer"
+    description: "Enter the OCID of the private IP address of the Indoor (aka Trust) Network Load Balancer, where all inter-VCN (East/West) traffic is sent to in the Hub VCN. In other words, this is the firewall entry point for cross-VCN and on-premises traffic. The value is available after the first apply of this stack in the output variable \"nlb_private_ip_address.INDOOR_NLB.id\". It gets also displayed in the Output tab of the apply job in OCI Resource Manager. Look for output \"nlb_private_ip_addresses (INDOOR_NLB.id)\"."
     required: false
     visible:
       and:
@@ -5043,28 +5043,6 @@ variables:
             - ${hub_deployment_option}
             - "VCN or on-premises connectivity routed through DMZ VCN with Network Virtual Appliance existing DRG (DMZ VCN will be created and DRG ID required)"
 
-  hub_vcn_web_subnet_jump_host_allowed_cidrs:
-    type: array
-    items:
-      type: string
-    uniqueItems: true
-    maxItems: 3
-    minItems: 1
-    title: "List of CIDR blocks allowed to SSH into the Web Subnet"
-    description: "These CIDRs are allowed to SSH into the Web subnet via a jump host eventually deployed in the Web subnet. Leave empty for no access."
-    required: false
-    visible:
-      and:
-        - define_net
-        - customize_hub_vcn_subnets
-        - or:
-          - eq:
-            - ${hub_deployment_option}
-            - "VCN or on-premises connectivity routing through DMZ VCN with Network Virtual Appliance (DRG and DMZ VCN will be created)"
-          - eq:
-            - ${hub_deployment_option}
-            - "VCN or on-premises connectivity routed through DMZ VCN with Network Virtual Appliance existing DRG (DMZ VCN will be created and DRG ID required)"
-
 # -------------------------------------------
 # ----- Networking - Hub Mgmt Subnet
 #--------------------------------------------
@@ -5164,8 +5142,8 @@ variables:
 #--------------------------------------------
   hub_vcn_outdoor_subnet_name:
     type: string
-    title: "Outdoor Subnet Name"
-    description: "Enter the Outdoor subnet name."
+    title: "Outdoor (aka Untrust) Subnet Name"
+    description: "Enter the Outdoor (aka Untrust) subnet name."
     required: false
     visible: 
       and:
@@ -5185,8 +5163,8 @@ variables:
 
   hub_vcn_outdoor_subnet_cidr:
     type: string
-    title: "Outdoor Subnet CIDR Block"
-    description: "Enter the Outdoor subnet CIDR block. It must be within the VCN CIDR blocks."
+    title: "Outdoor (aka Untrust) Subnet CIDR Block"
+    description: "Enter the Outdoor (aka Untrust) subnet CIDR block. It must be within the VCN CIDR blocks."
     required: false
     visible: 
       and:
@@ -5209,8 +5187,8 @@ variables:
 #--------------------------------------------
   hub_vcn_indoor_subnet_name:
     type: string
-    title: "Indoor Subnet Name"
-    description: "Enter the Indoor subnet name."
+    title: "Indoor (aka Trust) Subnet Name"
+    description: "Enter the Indoor (aka Trust) subnet name."
     required: false
     visible: 
       and:
@@ -5226,8 +5204,8 @@ variables:
 
   hub_vcn_indoor_subnet_cidr:
     type: string
-    title: "Indoor Subnet CIDR Block"
-    description: "Enter the Indoor subnet CIDR block. It must be within the VCN CIDR blocks."
+    title: "Indoor (aka Trust) Subnet CIDR Block"
+    description: "Enter the Indoor (aka Trust) subnet CIDR block. It must be within the VCN CIDR blocks."
     required: false
     visible: 
       and:
@@ -5716,28 +5694,29 @@ variables:
             - ${hub_deployment_option}
             - "VCN or on-premises connectivity routed through DMZ VCN with Network Virtual Appliance existing DRG (DMZ VCN will be created and DRG ID required)"
 
-  bastion_jump_host_custom_image_ocid:
+  bastion_jump_host_marketplace_image_option:
     type: string
-    title: "Custom Image OCID"
-    description: "Enter the custom image OCID for the Jump host. It has precedence over \"Platform Image\" and \"Marketplace Image Name\" below. You must pick one of the three options: \"Custom Image OCID\", \"Platform Image\" or \"Marketplace Image Name\" for deploying a Jump host."
+    title: "Marketplace Image Name"
+    description: "Enter the OCI marketplace image name for the Jump host. Some available options are: \"Oracle Linux 8 STIG\" (free), \"CIS Hardened Image Level 1 on Oracle Linux 8\" (paid). See OCI Markeplace for more and make sure the spelling is exactly as it shows in OCI Marketplace. You must pick one of the three options: \"Marketplace Image Name\", \"Platform Image\" or  \"Custom Image OCID\" for deploying a Jump host."
     required: false
     visible: deploy_bastion_jump_host
 
   bastion_jump_host_platform_image_ocid:
     type: oci:core:image:id
     title: "Platform Image"
-    description: "Select the OCI platform image for the Jump host. It has precedence over \"Marketplace Image Name\" below. You must pick one of the three options: \"Custom Image OCID\", \"Platform Image\" or \"Marketplace Image Name\" for deploying a Jump host."
+    description: "Select the OCI platform image for the Jump host. You must pick one of the three options: \"Marketplace Image Name\", \"Platform Image\" or  \"Custom Image OCID\" for deploying a Jump host."
     required: false
-    dependsOn: ${tenancy_ocid}
+    dependsOn: 
+      compartmentId: ${tenancy_ocid}
+    visible: deploy_bastion_jump_host  
+
+  bastion_jump_host_custom_image_ocid:
+    type: string
+    title: "Custom Image OCID"
+    description: "Enter the custom image OCID for the Jump host. You must pick one of the three options: \"Marketplace Image Name\", \"Platform Image\" or  \"Custom Image OCID\" for deploying a Jump host."
+    required: false
     visible: deploy_bastion_jump_host            
 
-  bastion_jump_host_marketplace_image_option:
-    type: string
-    title: "Marketplace Image Name"
-    description: "Enter the OCI marketplace image name for the Jump host. Some available options are: \"Oracle Linux 8 STIG\" (free), \"CIS Hardened Image Level 1 on Oracle Linux 8\" (paid). See OCI Markeplace for more and make sure the spelling is exactly as it shows in OCI Marketplace. You must pick one of the three options: \"Custom Image OCID\", \"Platform Image\" or \"Marketplace Image Name\" for deploying a Jump host."
-    required: false
-    visible: deploy_bastion_jump_host
-    
   deploy_bastion_service:
     type: boolean
     title: "Deploy OCI Bastion Service?"
@@ -5777,14 +5756,14 @@ variables:
     title: "Provide the public SSH Key for the Jump Host"
     required: false
     visible: deploy_bastion_jump_host
-    description: "The public SSH key for Jump Host instance."
+    description: "The public SSH key for Jump host instance."
 
   customize_jump_host:
     type: boolean
     title: "Customize Jump Host?"
     required: false
     default: false
-    description: "Check to set custom options for Jump Host instance."
+    description: "Check to set custom options for Jump host instance."
     visible: deploy_bastion_jump_host
 
   bastion_jump_host_instance_name:
@@ -5827,7 +5806,7 @@ variables:
   add_hub_vcn_jumphost_subnet:
     type: boolean
     title: "Add Bastion/Jump host Subnet in the Hub VCN?"
-    description: "Check to add a subnet for OCI Bastion service and Jump Hosts in the Hub VCN. Routing and security rules are added for SSH connectivity to other VCNs and on-premises network."
+    description: "Check to add a subnet for OCI Bastion service and Jump hosts in the Hub VCN. Routing and security rules are added for SSH connectivity to other VCNs and on-premises network."
     required: false
     visible:
       and:
