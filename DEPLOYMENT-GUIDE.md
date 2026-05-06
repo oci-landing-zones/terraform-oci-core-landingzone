@@ -234,7 +234,7 @@ Core Landing Zone provides a flexible network configuration, ranging from isolat
 
 - **Standard Three-Tier Web Application VCN**: designed for traditional three-tier applications, up to four subnets are provisioned, one to host load balancers, one for application servers (middle-tiers) and one for database servers. Optionally, a subnet (either public or private) for jump hosts is available. The load balancer subnet can be made either public or private. The application servers' and database servers' are always created private. Route rules and network security rules are configured based on typical requirements of three-tier applications.
 
-- **Exadata Cloud Service (ExaCS) VCN**: designed for Oracle Exadata workloads, up to three private subnets are provisioned. One subnet for the Exadata client (the database itself) and optional subnets database backup and integration (for Golden Gate, and other integration solutions, for instance). Route rules and network security rules are configured based on Exadata Cloud Service requirements.
+- **Exadata Cloud Service (ExaCS) VCN**: designed for Oracle Exadata workloads, up to three private subnets are provisioned. One subnet for the Exadata client (the database itself) and optional subnets database backup and integration (for Oracle GoldenGate, and other integration solutions, for instance). Route rules and network security rules are configured based on Exadata Cloud Service requirements.
 
 - **Oracle Kubernetes Engine (OKE) VCN**: designed for Kubernetes-based workloads, up to six subnets are provisioned, according to OKE requirements: Services subnet (public or private), where service like load balancers are expected to be deployed; Workers, API, Management, Pods (available for Native Pod Networking CNI) and Database subnets. Route rules and network security rules are configured based on OKE requirements.
 
@@ -336,9 +336,12 @@ The NSGs in OKE VCNs enforce the load balancer(services) → workers/pods layer 
 - **client-nsg**
   - **ingress:** from itself on protocols/ports defined in *exa_vcn\*_client_ingress_destination_ports*, on TCP:22 for SSH, and on TCP:6200 for Oracle Notification Service (FAN/ONS); from the Hub VCN Jump Host subnet;
   - **egress:** to itself on protocols/ports defined in *exa_vcn\*_client_ingress_destination_ports*, on TCP:22 for SSH, and on TCP:6200 for Oracle Notification Service (FAN/ONS); to Oracle Services Network (OSN) over HTTPS port 443.
-- **backup-nsg**
+- **backup-nsg** (optional)
   - **ingress:** none.
   - **egress:** to Oracle Services Network (OSN) over HTTPS port 443.
+- **integration-nsg** (optional)
+  - **ingress:** from *client-nsg* and from the list of external CIDRs defined by *exa_vcn\*_external_allowed_cidrs_to_ports_into_integration_tier* into protocols and ports defined by *exa_vcn\*_integration_ingress_destination_ports*.
+  - **egress:**  to *client-nsg* on protocols and ports defined by *exa_vcn\*_client_ingress_destination_ports*.
 
 #### Cross-VCN Network Security Rules
 
@@ -402,8 +405,8 @@ Note that you can still provide your own NSGs (use override variables *_addition
 Core Landing Zone natively supports the inlined deployment of a network firewall appliance. The image source can be a pre-built custom image available in the tenancy or an [OCI Marketplace](https://cloud.oracle.com/marketplace) image (Fortinet FortiGate or Palo Alto Networks VM-Series, with BYOL - Bring Your Own License - license type). The appliance is deployed as an active/active pair of OCI Compute instances behind a pair of OCI network load balancers, wired in a classic “sandwich” topology that preserves trust boundaries and isolates management access through three exposed network interfaces:
 
 - **Management interface**: lives in a dedicated subnet, and can be accessed by CIDRs in *allowed_onprem_cidrs_to_fw_mgmt_interface* and Bastion/jump-host NSGs in Hub VCN. Appliance administrators can reach it from on-premises via FastConnect/IPSec (using the approved CIDRs) or from the Internet by connecting through OCI Bastion or the hardened jump host in the Hub VCN. Only control-plane protocols (SSH/HTTPS) are allowed; no workload traffic traverses this interface.
-- **Outdoor (untrusted) interface**: front-ended by the OUTDOOR network load balancer. It receives north/south traffic from the internet or NAT gateways before forwarding it into the appliance. Spoke route tables send 0.0.0.0/0 (or specific external prefixes) toward *hub_vcn_north_south_entry_point_ocid*, ensuring every egress flow is inspected.
-- **Indoor (trusted) interface**: front-ended by the INDOOR network load balancer. DRG route tables point east/west spoke traffic and on-premises return traffic to *hub_vcn_east_west_entry_point_ocid*, forcing packets to re-enter the trusted side of the appliance before hitting workloads.
+- **Outdoor (untrust) interface**: front-ended by the OUTDOOR network load balancer. It receives north/south traffic from the internet or NAT gateways before forwarding it into the appliance. Spoke route tables send 0.0.0.0/0 (or specific external prefixes) toward *hub_vcn_north_south_entry_point_ocid*, ensuring every egress flow is inspected.
+- **Indoor (trust) interface**: front-ended by the INDOOR network load balancer. DRG route tables point east/west spoke traffic and on-premises return traffic to *hub_vcn_east_west_entry_point_ocid*, forcing packets to re-enter the trusted side of the appliance before hitting workloads.
 
 Core Landing Zone requires two Terraform applies to complete the network appliance configuration. The first apply builds the appliances, load balancers, and DRG attachments. The second apply populates both entry point OCIDs with the generated private IPs so every spoke/on-prem route consistently targets the proper outdoor/indoor interface. **Following the second apply, appliances' administrators must deploy policies for allowing overall network connectivity.**
 
