@@ -4179,7 +4179,7 @@ variables:
   oci_nfw_ip_ocid:
     type: string
     title: "OCI Network Firewall IP OCID"
-    description: "Enter the OCID of Native Firewall IP address, where all outbound traffic from the spoke VCNs is sent to in the Hub VCN."
+    description: "Enter the OCID of Native Firewall IP address, where all traffic is sent to in the Hub VCN. In other words, this is the OCI Network Firewall entry point for all north/south and east/west traffic in this landing zone deployment. The value is available after the first apply of this stack in the output variable \"oci_firewall_ip_ocid\". It gets also displayed in the Output tab of the apply job in OCI Resource Manager. Look for output \"oci_firewall_ip_ocid\"."
     visible:
       and:
         - define_net
@@ -4529,7 +4529,7 @@ variables:
   hub_vcn_north_south_entry_point_ocid:
     type: string
     title: "Hub VCN North/South Traffic Destination OCID - Outdoor (aka Untrust) Network Load Balancer"
-    description: "Enter the OCID of the private IP address of the Outdoor (aka Untrust) Network Load Balancer, where all inbound Internet (North/South) traffic is sent to in the Hub VCN. In other words, this is the firewall entry point for traffic coming from the Internet to the Hub VCN and then to the spoke VCNs through the DRG. The value is available after the first apply of this stack in the output variable \"nlb_private_ip_address.OUTDOOR-NLB.id\". It gets also displayed in the Output tab of the apply job in OCI Resource Manager. Look for output \"nlb_private_ip_addresses\"."
+    description: "Enter the OCID of the private IP address of the Outdoor (aka Untrust) Network Load Balancer, where all inbound Internet (North/South) traffic is sent to in the Hub VCN in this landing zone deployment. In other words, this is the firewall entry point for traffic coming from the Internet to the Hub VCN and then to the spoke VCNs through the DRG. The value is available after the first apply of this stack in the output variable \"nlb_private_ip_address.OUTDOOR-NLB.id\". It gets also displayed in the Output tab of the apply job in OCI Resource Manager. Look for output \"nlb_private_ip_addresses\". For more info, look at <a href=\"https://github.com/oci-landing-zones/terraform-oci-core-landingzone/blob/main/DEPLOYMENT-GUIDE.md#third-party-network-appliances\" target=\"_blank\">Deployment Guide</a>."
     required: false
     visible:
       and:
@@ -4542,10 +4542,6 @@ variables:
             - ${hub_deployment_option}
             - "VCN or on-premises connectivity routed through DMZ VCN with Network Virtual Appliance existing DRG (DMZ VCN will be created and DRG ID required)"
         - and: 
-          - not:   
-            - eq: 
-              - ${hub_vcn_deploy_net_appliance_option}
-              - "Don\"t deploy any network appliance at this time"
           - not:    
             - eq:
               - ${hub_vcn_deploy_net_appliance_option}
@@ -4554,7 +4550,7 @@ variables:
   hub_vcn_east_west_entry_point_ocid:
     type: string
     title: "Hub VCN East/West Traffic Destination OCID - Indoor (aka Trust) Network Load Balancer"
-    description: "Enter the OCID of the private IP address of the Indoor (aka Trust) Network Load Balancer, where all inter-VCN (East/West) traffic is sent to in the Hub VCN. In other words, this is the firewall entry point for cross-VCN and on-premises traffic. The value is available after the first apply of this stack in the output variable \"nlb_private_ip_address.INDOOR_NLB.id\". It gets also displayed in the Output tab of the apply job in OCI Resource Manager. Look for output \"nlb_private_ip_addresses (INDOOR_NLB.id)\"."
+    description: "Enter the OCID of the private IP address of the Indoor (aka Trust) Network Load Balancer, where all inter-VCN (East/West) and on-premises traffic is sent to in the Hub VCN in this landing zone deployment. In other words, this is the firewall entry point for cross-VCN and on-premises traffic. The value is available after the first apply of this stack in the output variable \"nlb_private_ip_address.INDOOR_NLB.id\". It gets also displayed in the Output tab of the apply job in OCI Resource Manager. Look for output \"nlb_private_ip_addresses (INDOOR_NLB.id)\". For more info, look at <a href=\"https://github.com/oci-landing-zones/terraform-oci-core-landingzone/blob/main/DEPLOYMENT-GUIDE.md#third-party-network-appliances\" target=\"_blank\">Deployment Guide</a>."
     required: false
     visible:
       and:
@@ -4567,10 +4563,6 @@ variables:
             - ${hub_deployment_option}
             - "VCN or on-premises connectivity routed through DMZ VCN with Network Virtual Appliance existing DRG (DMZ VCN will be created and DRG ID required)"
         - and: 
-          - not:   
-            - eq: 
-              - ${hub_vcn_deploy_net_appliance_option}
-              - "Don\"t deploy any network appliance at this time"
           - not:    
             - eq:
               - ${hub_vcn_deploy_net_appliance_option}
