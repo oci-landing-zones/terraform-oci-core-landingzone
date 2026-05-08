@@ -182,6 +182,10 @@ variableGroups:
       - "hub_vcn_name"
       - "hub_vcn_cidrs"
       - "hub_vcn_deploy_net_appliance_option"
+      - "net_appliance_marketplace_image_vendor"
+      - "net_appliance_marketplace_image_ocid"
+      - "net_appliance_marketplace_image_name"
+      - "net_appliance_marketplace_image_version"
       - "enable_native_firewall_threat_log"
       - "enable_native_firewall_traffic_log"
       - "oci_nfw_ip_ocid"
@@ -4157,8 +4161,9 @@ variables:
     description: "Choose one of the available network appliance options for deploying in the Hub VCN. Costs are incurred."
     enum:
       - "Don\"t deploy any network appliance at this time"
-      - "Palo Alto Networks VM-Series Firewall"
-      - "Fortinet FortiGate Firewall"
+      - "Marketplace Image"
+      #- "Palo Alto Networks VM-Series Firewall"
+      #- "Fortinet FortiGate Firewall"
       #- "Check Point CloudGuard Firewall"
       #- "Cisco Secure Firewall"
       #- "OCI Firewall Service"
@@ -4175,6 +4180,86 @@ variables:
             - ${hub_deployment_option}
             - "VCN or on-premises connectivity routed through DMZ VCN with Network Virtual Appliance existing DRG (DMZ VCN will be created and DRG ID required)"
     default: "Don\"t deploy any network appliance at this time"
+
+  net_appliance_marketplace_image_vendor:
+    type: enum
+    title: "Network Appliance Marketplace Image Vendor"
+    description: "Select the vendor of the Marketplace Image. For \"Marketplace Image\" option, you are required to provide either the image OCID or the image name and version. Marketplace image information can be obtained by running <a href=\"https://github.com/oci-landing-zones/terraform-oci-modules-workloads/tree/main/marketplace-images/examples/marketplace-images\" target=\"_blank\">Marketplace Images</a>. **NOTE THAT BY DEPLOYING A MARKETPLACE IMAGE USING TERRAFORM YOU ARE IMPLICITLY AGREEING WITH OCI MARKETPLACE TERMS FOR THE PRICING MODEL THAT APPLY TO THE SELECTED IMAGE.**"
+    enum:
+      - "PaloAlto"
+      - "Fortinet"
+      - "Other"
+    visible:
+      and:
+        - define_net
+        - or:
+          - eq:
+            - ${hub_deployment_option}
+            - "VCN or on-premises connectivity routing through DMZ VCN with Network Virtual Appliance (DRG and DMZ VCN will be created)"
+          - eq:
+            - ${hub_deployment_option}
+            - "VCN or on-premises connectivity routed through DMZ VCN with Network Virtual Appliance existing DRG (DMZ VCN will be created and DRG ID required)"     
+        - and:
+            - eq:
+              - ${hub_vcn_deploy_net_appliance_option}
+              - "Marketplace Image"
+
+  net_appliance_marketplace_image_ocid:
+    type: string
+    title: "Network Appliance Marketplace Image OCID (with Implict Agreement to OCI Marketplace Terms)"
+    description: "Enter the Marketplace Image OCID. For \"Marketplace Image\" option, you are required to provide either the image OCID or the image name and version. Marketplace image information can be obtained by running <a href=\"https://github.com/oci-landing-zones/terraform-oci-modules-workloads/tree/main/marketplace-images/examples/marketplace-images\" target=\"_blank\">Marketplace Images</a>. **NOTE THAT BY DEPLOYING A MARKETPLACE IMAGE USING TERRAFORM YOU ARE IMPLICITLY AGREEING WITH OCI MARKETPLACE TERMS FOR THE PRICING MODEL THAT APPLY TO THE SELECTED IMAGE.**"
+    visible:
+      and:
+        - define_net
+        - or:
+          - eq:
+            - ${hub_deployment_option}
+            - "VCN or on-premises connectivity routing through DMZ VCN with Network Virtual Appliance (DRG and DMZ VCN will be created)"
+          - eq:
+            - ${hub_deployment_option}
+            - "VCN or on-premises connectivity routed through DMZ VCN with Network Virtual Appliance existing DRG (DMZ VCN will be created and DRG ID required)"     
+        - and:
+            - eq:
+              - ${hub_vcn_deploy_net_appliance_option}
+              - "Marketplace Image"
+
+  net_appliance_marketplace_image_name:
+    type: string
+    title: "Network Appliance Marketplace Image Name (with Implict Agreement to OCI Marketplace Terms)"
+    description: "Enter the Marketplace Image Name. For \"Marketplace Image\" option, you are required to provide either the image OCID or the image name and version. Marketplace image information can be obtained by running <a href=\"https://github.com/oci-landing-zones/terraform-oci-modules-workloads/tree/main/marketplace-images/examples/marketplace-images\" target=\"_blank\">Marketplace Images</a>. **NOTE THAT BY DEPLOYING A MARKETPLACE IMAGE USING TERRAFORM YOU ARE IMPLICITLY AGREEING WITH OCI MARKETPLACE TERMS FOR THE PRICING MODEL THAT APPLY TO THE SELECTED IMAGE.**"
+    visible:
+      and:
+        - define_net
+        - or:
+          - eq:
+            - ${hub_deployment_option}
+            - "VCN or on-premises connectivity routing through DMZ VCN with Network Virtual Appliance (DRG and DMZ VCN will be created)"
+          - eq:
+            - ${hub_deployment_option}
+            - "VCN or on-premises connectivity routed through DMZ VCN with Network Virtual Appliance existing DRG (DMZ VCN will be created and DRG ID required)"     
+        - and:
+            - eq:
+              - ${hub_vcn_deploy_net_appliance_option}
+              - "Marketplace Image"            
+
+  net_appliance_marketplace_image_version:
+    type: string
+    title: "Network Appliance Marketplace Image Version (with Implict Agreement to OCI Marketplace Terms)"
+    description: "Enter the Marketplace Image Version. For \"Marketplace Image\" option, you are required to provide either the image OCID or the image name and version. Marketplace image information can be obtained by running <a href=\"https://github.com/oci-landing-zones/terraform-oci-modules-workloads/tree/main/marketplace-images/examples/marketplace-images\" target=\"_blank\">Marketplace Images</a>. **NOTE THAT BY DEPLOYING A MARKETPLACE IMAGE USING TERRAFORM YOU ARE IMPLICITLY AGREEING WITH OCI MARKETPLACE TERMS FOR THE PRICING MODEL THAT APPLY TO THE SELECTED IMAGE.**"
+    visible:
+      and:
+        - define_net
+        - or:
+          - eq:
+            - ${hub_deployment_option}
+            - "VCN or on-premises connectivity routing through DMZ VCN with Network Virtual Appliance (DRG and DMZ VCN will be created)"
+          - eq:
+            - ${hub_deployment_option}
+            - "VCN or on-premises connectivity routed through DMZ VCN with Network Virtual Appliance existing DRG (DMZ VCN will be created and DRG ID required)"     
+        - and:
+            - eq:
+              - ${hub_vcn_deploy_net_appliance_option}
+              - "Marketplace Image"
 
   oci_nfw_ip_ocid:
     type: string

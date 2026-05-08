@@ -5,58 +5,41 @@ locals {
 
   firewall_options = {
     "Don't deploy any network appliance at this time" = "NO",
-    "Palo Alto Networks VM-Series Firewall"           = "PALOALTO",
-    "Fortinet FortiGate Firewall"                     = "FORTINET",
-    "Check Point CloudGuard Firewall"                 = "CHECKPOINT", # Not available
-    "Cisco Secure Firewall"                           = "CISCO",      # Not available
+    "Marketplace Image"                               = "MARKETPLACE",
     "User-Provided Virtual Network Appliance"         = "CUSTOM",
     "OCI Native Firewall"                             = "OCINFW"
   }
 
-  image_name_database = {
-    "PALOALTO" = ["Palo Alto Networks VM-Series Next Generation Firewall", var.net_palo_alto_version]
-    "FORTINET" = ["FortiGate Next-Gen Firewall (BYOL)", var.net_fortigate_version]
-  }
-
   chosen_firewall_option = local.firewall_options[var.hub_vcn_deploy_net_appliance_option]
 
-  health_checkers = {
-    "FORTINET" = {
-      protocol    = "HTTP"
-      port        = 8008
-      return_code = 200
-      url_path    = "/"
-    }
-    "PALOALTO" = {
-      protocol    = "HTTPS"
-      port        = 443
-      return_code = 200
-      url_path    = "/php/login.php"
-    }
-    "CUSTOM" = {
-      protocol    = "HTTP"
-      port        = 80
-      return_code = 200
-      url_path    = "/"
-    }
-  }
+  net_appliance_image_source = local.chosen_firewall_option == "CUSTOM" ? "custom_image" : "marketplace_image"
 
-  #fortigate_image_ocid = "ocid1.image.oc1..aaaaaaaaq57pywudjr5yogjtl6qf3zs3yrwv66b5ooeiqykjgnneuerhfnia"
-
-  # current_image_name     = local.image_name_database[local.chosen_firewall_option][0]
-  # current_publisher_name = local.image_name_database[local.chosen_firewall_option][1]
-
-  image_source = local.chosen_firewall_option == "CUSTOM" ? "custom_image" : "marketplace_image"
-  image_options = local.chosen_firewall_option == "CUSTOM" ? {
+  net_appliance_image = local.chosen_firewall_option == "CUSTOM" ? {
     "custom_image" = {
-      ocid = var.net_appliance_image_ocid
+      ocid    = var.net_appliance_image_ocid
+      name    = null
+      version = null
     }
-    } : {
-    "marketplace_image" = local.chosen_firewall_option != "NO" && local.chosen_firewall_option != "OCINFW" ? {
-      name    = local.image_name_database[local.chosen_firewall_option][0]
-      version = local.image_name_database[local.chosen_firewall_option][1]
-    } : {}
-  }
+    } : local.chosen_firewall_option == "MARKETPLACE" ? {
+    "marketplace_image" = {
+      ocid    = var.net_appliance_marketplace_image_ocid
+      name    = var.net_appliance_marketplace_image_name
+      version = var.net_appliance_marketplace_image_version
+    }
+  } : null
+
+  net_appliance_marketplace_images_configuration = local.chosen_firewall_option == "MARKETPLACE" ? {
+    FW-1 = {
+      ocid    = var.net_appliance_marketplace_image_ocid
+      name    = var.net_appliance_marketplace_image_name
+      version = var.net_appliance_marketplace_image_version
+    }
+    FW-2 = {
+      ocid    = var.net_appliance_marketplace_image_ocid
+      name    = var.net_appliance_marketplace_image_name
+      version = var.net_appliance_marketplace_image_version
+    }
+  } : null
 
   instances_configuration = local.chosen_firewall_option != "NO" && local.chosen_firewall_option != "OCINFW" ? {
     default_compartment_id      = local.network_compartment_id
@@ -69,7 +52,7 @@ locals {
           memory = var.net_appliance_flex_shape_memory
           ocpus  = var.net_appliance_flex_shape_cpu
         }
-        (local.image_source) = local.image_options[local.image_source]
+        (local.net_appliance_image_source) = local.net_appliance_image[local.net_appliance_image_source]
         placement = {
           availability_domain = 1
           fault_domain        = 1
@@ -113,7 +96,7 @@ locals {
           memory = var.net_appliance_flex_shape_memory
           ocpus  = var.net_appliance_flex_shape_cpu
         },
-        (local.image_source) = local.image_options[local.image_source]
+        (local.net_appliance_image_source) = local.net_appliance_image[local.net_appliance_image_source]
         placement = {
           availability_domain = length(data.oci_identity_availability_domains.ads.availability_domains) > 1 ? 2 : 1
           fault_domain        = length(data.oci_identity_availability_domains.ads.availability_domains) > 1 ? 1 : 2
@@ -152,6 +135,26 @@ locals {
       }
     }
   } : null
+
+  health_checkers = {
+    "FORTINET" = {
+      protocol    = "HTTP"
+      port        = 8008
+      return_code = 200
+      url_path    = "/"
+    }
+    "PALOALTO" = {
+      protocol    = "TCP"
+      port        = 22
+    }
+    "OTHER" = {
+      protocol    = "HTTP"
+      port        = 80
+      return_code = 200
+      url_path    = "/"
+    }
+  }
+
   nlb_configuration = local.chosen_firewall_option != "NO" && local.chosen_firewall_option != "OCINFW" ? {
     default_compartment_id = local.network_compartment_id
     nlbs = {
@@ -167,7 +170,7 @@ locals {
             protocol = "ANY"
             backend_set = {
               name           = "default-backend-set"
-              health_checker = local.health_checkers[local.chosen_firewall_option]
+              health_checker = local.health_checkers[upper(coalesce(var.net_appliance_marketplace_image_vendor, "OTHER"))]
               backends = {
                 BACKENDS-1 = {
                   name       = "backend-1"
@@ -195,7 +198,7 @@ locals {
             protocol = "ANY"
             backend_set = {
               name           = "default-backend-set"
-              health_checker = local.health_checkers[local.chosen_firewall_option]
+              health_checker = local.health_checkers[upper(coalesce(var.net_appliance_marketplace_image_vendor, "OTHER"))]
               backends = {
                 BACKEND-1 = {
                   name       = "backend-1"
@@ -260,9 +263,11 @@ locals {
 }
 
 module "lz_firewall_appliance" {
-  count                   = local.chosen_firewall_option != "NO" && local.chosen_firewall_option != "OCINFW" ? 1 : 0
-  source                  = "github.com/oci-landing-zones/terraform-oci-modules-workloads//cis-compute-storage?ref=v0.2.2"
-  instances_configuration = local.instances_configuration
+  count = local.chosen_firewall_option != "NO" && local.chosen_firewall_option != "OCINFW" ? 1 : 0
+  source                  = "github.com/oci-landing-zones/terraform-oci-modules-workloads//cis-compute-storage?ref=release-0.2.7"
+  #source                           = "../terraform-oci-secure-workloads/cis-compute-storage"
+  instances_configuration          = local.instances_configuration
+  marketplace_images_configuration = local.net_appliance_marketplace_images_configuration
   providers = {
     oci                                  = oci
     oci.block_volumes_replication_region = oci.home

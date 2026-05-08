@@ -62,7 +62,39 @@ variable "hub_vcn_cidrs" {
 variable "hub_vcn_deploy_net_appliance_option" {
   type        = string
   default     = "Don't deploy any network appliance at this time"
-  description = "The network appliance option for deploying in the Hub VCN. Valid values: 'Don't deploy any network appliance at this time' (default), 'Palo Alto Networks VM-Series Firewall', 'Fortinet FortiGate Firewall', 'User-Provided Virtual Network Appliance', and 'OCI Native Firewall'. Costs are incurred."
+  description = "The network appliance option for deploying in the Hub VCN. Valid values: 'Don't deploy any network appliance at this time' (default), 'Marketplace Image', 'User-Provided Virtual Network Appliance', and 'OCI Native Firewall'. Costs are incurred. For 'Marketplace Image', users are required to provide either net_appliance_marketplace_image_ocid or net_appliance_marketplace_image_name (with optional net_appliance_marketplace_image_version) variables. For 'User-Provided Virtual Network Appliance', users are required to provide net_appliance_image_ocid variable."
+}
+
+variable "net_appliance_marketplace_image_vendor" {
+  type        = string
+  default     = null
+  description = "The marketplace image vendor for the network appliance. Applicable when hub_vcn_deploy_net_appliance_option is set to 'Marketplace Image'. Marketplace image information can be obtained by running the example in https://github.com/oci-landing-zones/terraform-oci-modules-workloads/tree/main/marketplace-images/examples/marketplace-images. NOTE THAT BY DEPLOYING A MARKETPLACE IMAGE USING TERRAFORM YOU ARE IMPLICITLY AGREEING WITH OCI MARKETPLACE TERMS FOR THE PRICING MODEL THAT APPLY TO THE SELECTED IMAGE."
+  validation {
+    condition = var.net_appliance_marketplace_image_vendor == null || contains(["PALOALTO", "FORTINET", "OTHER"], upper(var.net_appliance_marketplace_image_vendor))
+    error_message = "Validation failure for net_appliance_marketplace_image_vendor: it must be null or one of: \"PaloAlto\", \"Fortinet\", \"Other\" (case insensitive)."
+  }
+}
+
+variable "net_appliance_marketplace_image_ocid" {
+  type        = string
+  default     = null
+  description = "The marketplace image OCID for the network appliance. Applicable when hub_vcn_deploy_net_appliance_option is set to 'Marketplace Image'. Marketplace image information can be obtained by running the example in https://github.com/oci-landing-zones/terraform-oci-modules-workloads/tree/main/marketplace-images/examples/marketplace-images. NOTE THAT BY DEPLOYING A MARKETPLACE IMAGE USING TERRAFORM YOU ARE IMPLICITLY AGREEING WITH OCI MARKETPLACE TERMS FOR THE PRICING MODEL THAT APPLY TO THE SELECTED IMAGE."
+  validation {
+    condition = var.net_appliance_marketplace_image_ocid == null || can(regex("^ocid1\\.image\\.[a-z0-9]+\\..[a-zA-Z0-9]{60}$", var.net_appliance_marketplace_image_ocid))
+    error_message = "Validation failure for net_appliance_marketplace_image_ocid: it must be null or a valid OCI marketplace image OCID (e.g. ocid1.image.<realm>..<unique_id>)."
+  }
+}
+
+variable "net_appliance_marketplace_image_name" {
+  type        = string
+  default     = null
+  description = "The marketplace image name for the network appliance. Applicable when hub_vcn_deploy_net_appliance_option is set to 'Marketplace Image'. Valid names with BYOL pricing model: 'Palo Alto Networks VM-Series Firewall', 'Fortinet FortiGate Firewall'. Marketplace image information can be obtained by running the example in https://github.com/oci-landing-zones/terraform-oci-modules-workloads/tree/main/marketplace-images/examples/marketplace-images. NOTE THAT BY DEPLOYING A MARKETPLACE IMAGE USING TERRAFORM YOU ARE IMPLICITLY AGREEING WITH OCI MARKETPLACE TERMS FOR THE PRICING MODEL THAT APPLY TO THE SELECTED IMAGE."
+}
+
+variable "net_appliance_marketplace_image_version" {
+  type        = string
+  default     = null
+  description = "The marketplace image version for the network appliance. Applicable when hub_vcn_deploy_net_appliance_option is set to 'Marketplace Image' and net_appliance_marketplace_image_name is provided. If not provided, the latest version of the specified Marketplace image is be used. Marketplace image information can be obtained by running the example in https://github.com/oci-landing-zones/terraform-oci-modules-workloads/tree/main/marketplace-images/examples/marketplace-images. NOTE THAT BY DEPLOYING A MARKETPLACE IMAGE USING TERRAFORM YOU ARE IMPLICITLY AGREEING WITH OCI MARKETPLACE TERMS FOR THE PRICING MODEL THAT APPLY TO THE SELECTED IMAGE."
 }
 
 variable "enable_native_firewall_threat_log" {
