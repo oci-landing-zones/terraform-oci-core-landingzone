@@ -56,15 +56,16 @@ locals {
           ocpus  = var.bastion_jump_host_flex_shape_cpu
         }
 
-        marketplace_image = coalesce(var.bastion_jump_host_marketplace_image_option,"null") != "null" ? {
+        marketplace_image = coalesce(var.bastion_jump_host_marketplace_image_option, "null") != "null" ? {
           name = trimspace(var.bastion_jump_host_marketplace_image_option)
+          #version = "Oracle-Linux-8.10-2025.06.24-STIG"
         } : null
 
-        platform_image = coalesce(var.bastion_jump_host_platform_image_ocid,"null") != "null" ? {
+        platform_image = coalesce(var.bastion_jump_host_platform_image_ocid, "null") != "null" ? {
           ocid = trimspace(var.bastion_jump_host_platform_image_ocid)
         } : null
 
-        custom_image = coalesce(var.bastion_jump_host_custom_image_ocid,"null") != "null" ? {
+        custom_image = coalesce(var.bastion_jump_host_custom_image_ocid, "null") != "null" ? {
           ocid = trimspace(var.bastion_jump_host_custom_image_ocid)
         } : null
 
@@ -87,11 +88,18 @@ locals {
         platform_type                 = var.cis_level == "2" ? (length(regexall("VM.Standard", var.bastion_jump_host_instance_shape)) > 0 ? (length(regexall("VM.Standard.E", var.bastion_jump_host_instance_shape)) > 0 ? "AMD_VM" : "INTEL_VM") : null) : null ## VM.Standard.E[0-9] = AMD_VM ### VM.Standard[0-9] = INTEL_VM
       }
     }
-  } : {
+    } : {
     default_compartment_id      = null
-    default_ssh_public_key_path = null 
-    instances = {}
+    default_ssh_public_key_path = null
+    instances                   = {}
   }
+
+  jump_host_marketplace_images_configuration = (local.hub_with_vcn == true && var.add_hub_vcn_jumphost_subnet && var.deploy_bastion_jump_host == true && coalesce(var.bastion_jump_host_marketplace_image_option, "null") != "null") ? {
+    JUMP-HOST-INSTANCE = {
+      name    = trimspace(var.bastion_jump_host_marketplace_image_option)
+      version = null
+    }
+  } : null
 }
 
 module "lz_bastion" {
@@ -102,7 +110,8 @@ module "lz_bastion" {
 
 module "lz_bastion_jump_host" {
 
-  source = "github.com/oci-landing-zones/terraform-oci-modules-workloads//cis-compute-storage?ref=v0.2.2"
+  source = "github.com/oci-landing-zones/terraform-oci-modules-workloads//cis-compute-storage?ref=release-0.2.7"
+  #source = "../terraform-oci-secure-workloads/cis-compute-storage"
   count  = (local.hub_with_vcn == true && var.add_hub_vcn_jumphost_subnet && var.deploy_bastion_jump_host == true) ? 1 : 0
 
   providers = {
@@ -110,6 +119,7 @@ module "lz_bastion_jump_host" {
     oci.block_volumes_replication_region = oci.home
   }
 
-  instances_configuration = local.jump_host_instances_configuration
-  tenancy_ocid            = var.tenancy_ocid
+  instances_configuration          = local.jump_host_instances_configuration
+  marketplace_images_configuration = local.jump_host_marketplace_images_configuration
+  tenancy_ocid                     = var.tenancy_ocid
 }
