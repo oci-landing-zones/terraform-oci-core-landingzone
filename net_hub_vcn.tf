@@ -233,20 +233,32 @@ locals {
         local.chosen_firewall_option != "OCINFW" ? {
           "MGMT-SUBNET-ROUTE-TABLE" = {
             display_name = "mgmt-subnet-route-table"
-            route_rules = {
-              "OSN-RULE" = {
-                network_entity_key = "HUB-VCN-SERVICE-GATEWAY"
-                description        = "Traffic destined for all OCI services in Oracle Services Network is routed through Service Gateway."
-                destination        = "all-services"
-                destination_type   = "SERVICE_CIDR_BLOCK"
+            route_rules = merge(
+              {
+                "OSN-RULE" = {
+                  network_entity_key = "HUB-VCN-SERVICE-GATEWAY"
+                  description        = "Traffic destined for all OCI services in Oracle Services Network is routed through Service Gateway."
+                  destination        = "all-services"
+                  destination_type   = "SERVICE_CIDR_BLOCK"
+                }
               },
-              "EVERYWHERE-ELSE-RULE" = { # We don't route thru firewall because eventual problems with the firewall itself can lock admins out of mgmt interfaces.
-                network_entity_key = "HUB-DRG"
-                description        = "Traffic destined for networks outside the VCN is routed through the DRG."
-                destination        = "0.0.0.0/0"
-                destination_type   = "CIDR_BLOCK"
+              # We don't route thru firewall because eventual problems with the firewall itself can lock admins out of mgmt interfaces.
+              { for cidr in toset(concat(var.onprem_cidrs,var.allowed_onprem_cidrs_to_fw_mgmt_interface)) : "ON-PREM-${cidr}-RULE" => { 
+                  network_entity_key = "HUB-DRG" # FW admins can connect from on-prem to the management subnet through the DRG.
+                  description        = "Traffic destined for on-prem CIDR ${cidr} is routed through the DRG."
+                  destination        = cidr
+                  destination_type   = "CIDR_BLOCK"
+                }
+              },
+              {  
+                "EVERYWHERE-ELSE-RULE" = { 
+                  network_entity_key = "HUB-VCN-NAT-GATEWAY" 
+                  description        = "Traffic destined for networks outside the VCN is routed through the NAT GAteway."
+                  destination        = "0.0.0.0/0"
+                  destination_type   = "CIDR_BLOCK"
+                }
               }  
-            }
+            )
           }
         } : {},
         var.add_hub_vcn_jumphost_subnet == true ? {
@@ -740,87 +752,87 @@ locals {
 
   ## Ingress rules:
   hub_vcn_indoor_nsg_ingress_rules = merge(
-    # { for cidr in var.onprem_cidrs : "INGRESS-FROM-${cidr}-RULE" => {
-    #   description = "Ingress from on-premises CIDR."
-    #   stateless   = false
-    #   protocol    = "TCP"
-    #   src         = "${cidr}"
-    #   src_type    = "CIDR_BLOCK"
-    # }},
+    { for cidr in toset(concat(var.onprem_cidrs,var.allowed_onprem_cidrs_to_fw_mgmt_interface)) : "INGRESS-FROM-${cidr}-RULE" => {
+      description = "Ingress from on-premises CIDR."
+      stateless   = false
+      protocol    = "ALL"
+      src         = "${cidr}"
+      src_type    = "CIDR_BLOCK"
+    }},
     { for cidr in var.hub_vcn_cidrs : "INGRESS-FROM-HUB-VCN-${cidr}-RULE" => {
       description = "Ingress from ${local.hub_vcn_display_name}."
       stateless   = false
-      protocol    = "TCP"
+      protocol    = "ALL"
       src         = "${cidr}"
       src_type    = "CIDR_BLOCK"
     }},
     local.add_tt_vcn1 == true && var.tt_vcn1_attach_to_drg == true ? { for cidr in var.tt_vcn1_cidrs : "INGRESS-FROM-TT-VCN-1-${cidr}-RULE" => {
       description = "Ingress from ${local.tt_vcn1_display_name}."
       stateless   = false
-      protocol    = "TCP"
+      protocol    = "ALL"
       src         = "${cidr}"
       src_type    = "CIDR_BLOCK"
     }} : {},
     local.add_tt_vcn2 == true && var.tt_vcn2_attach_to_drg == true ? { for cidr in var.tt_vcn2_cidrs : "INGRESS-FROM-TT-VCN-2-${cidr}-RULE" => {
       description = "Ingress from ${local.tt_vcn2_display_name}."
       stateless   = false
-      protocol    = "TCP"
+      protocol    = "ALL"
       src         = "${cidr}"
       src_type    = "CIDR_BLOCK"
     }} : {},
     local.add_tt_vcn3 == true && var.tt_vcn3_attach_to_drg == true ? { for cidr in var.tt_vcn3_cidrs : "INGRESS-FROM-TT-VCN-3-${cidr}-RULE" => {
       description = "Ingress from ${local.tt_vcn3_display_name}."
       stateless   = false
-      protocol    = "TCP"
+      protocol    = "ALL"
       src         = "${cidr}"
       src_type    = "CIDR_BLOCK"
     }} : {},
     local.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true ? { for cidr in var.oke_vcn1_cidrs : "INGRESS-FROM-OKE-VCN-1-${cidr}-RULE" => {
       description = "Ingress from ${local.oke_vcn1_display_name}."
       stateless   = false
-      protocol    = "TCP"
+      protocol    = "ALL"
       src         = "${cidr}"
       src_type    = "CIDR_BLOCK"
     }} : {},
     local.add_oke_vcn2 == true && var.oke_vcn2_attach_to_drg == true ? { for cidr in var.oke_vcn2_cidrs : "INGRESS-FROM-OKE-VCN-2-${cidr}-RULE" => {
       description = "Ingress from ${local. oke_vcn2_display_name}."
       stateless   = false
-      protocol    = "TCP"
+      protocol    = "ALL"
       src         = "${cidr}"
       src_type    = "CIDR_BLOCK"
     }} : {},
     local.add_oke_vcn3 == true && var.oke_vcn3_attach_to_drg == true ? { for cidr in var.oke_vcn3_cidrs : "INGRESS-FROM-OKE-VCN-3-${cidr}-RULE" => {
       description = "Ingress from ${local.oke_vcn3_display_name}."
       stateless   = false
-      protocol    = "TCP"
+      protocol    = "ALL"
       src         = "${cidr}"
       src_type    = "CIDR_BLOCK"
     }} : {},
     local.add_exa_vcn1 == true && var.exa_vcn1_attach_to_drg == true ? { for cidr in var.exa_vcn1_cidrs : "INGRESS-FROM-EXA-VCN-1-${cidr}-RULE" => {
       description = "Ingress from ${local.exa_vcn1_display_name}."
       stateless   = false
-      protocol    = "TCP"
+      protocol    = "ALL"
       src         = "${cidr}"
       src_type    = "CIDR_BLOCK"
     }} : {},
     local.add_exa_vcn2 == true && var.exa_vcn2_attach_to_drg == true ? { for cidr in var.exa_vcn2_cidrs : "INGRESS-FROM-EXA-VCN-2-${cidr}-RULE" => {
       description = "Ingress from ${local.exa_vcn2_display_name}."
       stateless   = false
-      protocol    = "TCP"
+      protocol    = "ALL"
       src         = "${cidr}"
       src_type    = "CIDR_BLOCK"
     }} : {},
     local.add_exa_vcn3 == true && var.exa_vcn3_attach_to_drg == true ? { for cidr in var.exa_vcn3_cidrs : "INGRESS-FROM-EXA-VCN-3-${cidr}-RULE" => {
       description = "Ingress from ${local.exa_vcn3_display_name}."
       stateless   = false
-      protocol    = "TCP"
+      protocol    = "ALL"
       src         = "${cidr}"
       src_type    = "CIDR_BLOCK"
     }} : {},
     local.workload_cidrs_public != null ? { for cidr in local.workload_cidrs_public : "INGRESS-FROM-WORKLOAD-${cidr}-RULE" => {
       description = "Ingress from additional networks public access CIDR ${cidr}."
       stateless   = false
-      protocol    = "TCP"
+      protocol    = "ALL"
       src         = "${cidr}"
       src_type    = "CIDR_BLOCK"
     }} : {}
