@@ -207,20 +207,8 @@ locals {
                   description        = "Traffic destined for all OCI services in Oracle Services Network is routed through Service Gateway."
                   destination        = "all-services"
                   destination_type   = "SERVICE_CIDR_BLOCK"
-                }
-              },
-              local.chosen_firewall_option == "OCINFW" || (local.chosen_firewall_option != "OCINFW" && local.hub_vcn_outdoor_subnet_private == true) ? merge(
-                local.spoke_subnets_routing,
-                {
-                  "EVERYWHERE-ELSE-RULE" = {
-                    network_entity_key = "HUB-VCN-NAT-GATEWAY"
-                    description        = "Traffic destined for networks outside the VCN is routed through the NAT Gateway."
-                    destination        = "0.0.0.0/0"
-                    destination_type   = "CIDR_BLOCK"
-                  }
-                }  
-               ) : {
-                "EVERYWHERE-ELSE-RULE" = {
+                },
+                "DRG-RULE" = {
                   network_entity_key = "HUB-DRG"
                   description        = "Traffic destined for networks outside the VCN is routed through the DRG."
                   destination        = "0.0.0.0/0"
@@ -340,7 +328,7 @@ locals {
                 "INGRESS-FROM-LBR-NSG-RULE" = {
                   description = "Ingress from App Load Balancer NSG."
                   stateless   = false
-                  protocol    = "TCP"
+                  protocol    = "ALL"
                   src         = "HUB-VCN-APP-LOAD-BALANCER-NSG"
                   src_type    = "NETWORK_SECURITY_GROUP"
                 }
@@ -349,7 +337,7 @@ locals {
                 # For customized hub VCN deployments with overridden local.hub_vcn_outdoor_subnet_private and local.hub_vcn_outdoor_allowed_public_cidrs.
                   description = "Ingress from external CIDR ${cidr}."
                   stateless   = false
-                  protocol    = "TCP"
+                  protocol    = "ALL"
                   src         = "${cidr}"
                   src_type    = "CIDR_BLOCK"
                 }
@@ -359,7 +347,7 @@ locals {
               "EGRESS-TO-ANYWHERE-RULE" = {
                 description = "Egress to anywhere."
                 stateless   = false
-                protocol    = "TCP"
+                protocol    = "ALL"
                 dst         = "0.0.0.0/0"
                 dst_type    = "CIDR_BLOCK"
               }
@@ -370,17 +358,10 @@ locals {
           "HUB-VCN-OUTDOOR-FW-NSG" = {
             display_name = "outdoor-fw-nsg"
             ingress_rules = {
-              "INGRESS-FROM-OUTDOOR-NLB-NSG-RULE" = {
-                description = "Ingress from Outdoor NLB NSG (for health checks)."
-                stateless   = false
-                protocol    = "TCP"
-                src         = "HUB-VCN-OUTDOOR-NLB-NSG"
-                src_type    = "NETWORK_SECURITY_GROUP"
-              },
               "INGRESS-FROM-LBR-NSG-RULE" = {
                 description = "Ingress from App Load Balancer NSG."
                 stateless   = false
-                protocol    = "TCP"
+                protocol    = "ALL"
                 src         = "HUB-VCN-APP-LOAD-BALANCER-NSG"
                 src_type    = "NETWORK_SECURITY_GROUP"
               }
@@ -389,7 +370,7 @@ locals {
               "EGRESS-TO-ANYWHERE-RULE" = {
                 description = "Egress to anywhere over TCP"
                 stateless   = false
-                protocol    = "TCP"
+                protocol    = "ALL"
                 dst         = "0.0.0.0/0"
                 dst_type    = "CIDR_BLOCK"
               }
@@ -414,24 +395,6 @@ locals {
           "HUB-VCN-MGMT-NSG" = {
             display_name = "mgmt-nsg"
             ingress_rules = merge(
-              # { for cidr in var.hub_vcn_mgmt_subnet_external_allowed_cidrs_for_http : "INGRESS-FROM-${cidr}-HTTP-RULE" => {
-              #   description  = "Ingress from ${cidr} on port 443. Allows inbound HTTP access for on-prem IP addresses."
-              #   stateless    = false
-              #   protocol     = "TCP"
-              #   src          = cidr
-              #   src_type     = "CIDR_BLOCK"
-              #   dst_port_min = 443
-              #   dst_port_max = 443
-              # } },
-              # { for cidr in var.hub_vcn_mgmt_subnet_external_allowed_cidrs_for_ssh : "INGRESS-FROM-${cidr}-SSH-RULE" => {
-              #   description  = "Ingress from ${cidr} on port 22. Allows inbound SSH access for on-prem IP addresses."
-              #   stateless    = false
-              #   protocol     = "TCP"
-              #   src          = cidr
-              #   src_type     = "CIDR_BLOCK"
-              #   dst_port_min = 22
-              #   dst_port_max = 22
-              # } },
               { for cidr_port_pair in local.fw_mgmt_external_allowed_cidrs_to_ports : "INGRESS-FROM-${split(",",cidr_port_pair)[0]}-ON-${split(",",cidr_port_pair)[1]}-RULE" => {
                 description  = "Ingress from ${split(",",cidr_port_pair)[0]} over ${split(":",split(",",cidr_port_pair)[1])[0]} on ${split(":",split(",",cidr_port_pair)[1])[0] == "ICMP" ? "type/code ${split(":",split(",",cidr_port_pair)[1])[1]}" : "port ${split(":",split(",",cidr_port_pair)[1])[1]}"}."
                 stateless    = false
@@ -752,7 +715,7 @@ locals {
 
   ## Ingress rules:
   hub_vcn_indoor_nsg_ingress_rules = merge(
-    { for cidr in toset(concat(var.onprem_cidrs,var.allowed_onprem_cidrs_to_fw_mgmt_interface)) : "INGRESS-FROM-${cidr}-RULE" => {
+    { for cidr in toset(concat(var.onprem_cidrs,var.allowed_onprem_cidrs_to_fw_mgmt_interface)) : "INGRESS-FROM-ONPREM-${cidr}-RULE" => {
       description = "Ingress from on-premises CIDR."
       stateless   = false
       protocol    = "ALL"
@@ -829,13 +792,13 @@ locals {
       src         = "${cidr}"
       src_type    = "CIDR_BLOCK"
     }} : {},
-    local.workload_cidrs_public != null ? { for cidr in local.workload_cidrs_public : "INGRESS-FROM-WORKLOAD-${cidr}-RULE" => {
-      description = "Ingress from additional networks public access CIDR ${cidr}."
+    { for cidr in local.workload_cidrs_public : "INGRESS-FROM-VCN-${cidr}-RULE" => {
+      description = "Ingress from VCN with CIDR ${cidr}."
       stateless   = false
       protocol    = "ALL"
       src         = "${cidr}"
       src_type    = "CIDR_BLOCK"
-    }} : {}
+    }}
   )
 
   ## Egress rules:
