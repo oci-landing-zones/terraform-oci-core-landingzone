@@ -100,17 +100,6 @@
 
 | Variable Name                                   | Description | Type | Default | Required |
 |-------------------------------------------------|-------------|------|---------|----------|
-| bastion\_jump\_host\_boot\_volume\_size         | The boot volume size (in GB) for the bastion jump host instance. | number | 60 | no |
-| bastion\_jump\_host\_custom\_image\_ocid        | The custom image ocid of the user-provided bastion jump host instance. The custom image takes precedence over marketplace image. | string | null | no |
-| bastion\_jump\_host\_flex\_shape\_cpu           | The number of OCPUs for the selected flex shape. Applicable to flexible shapes only. | number | 2 | no |
-| bastion\_jump\_host\_flex\_shape\_memory        | The amount of memory (in GB) for the selected flex shape. Applicable to flexible shapes only. | number | 56 | no |
-| bastion\_jump\_host\_instance\_name             | The display name of the bastion jump host instance. | string | "bastion-jump-host-instance" | no |
-| bastion\_jump\_host\_instance\_shape            | The instance shape for the bastion jump host instance. | string | "VM.Standard.E4.Flex" | no |
-| bastion\_jump\_host\_marketplace\_image\_option | The OCI Marketplace image name for the jump host. Examples of available options are "Oracle Linux 8 STIG" (free) and "CIS Hardened Image Level 1 on Oracle Linux 8" (paid). | string | null | no |
-| bastion
-| bastion\_jump\_host\_ssh\_public\_key\_path     | The SSH public key to login to bastion jump host instance. | string | null| no |
-| bastion\_service\_allowed\_cidrs                | List of the bastion service allowed cidrs. | list(string) | [] | no |
-| bastion\_service\_name                          | The bastion service name. | string | null | no |
 | cloud\_guard\_admin\_email\_endpoints           | List of email addresses for Cloud Guard related notifications. | list(string) | [] | no |
 | cloud\_guard\_reporting\_region                 | Cloud Guard reporting region, where Cloud Guard reporting resources are kept. If not set, it defaults to home region. | string | null | no |
 | cloud\_guard\_risk\_level\_threshold            | Determines the minimum Risk level that triggers sending Cloud Guard problems to the defined Cloud Guard Email Endpoint. E.g. a setting of High will send notifications for Critical and High problems. | string | "High" | no |
@@ -385,21 +374,45 @@
 | hub\_vcn\_web\_subnet\_is\_private | Whether the Web subnet private. It is public by default. | bool | false | no |
 | hub\_vcn\_web\_subnet\_jump\_host\_allowed\_cidrs | List of CIDRs allowed to SSH into the Web subnet via a jump host eventually deployed in the Web subnet. Leave empty for no access. | list(string) | [] | no |
 | hub\_vcn\_web\_subnet\_name | The Hub VCN Web subnet name. | string | null | no |
+| hub\_vcn\_deploy\_net\_appliance\_option | The network appliance option to deploy in the Hub VCN. | string | Default is "Don't deploy any network appliance at this time". Other valid values: "Marketplace Image", "User-Provided Virtual Network Appliance", "OCI Native Firewall". Costs may be incurred. For "Marketplace Image", users are required to provide either net\_appliance\_marketplace\_image\_ocid or net\_appliance\_marketplace\_image\_name (with optional net\_appliance\_marketplace\_image\_version) variables. **NOTE THAT BY DEPLOYING A MARKETPLACE IMAGE USING THIS TERRAFORM MODULE YOU ARE IMPLICITLY AGREEING WITH ALL OCI MARKETPLACE TERMS, INCLUDING THE PRICING MODEL THAT APPLY TO THE SELECTED IMAGE.** Marketplace image information can be obtained by running [Marketplace Images](https://github.com/oci-landing-zones/terraform-oci-modules-workloads/tree/main/marketplace-images/examples/marketplace-images). For "User-Provided Virtual Network Appliance", users are required to provide net\_appliance\_image\_ocid variable. | no |
+| net\_appliance\_marketplace\_image\_vendor | The marketplace image vendor for the network appliance. Valid values are "PALOALTO", "FORTINET", "OTHER" | string | null | Required when hub\_vcn\_deploy\_net\_appliance\_option is set to "Marketplace Image".
+| net\_appliance\_marketplace\_image\_ocid   | The marketplace image OCID for the network appliance. Applicable when hub\_vcn\_deploy\_net\_appliance\_option is set to "Marketplace Image". | string | null | no |
+| net\_appliance\_marketplace\_image\_name   | The marketplace image name for the network appliance. Applicable when hub\_vcn\_deploy\_net\_appliance\_option is set to "Marketplace Image". | string | null | no |
+| net\_appliance\_marketplace\_image\_version| The marketplace image version for the network appliance. Applicable when hub\_vcn\_deploy\_net\_appliance\_option is set to "Marketplace Image". | string | null | no |
+| net\_appliance\_image\_ocid | The custom image ocid of the user-provided virtual network appliance. | string | null | Required when hub\_vcn\_deploy\_net\_appliance\_option is set to "User-Provided Virtual Network Appliance" |
 | net\_appliance\_boot\_volume\_size | The boot volume size (in GB) for the network appliances. | number | 60 | no |
 | net\_appliance\_flex\_shape\_cpu | The number of OCPUs for the selected flex shape. Applicable to flexible shapes only. | number | 2 | no |
 | net\_appliance\_flex\_shape\_memory | The amount of memory (in GB) for the selected flex shape. Applicable to flexible shapes only. | number | 56 | no |
-| net\_appliance\_image\_ocid | The custom image ocid of the user-provided virtual network appliance. | string | null | no
 | net\_appliance\_name\_prefix | Common prefix to network appliance name. To this common prefix, numbers 1 and 2 are appended to the corresponding instance. | string | "net-appliance-instance" | no |
 | net\_appliance\_public\_rsa\_key | The SSH public key to login to Network Appliance Compute instance. | string | null | no |
 | net\_appliance\_shape | The instance shape for the network appliance nodes. | string | "VM.Optimized3.Flex" | no |
-| oci\_nfw\_ip\_ocid | Enter OCI Network Firewall's Forwarding Private IP OCID. | string | null | no |
-| oci\_nfw\_policy\_ocid | Enter the OCI Network Firewall Policy OCID. | string | null | no |
-| onprem\_cidrs | List of on-premises CIDR blocks allowed to connect to the Landing Zone network via a DRG. | list(string) | [] | no |
+| oci\_nfw\_ip\_ocid | The OCI Network Firewall's Forwarding Private IP OCID. | string | null | no |
+| oci\_nfw\_policy\_ocid | The OCI Network Firewall Policy OCID. | string | null | no |
+| add\_hub\_vcn\_jumphost\_subnet | Whether to add an optional private subnet for jump hosts. The subnet is also used for Bastion Service deployment (when enabled by deploy_bastion_service variable). | boolean | false | Required for Landing Zone deployment of Jump Host and OCI Bastion service.
+| hub\_vcn\_jumphost\_subnet\_name | The Hub VCN Jump Host subnet Name. If not provided, a default name is CIDR. | string | null | no |
+| hub\_vcn\_jumphost\_subnet\_cidr | he Hub VCN Jump Host subnet CIDR block. If not provided, a default CIDR based on Hub VCN CIDR is provided | null | no |
+| deploy\_bastion\_jump_host |  Whether to deploy a jump host in the Jump Host subnet. | boolean | false | no |
+| bastion\_jump\_host\_image\_source | The image source for the jump host. Valid values: "Marketplace Image", "Platform Image", "Custom Image". For "Marketplace Image", users are required to provide either bastion\_jump\_host\_marketplace\_image\_ocid or bastion\_jump\_host\_marketplace\_image\_name (with optional bastion\_jump\_host\_marketplace\_image\_version) variables. **NOTE THAT BY DEPLOYING A MARKETPLACE IMAGE USING THIS TERRAFORM MODULE YOU ARE IMPLICITLY AGREEING WITH ALL OCI MARKETPLACE TERMS, INCLUDING THE PRICING MODEL THAT APPLY TO THE SELECTED IMAGE.** Marketplace image information can be obtained by running [Marketplace Images](https://github.com/oci-landing-zones/terraform-oci-modules-workloads/tree/main/marketplace-images/examples/marketplace-images) | string | null | no
+| bastion\_jump\_host\_custom\_image\_ocid        | The custom image ocid of the jump host instance. | string | null | Required if bastion\_jump\_host\_image\_source is set to "Custom Image" |
+| bastion\_jump\_host\_platform\_image\_ocid      | The OCI platform image ocid of the jump host instance. | string | null | Required if bastion\_jump\_host\_image\_source is set to "Platform Image" |
+| bastion\_jump\_host\_marketplace\_image\_ocid   | The OCI Marketplace image ocid for the jump host. | string | null | no
+| bastion\_jump\_host\_marketplace\_image\_name   | The OCI Marketplace image name for the jump host. Examples of available options are "Oracle Linux 8 STIG" (free) and "CIS Hardened Image Level 1 on Oracle Linux 8" (paid). | string | null | no |
+| bastion\_jump\_host\_marketplace\_image\_version| The OCI Marketplace image version for the jump host. Examples of available options are "Oracle-Linux-8.10-2025.06.24-STIG" (for "Oracle Linux 8 STIG") and "4.0.0.1" (for "CIS Hardened Image Level 1 on Oracle Linux 8"). | string | null | no
+| bastion\_jump\_host\_boot\_volume\_size         | The boot volume size (in GB) for the bastion jump host instance. | number | 60 | no |
+| bastion\_jump\_host\_flex\_shape\_cpu           | The number of OCPUs for the selected flex shape. Applicable to flexible shapes only. | number | 2 | no |
+| bastion\_jump\_host\_flex\_shape\_memory        | The amount of memory (in GB) for the selected flex shape. Applicable to flexible shapes only. | number | 56 | no |
+| bastion\_jump\_host\_instance\_name             | The display name of the bastion jump host instance. | string | "bastion-jump-host-instance" | no |
+| bastion\_jump\_host\_instance\_shape            | The instance shape for the bastion jump host instance. | string | "VM.Standard.E4.Flex" | no |
+| bastion\_jump\_host\_ssh\_public\_key\_path     | The SSH public key to login to bastion jump host instance. | string | null| no |
+| deploy\_bastion\_service                        | Whether to deploy OCI bastion service in the Jump Host subnet. | boolean | false | no |
+| bastion\_service\_allowed\_cidrs                | List of the bastion service allowed cidrs. | list(string) | [] | no |
+| bastion\_service\_name                          | The bastion service name. | string | null | no |
 
 ### <a name="on-prem-networking"></a> On-Premises Networking
 
 | Variable Name | Description | Type | Default | Required |
 |---------------|-------------|------|---------|----------|
+| onprem\_cidrs | List of on-premises CIDR blocks allowed to connect to the Landing Zone network via a DRG. | list(string) | [] | no |
 | cpe\_device\_shape\_vendor | Name of CPE device vendor. Valid values: "Fortinet", "Cisco", "Juniper", "Furukawa", "Check Point", "Palo Alto", "Yamaha", "Libreswan", "NEC", "WatchGuard", "Other". See list of [verified CPE devices](https://docs.oracle.com/en-us/iaas/Content/Network/Reference/CPElist.htm) for more information. | string | null | no |
 | cpe\_ip\_address | Public IP address used by the customer-premises equipment (CPE) so that a VPN connection can be established. | string | null | no |
 | cpe\_name | Display name of the customer-premises equipment (CPE). | string | null | no |
