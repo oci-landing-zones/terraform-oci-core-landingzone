@@ -1,12 +1,12 @@
-# May 08, 2026 Release Notes - 1.6.0
+# May 15, 2026 Release Notes - 1.6.0
 
-## Networking Updates
+## Networking Enhancements
 
 ### Generic
 
 1. Network route rules and security rules have been updated. Existing customers who uptake this release must be aware that route rules and security rules are going to be refreshed.
 2. Cross-VCN security rules are now defined in separate Network Security Groups. Core Landing Zone supports two modes for cross-VCN NSGs: constrained or open. Constrained NSGs are opinionated and useful in Hub/Spoke topologies where the Hub is the DRG. Open NSGs are useful in Hub/Spoke topologies where the Hub is a VCN with a firewall that enforces security rules. See [Cross-VCN Network Security Rules](./DEPLOYMENT-GUIDE.md#cross-vcn-network-security-rules) for details.
-3. Configuration overrides are introduced for advanced networking and IAM customization scenarios. The available overridable variables are defined and described in [locals_overrides.tf](./locals_overrides.tf). Sample overrides are provided in [net_override.tf](./net_override.tf) for networking and in [iam_override.tf](./iam_override.tf) for IAM. Terraform overrides are useful for preserving customizations in face of future code updates to Core Landing Zone.
+3. Configuration overrides are introduced for advanced networking scenarios. The available overridable variables are defined and described in [locals_overrides.tf](./locals_overrides.tf). Sample overrides are provided in [net_override.tf]. [Terraform override files](https://developer.hashicorp.com/terraform/language/files/override) are useful for preserving customizations in face of future code updates to Core Landing Zone.
 
 ### Three-Tier VCNs
 
@@ -50,8 +50,18 @@
 3. Variables **hub_vcn_mgmt_subnet_external_allowed_cidrs_for_http** and **hub_vcn_mgmt_subnet_external_allowed_cidrs_for_ssh** are replaced by newly added **allowed_onprem_cidrs_to_fw_mgmt_interface**, that works in conjunction with newly added **fw_mgmt_interface_ports**:
     - **allowed_onprem_cidrs_to_fw_mgmt_interface**: the list of on-premises CIDR blocks allowed access to Firewall management NSG (**mgmt-nsg**).
     - **fw_mgmt_interface_ports**: the list of protocols and ports allowed into Firewall Management NSG (**mgmt-nsg**) by the CIDRs provided in variable **allowed_onprem_cidrs_to_fw_mgmt_interface**. Each value is a colon-separated entry like \"TCP:22\".
-4. Application Load Balancer NSG (**app-load-balancer-nsg**) automatically populated with combined values provided in **tt_vcn\*_external_allowed_cidrs_into_web_tier** and **tt_vcn\*_web_ingress_destination_ports** for access to Three-Tier VCN workloads through Hub VCN.	
+4. Application Load Balancer NSG (**app-load-balancer-nsg**) rules can be customized via override variables **hub_vcn_app_load_balancer_nsg_ingress_rules** and **hub_vcn_app_load_balancer_nsg_egress_rules**	
 5. Bastion/Jump Host subnet is now provisioned based on newly added **add_hub_vcn_jumphost_subnet** variable. OCI Bastion deployment is based on **deploy_bastion_service** variable and Jump host deployment is based on **deploy_bastion_jump_host** variable.
+6. Jump Host can now be provisioned based on OCI Marketplace image OCID, in addition to name/version. Variable **bastion_jump_host_marketplace_image_option** has been replaced by newly added **bastion_jump_host_marketplace_image_name** and **bastion_jump_host_image_source** has been introduced to let users indicate whether the image is custom, platform or marketplace.
+7. Network firewall appliance can now be provisioned based on OCI Marketplace image OCID, in addition to name/version. 
+8. Newly added variable **net_appliance_marketplace_image_version** replaces both **net_palo_alto_version** and **net_fortigate_version** when specifying the OCI Marketplace image version for the network firewall appliance.
+
+## Other Updates
+
+1. [Issue 39](https://github.com/oci-landing-zones/terraform-oci-core-landingzone/issues/39) fixed: Jump Host now deploys in the requested region.
+2. [Issue 47](https://github.com/oci-landing-zones/terraform-oci-core-landingzone/issues/47) addressed with enhanced documentation in [VARIABLES.md](./VARIABLES.md), [variables_security.tf](./variables_security.tf) and [schema.yml](./schema.yml).
+3. [Issue 48](https://github.com/oci-landing-zones/terraform-oci-core-landingzone/issues/48) addressed with enhanced documentation in [Deployment Guide](./DEPLOYMENT-GUIDE.md#extending-landing-zone-to-a-new-region) for Extending Core Landing Zone and fixes for deploying Compute instances in requested region.
+4. [Issue 50](https://github.com/oci-landing-zones/terraform-oci-core-landingzone/issues/50) fixed: OSMS policy removed.
 
 
 # February 20, 2026 Release Notes - 1.5.5
