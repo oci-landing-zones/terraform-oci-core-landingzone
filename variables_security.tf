@@ -230,10 +230,10 @@ variable "bastion_service_name" {
 variable "bastion_service_allowed_cidrs" {
   type        = list(string)
   default     = []
-  description = "List of the bastion service allowed cidrs."
+  description = "List of the bastion service allowed cidrs. This is required if deploy_bastion_service is set to true. Avoid 0.0.0.0/0 by all means."
   validation {
     condition     = length([for c in var.bastion_service_allowed_cidrs : c if length(regexall("^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/([0-9]|[1-2][0-9]|3[0-2]))?$", c)) > 0]) == length(var.bastion_service_allowed_cidrs)
-    error_message = "Validation failed for bastion_service_allowed_cidrs: values must be in CIDR notation."
+    error_message = "Validation failed for bastion_service_allowed_cidrs: values must be in CIDR notation. This is required if deploy_bastion_service is set to true. Be specific, avoid entering 0.0.0.0/0 by all means."
   }
 }
 

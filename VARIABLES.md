@@ -405,7 +405,7 @@
 | bastion\_jump\_host\_instance\_shape            | The instance shape for the bastion jump host instance. | string | "VM.Standard.E4.Flex" | no |
 | bastion\_jump\_host\_ssh\_public\_key\_path     | The SSH public key to login to bastion jump host instance. | string | null| no |
 | deploy\_bastion\_service                        | Whether to deploy OCI bastion service in the Jump Host subnet. | boolean | false | no |
-| bastion\_service\_allowed\_cidrs                | List of the bastion service allowed cidrs. | list(string) | [] | no |
+| bastion\_service\_allowed\_cidrs                | List of allowed CIDRs into OCI Bastion service. | list(string) | [] | Required if deploy\_bastion\_service is set to true. Avoid entering 0.0.0.0/0 by all means. |
 | bastion\_service\_name                          | The bastion service name. | string | null | no |
 
 ### <a name="on-prem-networking"></a> On-Premises Networking
