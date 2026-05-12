@@ -26,7 +26,10 @@ locals {
   # Hub VCN security lists:
   hub_vcn_outdoor_subnet_security_list = null
   hub_vcn_indoor_subnet_security_list  = null
-  # TT VCN1 additional NSGs:
+  # HUB VCN App Load Balancer NSG rules
+  hub_vcn_app_load_balancer_nsg_ingress_rules = null
+  hub_vcn_app_load_balancer_nsg_egress_rules = null
+  # HUB VCN additional NSGs:
   hub_vcn_additional_nsgs = {}
   # Whether CIS checks for hub VCN are enabled.
   hub_vcn_cis_checks_enabled = true

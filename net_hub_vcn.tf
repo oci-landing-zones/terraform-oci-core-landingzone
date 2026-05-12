@@ -617,9 +617,19 @@ locals {
         {
           "HUB-VCN-APP-LOAD-BALANCER-NSG" = {
             display_name  = "app-load-balancer-nsg" # OCI Load Balancers further deployed in the hub VCN should be associated with this NSG.
-            ingress_rules = local.app_load_balancer_nsg_ingress_rules
-            egress_rules  = local.app_load_balancer_nsg_egress_rules
-          }
+            ingress_rules = coalesce(local.hub_vcn_app_load_balancer_nsg_ingress_rules, {
+              "INGRESS-FROM-ALL-RULE" = {
+                description  = "Ingress from anywhere."
+                stateless    = false
+                protocol     = "TCP"
+                src          = "0.0.0.0/0"
+                src_type     = "CIDR_BLOCK"
+                dst_port_min = 443
+                dst_port_max = 443
+              }
+            })
+            egress_rules = local.hub_vcn_app_load_balancer_nsg_egress_rules
+          }  
         },
         local.hub_vcn_additional_nsgs
       ) # closing NSG merge function  
@@ -811,54 +821,4 @@ locals {
       dst_type    = "CIDR_BLOCK"
     }
   }
-
-  ## Locals for HUB VCN app load balancer NSG rules
-  ## TT_VCN1
-  ## For ingress rules: allowed CIDRs to ports into the HUB VCN web tier from external sources for TT_VCN1. We take the same values defined for TT_VCN1 web tier, but here we check if TT_VCN1 VCN is attached to the DRG.
-  tt_vcn1_external_allowed_cidrs_to_ports_into_hub_web_tier = (local.add_tt_vcn1 == true && var.tt_vcn1_attach_to_drg == true)  ? flatten([for cidr in var.tt_vcn1_external_allowed_cidrs_into_web_tier : [for port in var.tt_vcn1_web_ingress_destination_ports : "${trimspace(cidr)},${trimspace(port)}" ] if length(var.tt_vcn1_external_allowed_cidrs_into_web_tier) > 0 && length(var.tt_vcn1_web_ingress_destination_ports) > 0]) : []
-  ## For egress rules: CIDR and ports pairs for egress from HUB VCN web tier to TT_VCN1 app subnet. We check if TT_VCN1 VCN is attached to the DRG.
-  hub_vcn_egress_to_tt_vcn1_app_tier = var.tt_vcn1_attach_to_drg == true ? [for port in var.tt_vcn1_app_ingress_destination_ports : "${coalesce(var.tt_vcn1_app_subnet_cidr, cidrsubnet(trimspace(var.tt_vcn1_cidrs[0]), 4, 1))},${trimspace(port)}" ] : []
-
-  ## TT_VCN2
-  ## For ingress rules: allowed CIDRs to ports into the HUB VCN web tier from external sources for TT_VCN2. We take the same values defined for TT_VCN2 web tier, but here we check if TT_VCN2 VCN is attached to the DRG.
-  tt_vcn2_external_allowed_cidrs_to_ports_into_hub_web_tier = var.tt_vcn2_attach_to_drg == true ? local.tt_vcn2_external_allowed_cidrs_to_ports_into_web_tier : []
-   ## For egress rules: CIDR and ports pairs for egress from HUB VCN web tier to TT_VCN2 app subnet. We check if TT_VCN2 VCN is attached to the DRG.
-  hub_vcn_egress_to_tt_vcn2_app_tier = var.tt_vcn2_attach_to_drg == true ? [for port in var.tt_vcn2_app_ingress_destination_ports : "${coalesce(var.tt_vcn2_app_subnet_cidr, cidrsubnet(trimspace(var.tt_vcn2_cidrs[0]), 4, 1))},${trimspace(port)}" ] : []
-  
-  ## TT_VCN3
-  ## For ingress rules: allowed CIDRs to ports into the HUB VCN web tier from external sources for TT_VCN3. We take the same values defined for TT_VCN3 web tier, but here we check if TT_VCN3 VCN is attached to the DRG.
-  tt_vcn3_external_allowed_cidrs_to_ports_into_hub_web_tier = var.tt_vcn3_attach_to_drg == true ? local.tt_vcn3_external_allowed_cidrs_to_ports_into_web_tier : []
-   ## For egress rules: CIDR and ports pairs for egress from HUB VCN web tier to TT_VCN3 app subnet. We check if TT_VCN3 VCN is attached to the DRG.
-  hub_vcn_egress_to_tt_vcn3_app_tier = var.tt_vcn3_attach_to_drg == true ? [for port in var.tt_vcn3_app_ingress_destination_ports : "${coalesce(var.tt_vcn3_app_subnet_cidr, cidrsubnet(trimspace(var.tt_vcn3_cidrs[0]), 4, 1))},${trimspace(port)}" ] : []
-
-  ## Aggregated locals for HUB VCN app load balancer NSG rules
-  all_spoke_vcns_allowed_cidrs_to_ports_into_hub_web_tier = distinct(concat(local.tt_vcn1_external_allowed_cidrs_to_ports_into_web_tier, local.tt_vcn2_external_allowed_cidrs_to_ports_into_web_tier, local.tt_vcn3_external_allowed_cidrs_to_ports_into_web_tier))
-  hub_vcn_egress_to_all_spoke_vcns_app_tier = distinct(concat(local.hub_vcn_egress_to_tt_vcn1_app_tier, local.hub_vcn_egress_to_tt_vcn2_app_tier, local.hub_vcn_egress_to_tt_vcn3_app_tier))
-
-  ## Override this variable to define ingress rules for the HUB VCN app load balancer NSG. By default, it allows ingress from user-provided allowed CIDRs and ports of all spoke VCNs' web subnets (local.tt_vcn*_external_allowed_cidrs_to_ports_into_web_tier).
-  app_load_balancer_nsg_ingress_rules = { for cidr_port_pair in local.all_spoke_vcns_allowed_cidrs_to_ports_into_hub_web_tier : "INGRESS-FROM-${split(",",cidr_port_pair)[0]}-ON-${split(",",cidr_port_pair)[1]}-RULE" => {
-    description  = "Ingress from ${split(",",cidr_port_pair)[0]} over ${split(":",split(",",cidr_port_pair)[1])[0]} on ${split(":",split(",",cidr_port_pair)[1])[0] == "ICMP" ? "type/code ${split(":",split(",",cidr_port_pair)[1])[1]}" : "port ${split(":",split(",",cidr_port_pair)[1])[1]}"}."
-    stateless    = false
-    protocol     = split(":",split(",",cidr_port_pair)[1])[0]
-    src          = split(",",cidr_port_pair)[0]
-    src_type     = "CIDR_BLOCK"
-    dst_port_min = split(":",split(",",cidr_port_pair)[1])[0] != "ICMP" ? (split(":",split(",",cidr_port_pair)[1])[1] == "ALL" ? null : split(":",split(",",cidr_port_pair)[1])[1]) : null
-    dst_port_max = split(":",split(",",cidr_port_pair)[1])[0] != "ICMP" ? (split(":",split(",",cidr_port_pair)[1])[1] == "ALL" ? null : split(":",split(",",cidr_port_pair)[1])[1]) : null
-    icmp_type    = split(":",split(",",cidr_port_pair)[1])[0] == "ICMP" ? split("/", split(":",split(",",cidr_port_pair)[1])[1])[0] : null
-    icmp_code    = split(":",split(",",cidr_port_pair)[1])[0] == "ICMP" ? (length(split("/", split(":",split(",",cidr_port_pair)[1])[1])) > 1 ? split("/", split(":",split(",",cidr_port_pair)[1])[1])[1] : null) : null
-  }}
-  
-  ## Override this variable to define egress rules for the HUB VCN app load balancer NSG. By default, it allows egress to all spoke VCNs' app subnets on the user-provided ingress destination app tier ports (var.tt_vcn*_app_ingress_destination_ports)
-  app_load_balancer_nsg_egress_rules = { for cidr_port_pair in local.hub_vcn_egress_to_all_spoke_vcns_app_tier : "EGRESS-TO-${split(",",cidr_port_pair)[0]}-ON-${split(",",cidr_port_pair)[1]}-RULE" => {
-    description  = "Egress to ${split(",",cidr_port_pair)[0]} over ${split(":",split(",",cidr_port_pair)[1])[0]} on ${split(":",split(",",cidr_port_pair)[1])[0] == "ICMP" ? "type/code ${split(":",split(",",cidr_port_pair)[1])[1]}" : "port ${split(":",split(",",cidr_port_pair)[1])[1]}"}."
-    stateless    = false
-    protocol     = "TCP"
-    dst          = split(",",cidr_port_pair)[0]
-    dst_type     = "CIDR_BLOCK"
-    dst_port_min = split(":",split(",",cidr_port_pair)[1])[0] != "ICMP" ? (split(":",split(",",cidr_port_pair)[1])[1] == "ALL" ? null : split(":",split(",",cidr_port_pair)[1])[1]) : null
-    dst_port_max = split(":",split(",",cidr_port_pair)[1])[0] != "ICMP" ? (split(":",split(",",cidr_port_pair)[1])[1] == "ALL" ? null : split(":",split(",",cidr_port_pair)[1])[1]) : null
-    icmp_type    = split(":",split(",",cidr_port_pair)[1])[0] == "ICMP" ? split("/", split(":",split(",",cidr_port_pair)[1])[1])[0] : null
-    icmp_code    = split(":",split(",",cidr_port_pair)[1])[0] == "ICMP" ? (length(split("/", split(":",split(",",cidr_port_pair)[1])[1])) > 1 ? split("/", split(":",split(",",cidr_port_pair)[1])[1])[1] : null) : null
-  }}
-  ## ------------------------------------------------------------------------------------------
 }

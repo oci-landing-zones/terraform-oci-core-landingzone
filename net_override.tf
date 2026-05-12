@@ -4,7 +4,7 @@
 # SAMPLE DUMMY override values
 # Uncomment the variables and assign them appropriate values per your use case requirements.
 
-# locals {
+locals {
 
 #     #-----------------------------------------------
 #     # Hub VCB overrides:
@@ -35,7 +35,28 @@
 #       ingress_rules = local.security_lists_default_ingress_rules
 #       egress_rules  = local.security_lists_default_egress_rules
 #     }
-
+#     hub_vcn_app_load_balancer_nsg_ingress_rules = {
+#       "INGRESS-FROM-MY-LAPTOP-RULE" = {
+#           description  = "Ingress from my laptop."
+#           stateless    = false
+#           protocol     = "TCP"
+#           src          = "X.X.X.X/X" # Provide CIDR range.
+#           src_type     = "CIDR_BLOCK"
+#           dst_port_min = 80
+#           dst_port_max = 80
+#       }
+#     }
+#     hub_vcn_app_load_balancer_nsg_egress_rules = {
+#       "EGRESS-TO-TT-VCN-1-APP-SUBNET-RULE" = {
+#           description  = "Egress to three-tier-vcn-1 app subnet."
+#           stateless    = false
+#           protocol     = "TCP"
+#           dst          = local.tt_vcn1_app_subnet_cidr
+#           dst_type     = "CIDR_BLOCK"
+#           dst_port_min = 80
+#           dst_port_max = 80
+#       }
+#     }
 #     hub_vcn_additional_nsgs = {
 #       "MY-ADDITIONAL-NSG" = {
 #         display_name = "my-additional-nsg"
@@ -423,4 +444,4 @@
 #         dst_type     = "CIDR_BLOCK"
 #       }
 #     ]
-# }    
+}    
