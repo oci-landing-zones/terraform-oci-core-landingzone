@@ -29,19 +29,19 @@ variable "allowed_onprem_cidrs_to_fw_mgmt_interface" {
 #---------------------------------------------------------------------------
 variable "cpe_name" {
   type        = string
-  default     = ""
+  default     = null
   description = "Display name of the Customer-Premises Equipment (CPE)."
 }
 
 variable "cpe_ip_address" {
   type        = string
-  default     = ""
+  default     = null
   description = "Public IP address used by the Customer-Premises Equipment (CPE) so that a VPN connection can be established."
 }
 
 variable "cpe_device_shape_vendor" {
   type        = string
-  default     = ""
+  default     = null
   description = "Name of the device shape vendor used by the Customer-Premises Equipment (CPE). See the list of verified CPE devices for more information."
 }
 
@@ -50,25 +50,25 @@ variable "cpe_device_shape_vendor" {
 #---------------------------------------------------------------------------
 variable "ipsec_vpn_name" {
   type        = string
-  default     = ""
+  default     = null
   description = "Display name of the IPSec VPN."
 }
 
 variable "ipsec_customer_bgp_asn" {
   type        = string
-  default     = ""
+  default     = null
   description = "Customer on-premises network's Autonomous System Number."
 }
 
 variable "ipsec_tunnel1_customer_interface_ip" {
   type        = string
-  default     = ""
+  default     = null
   description = "The first IP CIDR block used on the customer side for BGP peering for IPSec Tunnel 1."
 }
 
 variable "ipsec_tunnel1_oracle_interface_ip" {
   type        = string
-  default     = ""
+  default     = null
   description = "The first IP CIDR block provided by OCI for BGP peering for IPSec Tunnel 1."
 }
 
@@ -86,13 +86,13 @@ variable "ipsec_tunnel1_ike_version" {
 
 variable "ipsec_tunnel2_customer_interface_ip" {
   type        = string
-  default     = ""
+  default     = null
   description = "The second IP CIDR block used on the customer side for BGP peering for IPSec Tunnel 2."
 }
 
 variable "ipsec_tunnel2_oracle_interface_ip" {
   type        = string
-  default     = ""
+  default     = null
   description = "The second IP CIDR block provided by OCI for BGP peering for IPSec Tunnel 2."
 }
 
@@ -118,7 +118,7 @@ variable "on_premises_connection_option" {
 
 variable "fastconnect_virtual_circuit_name" {
   type        = string
-  default     = ""
+  default     = null
   description = "The name for the FastConnect virtual circuit."
 }
 
