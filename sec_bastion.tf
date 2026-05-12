@@ -56,16 +56,17 @@ locals {
           ocpus  = var.bastion_jump_host_flex_shape_cpu
         }
 
-        marketplace_image = coalesce(var.bastion_jump_host_marketplace_image_option, "null") != "null" ? {
-          name = trimspace(var.bastion_jump_host_marketplace_image_option)
-          #version = "Oracle-Linux-8.10-2025.06.24-STIG"
+        marketplace_image = var.bastion_jump_host_marketplace_image_ocid != null || var.bastion_jump_host_marketplace_image_name != null ? {
+          ocid    = try(trimspace(var.bastion_jump_host_marketplace_image_ocid), null)
+          name    = try(trimspace(var.bastion_jump_host_marketplace_image_name), null)
+          version = try(trimspace(var.bastion_jump_host_marketplace_image_version), null)
         } : null
 
-        platform_image = coalesce(var.bastion_jump_host_platform_image_ocid, "null") != "null" ? {
+        platform_image = var.bastion_jump_host_platform_image_ocid != null ? {
           ocid = trimspace(var.bastion_jump_host_platform_image_ocid)
         } : null
 
-        custom_image = coalesce(var.bastion_jump_host_custom_image_ocid, "null") != "null" ? {
+        custom_image = var.bastion_jump_host_custom_image_ocid != null ? {
           ocid = trimspace(var.bastion_jump_host_custom_image_ocid)
         } : null
 
@@ -94,11 +95,13 @@ locals {
     instances                   = {}
   }
 
-  jump_host_marketplace_images_configuration = (local.hub_with_vcn == true && var.add_hub_vcn_jumphost_subnet && var.deploy_bastion_jump_host == true && coalesce(var.bastion_jump_host_marketplace_image_option, "null") != "null") ? {
+  # This is needed to avoid unsolicited changes on marketplace images during terraform plan.
+  jump_host_marketplace_images_configuration = (local.hub_with_vcn == true && var.add_hub_vcn_jumphost_subnet && var.deploy_bastion_jump_host == true && (var.bastion_jump_host_marketplace_image_ocid != null || var.bastion_jump_host_marketplace_image_name != null)) ? {
     JUMP-HOST-INSTANCE = {
-      name    = trimspace(var.bastion_jump_host_marketplace_image_option)
-      version = null
-    }
+      ocid    = try(trimspace(var.bastion_jump_host_marketplace_image_ocid), null)
+      name    = try(trimspace(var.bastion_jump_host_marketplace_image_name), null)
+      version = try(trimspace(var.bastion_jump_host_marketplace_image_version), null)
+    }  
   } : null
 }
 

@@ -169,16 +169,38 @@ variable "bastion_jump_host_flex_shape_cpu" {
   description = "The number of OCPUs for the selected flex shape. Applicable to flexible shapes only."
 }
 
-variable "bastion_jump_host_marketplace_image_option" {
+variable "bastion_jump_host_image_source" {
   type        = string
   default     = null
-  description = "The Marketplace image name for the jump host. It has precedence over platform image and custom image. Some available options are: 'Oracle Linux 8 STIG' (free), 'CIS Hardened Image Level 1 on Oracle Linux 8' (paid). See OCI Markeplace for more and make sure the spelling is exactly as it shows in OCI Marketplace."
+  description = "The image source for the jump host. Valid values: \"Marketplace Image\", \"Platform Image\", \"Custom Image\"."
+}
+
+variable "bastion_jump_host_marketplace_image_ocid" {
+  type        = string
+  default     = null
+  description = "The marketplace image OCID for the jump host. Marketplace image information can be obtained by running the example in https://github.com/oci-landing-zones/terraform-oci-modules-workloads/tree/main/marketplace-images/examples/marketplace-images. NOTE THAT BY DEPLOYING A MARKETPLACE IMAGE USING TERRAFORM YOU ARE IMPLICITLY AGREEING WITH OCI MARKETPLACE TERMS FOR THE PRICING MODEL THAT APPLY TO THE SELECTED IMAGE."
+  validation {
+    condition = var.bastion_jump_host_marketplace_image_ocid == null || can(regex("^ocid1\\.image\\.[a-z0-9]+\\..[a-zA-Z0-9]{60}$", var.bastion_jump_host_marketplace_image_ocid))
+    error_message = "Validation failure for bastion_jump_host_marketplace_image_ocid: it must be null or a valid OCI marketplace image OCID (e.g. ocid1.image.<realm>..<unique_id>)."
+  }
+}
+
+variable "bastion_jump_host_marketplace_image_name" {
+  type        = string
+  default     = null
+  description = "The marketplace image name for the jump host. Marketplace image information can be obtained by running the example in https://github.com/oci-landing-zones/terraform-oci-modules-workloads/tree/main/marketplace-images/examples/marketplace-images. NOTE THAT BY DEPLOYING A MARKETPLACE IMAGE USING TERRAFORM YOU ARE IMPLICITLY AGREEING WITH OCI MARKETPLACE TERMS FOR THE PRICING MODEL THAT APPLY TO THE SELECTED IMAGE."
+}
+
+variable "bastion_jump_host_marketplace_image_version" {
+  type        = string
+  default     = null
+  description = "The marketplace image version for the jump host. Applicable when bastion_jump_host_marketplace_image_name is provided. If not provided, the latest version of the specified Marketplace image is be used. Marketplace image information can be obtained by running the example in https://github.com/oci-landing-zones/terraform-oci-modules-workloads/tree/main/marketplace-images/examples/marketplace-images. NOTE THAT BY DEPLOYING A MARKETPLACE IMAGE USING TERRAFORM YOU ARE IMPLICITLY AGREEING WITH OCI MARKETPLACE TERMS FOR THE PRICING MODEL THAT APPLY TO THE SELECTED IMAGE."
 }
 
 variable "bastion_jump_host_platform_image_ocid" {
   type        = string
   default     = null
-  description = "The platform image ocid for the jump host. It has precedence over custom image. OCI platform images (along with their OCIDs per region) are described in https://docs.oracle.com/en-us/iaas/images/."
+  description = "The platform image ocid for the jump host. OCI platform images (along with their OCIDs per region) are described in https://docs.oracle.com/en-us/iaas/images/."
 }
 
 variable "bastion_jump_host_custom_image_ocid" {
@@ -190,13 +212,13 @@ variable "bastion_jump_host_custom_image_ocid" {
 variable "deploy_bastion_jump_host" {
   type        = bool
   default     = false
-  description = "The option to deploy the bastion jump host."
+  description = "Whether to deploy the bastion jump host."
 }
 
 variable "deploy_bastion_service" {
   type        = bool
   default     = false
-  description = "The option to deploy the bastion service."
+  description = "Whether to deploy the bastion service."
 }
 
 variable "bastion_service_name" {
