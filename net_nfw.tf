@@ -28,6 +28,7 @@ locals {
     }
   } : null
 
+  # This is needed to avoid unsolicited changes on marketplace images during terraform plan.
   net_appliance_marketplace_images_configuration = local.chosen_firewall_option == "MARKETPLACE" ? {
     FW-1 = {
       ocid    = var.net_appliance_marketplace_image_ocid
