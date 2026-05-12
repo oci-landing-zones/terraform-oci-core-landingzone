@@ -42,15 +42,8 @@ variableGroups:
       - "custom_database_compartment_name"
       - "deploy_exainfra_cmp"
       - "custom_exainfra_compartment_name"
-    visible:
-      and:
-        - eq:
-          - ${extend_landing_zone_to_new_region}
-          - false
-        - eq:
-          - ${customize_iam}
-          - true  
-
+    visible: customize_iam
+    
   - title: "Identity Domains"
     variables:
       - "identity_domain_option"
@@ -716,10 +709,7 @@ variables:
     title: "Customize Default IAM Settings?"
     description: "Check if you need to customize the settings for compartments, identity domains, groups, and policies."
     default: false
-    visible:
-      eq:
-        - ${extend_landing_zone_to_new_region}
-        - false
+    visible: true
 
   define_net:
     type: boolean
@@ -769,6 +759,10 @@ variables:
       - "Yes, use existing"
       - "No"
     default: "Yes, deploy new"
+    visible:
+      eq:
+        - ${extend_landing_zone_to_new_region}
+        - false
   
   enclosing_compartment_parent_ocid:
     type: oci:identity:compartment:id
@@ -776,9 +770,13 @@ variables:
     description: "Select the existing compartment where Landing Zone enclosing compartment is created."
     required: false 
     visible:
-      eq:
-        - ${enclosing_compartment_options}
-        - "Yes, deploy new"
+      and:
+        - eq:
+          - ${enclosing_compartment_options}
+          - "Yes, deploy new"
+        - eq:
+          - ${extend_landing_zone_to_new_region}
+          - false  
 
   existing_enclosing_compartment_ocid:
     type: oci:identity:compartment:id
@@ -786,9 +784,13 @@ variables:
     description: "Select the existing compartment where Landing Zone compartments (Network, Security, App, Database) are created."
     required: false 
     visible:
-      eq:
-        - ${enclosing_compartment_options}
-        - "Yes, use existing"
+      and:
+        - eq:
+          - ${enclosing_compartment_options}
+          - "Yes, use existing"
+        - eq:
+          - ${extend_landing_zone_to_new_region}
+          - false  
 
   custom_enclosing_compartment_name:
     type: string
@@ -796,9 +798,13 @@ variables:
     description: "The custom name of the enclosing compartment. If none is provided, the default name for the enclosing compartment will be used."
     required: false
     visible:
-      eq:
-        - ${enclosing_compartment_options}
-        - "Yes, deploy new"
+      or:
+        - eq:
+          - ${enclosing_compartment_options}
+          - "Yes, deploy new"
+        - eq:
+          - ${extend_landing_zone_to_new_region}
+          - true  
 
   custom_network_compartment_name:
     type: string
@@ -816,6 +822,10 @@ variables:
     type: boolean
     title: "Deploy Application Compartment?"
     description: "Whether the application compartment is deployed."
+    visible: 
+      eq:
+        - ${extend_landing_zone_to_new_region}
+        - false 
 
   custom_app_compartment_name:
     type: string
@@ -828,6 +838,10 @@ variables:
     type: boolean
     title: "Deploy Database Compartment?"
     description: "Whether the database compartment is deployed."  
+    visible: 
+      eq:
+        - ${extend_landing_zone_to_new_region}
+        - false
 
   custom_database_compartment_name:
     type: string
@@ -840,13 +854,24 @@ variables:
     type: boolean
     title: "Deploy ExaCS Infra Compartment?"
     description: "Whether a separate compartment for Exadata Cloud Service Infrastructure is deployed."
+    visible: 
+      eq:
+        - ${extend_landing_zone_to_new_region}
+        - false
 
   custom_exainfra_compartment_name:
     type: string
     title: "ExaCS Infra Compartment Name"
     description: "The custom name of the ExaCS Infra compartment. If none is provided, the default name for the ExaCS Infra compartment will be used."
     required: false
-    visible: deploy_exainfra_cmp
+    visible: 
+      or:
+        - eq:
+          - ${deploy_exainfra_cmp}
+          - true
+        - eq:
+          - ${extend_landing_zone_to_new_region}
+          - true
 
   identity_domain_option:
     type: enum
