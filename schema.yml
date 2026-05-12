@@ -4183,10 +4183,10 @@ variables:
 
   hub_vcn_deploy_net_appliance_option:
     type: enum
-    title: "Deploy Network Appliance?"
-    description: "Choose one of the available network appliance options for deploying in the Hub VCN. Costs are incurred."
+    title: "Deploy Network Firewall?"
+    description: "Choose one of the available network appliance options for deploying in the Hub VCN. Costs may be incurred. If you choose to deploy a network appliance using a Marketplace Image, you are required to provide either the image OCID or the image name and version. Marketplace image information can be obtained by running <a href=\"https://github.com/oci-landing-zones/terraform-oci-modules-workloads/tree/main/marketplace-images/examples/marketplace-images\" target=\"_blank\">Marketplace Images</a>. **NOTE THAT BY DEPLOYING A MARKETPLACE IMAGE USING THIS TERRAFORM MODULE YOU ARE IMPLICITLY AGREEING WITH ALL OCI MARKETPLACE TERMS, INCLUDING THE PRICING MODEL TERMS THAT APPLY TO THE SELECTED IMAGE.**"
     enum:
-      - "Don\"t deploy any network appliance at this time"
+      - "Don\"t deploy any network firewall at this time"
       - "Marketplace Image"
       #- "Palo Alto Networks VM-Series Firewall"
       #- "Fortinet FortiGate Firewall"
@@ -5734,7 +5734,7 @@ variables:
   bastion_jump_host_image_source:
     type: enum
     title: "Jump Host Image Source"
-    description: "Select the source for the jump host image. You must pick one of the three options: \"Marketplace Image\", \"Platform Image\" or  \"Custom Image\" for deploying a Jump host."
+    description: "Select the source for the jump host image. You must pick one of the three options: \"Marketplace Image\", \"Platform Image\" or  \"Custom Image\" for deploying a jump host. If you choose to deploy the jump host using a Marketplace Image, you are required to provide either the image OCID or the image name and version. Marketplace image information can be obtained by running <a href=\"https://github.com/oci-landing-zones/terraform-oci-modules-workloads/tree/main/marketplace-images/examples/marketplace-images\" target=\"_blank\">Marketplace Images</a>. **NOTE THAT BY DEPLOYING A MARKETPLACE IMAGE USING THIS TERRAFORM MODULE YOU ARE IMPLICITLY AGREEING WITH ALL OCI MARKETPLACE TERMS, INCLUDING THE PRICING MODEL TERMS THAT APPLY TO THE SELECTED IMAGE.**"
     enum:
       - "Marketplace Image"
       - "Platform Image"
@@ -5745,7 +5745,7 @@ variables:
   bastion_jump_host_marketplace_image_ocid:
     type: string
     title: "Jump Host Marketplace Image OCID"
-    description: "Enter the OCI Marketplace image OCID for the Jump host. For \"Marketplace Image\" option, you are required to provide either the image OCID or the image name and version. Marketplace image information can be obtained by running <a href=\"https://github.com/oci-landing-zones/terraform-oci-modules-workloads/tree/main/marketplace-images/examples/marketplace-images\" target=\"_blank\">Marketplace Images</a>. NOTE THAT BY DEPLOYING A MARKETPLACE IMAGE USING TERRAFORM YOU ARE IMPLICITLY AGREEING WITH OCI MARKETPLACE TERMS FOR THE PRICING MODEL THAT APPLY TO THE SELECTED IMAGE."
+    description: "Enter the OCI Marketplace image OCID for the Jump host. For \"Marketplace Image\" option, you are required to provide either the image OCID or the image name and version."
     required: false
     visible: 
       and:
@@ -5759,7 +5759,7 @@ variables:
   bastion_jump_host_marketplace_image_name:
     type: string
     title: "Jump Host Marketplace Image Name"
-    description: "Enter the OCI Marketplace image name for the Jump host. For \"Marketplace Image\" option, you are required to provide either the image OCID or the image name and version. Marketplace image information can be obtained by running <a href=\"https://github.com/oci-landing-zones/terraform-oci-modules-workloads/tree/main/marketplace-images/examples/marketplace-images\" target=\"_blank\">Marketplace Images</a>. NOTE THAT BY DEPLOYING A MARKETPLACE IMAGE USING TERRAFORM YOU ARE IMPLICITLY AGREEING WITH OCI MARKETPLACE TERMS FOR THE PRICING MODEL THAT APPLY TO THE SELECTED IMAGE. Example values: \"Oracle Linux 8 STIG\" (free), \"CIS Hardened Image Level 1 on Oracle Linux 8\" (paid)."
+    description: "Enter the OCI Marketplace image name for the Jump host. For \"Marketplace Image\" option, you are required to provide either the image OCID or the image name and version. Example values: \"Oracle Linux 8 STIG\" (free), \"CIS Hardened Image Level 1 on Oracle Linux 8\" (paid)."
     required: false
     visible: 
       and:
@@ -5773,7 +5773,7 @@ variables:
   bastion_jump_host_marketplace_image_version:
     type: string
     title: "Jump Host Marketplace Image Version"
-    description: "Enter the OCI Marketplace image version for the Jump host. For \"Marketplace Image\" option, you are required to provide either the image OCID or the image name and version. Marketplace image information can be obtained by running <a href=\"https://github.com/oci-landing-zones/terraform-oci-modules-workloads/tree/main/marketplace-images/examples/marketplace-images\" target=\"_blank\">Marketplace Images</a>. NOTE THAT BY DEPLOYING A MARKETPLACE IMAGE USING TERRAFORM YOU ARE IMPLICITLY AGREEING WITH OCI MARKETPLACE TERMS FOR THE PRICING MODEL THAT APPLY TO THE SELECTED IMAGE. Example value: \"Oracle-Linux-8.10-2025.06.24-STIG\", \"4.0.0.1\"."
+    description: "Enter the OCI Marketplace image version for the Jump host. For \"Marketplace Image\" option, you are required to provide either the image OCID or the image name and version. Example values: \"Oracle-Linux-8.10-2025.06.24-STIG\" (for \"Oracle Linux 8 STIG\"), \"4.0.0.1\" (for \"CIS Hardened Image Level 1 on Oracle Linux 8\")."
     required: false
     visible: 
       and:
