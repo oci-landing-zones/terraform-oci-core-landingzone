@@ -4184,7 +4184,7 @@ variables:
   hub_vcn_deploy_net_appliance_option:
     type: enum
     title: "Deploy Network Firewall?"
-    description: "Choose one of the available network appliance options for deploying in the Hub VCN. Costs may be incurred. If you choose to deploy a network appliance using a Marketplace Image, you are required to provide either the image OCID or the image name and version. Marketplace image information can be obtained by running <a href=\"https://github.com/oci-landing-zones/terraform-oci-modules-workloads/tree/main/marketplace-images/examples/marketplace-images\" target=\"_blank\">Marketplace Images</a>. **NOTE THAT BY DEPLOYING A MARKETPLACE IMAGE USING THIS TERRAFORM MODULE YOU ARE IMPLICITLY AGREEING WITH ALL OCI MARKETPLACE TERMS, INCLUDING THE PRICING MODEL TERMS THAT APPLY TO THE SELECTED IMAGE.**"
+    description: "Choose one of the available options for deploying a network firewallin the Hub VCN. Costs may be incurred. If you choose to deploy using a Marketplace Image, you are required to provide either the image OCID or the image name and (optionally)version. Marketplace image information can be obtained by running <a href=\"https://github.com/oci-landing-zones/terraform-oci-modules-workloads/tree/main/marketplace-images/examples/marketplace-images\" target=\"_blank\">Marketplace Images</a>. NOTE THAT BY DEPLOYING A MARKETPLACE IMAGE USING THIS TERRAFORM MODULE YOU ARE IMPLICITLY AGREEING WITH ALL OCI MARKETPLACE TERMS, INCLUDING THE PRICING MODEL TERMS THAT APPLY TO THE SELECTED IMAGE."
     enum:
       - "Don\"t deploy any network firewall at this time"
       - "Marketplace Image"
@@ -5734,7 +5734,7 @@ variables:
   bastion_jump_host_image_source:
     type: enum
     title: "Jump Host Image Source"
-    description: "Select the source for the jump host image. You must pick one of the three options: \"Marketplace Image\", \"Platform Image\" or  \"Custom Image\" for deploying a jump host. If you choose to deploy the jump host using a Marketplace Image, you are required to provide either the image OCID or the image name and version. Marketplace image information can be obtained by running <a href=\"https://github.com/oci-landing-zones/terraform-oci-modules-workloads/tree/main/marketplace-images/examples/marketplace-images\" target=\"_blank\">Marketplace Images</a>. **NOTE THAT BY DEPLOYING A MARKETPLACE IMAGE USING THIS TERRAFORM MODULE YOU ARE IMPLICITLY AGREEING WITH ALL OCI MARKETPLACE TERMS, INCLUDING THE PRICING MODEL TERMS THAT APPLY TO THE SELECTED IMAGE.**"
+    description: "Select the source for the jump host image. You must pick one of the three options: \"Marketplace Image\", \"Platform Image\" or  \"Custom Image\". If you choose to deploy using a Marketplace Image, you are required to provide either the image OCID or the image name and (optionally) version. Marketplace image information can be obtained by running <a href=\"https://github.com/oci-landing-zones/terraform-oci-modules-workloads/tree/main/marketplace-images/examples/marketplace-images\" target=\"_blank\">Marketplace Images</a>. NOTE THAT BY DEPLOYING A MARKETPLACE IMAGE USING THIS TERRAFORM MODULE YOU ARE IMPLICITLY AGREEING WITH ALL OCI MARKETPLACE TERMS, INCLUDING THE PRICING MODEL TERMS THAT APPLY TO THE SELECTED IMAGE."
     enum:
       - "Marketplace Image"
       - "Platform Image"
