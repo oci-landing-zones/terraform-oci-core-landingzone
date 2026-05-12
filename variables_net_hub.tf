@@ -68,7 +68,7 @@ variable "hub_vcn_deploy_net_appliance_option" {
 variable "net_appliance_marketplace_image_vendor" {
   type        = string
   default     = null
-  description = "The marketplace image vendor for the network appliance. Applicable when hub_vcn_deploy_net_appliance_option is set to 'Marketplace Image'. Marketplace image information can be obtained by running the example in https://github.com/oci-landing-zones/terraform-oci-modules-workloads/tree/main/marketplace-images/examples/marketplace-images. NOTE THAT BY DEPLOYING A MARKETPLACE IMAGE USING TERRAFORM YOU ARE IMPLICITLY AGREEING WITH OCI MARKETPLACE TERMS FOR THE PRICING MODEL THAT APPLY TO THE SELECTED IMAGE."
+  description = "The marketplace image vendor for the network appliance. Required when hub_vcn_deploy_net_appliance_option is set to 'Marketplace Image'. Marketplace image information can be obtained by running the example in https://github.com/oci-landing-zones/terraform-oci-modules-workloads/tree/main/marketplace-images/examples/marketplace-images. NOTE THAT BY DEPLOYING A MARKETPLACE IMAGE USING TERRAFORM YOU ARE IMPLICITLY AGREEING WITH OCI MARKETPLACE TERMS FOR THE PRICING MODEL THAT APPLY TO THE SELECTED IMAGE."
   validation {
     condition = var.net_appliance_marketplace_image_vendor == null || contains(["PALOALTO", "FORTINET", "OTHER"], upper(var.net_appliance_marketplace_image_vendor))
     error_message = "Validation failure for net_appliance_marketplace_image_vendor: it must be null or one of: \"PaloAlto\", \"Fortinet\", \"Other\" (case insensitive)."
@@ -119,18 +119,6 @@ variable "oci_nfw_policy_ocid" {
   type        = string
   default     = null
   description = "The OCID of OCI Network Firewall policy."
-}
-
-variable "net_palo_alto_version" {
-  type        = string
-  description = "Palo Alto Firewall Version."
-  default     = "11.1.4-h7"
-}
-
-variable "net_fortigate_version" {
-  type        = string
-  description = "Fortinet Fortigate Firewall Version."
-  default     = "7.2.11_(_X64_)"
 }
 
 variable "net_appliance_name_prefix" {

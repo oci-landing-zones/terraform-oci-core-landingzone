@@ -184,8 +184,6 @@ variableGroups:
       - "oci_nfw_ip_ocid"
       - "oci_nfw_policy_ocid"
       - "net_appliance_image_ocid"
-      - "net_palo_alto_version"
-      - "net_fortigate_version"
       - "net_appliance_name_prefix"
       - "net_appliance_shape"
       - "net_appliance_flex_shape_memory"
@@ -233,7 +231,10 @@ variableGroups:
 
   - title: "Jump Host Settings"
     variables:
-      - "bastion_jump_host_marketplace_image_option"
+      - "bastion_jump_host_image_source"
+      - "bastion_jump_host_marketplace_image_ocid"
+      - "bastion_jump_host_marketplace_image_name"
+      - "bastion_jump_host_marketplace_image_version"
       - "bastion_jump_host_platform_image_ocid"
       - "bastion_jump_host_custom_image_ocid"
       - "bastion_jump_host_ssh_public_key_path"
@@ -4415,61 +4416,6 @@ variables:
               - ${hub_vcn_deploy_net_appliance_option}
               - "OCI Native Firewall"
   
-  net_palo_alto_version:
-    type: enum
-    title: "Palo Alto Network Firewall Version."
-    description: "Palo Alto Network Firewall Version."
-    enum:
-      - "11.1.4-h7"
-    required: false
-    visible:
-      and:
-        - define_net
-        - or:
-          - eq:
-            - ${hub_deployment_option}
-            - "VCN or on-premises connectivity routing through DMZ VCN with Network Virtual Appliance (DRG and DMZ VCN will be created)"
-          - eq:
-            - ${hub_deployment_option}
-            - "VCN or on-premises connectivity routed through DMZ VCN with Network Virtual Appliance existing DRG (DMZ VCN will be created and DRG ID required)"
-        - and:
-          - eq:
-            - ${hub_vcn_deploy_net_appliance_option}
-            - "Palo Alto Networks VM-Series Firewall"
-          - not:    
-            - eq:
-              - ${hub_vcn_deploy_net_appliance_option}
-              - "OCI Native Firewall"
-
-  net_fortigate_version:
-    type: enum
-    title: "Fortinet Fortigate Firewall Version."
-    description: "Fortinet Fortigate Firewall Version."
-    enum:
-      - "7.6.4_(_X64_)"
-      - "7.2.11_(_X64_)"
-      - "7.2.9_(_X64_)"
-      - "7.4.4_(_X64_)"
-    required: false
-    visible:
-      and:
-        - define_net
-        - or:
-          - eq:
-            - ${hub_deployment_option}
-            - "VCN or on-premises connectivity routing through DMZ VCN with Network Virtual Appliance (DRG and DMZ VCN will be created)"
-          - eq:
-            - ${hub_deployment_option}
-            - "VCN or on-premises connectivity routed through DMZ VCN with Network Virtual Appliance existing DRG (DMZ VCN will be created and DRG ID required)"
-        - and:
-          - eq:
-            - ${hub_vcn_deploy_net_appliance_option}
-            - "Fortinet FortiGate Firewall"
-          - not:    
-            - eq:
-              - ${hub_vcn_deploy_net_appliance_option}
-              - "OCI Native Firewall"
-
   net_appliance_name_prefix:
     type: string
     title: "Network Appliance Name Common Prefix"
@@ -5796,12 +5742,58 @@ variables:
             - ${hub_deployment_option}
             - "VCN or on-premises connectivity routed through DMZ VCN with Network Virtual Appliance existing DRG (DMZ VCN will be created and DRG ID required)"
 
-  bastion_jump_host_marketplace_image_option:
-    type: string
-    title: "Marketplace Image Name"
-    description: "Enter the OCI marketplace image name for the Jump host. Some available options are: \"Oracle Linux 8 STIG\" (free), \"CIS Hardened Image Level 1 on Oracle Linux 8\" (paid). See OCI Markeplace for more and make sure the spelling is exactly as it shows in OCI Marketplace. You must pick one of the three options: \"Marketplace Image Name\", \"Platform Image\" or  \"Custom Image OCID\" for deploying a Jump host."
+  bastion_jump_host_image_source:
+    type: enum
+    title: "Jump Host Image Source"
+    description: "Select the source for the jump host image. You must pick one of the three options: \"Marketplace Image\", \"Platform Image\" or  \"Custom Image\" for deploying a Jump host."
+    enum:
+      - "Marketplace Image"
+      - "Platform Image"
+      - "Custom Image"
     required: false
     visible: deploy_bastion_jump_host
+  
+  bastion_jump_host_marketplace_image_ocid:
+    type: string
+    title: "Jump Host Marketplace Image OCID"
+    description: "Enter the OCI Marketplace image OCID for the Jump host. For \"Marketplace Image\" option, you are required to provide either the image OCID or the image name and version. Marketplace image information can be obtained by running <a href=\"https://github.com/oci-landing-zones/terraform-oci-modules-workloads/tree/main/marketplace-images/examples/marketplace-images\" target=\"_blank\">Marketplace Images</a>. NOTE THAT BY DEPLOYING A MARKETPLACE IMAGE USING TERRAFORM YOU ARE IMPLICITLY AGREEING WITH OCI MARKETPLACE TERMS FOR THE PRICING MODEL THAT APPLY TO THE SELECTED IMAGE."
+    required: false
+    visible: 
+      and:
+        - eq: 
+          - ${deploy_bastion_jump_host}
+          - true
+        - eq:
+          - ${bastion_jump_host_image_source}          
+          - "Marketplace Image"
+
+  bastion_jump_host_marketplace_image_name:
+    type: string
+    title: "Jump Host Marketplace Image Name"
+    description: "Enter the OCI Marketplace image name for the Jump host. For \"Marketplace Image\" option, you are required to provide either the image OCID or the image name and version. Marketplace image information can be obtained by running <a href=\"https://github.com/oci-landing-zones/terraform-oci-modules-workloads/tree/main/marketplace-images/examples/marketplace-images\" target=\"_blank\">Marketplace Images</a>. NOTE THAT BY DEPLOYING A MARKETPLACE IMAGE USING TERRAFORM YOU ARE IMPLICITLY AGREEING WITH OCI MARKETPLACE TERMS FOR THE PRICING MODEL THAT APPLY TO THE SELECTED IMAGE. Example values: \"Oracle Linux 8 STIG\" (free), \"CIS Hardened Image Level 1 on Oracle Linux 8\" (paid)."
+    required: false
+    visible: 
+      and:
+        - eq: 
+          - ${deploy_bastion_jump_host}
+          - true
+        - eq:
+          - ${bastion_jump_host_image_source}          
+          - "Marketplace Image"
+  
+  bastion_jump_host_marketplace_image_version:
+    type: string
+    title: "Jump Host Marketplace Image Version"
+    description: "Enter the OCI Marketplace image version for the Jump host. For \"Marketplace Image\" option, you are required to provide either the image OCID or the image name and version. Marketplace image information can be obtained by running <a href=\"https://github.com/oci-landing-zones/terraform-oci-modules-workloads/tree/main/marketplace-images/examples/marketplace-images\" target=\"_blank\">Marketplace Images</a>. NOTE THAT BY DEPLOYING A MARKETPLACE IMAGE USING TERRAFORM YOU ARE IMPLICITLY AGREEING WITH OCI MARKETPLACE TERMS FOR THE PRICING MODEL THAT APPLY TO THE SELECTED IMAGE. Example value: \"Oracle-Linux-8.10-2025.06.24-STIG\", \"4.0.0.1\"."
+    required: false
+    visible: 
+      and:
+        - eq: 
+          - ${deploy_bastion_jump_host}
+          - true
+        - eq:
+          - ${bastion_jump_host_image_source}          
+          - "Marketplace Image"
 
   bastion_jump_host_platform_image_ocid:
     type: oci:core:image:id
@@ -5810,14 +5802,28 @@ variables:
     required: false
     dependsOn: 
       compartmentId: ${tenancy_ocid}
-    visible: deploy_bastion_jump_host  
+    visible: 
+      and:
+        - eq: 
+          - ${deploy_bastion_jump_host}
+          - true
+        - eq:
+          - ${bastion_jump_host_image_source}          
+          - "Platform Image"  
 
   bastion_jump_host_custom_image_ocid:
     type: string
     title: "Custom Image OCID"
     description: "Enter the custom image OCID for the Jump host. You must pick one of the three options: \"Marketplace Image Name\", \"Platform Image\" or  \"Custom Image OCID\" for deploying a Jump host."
     required: false
-    visible: deploy_bastion_jump_host            
+    visible: 
+      and:
+        - eq: 
+          - ${deploy_bastion_jump_host}
+          - true
+        - eq:
+          - ${bastion_jump_host_image_source}          
+          - "Custom Image"            
 
   deploy_bastion_service:
     type: boolean
