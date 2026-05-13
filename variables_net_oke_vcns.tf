@@ -44,7 +44,7 @@ variable "oke_vcn1_routable_vcns" {
   default     = []
   description = "The VCN labels that this VCN can send traffic to. Only applicable for Network topology where a DRG is deployed as the hub. Valid values: TT-VCN-1, TT-VCN-2, TT-VCN-3, EXA-VCN-1, EXA-VCN-2, EXA-VCN3, OKE-VCN-2, OKE-VCN-3."
   validation {
-    condition = length(var.oke_vcn1_routable_vcns) == 0 ? true : (length(var.oke_vcn1_routable_vcns) == 0 || alltrue([for label in var.oke_vcn1_routable_vcns : contains(["TT-VCN-1","TT-VCN-2","TT-VCN-3","EXA-VCN-1","EXA-VCN-2","EXA-VCN-3","OKE-VCN-2","OKE-VCN-3"], label)]))
+    condition     = length(var.oke_vcn1_routable_vcns) == 0 ? true : (length(var.oke_vcn1_routable_vcns) == 0 || alltrue([for label in var.oke_vcn1_routable_vcns : contains(["TT-VCN-1", "TT-VCN-2", "TT-VCN-3", "EXA-VCN-1", "EXA-VCN-2", "EXA-VCN-3", "OKE-VCN-2", "OKE-VCN-3"], label)]))
     error_message = "Invalid value provided for oke_vcn1_routable_vcns variable: it must be empty or contain only valid VCN labels: \"TT-VCN-1\",\"TT-VCN-2\",\"TT-VCN-3\",\"EXA-VCN-1\",\"EXA-VCN-2\",\"EXA-VCN-3\",\"OKE-VCN-2\",\"OKE-VCN-3\"."
   }
 }
@@ -118,7 +118,7 @@ variable "oke_vcn1_services_ingress_destination_ports" {
   default     = ["TCP:443"]
   description = "The list of protocols and destination ports allowed for ingress packets into OKE Services Network Security Group."
   validation {
-    condition = length(var.oke_vcn1_services_ingress_destination_ports) == 0 ? true : alltrue([for v in var.oke_vcn1_services_ingress_destination_ports : can(regex("^[^:]+:[^:]+$", v))])
+    condition     = length(var.oke_vcn1_services_ingress_destination_ports) == 0 ? true : alltrue([for v in var.oke_vcn1_services_ingress_destination_ports : can(regex("^[^:]+:[^:]+$", v))])
     error_message = "Invalid value provided for oke_vcn1_services_ingress_destination_ports variable: all values must be in the form protocol:port, with exactly one ':' separating protocol and port values."
   }
 }
@@ -151,7 +151,7 @@ variable "oke_vcn1_db_ingress_destination_ports" {
   default     = ["TCP:1521"]
   description = "Protocols and destination ports allowed for ingress packets into the OKE VCN1 database Network Security Group. Each value must be in the form protocol:port (e.g., 'TCP:1521')."
   validation {
-    condition = length(var.oke_vcn1_db_ingress_destination_ports) == 0 ? true : alltrue([for v in var.oke_vcn1_db_ingress_destination_ports : can(regex("^[^:]+:[^:]+$", v))])
+    condition     = length(var.oke_vcn1_db_ingress_destination_ports) == 0 ? true : alltrue([for v in var.oke_vcn1_db_ingress_destination_ports : can(regex("^[^:]+:[^:]+$", v))])
     error_message = "Invalid value provided for oke_vcn1_db_ingress_destination_ports variable: all values must be in the form protocol:port, with exactly one ':' separating protocol and port values."
   }
 }
@@ -203,7 +203,7 @@ variable "oke_vcn1_onprem_route_enable" {
 variable "customize_oke_vcn1_subnets" {
   type        = bool
   default     = false
-  description = "If true, allows for the customization of default subnets settings. Only applicable to RMS deployments."
+  description = "If true, allows for the customization of default subnets settings. Applicable to RMS deployments only, used for UI displaying."
 }
 # ------------------------------------------------------
 # ----- Networking - OKE VCN 2
@@ -248,7 +248,7 @@ variable "oke_vcn2_routable_vcns" {
   default     = []
   description = "The VCN labels that this VCN can send traffic to. Only applicable for Network topology where a DRG is deployed as the hub. Valid values: TT-VCN-1, TT-VCN-2, TT-VCN-3, EXA-VCN-1, EXA-VCN-2, EXA-VCN3, OKE-VCN-1, OKE-VCN-3"
   validation {
-    condition = length(var.oke_vcn2_routable_vcns) == 0 ? true : (length(var.oke_vcn2_routable_vcns) == 0 || alltrue([for label in var.oke_vcn2_routable_vcns : contains(["TT-VCN-1","TT-VCN-2","TT-VCN-3","EXA-VCN-1","EXA-VCN-2","EXA-VCN-3","OKE-VCN-1","OKE-VCN-3"], label)]))
+    condition     = length(var.oke_vcn2_routable_vcns) == 0 ? true : (length(var.oke_vcn2_routable_vcns) == 0 || alltrue([for label in var.oke_vcn2_routable_vcns : contains(["TT-VCN-1", "TT-VCN-2", "TT-VCN-3", "EXA-VCN-1", "EXA-VCN-2", "EXA-VCN-3", "OKE-VCN-1", "OKE-VCN-3"], label)]))
     error_message = "Invalid value provided for oke_vcn1_routable_vcns variable: it must be empty or contain only valid VCN labels: \"TT-VCN-1\",\"TT-VCN-2\",\"TT-VCN-3\",\"EXA-VCN-1\",\"EXA-VCN-2\",\"EXA-VCN-3\",\"OKE-VCN-1\",\"OKE-VCN-3\"."
   }
 }
@@ -322,7 +322,7 @@ variable "oke_vcn2_services_ingress_destination_ports" {
   default     = ["TCP:443"]
   description = "The list of protocols and destination ports allowed for ingress packets into OKE Services Network Security Group."
   validation {
-    condition = length(var.oke_vcn2_services_ingress_destination_ports) == 0 ? true : alltrue([for v in var.oke_vcn2_services_ingress_destination_ports : can(regex("^[^:]+:[^:]+$", v))])
+    condition     = length(var.oke_vcn2_services_ingress_destination_ports) == 0 ? true : alltrue([for v in var.oke_vcn2_services_ingress_destination_ports : can(regex("^[^:]+:[^:]+$", v))])
     error_message = "Invalid value provided for oke_vcn2_services_ingress_destination_ports variable: all values must be in the form protocol:port, with exactly one ':' separating protocol and port values."
   }
 }
@@ -354,7 +354,7 @@ variable "oke_vcn2_db_ingress_destination_ports" {
   default     = ["TCP:1521"]
   description = "Protocols and destination ports allowed for ingress packets into the OKE VCN2 database Network Security Group. Each value must be in the form protocol:port (e.g., 'TCP:1521')."
   validation {
-    condition = length(var.oke_vcn2_db_ingress_destination_ports) == 0 ? true : alltrue([for v in var.oke_vcn2_db_ingress_destination_ports : can(regex("^[^:]+:[^:]+$", v))])
+    condition     = length(var.oke_vcn2_db_ingress_destination_ports) == 0 ? true : alltrue([for v in var.oke_vcn2_db_ingress_destination_ports : can(regex("^[^:]+:[^:]+$", v))])
     error_message = "Invalid value provided for oke_vcn2_db_ingress_destination_ports variable: all values must be in the form protocol:port, with exactly one ':' separating protocol and port values."
   }
 }
@@ -406,7 +406,7 @@ variable "oke_vcn2_onprem_route_enable" {
 variable "customize_oke_vcn2_subnets" {
   type        = bool
   default     = false
-  description = "If true, allows for the customization of default subnets settings. Only applicable to RMS deployments."
+  description = "If true, allows for the customization of default subnets settings. Applicable to RMS deployments only, used for UI displaying."
 }
 # ------------------------------------------------------
 # ----- Networking - OKE VCN 3
@@ -451,7 +451,7 @@ variable "oke_vcn3_routable_vcns" {
   default     = []
   description = "The VCN labels that this VCN can send traffic to. Only applicable for Network topology where a DRG is deployed as the hub. Valid values: TT-VCN-1, TT-VCN-2, TT-VCN-3, EXA-VCN-1, EXA-VCN-2, EXA-VCN3, OKE-VCN-1, OKE-VCN-2."
   validation {
-    condition = length(var.oke_vcn3_routable_vcns) == 0 ? true : (length(var.oke_vcn3_routable_vcns) == 0 || alltrue([for label in var.oke_vcn3_routable_vcns : contains(["TT-VCN-1","TT-VCN-2","TT-VCN-3","EXA-VCN-1","EXA-VCN-2","EXA-VCN-3","OKE-VCN-1","OKE-VCN-2"], label)]))
+    condition     = length(var.oke_vcn3_routable_vcns) == 0 ? true : (length(var.oke_vcn3_routable_vcns) == 0 || alltrue([for label in var.oke_vcn3_routable_vcns : contains(["TT-VCN-1", "TT-VCN-2", "TT-VCN-3", "EXA-VCN-1", "EXA-VCN-2", "EXA-VCN-3", "OKE-VCN-1", "OKE-VCN-2"], label)]))
     error_message = "Invalid value provided for oke_vcn3_routable_vcns variable: it must be empty or contain only valid VCN labels: \"TT-VCN-1\",\"TT-VCN-2\",\"TT-VCN-3\",\"EXA-VCN-1\",\"EXA-VCN-2\",\"EXA-VCN-3\",\"OKE-VCN-1\",\"OKE-VCN-2\"."
   }
 }
@@ -525,7 +525,7 @@ variable "oke_vcn3_services_ingress_destination_ports" {
   default     = ["TCP:443"]
   description = "The list of protocols and destination ports allowed for ingress packets into OKE Services Network Security Group."
   validation {
-    condition = length(var.oke_vcn3_services_ingress_destination_ports) == 0 ? true : alltrue([for v in var.oke_vcn3_services_ingress_destination_ports : can(regex("^[^:]+:[^:]+$", v))])
+    condition     = length(var.oke_vcn3_services_ingress_destination_ports) == 0 ? true : alltrue([for v in var.oke_vcn3_services_ingress_destination_ports : can(regex("^[^:]+:[^:]+$", v))])
     error_message = "Invalid value provided for oke_vcn3_services_ingress_destination_ports variable: all values must be in the form protocol:port, with exactly one ':' separating protocol and port values."
   }
 }
@@ -557,7 +557,7 @@ variable "oke_vcn3_db_ingress_destination_ports" {
   default     = ["TCP:1521"]
   description = "Protocols and destination ports allowed for ingress packets into the OKE VCN3 database Network Security Group. Each value must be in the form protocol:port (e.g., 'TCP:1521')."
   validation {
-    condition = length(var.oke_vcn3_db_ingress_destination_ports) == 0 ? true : alltrue([for v in var.oke_vcn3_db_ingress_destination_ports : can(regex("^[^:]+:[^:]+$", v))])
+    condition     = length(var.oke_vcn3_db_ingress_destination_ports) == 0 ? true : alltrue([for v in var.oke_vcn3_db_ingress_destination_ports : can(regex("^[^:]+:[^:]+$", v))])
     error_message = "Invalid value provided for oke_vcn3_db_ingress_destination_ports variable: all values must be in the form protocol:port, with exactly one ':' separating protocol and port values."
   }
 }
@@ -609,5 +609,5 @@ variable "oke_vcn3_onprem_route_enable" {
 variable "customize_oke_vcn3_subnets" {
   type        = bool
   default     = false
-  description = "If true, allows for the customization of default subnets settings. Only applicable to RMS deployments."
+  description = "If true, allows for the customization of default subnets settings. Applicable to RMS deployments only, used for UI displaying."
 }

@@ -34,9 +34,10 @@ module "core_lz" {
     hub_deployment_option    = "VCN or on-premises connectivity routing through DMZ VCN with Network Virtual Appliance (DRG and DMZ VCN will be created)"
     hub_vcn_cidrs            = ["192.168.0.0/24"]
 
-    # -- Bastion Jump Host options: deploy jump host and enable bastion service
-    deploy_bastion_jump_host = true
-    deploy_bastion_service   = true
+    # -- Bastion Jump Host options: deploy jump host subnet, jump host and enable bastion service
+    add_hub_vcn_jumphost_subnet = true # deploy jump host subnet
+    deploy_bastion_jump_host = true    # deploy jump host in the jump host subnet
+    deploy_bastion_service   = true    # deploy OCI Bastion service in jump host subnet
     bastion_service_allowed_cidrs = ["x.x.x.x"] # Replace with Bastion service CIDR block allow list
 
     # --- Spoke VCN: three-tier VCN 1

@@ -44,7 +44,7 @@ variable "extend_landing_zone_to_new_region" {
   type        = bool
 }
 variable "customize_iam" {
-  description = "Whether Landing Zone IAM settings are to be customized. Customizable options are compartments, identity domains, groups, dynamic groups and policies."
+  description = "Whether Landing Zone IAM settings are to be customized. Customizable options are compartments, identity domains, groups, dynamic groups and policies. Applicable to RMS deployments only, used for UI displaying."
   type        = bool
   default     = false
 }
@@ -69,7 +69,7 @@ variable "display_output" {
   default     = true
 }
 variable "display_security_logging_governance_settings" {
-  description = "When true, allows for enabling/configuring settings for some OCI Security, Logging and Governance services. Only applicable to Resource Manager deployments."
+  description = "When true, allows for enabling/configuring settings for some OCI Security, Logging and Governance services. Applicable to RMS deployments only, used for UI displaying."
   type        = bool
   default     = false
 }

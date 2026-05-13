@@ -17,7 +17,7 @@ locals {
   security_zones_freeform_tags = local.custom_security_zones_freeform_tags != null ? merge(local.custom_security_zones_freeform_tags, local.default_security_zones_freeform_tags) : local.default_security_zones_freeform_tags
 
   security_zones_configuration = {
-    reporting_region = var.security_zones_reporting_region
+    reporting_region = coalesce(var.security_zones_reporting_region, local.regions_map[local.home_region_key])
 
     security_zones = {
       SECURITY-ZONE = {

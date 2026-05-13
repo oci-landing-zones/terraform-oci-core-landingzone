@@ -16,9 +16,10 @@
 | Variable Name | Description | Type | Default | Required |
 |---------------|-------------|------|---------|----------|
 | cis\_level | Determines CIS OCI Benchmark Level to apply on Landing Zone managed resources. Level 1 is be practical and prudent. Level 2 is intended for environments where security is more critical than manageability and usability. Level 2 drives the creation of an OCI Vault, buckets encryption with a customer managed key, write logs for buckets and the usage of specific policies in Security Zones. | string | 1 | no |
-| customize\_iam | Whether Landing Zone IAM settings are to be customized. Customizable options are identity domains, groups, dynamic groups and policies. | bool | false | no |
+| customize\_iam | Whether Landing Zone IAM settings are to be customized. Customizable options are identity domains, groups, dynamic groups and policies. Applicable to RMS deployments only, used for UI displaying. | bool | false | no |
 | define\_net | Whether networking is defined as part of this Landing Zone. By default, no networking resources are created. | bool | false | no |
 | display\_output | Whether to display a concise set of select resource outputs with their OCIDs and names. | bool | true | no |
+| display\_security\_logging\_governance\_settings | When true, allows for enabling/configuring settings for some OCI Security, Logging and Governance services. Applicable to RMS deployments only, used for UI displaying. | bool | false | no |
 | enable\_zpr | Whether ZPR is enabled as part of this Landing Zone. By default, no ZPR resources are created. | bool | false | no |
 | extend\_landing\_zone\_to\_new\_region | Whether Landing Zone is being extended to another region. When set to true, compartments, groups, policies and resources at the home region are not provisioned. Use this when you want to provision a Landing Zone in a new region, but reuse existing Landing Zone resources in the home region. | bool | false | no |
 | lz\_provenant\_prefix | The provenant landing zone prefix or code that identifies the client of this Landing Zone. This information goes into a freeform tag applied to all deployed resources. | string | "core" | no |
@@ -35,13 +36,14 @@
 | custom\_database\_compartment\_name                         | Custom name of the database compartment. | string | null | no |
 | custom\_enclosing\_compartment\_name                        | Custom name of the enclosing compartment. | string | null | no |
 | custom\_exainfra\_compartment\_name                         | Custom name of the exadata infrastructure compartment. | string | null | no |
+| custom\_id\_domain\_compartment\_ocid                       | The existing identity domain compartment OCID. Applicable to RMS deployments only, used for UI displaying. | string | null | no |
 | custom\_id\_domain\_ocid                                    | The existing identity domain OCID. | string | null | no |
 | custom\_network\_compartment\_name                          | Custom name of the network compartment. | string | null | no |
 | custom\_security\_compartment\_name                         | Custom name of the security compartment. | string | null | no |
 | deploy\_app\_cmp                                            | Whether the application compartment is deployed. | bool | true | no |
 | deploy\_database\_cmp                                       | Whether the database compartment is deployed. | bool | true | no |
 | deploy\_exainfra\_cmp                                       | Whether a separate compartment for Exadata Cloud Service Infrastructure is deployed. | bool | false | no |
-| dyn\_groups\_options                                        | IAM - Dynamic Groups | string | "Yes" | no |
+| dyn\_groups\_options                                        | Whether to deploy new dynamic groups or use existing dynamic groups. Applicable to RMS deployments only, used for UI displaying. | string | "Yes" | no |
 | enclosing\_compartment\_parent\_ocid                        | The existing compartment where Landing Zone enclosing compartment is created. | string | null | no |
 | existing\_ag\_admin\_group\_name                            | The existing group to which Access Governance management policies will be granted to. | list(string) | [] | no |
 | existing\_announcement\_reader\_group\_name                 | The existing group to which announcement reading policies will be granted to. | list(string) | [] | no |
@@ -66,7 +68,7 @@
 | existing\_security\_admin\_group\_name                      | The existing group to which security management policies will be granted to. | list(string) | [] | no |
 | existing\_security\_fun\_dyn\_group\_name                   | Existing security dynamic group to run functions. | string | "" | no |
 | existing\_storage\_admin\_group\_name                       | The existing group to which Storage management policies will be granted to. | list(string) | [] | no |
-| groups\_options                                             | Whether to deploy new groups or use existing groups. | string | "Yes" | no |
+| groups\_options                                             | Whether to deploy new groups or use existing groups. Applicable to RMS deployments only, used for UI displaying. | string | "Yes" | no |
 | identity\_domain\_option                                    | Option to use the default identity domain, create a new identity domain or use custom identity domain. Value to use: Default Domain, New Identity Domain, Use Custom Identity Domain | string | "Default Domain" | yes |
 | new\_identity\_domain\_name                                 | The name of the new identity domain if the option to create a new identity domain is chosen. | string | null | no |
 | new\_identity\_domain\_license\_type                        | the license type of new identity domain. Value to use: free, premium. | string | null | no |
@@ -103,6 +105,7 @@
 | cloud\_guard\_admin\_email\_endpoints           | List of email addresses for Cloud Guard related notifications. | list(string) | [] | no |
 | cloud\_guard\_reporting\_region                 | Cloud Guard reporting region, where Cloud Guard reporting resources are kept. If not set, it defaults to home region. | string | null | no |
 | cloud\_guard\_risk\_level\_threshold            | Determines the minimum Risk level that triggers sending Cloud Guard problems to the defined Cloud Guard Email Endpoint. E.g. a setting of High will send notifications for Critical and High problems. | string | "High" | no |
+| customize\_cloud\_guard\_settings               | Whether to customize Cloud Guard settings for a managed target. The Landing Zone enables Cloud Guard service and creates a managed target at the Root compartment in case a target at the Root compartment does not exist. Applicable to RMS deployments only, used for UI displaying. | bool | false | no |
 | deploy\_bastion\_jump\_host                     | The option to deploy the bastion jump host. | bool | false | no |
 | deploy\_bastion\_service                        | The option to deploy the bastion service. | bool | false | no |
 | enable\_cloud\_guard                            | Determines whether the Cloud Guard service should be enabled. If true, Cloud Guard is enabled and the Root compartment is configured with a Cloud Guard target, as long as there is no pre-existing Cloud Guard target for the Root compartment (or target creation will fail). If Cloud Guard is already enabled and a target exists for the Root compartment, set this variable to false. | bool | true | no |
@@ -129,9 +132,9 @@
 | add\_tt\_vcn1 | Whether to add a VCN configured for three-tier workload deployments, with up to four subnets: web (public by default), application (private), database (private). An optional subnet (private by default) for bastion deployment is also available. The added VCN is labelled 'TT-VCN-1'. The label should be used in the '*\_routable\_vcns' fields of other VCNs for constraining network traffic to those respective VCNs in a Hub/Spoke topology. | bool | false | no |
 | add\_tt\_vcn2 | Whether to add a second VCN configured for three-tier workload deployments, with up to four subnets: web (public by default), application (private), database (private). An optional subnet (private by default) for bastion deployment is also available. The added VCN is labelled 'TT-VCN-2'. The label should be used in the '*\_routable\_vcns' fields of other VCNs for constraining network traffic to those respective VCNs in a Hub/Spoke topology. | bool | false | no |
 | add\_tt\_vcn3 | Whether to add a third VCN configured for three-tier workload deployments, with up to four subnets: web (public by default), application (private), database (private). An optional subnet (private by default) for bastion deployment is also available. The added VCN is labelled 'TT-VCN-3'. The label should be used in the '*\_routable\_vcns' fields of other VCNs for constraining network traffic to those respective VCNs in a Hub/Spoke topology. | bool | false | no |
-| customize\_tt\_vcn1\_subnets | If true, allows for the customization of default subnets settings. Only applicable to RMS deployments. | bool | false | no |
-| customize\_tt\_vcn2\_subnets | If true, allows for the customization of default subnets settings. Only applicable to RMS deployments. | bool | false | no |
-| customize\_tt\_vcn3\_subnets | If true, allows for the customization of default subnets settings. Only applicable to RMS deployments. | bool | false | no |
+| customize\_tt\_vcn1\_subnets | If true, allows for the customization of default subnets settings. Applicable to RMS deployments only, used for UI displaying. | bool | false | no |
+| customize\_tt\_vcn2\_subnets | If true, allows for the customization of default subnets settings. Applicable to RMS deployments only, used for UI displaying. | bool | false | no |
+| customize\_tt\_vcn3\_subnets | If true, allows for the customization of default subnets settings. Applicable to RMS deployments only, used for UI displaying. | bool | false | no |
 | deploy\_tt\_vcn1\_bastion\_subnet | Whether to deploy a subnet where you can further deploy OCI Bastion service or a jump host. | bool | false | no |
 | deploy\_tt\_vcn2\_bastion\_subnet | Whether to deploy a subnet where you can further deploy OCI Bastion service or a jump host. | bool | false | no |
 | deploy\_tt\_vcn3\_bastion\_subnet | Whether to deploy a subnet where you can further deploy OCI Bastion service or a jump host. | bool | false | no |
@@ -207,6 +210,9 @@
 | add\_exa\_vcn1\_integration\_subnet | Whether to add an optional Integration subnet to Exadata VCN 1. | bool | false | no |
 | add\_exa\_vcn2 | Whether to add a second VCN configured for Exadata Cloud Service deployment, with two subnets: client (private) and backup (private). The added VCN is labelled 'EXA-VCN-2'. The label should be used in the '*\_routable\_vcns' fields of other VCNs for constraining network traffic to those respective VCNs in a Hub/Spoke topology. | bool | false | no |
 | add\_exa\_vcn3 | Whether to add a third VCN configured for Exadata Cloud Service deployment, with two subnets: client (private) and backup (private). The added VCN is labelled 'EXA-VCN-3'. The label should be used in the '*\_routable\_vcns' fields of other VCNs for constraining network traffic to those respective VCNs in a Hub/Spoke topology. | bool | false | no |
+| customize\_exa\_vcn1\_subnets | If true, allows for the customization of default subnets settings. Applicable to RMS deployments only, used for UI displaying. | bool | false | no |
+| customize\_exa\_vcn2\_subnets | If true, allows for the customization of default subnets settings. Applicable to RMS deployments only, used for UI displaying. | bool | false | no |
+| customize\_exa\_vcn3\_subnets | If true, allows for the customization of default subnets settings. Applicable to RMS deployments only, used for UI displaying. | bool | false | no |
 | exa\_vcn1\_attach\_to\_drg | If true, the VCN is attached to a DRG, enabling cross-vcn traffic routing. | bool | false | no |
 | exa\_vcn1\_backup\_subnet\_cidr | The Backup subnet CIDR block. It must be within the VCN CIDR blocks. | string | null | no |
 | exa\_vcn1\_backup\_subnet\_dns | The Backup subnet DNS name. Use only letters and numbers, no special characters. | string | null | no |
@@ -274,6 +280,9 @@
 | add\_oke\_vcn2\_mgmt\_subnet | Whether to add a private subnet for cluster management. | bool | false | no |
 | add\_oke\_vcn3 | Whether to add a third VCN configured for OKE workload deployments, with at least three subnets: service (public by default), workers (private) and API endpoint (private). Additionally, a private subnet for pods deployment is created if the OKE CNI Type is 'Native'. You can also enable an extra private subnet for managing the OKE cluster. The added VCN is labelled 'OKE-VCN-3'. The label should be used in the '*\_routable\_vcns' fields of other VCNs for constraining network traffic to those respective VCNs in a Hub/Spoke topology. | bool | false | no |
 | add\_oke\_vcn3\_mgmt\_subnet | Whether to add a private subnet for cluster management. | bool | false | no |
+| customize\_oke\_vcn1\_subnets | If true, allows for the customization of default subnets settings. Applicable to RMS deployments only, used for UI displaying. | bool | false | no |
+| customize\_oke\_vcn2\_subnets | If true, allows for the customization of default subnets settings. Applicable to RMS deployments only, used for UI displaying. | bool | false | no |
+| customize\_oke\_vcn3\_subnets | If true, allows for the customization of default subnets settings. Applicable to RMS deployments only, used for UI displaying. | bool | false | no |
 | oke\_vcn1\_api\_subnet\_cidr | The API subnet CIDR block. It must be within the VCN CIDR blocks. | string | null | no |
 | oke\_vcn1\_api\_subnet\_dns | The API subnet DNS name. Use only letters and numbers, no special characters. | string | null | no |
 | oke\_vcn1\_api\_subnet\_name | The API subnet name. | string | null | no |
@@ -345,7 +354,7 @@
 
 | Variable Name | Description | Type | Default | Required |
 |---------------|-------------|------|---------|----------|
-| customize\_hub\_vcn\_subnets | Whether to customize default subnets settings of the Hub VCN. Only applicable to RMS deployments. | bool | false | no |
+| customize\_hub\_vcn\_subnets | Whether to customize default subnets settings of the Hub VCN. Applicable to RMS deployments only, used for UI displaying. | bool | false | no |
 | enable\_native\_firewall\_threat\_log | Enable OCI Native Firewall Threat Log. | bool | false | no |
 | enable\_native\_firewall\_traffic\_log | Enable OCI Native Firewall Traffic Log. | bool | false | no |
 | existing\_drg\_ocid | The OCID of an existing DRG that you want to reuse for hub deployment. Only applicable if hub\_deployment\_option is 'VCN or on-premises connectivity routing via DRG (existing DRG)' or 'VCN or on-premises connectivity routed through DMZ VCN with Network Virtual Appliance existing DRG (DMZ VCN will be created and DRG ID required)'. | string | null | no |
@@ -375,7 +384,7 @@
 | hub\_vcn\_web\_subnet\_jump\_host\_allowed\_cidrs | List of CIDRs allowed to SSH into the Web subnet via a jump host eventually deployed in the Web subnet. Leave empty for no access. | list(string) | [] | no |
 | hub\_vcn\_web\_subnet\_name | The Hub VCN Web subnet name. | string | null | no |
 | hub\_vcn\_deploy\_net\_appliance\_option | The network appliance option to deploy in the Hub VCN. | string | Default is "Don't deploy any network appliance at this time". Other valid values: "Marketplace Image", "User-Provided Virtual Network Appliance", "OCI Native Firewall". Costs may be incurred. For "Marketplace Image", users are required to provide either net\_appliance\_marketplace\_image\_ocid or net\_appliance\_marketplace\_image\_name (with optional net\_appliance\_marketplace\_image\_version) variables. **NOTE THAT BY DEPLOYING A MARKETPLACE IMAGE USING THIS TERRAFORM MODULE YOU ARE IMPLICITLY AGREEING WITH ALL OCI MARKETPLACE TERMS, INCLUDING THE PRICING MODEL THAT APPLY TO THE SELECTED IMAGE.** Marketplace image information can be obtained by running [Marketplace Images](https://github.com/oci-landing-zones/terraform-oci-modules-workloads/tree/main/marketplace-images/examples/marketplace-images). For "User-Provided Virtual Network Appliance", users are required to provide net\_appliance\_image\_ocid variable. | no |
-| net\_appliance\_marketplace\_image\_vendor | The marketplace image vendor for the network appliance. Valid values are "PALOALTO", "FORTINET", "OTHER" | string | null | Required when hub\_vcn\_deploy\_net\_appliance\_option is set to "Marketplace Image".
+| net\_appliance\_image\_vendor | The image vendor for the network appliance. Valid values are "PALOALTO", "FORTINET", "OTHER". Used to select the default Network Load Balancer health checker for Marketplace Image and User-Provided Virtual Network Appliance deployments. | string | null | no |
 | net\_appliance\_marketplace\_image\_ocid   | The marketplace image OCID for the network appliance. Applicable when hub\_vcn\_deploy\_net\_appliance\_option is set to "Marketplace Image". | string | null | no |
 | net\_appliance\_marketplace\_image\_name   | The marketplace image name for the network appliance. Applicable when hub\_vcn\_deploy\_net\_appliance\_option is set to "Marketplace Image". | string | null | no |
 | net\_appliance\_marketplace\_image\_version| The marketplace image version for the network appliance. Applicable when hub\_vcn\_deploy\_net\_appliance\_option is set to "Marketplace Image". | string | null | no |
@@ -404,6 +413,7 @@
 | bastion\_jump\_host\_instance\_name             | The display name of the bastion jump host instance. | string | "bastion-jump-host-instance" | no |
 | bastion\_jump\_host\_instance\_shape            | The instance shape for the bastion jump host instance. | string | "VM.Standard.E4.Flex" | no |
 | bastion\_jump\_host\_ssh\_public\_key\_path     | The SSH public key to login to bastion jump host instance. | string | null| no |
+| customize\_jump\_host                           | Set to true to set custom options for jump host. Applicable to RMS deployments only, used for UI displaying. | bool | false | no |
 | deploy\_bastion\_service                        | Whether to deploy OCI bastion service in the Jump Host subnet. | boolean | false | no |
 | bastion\_service\_allowed\_cidrs                | List of allowed CIDRs into OCI Bastion service. | list(string) | [] | Required if deploy\_bastion\_service is set to true. Avoid entering 0.0.0.0/0 by all means. |
 | bastion\_service\_name                          | The bastion service name. | string | null | no |
@@ -462,7 +472,7 @@
 | existing\_service\_connector\_target\_function\_id | An existing function to be used as the Service Connector target. Only applicable if 'service\_connector\_target\_kind' is set to 'functions'. | string | null | no |
 | existing\_service\_connector\_target\_stream\_id | An existing stream to be used as the Service Connector target. Only applicable if 'service\_connector\_target\_kind' is set to 'streaming'. | string | null | no |
 | network\_admin\_email\_endpoints | List of email addresses for all network related notifications. (Type an email address and hit enter to enter multiple values) | list(string) | [] | no |
-| notifications\_advanced\_options | nan | bool | false | no |
+| notifications\_advanced\_options | Whether to display advanced notification options. Applicable to RMS deployments only, used for UI displaying. | bool | false | no |
 | onboard\_logging\_analytics | Whether Logging Analytics will be enabled in the tenancy. If true, the Logging Analytics service will be enabled in the tenancy and a new Logging Analytics Namespace will be created. If false, the existing Logging Analytics namespace will be used. Only applicable if 'service\_connector\_target\_kind' is set to 'logginganalytics'. | bool | false | no |
 | security\_admin\_email\_endpoints | List of email addresses for all security related notifications. (Type an email address and hit enter to enter multiple values) | list(string) | [] | no |
 | service\_connector\_target\_kind | Service Connector Hub target resource. Valid values are 'objectstorage', 'streaming', 'functions' or 'logginganalytics'. In case of 'objectstorage', a new bucket is created. In case of 'streaming', you can provide an existing stream ocid in 'existing\_service\_connector\_target\_stream\_id' and that stream is used. If no ocid is provided, a new stream is created. In case of 'functions', you must provide the existing function ocid in 'existing\_service\_connector\_target\_function\_id'. If case of 'logginganalytics', a log group for Logging Analytics service is created and the service is enabled if not already. | string | "objectstorage" | no |

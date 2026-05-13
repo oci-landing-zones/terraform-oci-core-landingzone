@@ -16,14 +16,14 @@ variable "hub_deployment" {
 }
 
 variable "enable_cross_vcn_constrained_nsgs" {
-  type = bool
-  default = true
+  type        = bool
+  default     = true
   description = "When true, Landing Zone provisions NSGs that enable DRG-attached and routable VCNs to connect with each other according to Landing Zone provided rules."
 }
 
 variable "enable_cross_vcn_open_nsg" {
-  type = bool
-  default = false
+  type        = bool
+  default     = false
   description = "When true, Landing Zone provisions a NSG that enables DRG-attached and routable VCNs to fully connect with each other."
 }
 
@@ -65,13 +65,13 @@ variable "hub_vcn_deploy_net_appliance_option" {
   description = "The network appliance option for deploying in the Hub VCN. Valid values: 'Don't deploy any network appliance at this time' (default), 'Marketplace Image', 'User-Provided Virtual Network Appliance', and 'OCI Native Firewall'. Costs are incurred. For 'Marketplace Image', users are required to provide either net_appliance_marketplace_image_ocid or net_appliance_marketplace_image_name (with optional net_appliance_marketplace_image_version) variables. For 'User-Provided Virtual Network Appliance', users are required to provide net_appliance_image_ocid variable."
 }
 
-variable "net_appliance_marketplace_image_vendor" {
+variable "net_appliance_image_vendor" {
   type        = string
   default     = null
-  description = "The marketplace image vendor for the network appliance. Required when hub_vcn_deploy_net_appliance_option is set to 'Marketplace Image'. Marketplace image information can be obtained by running the example in https://github.com/oci-landing-zones/terraform-oci-modules-workloads/tree/main/marketplace-images/examples/marketplace-images. NOTE THAT BY DEPLOYING A MARKETPLACE IMAGE USING TERRAFORM YOU ARE IMPLICITLY AGREEING WITH OCI MARKETPLACE TERMS FOR THE PRICING MODEL THAT APPLY TO THE SELECTED IMAGE."
+  description = "The image vendor for the network appliance. Applicable when hub_vcn_deploy_net_appliance_option is set to 'Marketplace Image' or 'User-Provided Virtual Network Appliance'. Used to select the default Network Load Balancer health checker. Valid values are: 'PaloAlto', 'Fortinet', 'Other'."
   validation {
-    condition = var.net_appliance_marketplace_image_vendor == null || contains(["PALOALTO", "FORTINET", "OTHER"], upper(var.net_appliance_marketplace_image_vendor))
-    error_message = "Validation failure for net_appliance_marketplace_image_vendor: it must be null or one of: \"PaloAlto\", \"Fortinet\", \"Other\" (case insensitive)."
+    condition     = contains(["PALOALTO", "FORTINET", "OTHER"], upper(coalesce(var.net_appliance_image_vendor, "OTHER")))
+    error_message = "Validation failure for net_appliance_image_vendor: it must be null or one of: \"PaloAlto\", \"Fortinet\", \"Other\" (case insensitive)."
   }
 }
 
@@ -80,7 +80,7 @@ variable "net_appliance_marketplace_image_ocid" {
   default     = null
   description = "The marketplace image OCID for the network appliance. Applicable when hub_vcn_deploy_net_appliance_option is set to 'Marketplace Image'. Marketplace image information can be obtained by running the example in https://github.com/oci-landing-zones/terraform-oci-modules-workloads/tree/main/marketplace-images/examples/marketplace-images. NOTE THAT BY DEPLOYING A MARKETPLACE IMAGE USING TERRAFORM YOU ARE IMPLICITLY AGREEING WITH OCI MARKETPLACE TERMS FOR THE PRICING MODEL THAT APPLY TO THE SELECTED IMAGE."
   validation {
-    condition = var.net_appliance_marketplace_image_ocid == null || can(regex("^ocid1\\.image\\.[a-z0-9]+\\..[a-zA-Z0-9]{60}$", var.net_appliance_marketplace_image_ocid))
+    condition     = var.net_appliance_marketplace_image_ocid == null || can(regex("^ocid1\\.image\\.[a-z0-9]+\\..[a-zA-Z0-9]{60}$", var.net_appliance_marketplace_image_ocid))
     error_message = "Validation failure for net_appliance_marketplace_image_ocid: it must be null or a valid OCI marketplace image OCID (e.g. ocid1.image.<realm>..<unique_id>)."
   }
 }
@@ -172,7 +172,7 @@ variable "net_appliance_image_ocid" {
 variable "customize_hub_vcn_subnets" {
   type        = bool
   default     = false
-  description = "Whether to customize default subnets settings of the Hub VCN. Only applicable to RMS deployments."
+  description = "Whether to customize default subnets settings of the Hub VCN. Applicable to RMS deployments only, used for UI displaying."
 }
 
 # -------------------------------------------
@@ -216,10 +216,10 @@ variable "hub_vcn_mgmt_subnet_cidr" {
 }
 variable "fw_mgmt_interface_ports" {
   type        = list(string)
-  default     = ["TCP:22","TCP:443"]
+  default     = ["TCP:22", "TCP:443"]
   description = "The list of protocols and ports allowed into Firewall Management interface by the CIDRs provided in variable allowed_onprem_cidrs_to_fw_mgmt_interface. Each value is a colon-separated entry like \"TCP:22\"."
   validation {
-    condition = length(var.fw_mgmt_interface_ports) == 0 ? true : alltrue([for v in var.fw_mgmt_interface_ports : can(regex("^[^:]+:[^:]+$", v))])
+    condition     = length(var.fw_mgmt_interface_ports) == 0 ? true : alltrue([for v in var.fw_mgmt_interface_ports : can(regex("^[^:]+:[^:]+$", v))])
     error_message = "Invalid value provided for fw_mgmt_interface_ports variable: all values must be in the form protocol:port, with exactly one ':' separating protocol and port values."
   }
 }
@@ -294,7 +294,7 @@ variable "workloadvcn_ocids_onprem_access" {
   default     = []
 }
 variable "rpc_requestor_peers" {
-  type        = list(string) 
+  type        = list(string)
   description = "A list of RPC requestor peers in the format PEER-NAME:PEER-TENANCY-OCID:PEER-GROUP-OCID requiring RPC (Remote Peering Connection) connectivity to Core LZ DRG (new or existing). Core LZ DRG acts an RPC peer acceptor. PEER-TENANCY-OCID and PEER-GROUP-OCID are optional and only required when the RPC peer is in a different tenancy, for cross-tenancy policy. If the RPC peer is in the same tenancy, provide PEER-NAME only. PEER-NAME is just an identifier for the RPC peer and can be any string without colon (:)."
   default     = []
 }

@@ -23,7 +23,7 @@ provider "oci" {
 }
 
 provider "oci" {
-  alias                = "secondary_region"
+  alias                = "not_in_use"
   region               = local.regions_map[local.home_region_key]
   tenancy_ocid         = var.tenancy_ocid
   user_ocid            = var.user_ocid

@@ -117,7 +117,7 @@ variable "exa_vcn1_onprem_route_enable" {
 variable "customize_exa_vcn1_subnets" {
   type        = bool
   default     = false
-  description = "If true, allows for the customization of default subnets settings. Only applicable to RMS deployments."
+  description = "If true, allows for the customization of default subnets settings. Applicable to RMS deployments only, used for UI displaying."
 }
 # ------------------------------------------------------
 # ----- Networking - Exadata Cloud Service VCN 2
@@ -236,7 +236,7 @@ variable "exa_vcn2_onprem_route_enable" {
 variable "customize_exa_vcn2_subnets" {
   type        = bool
   default     = false
-  description = "If true, allows for the customization of default subnets settings. Only applicable to RMS deployments."
+  description = "If true, allows for the customization of default subnets settings. Applicable to RMS deployments only, used for UI displaying."
 }
 # ------------------------------------------------------
 # ----- Networking - Exadata Cloud Service VCN 3
@@ -355,5 +355,5 @@ variable "exa_vcn3_onprem_route_enable" {
 variable "customize_exa_vcn3_subnets" {
   type        = bool
   default     = false
-  description = "If true, allows for the customization of default subnets settings. Only applicable to RMS deployments."
+  description = "If true, allows for the customization of default subnets settings. Applicable to RMS deployments only, used for UI displaying."
 }

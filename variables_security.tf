@@ -10,7 +10,7 @@ variable "enable_security_zones" {
   description = "Determines if Security Zones are enabled in Landing Zone. When set to true, the Security Zone is enabled for the enclosing compartment. If no enclosing compartment is used, then the Security Zone is not enabled."
 }
 variable "security_zones_reporting_region" {
-  default     = ""
+  default     = null
   type        = string
   description = "The reporting region of security zones. It defaults to tenancy home region if undefined."
 }
@@ -35,7 +35,7 @@ variable "enable_cloud_guard" {
 }
 variable "customize_cloud_guard_settings" {
   type        = bool
-  description = "Whether to customize Cloud Guard settings for a managed target. The Landing Zone enables Cloud Guard service and creates a managed target at the Root compartment in case a target at the Root compartment does not exist."
+  description = "Whether to customize Cloud Guard settings for a managed target. The Landing Zone enables Cloud Guard service and creates a managed target at the Root compartment in case a target at the Root compartment does not exist. Applicable to RMS deployments only, used for UI displaying."
   default     = false
 }
 variable "enable_cloud_guard_cloned_recipes" {
@@ -180,7 +180,7 @@ variable "bastion_jump_host_marketplace_image_ocid" {
   default     = null
   description = "The marketplace image OCID for the jump host. Marketplace image information can be obtained by running the example in https://github.com/oci-landing-zones/terraform-oci-modules-workloads/tree/main/marketplace-images/examples/marketplace-images. NOTE THAT BY DEPLOYING A MARKETPLACE IMAGE USING TERRAFORM YOU ARE IMPLICITLY AGREEING WITH OCI MARKETPLACE TERMS FOR THE PRICING MODEL THAT APPLY TO THE SELECTED IMAGE."
   validation {
-    condition = var.bastion_jump_host_marketplace_image_ocid == null || can(regex("^ocid1\\.image\\.[a-z0-9]+\\..[a-zA-Z0-9]{60}$", var.bastion_jump_host_marketplace_image_ocid))
+    condition     = var.bastion_jump_host_marketplace_image_ocid == null || can(regex("^ocid1\\.image\\.[a-z0-9]+\\..[a-zA-Z0-9]{60}$", var.bastion_jump_host_marketplace_image_ocid))
     error_message = "Validation failure for bastion_jump_host_marketplace_image_ocid: it must be null or a valid OCI marketplace image OCID (e.g. ocid1.image.<realm>..<unique_id>)."
   }
 }
@@ -240,13 +240,12 @@ variable "bastion_service_allowed_cidrs" {
 variable "customize_jump_host" {
   type        = bool
   default     = false
-  description = "Set to true to set custom options for jump host."
+  description = "Set to true to set custom options for jump host. Applicable to RMS deployments only, used for UI displaying."
 }
 
 # ------------------------------------------------------
 # ----- Vault
 # ------------------------------------------------------
-
 variable "enable_vault" {
   type        = bool
   default     = false
@@ -261,5 +260,5 @@ variable "vault_type" {
 variable "vault_replica_region" {
   type        = string
   default     = null
-  description = "The replica region where the vault backup is located."
+  description = "The vault replica region."
 }

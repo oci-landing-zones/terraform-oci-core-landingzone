@@ -57,7 +57,7 @@ locals {
 module "oci_native_firewall_logs" {
   count = local.chosen_firewall_option == "OCINFW" ? 1 : 0
 
-  source                = "github.com/oci-landing-zones/terraform-oci-modules-observability//logging?ref=v0.2.4"
+  source                = "github.com/oci-landing-zones/terraform-oci-modules-observability//logging?ref=v0.2.5"
   logging_configuration = local.logging_configuration_nfw
   tenancy_ocid          = var.tenancy_ocid
 

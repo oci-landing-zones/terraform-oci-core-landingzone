@@ -36,7 +36,6 @@ module "core_lz" {
     
     exa_vcn1_name                              = "exa-prod"
     exa_vcn1_cidrs                             = ["172.20.0.0/20"]
-    customize_exa_vcn1_subnets                 = true
     exa_vcn1_client_subnet_cidr                = "172.20.0.0/24"
     exa_vcn1_backup_subnet_cidr                = "172.20.1.0/24"
     add_exa_vcn1_integration_subnet            = true

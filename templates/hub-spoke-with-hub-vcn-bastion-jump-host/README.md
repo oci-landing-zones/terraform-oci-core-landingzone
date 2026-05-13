@@ -1,6 +1,6 @@
 # Core Landing Zone with Hub & Spoke Topology, Including Jump Host with Bastion Service Template
 
-This template shows how to deploy a CIS compliant landing zone using [OCI Core Landing Zone](../../) configured with a Hub & Spoke networking topology including a Jump Host with Bastion service enabled. It deploys a Jump Host with Oracle Linux 8 in the Jump Host subnet of the Hub VCN, a Bastion service in the Jump Host, a Three Tier VCN, and an Exadata VCN which are peered through the DRG. The DRG is configured to route traffic across all VCNs.
+This template shows how to deploy a CIS compliant landing zone using [OCI Core Landing Zone](../../) configured with a Hub & Spoke networking topology, including a Jump Host subnet with a Jump host instance and OCI Bastion service enabled. It deploys a Jump Host with Oracle Linux 8 in the Jump Host subnet of the Hub VCN, OCI Bastion service, a Three Tier VCN, and an Exadata VCN which are peered through the DRG. The DRG is configured to route traffic across all VCNs.
 
 Please see other [templates](../../templates/) available for CIS compliant landing zones with custom configurations.
 
@@ -13,7 +13,8 @@ This template has the following parameters set:
 | service\_label                    | A unique identifier to prefix the resources | ocibastion                                                                                                                 |
 | define\_net                       | Check to define networking resources. By default, the Landing Zone does NOT deploy any networks. | true                                                                                                                       |
 | hub\_deployment\_option           | The hub deployment option. In this case, a DRG is deployed to act as the hub in the Hub/Spoke topology. | "VCN or on-premises connectivity routing through DMZ VCN with Network Virtual Appliance (DRG and DMZ VCN will be created)" |
-| hub\_vcn\_cidrs                   | Hub VCN list of CIDR Blocks | ["192.168.0.0/24"]                                                                                                         |
+| hub\_vcn\_cidrs                   | Hub VCN list of CIDR Blocks | ["192.168.0.0/24"]    
+| add\_hub_vcn\_jumphost\_subnet    | The option to deploy the jump host subnet, where both Jump host and OCI Bastion are further deployed. | true                                                                                                       |
 | deploy\_bastion\_jump\_host       | The option to deploy the bastion jump host. | true                                                                                                                       |
 | deploy\_bastion\_service          | The option to deploy the bastion service. | true                                                                                                                       |
 | bastion\_service\_allowed\_cidrs  | List of the bastion service allowed cidrs. | ["x.x.x.x"]                                                                                                                |
@@ -34,7 +35,7 @@ This template can be deployed using OCI Resource Manager Service (RMS) or Terraf
 
 By clicking the button below, you are redirected to an OCI RMS Stack with variables pre-assigned for deployment.
 
-[![Deploy_To_OCI](../../images/DeployToOCI.svg)](https://cloud.oracle.com/resourcemanager/stacks/create?zipUrl=https://github.com/oci-landing-zones/terraform-oci-core-landingzone/archive/refs/heads/main.zip&zipUrlVariables={"service_label":"ocibastion","define_net":true,"hub_deployment_option":"VCN%20or%20on-premises%20connectivity%20routing%20through%20DMZ%20VCN%20with%20Network%20Virtual%20Appliance%20%28DRG%20and%20DMZ%20VCN%20will%20be%20created%29","hub_vcn_cidrs":["192.168.0.0/24"],"deploy_bastion_jump_host":true,"deploy_bastion_service":true,"bastion_service_allowed_cidrs":["x.x.x.x"],"add_tt_vcn1":true,"tt_vcn1_cidrs":["10.0.0.0/20"],"tt_vcn1_attach_to_drg":true,"add_exa_vcn1":true,"exa_vcn1_cidrs":["172.16.0.0/20"],"exa_vcn1_attach_to_drg":true,"network_admin_email_endpoints":["email.address@example.com"],"security_admin_email_endpoints":["email.address@example.com"]})
+[![Deploy_To_OCI](../../images/DeployToOCI.svg)](https://cloud.oracle.com/resourcemanager/stacks/create?zipUrl=https://github.com/oci-landing-zones/terraform-oci-core-landingzone/archive/refs/heads/main.zip&zipUrlVariables={"service_label":"ocibastion","define_net":true,"hub_deployment_option":"VCN%20or%20on-premises%20connectivity%20routing%20through%20DMZ%20VCN%20with%20Network%20Virtual%20Appliance%20%28DRG%20and%20DMZ%20VCN%20will%20be%20created%29","hub_vcn_cidrs":["192.168.0.0/24"],"customize_hub_vcn_subnets":true,"add_hub_vcn_jumphost_subnet":true,"deploy_bastion_jump_host":true,"deploy_bastion_service":true,"bastion_service_allowed_cidrs":["x.x.x.x"],"add_tt_vcn1":true,"tt_vcn1_cidrs":["10.0.0.0/20"],"tt_vcn1_attach_to_drg":true,"add_exa_vcn1":true,"exa_vcn1_cidrs":["172.16.0.0/20"],"exa_vcn1_attach_to_drg":true,"network_admin_email_endpoints":["email.address@example.com"],"security_admin_email_endpoints":["email.address@example.com"]})
 
 You are required to review/adjust the following variable settings:
 

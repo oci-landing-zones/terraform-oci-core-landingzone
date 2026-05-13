@@ -145,8 +145,8 @@ locals {
       url_path    = "/"
     }
     "PALOALTO" = {
-      protocol    = "TCP"
-      port        = 22
+      protocol = "TCP"
+      port     = 22
     }
     "OTHER" = {
       protocol    = "HTTP"
@@ -171,7 +171,7 @@ locals {
             protocol = "ANY"
             backend_set = {
               name           = "default-backend-set"
-              health_checker = local.health_checkers[upper(coalesce(var.net_appliance_marketplace_image_vendor, "OTHER"))]
+              health_checker = local.health_checkers[upper(coalesce(var.net_appliance_image_vendor, "OTHER"))]
               backends = {
                 BACKENDS-1 = {
                   name       = "backend-1"
@@ -199,7 +199,7 @@ locals {
             protocol = "ANY"
             backend_set = {
               name           = "default-backend-set"
-              health_checker = local.health_checkers[upper(coalesce(var.net_appliance_marketplace_image_vendor, "OTHER"))]
+              health_checker = local.health_checkers[upper(coalesce(var.net_appliance_image_vendor, "OTHER"))]
               backends = {
                 BACKEND-1 = {
                   name       = "backend-1"
@@ -264,9 +264,8 @@ locals {
 }
 
 module "lz_firewall_appliance" {
-  count = local.chosen_firewall_option != "NO" && local.chosen_firewall_option != "OCINFW" ? 1 : 0
-  source                  = "github.com/oci-landing-zones/terraform-oci-modules-workloads//cis-compute-storage?ref=release-0.2.7"
-  #source                           = "../terraform-oci-secure-workloads/cis-compute-storage"
+  count                            = local.chosen_firewall_option != "NO" && local.chosen_firewall_option != "OCINFW" ? 1 : 0
+  source                           = "github.com/oci-landing-zones/terraform-oci-modules-workloads//cis-compute-storage?ref=v0.2.7"
   instances_configuration          = local.instances_configuration
   marketplace_images_configuration = local.net_appliance_marketplace_images_configuration
   providers = {
@@ -278,12 +277,12 @@ module "lz_firewall_appliance" {
 
 module "lz_nlb" {
   count             = local.chosen_firewall_option != "NO" && local.chosen_firewall_option != "OCINFW" ? 1 : 0
-  source            = "github.com/oci-landing-zones/terraform-oci-modules-networking//modules/nlb?ref=v0.8.1"
+  source            = "github.com/oci-landing-zones/terraform-oci-modules-networking//modules/nlb?ref=v0.8.2"
   nlb_configuration = local.nlb_configuration
 }
 
 module "native_oci_firewall" {
   count                 = local.chosen_firewall_option == "OCINFW" ? 1 : 0
-  source                = "github.com/oci-landing-zones/terraform-oci-modules-networking?ref=v0.8.1"
+  source                = "github.com/oci-landing-zones/terraform-oci-modules-networking?ref=v0.8.2"
   network_configuration = local.network_firewall_network_configuration
 }

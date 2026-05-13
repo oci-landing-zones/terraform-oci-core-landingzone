@@ -95,8 +95,9 @@ variable "alarm_message_format" {
   }
 }
 variable "notifications_advanced_options" {
-  type    = bool
-  default = false
+  type        = bool
+  default     = false
+  description = "Whether to display advanced notification options. Applicable to RMS deployments only, used for UI displaying."
 }
 
 # ------------------------------------------------------

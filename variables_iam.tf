@@ -101,6 +101,11 @@ variable "custom_exainfra_compartment_name" {
 #   default     = null
 #   description = "The existing identity domain name."
 # }
+variable "custom_id_domain_compartment_ocid" {
+  type        = string
+  default     = null
+  description = "The existing identity domain compartment OCID. Applicable to RMS deployments only, used for UI displaying."
+}
 variable "custom_id_domain_ocid" {
   type        = string
   default     = null
@@ -234,7 +239,7 @@ variable "new_identity_domain_license_type" {
 variable "groups_options" {
   type        = string
   default     = "Yes"
-  description = "Whether to deploy new groups or use existing groups."
+  description = "Whether to deploy new groups or use existing groups. Applicable to RMS deployments only, used for UI displaying."
 }
 variable "rm_existing_iam_admin_group_name" {
   type        = string
@@ -375,8 +380,9 @@ variable "existing_ag_admin_group_name" {
 # ----- IAM - Dynamic Groups
 #-------------------------------------------------------
 variable "dyn_groups_options" {
-  type    = string
-  default = "Yes"
+  type        = string
+  default     = "Yes"
+  description = "Whether to deploy new dynamic groups or use existing dynamic groups. Applicable to RMS deployments only, used for UI displaying."
 }
 variable "existing_security_fun_dyn_group_name" {
   type        = string

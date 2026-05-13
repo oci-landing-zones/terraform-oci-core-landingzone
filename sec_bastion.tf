@@ -113,8 +113,7 @@ module "lz_bastion" {
 
 module "lz_bastion_jump_host" {
 
-  source = "github.com/oci-landing-zones/terraform-oci-modules-workloads//cis-compute-storage?ref=release-0.2.7"
-  #source = "../terraform-oci-secure-workloads/cis-compute-storage"
+  source = "github.com/oci-landing-zones/terraform-oci-modules-workloads//cis-compute-storage?ref=v0.2.7"
   count  = (local.hub_with_vcn == true && var.add_hub_vcn_jumphost_subnet && var.deploy_bastion_jump_host == true) ? 1 : 0
 
   providers = {

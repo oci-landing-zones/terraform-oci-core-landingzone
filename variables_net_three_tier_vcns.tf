@@ -33,14 +33,14 @@ variable "tt_vcn1_routable_vcns" {
   default     = []
   description = "The VCN labels that this VCN can send traffic to. Leave unassigned for sending traffic to all VCNs. Only applicable for Network topology where a DRG is deployed as the hub. Valid values: TT-VCN-2, TT-VCN-3, EXA-VCN-1, EXA-VCN-2, EXA-VCN3, OKE-VCN-1, OKE-VCN-2, OKE-VCN-3."
   validation {
-    condition = length(var.tt_vcn1_routable_vcns) == 0 ? true : (length(var.tt_vcn1_routable_vcns) == 0 || alltrue([for label in var.tt_vcn1_routable_vcns : contains(["TT-VCN-2","TT-VCN-3","EXA-VCN-1","EXA-VCN-2","EXA-VCN-3","OKE-VCN-1","OKE-VCN-2","OKE-VCN-3"], label)]))
+    condition     = length(var.tt_vcn1_routable_vcns) == 0 ? true : (length(var.tt_vcn1_routable_vcns) == 0 || alltrue([for label in var.tt_vcn1_routable_vcns : contains(["TT-VCN-2", "TT-VCN-3", "EXA-VCN-1", "EXA-VCN-2", "EXA-VCN-3", "OKE-VCN-1", "OKE-VCN-2", "OKE-VCN-3"], label)]))
     error_message = "Invalid value provided for tt_vcn1_routable_vcns variable: it must be empty or contain only valid VCN labels: \"TT-VCN-2\",\"TT-VCN-3\",\"EXA-VCN-1\",\"EXA-VCN-2\",\"EXA-VCN-3\",\"OKE-VCN-1\",\"OKE-VCN-2\",\"OKE-VCN-3\"."
   }
 }
 variable "customize_tt_vcn1_subnets" {
   type        = bool
   default     = false
-  description = "If true, allows for the customization of default subnets settings. Only applicable to RMS deployments."
+  description = "If true, allows for the customization of default subnets settings. Applicable to RMS deployments only, used for UI displaying."
 }
 variable "tt_vcn1_web_subnet_name" {
   type        = string
@@ -75,7 +75,7 @@ variable "tt_vcn1_web_ingress_destination_ports" {
   default     = ["TCP:443"]
   description = "The list of protocols and destination ports allowed for ingress packets into LBR Network Security Group. Each list value is a colon-separated entry like 'TCP:443'."
   validation {
-    condition = length(var.tt_vcn1_web_ingress_destination_ports) == 0 ? true : alltrue([for v in var.tt_vcn1_web_ingress_destination_ports : can(regex("^[^:]+:[^:]+$", v))])
+    condition     = length(var.tt_vcn1_web_ingress_destination_ports) == 0 ? true : alltrue([for v in var.tt_vcn1_web_ingress_destination_ports : can(regex("^[^:]+:[^:]+$", v))])
     error_message = "Invalid value provided for tt_vcn1_web_ingress_destination_ports variable: all values must be in the form protocol:port, with exactly one ':' separating protocol and port values."
   }
 }
@@ -98,7 +98,7 @@ variable "tt_vcn1_app_ingress_destination_ports" {
   default     = ["TCP:80"]
   description = "The list of protocols and destination ports allowed for ingress packets into App Network Security Group. Each list value is a colon-separated entry like 'TCP:80'."
   validation {
-    condition = length(var.tt_vcn1_app_ingress_destination_ports) == 0 ? true : alltrue([for v in var.tt_vcn1_app_ingress_destination_ports : can(regex("^[^:]+:[^:]+$", v))])
+    condition     = length(var.tt_vcn1_app_ingress_destination_ports) == 0 ? true : alltrue([for v in var.tt_vcn1_app_ingress_destination_ports : can(regex("^[^:]+:[^:]+$", v))])
     error_message = "Invalid value provided for tt_vcn1_app_ingress_destination_ports variable: all values must be in the form protocol:port, with exactly one ':' separating protocol and port values."
   }
 }
@@ -118,10 +118,10 @@ variable "tt_vcn1_db_subnet_cidr" {
 }
 variable "tt_vcn1_db_ingress_destination_ports" {
   type        = list(string)
-  default     = ["TCP:1521","TCP:1522"]
+  default     = ["TCP:1521", "TCP:1522"]
   description = "The list of protocols and destination ports allowed for ingress packets into DB Network Security Group. Each list value is a colon-separated entry like 'TCP:1521'."
   validation {
-    condition = length(var.tt_vcn1_db_ingress_destination_ports) == 0 ? true : alltrue([for v in var.tt_vcn1_db_ingress_destination_ports : can(regex("^[^:]+:[^:]+$", v))])
+    condition     = length(var.tt_vcn1_db_ingress_destination_ports) == 0 ? true : alltrue([for v in var.tt_vcn1_db_ingress_destination_ports : can(regex("^[^:]+:[^:]+$", v))])
     error_message = "Invalid value provided for tt_vcn1_db_ingress_destination_ports variable: all values must be in the form protocol:port, with exactly one ':' separating protocol and port values."
   }
 }
@@ -196,14 +196,14 @@ variable "tt_vcn2_routable_vcns" {
   default     = []
   description = "The VCN labels that this VCN can send traffic to. Only applicable for Network topology where a DRG is deployed as the hub. Valid values: TT-VCN-1, TT-VCN-3, EXA-VCN-1, EXA-VCN-2, EXA-VCN3, OKE-VCN-1, OKE-VCN-2, OKE-VCN-3."
   validation {
-    condition = length(var.tt_vcn2_routable_vcns) == 0 ? true : (length(var.tt_vcn2_routable_vcns) == 0 || alltrue([for label in var.tt_vcn2_routable_vcns : contains(["TT-VCN-1","TT-VCN-3","EXA-VCN-1","EXA-VCN-2","EXA-VCN-3","OKE-VCN-1","OKE-VCN-2","OKE-VCN-3"], label)]))
+    condition     = length(var.tt_vcn2_routable_vcns) == 0 ? true : (length(var.tt_vcn2_routable_vcns) == 0 || alltrue([for label in var.tt_vcn2_routable_vcns : contains(["TT-VCN-1", "TT-VCN-3", "EXA-VCN-1", "EXA-VCN-2", "EXA-VCN-3", "OKE-VCN-1", "OKE-VCN-2", "OKE-VCN-3"], label)]))
     error_message = "Invalid value provided for tt_vcn2_routable_vcns variable: it must be empty or contain only valid VCN labels: \"TT-VCN-1\",\"TT-VCN-3\",\"EXA-VCN-1\",\"EXA-VCN-2\",\"EXA-VCN-3\",\"OKE-VCN-1\",\"OKE-VCN-2\",\"OKE-VCN-3\"."
   }
 }
 variable "customize_tt_vcn2_subnets" {
   type        = bool
   default     = false
-  description = "If true, allows for the customization of default subnets settings. Only applicable to RMS deployments."
+  description = "If true, allows for the customization of default subnets settings. Applicable to RMS deployments only, used for UI displaying."
 }
 variable "tt_vcn2_web_subnet_name" {
   type        = string
@@ -238,7 +238,7 @@ variable "tt_vcn2_web_ingress_destination_ports" {
   default     = ["TCP:443"]
   description = "The list of protocols and destination ports allowed for ingress packets into LBR Network Security Group. Each list value is a colon-separated entry like 'TCP:443'."
   validation {
-    condition = length(var.tt_vcn2_web_ingress_destination_ports) == 0 ? true : alltrue([for v in var.tt_vcn2_web_ingress_destination_ports : can(regex("^[^:]+:[^:]+$", v))])
+    condition     = length(var.tt_vcn2_web_ingress_destination_ports) == 0 ? true : alltrue([for v in var.tt_vcn2_web_ingress_destination_ports : can(regex("^[^:]+:[^:]+$", v))])
     error_message = "Invalid value provided for tt_vcn2_web_ingress_destination_ports variable: all values must be in the form protocol:port, with exactly one ':' separating protocol and port values."
   }
 }
@@ -261,7 +261,7 @@ variable "tt_vcn2_app_ingress_destination_ports" {
   default     = ["TCP:80"]
   description = "The list of protocols and destination ports allowed for ingress packets into App Network Security Group. Each list value is a colon-separated entry like 'TCP:80'."
   validation {
-    condition = length(var.tt_vcn2_app_ingress_destination_ports) == 0 ? true : alltrue([for v in var.tt_vcn2_app_ingress_destination_ports : can(regex("^[^:]+:[^:]+$", v))])
+    condition     = length(var.tt_vcn2_app_ingress_destination_ports) == 0 ? true : alltrue([for v in var.tt_vcn2_app_ingress_destination_ports : can(regex("^[^:]+:[^:]+$", v))])
     error_message = "Invalid value provided for tt_vcn2_app_ingress_destination_ports variable: all values must be in the form protocol:port, with exactly one ':' separating protocol and port values."
   }
 }
@@ -281,10 +281,10 @@ variable "tt_vcn2_db_subnet_cidr" {
 }
 variable "tt_vcn2_db_ingress_destination_ports" {
   type        = list(string)
-  default     = ["TCP:1521","TCP:1522"]
+  default     = ["TCP:1521", "TCP:1522"]
   description = "The list of protocols and destination ports allowed for ingress packets into DB Network Security Group. Each list value is a colon-separated entry like 'TCP:1521'."
   validation {
-    condition = length(var.tt_vcn2_db_ingress_destination_ports) == 0 ? true : alltrue([for v in var.tt_vcn2_db_ingress_destination_ports : can(regex("^[^:]+:[^:]+$", v))])
+    condition     = length(var.tt_vcn2_db_ingress_destination_ports) == 0 ? true : alltrue([for v in var.tt_vcn2_db_ingress_destination_ports : can(regex("^[^:]+:[^:]+$", v))])
     error_message = "Invalid value provided for tt_vcn2_db_ingress_destination_ports variable: all values must be in the form protocol:port, with exactly one ':' separating protocol and port values."
   }
 }
@@ -359,14 +359,14 @@ variable "tt_vcn3_routable_vcns" {
   default     = []
   description = "The VCN labels that this VCN can send traffic to. Only applicable for Network topology where a DRG is deployed as the hub. Valid values: TT-VCN-1, TT-VCN-2, EXA-VCN-1, EXA-VCN-2, EXA-VCN3, OKE-VCN-1, OKE-VCN-2, OKE-VCN-3."
   validation {
-    condition = length(var.tt_vcn3_routable_vcns) == 0 ? true : (length(var.tt_vcn3_routable_vcns) == 0 || alltrue([for label in var.tt_vcn3_routable_vcns : contains(["TT-VCN-1","TT-VCN-2","EXA-VCN-1","EXA-VCN-2","EXA-VCN-3","OKE-VCN-1","OKE-VCN-2","OKE-VCN-3"], label)]))
+    condition     = length(var.tt_vcn3_routable_vcns) == 0 ? true : (length(var.tt_vcn3_routable_vcns) == 0 || alltrue([for label in var.tt_vcn3_routable_vcns : contains(["TT-VCN-1", "TT-VCN-2", "EXA-VCN-1", "EXA-VCN-2", "EXA-VCN-3", "OKE-VCN-1", "OKE-VCN-2", "OKE-VCN-3"], label)]))
     error_message = "Invalid value provided for tt_vcn3_routable_vcns variable: it must be empty or contain only valid VCN labels: \"TT-VCN-1\",\"TT-VCN-3\",\"EXA-VCN-1\",\"EXA-VCN-2\",\"EXA-VCN-3\",\"OKE-VCN-1\",\"OKE-VCN-2\",\"OKE-VCN-3\"."
   }
 }
 variable "customize_tt_vcn3_subnets" {
   type        = bool
   default     = false
-  description = "If true, allows for the customization of default subnets settings. Only applicable to RMS deployments."
+  description = "If true, allows for the customization of default subnets settings. Applicable to RMS deployments only, used for UI displaying."
 }
 variable "tt_vcn3_web_subnet_name" {
   type        = string
@@ -401,7 +401,7 @@ variable "tt_vcn3_web_ingress_destination_ports" {
   default     = ["TCP:443"]
   description = "The list of protocols and destination ports allowed for ingress packets into LBR Network Security Group. Each list value is a colon-separated entry like 'TCP:443'."
   validation {
-    condition = length(var.tt_vcn3_web_ingress_destination_ports) == 0 ? true : alltrue([for v in var.tt_vcn3_web_ingress_destination_ports : can(regex("^[^:]+:[^:]+$", v))])
+    condition     = length(var.tt_vcn3_web_ingress_destination_ports) == 0 ? true : alltrue([for v in var.tt_vcn3_web_ingress_destination_ports : can(regex("^[^:]+:[^:]+$", v))])
     error_message = "Invalid value provided for tt_vcn3_web_ingress_destination_ports variable: all values must be in the form protocol:port, with exactly one ':' separating protocol and port values."
   }
 }
@@ -424,7 +424,7 @@ variable "tt_vcn3_app_ingress_destination_ports" {
   default     = ["TCP:80"]
   description = "The list of protocols and destination ports allowed for ingress packets into App Network Security Group. Each list value is a colon-separated entry like 'TCP:80'."
   validation {
-    condition = length(var.tt_vcn3_app_ingress_destination_ports) == 0 ? true : alltrue([for v in var.tt_vcn3_app_ingress_destination_ports : can(regex("^[^:]+:[^:]+$", v))])
+    condition     = length(var.tt_vcn3_app_ingress_destination_ports) == 0 ? true : alltrue([for v in var.tt_vcn3_app_ingress_destination_ports : can(regex("^[^:]+:[^:]+$", v))])
     error_message = "Invalid value provided for tt_vcn3_app_ingress_destination_ports variable: all values must be in the form protocol:port, with exactly one ':' separating protocol and port values."
   }
 }
@@ -444,10 +444,10 @@ variable "tt_vcn3_db_subnet_cidr" {
 }
 variable "tt_vcn3_db_ingress_destination_ports" {
   type        = list(string)
-  default     = ["TCP:1521","TCP:1522"]
+  default     = ["TCP:1521", "TCP:1522"]
   description = "The list of protocols and destination ports allowed for ingress packets into DB Network Security Group. Each list value is a colon-separated entry like 'TCP:1521'."
   validation {
-    condition = length(var.tt_vcn3_db_ingress_destination_ports) == 0 ? true : alltrue([for v in var.tt_vcn3_db_ingress_destination_ports : can(regex("^[^:]+:[^:]+$", v))])
+    condition     = length(var.tt_vcn3_db_ingress_destination_ports) == 0 ? true : alltrue([for v in var.tt_vcn3_db_ingress_destination_ports : can(regex("^[^:]+:[^:]+$", v))])
     error_message = "Invalid value provided for tt_vcn3_db_ingress_destination_ports variable: all values must be in the form protocol:port, with exactly one ':' separating protocol and port values."
   }
 }

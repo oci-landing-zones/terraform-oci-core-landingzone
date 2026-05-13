@@ -49,6 +49,7 @@ variableGroups:
       - "identity_domain_option"
       - "new_identity_domain_name"
       - "new_identity_domain_license_type"
+      - "custom_id_domain_compartment_ocid"
       - "custom_id_domain_ocid"
       - "deploy_custom_domain_groups"
     visible:
@@ -175,7 +176,7 @@ variableGroups:
       - "hub_vcn_name"
       - "hub_vcn_cidrs"
       - "hub_vcn_deploy_net_appliance_option"
-      - "net_appliance_marketplace_image_vendor"
+      - "net_appliance_image_vendor"
       - "net_appliance_marketplace_image_ocid"
       - "net_appliance_marketplace_image_name"
       - "net_appliance_marketplace_image_version"
@@ -877,7 +878,7 @@ variables:
   identity_domain_option:
     type: enum
     title: "Identity Domain Option"
-    description: "Option to create a new identity domain or use the default domain"
+    description: "Select an option to create a new identity domain or use an existing one (default or custom)"
     required: true
     enum:
       - "New Identity Domain"
@@ -908,27 +909,22 @@ variables:
         - ${identity_domain_option}
         - "New Identity Domain"
 
-#  use_custom_id_domain:
-#    type: boolean
-#    title: "Enable an Existing Identity Domain to Manage Landing Zone?"
-#    description: "Your tenancy already has a default Identity Domain, whose groups are used to manage the Landing Zone. Check this box for enabling groups in an *existing* non-default Identity Domain to manage the resources deployed by the Landing Zone. See <a href=\"https://docs.oracle.com/en-us/iaas/Content/Identity/usingidentitydomains/oci-iam-concepts.htm\">IAM Technologies</a> for identity domains concepts."
-#    default: false
-#    visible:
-#      eq:
-#        - ${identity_domain_option}
-#        - "Default Domain"
-
-  # custom_id_domain_name:
-  #   type: string
-  #   title: "Existing Identity Domain Name"
-  #   description: "Enter the existing Identity Domain name."
-  #   required: false
-  #   visible: use_custom_id_domain
+  custom_id_domain_compartment_ocid:
+    type: oci:identity:compartment:id
+    title: "Existing Identity Domain Compartment"
+    description: "Select the compartment of the existing Identity Domain"
+    required: false
+    visible:
+      eq:
+        - ${identity_domain_option}
+        - "Use Custom Identity Domain"
 
   custom_id_domain_ocid:
-    type: oci:identity:domain:id
-    title: "Existing Identity Domain OCID"
-    description: "Enter the OCID of the existing Identity Domain"
+    type: oci:identity:domains:id
+    title: "Existing Identity Domain"
+    description: "Select the existing Identity Domain"
+    dependsOn:
+      compartmentId: ${custom_id_domain_compartment_ocid}
     required: false
     visible:
       eq:
@@ -4202,10 +4198,10 @@ variables:
             - "VCN or on-premises connectivity routed through DMZ VCN with Network Virtual Appliance existing DRG (DMZ VCN will be created and DRG ID required)"
     default: "Don\"t deploy any network appliance at this time"
 
-  net_appliance_marketplace_image_vendor:
+  net_appliance_image_vendor:
     type: enum
-    title: "Network Appliance Marketplace Image Vendor"
-    description: "Select the vendor of the Marketplace Image. For \"Marketplace Image\" option, you are required to provide either the image OCID or the image name and version. Marketplace image information can be obtained by running <a href=\"https://github.com/oci-landing-zones/terraform-oci-modules-workloads/tree/main/marketplace-images/examples/marketplace-images\" target=\"_blank\">Marketplace Images</a>. **NOTE THAT BY DEPLOYING A MARKETPLACE IMAGE USING TERRAFORM YOU ARE IMPLICITLY AGREEING WITH OCI MARKETPLACE TERMS FOR THE PRICING MODEL THAT APPLY TO THE SELECTED IMAGE.**"
+    title: "Network Appliance Image Vendor"
+    description: "Select the vendor family for the network appliance image. This value is used to select the default Network Load Balancer health checker for Marketplace Image and User-Provided Virtual Network Appliance deployments."
     enum:
       - "PaloAlto"
       - "Fortinet"
@@ -4220,10 +4216,13 @@ variables:
           - eq:
             - ${hub_deployment_option}
             - "VCN or on-premises connectivity routed through DMZ VCN with Network Virtual Appliance existing DRG (DMZ VCN will be created and DRG ID required)"     
-        - and:
-            - eq:
-              - ${hub_vcn_deploy_net_appliance_option}
-              - "Marketplace Image"
+        - or:
+          - eq:
+            - ${hub_vcn_deploy_net_appliance_option}
+            - "Marketplace Image"
+          - eq:
+            - ${hub_vcn_deploy_net_appliance_option}
+            - "User-Provided Virtual Network Appliance"
 
   net_appliance_marketplace_image_ocid:
     type: string
@@ -5439,10 +5438,9 @@ variables:
     default: false
 
   security_zones_reporting_region:
-    type: string
+    type: oci:identity:region:name
     title: Security Zones Reporting Region
-    description: "The reporting region of security zones. It defaults to tenancy home region if undefined."
-    default: ""
+    description: "Select security zones reporting region. It defaults to tenancy home region if undefined."
     required: false
     visible:
       and:
@@ -5968,7 +5966,7 @@ variables:
   vault_replica_region:
     type: oci:identity:region:name
     title: "Vault Replica Region"
-    description: "The replica region of the vault. Applicable to VIRTUAL_PRIVATE vault only."
+    description: "The vault replica region."
     required: false
     visible: enable_vault
     
