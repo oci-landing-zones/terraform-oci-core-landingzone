@@ -138,6 +138,10 @@
 | deploy\_tt\_vcn1\_bastion\_subnet | Whether to deploy a subnet where you can further deploy OCI Bastion service or a jump host. | bool | false | no |
 | deploy\_tt\_vcn2\_bastion\_subnet | Whether to deploy a subnet where you can further deploy OCI Bastion service or a jump host. | bool | false | no |
 | deploy\_tt\_vcn3\_bastion\_subnet | Whether to deploy a subnet where you can further deploy OCI Bastion service or a jump host. | bool | false | no |
+| define\_tt\_vcn1\_additional\_nsgs | When true, Landing Zone provisions additional TT-VCN-1 NSGs from tt\_vcn1\_additional\_nsgs. | bool | false | no |
+| define\_tt\_vcn2\_additional\_nsgs | When true, Landing Zone provisions additional TT-VCN-2 NSGs from tt\_vcn2\_additional\_nsgs. | bool | false | no |
+| define\_tt\_vcn3\_additional\_nsgs | When true, Landing Zone provisions additional TT-VCN-3 NSGs from tt\_vcn3\_additional\_nsgs. | bool | false | no |
+| tt\_vcn1\_additional\_nsgs | Additional NSGs for TT-VCN-1. Accepts either a native HCL map/object or a JSON object string. Only used when define\_tt\_vcn1\_additional\_nsgs is true. | any | {} | no |
 | tt\_vcn1\_app\_subnet\_cidr | The Application subnet CIDR block. It must be within the VCN CIDR blocks. | string | null | no |
 | tt\_vcn1\_app\_subnet\_dns | The Application subnet DNS name. Use only letters and numbers, no special characters. | string | null | no |
 | tt\_vcn1\_app\_subnet\_name | The Application subnet name. | string | null | no |
@@ -160,6 +164,7 @@
 | tt\_vcn1\_web\_subnet\_is\_private | Whether the Web subnet private. It is public by default. | bool | false | no |
 | tt\_vcn1\_web\_subnet\_name | The Web subnet name. | string | null | no |
 | tt\_vcn2\_app\_subnet\_cidr | The Application subnet CIDR block. It must be within the VCN CIDR blocks. | string | null | no |
+| tt\_vcn2\_additional\_nsgs | Additional NSGs for TT-VCN-2. Accepts either a native HCL map/object or a JSON object string. Only used when define\_tt\_vcn2\_additional\_nsgs is true. | any | {} | no |
 | tt\_vcn2\_app\_subnet\_dns | The Application subnet DNS name. Use only letters and numbers, no special characters. | string | null | no |
 | tt\_vcn2\_app\_subnet\_name | The Application subnet name. | string | null | no |
 | tt\_vcn2\_attach\_to\_drg | If true, the VCN is attached to a DRG, enabling cross-vcn traffic routing. | bool | false | no |
@@ -181,6 +186,7 @@
 | tt\_vcn2\_web\_subnet\_is\_private | Whether the Web subnet private. It is public by default. | bool | false | no |
 | tt\_vcn2\_web\_subnet\_name | The Web subnet name. | string | null | no |
 | tt\_vcn3\_app\_subnet\_cidr | The Application subnet CIDR block. It must be within the VCN CIDR blocks. | string | null | no |
+| tt\_vcn3\_additional\_nsgs | Additional NSGs for TT-VCN-3. Accepts either a native HCL map/object or a JSON object string. Only used when define\_tt\_vcn3\_additional\_nsgs is true. | any | {} | no |
 | tt\_vcn3\_app\_subnet\_dns | The Application subnet DNS name. Use only letters and numbers, no special characters. | string | null | no |
 | tt\_vcn3\_app\_subnet\_name | The Application subnet name. | string | null | no |
 | tt\_vcn3\_attach\_to\_drg | If true, the VCN is attached to a DRG, enabling cross-vcn traffic routing. | bool | false | no |
@@ -213,6 +219,10 @@
 | customize\_exa\_vcn1\_subnets | If true, allows for the customization of default subnets settings. Applicable to RMS deployments only, used for UI displaying. | bool | false | no |
 | customize\_exa\_vcn2\_subnets | If true, allows for the customization of default subnets settings. Applicable to RMS deployments only, used for UI displaying. | bool | false | no |
 | customize\_exa\_vcn3\_subnets | If true, allows for the customization of default subnets settings. Applicable to RMS deployments only, used for UI displaying. | bool | false | no |
+| define\_exa\_vcn1\_additional\_nsgs | When true, Landing Zone provisions additional EXA-VCN-1 NSGs from exa\_vcn1\_additional\_nsgs. | bool | false | no |
+| define\_exa\_vcn2\_additional\_nsgs | When true, Landing Zone provisions additional EXA-VCN-2 NSGs from exa\_vcn2\_additional\_nsgs. | bool | false | no |
+| define\_exa\_vcn3\_additional\_nsgs | When true, Landing Zone provisions additional EXA-VCN-3 NSGs from exa\_vcn3\_additional\_nsgs. | bool | false | no |
+| exa\_vcn1\_additional\_nsgs | Additional NSGs for EXA-VCN-1. Accepts either a native HCL map/object or a JSON object string. Only used when define\_exa\_vcn1\_additional\_nsgs is true. | any | {} | no |
 | exa\_vcn1\_attach\_to\_drg | If true, the VCN is attached to a DRG, enabling cross-vcn traffic routing. | bool | false | no |
 | exa\_vcn1\_backup\_subnet\_cidr | The Backup subnet CIDR block. It must be within the VCN CIDR blocks. | string | null | no |
 | exa\_vcn1\_backup\_subnet\_dns | The Backup subnet DNS name. Use only letters and numbers, no special characters. | string | null | no |
@@ -232,6 +242,7 @@
 | exa\_vcn1\_onprem\_route\_enable | This will drive the creation of the routes and security list rules. | bool | false | no |
 | exa\_vcn1\_routable\_vcns | The VCN labels that this VCN can send traffic to. Leave unassigned for sending traffic to all VCNs. Only applicable for Hub/Spoke topology where a DRG is deployed as the hub. Valid values: "TT-VCN-1", "TT-VCN-2", "TT-VCN-3", "EXA-VCN-2", "EXA-VCN-3", "OKE-VCN-1", "OKE-VCN-2", "OKE-VCN-3". | list(string) | [] | no |
 | exa\_vcn2\_attach\_to\_drg | If true, the VCN is attached to a DRG, enabling cross-vcn traffic routing. | bool | false | no |
+| exa\_vcn2\_additional\_nsgs | Additional NSGs for EXA-VCN-2. Accepts either a native HCL map/object or a JSON object string. Only used when define\_exa\_vcn2\_additional\_nsgs is true. | any | {} | no |
 | exa\_vcn2\_backup\_subnet\_cidr | The Backup subnet CIDR block. It must be within the VCN CIDR blocks. | string | null | no |
 | exa\_vcn2\_backup\_subnet\_dns | The Backup subnet DNS name. Use only letters and numbers, no special characters. | string | null | no |
 | exa\_vcn2\_backup\_subnet\_name | The Backup subnet name. | string | null | no |
@@ -251,6 +262,7 @@
 | exa\_vcn2\_onprem\_route\_enable | This will drive the creation of the routes and security list rules. | bool | false | no |
 | exa\_vcn2\_routable\_vcns | The VCN labels that this VCN can send traffic to. Leave unassigned for sending traffic to all VCNs. Only applicable for Hub/Spoke topology where a DRG is deployed as the hub. Valid values: "TT-VCN-1", "TT-VCN-2", "TT-VCN-3", "EXA-VCN-1", "EXA-VCN-3", "OKE-VCN-1", "OKE-VCN-2", "OKE-VCN-3". | list(string) | [] | no |
 | exa\_vcn3\_attach\_to\_drg | If true, the VCN is attached to a DRG, enabling cross-vcn traffic routing. | bool | false | no |
+| exa\_vcn3\_additional\_nsgs | Additional NSGs for EXA-VCN-3. Accepts either a native HCL map/object or a JSON object string. Only used when define\_exa\_vcn3\_additional\_nsgs is true. | any | {} | no |
 | exa\_vcn3\_backup\_subnet\_cidr | The Backup subnet CIDR block. It must be within the VCN CIDR blocks. | string | null | no |
 | exa\_vcn3\_backup\_subnet\_dns | The Backup subnet DNS name. Use only letters and numbers, no special characters. | string | null | no |
 | exa\_vcn3\_backup\_subnet\_name | The Backup subnet name. | string | null | no |
@@ -283,6 +295,10 @@
 | customize\_oke\_vcn1\_subnets | If true, allows for the customization of default subnets settings. Applicable to RMS deployments only, used for UI displaying. | bool | false | no |
 | customize\_oke\_vcn2\_subnets | If true, allows for the customization of default subnets settings. Applicable to RMS deployments only, used for UI displaying. | bool | false | no |
 | customize\_oke\_vcn3\_subnets | If true, allows for the customization of default subnets settings. Applicable to RMS deployments only, used for UI displaying. | bool | false | no |
+| define\_oke\_vcn1\_additional\_nsgs | When true, Landing Zone provisions additional OKE-VCN-1 NSGs from oke\_vcn1\_additional\_nsgs. | bool | false | no |
+| define\_oke\_vcn2\_additional\_nsgs | When true, Landing Zone provisions additional OKE-VCN-2 NSGs from oke\_vcn2\_additional\_nsgs. | bool | false | no |
+| define\_oke\_vcn3\_additional\_nsgs | When true, Landing Zone provisions additional OKE-VCN-3 NSGs from oke\_vcn3\_additional\_nsgs. | bool | false | no |
+| oke\_vcn1\_additional\_nsgs | Additional NSGs for OKE-VCN-1. Accepts either a native HCL map/object or a JSON object string. Only used when define\_oke\_vcn1\_additional\_nsgs is true. | any | {} | no |
 | oke\_vcn1\_api\_subnet\_cidr | The API subnet CIDR block. It must be within the VCN CIDR blocks. | string | null | no |
 | oke\_vcn1\_api\_subnet\_dns | The API subnet DNS name. Use only letters and numbers, no special characters. | string | null | no |
 | oke\_vcn1\_api\_subnet\_name | The API subnet name. | string | null | no |
@@ -306,6 +322,7 @@
 | oke\_vcn1\_workers\_subnet\_dns | The Workers subnet DNS name. Use only letters and numbers, no special characters. | string | null | no |
 | oke\_vcn1\_workers\_subnet\_name | The Workers subnet name. | string | null | no |
 | oke\_vcn2\_api\_subnet\_cidr | The API subnet CIDR block. It must be within the VCN CIDR blocks. | string | null | no |
+| oke\_vcn2\_additional\_nsgs | Additional NSGs for OKE-VCN-2. Accepts either a native HCL map/object or a JSON object string. Only used when define\_oke\_vcn2\_additional\_nsgs is true. | any | {} | no |
 | oke\_vcn2\_api\_subnet\_dns | The API subnet DNS name. Use only letters and numbers, no special characters. | string | null | no |
 | oke\_vcn2\_api\_subnet\_name | The API subnet name. | string | null | no |
 | oke\_vcn2\_attach\_to\_drg | If true, the VCN is attached to a DRG, enabling cross-vcn traffic routing. | bool | false | no |
@@ -328,6 +345,7 @@
 | oke\_vcn2\_workers\_subnet\_dns | The Workers subnet DNS name. Use only letters and numbers, no special characters. | string | null | no |
 | oke\_vcn2\_workers\_subnet\_name | The Workers subnet name. | string | null | no |
 | oke\_vcn3\_api\_subnet\_cidr | The API subnet CIDR block. It must be within the VCN CIDR blocks. | string | null | no |
+| oke\_vcn3\_additional\_nsgs | Additional NSGs for OKE-VCN-3. Accepts either a native HCL map/object or a JSON object string. Only used when define\_oke\_vcn3\_additional\_nsgs is true. | any | {} | no |
 | oke\_vcn3\_api\_subnet\_dns | The API subnet DNS name. Use only letters and numbers, no special characters. | string | null | no |
 | oke\_vcn3\_api\_subnet\_name | The API subnet name. | string | null | no |
 | oke\_vcn3\_attach\_to\_drg | If true, the VCN is attached to a DRG, enabling cross-vcn traffic routing. | bool | false | no |
@@ -355,11 +373,13 @@
 | Variable Name | Description | Type | Default | Required |
 |---------------|-------------|------|---------|----------|
 | customize\_hub\_vcn\_subnets | Whether to customize default subnets settings of the Hub VCN. Applicable to RMS deployments only, used for UI displaying. | bool | false | no |
+| define\_hub\_vcn\_additional\_nsgs | When true, Landing Zone provisions additional Hub VCN NSGs from hub\_vcn\_additional\_nsgs. | bool | false | no |
 | enable\_native\_firewall\_threat\_log | Enable OCI Native Firewall Threat Log. | bool | false | no |
 | enable\_native\_firewall\_traffic\_log | Enable OCI Native Firewall Traffic Log. | bool | false | no |
 | existing\_drg\_ocid | The OCID of an existing DRG that you want to reuse for hub deployment. Only applicable if hub\_deployment\_option is 'VCN or on-premises connectivity routing via DRG (existing DRG)' or 'VCN or on-premises connectivity routed through DMZ VCN with Network Virtual Appliance existing DRG (DMZ VCN will be created and DRG ID required)'. | string | null | no |
 | hub\_deployment | The available options for hub deployment as an integer. 'No cross-VCN or on-premises connectivity' = 0, 'VCN or on-premises connectivity routing via DRG (DRG will be created)' = 1, 'VCN or on-premises connectivity routing via DRG (existing DRG)' = 2, 'VCN or on-premises connectivity routing through DMZ VCN with Network Virtual Appliance (DRG and DMZ VCN will be created)' = 3, 'VCN or on-premises connectivity routed through DMZ VCN with Network Virtual Appliance existing DRG (DMZ VCN will be created and DRG ID required)' = 4 | number | 0| no |
 | hub\_deployment\_option | The available options for hub deployment. Valid values: 'No cross-VCN or on-premises connectivity', 'VCN or on-premises connectivity routing via DRG (DRG will be created)', 'VCN or on-premises connectivity routing via DRG (existing DRG)', 'VCN or on-premises connectivity routing through DMZ VCN with Network Virtual Appliance (DRG and DMZ VCN will be created)', 'VCN or on-premises connectivity routed through DMZ VCN with Network Virtual Appliance existing DRG (DMZ VCN will be created and DRG ID required)'. All the VCNs that attach to the DRG join the topology as spokes. | string | "No cross-VCN or on-premises connectivity" | no |
+| hub\_vcn\_additional\_nsgs | Additional NSGs for the Hub VCN. Accepts either a native HCL map/object or a JSON object string. Only used when define\_hub\_vcn\_additional\_nsgs is true. | any | {} | no |
 | hub\_vcn\_cidrs | List of CIDR blocks for the Hub VCN. | list(string) | ["192.168.0.0/26"] | no |
 | hub\_vcn\_deploy\_net\_appliance\_option | The network appliance option for deploying in the Hub VCN. Valid values: 'Don't deploy any network appliance at this time' (default), 'Palo Alto Networks VM-Series Firewall', 'Fortinet FortiGate Firewall', 'User-Provided Virtual Network Appliance', and 'OCI Native Firewall'. Costs are incurred. | string | "Don't deploy any network appliance at this time" | no |
 | hub\_vcn\_dns | The Hub VCN DNS name. | string | null | no |

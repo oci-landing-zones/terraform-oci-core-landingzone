@@ -55,6 +55,7 @@
 6. Jump Host can now be provisioned based on OCI Marketplace image OCID, in addition to name/version. Variable **bastion_jump_host_marketplace_image_option** has been replaced by newly added **bastion_jump_host_marketplace_image_name** and **bastion_jump_host_image_source** has been introduced to let users indicate whether the image is custom, platform or marketplace.
 7. Network firewall appliance can now be provisioned based on OCI Marketplace image OCID, in addition to name/version. 
 8. Newly added variable **net_appliance_marketplace_image_version** replaces both **net_palo_alto_version** and **net_fortigate_version** when specifying the OCI Marketplace image version for the network firewall appliance.
+9. Additional NSGs for Hub, Three-tier, OKE, and Exadata VCNs can now be configured through **define_\*_additional_nsgs** and **\*_additional_nsgs** variables. The NSG definition accepts a native HCL map/object or a JSON object string, and the Resource Manager UI exposes it as a multiline JSON field.
 
 ## Other Updates
 

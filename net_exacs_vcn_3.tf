@@ -94,7 +94,7 @@ locals {
                     destination_type   = "CIDR_BLOCK"
                   }
                 } : {}
-              ) : merge(
+                ) : merge(
                 {
                   "HUB-DRG-RULE" = {
                     network_entity_key = "HUB-DRG"
@@ -150,7 +150,7 @@ locals {
                     destination_type   = "CIDR_BLOCK"
                   }
                 } : {}
-              ) : merge(
+                ) : merge(
                 {
                   "HUB-DRG-RULE" = {
                     network_entity_key = "HUB-DRG"
@@ -409,7 +409,7 @@ locals {
         local.exa_vcn3_cross_vcn_open_nsg,
         local.exa_vcn3_cross_vcn_client_nsg,
         local.exa_vcn3_cross_vcn_integration_nsg,
-        local.exa_vcn3_additional_nsgs
+        local.additional_nsgs_by_vcn["EXA-VCN-3"]
       )
 
       vcn_specific_gateways = {
