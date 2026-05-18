@@ -109,6 +109,27 @@ variable "exa_vcn1_routable_vcns" {
   default     = []
   description = "The VCN labels that this VCN can send traffic to. Leave unassigned for sending traffic to all VCNs. Only applicable for Network topology where a DRG is deployed as the hub. Valid values: TT-VCN-1, TT-VCN-2, TT-VCN-3, EXA-VCN-2, EXA-VCN3, OKE-VCN-1, OKE-VCN-2, OKE-VCN-3."
 }
+variable "define_exa_vcn1_additional_nsgs" {
+  type        = bool
+  default     = false
+  description = "When true, Landing Zone provisions additional EXA-VCN-1 NSGs from exa_vcn1_additional_nsgs."
+}
+variable "exa_vcn1_additional_nsgs" {
+  type        = any
+  default     = {}
+  nullable    = true
+  description = "Additional NSGs for EXA-VCN-1. Accepts either a native HCL map/object or a JSON object string. Only used when define_exa_vcn1_additional_nsgs is true."
+
+  validation {
+    condition = (
+      var.exa_vcn1_additional_nsgs == null ||
+      try(trimspace(tostring(var.exa_vcn1_additional_nsgs)) == "", false) ||
+      can(keys(var.exa_vcn1_additional_nsgs)) ||
+      can(keys(jsondecode(var.exa_vcn1_additional_nsgs)))
+    )
+    error_message = "exa_vcn1_additional_nsgs must be null, empty, a map/object, or a JSON object string."
+  }
+}
 variable "exa_vcn1_onprem_route_enable" {
   type        = bool
   default     = false
@@ -228,6 +249,27 @@ variable "exa_vcn2_routable_vcns" {
   default     = []
   description = "The VCN labels that this VCN can send traffic to. Leave unassigned for sending traffic to all VCNs. Only applicable for Network topology where a DRG is deployed as the hub. Valid values: TT-VCN-1, TT-VCN-2, TT-VCN-3, EXA-VCN-1, EXA-VCN3, OKE-VCN-1, OKE-VCN-2, OKE-VCN-3."
 }
+variable "define_exa_vcn2_additional_nsgs" {
+  type        = bool
+  default     = false
+  description = "When true, Landing Zone provisions additional EXA-VCN-2 NSGs from exa_vcn2_additional_nsgs."
+}
+variable "exa_vcn2_additional_nsgs" {
+  type        = any
+  default     = {}
+  nullable    = true
+  description = "Additional NSGs for EXA-VCN-2. Accepts either a native HCL map/object or a JSON object string. Only used when define_exa_vcn2_additional_nsgs is true."
+
+  validation {
+    condition = (
+      var.exa_vcn2_additional_nsgs == null ||
+      try(trimspace(tostring(var.exa_vcn2_additional_nsgs)) == "", false) ||
+      can(keys(var.exa_vcn2_additional_nsgs)) ||
+      can(keys(jsondecode(var.exa_vcn2_additional_nsgs)))
+    )
+    error_message = "exa_vcn2_additional_nsgs must be null, empty, a map/object, or a JSON object string."
+  }
+}
 variable "exa_vcn2_onprem_route_enable" {
   type        = bool
   default     = false
@@ -346,6 +388,27 @@ variable "exa_vcn3_routable_vcns" {
   type        = list(string)
   default     = []
   description = "The VCN labels that this VCN can send traffic to. Leave unassigned for sending traffic to all VCNs. Only applicable for Network topology where a DRG is deployed as the hub. Valid values: TT-VCN-1, TT-VCN-2, TT-VCN-3, EXA-VCN-1, EXA-VCN2, OKE-VCN-1, OKE-VCN-2, OKE-VCN-3."
+}
+variable "define_exa_vcn3_additional_nsgs" {
+  type        = bool
+  default     = false
+  description = "When true, Landing Zone provisions additional EXA-VCN-3 NSGs from exa_vcn3_additional_nsgs."
+}
+variable "exa_vcn3_additional_nsgs" {
+  type        = any
+  default     = {}
+  nullable    = true
+  description = "Additional NSGs for EXA-VCN-3. Accepts either a native HCL map/object or a JSON object string. Only used when define_exa_vcn3_additional_nsgs is true."
+
+  validation {
+    condition = (
+      var.exa_vcn3_additional_nsgs == null ||
+      try(trimspace(tostring(var.exa_vcn3_additional_nsgs)) == "", false) ||
+      can(keys(var.exa_vcn3_additional_nsgs)) ||
+      can(keys(jsondecode(var.exa_vcn3_additional_nsgs)))
+    )
+    error_message = "exa_vcn3_additional_nsgs must be null, empty, a map/object, or a JSON object string."
+  }
 }
 variable "exa_vcn3_onprem_route_enable" {
   type        = bool

@@ -259,72 +259,6 @@ variableGroups:
         - add_hub_vcn_jumphost_subnet
         - deploy_bastion_jump_host
 
-  - title: "Networking - On-Premise Connectivity"
-    variables:
-      - "on_premises_connection_option" 
-      - "onprem_cidrs"
-    visible: define_net
-
-  - title: "Networking - FastConnect Virtual Circuit"
-    variables:
-      - "fastconnect_virtual_circuit_name"
-      - "fastconnect_virtual_circuit_bandwidth_shape"
-      - "fastconnect_virtual_circuit_bandwidth_custom_shape"
-      - "fastconnect_virtual_circuit_type"
-      - "fastconnect_virtual_circuit_provider_service_id"
-      - "fastconnect_virtual_circuit_provider_service_key_name"
-      - "fastconnect_virtual_circuit_customer_asn"
-      - "fastconnect_virtual_circuit_customer_bgp_peering_ip"
-      - "fastconnect_virtual_circuit_oracle_bgp_peering_ip"
-      - "fastconnect_virtual_circuit_bgp_md5auth_key"
-      - "fastconnect_virtual_circuit_is_bfd_enabled"
-      - "fastconnect_virtual_circuit_routing_policy"
-      - "fastconnect_virtual_circuit_ip_mtu"
-    visible:
-      and:
-        - define_net
-        - not:
-          - eq:
-            - ${hub_deployment_option}
-            - "No cross-VCN or on-premises connectivity"
-        - or:
-          - eq:
-            - ${on_premises_connection_option}
-            - "Create New FastConnect Virtual Circuit"
-          - eq:
-            - ${on_premises_connection_option}
-            - "Create New FastConnect and IPSec"
-
-  - title: "Networking - IPSec VPN"
-    variables:
-      - "cpe_name"
-      - "cpe_ip_address"
-      - "cpe_device_shape_vendor"
-      - "ipsec_vpn_name"
-      - "ipsec_customer_bgp_asn"
-      - "ipsec_tunnel1_customer_interface_ip"
-      - "ipsec_tunnel1_oracle_interface_ip"
-      - "ipsec_tunnel1_shared_secret"
-      - "ipsec_tunnel1_ike_version"
-      - "ipsec_tunnel2_customer_interface_ip"
-      - "ipsec_tunnel2_oracle_interface_ip"
-      - "ipsec_tunnel2_shared_secret"
-      - "ipsec_tunnel2_ike_version"
-    visible:
-      and:
-        - define_net
-        - not:
-          - eq:
-            - ${hub_deployment_option}
-            - "No cross-VCN or on-premises connectivity"
-        - or:
-          - eq:
-            - ${on_premises_connection_option}
-            - "Create New IPSec VPN"
-          - eq:
-            - ${on_premises_connection_option}
-            - "Create New FastConnect and IPSec"
-
   - title: "Networking - Three Tier VCNs"
     variables:
       - "add_tt_vcn1"
@@ -541,10 +475,101 @@ variableGroups:
       - "oke_vcn3_db_ingress_destination_ports"
     visible: define_net
 
+  - title: "Networking - Additional NSGs"
+    variables:
+      - "define_hub_vcn_additional_nsgs"
+      - "hub_vcn_additional_nsgs"
+      - "define_tt_vcn1_additional_nsgs"
+      - "tt_vcn1_additional_nsgs"
+      - "define_tt_vcn2_additional_nsgs"
+      - "tt_vcn2_additional_nsgs"
+      - "define_tt_vcn3_additional_nsgs"
+      - "tt_vcn3_additional_nsgs"
+      - "define_exa_vcn1_additional_nsgs"
+      - "exa_vcn1_additional_nsgs"
+      - "define_exa_vcn2_additional_nsgs"
+      - "exa_vcn2_additional_nsgs"
+      - "define_exa_vcn3_additional_nsgs"
+      - "exa_vcn3_additional_nsgs"
+      - "define_oke_vcn1_additional_nsgs"
+      - "oke_vcn1_additional_nsgs"
+      - "define_oke_vcn2_additional_nsgs"
+      - "oke_vcn2_additional_nsgs"
+      - "define_oke_vcn3_additional_nsgs"
+      - "oke_vcn3_additional_nsgs"
+      
+    visible: define_net
+
   - title: "Networking - Externally Managed VCNs"
     variables:
       - "workloadvcn_ocids_public_access"
       - "workloadvcn_ocids_onprem_access"
+
+  - title: "Networking - On-Premise Connectivity"
+    variables:
+      - "on_premises_connection_option"
+      - "onprem_cidrs"
+    visible: define_net
+
+  - title: "Networking - FastConnect Virtual Circuit"
+    variables:
+      - "fastconnect_virtual_circuit_name"
+      - "fastconnect_virtual_circuit_bandwidth_shape"
+      - "fastconnect_virtual_circuit_bandwidth_custom_shape"
+      - "fastconnect_virtual_circuit_type"
+      - "fastconnect_virtual_circuit_provider_service_id"
+      - "fastconnect_virtual_circuit_provider_service_key_name"
+      - "fastconnect_virtual_circuit_customer_asn"
+      - "fastconnect_virtual_circuit_customer_bgp_peering_ip"
+      - "fastconnect_virtual_circuit_oracle_bgp_peering_ip"
+      - "fastconnect_virtual_circuit_bgp_md5auth_key"
+      - "fastconnect_virtual_circuit_is_bfd_enabled"
+      - "fastconnect_virtual_circuit_routing_policy"
+      - "fastconnect_virtual_circuit_ip_mtu"
+    visible:
+      and:
+        - define_net
+        - not:
+          - eq:
+            - ${hub_deployment_option}
+            - "No cross-VCN or on-premises connectivity"
+        - or:
+          - eq:
+            - ${on_premises_connection_option}
+            - "Create New FastConnect Virtual Circuit"
+          - eq:
+            - ${on_premises_connection_option}
+            - "Create New FastConnect and IPSec"
+
+  - title: "Networking - IPSec VPN"
+    variables:
+      - "cpe_name"
+      - "cpe_ip_address"
+      - "cpe_device_shape_vendor"
+      - "ipsec_vpn_name"
+      - "ipsec_customer_bgp_asn"
+      - "ipsec_tunnel1_customer_interface_ip"
+      - "ipsec_tunnel1_oracle_interface_ip"
+      - "ipsec_tunnel1_shared_secret"
+      - "ipsec_tunnel1_ike_version"
+      - "ipsec_tunnel2_customer_interface_ip"
+      - "ipsec_tunnel2_oracle_interface_ip"
+      - "ipsec_tunnel2_shared_secret"
+      - "ipsec_tunnel2_ike_version"
+    visible:
+      and:
+        - define_net
+        - not:
+          - eq:
+            - ${hub_deployment_option}
+            - "No cross-VCN or on-premises connectivity"
+        - or:
+          - eq:
+            - ${on_premises_connection_option}
+            - "Create New IPSec VPN"
+          - eq:
+            - ${on_premises_connection_option}
+            - "Create New FastConnect and IPSec"
 
   - title: "Events and Notifications"
     variables:
@@ -4176,6 +4201,258 @@ variables:
           - eq:
             - ${hub_deployment_option}
             - "VCN or on-premises connectivity routed through DMZ VCN with Network Virtual Appliance existing DRG (DMZ VCN will be created and DRG ID required)"
+
+  define_hub_vcn_additional_nsgs:
+    type: boolean
+    title: "Define Hub VCN Additional NSGs?"
+    description: "When checked, Core Landing Zone provisions the additional Hub VCN NSGs defined in the field below."
+    required: false
+    default: false
+    visible:
+      and:
+        - define_net
+        - or:
+          - eq:
+            - ${hub_deployment_option}
+            - "VCN or on-premises connectivity routing through DMZ VCN with Network Virtual Appliance (DRG and DMZ VCN will be created)"
+          - eq:
+            - ${hub_deployment_option}
+            - "VCN or on-premises connectivity routed through DMZ VCN with Network Virtual Appliance existing DRG (DMZ VCN will be created and DRG ID required)"
+
+  hub_vcn_additional_nsgs:
+    type: text
+    multiline: true
+    title: "Hub VCN Additional NSGs"
+    description: "JSON object defining additional NSGs for the Hub VCN. The top-level object keys are NSG keys. Each NSG must include display_name and can include ingress_rules and egress_rules objects."
+    required: false
+    default: "{}"
+    visible:
+      and:
+        - define_net
+        - define_hub_vcn_additional_nsgs
+        - or:
+          - eq:
+            - ${hub_deployment_option}
+            - "VCN or on-premises connectivity routing through DMZ VCN with Network Virtual Appliance (DRG and DMZ VCN will be created)"
+          - eq:
+            - ${hub_deployment_option}
+            - "VCN or on-premises connectivity routed through DMZ VCN with Network Virtual Appliance existing DRG (DMZ VCN will be created and DRG ID required)"
+
+  define_tt_vcn1_additional_nsgs:
+    type: boolean
+    title: "Define TT-VCN-1 Additional NSGs?"
+    description: "When checked, Core Landing Zone provisions the additional TT-VCN-1 NSGs defined in the field below."
+    required: false
+    default: false
+    visible:
+      and:
+        - define_net
+        - add_tt_vcn1
+
+  tt_vcn1_additional_nsgs:
+    type: text
+    multiline: true
+    title: "TT-VCN-1 Additional NSGs"
+    description: "JSON object defining additional NSGs for TT-VCN-1. The top-level object keys are NSG keys. Each NSG must include display_name and can include ingress_rules and egress_rules objects."
+    required: false
+    default: "{}"
+    visible:
+      and:
+        - define_net
+        - add_tt_vcn1
+        - define_tt_vcn1_additional_nsgs
+
+  define_tt_vcn2_additional_nsgs:
+    type: boolean
+    title: "Define TT-VCN-2 Additional NSGs?"
+    description: "When checked, Core Landing Zone provisions the additional TT-VCN-2 NSGs defined in the field below."
+    required: false
+    default: false
+    visible:
+      and:
+        - define_net
+        - add_tt_vcn2
+
+  tt_vcn2_additional_nsgs:
+    type: text
+    multiline: true
+    title: "TT-VCN-2 Additional NSGs"
+    description: "JSON object defining additional NSGs for TT-VCN-2. The top-level object keys are NSG keys. Each NSG must include display_name and can include ingress_rules and egress_rules objects."
+    required: false
+    default: "{}"
+    visible:
+      and:
+        - define_net
+        - add_tt_vcn2
+        - define_tt_vcn2_additional_nsgs
+
+  define_tt_vcn3_additional_nsgs:
+    type: boolean
+    title: "Define TT-VCN-3 Additional NSGs?"
+    description: "When checked, Core Landing Zone provisions the additional TT-VCN-3 NSGs defined in the field below."
+    required: false
+    default: false
+    visible:
+      and:
+        - define_net
+        - add_tt_vcn3
+
+  tt_vcn3_additional_nsgs:
+    type: text
+    multiline: true
+    title: "TT-VCN-3 Additional NSGs"
+    description: "JSON object defining additional NSGs for TT-VCN-3. The top-level object keys are NSG keys. Each NSG must include display_name and can include ingress_rules and egress_rules objects."
+    required: false
+    default: "{}"
+    visible:
+      and:
+        - define_net
+        - add_tt_vcn3
+        - define_tt_vcn3_additional_nsgs
+
+  define_oke_vcn1_additional_nsgs:
+    type: boolean
+    title: "Define OKE-VCN-1 Additional NSGs?"
+    description: "When checked, Core Landing Zone provisions the additional OKE-VCN-1 NSGs defined in the field below."
+    required: false
+    default: false
+    visible:
+      and:
+        - define_net
+        - add_oke_vcn1
+
+  oke_vcn1_additional_nsgs:
+    type: text
+    multiline: true
+    title: "OKE-VCN-1 Additional NSGs"
+    description: "JSON object defining additional NSGs for OKE-VCN-1. The top-level object keys are NSG keys. Each NSG must include display_name and can include ingress_rules and egress_rules objects."
+    required: false
+    default: "{}"
+    visible:
+      and:
+        - define_net
+        - add_oke_vcn1
+        - define_oke_vcn1_additional_nsgs
+
+  define_oke_vcn2_additional_nsgs:
+    type: boolean
+    title: "Define OKE-VCN-2 Additional NSGs?"
+    description: "When checked, Core Landing Zone provisions the additional OKE-VCN-2 NSGs defined in the field below."
+    required: false
+    default: false
+    visible:
+      and:
+        - define_net
+        - add_oke_vcn2
+
+  oke_vcn2_additional_nsgs:
+    type: text
+    multiline: true
+    title: "OKE-VCN-2 Additional NSGs"
+    description: "JSON object defining additional NSGs for OKE-VCN-2. The top-level object keys are NSG keys. Each NSG must include display_name and can include ingress_rules and egress_rules objects."
+    required: false
+    default: "{}"
+    visible:
+      and:
+        - define_net
+        - add_oke_vcn2
+        - define_oke_vcn2_additional_nsgs
+
+  define_oke_vcn3_additional_nsgs:
+    type: boolean
+    title: "Define OKE-VCN-3 Additional NSGs?"
+    description: "When checked, Core Landing Zone provisions the additional OKE-VCN-3 NSGs defined in the field below."
+    required: false
+    default: false
+    visible:
+      and:
+        - define_net
+        - add_oke_vcn3
+
+  oke_vcn3_additional_nsgs:
+    type: text
+    multiline: true
+    title: "OKE-VCN-3 Additional NSGs"
+    description: "JSON object defining additional NSGs for OKE-VCN-3. The top-level object keys are NSG keys. Each NSG must include display_name and can include ingress_rules and egress_rules objects."
+    required: false
+    default: "{}"
+    visible:
+      and:
+        - define_net
+        - add_oke_vcn3
+        - define_oke_vcn3_additional_nsgs
+
+  define_exa_vcn1_additional_nsgs:
+    type: boolean
+    title: "Define EXA-VCN-1 Additional NSGs?"
+    description: "When checked, Core Landing Zone provisions the additional EXA-VCN-1 NSGs defined in the field below."
+    required: false
+    default: false
+    visible:
+      and:
+        - define_net
+        - add_exa_vcn1
+
+  exa_vcn1_additional_nsgs:
+    type: text
+    multiline: true
+    title: "EXA-VCN-1 Additional NSGs"
+    description: "JSON object defining additional NSGs for EXA-VCN-1. The top-level object keys are NSG keys. Each NSG must include display_name and can include ingress_rules and egress_rules objects."
+    required: false
+    default: "{}"
+    visible:
+      and:
+        - define_net
+        - add_exa_vcn1
+        - define_exa_vcn1_additional_nsgs
+
+  define_exa_vcn2_additional_nsgs:
+    type: boolean
+    title: "Define EXA-VCN-2 Additional NSGs?"
+    description: "When checked, Core Landing Zone provisions the additional EXA-VCN-2 NSGs defined in the field below."
+    required: false
+    default: false
+    visible:
+      and:
+        - define_net
+        - add_exa_vcn2
+
+  exa_vcn2_additional_nsgs:
+    type: text
+    multiline: true
+    title: "EXA-VCN-2 Additional NSGs"
+    description: "JSON object defining additional NSGs for EXA-VCN-2. The top-level object keys are NSG keys. Each NSG must include display_name and can include ingress_rules and egress_rules objects."
+    required: false
+    default: "{}"
+    visible:
+      and:
+        - define_net
+        - add_exa_vcn2
+        - define_exa_vcn2_additional_nsgs
+
+  define_exa_vcn3_additional_nsgs:
+    type: boolean
+    title: "Define EXA-VCN-3 Additional NSGs?"
+    description: "When checked, Core Landing Zone provisions the additional EXA-VCN-3 NSGs defined in the field below."
+    required: false
+    default: false
+    visible:
+      and:
+        - define_net
+        - add_exa_vcn3
+
+  exa_vcn3_additional_nsgs:
+    type: text
+    multiline: true
+    title: "EXA-VCN-3 Additional NSGs"
+    description: "JSON object defining additional NSGs for EXA-VCN-3. The top-level object keys are NSG keys. Each NSG must include display_name and can include ingress_rules and egress_rules objects."
+    required: false
+    default: "{}"
+    visible:
+      and:
+        - define_net
+        - add_exa_vcn3
+        - define_exa_vcn3_additional_nsgs
 
   hub_vcn_deploy_net_appliance_option:
     type: enum

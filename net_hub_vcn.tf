@@ -21,7 +21,7 @@ locals {
   hub_vcn_jumphost_subnet_dns_label    = substr(replace(coalesce(var.hub_vcn_jumphost_subnet_name, "jumphost-subnet"), "/[^\\w]/", ""), 0, 14)
   hub_vcn_jumphost_subnet_cidr         = coalesce(var.hub_vcn_jumphost_subnet_cidr, cidrsubnet(var.hub_vcn_cidrs[0], 3, 4))
 
-  fw_mgmt_external_allowed_cidrs_to_ports = local.chosen_firewall_option != "OCINFW" ? flatten([for cidr in var.allowed_onprem_cidrs_to_fw_mgmt_interface : [for port in var.fw_mgmt_interface_ports : "${trimspace(cidr)},${trimspace(port)}" ] if length(var.allowed_onprem_cidrs_to_fw_mgmt_interface) > 0 && length(var.fw_mgmt_interface_ports) > 0]) : []
+  fw_mgmt_external_allowed_cidrs_to_ports = local.chosen_firewall_option != "OCINFW" ? flatten([for cidr in var.allowed_onprem_cidrs_to_fw_mgmt_interface : [for port in var.fw_mgmt_interface_ports : "${trimspace(cidr)},${trimspace(port)}"] if length(var.allowed_onprem_cidrs_to_fw_mgmt_interface) > 0 && length(var.fw_mgmt_interface_ports) > 0]) : []
 
   hub_vcn = local.hub_with_vcn == true ? { # local variable hub_with_vcn is defined in net_hub_drg.tf.
     "HUB-VCN" = {
@@ -100,7 +100,7 @@ locals {
       security_lists = merge(
         local.chosen_firewall_option != "OCINFW" ? {
           "MGMT-SUB-SL" = {
-            display_name  = "mgmt-subnet-security-list"
+            display_name = "mgmt-subnet-security-list"
             ingress_rules = [
               {
                 description  = "Ingress from ${local.hub_vcn_mgmt_subnet_cidr} on HTTP port. Required for inbound port forwarding connections from OCI Bastion service to FW management interface."
@@ -214,7 +214,7 @@ locals {
                   destination        = "0.0.0.0/0"
                   destination_type   = "CIDR_BLOCK"
                 }
-              } 
+              }
             )
           }
         },
@@ -231,21 +231,21 @@ locals {
                 }
               },
               # We don't route thru firewall because eventual problems with the firewall itself can lock admins out of mgmt interfaces.
-              { for cidr in toset(concat(var.onprem_cidrs,var.allowed_onprem_cidrs_to_fw_mgmt_interface)) : "ON-PREM-${cidr}-RULE" => { 
-                  network_entity_key = "HUB-DRG" # FW admins can connect from on-prem to the management subnet through the DRG.
-                  description        = "Traffic destined for on-prem CIDR ${cidr} is routed through the DRG."
-                  destination        = cidr
-                  destination_type   = "CIDR_BLOCK"
+              { for cidr in toset(concat(var.onprem_cidrs, var.allowed_onprem_cidrs_to_fw_mgmt_interface)) : "ON-PREM-${cidr}-RULE" => {
+                network_entity_key = "HUB-DRG" # FW admins can connect from on-prem to the management subnet through the DRG.
+                description        = "Traffic destined for on-prem CIDR ${cidr} is routed through the DRG."
+                destination        = cidr
+                destination_type   = "CIDR_BLOCK"
                 }
               },
-              {  
-                "EVERYWHERE-ELSE-RULE" = { 
-                  network_entity_key = "HUB-VCN-NAT-GATEWAY" 
+              {
+                "EVERYWHERE-ELSE-RULE" = {
+                  network_entity_key = "HUB-VCN-NAT-GATEWAY"
                   description        = "Traffic destined for networks outside the VCN is routed through the NAT GAteway."
                   destination        = "0.0.0.0/0"
                   destination_type   = "CIDR_BLOCK"
                 }
-              }  
+              }
             )
           }
         } : {},
@@ -253,7 +253,7 @@ locals {
           "JUMPHOST-SUBNET-ROUTE-TABLE" = {
             display_name = "jumphost-subnet-route-table"
             route_rules = merge(
-              {  
+              {
                 "OSN-RULE" = {
                   network_entity_key = "HUB-VCN-SERVICE-GATEWAY"
                   description        = "Traffic destined for all OCI services in Oracle Services Network is routed through Service Gateway."
@@ -263,14 +263,14 @@ locals {
               },
               coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_east_west_entry_point_ocid, local.void) != local.void ? {
                 "EVERYWHERE-ELSE-RULE" = {
-                  network_entity_id  = coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_east_west_entry_point_ocid)
-                  description        = "Traffic destined for networks outside the VCN is routed through the private IP address ${coalesce(var.oci_nfw_ip_ocid, local.void) != local.void ? coalesce(data.oci_core_private_ip.oci_firewall[0].ip_address, "undetermined") : coalesce(data.oci_core_private_ip.indoor_nlb[0].ip_address, "undetermined")}."
-                  destination        = "0.0.0.0/0"
-                  destination_type   = "CIDR_BLOCK"
-                }  
-              } : {}  
+                  network_entity_id = coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_east_west_entry_point_ocid)
+                  description       = "Traffic destined for networks outside the VCN is routed through the private IP address ${coalesce(var.oci_nfw_ip_ocid, local.void) != local.void ? coalesce(data.oci_core_private_ip.oci_firewall[0].ip_address, "undetermined") : coalesce(data.oci_core_private_ip.indoor_nlb[0].ip_address, "undetermined")}."
+                  destination       = "0.0.0.0/0"
+                  destination_type  = "CIDR_BLOCK"
+                }
+              } : {}
             )
-          }    
+          }
         } : {},
         # HUB-VCN-INGRESS-ROUTE-TABLE gets attached as the ingress route table of Hub VCN DRG attachment (see net_hub_drg.tf). It controls where traffic that enters the Hub VCN via its DRG attachment is routed to.
         {
@@ -285,7 +285,7 @@ locals {
                   destination_type   = "SERVICE_CIDR_BLOCK"
                 }
               },
-              var.add_hub_vcn_jumphost_subnet == true && coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_east_west_entry_point_ocid, local.void) != local.void ? { 
+              var.add_hub_vcn_jumphost_subnet == true && coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_east_west_entry_point_ocid, local.void) != local.void ? {
                 "JUMP-HOST-SUBNET-RULE" = { # Required for routing traffic destined to the jump host subnet in the Hub VCN. Without it, traffic doesn't reach the firewall because local VCN routes kick in first.
                   description       = "Traffic destined for ${local.hub_vcn_jumphost_subnet_display_name} is routed through the private IP address ${coalesce(var.oci_nfw_ip_ocid, local.void) != local.void ? coalesce(data.oci_core_private_ip.oci_firewall[0].ip_address, "undetermined") : coalesce(data.oci_core_private_ip.indoor_nlb[0].ip_address, "undetermined")}."
                   destination       = local.hub_vcn_jumphost_subnet_cidr
@@ -333,15 +333,15 @@ locals {
                   src_type    = "NETWORK_SECURITY_GROUP"
                 }
               },
-              local.hub_vcn_outdoor_subnet_private == false ? { for cidr in local.hub_vcn_outdoor_allowed_public_cidrs : "INGRESS-FROM-EXTERNAL-${cidr}-RULE" => { 
+              local.hub_vcn_outdoor_subnet_private == false ? { for cidr in local.hub_vcn_outdoor_allowed_public_cidrs : "INGRESS-FROM-EXTERNAL-${cidr}-RULE" => {
                 # For customized hub VCN deployments with overridden local.hub_vcn_outdoor_subnet_private and local.hub_vcn_outdoor_allowed_public_cidrs.
-                  description = "Ingress from external CIDR ${cidr}."
-                  stateless   = false
-                  protocol    = "ALL"
-                  src         = "${cidr}"
-                  src_type    = "CIDR_BLOCK"
+                description = "Ingress from external CIDR ${cidr}."
+                stateless   = false
+                protocol    = "ALL"
+                src         = "${cidr}"
+                src_type    = "CIDR_BLOCK"
                 }
-              } : {}  
+              } : {}
             )
             egress_rules = {
               "EGRESS-TO-ANYWHERE-RULE" = {
@@ -379,33 +379,33 @@ locals {
         } : {},
         local.chosen_firewall_option != "OCINFW" ? {
           "HUB-VCN-INDOOR-NLB-NSG" = {
-            display_name = "indoor-nlb-nsg"
+            display_name  = "indoor-nlb-nsg"
             ingress_rules = local.hub_vcn_indoor_nsg_ingress_rules
-            egress_rules = local.hub_vcn_indoor_nsg_egress_rules
+            egress_rules  = local.hub_vcn_indoor_nsg_egress_rules
           }
         } : {},
         local.chosen_firewall_option != "OCINFW" ? {
           "HUB-VCN-INDOOR-FW-NSG" = {
-            display_name = "indoor-fw-nsg"
+            display_name  = "indoor-fw-nsg"
             ingress_rules = local.hub_vcn_indoor_nsg_ingress_rules
-            egress_rules = local.hub_vcn_indoor_nsg_egress_rules
+            egress_rules  = local.hub_vcn_indoor_nsg_egress_rules
           }
         } : {},
         local.chosen_firewall_option != "OCINFW" ? {
           "HUB-VCN-MGMT-NSG" = {
             display_name = "mgmt-nsg"
             ingress_rules = merge(
-              { for cidr_port_pair in local.fw_mgmt_external_allowed_cidrs_to_ports : "INGRESS-FROM-${split(",",cidr_port_pair)[0]}-ON-${split(",",cidr_port_pair)[1]}-RULE" => {
-                description  = "Ingress from ${split(",",cidr_port_pair)[0]} over ${split(":",split(",",cidr_port_pair)[1])[0]} on ${split(":",split(",",cidr_port_pair)[1])[0] == "ICMP" ? "type/code ${split(":",split(",",cidr_port_pair)[1])[1]}" : "port ${split(":",split(",",cidr_port_pair)[1])[1]}"}."
+              { for cidr_port_pair in local.fw_mgmt_external_allowed_cidrs_to_ports : "INGRESS-FROM-${split(",", cidr_port_pair)[0]}-ON-${split(",", cidr_port_pair)[1]}-RULE" => {
+                description  = "Ingress from ${split(",", cidr_port_pair)[0]} over ${split(":", split(",", cidr_port_pair)[1])[0]} on ${split(":", split(",", cidr_port_pair)[1])[0] == "ICMP" ? "type/code ${split(":", split(",", cidr_port_pair)[1])[1]}" : "port ${split(":", split(",", cidr_port_pair)[1])[1]}"}."
                 stateless    = false
-                protocol     = split(":",split(",",cidr_port_pair)[1])[0]
-                src          = split(",",cidr_port_pair)[0]
+                protocol     = split(":", split(",", cidr_port_pair)[1])[0]
+                src          = split(",", cidr_port_pair)[0]
                 src_type     = "CIDR_BLOCK"
-                dst_port_min = split(":",split(",",cidr_port_pair)[1])[0] != "ICMP" ? (split(":",split(",",cidr_port_pair)[1])[1] == "ALL" ? null : split(":",split(",",cidr_port_pair)[1])[1]) : null
-                dst_port_max = split(":",split(",",cidr_port_pair)[1])[0] != "ICMP" ? (split(":",split(",",cidr_port_pair)[1])[1] == "ALL" ? null : split(":",split(",",cidr_port_pair)[1])[1]) : null
-                icmp_type    = split(":",split(",",cidr_port_pair)[1])[0] == "ICMP" ? split("/", split(":",split(",",cidr_port_pair)[1])[1])[0] : null
-                icmp_code    = split(":",split(",",cidr_port_pair)[1])[0] == "ICMP" ? (length(split("/", split(":",split(",",cidr_port_pair)[1])[1])) > 1 ? split("/", split(":",split(",",cidr_port_pair)[1])[1])[1] : null) : null
-              }},
+                dst_port_min = split(":", split(",", cidr_port_pair)[1])[0] != "ICMP" ? (split(":", split(",", cidr_port_pair)[1])[1] == "ALL" ? null : split(":", split(",", cidr_port_pair)[1])[1]) : null
+                dst_port_max = split(":", split(",", cidr_port_pair)[1])[0] != "ICMP" ? (split(":", split(",", cidr_port_pair)[1])[1] == "ALL" ? null : split(":", split(",", cidr_port_pair)[1])[1]) : null
+                icmp_type    = split(":", split(",", cidr_port_pair)[1])[0] == "ICMP" ? split("/", split(":", split(",", cidr_port_pair)[1])[1])[0] : null
+                icmp_code    = split(":", split(",", cidr_port_pair)[1])[0] == "ICMP" ? (length(split("/", split(":", split(",", cidr_port_pair)[1])[1])) > 1 ? split("/", split(":", split(",", cidr_port_pair)[1])[1])[1] : null) : null
+              } },
               var.add_hub_vcn_jumphost_subnet == true ? {
                 "INGRESS-FROM-JUMP-HOST-NSG-SSH-RULE" = {
                   description  = "Ingress from Jump Host NSG to SSH port. Required by hosts deployed in the Jump Host NSG."
@@ -609,14 +609,14 @@ locals {
         } : {},
         local.chosen_firewall_option == "OCINFW" ? {
           "HUB-VCN-OCI-FIREWALL-NSG" = {
-            display_name = "oci-firewall-nsg"
+            display_name  = "oci-firewall-nsg"
             ingress_rules = local.hub_vcn_indoor_nsg_ingress_rules
-            egress_rules = local.hub_vcn_indoor_nsg_egress_rules
+            egress_rules  = local.hub_vcn_indoor_nsg_egress_rules
           }
         } : {},
         {
           "HUB-VCN-APP-LOAD-BALANCER-NSG" = {
-            display_name  = "app-load-balancer-nsg" # OCI Load Balancers further deployed in the hub VCN should be associated with this NSG.
+            display_name = "app-load-balancer-nsg" # OCI Load Balancers further deployed in the hub VCN should be associated with this NSG.
             ingress_rules = coalesce(local.hub_vcn_app_load_balancer_nsg_ingress_rules, {
               "INGRESS-FROM-ALL-RULE" = {
                 description  = "Ingress from anywhere."
@@ -629,9 +629,9 @@ locals {
               }
             })
             egress_rules = local.hub_vcn_app_load_balancer_nsg_egress_rules
-          }  
+          }
         },
-        local.hub_vcn_additional_nsgs
+        local.additional_nsgs_by_vcn["HUB-VCN"]
       ) # closing NSG merge function  
 
       vcn_specific_gateways = merge(
@@ -657,66 +657,66 @@ locals {
         {
           service_gateways = {
             "HUB-VCN-SERVICE-GATEWAY" = {
-              display_name    = "service-gateway"
-              services        = "all-services"
+              display_name = "service-gateway"
+              services     = "all-services"
             }
           }
-        }  
+        }
       )
     }
   } : null
 
   spoke_subnets_routing = merge(
     local.add_tt_vcn1 == true && var.tt_vcn1_attach_to_drg == true ? { for cidr in var.tt_vcn1_cidrs : "TT-VCN-1-${cidr}-RULE" => {
-      description = "Traffic destined for ${local.tt_vcn1_display_name} CIDR ${cidr} is routed through ${coalesce(var.oci_nfw_ip_ocid, local.void) != local.void ? "the private IP address ${coalesce(data.oci_core_private_ip.oci_firewall[0].ip_address,"undetermined")}" : coalesce(var.hub_vcn_north_south_entry_point_ocid, local.void) != local.void ? "the private IP address ${coalesce(data.oci_core_private_ip.outdoor_nlb[0].ip_address,"undetermined")}" : "the DRG"}."
+      description        = "Traffic destined for ${local.tt_vcn1_display_name} CIDR ${cidr} is routed through ${coalesce(var.oci_nfw_ip_ocid, local.void) != local.void ? "the private IP address ${coalesce(data.oci_core_private_ip.oci_firewall[0].ip_address, "undetermined")}" : coalesce(var.hub_vcn_north_south_entry_point_ocid, local.void) != local.void ? "the private IP address ${coalesce(data.oci_core_private_ip.outdoor_nlb[0].ip_address, "undetermined")}" : "the DRG"}."
       destination        = "${cidr}"
       destination_type   = "CIDR_BLOCK"
       network_entity_id  = coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_north_south_entry_point_ocid, local.void) != local.void ? coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_north_south_entry_point_ocid) : null
       network_entity_key = coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_north_south_entry_point_ocid, local.void) == local.void ? "HUB-DRG" : null
-    }} : {},
+    } } : {},
     local.add_tt_vcn2 == true && var.tt_vcn2_attach_to_drg == true ? { for cidr in var.tt_vcn2_cidrs : "TT-VCN-2-${cidr}-RULE" => {
-      description        = "Traffic destined for ${local.tt_vcn2_display_name} CIDR ${cidr} is routed through ${coalesce(var.oci_nfw_ip_ocid, local.void) != local.void ? "the private IP address ${coalesce(data.oci_core_private_ip.oci_firewall[0].ip_address,"undetermined")}" : coalesce(var.hub_vcn_north_south_entry_point_ocid, local.void) != local.void ? "the private IP address ${coalesce(data.oci_core_private_ip.outdoor_nlb[0].ip_address,"undetermined")}" : "the DRG"}."
+      description        = "Traffic destined for ${local.tt_vcn2_display_name} CIDR ${cidr} is routed through ${coalesce(var.oci_nfw_ip_ocid, local.void) != local.void ? "the private IP address ${coalesce(data.oci_core_private_ip.oci_firewall[0].ip_address, "undetermined")}" : coalesce(var.hub_vcn_north_south_entry_point_ocid, local.void) != local.void ? "the private IP address ${coalesce(data.oci_core_private_ip.outdoor_nlb[0].ip_address, "undetermined")}" : "the DRG"}."
       destination        = "${cidr}"
       destination_type   = "CIDR_BLOCK"
       network_entity_id  = coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_north_south_entry_point_ocid, local.void) != local.void ? coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_north_south_entry_point_ocid) : null
       network_entity_key = coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_north_south_entry_point_ocid, local.void) == local.void ? "HUB-DRG" : null
-    }} : {},
+    } } : {},
     local.add_tt_vcn3 == true && var.tt_vcn3_attach_to_drg == true ? { for cidr in var.tt_vcn3_cidrs : "TT-VCN-3-${cidr}-RULE" => {
-      description        = "Traffic destined for ${local.tt_vcn3_display_name} CIDR ${cidr} is routed through ${coalesce(var.oci_nfw_ip_ocid, local.void) != local.void ? "the private IP address ${coalesce(data.oci_core_private_ip.oci_firewall[0].ip_address,"undetermined")}" : coalesce(var.hub_vcn_north_south_entry_point_ocid, local.void) != local.void ? "the private IP address ${coalesce(data.oci_core_private_ip.outdoor_nlb[0].ip_address,"undetermined")}" : "the DRG"}."
+      description        = "Traffic destined for ${local.tt_vcn3_display_name} CIDR ${cidr} is routed through ${coalesce(var.oci_nfw_ip_ocid, local.void) != local.void ? "the private IP address ${coalesce(data.oci_core_private_ip.oci_firewall[0].ip_address, "undetermined")}" : coalesce(var.hub_vcn_north_south_entry_point_ocid, local.void) != local.void ? "the private IP address ${coalesce(data.oci_core_private_ip.outdoor_nlb[0].ip_address, "undetermined")}" : "the DRG"}."
       destination        = "${cidr}"
       destination_type   = "CIDR_BLOCK"
       network_entity_id  = coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_north_south_entry_point_ocid, local.void) != local.void ? coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_north_south_entry_point_ocid) : null
       network_entity_key = coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_north_south_entry_point_ocid, local.void) == local.void ? "HUB-DRG" : null
-    }} : {},
+    } } : {},
     local.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true ? { for cidr in var.oke_vcn1_cidrs : "OKE-VCN-1-${cidr}}-RULE" => {
-      description        = "Traffic destined for ${local.oke_vcn1_display_name} CIDR ${cidr} is routed through ${coalesce(var.oci_nfw_ip_ocid, local.void) != local.void ? "the private IP address ${coalesce(data.oci_core_private_ip.oci_firewall[0].ip_address,"undetermined")}" : coalesce(var.hub_vcn_north_south_entry_point_ocid, local.void) != local.void ? "the private IP address ${coalesce(data.oci_core_private_ip.outdoor_nlb[0].ip_address,"undetermined")}" : "the DRG"}."
+      description        = "Traffic destined for ${local.oke_vcn1_display_name} CIDR ${cidr} is routed through ${coalesce(var.oci_nfw_ip_ocid, local.void) != local.void ? "the private IP address ${coalesce(data.oci_core_private_ip.oci_firewall[0].ip_address, "undetermined")}" : coalesce(var.hub_vcn_north_south_entry_point_ocid, local.void) != local.void ? "the private IP address ${coalesce(data.oci_core_private_ip.outdoor_nlb[0].ip_address, "undetermined")}" : "the DRG"}."
       destination        = "${cidr}"
       destination_type   = "CIDR_BLOCK"
       network_entity_id  = coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_north_south_entry_point_ocid, local.void) != local.void ? coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_north_south_entry_point_ocid) : null
       network_entity_key = coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_north_south_entry_point_ocid, local.void) == local.void ? "HUB-DRG" : null
-    }} : {},
+    } } : {},
     local.add_oke_vcn2 == true && var.oke_vcn2_attach_to_drg == true ? { for cidr in var.oke_vcn2_cidrs : "OKE-VCN-2-${cidr}}-RULE" => {
-      description        = "Traffic destined for ${local. oke_vcn2_display_name} CIDR ${cidr} is routed through ${coalesce(var.oci_nfw_ip_ocid, local.void) != local.void ? "the private IP address ${coalesce(data.oci_core_private_ip.oci_firewall[0].ip_address,"undetermined")}" : coalesce(var.hub_vcn_north_south_entry_point_ocid, local.void) != local.void ? "the private IP address ${coalesce(data.oci_core_private_ip.outdoor_nlb[0].ip_address,"undetermined")}" : "the DRG"}."
+      description        = "Traffic destined for ${local.oke_vcn2_display_name} CIDR ${cidr} is routed through ${coalesce(var.oci_nfw_ip_ocid, local.void) != local.void ? "the private IP address ${coalesce(data.oci_core_private_ip.oci_firewall[0].ip_address, "undetermined")}" : coalesce(var.hub_vcn_north_south_entry_point_ocid, local.void) != local.void ? "the private IP address ${coalesce(data.oci_core_private_ip.outdoor_nlb[0].ip_address, "undetermined")}" : "the DRG"}."
       destination        = "${cidr}"
       destination_type   = "CIDR_BLOCK"
       network_entity_id  = coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_north_south_entry_point_ocid, local.void) != local.void ? coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_north_south_entry_point_ocid) : null
       network_entity_key = coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_north_south_entry_point_ocid, local.void) == local.void ? "HUB-DRG" : null
-    }} : {},
+    } } : {},
     local.add_oke_vcn3 == true && var.oke_vcn3_attach_to_drg == true ? { for cidr in var.oke_vcn3_cidrs : "OKE-VCN-3-${cidr}}-RULE" => {
-      description        = "Traffic destined for ${local.oke_vcn3_display_name} CIDR ${cidr} is routed through ${coalesce(var.oci_nfw_ip_ocid, local.void) != local.void ? "the private IP address ${coalesce(data.oci_core_private_ip.oci_firewall[0].ip_address,"undetermined")}" : coalesce(var.hub_vcn_north_south_entry_point_ocid, local.void) != local.void ? "the private IP address ${coalesce(data.oci_core_private_ip.outdoor_nlb[0].ip_address,"undetermined")}" : "the DRG"}."
+      description        = "Traffic destined for ${local.oke_vcn3_display_name} CIDR ${cidr} is routed through ${coalesce(var.oci_nfw_ip_ocid, local.void) != local.void ? "the private IP address ${coalesce(data.oci_core_private_ip.oci_firewall[0].ip_address, "undetermined")}" : coalesce(var.hub_vcn_north_south_entry_point_ocid, local.void) != local.void ? "the private IP address ${coalesce(data.oci_core_private_ip.outdoor_nlb[0].ip_address, "undetermined")}" : "the DRG"}."
       destination        = "${cidr}"
       destination_type   = "CIDR_BLOCK"
       network_entity_id  = coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_north_south_entry_point_ocid, local.void) != local.void ? coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_north_south_entry_point_ocid) : null
       network_entity_key = coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_north_south_entry_point_ocid, local.void) == local.void ? "HUB-DRG" : null
-    }} : {},
+    } } : {},
     local.workload_cidrs_public != null ? { for cidr in local.workload_cidrs_public : "PUBLIC-ACCESS-VCN-${cidr}}-RULE" => {
-      description        = "Traffic destined for VCN with CIDR ${cidr} is routed through ${coalesce(var.oci_nfw_ip_ocid, local.void) != local.void ? "the private IP address ${coalesce(data.oci_core_private_ip.oci_firewall[0].ip_address,"undetermined")}" : coalesce(var.hub_vcn_north_south_entry_point_ocid, local.void) != local.void ? "the private IP address ${coalesce(data.oci_core_private_ip.outdoor_nlb[0].ip_address,"undetermined")}" : "the DRG"}."
+      description        = "Traffic destined for VCN with CIDR ${cidr} is routed through ${coalesce(var.oci_nfw_ip_ocid, local.void) != local.void ? "the private IP address ${coalesce(data.oci_core_private_ip.oci_firewall[0].ip_address, "undetermined")}" : coalesce(var.hub_vcn_north_south_entry_point_ocid, local.void) != local.void ? "the private IP address ${coalesce(data.oci_core_private_ip.outdoor_nlb[0].ip_address, "undetermined")}" : "the DRG"}."
       destination        = "${cidr}"
       destination_type   = "CIDR_BLOCK"
       network_entity_id  = coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_north_south_entry_point_ocid, local.void) != local.void ? coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_north_south_entry_point_ocid) : null
       network_entity_key = coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_north_south_entry_point_ocid, local.void) == local.void ? "HUB-DRG" : null
-    }} : {}
-  )  
+    } } : {}
+  )
 
   ## ------------------------------------------------------------------------------------------
   ## Locals for indoor NSG rules
@@ -725,90 +725,90 @@ locals {
 
   ## Ingress rules:
   hub_vcn_indoor_nsg_ingress_rules = merge(
-    { for cidr in toset(concat(var.onprem_cidrs,var.allowed_onprem_cidrs_to_fw_mgmt_interface)) : "INGRESS-FROM-ONPREM-${cidr}-RULE" => {
+    { for cidr in toset(concat(var.onprem_cidrs, var.allowed_onprem_cidrs_to_fw_mgmt_interface)) : "INGRESS-FROM-ONPREM-${cidr}-RULE" => {
       description = "Ingress from on-premises CIDR."
       stateless   = false
       protocol    = "ALL"
       src         = "${cidr}"
       src_type    = "CIDR_BLOCK"
-    }},
+    } },
     { for cidr in var.hub_vcn_cidrs : "INGRESS-FROM-HUB-VCN-${cidr}-RULE" => {
       description = "Ingress from ${local.hub_vcn_display_name}."
       stateless   = false
       protocol    = "ALL"
       src         = "${cidr}"
       src_type    = "CIDR_BLOCK"
-    }},
+    } },
     local.add_tt_vcn1 == true && var.tt_vcn1_attach_to_drg == true ? { for cidr in var.tt_vcn1_cidrs : "INGRESS-FROM-TT-VCN-1-${cidr}-RULE" => {
       description = "Ingress from ${local.tt_vcn1_display_name}."
       stateless   = false
       protocol    = "ALL"
       src         = "${cidr}"
       src_type    = "CIDR_BLOCK"
-    }} : {},
+    } } : {},
     local.add_tt_vcn2 == true && var.tt_vcn2_attach_to_drg == true ? { for cidr in var.tt_vcn2_cidrs : "INGRESS-FROM-TT-VCN-2-${cidr}-RULE" => {
       description = "Ingress from ${local.tt_vcn2_display_name}."
       stateless   = false
       protocol    = "ALL"
       src         = "${cidr}"
       src_type    = "CIDR_BLOCK"
-    }} : {},
+    } } : {},
     local.add_tt_vcn3 == true && var.tt_vcn3_attach_to_drg == true ? { for cidr in var.tt_vcn3_cidrs : "INGRESS-FROM-TT-VCN-3-${cidr}-RULE" => {
       description = "Ingress from ${local.tt_vcn3_display_name}."
       stateless   = false
       protocol    = "ALL"
       src         = "${cidr}"
       src_type    = "CIDR_BLOCK"
-    }} : {},
+    } } : {},
     local.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true ? { for cidr in var.oke_vcn1_cidrs : "INGRESS-FROM-OKE-VCN-1-${cidr}-RULE" => {
       description = "Ingress from ${local.oke_vcn1_display_name}."
       stateless   = false
       protocol    = "ALL"
       src         = "${cidr}"
       src_type    = "CIDR_BLOCK"
-    }} : {},
+    } } : {},
     local.add_oke_vcn2 == true && var.oke_vcn2_attach_to_drg == true ? { for cidr in var.oke_vcn2_cidrs : "INGRESS-FROM-OKE-VCN-2-${cidr}-RULE" => {
-      description = "Ingress from ${local. oke_vcn2_display_name}."
+      description = "Ingress from ${local.oke_vcn2_display_name}."
       stateless   = false
       protocol    = "ALL"
       src         = "${cidr}"
       src_type    = "CIDR_BLOCK"
-    }} : {},
+    } } : {},
     local.add_oke_vcn3 == true && var.oke_vcn3_attach_to_drg == true ? { for cidr in var.oke_vcn3_cidrs : "INGRESS-FROM-OKE-VCN-3-${cidr}-RULE" => {
       description = "Ingress from ${local.oke_vcn3_display_name}."
       stateless   = false
       protocol    = "ALL"
       src         = "${cidr}"
       src_type    = "CIDR_BLOCK"
-    }} : {},
+    } } : {},
     local.add_exa_vcn1 == true && var.exa_vcn1_attach_to_drg == true ? { for cidr in var.exa_vcn1_cidrs : "INGRESS-FROM-EXA-VCN-1-${cidr}-RULE" => {
       description = "Ingress from ${local.exa_vcn1_display_name}."
       stateless   = false
       protocol    = "ALL"
       src         = "${cidr}"
       src_type    = "CIDR_BLOCK"
-    }} : {},
+    } } : {},
     local.add_exa_vcn2 == true && var.exa_vcn2_attach_to_drg == true ? { for cidr in var.exa_vcn2_cidrs : "INGRESS-FROM-EXA-VCN-2-${cidr}-RULE" => {
       description = "Ingress from ${local.exa_vcn2_display_name}."
       stateless   = false
       protocol    = "ALL"
       src         = "${cidr}"
       src_type    = "CIDR_BLOCK"
-    }} : {},
+    } } : {},
     local.add_exa_vcn3 == true && var.exa_vcn3_attach_to_drg == true ? { for cidr in var.exa_vcn3_cidrs : "INGRESS-FROM-EXA-VCN-3-${cidr}-RULE" => {
       description = "Ingress from ${local.exa_vcn3_display_name}."
       stateless   = false
       protocol    = "ALL"
       src         = "${cidr}"
       src_type    = "CIDR_BLOCK"
-    }} : {},
+    } } : {},
     { for cidr in local.workload_cidrs_public : "INGRESS-FROM-VCN-${cidr}-RULE" => {
       description = "Ingress from VCN with CIDR ${cidr}."
       stateless   = false
       protocol    = "ALL"
       src         = "${cidr}"
       src_type    = "CIDR_BLOCK"
-    }}
+    } }
   )
 
   ## Egress rules:

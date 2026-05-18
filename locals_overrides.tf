@@ -28,9 +28,7 @@ locals {
   hub_vcn_indoor_subnet_security_list  = null
   # HUB VCN App Load Balancer NSG rules
   hub_vcn_app_load_balancer_nsg_ingress_rules = null
-  hub_vcn_app_load_balancer_nsg_egress_rules = null
-  # HUB VCN additional NSGs:
-  hub_vcn_additional_nsgs = {}
+  hub_vcn_app_load_balancer_nsg_egress_rules  = null
   # Whether CIS checks for hub VCN are enabled.
   hub_vcn_cis_checks_enabled = true
 
@@ -41,8 +39,6 @@ locals {
   tt_vcn1_web_subnet_security_list = null
   tt_vcn1_app_subnet_security_list = null
   tt_vcn1_db_subnet_security_list  = null
-  # TT VCN1 additional NSGs:
-  tt_vcn1_additional_nsgs = {}
   # Whether CIS checks for tt_vcn1 VCN are enabled.
   tt_vcn1_cis_checks_enabled = true
   # Whether traffic between subnets of tt_vcn1 is routed through DRG.
@@ -57,8 +53,6 @@ locals {
   tt_vcn2_web_subnet_security_list = null
   tt_vcn2_app_subnet_security_list = null
   tt_vcn2_db_subnet_security_list  = null
-  # TT VCN2 additional NSGs:
-  tt_vcn2_additional_nsgs = {}
   # Whether CIS checks for tt_vcn2 VCN are enabled.
   tt_vcn2_cis_checks_enabled = true
   # Whether traffic between subnets of tt_vcn2 is routed through DRG.
@@ -73,8 +67,6 @@ locals {
   tt_vcn3_web_subnet_security_list = null
   tt_vcn3_app_subnet_security_list = null
   tt_vcn3_db_subnet_security_list  = null
-  # TT VCN3 additional NSGs:
-  tt_vcn3_additional_nsgs = {}
   # Whether CIS checks for tt_vcn3 VCN are enabled.
   tt_vcn3_cis_checks_enabled = true
   # Whether traffic between subnets of tt_vcn3 is routed through DRG.
@@ -92,8 +84,6 @@ locals {
   oke_vcn1_mgmt_subnet_security_list     = null
   oke_vcn1_pods_subnet_security_list     = null
   oke_vcn1_db_subnet_security_list       = null
-  # OKE VCN1 additional NSGs:
-  oke_vcn1_additional_nsgs = {}
   # Whether CIS checks for oke_vcn1 VCN are enabled.
   oke_vcn1_cis_checks_enabled = true
   # Whether traffic between subnets of oke_vcn1 is routed through DRG.
@@ -109,8 +99,6 @@ locals {
   oke_vcn2_mgmt_subnet_security_list     = null
   oke_vcn2_pods_subnet_security_list     = null
   oke_vcn2_db_subnet_security_list       = null
-  # OKE VCN2 additional NSGs:
-  oke_vcn2_additional_nsgs = {}
   # Whether CIS checks for oke_vcn2 VCN are enabled.
   oke_vcn2_cis_checks_enabled = true
   # Whether traffic between subnets of oke_vcn2 is routed through DRG.
@@ -126,8 +114,6 @@ locals {
   oke_vcn3_mgmt_subnet_security_list     = null
   oke_vcn3_pods_subnet_security_list     = null
   oke_vcn3_db_subnet_security_list       = null
-  # OKE VCN3 additional NSGs:
-  oke_vcn3_additional_nsgs = {}
   # Whether CIS checks for oke_vcn3 VCN are enabled.
   oke_vcn3_cis_checks_enabled = true
   # Whether traffic between subnets of oke_vcn3 is routed through DRG.
@@ -140,8 +126,6 @@ locals {
   exa_vcn1_client_subnet_security_list      = null
   exa_vcn1_backup_subnet_security_list      = null
   exa_vcn1_integration_subnet_security_list = null
-  # EXA VCN1 additional NSGs:
-  exa_vcn1_additional_nsgs = {}
   # Whether CIS checks for exa_vcn1 VCN are enabled.
   exa_vcn1_cis_checks_enabled = true
   # Whether client/integration intra-VCN traffic for EXA VCN1 is routed through DRG.
@@ -154,8 +138,6 @@ locals {
   exa_vcn2_client_subnet_security_list      = null
   exa_vcn2_backup_subnet_security_list      = null
   exa_vcn2_integration_subnet_security_list = null
-  # EXA VCN2 additional NSGs:
-  exa_vcn2_additional_nsgs = {}
   # Whether CIS checks for exa_vcn2 VCN are enabled.
   exa_vcn2_cis_checks_enabled = true
   # Whether client/integration intra-VCN traffic for EXA VCN2 is routed through DRG.
@@ -168,8 +150,6 @@ locals {
   exa_vcn3_client_subnet_security_list      = null
   exa_vcn3_backup_subnet_security_list      = null
   exa_vcn3_integration_subnet_security_list = null
-  # EXA VCN3 additional NSGs:
-  exa_vcn3_additional_nsgs = {}
   # Whether CIS checks for exa_vcn3 VCN are enabled.
   exa_vcn3_cis_checks_enabled = true
   # Whether client/integration intra-VCN traffic for EXA VCN3 is routed through DRG.

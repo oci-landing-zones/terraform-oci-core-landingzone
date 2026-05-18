@@ -27,6 +27,29 @@ variable "enable_cross_vcn_open_nsg" {
   description = "When true, Landing Zone provisions a NSG that enables DRG-attached and routable VCNs to fully connect with each other."
 }
 
+variable "define_hub_vcn_additional_nsgs" {
+  type        = bool
+  default     = false
+  description = "When true, Landing Zone provisions additional Hub VCN NSGs from hub_vcn_additional_nsgs."
+}
+
+variable "hub_vcn_additional_nsgs" {
+  type        = any
+  default     = {}
+  nullable    = true
+  description = "Additional NSGs for the Hub VCN. Accepts either a native HCL map/object or a JSON object string. Only used when define_hub_vcn_additional_nsgs is true."
+
+  validation {
+    condition = (
+      var.hub_vcn_additional_nsgs == null ||
+      try(trimspace(tostring(var.hub_vcn_additional_nsgs)) == "", false) ||
+      can(keys(var.hub_vcn_additional_nsgs)) ||
+      can(keys(jsondecode(var.hub_vcn_additional_nsgs)))
+    )
+    error_message = "hub_vcn_additional_nsgs must be null, empty, a map/object, or a JSON object string."
+  }
+}
+
 variable "existing_drg_ocid" {
   type        = string
   default     = null

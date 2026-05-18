@@ -37,6 +37,27 @@ variable "tt_vcn1_routable_vcns" {
     error_message = "Invalid value provided for tt_vcn1_routable_vcns variable: it must be empty or contain only valid VCN labels: \"TT-VCN-2\",\"TT-VCN-3\",\"EXA-VCN-1\",\"EXA-VCN-2\",\"EXA-VCN-3\",\"OKE-VCN-1\",\"OKE-VCN-2\",\"OKE-VCN-3\"."
   }
 }
+variable "define_tt_vcn1_additional_nsgs" {
+  type        = bool
+  default     = false
+  description = "When true, Landing Zone provisions additional TT-VCN-1 NSGs from tt_vcn1_additional_nsgs."
+}
+variable "tt_vcn1_additional_nsgs" {
+  type        = any
+  default     = {}
+  nullable    = true
+  description = "Additional NSGs for TT-VCN-1. Accepts either a native HCL map/object or a JSON object string. Only used when define_tt_vcn1_additional_nsgs is true."
+
+  validation {
+    condition = (
+      var.tt_vcn1_additional_nsgs == null ||
+      try(trimspace(tostring(var.tt_vcn1_additional_nsgs)) == "", false) ||
+      can(keys(var.tt_vcn1_additional_nsgs)) ||
+      can(keys(jsondecode(var.tt_vcn1_additional_nsgs)))
+    )
+    error_message = "tt_vcn1_additional_nsgs must be null, empty, a map/object, or a JSON object string."
+  }
+}
 variable "customize_tt_vcn1_subnets" {
   type        = bool
   default     = false
@@ -200,6 +221,27 @@ variable "tt_vcn2_routable_vcns" {
     error_message = "Invalid value provided for tt_vcn2_routable_vcns variable: it must be empty or contain only valid VCN labels: \"TT-VCN-1\",\"TT-VCN-3\",\"EXA-VCN-1\",\"EXA-VCN-2\",\"EXA-VCN-3\",\"OKE-VCN-1\",\"OKE-VCN-2\",\"OKE-VCN-3\"."
   }
 }
+variable "define_tt_vcn2_additional_nsgs" {
+  type        = bool
+  default     = false
+  description = "When true, Landing Zone provisions additional TT-VCN-2 NSGs from tt_vcn2_additional_nsgs."
+}
+variable "tt_vcn2_additional_nsgs" {
+  type        = any
+  default     = {}
+  nullable    = true
+  description = "Additional NSGs for TT-VCN-2. Accepts either a native HCL map/object or a JSON object string. Only used when define_tt_vcn2_additional_nsgs is true."
+
+  validation {
+    condition = (
+      var.tt_vcn2_additional_nsgs == null ||
+      try(trimspace(tostring(var.tt_vcn2_additional_nsgs)) == "", false) ||
+      can(keys(var.tt_vcn2_additional_nsgs)) ||
+      can(keys(jsondecode(var.tt_vcn2_additional_nsgs)))
+    )
+    error_message = "tt_vcn2_additional_nsgs must be null, empty, a map/object, or a JSON object string."
+  }
+}
 variable "customize_tt_vcn2_subnets" {
   type        = bool
   default     = false
@@ -361,6 +403,27 @@ variable "tt_vcn3_routable_vcns" {
   validation {
     condition     = length(var.tt_vcn3_routable_vcns) == 0 ? true : (length(var.tt_vcn3_routable_vcns) == 0 || alltrue([for label in var.tt_vcn3_routable_vcns : contains(["TT-VCN-1", "TT-VCN-2", "EXA-VCN-1", "EXA-VCN-2", "EXA-VCN-3", "OKE-VCN-1", "OKE-VCN-2", "OKE-VCN-3"], label)]))
     error_message = "Invalid value provided for tt_vcn3_routable_vcns variable: it must be empty or contain only valid VCN labels: \"TT-VCN-1\",\"TT-VCN-3\",\"EXA-VCN-1\",\"EXA-VCN-2\",\"EXA-VCN-3\",\"OKE-VCN-1\",\"OKE-VCN-2\",\"OKE-VCN-3\"."
+  }
+}
+variable "define_tt_vcn3_additional_nsgs" {
+  type        = bool
+  default     = false
+  description = "When true, Landing Zone provisions additional TT-VCN-3 NSGs from tt_vcn3_additional_nsgs."
+}
+variable "tt_vcn3_additional_nsgs" {
+  type        = any
+  default     = {}
+  nullable    = true
+  description = "Additional NSGs for TT-VCN-3. Accepts either a native HCL map/object or a JSON object string. Only used when define_tt_vcn3_additional_nsgs is true."
+
+  validation {
+    condition = (
+      var.tt_vcn3_additional_nsgs == null ||
+      try(trimspace(tostring(var.tt_vcn3_additional_nsgs)) == "", false) ||
+      can(keys(var.tt_vcn3_additional_nsgs)) ||
+      can(keys(jsondecode(var.tt_vcn3_additional_nsgs)))
+    )
+    error_message = "tt_vcn3_additional_nsgs must be null, empty, a map/object, or a JSON object string."
   }
 }
 variable "customize_tt_vcn3_subnets" {

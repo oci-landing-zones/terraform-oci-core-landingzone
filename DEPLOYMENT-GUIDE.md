@@ -284,7 +284,62 @@ Security lists are deployed by Core Landing Zone only for very generic rules in 
 
 **Since NSGs are not inherited by resources, they must explicitly associated by customers on a per-resource basis.**.
 
-Core Landing Zone native NSGs enforce opinionated connectivity for each workload type. The following three sections describe the default NSGs controlling traffic inside each VCN. When the VCNs are connected and on-premises connectivity is configured, another set of cross-vcn NSGs is deployed (see section **Cross-VCN Network Security Rules**). Customers can also bring their own NSGs through *\*_additional_nsgs* variable overrides.
+Core Landing Zone native NSGs enforce opinionated connectivity for each workload type. The following sections describe the default NSGs controlling traffic inside each VCN. When the VCNs are connected and on-premises connectivity is configured, another set of cross-vcn NSGs is deployed (see section **Cross-VCN Network Security Rules**). Customers can also bring their own NSGs through the *define_\*_additional_nsgs* and *\*_additional_nsgs* variables.
+
+#### Hub VCN NSGs
+
+The Hub VCN NSGs protect shared ingress, inspection, management, and operator access points. The same VNIC-level additional NSG model applies to Hub VCN resources, just for shared hub services instead of workload spokes.
+
+- **outdoor-nlb-nsg** and **outdoor-fw-nsg**
+  - **ingress:** from the Hub VCN application load balancer NSG and, when the outdoor subnet is public, from allowed external CIDRs.
+  - **egress:** to any destination, allowing the outdoor side of the inspection path to forward north-south traffic.
+- **indoor-nlb-nsg**, **indoor-fw-nsg**, and **oci-firewall-nsg**
+  - **ingress:** from Hub, spoke, and on-premises CIDRs that must traverse east-west or north-south inspection paths.
+  - **egress:** to any destination after inspection.
+- **mgmt-nsg**
+  - **ingress:** from approved on-premises management CIDRs, the jump host NSG, and the management subnet paths required for appliance administration.
+- **jump-host-nsg** (optional)
+  - **ingress:** from on-premises CIDRs over SSH port 22.
+  - **egress:** to firewall management, Oracle Services Network (OSN), and selected spoke subnets over SSH port 22.
+- **app-load-balancer-nsg**
+  - **ingress:** from external CIDRs allowed to reach load balancers deployed in the Hub VCN.
+  - **egress:** controlled by *hub_vcn_app_load_balancer_nsg_egress_rules*.
+
+Attach Hub-specific custom NSGs by setting *define_hub_vcn_additional_nsgs = true* and providing *hub_vcn_additional_nsgs* as a native HCL map/object or JSON object string. This is useful for SD-WAN edge VNICs, shared service endpoints, or custom hub appliances that should not be mixed into the default management, jump host, or inspection NSGs.
+
+For example, set the following variables for a custom Hub VCN shared DNS forwarder NSG:
+
+```hcl
+define_hub_vcn_additional_nsgs = true
+
+hub_vcn_additional_nsgs = {
+  "HUB-VCN-SHARED-DNS-FORWARDER-NSG" = {
+    display_name = "hub-shared-dns-forwarder-nsg"
+    ingress_rules = {
+      "INGRESS-FROM-SPOKES-DNS-UDP" = {
+        description  = "Allow spoke VCN clients to query a Hub VCN DNS forwarder over UDP."
+        stateless    = false
+        protocol     = "UDP"
+        src          = "10.60.0.0/16"
+        src_type     = "CIDR_BLOCK"
+        dst_port_min = 53
+        dst_port_max = 53
+      }
+    }
+    egress_rules = {
+      "EGRESS-TO-ONPREM-DNS-UDP" = {
+        description  = "Allow the Hub VCN DNS forwarder to relay DNS queries to an on-premises resolver over UDP."
+        stateless    = false
+        protocol     = "UDP"
+        dst          = "172.20.10.53/32"
+        dst_type     = "CIDR_BLOCK"
+        dst_port_min = 53
+        dst_port_max = 53
+      }
+    }
+  }
+}
+```
 
 #### Three-Tier VCN NSGs
 
@@ -304,6 +359,55 @@ The NSGs in Three-tier VCNs enforce the classic load balancer → application la
   - **egress:** to *lbr-nsg*, *app-nsg*, and *db-nsg* over SSH port 22; to Oracle Services Network (OSN) over HTTPS port 443.
 
 **Note**: *lbr-nsg*, *app-nsg* and *db-nsg* optionally provide ingress security rules for SSH connectivity from *bastion-nsg* and Hub VCN Jump Host subnet over port 22.
+
+Attach workload-specific NSGs on a per-spoke basis by setting *define_tt_vcn\*_additional_nsgs = true* and providing *tt_vcn\*_additional_nsgs* as a native HCL map/object or JSON object string, supplementing the global constrained/open NSGs without modifying the core module. For example, set the following variables for custom *TT-VCN-1* NSGs:
+
+```hcl
+define_tt_vcn1_additional_nsgs = true
+
+tt_vcn1_additional_nsgs = {
+  "TT-VCN-1-OBSERVABILITY-NSG" = {
+    display_name = "tt-vcn-1-observability-nsg"
+    ingress_rules = {
+      "INGRESS-FROM-MONITORING-SUBNET-NODE-EXPORTER" = {
+        description  = "Allow a monitoring subnet to scrape node exporter metrics from workload hosts."
+        stateless    = false
+        protocol     = "TCP"
+        src          = "10.0.8.0/24"
+        src_type     = "CIDR_BLOCK"
+        dst_port_min = 9100
+        dst_port_max = 9100
+      }
+    }
+    egress_rules = {
+      "EGRESS-TO-ONPREM-SIEM-SYSLOG-TLS" = {
+        description  = "Allow workload hosts to forward security logs to an on-premises SIEM over TLS."
+        stateless    = false
+        protocol     = "TCP"
+        dst          = "172.20.15.10/32"
+        dst_type     = "CIDR_BLOCK"
+        dst_port_min = 6514
+        dst_port_max = 6514
+      }
+    }
+  }
+  "TT-VCN-1-GENAI-PRIVATE-ENDPOINT-NSG" = {
+    display_name = "tt-vcn-1-genai-private-endpoint-nsg"
+    ingress_rules = {
+      "INGRESS-FROM-APP-NSG-HTTPS" = {
+        description  = "Allow application hosts in the Core Landing Zone app NSG to reach an OCI Generative AI private endpoint."
+        stateless    = false
+        protocol     = "TCP"
+        src          = "TT-VCN-1-APP-NSG"
+        src_type     = "NETWORK_SECURITY_GROUP"
+        dst_port_min = 443
+        dst_port_max = 443
+      }
+    }
+    egress_rules = {}
+  }
+}
+```
 
 #### OKE VCN NSGs
 
@@ -330,6 +434,49 @@ The NSGs in OKE VCNs enforce the load balancer(services) → workers/pods layer 
 
 **Note 1**: *workers_nsg* optionally provide ingress security rules for SSH connectivity from *mgmt_nsg* and Hub VCN Jump Host subnet over port 22.
 **Note 2**: *api_nsg* optionally provides ingress security rules for cluster management from *mgmt_nsg* and Hub VCN Jump Host subnet over port 6443.
+
+Attach workload-specific NSGs on a per-spoke basis by setting *define_oke_vcn\*_additional_nsgs = true* and providing *oke_vcn\*_additional_nsgs* as a native HCL map/object or JSON object string, supplementing the global constrained/open NSGs without modifying the core module. For example, set the following variables for a custom *OKE-VCN-1* NSG:
+
+```hcl
+define_oke_vcn1_additional_nsgs = true
+
+oke_vcn1_additional_nsgs = {
+  "OKE-VCN-1-PLATFORM-TOOLS-NSG" = {
+    display_name = "oke-vcn-1-platform-tools-nsg"
+    ingress_rules = {
+      "INGRESS-FROM-SCANNER-CIDR-WEBHOOK" = {
+        description  = "Allow a vulnerability scanner subnet to reach an admission controller webhook."
+        stateless    = false
+        protocol     = "TCP"
+        src          = "10.40.12.0/24"
+        src_type     = "CIDR_BLOCK"
+        dst_port_min = 8443
+        dst_port_max = 8443
+      }
+    }
+    egress_rules = {
+      "EGRESS-TO-PRIVATE-REGISTRY" = {
+        description  = "Allow worker nodes to pull images from a private registry mirror."
+        stateless    = false
+        protocol     = "TCP"
+        dst          = "10.40.20.25/32"
+        dst_type     = "CIDR_BLOCK"
+        dst_port_min = 5000
+        dst_port_max = 5000
+      }
+      "EGRESS-TO-OSN-HTTPS" = {
+        description  = "Allow platform tools to reach all services in Oracle Services Network over HTTPS."
+        stateless    = false
+        protocol     = "TCP"
+        dst          = "all-services"
+        dst_type     = "SERVICE_CIDR_BLOCK"
+        dst_port_min = 443
+        dst_port_max = 443
+      }
+    }
+  }
+}
+```
  
 #### Exadata Cloud Service VCN NSGs
 
@@ -342,6 +489,49 @@ The NSGs in OKE VCNs enforce the load balancer(services) → workers/pods layer 
 - **integration-nsg** (optional)
   - **ingress:** from *client-nsg* and from the list of external CIDRs defined by *exa_vcn\*_external_allowed_cidrs_to_ports_into_integration_tier* into protocols and ports defined by *exa_vcn\*_integration_ingress_destination_ports*.
   - **egress:**  to *client-nsg* on protocols and ports defined by *exa_vcn\*_client_ingress_destination_ports*.
+
+Attach workload-specific NSGs on a per-spoke basis by setting *define_exa_vcn\*_additional_nsgs = true* and providing *exa_vcn\*_additional_nsgs* as a native HCL map/object or JSON object string, supplementing the native client, integration, and cross-VCN NSGs without modifying the core module. For example, set the following variables for a custom *EXA-VCN-1* NSG:
+
+```hcl
+define_exa_vcn1_additional_nsgs = true
+
+exa_vcn1_additional_nsgs = {
+  "EXA-VCN-1-REPLICATION-NSG" = {
+    display_name = "exa-vcn-1-replication-nsg"
+    ingress_rules = {
+      "INGRESS-FROM-GOLDENGATE-SUBNET-TCPS" = {
+        description  = "Allow GoldenGate hosts to connect to encrypted database listeners."
+        stateless    = false
+        protocol     = "TCP"
+        src          = "10.50.20.0/24"
+        src_type     = "CIDR_BLOCK"
+        dst_port_min = 2484
+        dst_port_max = 2484
+      }
+      "INGRESS-FROM-DBA-SUBNET-ICMP-ECHO" = {
+        description = "Allow database administrators to run ICMP ping checks from a controlled operations subnet."
+        stateless   = false
+        protocol    = "ICMP"
+        src         = "10.50.10.0/24"
+        src_type    = "CIDR_BLOCK"
+        icmp_type   = 8
+        icmp_code   = 0
+      }
+    }
+    egress_rules = {
+      "EGRESS-TO-REMOTE-STANDBY-SQLNET" = {
+        description  = "Allow replication traffic to a remote standby database network."
+        stateless    = false
+        protocol     = "TCP"
+        dst          = "172.20.50.0/24"
+        dst_type     = "CIDR_BLOCK"
+        dst_port_min = 1521
+        dst_port_max = 1522
+      }
+    }
+  }
+}
+```
 
 #### Cross-VCN Network Security Rules
 
@@ -398,7 +588,7 @@ Core Landing Zone provides two sets of Network Security Groups (NSGs) for on-pre
 
   ![Cross-VCN Constrained NSGs for Exa VCNs](images/cross-vcn-constrained-nsgs-for-exa-vcns.png)
 
-Note that you can still provide your own NSGs (use override variables *_additional_nsgs*) in addition to Core Landing Zone managed ones, but the constrained set provides a strong, opinionated starting point.
+Note that you can still provide your own NSGs with the *define_\*_additional_nsgs* and *\*_additional_nsgs* variables in addition to Core Landing Zone managed ones, but the constrained set provides a strong, opinionated starting point.
 
 ### Third-Party Network Appliances
 
@@ -459,25 +649,24 @@ Landing Zone can provision connectivity to on-premises networks through FastConn
 
 ### Advanced Networking Scenarios
 
-Core Landing Zone supports many networking scenarios through its global variables, as detailed earlier in this section. When workloads demand even finer-grained routing or other security postures, you can redefine the local variables in *locals_overrides.tf* inside a *\*_override.tf* file (see provided sample *net_override.tf*). These overrides unlock the following scenarios:
+Core Landing Zone supports many networking scenarios through its global variables, as detailed earlier in this section. When workloads demand even finer-grained routing, security list, or governance postures, you can redefine the local variables in *locals_overrides.tf* inside a *\*_override.tf* file (see provided sample *net_override.tf*). These overrides unlock the following scenarios:
 
 #### Hub VCN Integration with SD-WAN
 
 - Toggle *hub_vcn_outdoor_subnet_private* to expose the outdoor subnet publicly for SD-WAN edge devices.
 - Use *hub_vcn_outdoor_allowed_public_cidrs* to narrowly define which CIDRs may reach the public outdoor subnet.
-- Replace the default security lists on outdoor and indoor subnets via *hub_vcn_outdoor_subnet_security_list* and *hub_vcn_indoor_subnet_security_list*, or append bespoke NSGs with *hub_vcn_additional_nsgs* for custom VNIC-specific network security rules.
+- Replace the default security lists on outdoor and indoor subnets via *hub_vcn_outdoor_subnet_security_list* and *hub_vcn_indoor_subnet_security_list*.
 - Relax governance by toggling *hub_vcn_cis_checks_enabled*, if a deviation from CIS networking guardrails is absolutely required. **Use this with extreme caution, ensuring your custom network security rules (in NSGs and security lists) do not expose SSH port to Internet**.
 
 #### Three-tier Spokes with Bespoke East-West Controls
 
-The three-tier spoke overrides are Terraform local overrides. Define them in a *\*_override.tf* file, using the provided *net_override.tf* sample as the starting point, so that the base Landing Zone files can still be upgraded safely.
+The three-tier spoke security list, CIS, and intra-VCN routing settings are Terraform local overrides. Define them in a *\*_override.tf* file, using the provided *net_override.tf* sample as the starting point, so that the base Landing Zone files can still be upgraded safely.
 
 - Override any of the web, app, or database subnet security lists per VCN (*tt_vcn\*_web_subnet_security_list*, *tt_vcn\*_app_subnet_security_list*, *tt_vcn\*_db_subnet_security_list*) to align with workload-specific port matrices or allow all ingress/egress traffic in the VCNs, delegating the fine-grained controls to a firewall.
-- Attach workload-specific NSGs on a per-spoke basis through *tt_vcn\*_additional_nsgs*, supplementing the global constrained/open NSGs without modifying the core module.
 - Force every intra-VCN flow through the DRG for centralized inspection by enabling *tt_vcn\*_enable_intra_vcn_drg_route*, which is useful when a Hub firewall must see even subnet-to-subnet traffic.
 - Relax governance by toggling *tt_vcn\*_cis_checks_enabled*, if a deviation from CIS networking guardrails is absolutely required. This is common when VCN security rules are open and control is enforced by a firewall. **Use this with extreme caution, ensuring your custom network security rules (in NSGs and security lists) do not expose sensitive ports to Internet**.
 
-For example, the following *net_override.tf* pattern replaces the web, app, and database subnet security lists for *TT-VCN-1*, adds a custom NSG, disables CIS checks for that VCN, and routes intra-VCN traffic through the DRG:
+The following *net_override.tf* pattern replaces the web, app, and database subnet security lists for *TT-VCN-1*, disables CIS checks for that VCN, and routes intra-VCN traffic through the DRG:
 
 ```hcl
 locals {
@@ -499,14 +688,6 @@ locals {
     egress_rules  = local.security_lists_default_egress_rules
   }
 
-  tt_vcn1_additional_nsgs = {
-    "TT-VCN-1-CUSTOM-NSG" = {
-      display_name  = "tt-vcn-1-custom-nsg"
-      ingress_rules = {}
-      egress_rules  = {}
-    }
-  }
-
   tt_vcn1_cis_checks_enabled         = false
   tt_vcn1_enable_intra_vcn_drg_route = true
 }
@@ -516,14 +697,13 @@ Use the same pattern for *TT-VCN-2* and *TT-VCN-3* by replacing the prefix with 
 
 #### OKE Spokes with Bespoke East-West Controls
 
-The OKE spoke overrides are Terraform local overrides. Define them in a *\*_override.tf* file, using the provided *net_override.tf* sample as the starting point, so that the base Landing Zone files can still be upgraded safely.
+The OKE spoke security list, CIS, and intra-VCN routing settings are Terraform local overrides. Define them in a *\*_override.tf* file, using the provided *net_override.tf* sample as the starting point, so that the base Landing Zone files can still be upgraded safely.
 
 - Override any of the api, workers, pods, services, mgmt, or database subnet security lists per VCN (*oke_vcn\*_api_subnet_security_list*, *oke_vcn\*_workers_subnet_security_list*, *oke_vcn\*_pods_subnet_security_list*, *oke_vcn\*_services_subnet_security_list*, *oke_vcn\*_mgmt_subnet_security_list*, *oke_vcn\*_db_subnet_security_list*) to align with workload-specific port matrices or allow all ingress/egress traffic in the VCNs, delegating the fine-grained controls to a firewall.
-- Attach workload-specific NSGs on a per-spoke basis through *oke_vcn\*_additional_nsgs*, supplementing the global constrained/open NSGs without modifying the core module.
 - Force every intra-VCN flow through the DRG for centralized inspection by enabling *oke_vcn\*_enable_intra_vcn_drg_route*, which is useful when a Hub firewall must see even subnet-to-subnet traffic.
 - Relax governance by toggling *oke_vcn\*_cis_checks_enabled*, if a deviation from CIS networking guardrails is absolutely required. This is common when VCN security rules are open and control is enforced by a firewall. **Use this with extreme caution, ensuring your custom network security rules (in NSGs and security lists) do not expose sensitive ports to Internet**.
 
-For example, the following *net_override.tf* pattern replaces the API, workers, pods, services, management, and database subnet security lists for *OKE-VCN-1*, adds a custom NSG, disables CIS checks for that VCN, and routes intra-VCN traffic through the DRG:
+The following *net_override.tf* pattern replaces the API, workers, pods, services, management, and database subnet security lists for *OKE-VCN-1*, disables CIS checks for that VCN, and routes intra-VCN traffic through the DRG:
 
 ```hcl
 locals {
@@ -563,14 +743,6 @@ locals {
     egress_rules  = local.security_lists_default_egress_rules
   }
 
-  oke_vcn1_additional_nsgs = {
-    "OKE-VCN-1-CUSTOM-NSG" = {
-      display_name  = "oke-vcn-1-custom-nsg"
-      ingress_rules = {}
-      egress_rules  = {}
-    }
-  }
-
   oke_vcn1_cis_checks_enabled         = false
   oke_vcn1_enable_intra_vcn_drg_route = true
 }
@@ -578,18 +750,17 @@ locals {
 
 Use the same pattern for *OKE-VCN-2* and *OKE-VCN-3* by replacing the prefix with *oke_vcn2_* or *oke_vcn3_*.
 
-### Exadata Cloud Service Spokes with Bespoke East-West Controls
+#### Exadata Cloud Service Spokes with Bespoke East-West Controls
 
-The Exadata Cloud Service (ExaCS) spoke overrides are Terraform local overrides. Define them in a *\*_override.tf* file, using the provided *net_override.tf* sample as the starting point, so that the base Landing Zone files can still be upgraded safely.
+The Exadata Cloud Service (ExaCS) spoke security list, CIS, and intra-VCN routing settings are Terraform local overrides. Define them in a *\*_override.tf* file, using the provided *net_override.tf* sample as the starting point, so that the base Landing Zone files can still be upgraded safely.
 
 - Override Exadata client, backup, or integration subnet security lists per VCN (*exa_vcn\*_client_subnet_security_list*, *exa_vcn\*_backup_subnet_security_list*, *exa_vcn\*_integration_subnet_security_list*) to align with workload-specific routing inspection patterns or to delegate fine-grained subnet controls to a firewall. These overrides are available for *EXA-VCN-1*, *EXA-VCN-2*, and *EXA-VCN-3*.
 - Custom Exadata subnet security lists are applied when the Exadata spoke is attached to the DRG in a Hub VCN topology. In standalone or DRG-as-hub deployments, the default Exadata security list behavior is preserved.
 - Backup subnet security list overrides are only used when the matching *add_exa_vcn\*_backup_subnet* toggle is enabled. Integration subnet security list overrides are only used when the matching *add_exa_vcn\*_integration_subnet* toggle is enabled.
-- Attach workload-specific NSGs on a per-spoke basis through *exa_vcn\*_additional_nsgs*, supplementing the native client, integration, and cross-VCN NSGs without modifying the core module.
 - Force client-to-integration and integration-to-client flows through the DRG for centralized inspection by enabling *exa_vcn\*_enable_intra_vcn_drg_route*. This only adds the client and integration subnet route rules when the Exadata VCN is attached to the DRG, and it is most useful when a Hub firewall must inspect traffic between those two Exadata subnets.
 - Relax governance by toggling *exa_vcn\*_cis_checks_enabled*, if a deviation from CIS networking guardrails is absolutely required. This is common when Exadata subnet security rules are intentionally opened and control is enforced by a firewall. **Use this with extreme caution, ensuring your custom network security rules (in NSGs and security lists) do not expose sensitive ports to Internet**.
 
-For example, the following *net_override.tf* pattern replaces the client, backup, and integration subnet security lists for *EXA-VCN-1*, adds a custom NSG, disables CIS checks for that VCN, and routes client/integration subnet traffic through the DRG:
+The following *net_override.tf* pattern replaces the client, backup, and integration subnet security lists for *EXA-VCN-1*, disables CIS checks for that VCN, and routes client/integration subnet traffic through the DRG:
 
 ```hcl
 locals {
@@ -609,14 +780,6 @@ locals {
     display_name  = "integration-subnet-security-list"
     ingress_rules = local.security_lists_default_ingress_rules
     egress_rules  = local.security_lists_default_egress_rules
-  }
-
-  exa_vcn1_additional_nsgs = {
-    "EXA-VCN-1-CUSTOM-NSG" = {
-      display_name  = "exa-vcn-1-custom-nsg"
-      ingress_rules = {}
-      egress_rules  = {}
-    }
   }
 
   exa_vcn1_cis_checks_enabled         = false

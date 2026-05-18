@@ -49,6 +49,29 @@ variable "oke_vcn1_routable_vcns" {
   }
 }
 
+variable "define_oke_vcn1_additional_nsgs" {
+  type        = bool
+  default     = false
+  description = "When true, Landing Zone provisions additional OKE-VCN-1 NSGs from oke_vcn1_additional_nsgs."
+}
+
+variable "oke_vcn1_additional_nsgs" {
+  type        = any
+  default     = {}
+  nullable    = true
+  description = "Additional NSGs for OKE-VCN-1. Accepts either a native HCL map/object or a JSON object string. Only used when define_oke_vcn1_additional_nsgs is true."
+
+  validation {
+    condition = (
+      var.oke_vcn1_additional_nsgs == null ||
+      try(trimspace(tostring(var.oke_vcn1_additional_nsgs)) == "", false) ||
+      can(keys(var.oke_vcn1_additional_nsgs)) ||
+      can(keys(jsondecode(var.oke_vcn1_additional_nsgs)))
+    )
+    error_message = "oke_vcn1_additional_nsgs must be null, empty, a map/object, or a JSON object string."
+  }
+}
+
 variable "oke_vcn1_api_subnet_cidr" {
   type        = string
   default     = null
@@ -253,6 +276,29 @@ variable "oke_vcn2_routable_vcns" {
   }
 }
 
+variable "define_oke_vcn2_additional_nsgs" {
+  type        = bool
+  default     = false
+  description = "When true, Landing Zone provisions additional OKE-VCN-2 NSGs from oke_vcn2_additional_nsgs."
+}
+
+variable "oke_vcn2_additional_nsgs" {
+  type        = any
+  default     = {}
+  nullable    = true
+  description = "Additional NSGs for OKE-VCN-2. Accepts either a native HCL map/object or a JSON object string. Only used when define_oke_vcn2_additional_nsgs is true."
+
+  validation {
+    condition = (
+      var.oke_vcn2_additional_nsgs == null ||
+      try(trimspace(tostring(var.oke_vcn2_additional_nsgs)) == "", false) ||
+      can(keys(var.oke_vcn2_additional_nsgs)) ||
+      can(keys(jsondecode(var.oke_vcn2_additional_nsgs)))
+    )
+    error_message = "oke_vcn2_additional_nsgs must be null, empty, a map/object, or a JSON object string."
+  }
+}
+
 variable "oke_vcn2_api_subnet_cidr" {
   type        = string
   default     = null
@@ -453,6 +499,29 @@ variable "oke_vcn3_routable_vcns" {
   validation {
     condition     = length(var.oke_vcn3_routable_vcns) == 0 ? true : (length(var.oke_vcn3_routable_vcns) == 0 || alltrue([for label in var.oke_vcn3_routable_vcns : contains(["TT-VCN-1", "TT-VCN-2", "TT-VCN-3", "EXA-VCN-1", "EXA-VCN-2", "EXA-VCN-3", "OKE-VCN-1", "OKE-VCN-2"], label)]))
     error_message = "Invalid value provided for oke_vcn3_routable_vcns variable: it must be empty or contain only valid VCN labels: \"TT-VCN-1\",\"TT-VCN-2\",\"TT-VCN-3\",\"EXA-VCN-1\",\"EXA-VCN-2\",\"EXA-VCN-3\",\"OKE-VCN-1\",\"OKE-VCN-2\"."
+  }
+}
+
+variable "define_oke_vcn3_additional_nsgs" {
+  type        = bool
+  default     = false
+  description = "When true, Landing Zone provisions additional OKE-VCN-3 NSGs from oke_vcn3_additional_nsgs."
+}
+
+variable "oke_vcn3_additional_nsgs" {
+  type        = any
+  default     = {}
+  nullable    = true
+  description = "Additional NSGs for OKE-VCN-3. Accepts either a native HCL map/object or a JSON object string. Only used when define_oke_vcn3_additional_nsgs is true."
+
+  validation {
+    condition = (
+      var.oke_vcn3_additional_nsgs == null ||
+      try(trimspace(tostring(var.oke_vcn3_additional_nsgs)) == "", false) ||
+      can(keys(var.oke_vcn3_additional_nsgs)) ||
+      can(keys(jsondecode(var.oke_vcn3_additional_nsgs)))
+    )
+    error_message = "oke_vcn3_additional_nsgs must be null, empty, a map/object, or a JSON object string."
   }
 }
 
