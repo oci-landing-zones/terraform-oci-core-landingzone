@@ -1,4 +1,38 @@
-# May 15, 2026 Release Notes - 1.6.0
+# May 22, 2026 Release Notes - 1.6.0
+
+## Global Variable Changes from 1.5.5 to 1.6.0
+
+The table below summarizes global variable changes between releases **1.5.5** and **1.6.0**. Before upgrading existing deployments, review any removed or replaced variables in your *.tfvars*, Resource Manager stack variables, automation pipelines, and template files. Variables shown with *{1,2,3}* exist once for each numbered VCN family member.
+
+| Change | Variable(s) in 1.5.5 | Variable(s) in 1.6.0 | Upgrade guidance / what's new |
+| --- | --- | --- | --- |
+| Removed | **customize_bastion_service** | None | This was a Resource Manager UI control and has no direct replacement. See **add_hub_vcn_jumphost_subnet**, **deploy_bastion_service** and the **bastion_service_\*** variables for controlling optional OCI Bastion Service provisioning. |
+| Removed | **customize_jumphost_subnet** | None | This was a Resource Manager UI control and has no direct replacement. See **add_hub_vcn_jumphost_subnet** variable for controlling optional Jump Host subnet provisioning. |
+| Replaced | **bastion_jump_host_marketplace_image_option** | **bastion_jump_host_image_source**, **bastion_jump_host_marketplace_image_name**, **bastion_jump_host_marketplace_image_version**, **bastion_jump_host_marketplace_image_ocid** | Replace the old Marketplace image option with the new image source plus image name/version or image OCID. Use **bastion_jump_host_image_source** = *"Marketplace Image"* for Marketplace images. |
+| Replaced | **hub_vcn_mgmt_subnet_external_allowed_cidrs_for_http**, **hub_vcn_mgmt_subnet_external_allowed_cidrs_for_ssh** | **allowed_onprem_cidrs_to_fw_mgmt_interface**, **fw_mgmt_interface_ports** | Move allowed firewall-management CIDRs to **allowed_onprem_cidrs_to_fw_mgmt_interface**, and list allowed protocol/port pairs such as *TCP:22* or *TCP:443* in **fw_mgmt_interface_ports**. |
+| Replaced | **net_palo_alto_version** | **net_appliance_image_vendor**, **net_appliance_marketplace_image_name**, **net_appliance_marketplace_image_version**, **net_appliance_marketplace_image_ocid** | Set **net_appliance_image_vendor** = *"PaloAlto"*. For Marketplace images, provide either **net_appliance_marketplace_image_ocid** or **net_appliance_marketplace_image_name** plus optional **net_appliance_marketplace_image_version**. |
+| Replaced | **net_fortigate_version** | **net_appliance_image_vendor**, **net_appliance_marketplace_image_name**, **net_appliance_marketplace_image_version**, **net_appliance_marketplace_image_ocid** | Set **net_appliance_image_vendor** = *"Fortinet"*. For Marketplace images, provide either **net_appliance_marketplace_image_ocid** or **net_appliance_marketplace_image_name** plus optional **net_appliance_marketplace_image_version**. |
+| Added | None | **custom_id_domain_compartment_ocid** | Resource Manager helper input for selecting the compartment containing an existing custom identity domain. Terraform CLI deployments can continue using **custom_id_domain_ocid** directly. |
+| Added | None | **enable_cross_vcn_constrained_nsgs**, **enable_cross_vcn_open_nsg** | Controls the new cross-VCN NSG modes. Review these when upgrading Hub/Spoke deployments because route and security rules are refreshed in 1.6.0. |
+| Added | None | **rpc_requestor_peers** | Allows requestor-side Remote Peering Connection peer definitions for advanced networking use cases. |
+| Added | None | **add_hub_vcn_jumphost_subnet** | Controls whether the optional private Jump Host/Bastion subnet is created in the Hub VCN. |
+| Added | None | **allowed_onprem_cidrs_to_fw_mgmt_interface**, **fw_mgmt_interface_ports** | Provides a vendor-neutral way to allow selected on-premises CIDRs and ports into firewall management interfaces. |
+| Added | None | **net_appliance_image_vendor**, **net_appliance_marketplace_image_ocid**, **net_appliance_marketplace_image_name**, **net_appliance_marketplace_image_version** | Adds vendor and Marketplace image selection for Hub VCN network appliances, including support for Marketplace image OCIDs. |
+| Added | None | **bastion_jump_host_image_source**, **bastion_jump_host_marketplace_image_ocid**, **bastion_jump_host_marketplace_image_name**, **bastion_jump_host_marketplace_image_version**, **bastion_jump_host_platform_image_ocid** | Adds explicit image-source handling for Bastion Jump Host: Marketplace, platform, or custom images. |
+| Added | None | **define_hub_vcn_additional_nsgs**, **hub_vcn_additional_nsgs** | Allows additional Hub VCN NSGs to be defined without editing module internals. |
+| Added | None | **define_tt_vcn{1,2,3}_additional_nsgs**, **tt_vcn{1,2,3}_additional_nsgs** | Allows additional Three-Tier VCN NSGs to be defined per VCN. |
+| Added | None | **define_oke_vcn{1,2,3}_additional_nsgs**, **oke_vcn{1,2,3}_additional_nsgs** | Allows additional OKE VCN NSGs to be defined per VCN. |
+| Added | None | **define_exa_vcn{1,2,3}_additional_nsgs**, **exa_vcn{1,2,3}_additional_nsgs** | Allows additional Exadata VCN NSGs to be defined per VCN. |
+| Added | None | **tt_vcn{1,2,3}_external_allowed_cidrs_into_web_tier** | Lets users restrict external CIDRs allowed into Three-Tier Web/LBR tiers. Defaults preserve the previous broad behavior unless changed. |
+| Added | None | **tt_vcn{1,2,3}_web_ingress_destination_ports**, **tt_vcn{1,2,3}_app_ingress_destination_ports**, **tt_vcn{1,2,3}_db_ingress_destination_ports** | Exposes previously hardcoded Three-Tier NSG ingress destination ports. |
+| Added | None | **oke_vcn{1,2,3}_services_subnet_is_private** | Allows OKE services subnets to be made private. |
+| Added | None | **add_oke_vcn{1,2,3}_db_subnet**, **oke_vcn{1,2,3}_db_subnet_cidr**, **oke_vcn{1,2,3}_db_subnet_name** | Adds optional DB subnets to OKE VCNs. |
+| Added | None | **oke_vcn{1,2,3}_external_allowed_cidrs_into_services_tier** | Lets users restrict external CIDRs allowed into OKE services tiers. Defaults preserve the previous broad behavior unless changed. |
+| Added | None | **oke_vcn{1,2,3}_services_ingress_destination_ports**, **oke_vcn{1,2,3}_db_ingress_destination_ports** | Exposes OKE Services and DB NSG ingress destination ports. |
+| Added | None | **add_exa_vcn{1,2,3}_backup_subnet** | Makes Exadata backup subnets optional. Review this if your deployment assumes backup subnets are always created. |
+| Added | None | **add_exa_vcn{1,2,3}_integration_subnet**, **exa_vcn{1,2,3}_integration_subnet_cidr**, **exa_vcn{1,2,3}_integration_subnet_name** | Adds optional Exadata integration subnets. |
+| Added | None | **exa_vcn{1,2,3}_external_allowed_cidrs_into_client_tier**, **exa_vcn{1,2,3}_client_ingress_destination_ports** | Lets users restrict external CIDRs and destination ports for Exadata client tiers. |
+| Added | None | **exa_vcn{1,2,3}_external_allowed_cidrs_into_integration_tier**, **exa_vcn{1,2,3}_integration_ingress_destination_ports** | Lets users restrict external CIDRs and destination ports for Exadata integration tiers. |
 
 ## Networking Enhancements
 
@@ -10,38 +44,38 @@
 
 ### Three-Tier VCNs
 
-1. The Web subnet in Three-Tier VCNs is no longer automatically made private when the VCN is attached to DRG. It now must be explicitly made private through **tt_vcn\*_web_subnet_is_private** variables. 
+1. The Web subnet in Three-Tier VCNs is no longer automatically made private when the VCN is attached to DRG. It now must be explicitly made private through **tt_vcn{1,2,3}_web_subnet_is_private** variables.
 2. Newly added global variables for capturing external CIDRs allowed into application endpoints in Three-Tier Web subnets:
-    - **tt_vcn\*_external_allowed_cidrs_into_web_tier**: the list of external CIDRs blocks allowed ingress access on LBR NSG (**lbr-nsg**) of **tt_vcn\*** VCN . Use this to limit the range of IP addresses that can access the web tier. (the previously hardcoded value (0.0.0.0/0) is now the default.)
+    - **tt_vcn{1,2,3}_external_allowed_cidrs_into_web_tier**: the list of external CIDRs blocks allowed ingress access on LBR NSG (**lbr-nsg**) of **tt_vcn{1,2,3}** VCN . Use this to limit the range of IP addresses that can access the web tier. (the previously hardcoded value (0.0.0.0/0) is now the default.)
 3. Newly added global variables for capturing protocols and ports in NSG ingress rules (previously hardcoded), allowing for easier management of application listening ports at OCI network security rules level (previously hardcoded values are now the default.):
-    - **tt_vcn\*_web_ingress_destination_ports**: the list of protocols and destination ports allowed for ingress packets into LBR NSG (**lbr-nsg**). Each value is a colon-separated pair like "TCP:443".
-    - **tt_vcn\*_app_ingress_destination_ports**: the list of protocols and destination ports allowed for ingress packets into App NSG (**app-nsg**). Each value is a colon-separated pair like "TCP:80".
-    - **tt_vcn\*_db_ingress_destination_ports**: the list of protocols and destination ports allowed for ingress packets into DB NSG (**db-nsg**). Each value is a colon-separated pair like "TCP:1521".    
+    - **tt_vcn{1,2,3}_web_ingress_destination_ports**: the list of protocols and destination ports allowed for ingress packets into LBR NSG (**lbr-nsg**). Each value is a colon-separated pair like "TCP:443".
+    - **tt_vcn{1,2,3}_app_ingress_destination_ports**: the list of protocols and destination ports allowed for ingress packets into App NSG (**app-nsg**). Each value is a colon-separated pair like "TCP:80".
+    - **tt_vcn{1,2,3}_db_ingress_destination_ports**: the list of protocols and destination ports allowed for ingress packets into DB NSG (**db-nsg**). Each value is a colon-separated pair like "TCP:1521".
 
 ### OKE VCNs
 
-1. The Service subnet in OKE VCNs can now be made private through newly added **oke_vcn\*_services_subnet_is_private** variables.
-2. A DB subnet can now be optionally deployed within OKE VCNs through newly added **add_oke_vcn\*_db_subnet** variables, and further qualified with newly added **oke_vcn\*_db_subnet_cidr**, **oke_vcn\*_db_subnet_name** and **oke_vcn\*_db_ingress_destination_ports** variables.
+1. The Service subnet in OKE VCNs can now be made private through newly added **oke_vcn{1,2,3}_services_subnet_is_private** variables.
+2. A DB subnet can now be optionally deployed within OKE VCNs through newly added **add_oke_vcn{1,2,3}_db_subnet** variables, and further qualified with newly added **oke_vcn{1,2,3}_db_subnet_cidr**, **oke_vcn{1,2,3}_db_subnet_name** and **oke_vcn{1,2,3}_db_ingress_destination_ports** variables.
 3. Newly added global variables for capturing external CIDRs allowed into application endpoints in OKE Services subnets:
-    - **oke_vcn\*_external_allowed_cidrs_into_services_tier**: the list of external CIDRs blocks allowed ingress access on Services NSG (**services-nsg**) of **oke_vcn\*** VCN. Use this to limit the range of IP addresses that can access the services tier. (the previously hardcoded value (0.0.0.0/0) is now the default.)
+    - **oke_vcn{1,2,3}_external_allowed_cidrs_into_services_tier**: the list of external CIDRs blocks allowed ingress access on Services NSG (**services-nsg**) of **oke_vcn{1,2,3}** VCN. Use this to limit the range of IP addresses that can access the services tier. (the previously hardcoded value (0.0.0.0/0) is now the default.)
 4. Newly added global variables for capturing protocols and ports in NSG ingress rules (previously hardcoded), allowing for easier management of application listening ports at OCI network security rules level (previously hardcoded values are now the default.):
-    - **oke_vcn\*_services_ingress_destination_ports**: the list of protocols and destination ports allowed for ingress packets into Services NSG (**services-nsg**). Each value is a colon-separated pair like "TCP:443".
-    - **oke_vcn\*_db_ingress_destination_ports**: the list of protocols and destination ports allowed for ingress packets into DB NSG (**db-nsg**). Each value is a colon-separated pair like "TCP:1521".    
+    - **oke_vcn{1,2,3}_services_ingress_destination_ports**: the list of protocols and destination ports allowed for ingress packets into Services NSG (**services-nsg**). Each value is a colon-separated pair like "TCP:443".
+    - **oke_vcn{1,2,3}_db_ingress_destination_ports**: the list of protocols and destination ports allowed for ingress packets into DB NSG (**db-nsg**). Each value is a colon-separated pair like "TCP:1521".
 
 ### Exadata VCNs
 
-1. The Backup subnet is now optional through newly added **add_exa_vcn\*_backup_subnet** variables (default is true), improving Core Landing Zone coverage for Autonomous Database on Exadata Dedicated Infrastructure.
+1. The Backup subnet is now optional through newly added **add_exa_vcn{1,2,3}_backup_subnet** variables (default is true), improving Core Landing Zone coverage for Autonomous Database on Exadata Dedicated Infrastructure.
 2. Exadata VCNs can now be optionally deployed with an integration subnet, enhancing Core Landing Zone support for integration solutions like Oracle GoldenGate. The following global variables have been introduced: 
-    - **add_exa_vcn\*_integration_subnet**: whether to add an optional Integration subnet to the VCN.
-    - **exa_vcn\*_integration_subnet_cidr**: the Integration subnet CIDR block.
-    - **exa_vcn\*_integration_subnet_name**: the Integration subnet name.
-    - **exa_vcn\*_external_allowed_cidrs_into_integration_tier**: the list of external CIDR blocks allowed ingress access on Integration NSG (**integration-nsg**) of **exa_vcn\*** VCN . Use this to limit the range of IP addresses that can access the integration tier.
-    - **exa_vcn\*_integration_ingress_destination_ports**: the list of protocols and destination ports allowed for ingress packets into newly added Integration NSG (**integration-nsg**). Each value is a colon-separated pair like "TCP:443". 
+    - **add_exa_vcn{1,2,3}_integration_subnet**: whether to add an optional Integration subnet to the VCN.
+    - **exa_vcn{1,2,3}_integration_subnet_cidr**: the Integration subnet CIDR block.
+    - **exa_vcn{1,2,3}_integration_subnet_name**: the Integration subnet name.
+    - **exa_vcn{1,2,3}_external_allowed_cidrs_into_integration_tier**: the list of external CIDR blocks allowed ingress access on Integration NSG (**integration-nsg**) of **exa_vcn{1,2,3}** VCN . Use this to limit the range of IP addresses that can access the integration tier.
+    - **exa_vcn{1,2,3}_integration_ingress_destination_ports**: the list of protocols and destination ports allowed for ingress packets into newly added Integration NSG (**integration-nsg**). Each value is a colon-separated pair like "TCP:443".
 3. Newly added global variables for capturing external CIDRs allowed into application endpoints in Exadata Client subnets:
-    - **exa_vcn\*_external_allowed_cidrs_into_client_tier**:  the list of external CIDRs blocks allowed ingress access on Client NSG (*client-nsg*) in **exa_vcn\*** VCN. Use this to limit the range of IP addresses that can access the client tier.
+    - **exa_vcn{1,2,3}_external_allowed_cidrs_into_client_tier**:  the list of external CIDRs blocks allowed ingress access on Client NSG (*client-nsg*) in **exa_vcn{1,2,3}** VCN. Use this to limit the range of IP addresses that can access the client tier.
 4. Newly added global variables for capturing protocols and ports in NSG ingress rules (previously hardcoded), allowing for easier management of application listening ports at OCI network security rules level (previously hardcoded values are now the default.):
-    - **exa_vcn\*_client_ingress_destination_ports**: the list of protocols and destination ports allowed for ingress packets into Client NSG (**client-nsg**). Each value is a colon-separated pair like "TCP:1521". 
-    - **exa_vcn\*_integration_ingress_destination_ports**: the list of protocols and destination ports allowed for ingress packets into newly added Integration NSG (**integration-nsg**). Each value is a colon-separated pair like "TCP:443". 
+    - **exa_vcn{1,2,3}_client_ingress_destination_ports**: the list of protocols and destination ports allowed for ingress packets into Client NSG (**client-nsg**). Each value is a colon-separated pair like "TCP:1521".
+    - **exa_vcn{1,2,3}_integration_ingress_destination_ports**: the list of protocols and destination ports allowed for ingress packets into newly added Integration NSG (**integration-nsg**). Each value is a colon-separated pair like "TCP:443".
 
 ### Hub VCN
 
@@ -55,7 +89,7 @@
 6. Jump Host can now be provisioned based on OCI Marketplace image OCID, in addition to name/version. Variable **bastion_jump_host_marketplace_image_option** has been replaced by newly added **bastion_jump_host_marketplace_image_name** and **bastion_jump_host_image_source** has been introduced to let users indicate whether the image is custom, platform or marketplace.
 7. Network firewall appliance can now be provisioned based on OCI Marketplace image OCID, in addition to name/version. 
 8. Newly added variable **net_appliance_marketplace_image_version** replaces both **net_palo_alto_version** and **net_fortigate_version** when specifying the OCI Marketplace image version for the network firewall appliance.
-9. Additional NSGs for Hub, Three-tier, OKE, and Exadata VCNs can now be configured through **define_\*_additional_nsgs** and **\*_additional_nsgs** variables. The NSG definition accepts a native HCL map/object or a JSON object string, and the Resource Manager UI exposes it as a multiline JSON field.
+9. Additional NSGs for Hub, Three-tier, OKE, and Exadata VCNs can now be configured through **define_hub_vcn_additional_nsgs**, **hub_vcn_additional_nsgs**, **define_tt_vcn{1,2,3}_additional_nsgs**, **tt_vcn{1,2,3}_additional_nsgs**, **define_oke_vcn{1,2,3}_additional_nsgs**, **oke_vcn{1,2,3}_additional_nsgs**, **define_exa_vcn{1,2,3}_additional_nsgs**, and **exa_vcn{1,2,3}_additional_nsgs** variables. The NSG definition accepts a native HCL map/object or a JSON object string, and the Resource Manager UI exposes it as a multiline JSON field.
 
 ## Other Updates
 

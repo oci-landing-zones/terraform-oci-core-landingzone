@@ -666,7 +666,7 @@ The three-tier spoke security list, CIS, and intra-VCN routing settings are Terr
 - Force every intra-VCN flow through the DRG for centralized inspection by enabling *tt_vcn\*_enable_intra_vcn_drg_route*, which is useful when a Hub firewall must see even subnet-to-subnet traffic.
 - Relax governance by toggling *tt_vcn\*_cis_checks_enabled*, if a deviation from CIS networking guardrails is absolutely required. This is common when VCN security rules are open and control is enforced by a firewall. **Use this with extreme caution, ensuring your custom network security rules (in NSGs and security lists) do not expose sensitive ports to Internet**.
 
-The following *net_override.tf* pattern replaces the web, app, and database subnet security lists for *TT-VCN-1*, disables CIS checks for that VCN, and routes intra-VCN traffic through the DRG:
+The following *net_override.tf* pattern replaces the web, app, and database subnet security lists for *TT-VCN-1*, and routes intra-VCN traffic through the DRG:
 
 ```hcl
 locals {
@@ -688,7 +688,6 @@ locals {
     egress_rules  = local.security_lists_default_egress_rules
   }
 
-  tt_vcn1_cis_checks_enabled         = false
   tt_vcn1_enable_intra_vcn_drg_route = true
 }
 ```
@@ -703,7 +702,7 @@ The OKE spoke security list, CIS, and intra-VCN routing settings are Terraform l
 - Force every intra-VCN flow through the DRG for centralized inspection by enabling *oke_vcn\*_enable_intra_vcn_drg_route*, which is useful when a Hub firewall must see even subnet-to-subnet traffic.
 - Relax governance by toggling *oke_vcn\*_cis_checks_enabled*, if a deviation from CIS networking guardrails is absolutely required. This is common when VCN security rules are open and control is enforced by a firewall. **Use this with extreme caution, ensuring your custom network security rules (in NSGs and security lists) do not expose sensitive ports to Internet**.
 
-The following *net_override.tf* pattern replaces the API, workers, pods, services, management, and database subnet security lists for *OKE-VCN-1*, disables CIS checks for that VCN, and routes intra-VCN traffic through the DRG:
+The following *net_override.tf* pattern replaces the API, workers, pods, services, management, and database subnet security lists for *OKE-VCN-1*, and routes intra-VCN traffic through the DRG:
 
 ```hcl
 locals {
@@ -743,7 +742,6 @@ locals {
     egress_rules  = local.security_lists_default_egress_rules
   }
 
-  oke_vcn1_cis_checks_enabled         = false
   oke_vcn1_enable_intra_vcn_drg_route = true
 }
 ```
@@ -760,7 +758,7 @@ The Exadata Cloud Service (ExaCS) spoke security list, CIS, and intra-VCN routin
 - Force client-to-integration and integration-to-client flows through the DRG for centralized inspection by enabling *exa_vcn\*_enable_intra_vcn_drg_route*. This only adds the client and integration subnet route rules when the Exadata VCN is attached to the DRG, and it is most useful when a Hub firewall must inspect traffic between those two Exadata subnets.
 - Relax governance by toggling *exa_vcn\*_cis_checks_enabled*, if a deviation from CIS networking guardrails is absolutely required. This is common when Exadata subnet security rules are intentionally opened and control is enforced by a firewall. **Use this with extreme caution, ensuring your custom network security rules (in NSGs and security lists) do not expose sensitive ports to Internet**.
 
-The following *net_override.tf* pattern replaces the client, backup, and integration subnet security lists for *EXA-VCN-1*, disables CIS checks for that VCN, and routes client/integration subnet traffic through the DRG:
+The following *net_override.tf* pattern replaces the client, backup, and integration subnet security lists for *EXA-VCN-1*, and routes client/integration subnet traffic through the DRG:
 
 ```hcl
 locals {
@@ -782,7 +780,6 @@ locals {
     egress_rules  = local.security_lists_default_egress_rules
   }
 
-  exa_vcn1_cis_checks_enabled         = false
   exa_vcn1_enable_intra_vcn_drg_route = true
 }
 ```
