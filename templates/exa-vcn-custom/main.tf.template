@@ -30,7 +30,7 @@ module "core_lz" {
     # ------------------------------------------------------
     define_net   = true
     hub_deployment_option = "VCN or on-premises connectivity routing via DRG (existing DRG)" # use existing DRG
-    existing_drg_ocid = "<ocid1.drg..replace-with-existing_drg_ocid>"
+    existing_drg_ocid = "ocid1.drg..replace-with-existing-drg-ocid"
 
     add_exa_vcn1 = true
     
