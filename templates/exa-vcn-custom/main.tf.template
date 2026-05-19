@@ -51,6 +51,6 @@ module "core_lz" {
     # ------------------------------------------------------
     # ----- Notifications
     # ------------------------------------------------------
-    network_admin_email_endpoints  = ["dba-network@example.com"]
-    security_admin_email_endpoints = ["security.admin@example.com"]
+    network_admin_email_endpoints  = ["email.address@example.com"]
+    security_admin_email_endpoints = ["email.address@example.com"]
 }
