@@ -21,8 +21,7 @@ module "lz_network" {
   network_dependency = local.use_existing_drg ? {
     "dynamic_routing_gateways" = {
       "HUB-DRG" = { "id" : trimspace(var.existing_drg_ocid) }
-    },
-    "remote_peering_connections" = {}
+    }
   } : null
   tenancy_ocid = var.tenancy_ocid
 }

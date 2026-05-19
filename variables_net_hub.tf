@@ -316,11 +316,6 @@ variable "workloadvcn_ocids_onprem_access" {
   description = "A list of externally-managed VCN OCIDs that require on-premises connectivity. The VCNs provided here attach to the DRG as a spoke and are routeable from the on-premises network."
   default     = []
 }
-variable "rpc_requestor_peers" {
-  type        = list(string)
-  description = "A list of RPC requestor peers in the format PEER-NAME:PEER-TENANCY-OCID:PEER-GROUP-OCID requiring RPC (Remote Peering Connection) connectivity to Core LZ DRG (new or existing). Core LZ DRG acts an RPC peer acceptor. PEER-TENANCY-OCID and PEER-GROUP-OCID are optional and only required when the RPC peer is in a different tenancy, for cross-tenancy policy. If the RPC peer is in the same tenancy, provide PEER-NAME only. PEER-NAME is just an identifier for the RPC peer and can be any string without colon (:)."
-  default     = []
-}
 # -------------------------------------------
 # ----- Networking - Internet Gateway
 #--------------------------------------------

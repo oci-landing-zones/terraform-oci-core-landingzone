@@ -691,7 +691,6 @@ variableGroups:
       - "fastconnect_virtual_circuit_vlan"
       - "display_output"
       - "enable_cloud_guard"
-      - "rpc_requestor_peers"
 
 variables:
   is_free_tenancy:
