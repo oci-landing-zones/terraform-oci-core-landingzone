@@ -30,7 +30,7 @@ module "core_lz" {
     # ------------------------------------------------------
     define_net   = true
     hub_deployment_option = "VCN or on-premises connectivity routing via DRG (existing DRG)" # use existing DRG
-    existing_drg_ocid = "ocid1.drg....baq"
+    existing_drg_ocid = "<ocid1.drg..replace-with-existing_drg_ocid>"
 
     add_exa_vcn1 = true
     
@@ -44,6 +44,9 @@ module "core_lz" {
     exa_vcn1_external_allowed_cidrs_into_client_tier = ["203.0.113.20/32"]
     exa_vcn1_integration_ingress_destination_ports   = ["TCP:443", "TCP:8443"]
     exa_vcn1_external_allowed_cidrs_into_integration_tier = ["198.51.100.0/24"]
+
+    exa_vcn1_onprem_route_enable = true # enables route rule in DRG for routing to on-premises network from Exadata VCN. This is required for Exadata to communicate with on-premises network if you have a hybrid environment, and is also required for the integration use case in this example.
+    onprem_cidrs                  = ["10.0.0.0/16"] # used in DRG route rules for routing to on-premises network. Replace with your on-premises CIDR.
     
     # ------------------------------------------------------
     # ----- Notifications
