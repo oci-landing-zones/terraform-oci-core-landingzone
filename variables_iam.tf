@@ -39,7 +39,7 @@ variable "custom_enclosing_compartment_name" {
   default     = null
   description = "Custom name of the enclosing compartment."
   validation {
-    condition = var.custom_enclosing_compartment_name == null || (length(var.custom_enclosing_compartment_name) > 3 && !startswith(var.custom_enclosing_compartment_name, " "))
+    condition = var.custom_enclosing_compartment_name == null ? true : (length(var.custom_enclosing_compartment_name) > 3 && !startswith(var.custom_enclosing_compartment_name, " ") ? true : false)
     error_message = "Validation failed for variable custom_enclosing_compartment_name: it must be null, or a string longer than 3 characters that does not start with a space."
   }
 }
@@ -48,7 +48,7 @@ variable "custom_network_compartment_name" {
   default     = null
   description = "Custom name of the network compartment."
   validation {
-    condition = var.custom_network_compartment_name == null || (length(var.custom_network_compartment_name) > 3 && !startswith(var.custom_network_compartment_name, " "))
+    condition = var.custom_network_compartment_name == null ? true : (length(var.custom_network_compartment_name) > 3 && !startswith(var.custom_network_compartment_name, " ") ? true : false)
     error_message = "Validation failed for variable custom_network_compartment_name: it must be null, or a string longer than 3 characters that does not start with a space."
   }
 }
@@ -57,7 +57,7 @@ variable "custom_security_compartment_name" {
   default     = null
   description = "Custom name of the security compartment."
   validation {
-    condition = var.custom_security_compartment_name == null || (length(var.custom_security_compartment_name) > 3 && !startswith(var.custom_security_compartment_name, " "))
+    condition = var.custom_security_compartment_name == null ? true : (length(var.custom_security_compartment_name) > 3 && !startswith(var.custom_security_compartment_name, " ") ? true : false)
     error_message = "Validation failed for variable custom_security_compartment_name: it must be null, or a string longer than 3 characters that does not start with a space."
   }
 }
@@ -66,7 +66,7 @@ variable "custom_app_compartment_name" {
   default     = null
   description = "Custom name of the app compartment."
   validation {
-    condition = var.custom_app_compartment_name == null || (length(var.custom_app_compartment_name) > 3 && !startswith(var.custom_app_compartment_name, " "))
+    condition = var.custom_app_compartment_name == null ? true : (length(var.custom_app_compartment_name) > 3 && !startswith(var.custom_app_compartment_name, " ") ? true : false)
     error_message = "Validation failed for variable custom_app_compartment_name: it must be null, or a string longer than 3 characters that does not start with a space."
   }
 }
@@ -75,7 +75,7 @@ variable "custom_database_compartment_name" {
   default     = null
   description = "Custom name of the database compartment."
   validation {
-    condition = var.custom_database_compartment_name == null || (length(var.custom_database_compartment_name) > 3 && !startswith(var.custom_database_compartment_name, " "))
+    condition = var.custom_database_compartment_name == null ? true : (length(var.custom_database_compartment_name) > 3 && !startswith(var.custom_database_compartment_name, " ") ? true : false)
     error_message = "Validation failed for variable custom_database_compartment_name: it must be null, or a string longer than 3 characters that does not start with a space."
   }
 }
@@ -84,7 +84,7 @@ variable "custom_exainfra_compartment_name" {
   default     = null
   description = "Custom name of the exadata infrastructure compartment."
   validation {
-    condition = var.custom_exainfra_compartment_name == null || (length(var.custom_exainfra_compartment_name) > 3 && !startswith(var.custom_exainfra_compartment_name, " "))
+    condition = var.custom_exainfra_compartment_name == null ? true : (length(var.custom_exainfra_compartment_name) > 3 && !startswith(var.custom_exainfra_compartment_name, " ") ? true : false)
     error_message = "Validation failed for variable custom_exainfra_compartment_name: it must be null, or a string longer than 3 characters that does not start with a space."
   }
 }
