@@ -33,6 +33,7 @@ module "core_lz" {
     existing_drg_ocid = "ocid1.drg..replace-with-existing-drg-ocid"
 
     add_exa_vcn1 = true
+    exa_vcn1_attach_to_drg = true
     
     exa_vcn1_name                              = "exa-prod"
     exa_vcn1_cidrs                             = ["172.20.0.0/20"]
