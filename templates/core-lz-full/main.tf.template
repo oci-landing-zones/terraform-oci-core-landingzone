@@ -396,7 +396,7 @@ module "core_lz_full" {
   # Active path: Core LZ does not manage on-premises connectivity. 
   # Note that on-premises connectivity can still be established externally to Core LZ.
   # --------------------------------------------------------------------------------------
-  # on_premises_connection_option = "None"
+  on_premises_connection_option = "None"
   
   # --------------------------------------------------------------------------------------
   # Alternate path 1: create both FastConnect and IPSec VPN connectivity.
