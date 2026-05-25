@@ -142,7 +142,7 @@ variable "bastion_jump_host_instance_name" {
 variable "bastion_jump_host_ssh_public_key_path" {
   type        = string
   default     = null
-  description = "The SSH public key to login to bastion jump host instance."
+  description = "The SSH public key to login to bastion jump host instance. Either the file path or the actual public key content are accepted."
 }
 
 variable "bastion_jump_host_instance_shape" {
