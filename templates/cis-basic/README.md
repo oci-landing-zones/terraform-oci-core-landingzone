@@ -2,8 +2,7 @@
 
 This template shows how to deploy the most basic CIS compliant landing zone using [OCI Core Landing Zone](../../) configuration. In this "express" or "lite" template, no networking is deployed.
 
-Please see other [templates](../../templates/) available for CIS compliant landing zones with more complex configurations.
-
+Please see [templates](../../templates/) for other CIS compliant Core Landing Zone templates.
 
 ## Default Values
 

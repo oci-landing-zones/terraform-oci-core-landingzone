@@ -1,6 +1,6 @@
 # VCN Custom Networking for Exadata Cloud Service
 
-This template show how to deploy an [OCI Core Landing Zone](../../) configuration with one VCN for Exadata Cloud Service that gets attached to an existing DRG. 
+This template shows how to deploy an [OCI Core Landing Zone](../../) configuration with one VCN for Exadata Cloud Service that gets attached to an existing DRG. Such network configuration is useful in scenarios to connect existing VCNs (in the same or different regions) and providing on-prem connectivity to a newly added Exadata Cloud Service system. Note however, that this template assumes that IpSec VPN or FastConnect are externally configured.
 
 Please see [templates](../../templates/) for other CIS compliant Core Landing Zone templates.
 
