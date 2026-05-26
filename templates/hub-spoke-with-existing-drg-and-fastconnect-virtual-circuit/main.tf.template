@@ -40,7 +40,7 @@ module "core_lz" {
   fastconnect_virtual_circuit_bandwidth_shape         = "1 Gbps"                        ## Replace with virtual circuit shape
   fastconnect_virtual_circuit_type                    = "PRIVATE"
   fastconnect_virtual_circuit_provider_service_id     = "ocid1.providerservice.oc1.xxx" ## Replace with the OCID of the fastconnect partner provider
-  fastconnect_virtual_circuit_customer_asn            = "xxxxx"                         ## Replace with valid value for customer asn
+  fastconnect_virtual_circuit_customer_asn            = "65100"                         ## Replace with valid value for customer asn
   fastconnect_virtual_circuit_customer_bgp_peering_ip = "10.10.10.1/30"
   fastconnect_virtual_circuit_oracle_bgp_peering_ip   = "10.10.10.2/30"
 

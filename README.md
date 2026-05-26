@@ -174,7 +174,7 @@ Some deployment scenarios are available under the [templates](./templates/) fold
 - [Core Landing Zone Basic](./templates/cis-basic/)
 - [Core Landing Zone Full](./templates/core-lz-full/)
 - [Core Landing Zone with New Identity Domain](./templates/new-identity-domain/)
-- [Core Landing Zone Custom Identity Domain](./templates/custom-identity-domain/)
+- [Core Landing Zone with Existing Identity Domain](./templates/existing-identity-domain/)
 - [Core Landing Zone with Standalone Default Three-Tier VCN](./templates/standalone-three-tier-vcn-defaults/)
 - [Core Landing Zone with Standalone Custom Three-Tier VCN](./templates/standalone-three-tier-vcn-custom/)
 - [Core Landing Zone with Standalone Three Tier VCN and ZPR](./templates/standalone-three-tier-vcn-zpr/)

@@ -12,7 +12,7 @@ This template has the following parameters set:
 
 | Variable Name | Description | Value |
 |---------------|-------------|-------|
-| *service_label* | A unique identifier to prefix the resources | "express" |
+| *service_label* | A unique identifier to prefix the resources | "basic" |
 | *network_admin_email_endpoints* | List of email addresses that receive notifications for networking related events. | ["email.address@example.com"] |
 | *security_admin_email_endpoints* | List of email addresses that receive notifications for security related events. | ["email.address@example.com"] |
 
@@ -25,7 +25,7 @@ This template can be deployed using OCI Resource Manager Service (RMS) or Terraf
 
 By clicking the button below, you are redirected to an OCI RMS Stack with variables pre-assigned for deployment.
 
-[![Deploy_To_OCI](../../images/DeployToOCI.svg)](https://cloud.oracle.com/resourcemanager/stacks/create?zipUrl=https://github.com/oci-landing-zones/terraform-oci-core-landingzone/archive/refs/heads/release-1.6.0.zip&zipUrlVariables={"service_label":"express","network_admin_email_endpoints":["email.address@example.com"],"security_admin_email_endpoints":["email.address@example.com"]})
+[![Deploy_To_OCI](../../images/DeployToOCI.svg)](https://cloud.oracle.com/resourcemanager/stacks/create?zipUrl=https://github.com/oci-landing-zones/terraform-oci-core-landingzone/archive/refs/heads/release-1.6.0.zip&zipUrlVariables={"service_label":"basic","network_admin_email_endpoints":["email.address@example.com"],"security_admin_email_endpoints":["email.address@example.com"]})
 
 You are required to review/adjust the following variable settings:
  - Make sure to pick an OCI region for deployment.

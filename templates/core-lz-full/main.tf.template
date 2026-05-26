@@ -35,7 +35,7 @@ module "core_lz" {
   region               = "us-ashburn-1"
 
   # A short prefix prepended to deployed resources. Must start with a letter and be <= 15 chars.
-  service_label = "corefull"
+  service_label = "full"
 
   # Use "1" for CIS Level 1 or "2" for stricter controls such as Vault-backed encryption.
   cis_level = "2"
