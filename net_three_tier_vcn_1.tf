@@ -25,7 +25,7 @@ locals {
 
   tt_vcn_1 = local.add_tt_vcn1 == true ? {
     "TT-VCN-1" = {
-      enable_cis_checks                = local.tt_vcn1_cis_checks_enabled
+      enable_cis_checks                = local.vcn_cis_checks_override_allowed ? local.tt_vcn1_cis_checks_enabled : true
       display_name                     = local.tt_vcn1_display_name
       is_ipv6enabled                   = false
       is_oracle_gua_allocation_enabled = false

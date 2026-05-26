@@ -25,7 +25,7 @@ locals {
 
   hub_vcn = local.hub_with_vcn == true ? { # local variable hub_with_vcn is defined in net_hub_drg.tf.
     "HUB-VCN" = {
-      enable_cis_checks                = local.hub_vcn_cis_checks_enabled
+      enable_cis_checks                = local.vcn_cis_checks_override_allowed ? local.hub_vcn_cis_checks_enabled : true
       display_name                     = local.hub_vcn_display_name
       is_ipv6enabled                   = false
       is_oracle_gua_allocation_enabled = false

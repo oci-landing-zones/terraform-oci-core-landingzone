@@ -31,7 +31,7 @@ locals {
 
   oke_vcn_2 = local.add_oke_vcn2 == true ? {
     "OKE-VCN-2" = {
-      enable_cis_checks                = local.oke_vcn2_cis_checks_enabled
+      enable_cis_checks                = local.vcn_cis_checks_override_allowed ? local.oke_vcn2_cis_checks_enabled : true
       display_name                     = local.oke_vcn2_display_name
       is_ipv6enabled                   = false
       is_oracle_gua_allocation_enabled = false

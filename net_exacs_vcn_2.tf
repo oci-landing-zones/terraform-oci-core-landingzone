@@ -23,7 +23,7 @@ locals {
 
   exa_vcn_2 = local.add_exa_vcn2 == true ? {
     "EXA-VCN-2" = {
-      enable_cis_checks                = local.exa_vcn2_cis_checks_enabled
+      enable_cis_checks                = local.vcn_cis_checks_override_allowed ? local.exa_vcn2_cis_checks_enabled : true
       display_name                     = local.exa_vcn2_display_name
       is_ipv6enabled                   = false
       is_oracle_gua_allocation_enabled = false

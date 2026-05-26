@@ -34,6 +34,11 @@ locals {
 
   void = "__VOID__"
 
+  # Whether VCN CIS check overrides are allowed to take effect.
+  # Network rules should only be relaxed when there is a firewall in place to inspect the traffic, such as when using OCI NFW or a Network appliance in the Hub VCN. 
+  # If there is no firewall in place, it is recommended to keep the CIS checks enabled for better security posture.
+  vcn_cis_checks_override_allowed = coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_east_west_entry_point_ocid, local.void) != local.void
+
 }
 
 
