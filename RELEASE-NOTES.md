@@ -92,10 +92,11 @@ The table below summarizes all changes mentioned above. Before upgrading existin
 
 ## Other Updates
 
-1. [Issue 39](https://github.com/oci-landing-zones/terraform-oci-core-landingzone/issues/39) fixed: Jump Host now deploys in the requested region.
-2. [Issue 47](https://github.com/oci-landing-zones/terraform-oci-core-landingzone/issues/47) addressed with enhanced documentation in [VARIABLES.md](./VARIABLES.md), [variables_security.tf](./variables_security.tf) and [schema.yml](./schema.yml).
-3. [Issue 48](https://github.com/oci-landing-zones/terraform-oci-core-landingzone/issues/48) addressed with enhanced documentation in [Deployment Guide](./DEPLOYMENT-GUIDE.md#extending-landing-zone-to-a-new-region) for Extending Core Landing Zone and fixes for deploying Compute instances in requested region.
-4. [Issue 50](https://github.com/oci-landing-zones/terraform-oci-core-landingzone/issues/50) fixed: OSMS policy removed.
+1. Core Landing Zone IAM policies can be augmented using newly added *custom_policy_statements* override variable. The provided statements are put together in a separate policy at the enclosing compartment of the landing zone, and only when the enclosing compartment is not the Root compartment. *Use this with extreme caution as it may introduce security issues if not used properly. Make sure to follow the principle of least privilege when defining custom statements, ensuring to grant only the necessary permissions required for your use case.*
+2. [Issue 39](https://github.com/oci-landing-zones/terraform-oci-core-landingzone/issues/39) fixed: Jump Host now deploys in the requested region.
+3. [Issue 47](https://github.com/oci-landing-zones/terraform-oci-core-landingzone/issues/47) addressed with enhanced documentation in [VARIABLES.md](./VARIABLES.md), [variables_security.tf](./variables_security.tf) and [schema.yml](./schema.yml).
+4. [Issue 48](https://github.com/oci-landing-zones/terraform-oci-core-landingzone/issues/48) addressed with enhanced documentation in [Deployment Guide](./DEPLOYMENT-GUIDE.md#extending-landing-zone-to-a-new-region) for Extending Core Landing Zone and fixes for deploying Compute instances in requested region.
+5. [Issue 50](https://github.com/oci-landing-zones/terraform-oci-core-landingzone/issues/50) fixed: OSMS policy removed.
 
 
 # February 20, 2026 Release Notes - 1.5.5
