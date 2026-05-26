@@ -30,7 +30,7 @@ module "core_lz" {
     # ----- Existing Identity Domain
     # ------------------------------------------------------
     identity_domain_option = "Use Custom Identity Domain" # Designate to Landing Zone that you want to use a pre-existing identity domain.
-    custom_id_domain_ocid = <ocid1.domain.oc1..replace-with-your-identity-domain-ocid> # Replace with your identity domain OCID.
+    custom_id_domain_ocid = "ocid1.domain.oc1..replace-with-your-identity-domain-ocid" # Replace with your identity domain OCID.
     deploy_custom_domain_groups = true # true means groups are deployed. false means group are not deployed. If false, you must provide the existing group names in the variables below.
 
     # Following variables are required if deploy_custom_domain_groups is false. Provide the existing group names in the custom identity domain that you want to use with the landing zone.

@@ -16,7 +16,7 @@
 # Hub VCN with no Firewall Deployment
 # ----------------------------------------------------------------------------------------
 
-module "corelz_nofw" {
+module "core_lz" {
     source = "../../"
     # ------------------------------------------------------
     # ----- Environment
@@ -51,7 +51,7 @@ module "corelz_nofw" {
     bastion_jump_host_flex_shape_cpu      = 2
 
     deploy_bastion_service   = true
-    bastion_service_allowed_cidrs = ["x.x.x.x/x"]
+    bastion_service_allowed_cidrs = ["198.51.100.0/24"]
 
     # --- Routing to Firewall. Uncomment and update the two variables below for the second time execution after the firewall is deployed.
     # hub_vcn_north_south_entry_point_ocid = "replace with the OCID value of the OCI private IP address of the firewall untrust interface."
