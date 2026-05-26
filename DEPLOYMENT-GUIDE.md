@@ -950,21 +950,21 @@ Core Landing Zone can scale from single VCN deployment to large hub-and-spoke de
 
 ### Sample Templates for Networking Deployment Scenarios
 
-| Template | Directory | Primary Scenario | Connectivity Focus |
+| Template name | Template link | Primary Scenario | Connectivity Focus |
 | --- | --- | --- | --- |
-| No networking baseline | [templates/cis-basic](./templates/cis-basic/) | IAM/governance-only Landing Zone | None |
-| Single three-tier VCN (defaults) | [templates/standalone-three-tier-vcn-defaults](./templates/standalone-three-tier-vcn-defaults/) | Reference three-tier deployment | Internet + logging |
-| Single three-tier VCN with ZPR | [templates/standalone-three-tier-vcn-zpr](./templates/standalone-three-tier-vcn-zpr/) | ZPR-enabled tenancy | Internet |
-| Single three-tier VCN (custom) | [templates/standalone-three-tier-vcn-custom](./templates/standalone-three-tier-vcn-custom/) | Custom CIDRs/subnets/bastion | Internet |
-| Three three-tier spokes over DRG | [templates/hub-spoke-with-drg-and-three-tier-vcns](./templates/hub-spoke-with-drg-and-three-tier-vcns/) | Lightweight DRG hub | Inter-VCN |
-| Hub VCN routing-only (new) | [templates/hub-spoke-with-hub-vcn-routing-only](./templates/hub-spoke-with-hub-vcn-routing-only/) | DMZ hub without firewall yet | Pre-stage on-prem CIDRs |
-| Hub VCN + OCI Network Firewall | [templates/hub-spoke-with-hub-vcn-net-firewall](./templates/hub-spoke-with-hub-vcn-net-firewall/) | Managed NGFW | Routed via firewall |
-| Hub VCN + third-party firewall | [templates/hub-spoke-with-hub-vcn-net-appliance](./templates/hub-spoke-with-hub-vcn-net-appliance/) | Fortinet or Palo Alto appliance | Routed via appliances |
-| Hub VCN + Bastion jump host | [templates/hub-spoke-with-hub-vcn-bastion-jump-host](./templates/hub-spoke-with-hub-vcn-bastion-jump-host/) | DMZ with Bastion + jump host | Operator access |
-| Hub VCN + FastConnect | [templates/hub-spoke-with-hub-vcn-fastconnect-virtual-circuit](./templates/hub-spoke-with-hub-vcn-fastconnect-virtual-circuit/) | Dedicated FastConnect peering | On-prem via FC |
-| Hub VCN + IPSec VPN | [templates/hub-spoke-with-hub-vcn-ipsec-vpn](./templates/hub-spoke-with-hub-vcn-ipsec-vpn/) | Site-to-Site VPN | On-prem via VPN |
-| Hub VCN + hybrid FC & IPSec (new) | [templates/hub-spoke-with-hub-vcn-hybrid-connectivity](./templates/hub-spoke-with-hub-vcn-hybrid-connectivity/) | Dual-homed connectivity + OCI NFW | On-prem via FC + VPN |
-| Hub DRG + externally managed VCNs | [templates/externally-managed-vcns](./templates/externally-managed-vcns/) | Attach third-party VCNs or LibreSwan | On-prem + external VCNs |
+| Core Landing Zone Basic | [templates/cis-basic](./templates/cis-basic/) | IAM/governance-only Landing Zone | None |
+| Core Landing Zone Full | [templates/core-lz-full](./templates/core-lz-full/) | Full landing zone reference | Hub/spoke + security services |
+| Core Landing Zone with Standalone Default Three-Tier VCN | [templates/standalone-three-tier-vcn-defaults](./templates/standalone-three-tier-vcn-defaults/) | Reference three-tier deployment | Internet + logging |
+| Core Landing Zone with Standalone Custom Three-Tier VCN | [templates/standalone-three-tier-vcn-custom](./templates/standalone-three-tier-vcn-custom/) | Custom CIDRs/subnets/bastion | Internet |
+| Core Landing Zone with Standalone Three Tier VCN and ZPR | [templates/standalone-three-tier-vcn-zpr](./templates/standalone-three-tier-vcn-zpr/) | ZPR-enabled tenancy | Internet |
+| Core Landing Zone with New DRG and Three Tier VCNs | [templates/hub-spoke-with-new-drg-and-three-tier-vcns](./templates/hub-spoke-with-new-drg-and-three-tier-vcns/) | Lightweight DRG hub | Inter-VCN |
+| Core Landing Zone with No Firewall | [templates/hub-spoke-with-hub-vcn-no-firewall](./templates/hub-spoke-with-hub-vcn-no-firewall/) | DMZ hub without firewall yet | Pre-stage firewall routing |
+| Core Landing Zone with OCI Network Firewall | [templates/hub-spoke-with-hub-vcn-net-firewall](./templates/hub-spoke-with-hub-vcn-net-firewall/) | Managed NGFW | Routed via firewall |
+| Core Landing Zone with Network Firewall Appliance | [templates/hub-spoke-with-hub-vcn-net-appliance](./templates/hub-spoke-with-hub-vcn-net-appliance/) | Fortinet or Palo Alto appliance | Routed via appliances |
+| Core Landing Zone with Existing DRG and FastConnect Virtual Circuit | [templates/hub-spoke-with-existing-drg-and-fastconnect-virtual-circuit](./templates/hub-spoke-with-existing-drg-and-fastconnect-virtual-circuit/) | Dedicated FastConnect peering | On-prem via FC |
+| Core Landing Zone with new DRG and Site to Site IPSec VPN | [templates/hub-spoke-with-new-drg-and-ipsec-vpn](./templates/hub-spoke-with-new-drg-and-ipsec-vpn/) | Site-to-Site VPN | On-prem via VPN |
+| Core Landing Zone with Existing DRG and Externally Managed VCNs | [templates/hub-spoke-with-existing-drg-and-externally-managed-vcns](./templates/hub-spoke-with-existing-drg-and-externally-managed-vcns/) | Attach externally managed VCNs | On-prem + external VCNs |
+| Core Landing Zone with Existing DRG and Custom ExaCS VCN | [templates/hub-spoke-with-existing-drg-and-exa-vcn-custom](./templates/hub-spoke-with-existing-drg-and-exa-vcn-custom/) | Custom Exadata Cloud Service networking | Existing DRG |
 
 ### Template Profiles
 

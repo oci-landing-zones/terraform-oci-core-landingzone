@@ -171,23 +171,21 @@ This module requires Terraform binary version 1.3.0 or greater, as its underlyin
 
 Some deployment scenarios are available under the [templates](./templates/) folder:
 
-- [Groups and Dynamic Groups From a New Identity Domain](./templates/new-identity-domain)
-- [Groups and Dynamic Groups From a Custom Identity Domain](./templates/custom-identity-domain)
-- [No Networking](./templates/cis-basic/)
-- [Single Three-Tier VCN with default settings](./templates/standalone-three-tier-vcn-defaults/)
-- [Single Three-Tier VCN with ZPR enabled](./templates/standalone-three-tier-vcn-zpr/)
-- [Single Three-Tier VCN with custom settings](./templates/standalone-three-tier-vcn-custom/)
-- [Multiple Three-Tier VCNs peered through DRG](./templates/hub-spoke-with-drg-and-three-tier-vcns)
-- [Multiple VCN types peered through a Hub VCN with native Network Firewall](./templates/hub-spoke-with-hub-vcn-net-firewall)
-- [Multiple VCN types peered through a Hub VCN with third party network appliance](./templates/hub-spoke-with-hub-vcn-net-appliance)
-- [Multiple VCN types peered through a Hub VCN with a Bastion Service enabled on a jump host](./templates/hub-spoke-with-hub-vcn-bastion-jump-host)
-- [On-premises connectivity through a Hub VCN with Site-to-Site VPN using IPSec](./templates/hub-spoke-with-hub-vcn-ipsec-vpn)
-- [On-premises connectivity through a Hub VCN with FastConnect virtual circuits](./templates/hub-spoke-with-hub-vcn-fastconnect-virtual-circuit)
-- [Hub DRG including externally managed VCN using IPSec/LibreSwan](./templates/externally-managed-vcns)
-
-Another key deployment scenario of OCI Core Landing Zone is [Zero Trust Landing Zone](https://github.com/oci-landing-zones/terraform-oci-zero-trust-landingzone).
-
-OCI Core Landing Zone offers **OCI Network Firewall** in a Hub VCN for use with Three Tier, Exadata and/or OKE networking.
+- [Core Landing Zone Basic](./templates/cis-basic/)
+- [Core Landing Zone Full](./templates/core-lz-full/)
+- [Core Landing Zone with New Identity Domain](./templates/new-identity-domain/)
+- [Core Landing Zone Custom Identity Domain](./templates/custom-identity-domain/)
+- [Core Landing Zone with Standalone Default Three-Tier VCN](./templates/standalone-three-tier-vcn-defaults/)
+- [Core Landing Zone with Standalone Custom Three-Tier VCN](./templates/standalone-three-tier-vcn-custom/)
+- [Core Landing Zone with Standalone Three Tier VCN and ZPR](./templates/standalone-three-tier-vcn-zpr/)
+- [Core Landing Zone with New DRG and Three Tier VCNs](./templates/hub-spoke-with-new-drg-and-three-tier-vcns/)
+- [Core Landing Zone with No Firewall](./templates/hub-spoke-with-hub-vcn-no-firewall/)
+- [Core Landing Zone with OCI Network Firewall](./templates/hub-spoke-with-hub-vcn-net-firewall/)
+- [Core Landing Zone with Network Firewall Appliance](./templates/hub-spoke-with-hub-vcn-net-appliance/)
+- [Core Landing Zone with new DRG and Site to Site IPSec VPN](./templates/hub-spoke-with-new-drg-and-ipsec-vpn/)
+- [Core Landing Zone with Existing DRG and FastConnect Virtual Circuit](./templates/hub-spoke-with-existing-drg-and-fastconnect-virtual-circuit/)
+- [Core Landing Zone with Existing DRG and Externally Managed VCNs](./templates/hub-spoke-with-existing-drg-and-externally-managed-vcns/)
+- [Core Landing Zone with Existing DRG and Custom ExaCS VCN](./templates/hub-spoke-with-existing-drg-and-exa-vcn-custom/)
 
 
 ## <a name="modules">CIS OCI Foundations Benchmark Modules Collection</a>
