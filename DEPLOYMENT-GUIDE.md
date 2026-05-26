@@ -948,95 +948,25 @@ custom_security_compartment_name  = "my-custom-security-cmp"
 
 ## <a name="networking-4"></a>4.2 Networking
 
-Core Landing Zone can scale from single VCN deployment to large hub-and-spoke deployments that mix application, container (OKE), and database (Exadata) spokes. A Dynamic Routing Gateway (DRG) always provides cross-VCN routing, while an optional DMZ VCN adds centralized inspection, bastion access, or third-party network services. You choose whether to leave the hub as routing-only, insert OCI Native Network Firewall, or deploy marketplace firewalls (Fortinet / Palo Alto). On-premises connectivity can be enabled later (FastConnect, IPSec, or both) without rebuilding spokes because every template exposes `*_onprem_route_enable` toggles.
+Core Landing Zone can scale from single VCN deployment to large hub-and-spoke deployments supporting a mix of traditional three tier, cloud native and Oracle Exadata workloads. A Dynamic Routing Gateway (DRG) always provides cross-VCN routing, while an optional Hub (aka DMZ) VCN adds centralized inspection and bastion access. On-premises connectivity via FastConnect or Site to Site IPSec VCN can also be enabled.
 
 ### Sample Templates for Networking Deployment Scenarios
 
-| Template name | Template link | Primary Scenario | Connectivity Focus |
-| --- | --- | --- | --- |
-| Core Landing Zone Basic | [templates/cis-basic](./templates/cis-basic/) | IAM/governance-only Landing Zone | None |
-| Core Landing Zone Full | [templates/core-lz-full](./templates/core-lz-full/) | Full landing zone reference | Hub/spoke + security services |
-| Core Landing Zone with Standalone Default Three-Tier VCN | [templates/standalone-three-tier-vcn-defaults](./templates/standalone-three-tier-vcn-defaults/) | Reference three-tier deployment | Internet + logging |
-| Core Landing Zone with Standalone Custom Three-Tier VCN | [templates/standalone-three-tier-vcn-custom](./templates/standalone-three-tier-vcn-custom/) | Custom CIDRs/subnets/bastion | Internet |
-| Core Landing Zone with Standalone Three Tier VCN and ZPR | [templates/standalone-three-tier-vcn-zpr](./templates/standalone-three-tier-vcn-zpr/) | ZPR-enabled tenancy | Internet |
-| Core Landing Zone with New DRG and Three Tier VCNs | [templates/hub-spoke-with-new-drg-and-three-tier-vcns](./templates/hub-spoke-with-new-drg-and-three-tier-vcns/) | Lightweight DRG hub | Inter-VCN |
-| Core Landing Zone with No Firewall | [templates/hub-spoke-with-hub-vcn-no-firewall](./templates/hub-spoke-with-hub-vcn-no-firewall/) | DMZ hub without firewall yet | Pre-stage firewall routing |
-| Core Landing Zone with OCI Network Firewall | [templates/hub-spoke-with-hub-vcn-net-firewall](./templates/hub-spoke-with-hub-vcn-net-firewall/) | Managed NGFW | Routed via firewall |
-| Core Landing Zone with Network Firewall Appliance | [templates/hub-spoke-with-hub-vcn-net-appliance](./templates/hub-spoke-with-hub-vcn-net-appliance/) | Fortinet or Palo Alto appliance | Routed via appliances |
-| Core Landing Zone with Existing DRG and FastConnect Virtual Circuit | [templates/hub-spoke-with-existing-drg-and-fastconnect-virtual-circuit](./templates/hub-spoke-with-existing-drg-and-fastconnect-virtual-circuit/) | Dedicated FastConnect peering | On-prem via FC |
-| Core Landing Zone with new DRG and Site to Site IPSec VPN | [templates/hub-spoke-with-new-drg-and-ipsec-vpn](./templates/hub-spoke-with-new-drg-and-ipsec-vpn/) | Site-to-Site VPN | On-prem via VPN |
-| Core Landing Zone with Existing DRG and Externally Managed VCNs | [templates/hub-spoke-with-existing-drg-and-externally-managed-vcns](./templates/hub-spoke-with-existing-drg-and-externally-managed-vcns/) | Attach externally managed VCNs | On-prem + external VCNs |
-| Core Landing Zone with Existing DRG and Custom ExaCS VCN | [templates/hub-spoke-with-existing-drg-and-exa-vcn-custom](./templates/hub-spoke-with-existing-drg-and-exa-vcn-custom/) | Custom Exadata Cloud Service networking | Existing DRG |
-
-### Template Profiles
-
-Each template ships with a `main.tf.template` and a README containing a Deploy-to-OCI button. Summaries below highlight the most important variables and deployment notes:
-
-#### No networking baseline (`templates/cis-basic`)
-- **Use when:** IAM, compartments, notifications, and budgets are needed but networking is managed elsewhere.
-- **Key variables:** `service_label`, `network_admin_email_endpoints`, `security_admin_email_endpoints`.
-- **Deploy:** Rename the template to `main.tf`, fill tenancy credentials, and run `terraform init/plan/apply`, or create an OCI Resource Manager stack from the GitHub ZIP.
-
-#### Single three-tier VCN (defaults) (`templates/standalone-three-tier-vcn-defaults`)
-- **Use when:** You need the reference three-tier VCN with public web, private app/db, logging, and budgets enabled.
-- **Key variables:** `define_net`, `add_tt_vcn1`, `enable_service_connector`, `enable_security_zones`, `create_budget`.
-- **Deploy:** Keep `define_net` and `add_tt_vcn1` enabled, provide region/service label, and run Terraform or the Deploy-to-OCI workflow.
-
-#### Single three-tier VCN with ZPR (`templates/standalone-three-tier-vcn-zpr`)
-- **Use when:** Tenancy-wide Zero Trust Packet Routing must be enforced from day one.
-- **Key variables:** `enable_zpr`, `define_net`, `add_tt_vcn1`.
-- **Deploy:** Same steps as the default template, ensuring ZPR remains true; acknowledge ZPR guardrails in OCI Resource Manager if used.
-
-#### Single three-tier VCN (custom) (`templates/standalone-three-tier-vcn-custom`)
-- **Use when:** You must control CIDRs, subnet names, and bastion exposure.
-- **Key variables:** `tt_vcn1_name`, `tt_vcn1_cidrs`, `tt_vcn1_web/app/db_subnet_*`, `deploy_tt_vcn1_bastion_subnet`, `tt_vcn1_bastion_subnet_allowed_cidrs`.
-- **Deploy:** Update every `tt_vcn1_*` variable to match your standards before running Terraform or launching the stack.
-
-#### Three three-tier spokes using only a DRG hub (`templates/hub-spoke-with-drg-and-three-tier-vcns`)
-- **Use when:** You want a lightweight DRG hub without a DMZ VCN.
-- **Key variables:** `hub_deployment_option = "VCN or on-premises connectivity routing via DRG (DRG will be created)"`, plus `tt_vcn*_cidrs` and `tt_vcn*_attach_to_drg`.
-- **Deploy:** Adjust CIDRs for all three spokes, keep DRG attachment true, and run Terraform/ORM once.
-
-#### Hub VCN routing-only (`templates/hub-spoke-with-hub-vcn-routing-only`)
-- **Use when:** You need the DMZ hub now but will add firewalls later; includes multiple spoke VCNs and bastion service.
-- **Key variables:** `hub_vcn_deploy_net_appliance_option = "Don't deploy any network appliance at this time"`, `enable_cross_vcn_open_nsg`, `onprem_cidrs`, `add_tt_vcn*`, `add_oke_vcn1`, `add_exa_vcn1`, `deploy_bastion_service`.
-- **Deploy:** Provide real CIDRs/OCIDs, run a single Terraform/ORM apply, and capture Hub/DRG outputs for later firewall stacks.
-
-#### Hub VCN with OCI Native Network Firewall (`templates/hub-spoke-with-hub-vcn-net-firewall`)
-- **Use when:** You want a managed Layer 7 firewall with Threat and Traffic logs.
-- **Key variables:** `hub_vcn_deploy_net_appliance_option = "OCI Native Firewall"`, `enable_native_firewall_threat_log`, `enable_native_firewall_traffic_log`, `oci_firewall_ip_ocid`, `oci_nfw_policy_ocid`.
-- **Deploy:** Apply once to create the firewall and capture the `oci_firewall_ip_ocid`. Create/associate your custom policy in OCI Console, set both OCIDs, then run a second apply to push routing through the firewall.
-
-#### Hub VCN with third-party firewall (`templates/hub-spoke-with-hub-vcn-net-appliance`)
-- **Use when:** You need Fortinet FortiGate or Palo Alto VM-Series appliances fronted by NLBs.
-- **Key variables:** `hub_vcn_deploy_net_appliance_option` (Fortinet or Palo Alto), appliance-specific version/shape variables, `net_appliance_public_rsa_key`, plus `hub_vcn_north_south_entry_point_ocid` and `hub_vcn_east_west_entry_point_ocid`.
-- **Deploy:** First apply creates the appliances and outputs `nlb_private_ip_addresses`. Update the two hub entry point OCIDs with those NLB Private IPs and run a second apply.
-
-#### Hub VCN with Bastion service and jump host (`templates/hub-spoke-with-hub-vcn-bastion-jump-host`)
-- **Use when:** Operators need controlled access through OCI Bastion and a hardened jump host in the DMZ.
-- **Key variables:** `deploy_bastion_service`, `deploy_bastion_jump_host`, `bastion_service_allowed_cidrs`, plus hub/spoke CIDRs.
-- **Deploy:** Single apply after setting allowed CIDRs to the operations team’s IP ranges.
-
-#### Hub VCN with FastConnect (`templates/hub-spoke-with-hub-vcn-fastconnect-virtual-circuit`)
-- **Use when:** You want private FastConnect peering.
-- **Key variables:** `on_premises_connection_option = "Create New FastConnect Virtual Circuit"`, `fastconnect_virtual_circuit_*`, `onprem_cidrs`, and each spoke’s `*_onprem_route_enable`.
-- **Deploy:** Supply provider service ID, VLAN, BGP ASN/IPs, then run Terraform/ORM once.
-
-#### Hub VCN with IPSec VPN (`templates/hub-spoke-with-hub-vcn-ipsec-vpn`)
-- **Use when:** You need Site-to-Site VPN only.
-- **Key variables:** `on_premises_connection_option = "Create New IPSec VPN"`, `cpe_ip_address`, `cpe_device_shape_vendor`, `ipsec_tunnel*_customer_interface_ip`, `ipsec_tunnel*_oracle_interface_ip`, `ipsec_tunnel*_ike_version`, and `*_onprem_route_enable`.
-- **Deploy:** Populate tunnel IPs/ASN/secrets before applying.
-
-#### Hub VCN with hybrid FastConnect + IPSec (`templates/hub-spoke-with-hub-vcn-hybrid-connectivity`)
-- **Use when:** You need both FastConnect and IPSec simultaneously with OCI Native Network Firewall enforcement and logging.
-- **Key variables:** Combination of FastConnect/IPSec variables plus `allowed_onprem_cidrs_to_fw_mgmt_interface`, `fw_mgmt_interface_ports`, and the firewall OCIDs used during the second apply.
-- **Deploy:** Apply once to provision connectivity and firewall, capture the firewall IP and your policy OCID, then apply again to finish routing.
-
-#### Hub DRG including externally managed VCNs (`templates/externally-managed-vcns`)
-- **Use when:** You must attach third-party (or partner) VCNs to the Landing Zone DRG while letting them use Landing Zone’s on-prem connectivity.
-- **Key variables:** `workloadvcn_ocids_public_access`, `workloadvcn_ocids_onprem_access`, `on_premises_connection_option`, `cpe_*`, `ipsec_*`, and `tt_vcn1_onprem_route_enable`.
-- **Deploy:** Provide the external VCN OCIDs and IPSec/FastConnect values, then run Terraform/ORM once.
-
+| Template name | Template link | Primary Scenario |
+| --- | --- | --- |
+| Core Landing Zone Basic | [templates/cis-basic](./templates/cis-basic/) | IAM, governance, notifications, and budgets without Core LZ-managed networking. Use when VCNs and connectivity are managed outside the landing zone. |
+| Core Landing Zone Full | [templates/core-lz-full](./templates/core-lz-full/) | Complete reference landing zone with hub-and-spoke networking, security services, governance, optional workload VCNs, and optional on-premises connectivity. |
+| Core Landing Zone with Standalone Default Three-Tier VCN | [templates/standalone-three-tier-vcn-defaults](./templates/standalone-three-tier-vcn-defaults/) | Single reference three-tier VCN with public web and private app/database tiers, internet access, flow logs, and default landing-zone guardrails. |
+| Core Landing Zone with Standalone Custom Three-Tier VCN | [templates/standalone-three-tier-vcn-custom](./templates/standalone-three-tier-vcn-custom/) | Single three-tier VCN where CIDRs, subnet names, subnet exposure, and bastion settings are explicitly customized. |
+| Core Landing Zone with Standalone Three Tier VCN and ZPR | [templates/standalone-three-tier-vcn-zpr](./templates/standalone-three-tier-vcn-zpr/) | Single three-tier VCN with Zero Trust Packet Routing enabled from the first deployment. |
+| Core Landing Zone with New DRG and Three Tier VCNs | [templates/hub-spoke-with-new-drg-and-three-tier-vcns](./templates/hub-spoke-with-new-drg-and-three-tier-vcns/) | Multiple three-tier spokes attached to a newly created DRG, using DRG routing for cross-VCN connectivity without a hub VCN. |
+| Core Landing Zone with No Firewall | [templates/hub-spoke-with-hub-vcn-no-firewall](./templates/hub-spoke-with-hub-vcn-no-firewall/) | Hub VCN and DRG deployment without an active firewall appliance, useful for staging a DMZ before firewall insertion. |
+| Core Landing Zone with OCI Network Firewall | [templates/hub-spoke-with-hub-vcn-net-firewall](./templates/hub-spoke-with-hub-vcn-net-firewall/) | Hub VCN with OCI Network Firewall, threat and traffic logs, and routing that can be completed after the firewall private IP is known. |
+| Core Landing Zone with Network Firewall Appliance | [templates/hub-spoke-with-hub-vcn-net-appliance](./templates/hub-spoke-with-hub-vcn-net-appliance/) | Hub VCN with Fortinet FortiGate or Palo Alto VM-Series appliances fronted by network load balancers for north-south and east-west inspection. |
+| Core Landing Zone with Existing DRG and FastConnect Virtual Circuit | [templates/hub-spoke-with-existing-drg-and-fastconnect-virtual-circuit](./templates/hub-spoke-with-existing-drg-and-fastconnect-virtual-circuit/) | Reuse an existing DRG and add a FastConnect virtual circuit for dedicated on-premises connectivity. |
+| Core Landing Zone with new DRG and Site to Site IPSec VPN | [templates/hub-spoke-with-new-drg-and-ipsec-vpn](./templates/hub-spoke-with-new-drg-and-ipsec-vpn/) | Create a new DRG, CPE, and IPSec VPN tunnels for site-to-site on-premises connectivity. |
+| Core Landing Zone with Existing DRG and Externally Managed VCNs | [templates/hub-spoke-with-existing-drg-and-externally-managed-vcns](./templates/hub-spoke-with-existing-drg-and-externally-managed-vcns/) | Reuse an existing DRG and route externally managed workload VCNs through landing-zone public or on-premises access paths. |
+| Core Landing Zone with Existing DRG and Custom ExaCS VCN | [templates/hub-spoke-with-existing-drg-and-exa-vcn-custom](./templates/hub-spoke-with-existing-drg-and-exa-vcn-custom/) | Reuse an existing DRG with custom Exadata Cloud Service VCN CIDRs, subnet settings, and DRG attachment behavior. |
 
 ## <a name="governance-4"></a>4.3 Governance
 ### Operational Monitoring
