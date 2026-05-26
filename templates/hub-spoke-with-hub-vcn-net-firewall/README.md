@@ -1,4 +1,4 @@
-# Core Landing Zone with Hub & Spoke Topology, Including Native OCI Network Firewall Template
+# Core Landing Zone with OCI Network Firewall
 
 This template shows how to deploy a CIS compliant landing zone using [OCI Core Landing Zone](../../) configured with a Hub & Spoke networking topology including OCI Network Firewall. It deploys Network Firewall in the Hub VCN, a Three Tier VCN, an Exadata VCN and an OKE VCN which are peered through the DRG. The DRG is configured to route traffic across all VCNs.
 
@@ -15,28 +15,28 @@ This template has the following parameters set:
 
 | Variable Name | Description | Value |
 |---------------|-------------|-------|
-| service\_label | A unique identifier to prefix the resources | ocinetfw |
-| define\_net | Check to define networking resources. By default, the Landing Zone does NOT deploy any networks. | true |
-| hub\_deployment\_option | The hub deployment option. In this case, a DRG is deployed to act as the hub in the Hub/Spoke topology. | "VCN or on-premises connectivity routing through DMZ VCN with Network Virtual Appliance (DRG and DMZ VCN will be created)" |
-| hub\_vcn\_cidrs | Hub VCN list of CIDR Blocks | ["192.168.0.0/26"]|
-| hub\_vcn\_deploy\_net\_appliance\_option | Choose one of the available network appliance options for deploying in the Hub VCN. | OCI Native Firewall |
-| enable\_native\_firewall\_threat\_log | Enable OCI Native Firewall Threat Log. | true |
-| enable\_native\_firewall\_traffic\_log | Enable OCI Native Firewall Traffic Log. | true |
-| add\_tt\_vcn1 | When true, deploys three-tier VCN 1, with three subnets: web (public by default), application (private) and database (private). An optional subnet (private by default) for bastion deployment is also available | true |
-| tt\_vcn1\_cidrs | Three-tier VCN 1 CIDR blocks. | ["10.0.0.0/20"] |
-| tt\_vcn1\_attach\_to\_drg | When true, attaches three-tier VCN 1 to the DRG | true |
-| add\_exa\_vcn1 | VCN configured for Exadata Cloud Service deployment. | true |
-| exa\_vcn1\_cidrs | Exa VCN 1 CIDR blocks. | ["172.16.0.0/20"] |
-| exa\_vcn1\_attach\_to\_drg | When true, the VCN is attached to a DRG, enabling cross-vcn traffic routing | true |
-| add\_oke\_vcn1 | Add OKE VCN | true |
-| oke\_vcn1\_cni\_type | OKE CNI Type | "Native" |
-| oke\_vcn1\_cidrs | OKE VCN 1 CIDR Block. | ["10.3.0.0/16"]|
-| oke\_vcn1\_attach\_to\_drg | Attach this VCN to DRG (Dynamic Routing Gateway) | true |
-| network\_admin\_email\_endpoints | List of email addresses that receive notifications for networking related events. | ["email.address@example.com"] |
-| security\_admin\_email\_endpoints | List of email addresses that receive notifications for security related events. | ["email.address@example.com"] |
+| *service_label* | A unique identifier to prefix the resources | "ocinetfw" |
+| *define_net* | Check to define networking resources. By default, the Landing Zone does NOT deploy any networks. | true |
+| *hub_deployment_option* | The hub deployment option. In this case, a DRG is deployed to act as the hub in the Hub/Spoke topology. | "VCN or on-premises connectivity routing through DMZ VCN with Network Virtual Appliance (DRG and DMZ VCN will be created)" |
+| *hub_vcn_cidrs* | Hub VCN list of CIDR Blocks | ["192.168.0.0/26"] |
+| *hub_vcn_deploy_net_appliance_option* | Choose one of the available network appliance options for deploying in the Hub VCN. | OCI Native Firewall |
+| *enable_native_firewall_threat_log* | Enable OCI Native Firewall Threat Log. | true |
+| *enable_native_firewall_traffic_log* | Enable OCI Native Firewall Traffic Log. | true |
+| *add_tt_vcn1* | When true, deploys three-tier VCN 1, with three subnets: web (public by default), application (private) and database (private). An optional subnet (private by default) for bastion deployment is also available | true |
+| *tt_vcn1_cidrs* | Three-tier VCN 1 CIDR blocks. | ["10.0.0.0/20"] |
+| *tt_vcn1_attach_to_drg* | When true, attaches three-tier VCN 1 to the DRG | true |
+| *add_exa_vcn1* | VCN configured for Exadata Cloud Service deployment. | true |
+| *exa_vcn1_cidrs* | Exa VCN 1 CIDR blocks. | ["172.16.0.0/20"] |
+| *exa_vcn1_attach_to_drg* | When true, the VCN is attached to a DRG, enabling cross-vcn traffic routing | true |
+| *add_oke_vcn1* | Add OKE VCN | true |
+| *oke_vcn1_cni_type* | OKE CNI Type | "Native" |
+| *oke_vcn1_cidrs* | OKE VCN 1 CIDR Block. | ["10.3.0.0/16"] |
+| *oke_vcn1_attach_to_drg* | Attach this VCN to DRG (Dynamic Routing Gateway) | true |
+| *network_admin_email_endpoints* | List of email addresses that receive notifications for networking related events. | ["email.address@example.com"] |
+| *security_admin_email_endpoints* | List of email addresses that receive notifications for security related events. | ["email.address@example.com"] |
 | **Used during second terraform run**: | | |
-| oci\_nfw\_ip\_ocid | OCI Native Firewall Forwarding IP OCID. | ["ocid1.privateip.oc1.phx.abuwclj...goq"] |
-| oci\_nfw\_policy\_ocid | User created OCI Network Firewall policy OCID | ["ocid1.networkfirewallpolicy.oc1.phx.amaaaa...gmm"] |
+| *oci_nfw_ip_ocid* | OCI Native Firewall Forwarding IP OCID. | ["ocid1.privateip.oc1.phx.abuwclj...goq"] |
+| *oci_nfw_policy_ocid* | User created OCI Network Firewall policy OCID | ["ocid1.networkfirewallpolicy.oc1.phx.amaaaa...gmm"] |
 
 For a detailed description of all variables that can be used, see the [Variables](../../VARIABLES.md) documentation.
 
@@ -46,7 +46,7 @@ This template can be deployed using OCI Resource Manager Service (RMS) or Terraf
 
 By clicking the button below, you are redirected to an OCI RMS Stack with variables pre-assigned for deployment.
 
-[![Deploy_To_OCI](../../images/DeployToOCI.svg)](https://cloud.oracle.com/resourcemanager/stacks/create?zipUrl=https://github.com/oci-landing-zones/terraform-oci-core-landingzone/archive/refs/heads/main.zip&zipUrlVariables={"service_label":"ocinetfw","define_net":true,"hub_deployment_option":"VCN%20or%20on-premises%20connectivity%20routing%20through%20DMZ%20VCN%20with%20Network%20Virtual%20Appliance%20%28DRG%20and%20DMZ%20VCN%20will%20be%20created%29","hub_vcn_cidrs":["192.168.0.0/26"],"hub_vcn_deploy_net_appliance_option":"OCI%20Native%20Firewall","enable_native_firewall_threat_log":true,"enable_native_firewall_traffic_log":true,"add_tt_vcn1":true,"tt_vcn1_cidrs":["10.0.0.0/20"],"tt_vcn1_attach_to_drg":true,"add_exa_vcn1":true,"exa_vcn1_cidrs":["172.16.0.0/20"],"exa_vcn1_attach_to_drg":true,"add_oke_vcn1":true,"oke_vcn1_cni_type":"Native","oke_vcn1_cidrs":["10.3.0.0/16"],"oke_vcn1_attach_to_drg":true,"network_admin_email_endpoints":["email.address@example.com"],"security_admin_email_endpoints":["email.address@example.com"]})
+[![Deploy_To_OCI](../../images/DeployToOCI.svg)](https://cloud.oracle.com/resourcemanager/stacks/create?zipUrl=https://github.com/oci-landing-zones/terraform-oci-core-landingzone/archive/refs/heads/release-1.6.0.zip&zipUrlVariables={"service_label":"ocinetfw","define_net":true,"hub_deployment_option":"VCN%20or%20on-premises%20connectivity%20routing%20through%20DMZ%20VCN%20with%20Network%20Virtual%20Appliance%20%28DRG%20and%20DMZ%20VCN%20will%20be%20created%29","hub_vcn_cidrs":["192.168.0.0/26"],"hub_vcn_deploy_net_appliance_option":"OCI%20Native%20Firewall","enable_native_firewall_threat_log":true,"enable_native_firewall_traffic_log":true,"add_tt_vcn1":true,"tt_vcn1_cidrs":["10.0.0.0/20"],"tt_vcn1_attach_to_drg":true,"add_exa_vcn1":true,"exa_vcn1_cidrs":["172.16.0.0/20"],"exa_vcn1_attach_to_drg":true,"add_oke_vcn1":true,"oke_vcn1_cni_type":"Native","oke_vcn1_cidrs":["10.3.0.0/16"],"oke_vcn1_attach_to_drg":true,"network_admin_email_endpoints":["email.address@example.com"],"security_admin_email_endpoints":["email.address@example.com"]})
 
 You are required to review/adjust the following variable settings:
 

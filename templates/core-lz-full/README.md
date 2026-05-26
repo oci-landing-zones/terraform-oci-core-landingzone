@@ -1,4 +1,4 @@
-# Core Landing Zone Full Template
+# Core Landing Zone Full
 
 This template shows how to deploy an [OCI Core Landing Zone](../../) configuration with a full option showcase. It enables the main IAM, governance, security, observability, and networking options in one verbose template, with a practical default path enabled and alternate paths left commented in *main.tf.template*.
 
