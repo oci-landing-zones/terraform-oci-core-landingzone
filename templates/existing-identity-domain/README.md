@@ -27,7 +27,7 @@ This template can be deployed using OCI Resource Manager Service (RMS) or Terraf
 
 By clicking the button below, you are redirected to an OCI RMS Stack with variables pre-assigned for deployment. 
 
-[![Deploy_To_OCI](../../images/DeployToOCI.svg)](https://cloud.oracle.com/resourcemanager/stacks/create?zipUrl=https://github.com/oci-landing-zones/terraform-oci-core-landingzone/archive/refs/heads/release-1.6.0.zip&zipUrlVariables={"service_label":"existdomain","network_admin_email_endpoints":["email.address@example.com"],"security_admin_email_endpoints":["email.address@example.com"],"identity_domain_option":"Use%20Custom%20Identity%20Domain","custom_id_domain_ocid":"ocid1.domain.oc1..replace-with-your-identity-domain-ocid","deploy_custom_domain_groups":true,"customize_iam":true})
+[![Deploy_To_OCI](../../images/DeployToOCI.svg)](https://cloud.oracle.com/resourcemanager/stacks/create?zipUrl=https://github.com/oci-landing-zones/terraform-oci-core-landingzone/archive/refs/heads/release-1.6.0.zip&zipUrlVariables={"service_label":"existdomain","customize_iam":true,"identity_domain_option":"Use%20Custom%20Identity%20Domain","custom_id_domain_ocid":"ocid1.domain.oc1..replace-with-your-identity-domain-ocid","deploy_custom_domain_groups":true,"network_admin_email_endpoints":["email.address@example.com"],"security_admin_email_endpoints":["email.address@example.com"]})
 
 You are required to review/adjust the following variable settings:
  - Make sure to pick an OCI region for deployment.
