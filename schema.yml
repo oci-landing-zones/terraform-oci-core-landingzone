@@ -1206,30 +1206,6 @@ variables:
         - not:
             - deploy_custom_domain_groups
 
-  # deploy_id_domain:
-  #   type: boolean
-  #   title: "Deploy a non-default Identity Domain?"
-  #   description: "Your tenancy already has a default Identity Domain. Click for deploying a non-default Identity Domain in the enclosing compartment. See <a href=\"https://docs.oracle.com/en-us/iaas/Content/Identity/usingidentitydomains/oci-iam-concepts.htm\">IAM Technologies</a> for identity domains concepts."
-  #   default: false
-
-  # id_domain_name:
-  #   type: string
-  #   title: "Identity Domain Name"
-  #   description: "The Identity Domain name to create. If not set, a default name is provided."
-  #   required: false
-  #   visible: deploy_id_domain
-
-  # id_domain_type:
-  #   type: enum
-  #   title: "Identity Domain Type"
-  #   description: "The Identity Domain type. See <a href=\"https://docs.oracle.com/en-us/iaas/Content/Identity/sku/overview.htm#overview\">IAM Identity Domain Types</a> for details."
-  #   required: false
-  #   enum:
-  #     - "Free"
-  #     - "Premium"
-  #     - "External User"
-  #   visible: deploy_id_domain  
-
   groups_options:
     type: enum
     title: "Deploy New Groups?"

@@ -91,16 +91,6 @@ variable "custom_exainfra_compartment_name" {
 # ------------------------------------------------------
 # ----- IAM - Identity Domains
 #-------------------------------------------------------
-//variable "use_custom_id_domain" {
-//  type        = bool
-//  default     = false
-//  description = "Whether to use an existing identity domain with groups and dynamic groups to grant landing zone IAM policies. If false, groups and dynamic groups from the Default identity domain are utilized."
-//}
-# variable "custom_id_domain_name" {
-#   type        = string
-#   default     = null
-#   description = "The existing identity domain name."
-# }
 variable "custom_id_domain_compartment_ocid" {
   type        = string
   default     = null
