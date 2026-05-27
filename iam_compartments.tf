@@ -147,8 +147,6 @@ locals {
 
   lz_default_enclosed_compartments = merge(local.network_cmp, local.security_cmp, local.app_cmp, local.database_cmp, local.exainfra_cmp)
 
-  additional_enclosed_compartments = {}
-
   all_enclosed_compartments = merge(local.lz_default_enclosed_compartments, local.additional_enclosed_compartments)
   #------------------------------------------------------------------------
   #----- Enclosing compartment configuration definition. Input to module.
