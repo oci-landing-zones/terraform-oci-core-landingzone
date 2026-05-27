@@ -653,24 +653,26 @@ Landing Zone can provision connectivity to on-premises networks through FastConn
 
 ### Advanced Networking Scenarios
 
-Core Landing Zone supports many networking scenarios through its global variables, as detailed earlier in this section. When workloads demand even finer-grained routing, security list, or governance postures, you can redefine the local variables in *locals_overrides.tf* inside a *\*_override.tf* file (see provided sample *net_override.tf*). These overrides unlock the following scenarios:
+Core Landing Zone supports many networking scenarios through its global variables, as detailed earlier in this section. When workloads demand even finer-grained routing, security list, or governance postures, you can redefine the existing local variables in [locals_overrides.tf](./locals_overrides.tf) inside a *\*_override.tf* file (see provided sample [net_override.tf](./net_override.tf)). These overrides unlock the following scenarios:
+
+VCN CIS check overrides only take effect when traffic inspection is in place. Core Landing Zone allows these overrides when *oci_nfw_ip_ocid* is provided, or when both *hub_vcn_east_west_entry_point_ocid* and *hub_vcn_north_south_entry_point_ocid* are provided for a third-party network appliance. Use these overrides with extreme caution, ensuring custom NSG and security list rules do not expose sensitive ports to the Internet.
 
 #### Hub VCN Integration with SD-WAN
 
 - Toggle *hub_vcn_outdoor_subnet_private* to expose the outdoor subnet publicly for SD-WAN edge devices.
 - Use *hub_vcn_outdoor_allowed_public_cidrs* to narrowly define which CIDRs may reach the public outdoor subnet.
-- Replace the default security lists on outdoor and indoor subnets via *hub_vcn_outdoor_subnet_security_list* and *hub_vcn_indoor_subnet_security_list*.
-- Relax governance by toggling *hub_vcn_cis_checks_enabled*, if a deviation from CIS networking guardrails is absolutely required. **Note that this override only becomes effective when either *oci_nfw_ip_ocid* or *hub_vcn_east_west_entry_point_ocid* are provided, i.e., when traffic is directed to a firewall. Use it with extreme caution, ensuring your custom network security rules (in NSGs and security lists) do not expose sensitive ports to Internet**.
+- Replace Hub VCN subnet security lists via *hub_vcn_web_subnet_security_list*, *hub_vcn_outdoor_subnet_security_list*, *hub_vcn_indoor_subnet_security_list*, *hub_vcn_mgmt_subnet_security_list*, and *hub_vcn_jumphost_subnet_security_list*.
+- Relax governance by toggling *hub_vcn_cis_checks_enabled*, if a deviation from CIS networking guardrails is absolutely required and the firewall-gating condition above is met.
 
 #### Three-tier Spokes with Bespoke East-West Controls
 
-The three-tier spoke security list, CIS, and intra-VCN routing settings are Terraform local overrides. Define them in a *\*_override.tf* file, using the provided *net_override.tf* sample as the starting point, so that the base Landing Zone files can still be upgraded safely.
+The three-tier spoke security list, CIS guardrails, and intra-VCN routing settings are Terraform local overrides. Define them in the provided [net_override.tf](./net_override.tf) sample as the starting point, so that the base Landing Zone files can still be upgraded safely.
 
-- Override any of the web, app, or database subnet security lists per VCN (*tt_vcn\*_web_subnet_security_list*, *tt_vcn\*_app_subnet_security_list*, *tt_vcn\*_db_subnet_security_list*) to align with workload-specific port matrices or allow all ingress/egress traffic in the VCNs, delegating the fine-grained controls to a firewall.
+- Override any of the web, app, database, or bastion subnet security lists per VCN (*tt_vcn\*_web_subnet_security_list*, *tt_vcn\*_app_subnet_security_list*, *tt_vcn\*_db_subnet_security_list*, *tt_vcn\*_bastion_subnet_security_list*) to align with workload-specific port matrices or allow all ingress/egress traffic in the VCNs, delegating the fine-grained controls to a firewall.
 - Force every intra-VCN flow through the DRG for centralized inspection by enabling *tt_vcn\*_enable_intra_vcn_drg_route*, which is useful when a Hub firewall must see even subnet-to-subnet traffic.
-- Relax governance by toggling *tt_vcn\*_cis_checks_enabled*, if a deviation from CIS networking guardrails is absolutely required. This is common when VCN security rules are open and control is enforced by a firewall. **Note that this override only becomes effective when either *oci_nfw_ip_ocid* or *hub_vcn_east_west_entry_point_ocid* are provided, i.e., when traffic is directed to a firewall. Use it with extreme caution, ensuring your custom network security rules (in NSGs and security lists) do not expose sensitive ports to Internet**.
+- Relax governance by toggling *tt_vcn\*_cis_checks_enabled*, if a deviation from CIS networking guardrails is absolutely required and the firewall-gating condition above is met.
 
-The following *net_override.tf* pattern replaces the web, app, and database subnet security lists for *TT-VCN-1*, and routes intra-VCN traffic through the DRG:
+The following *net_override.tf* pattern replaces the web, app, database, and bastion subnet security lists for *TT-VCN-1*, and routes intra-VCN traffic through the DRG:
 
 ```hcl
 locals {
@@ -692,6 +694,12 @@ locals {
     egress_rules  = local.security_lists_default_egress_rules
   }
 
+  tt_vcn1_bastion_subnet_security_list = {
+    display_name  = "bastion-subnet-security-list"
+    ingress_rules = local.security_lists_default_ingress_rules
+    egress_rules  = local.security_lists_default_egress_rules
+  }
+
   tt_vcn1_enable_intra_vcn_drg_route = true
 }
 ```
@@ -700,11 +708,11 @@ Use the same pattern for *TT-VCN-2* and *TT-VCN-3* by replacing the prefix with 
 
 #### OKE Spokes with Bespoke East-West Controls
 
-The OKE spoke security list, CIS, and intra-VCN routing settings are Terraform local overrides. Define them in a *\*_override.tf* file, using the provided *net_override.tf* sample as the starting point, so that the base Landing Zone files can still be upgraded safely.
+The OKE spoke security list, CIS guardrails, and intra-VCN routing settings are Terraform local overrides. Define them in the provided [net_override.tf](./net_override.tf) sample as the starting point, so that the base Landing Zone files can still be upgraded safely.
 
 - Override any of the api, workers, pods, services, mgmt, or database subnet security lists per VCN (*oke_vcn\*_api_subnet_security_list*, *oke_vcn\*_workers_subnet_security_list*, *oke_vcn\*_pods_subnet_security_list*, *oke_vcn\*_services_subnet_security_list*, *oke_vcn\*_mgmt_subnet_security_list*, *oke_vcn\*_db_subnet_security_list*) to align with workload-specific port matrices or allow all ingress/egress traffic in the VCNs, delegating the fine-grained controls to a firewall.
 - Force every intra-VCN flow through the DRG for centralized inspection by enabling *oke_vcn\*_enable_intra_vcn_drg_route*, which is useful when a Hub firewall must see even subnet-to-subnet traffic.
-- Relax governance by toggling *oke_vcn\*_cis_checks_enabled*, if a deviation from CIS networking guardrails is absolutely required. This is common when VCN security rules are open and control is enforced by a firewall. **Note that this override only becomes effective when either *oci_nfw_ip_ocid* or *hub_vcn_east_west_entry_point_ocid* are provided, i.e., when traffic is directed to a firewall. Use it with extreme caution, ensuring your custom network security rules (in NSGs and security lists) do not expose sensitive ports to Internet**.
+- Relax governance by toggling *oke_vcn\*_cis_checks_enabled*, if a deviation from CIS networking guardrails is absolutely required and the firewall-gating condition above is met.
 
 The following *net_override.tf* pattern replaces the API, workers, pods, services, management, and database subnet security lists for *OKE-VCN-1*, and routes intra-VCN traffic through the DRG:
 
@@ -754,13 +762,12 @@ Use the same pattern for *OKE-VCN-2* and *OKE-VCN-3* by replacing the prefix wit
 
 #### Exadata Cloud Service Spokes with Bespoke East-West Controls
 
-The Exadata Cloud Service (ExaCS) spoke security list, CIS, and intra-VCN routing settings are Terraform local overrides. Define them in a *\*_override.tf* file, using the provided *net_override.tf* sample as the starting point, so that the base Landing Zone files can still be upgraded safely.
+The Exadata Cloud Service (ExaCS) spoke security list, CIS guardrails, and intra-VCN routing settings are Terraform local overrides. Define them in the provided [net_override.tf](./net_override.tf) sample as the starting point, so that the base Landing Zone files can still be upgraded safely.
 
 - Override Exadata client, backup, or integration subnet security lists per VCN (*exa_vcn\*_client_subnet_security_list*, *exa_vcn\*_backup_subnet_security_list*, *exa_vcn\*_integration_subnet_security_list*) to align with workload-specific routing inspection patterns or to delegate fine-grained subnet controls to a firewall. These overrides are available for *EXA-VCN-1*, *EXA-VCN-2*, and *EXA-VCN-3*.
-- Custom Exadata subnet security lists are applied when the Exadata spoke is attached to the DRG in a Hub VCN topology. In standalone or DRG-as-hub deployments, the default Exadata security list behavior is preserved.
-- Backup subnet security list overrides are only used when the matching *add_exa_vcn\*_backup_subnet* toggle is enabled. Integration subnet security list overrides are only used when the matching *add_exa_vcn\*_integration_subnet* toggle is enabled.
+- The client subnet override replaces the default client subnet security list whenever the Exadata VCN is deployed. Backup and integration subnet overrides are only used when the matching *add_exa_vcn\*_backup_subnet* or *add_exa_vcn\*_integration_subnet* toggle is enabled.
 - Force client-to-integration and integration-to-client flows through the DRG for centralized inspection by enabling *exa_vcn\*_enable_intra_vcn_drg_route*. This only adds the client and integration subnet route rules when the Exadata VCN is attached to the DRG, and it is most useful when a Hub firewall must inspect traffic between those two Exadata subnets.
-- Relax governance by toggling *exa_vcn\*_cis_checks_enabled*, if a deviation from CIS networking guardrails is absolutely required. This is common when Exadata subnet security rules are intentionally opened and control is enforced by a firewall. **Note that this override only becomes effective when either *oci_nfw_ip_ocid* or *hub_vcn_east_west_entry_point_ocid* are provided, i.e., when traffic is directed to a firewall. Use it with extreme caution, ensuring your custom network security rules (in NSGs and security lists) do not expose sensitive ports to Internet**.
+- Relax governance by toggling *exa_vcn\*_cis_checks_enabled*, if a deviation from CIS networking guardrails is absolutely required and the firewall-gating condition above is met.
 
 The following *net_override.tf* pattern replaces the client, backup, and integration subnet security lists for *EXA-VCN-1*, and routes client/integration subnet traffic through the DRG:
 

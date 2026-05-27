@@ -44,7 +44,7 @@ locals {
             ipv6cidr_blocks           = []
             prohibit_internet_ingress = false
             route_table_key           = "WEB-SUBNET-ROUTE-TABLE"
-            # security_list_keys        = ["HUB-VCN-SL"]
+            security_list_keys        = local.hub_vcn_web_subnet_security_list != null ? ["WEB-SUB-SL"] : []
           }
         },
         local.chosen_firewall_option != "OCINFW" ? {
@@ -99,7 +99,7 @@ locals {
 
       security_lists = merge(
         local.chosen_firewall_option != "OCINFW" ? {
-          "MGMT-SUB-SL" = {
+          "MGMT-SUB-SL" = coalesce(local.hub_vcn_mgmt_subnet_security_list, {
             display_name = "mgmt-subnet-security-list"
             ingress_rules = [
               {
@@ -123,10 +123,10 @@ locals {
                 dst_port_max = 443
               }
             ]
-          }
+          })
         } : {},
         var.add_hub_vcn_jumphost_subnet == true ? {
-          "JUMPHOST-SUB-SL" = {
+          "JUMPHOST-SUB-SL" = coalesce(local.hub_vcn_jumphost_subnet_security_list, {
             display_name = "jumphost-subnet-security-list"
             ingress_rules = [
               {
@@ -150,9 +150,12 @@ locals {
                 dst_port_max = 22
               }
             ]
-          }
+          })
         } : {},
         # Security lists overrides
+        local.hub_vcn_web_subnet_security_list != null ? {
+          "WEB-SUB-SL" = local.hub_vcn_web_subnet_security_list
+        } : {},
         local.hub_vcn_outdoor_subnet_security_list != null ? {
           "OUTDOOR-SUB-SL" = local.hub_vcn_outdoor_subnet_security_list
         } : {},

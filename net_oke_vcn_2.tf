@@ -49,7 +49,7 @@ locals {
             ipv6cidr_blocks           = []
             prohibit_internet_ingress = true
             route_table_key           = "OKE-VCN-2-API-SUBNET-ROUTE-TABLE"
-            security_list_keys        = local.oke_vcn2_api_subnet_security_list != null && (local.hub_with_vcn == true && var.oke_vcn2_attach_to_drg == true) ? ["CUSTOM-OKE-VCN-2-API-SUBNET-SL"] : []
+            security_list_keys        = local.oke_vcn2_api_subnet_security_list != null ? ["OKE-VCN-2-API-SUBNET-SL"] : []
           }
         },
         {
@@ -61,7 +61,7 @@ locals {
             ipv6cidr_blocks           = []
             prohibit_internet_ingress = true
             route_table_key           = "OKE-VCN-2-WORKERS-SUBNET-ROUTE-TABLE"
-            security_list_keys        = local.oke_vcn2_workers_subnet_security_list != null && (local.hub_with_vcn == true && var.oke_vcn2_attach_to_drg == true) ? ["CUSTOM-OKE-VCN-2-WORKERS-SUBNET-SL"] : ["OKE-VCN-2-WORKERS-SUBNET-SL"]
+            security_list_keys        = ["OKE-VCN-2-WORKERS-SUBNET-SL"]
           }
         },
         {
@@ -73,7 +73,7 @@ locals {
             ipv6cidr_blocks           = []
             prohibit_internet_ingress = var.oke_vcn2_services_subnet_is_private
             route_table_key           = "OKE-VCN-2-SERVICES-SUBNET-ROUTE-TABLE"
-            security_list_keys        = local.oke_vcn2_services_subnet_security_list != null && (local.hub_with_vcn == true && var.oke_vcn2_attach_to_drg == true) ? ["CUSTOM-OKE-VCN-2-SERVICES-SUBNET-SL"] : ["OKE-VCN-2-SERVICES-SUBNET-SL"]
+            security_list_keys        = ["OKE-VCN-2-SERVICES-SUBNET-SL"]
           }
         },
         var.add_oke_vcn2_mgmt_subnet ? {
@@ -85,7 +85,7 @@ locals {
             ipv6cidr_blocks           = []
             prohibit_internet_ingress = true
             route_table_key           = "OKE-VCN-2-MGMT-SUBNET-ROUTE-TABLE"
-            security_list_keys        = local.oke_vcn2_mgmt_subnet_security_list != null && var.add_oke_vcn2_mgmt_subnet && (local.hub_with_vcn == true && var.oke_vcn2_attach_to_drg == true) ? ["CUSTOM-OKE-VCN-2-MGMT-SUBNET-SL"] : ["OKE-VCN-2-MGMT-SUBNET-SL"]
+            security_list_keys        = ["OKE-VCN-2-MGMT-SUBNET-SL"]
           }
         } : {},
         var.add_oke_vcn2_db_subnet ? {
@@ -97,7 +97,7 @@ locals {
             ipv6cidr_blocks           = []
             prohibit_internet_ingress = true
             route_table_key           = "OKE-VCN-2-DB-SUBNET-ROUTE-TABLE"
-            security_list_keys        = local.oke_vcn2_db_subnet_security_list != null && var.add_oke_vcn2_db_subnet && (local.hub_with_vcn == true && var.oke_vcn2_attach_to_drg == true) ? ["CUSTOM-OKE-VCN-2-DB-SUBNET-SL"] : ["OKE-VCN-2-DB-SUBNET-SL"]
+            security_list_keys        = ["OKE-VCN-2-DB-SUBNET-SL"]
           }
         } : {},
         upper(var.oke_vcn2_cni_type) == "NATIVE" ? {
@@ -109,7 +109,7 @@ locals {
             ipv6cidr_blocks           = []
             prohibit_internet_ingress = true
             route_table_key           = "OKE-VCN-2-PODS-SUBNET-ROUTE-TABLE"
-            security_list_keys        = local.oke_vcn2_pods_subnet_security_list != null && upper(var.oke_vcn2_cni_type) == "NATIVE" && (local.hub_with_vcn == true && var.oke_vcn2_attach_to_drg == true) ? ["CUSTOM-OKE-VCN-2-PODS-SUBNET-SL"] : ["OKE-VCN-2-PODS-SUBNET-SL"]
+            security_list_keys        = ["OKE-VCN-2-PODS-SUBNET-SL"]
           }
         } : {}
       )
@@ -536,8 +536,8 @@ locals {
       )
 
       security_lists = merge(
-        local.oke_vcn2_api_subnet_security_list != null && (local.hub_with_vcn == true && var.oke_vcn2_attach_to_drg == true) ? {
-          "CUSTOM-OKE-VCN-2-API-SUBNET-SL" = local.oke_vcn2_api_subnet_security_list
+        local.oke_vcn2_api_subnet_security_list != null ? {
+          "OKE-VCN-2-API-SUBNET-SL" = local.oke_vcn2_api_subnet_security_list
         } : {},
         {
           "OKE-VCN-2-WORKERS-SUBNET-SL" = {
@@ -595,20 +595,20 @@ locals {
             ingress_rules = [local.icmp_path_discovery_security_rule]
           }
         } : {},
-        local.oke_vcn2_workers_subnet_security_list != null && (local.hub_with_vcn == true && var.oke_vcn2_attach_to_drg == true) ? {
-          "CUSTOM-OKE-VCN-2-WORKERS-SUBNET-SL" = local.oke_vcn2_workers_subnet_security_list
+        local.oke_vcn2_workers_subnet_security_list != null ? {
+          "OKE-VCN-2-WORKERS-SUBNET-SL" = local.oke_vcn2_workers_subnet_security_list
         } : {},
-        local.oke_vcn2_services_subnet_security_list != null && (local.hub_with_vcn == true && var.oke_vcn2_attach_to_drg == true) ? {
-          "CUSTOM-OKE-VCN-2-SERVICES-SUBNET-SL" = local.oke_vcn2_services_subnet_security_list
+        local.oke_vcn2_services_subnet_security_list != null ? {
+          "OKE-VCN-2-SERVICES-SUBNET-SL" = local.oke_vcn2_services_subnet_security_list
         } : {},
-        local.oke_vcn2_mgmt_subnet_security_list != null && var.add_oke_vcn2_mgmt_subnet && (local.hub_with_vcn == true && var.oke_vcn2_attach_to_drg == true) ? {
-          "CUSTOM-OKE-VCN-2-MGMT-SUBNET-SL" = local.oke_vcn2_mgmt_subnet_security_list
+        local.oke_vcn2_mgmt_subnet_security_list != null && var.add_oke_vcn2_mgmt_subnet ? {
+          "OKE-VCN-2-MGMT-SUBNET-SL" = local.oke_vcn2_mgmt_subnet_security_list
         } : {},
-        local.oke_vcn2_pods_subnet_security_list != null && upper(var.oke_vcn2_cni_type) == "NATIVE" && (local.hub_with_vcn == true && var.oke_vcn2_attach_to_drg == true) ? {
-          "CUSTOM-OKE-VCN-2-PODS-SUBNET-SL" = local.oke_vcn2_pods_subnet_security_list
+        local.oke_vcn2_pods_subnet_security_list != null && upper(var.oke_vcn2_cni_type) == "NATIVE" ? {
+          "OKE-VCN-2-PODS-SUBNET-SL" = local.oke_vcn2_pods_subnet_security_list
         } : {},
-        local.oke_vcn2_db_subnet_security_list != null && var.add_oke_vcn2_db_subnet && (local.hub_with_vcn == true && var.oke_vcn2_attach_to_drg == true) ? {
-          "CUSTOM-OKE-VCN-2-DB-SUBNET-SL" = local.oke_vcn2_db_subnet_security_list
+        local.oke_vcn2_db_subnet_security_list != null && var.add_oke_vcn2_db_subnet ? {
+          "OKE-VCN-2-DB-SUBNET-SL" = local.oke_vcn2_db_subnet_security_list
         } : {}
       )
 

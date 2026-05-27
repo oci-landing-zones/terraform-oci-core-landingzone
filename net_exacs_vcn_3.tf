@@ -42,7 +42,7 @@ locals {
             ipv6cidr_blocks           = []
             prohibit_internet_ingress = true
             route_table_key           = "EXA-VCN-3-CLIENT-SUBNET-ROUTE-TABLE"
-            security_list_keys        = local.exa_vcn3_client_subnet_security_list != null && (local.hub_with_vcn == true && var.exa_vcn3_attach_to_drg == true) ? ["CUSTOM-EXA-VCN-3-CLIENT-SUBNET-SL"] : ["EXA-VCN-3-CLIENT-SUBNET-SL"]
+            security_list_keys        = ["EXA-VCN-3-CLIENT-SUBNET-SL"]
           }
         },
         local.add_exa_vcn3_backup_subnet == true ? {
@@ -54,7 +54,7 @@ locals {
             ipv6cidr_blocks           = []
             prohibit_internet_ingress = true
             route_table_key           = "EXA-VCN-3-BACKUP-SUBNET-ROUTE-TABLE"
-            security_list_keys        = local.exa_vcn3_backup_subnet_security_list != null && local.add_exa_vcn3_backup_subnet == true && (local.hub_with_vcn == true && var.exa_vcn3_attach_to_drg == true) ? ["CUSTOM-EXA-VCN-3-BACKUP-SUBNET-SL"] : []
+            security_list_keys        = local.exa_vcn3_backup_subnet_security_list != null ? ["EXA-VCN-3-BACKUP-SUBNET-SL"] : []
           }
         } : {},
         local.add_exa_vcn3_integration_subnet == true ? {
@@ -66,7 +66,7 @@ locals {
             ipv6cidr_blocks           = []
             prohibit_internet_ingress = true
             route_table_key           = "EXA-VCN-3-INTEGRATION-SUBNET-ROUTE-TABLE"
-            security_list_keys        = local.exa_vcn3_integration_subnet_security_list != null && local.add_exa_vcn3_integration_subnet == true && (local.hub_with_vcn == true && var.exa_vcn3_attach_to_drg == true) ? ["CUSTOM-EXA-VCN-3-INTEGRATION-SUBNET-SL"] : []
+            security_list_keys        = local.exa_vcn3_integration_subnet_security_list != null ? ["EXA-VCN-3-INTEGRATION-SUBNET-SL"] : []
           }
         } : {}
       )
@@ -220,14 +220,14 @@ locals {
             ]
           }
         },
-        local.exa_vcn3_client_subnet_security_list != null && (local.hub_with_vcn == true && var.exa_vcn3_attach_to_drg == true) ? {
-          "CUSTOM-EXA-VCN-3-CLIENT-SUBNET-SL" = local.exa_vcn3_client_subnet_security_list
+        local.exa_vcn3_client_subnet_security_list != null ? {
+          "EXA-VCN-3-CLIENT-SUBNET-SL" = local.exa_vcn3_client_subnet_security_list
         } : {},
-        local.exa_vcn3_backup_subnet_security_list != null && local.add_exa_vcn3_backup_subnet == true && (local.hub_with_vcn == true && var.exa_vcn3_attach_to_drg == true) ? {
-          "CUSTOM-EXA-VCN-3-BACKUP-SUBNET-SL" = local.exa_vcn3_backup_subnet_security_list
+        local.exa_vcn3_backup_subnet_security_list != null && local.add_exa_vcn3_backup_subnet == true ? {
+          "EXA-VCN-3-BACKUP-SUBNET-SL" = local.exa_vcn3_backup_subnet_security_list
         } : {},
-        local.exa_vcn3_integration_subnet_security_list != null && local.add_exa_vcn3_integration_subnet == true && (local.hub_with_vcn == true && var.exa_vcn3_attach_to_drg == true) ? {
-          "CUSTOM-EXA-VCN-3-INTEGRATION-SUBNET-SL" = local.exa_vcn3_integration_subnet_security_list
+        local.exa_vcn3_integration_subnet_security_list != null && local.add_exa_vcn3_integration_subnet == true ? {
+          "EXA-VCN-3-INTEGRATION-SUBNET-SL" = local.exa_vcn3_integration_subnet_security_list
         } : {}
       )
 

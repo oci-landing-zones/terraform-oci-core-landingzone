@@ -44,7 +44,7 @@ locals {
             ipv6cidr_blocks           = []
             prohibit_internet_ingress = var.tt_vcn3_web_subnet_is_private
             route_table_key           = "TT-VCN-3-WEB-SUBNET-ROUTE-TABLE"
-            security_list_keys        = local.tt_vcn3_web_subnet_security_list != null && ((local.hub_with_vcn == true && var.tt_vcn3_attach_to_drg == true) || var.tt_vcn3_web_subnet_is_private) ? ["TT-VCN-3-WEB-SUBNET-SL"] : []
+            security_list_keys        = local.tt_vcn3_web_subnet_security_list != null ? ["TT-VCN-3-WEB-SUBNET-SL"] : []
           }
         },
         {
@@ -56,7 +56,7 @@ locals {
             ipv6cidr_blocks           = []
             prohibit_internet_ingress = true
             route_table_key           = "TT-VCN-3-APP-SUBNET-ROUTE-TABLE"
-            security_list_keys        = local.tt_vcn3_app_subnet_security_list != null && (local.hub_with_vcn == true && var.tt_vcn3_attach_to_drg == true) ? ["TT-VCN-3-APP-SUBNET-SL"] : []
+            security_list_keys        = local.tt_vcn3_app_subnet_security_list != null ? ["TT-VCN-3-APP-SUBNET-SL"] : []
           }
         },
         {
@@ -68,7 +68,7 @@ locals {
             ipv6cidr_blocks           = []
             prohibit_internet_ingress = true
             route_table_key           = "TT-VCN-3-DB-SUBNET-ROUTE-TABLE"
-            security_list_keys        = local.tt_vcn3_db_subnet_security_list != null && (local.hub_with_vcn == true && var.tt_vcn3_attach_to_drg == true) ? ["TT-VCN-3-DB-SUBNET-SL"] : []
+            security_list_keys        = local.tt_vcn3_db_subnet_security_list != null ? ["TT-VCN-3-DB-SUBNET-SL"] : []
           }
         },
         var.deploy_tt_vcn3_bastion_subnet == true ? {
@@ -80,15 +80,15 @@ locals {
             ipv6cidr_blocks           = []
             prohibit_internet_ingress = var.tt_vcn3_bastion_is_access_via_public_endpoint == true ? false : true
             route_table_key           = "TT-VCN-3-BASTION-SUBNET-ROUTE-TABLE"
-            security_list_keys        = var.tt_vcn3_bastion_is_access_via_public_endpoint == false ? ["TT-VCN-3-BASTION-SUBNET-SL"] : []
+            security_list_keys        = ["TT-VCN-3-BASTION-SUBNET-SL"]
           }
         } : {}
       ) # merge function
 
       security_lists = merge(
-        var.deploy_tt_vcn3_bastion_subnet == true && var.tt_vcn3_bastion_is_access_via_public_endpoint == false ? {
-          # The bastion subnet security list is only applicable to Bastion service endpoints, which are private.
-          "TT-VCN-3-BASTION-SUBNET-SL" = {
+        var.deploy_tt_vcn3_bastion_subnet == true ? {
+          # The default bastion subnet security list applies to private Bastion service endpoints; a non-null override replaces it whenever the bastion subnet is deployed.
+          "TT-VCN-3-BASTION-SUBNET-SL" = coalesce(local.tt_vcn3_bastion_subnet_security_list, {
             display_name = "${local.tt_vcn3_bastion_subnet_display_name}-security-list"
             ingress_rules = [
               {
@@ -112,16 +112,16 @@ locals {
                 dst_port_max = 22
               }
             ]
-          }
+          })
         } : {},
         # Security lists overrides
-        local.tt_vcn3_web_subnet_security_list != null && ((local.hub_with_vcn == true && var.tt_vcn3_attach_to_drg == true) || var.tt_vcn3_web_subnet_is_private) ? {
+        local.tt_vcn3_web_subnet_security_list != null ? {
           "TT-VCN-3-WEB-SUBNET-SL" = local.tt_vcn3_web_subnet_security_list
         } : {},
-        local.tt_vcn3_app_subnet_security_list != null && (local.hub_with_vcn == true && var.tt_vcn3_attach_to_drg == true) ? {
+        local.tt_vcn3_app_subnet_security_list != null ? {
           "TT-VCN-3-APP-SUBNET-SL" = local.tt_vcn3_app_subnet_security_list
         } : {},
-        local.tt_vcn3_db_subnet_security_list != null && (local.hub_with_vcn == true && var.tt_vcn3_attach_to_drg == true) ? {
+        local.tt_vcn3_db_subnet_security_list != null ? {
           "TT-VCN-3-DB-SUBNET-SL" = local.tt_vcn3_db_subnet_security_list
         } : {}
       )

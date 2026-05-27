@@ -1,13 +1,15 @@
 # Local .terraform directories
 **/.terraform/*
+**/.terraform*
 *.lock.hcl
 *.out
 .worktrees/
+**/*.zip
+**/*.py
 
 # .tfstate files
 *.tfstate
 *.tfstate.*
-templates-proposed/.validation-results.json
 
 # Crash log files
 crash.log
@@ -259,3 +261,6 @@ $RECYCLE.BIN/
 *_config
 
 **/superpowers/*
+
+**/tests/*
+**/templates/*/main.tf
