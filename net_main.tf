@@ -25,3 +25,18 @@ module "lz_network" {
   } : null
   tenancy_ocid = var.tenancy_ocid
 }
+
+resource "null_resource" "validate_hub_vcn_outdoor_allowed_public_cidrs" {
+  count = var.define_net && local.hub_with_vcn && length(local.hub_vcn_outdoor_allowed_public_cidrs) > 0 ? 1 : 0
+  triggers = {
+    cidrs = join(",", local.hub_vcn_outdoor_allowed_public_cidrs)
+  }
+  lifecycle {
+    precondition {
+      condition = alltrue([
+        for cidr in local.hub_vcn_outdoor_allowed_public_cidrs : trimspace(cidr) != "0.0.0.0/0"
+      ])
+      error_message = "VALIDATION FAILURE: hub_vcn_outdoor_allowed_public_cidrs must not include 0.0.0.0/0."
+    }
+  }
+}
