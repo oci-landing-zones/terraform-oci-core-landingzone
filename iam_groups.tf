@@ -39,6 +39,7 @@ module "lz_custom_domain_groups" {
   tenancy_ocid                         = var.tenancy_ocid
   identity_domain_groups_configuration = var.extend_landing_zone_to_new_region == false && var.identity_domain_option == "Use Custom Identity Domain" ? local.custom_domain_groups_configuration : local.empty_groups_configuration
   identity_domains_dependency          = {}
+  depends_on                           = [data.oci_identity_domain.existing_identity_domain]
 }
 
 locals {
