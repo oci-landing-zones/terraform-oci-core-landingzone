@@ -187,7 +187,9 @@ Two extra compartments can be provisioned based on user choice:
 
 - **Exainfra**: designed to hold Exadata infrastructure resources that are primarily managed by Exadata administrators. It is recommended for customers where Exadata infrastructure and databases are managed by different groups.
 
-- **Enclosing compartment**: designed to enclose the aforementioned compartments in a single top compartment. When deploying as a non administrator, an enclosing compartment is mandatory.
+- **Enclosing compartment**: designed to enclose the aforementioned compartments within a single top compartment. It is highly recommended as it provides a boundary for your landing zone deployment.
+
+Note that Core Landing Zone enclosed compartments can be augmented using newly added *additional_enclosed_compartments* override variable. The provided compartments are provisioned within the enclosing compartment. See [iam_override.tf](./iam_override.tf) for an example.
 
 ### Groups
 

@@ -147,13 +147,6 @@ locals {
 
   lz_default_enclosed_compartments = merge(local.network_cmp, local.security_cmp, local.app_cmp, local.database_cmp, local.exainfra_cmp)
 
-  # For adding compartments to Core Landing Zone, override additional_enclosed_compartments variable with a map of additional compartments, like:
-  # additional_enclosed_compartments = {
-  #     DEVOPS-CMP = { 
-  #         name = "${var.service_label}-devops-cmp", 
-  #         description = "Core Landing Zone custom DevOps compartment" 
-  #     }
-  # }
   additional_enclosed_compartments = {}
 
   all_enclosed_compartments = merge(local.lz_default_enclosed_compartments, local.additional_enclosed_compartments)

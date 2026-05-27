@@ -9,9 +9,17 @@
 #-----------------------------------------------
 # IAM overrides:
 #-----------------------------------------------
+
+# For adding compartments to Core Landing Zone, override additional_enclosed_compartments variable with a map of additional compartments, like:
+# additional_enclosed_compartments = {
+#     DEVOPS-CMP = { 
+#         name = "${var.service_label}-devops-cmp", 
+#         description = "Core Landing Zone custom DevOps compartment" 
+#     }
+# }
+
 # Custom policy statements to be added to the default policies created for the landing zone. A separate policy is created at the enclosing compartment of the landing zone, and only when the enclosing compartment is not the Root compartment.
 # Use this with extreme caution as it may introduce security risks if not used properly. Make sure to follow the principle of least privilege when defining custom policies, and only grant the necessary permissions required for your use case.
-
-#  custom_policy_statements = ["allow group ${join(",", local.appdev_admin_group_name)} to manage sddcs in compartment ${local.app_compartment_name}"]
+# custom_policy_statements = ["allow group ${join(",", local.appdev_admin_group_name)} to manage sddcs in compartment ${local.app_compartment_name}"]
 
 #}  
