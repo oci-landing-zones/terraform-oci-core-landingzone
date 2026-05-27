@@ -25,7 +25,7 @@ locals {
 
   hub_vcn = local.hub_with_vcn == true ? { # local variable hub_with_vcn is defined in net_hub_drg.tf.
     "HUB-VCN" = {
-      enable_cis_checks                = local.vcn_cis_checks_override_allowed ? local.hub_vcn_cis_checks_enabled : true
+      enable_cis_checks                = false # This is consciously done here to let any traffic to enter the firewall for inspection.
       display_name                     = local.hub_vcn_display_name
       is_ipv6enabled                   = false
       is_oracle_gua_allocation_enabled = false
@@ -325,59 +325,16 @@ locals {
       network_security_groups = merge(
         local.chosen_firewall_option != "OCINFW" ? {
           "HUB-VCN-OUTDOOR-NLB-NSG" = {
-            display_name = "outdoor-nlb-nsg"
-            ingress_rules = merge(
-              {
-                "INGRESS-FROM-LBR-NSG-RULE" = {
-                  description = "Ingress from App Load Balancer NSG."
-                  stateless   = false
-                  protocol    = "ALL"
-                  src         = "HUB-VCN-APP-LOAD-BALANCER-NSG"
-                  src_type    = "NETWORK_SECURITY_GROUP"
-                }
-              },
-              local.hub_vcn_outdoor_subnet_private == false ? { for cidr in local.hub_vcn_outdoor_allowed_public_cidrs : "INGRESS-FROM-EXTERNAL-${cidr}-RULE" => {
-                # For customized hub VCN deployments with overridden local.hub_vcn_outdoor_subnet_private and local.hub_vcn_outdoor_allowed_public_cidrs.
-                description = "Ingress from external CIDR ${cidr}."
-                stateless   = false
-                protocol    = "ALL"
-                src         = "${cidr}"
-                src_type    = "CIDR_BLOCK"
-                }
-              } : {}
-            )
-            egress_rules = {
-              "EGRESS-TO-ANYWHERE-RULE" = {
-                description = "Egress to anywhere."
-                stateless   = false
-                protocol    = "ALL"
-                dst         = "0.0.0.0/0"
-                dst_type    = "CIDR_BLOCK"
-              }
-            }
+            display_name  = "outdoor-nlb-nsg"
+            ingress_rules = local.hub_vcn_outdoor_nsg_ingress_rules
+            egress_rules  = local.hub_vcn_outdoor_nsg_egress_rules
           }
         } : {},
         local.chosen_firewall_option != "OCINFW" ? {
           "HUB-VCN-OUTDOOR-FW-NSG" = {
-            display_name = "outdoor-fw-nsg"
-            ingress_rules = {
-              "INGRESS-FROM-LBR-NSG-RULE" = {
-                description = "Ingress from App Load Balancer NSG."
-                stateless   = false
-                protocol    = "ALL"
-                src         = "HUB-VCN-APP-LOAD-BALANCER-NSG"
-                src_type    = "NETWORK_SECURITY_GROUP"
-              }
-            }
-            egress_rules = {
-              "EGRESS-TO-ANYWHERE-RULE" = {
-                description = "Egress to anywhere over TCP"
-                stateless   = false
-                protocol    = "ALL"
-                dst         = "0.0.0.0/0"
-                dst_type    = "CIDR_BLOCK"
-              }
-            }
+            display_name  = "outdoor-fw-nsg"
+            ingress_rules = local.hub_vcn_outdoor_nsg_ingress_rules
+            egress_rules  = local.hub_vcn_outdoor_nsg_egress_rules
           }
         } : {},
         local.chosen_firewall_option != "OCINFW" ? {
@@ -721,105 +678,56 @@ locals {
     } } : {}
   )
 
-  ## ------------------------------------------------------------------------------------------
-  ## Locals for indoor NSG rules
-  ## NOTE: Core LZ deploys specific ingress rules to not become non-compliant with CIS OCI Benchmark. A simpler approach would be to have a single ingress rule allowing all traffic into the NSGs, 
-  ## but that would be flagged by CIS as overly permissive. The current approach is to have specific rules for each source (on-prem, hub VCN, TT VCNs, OKE VCNs, EXA VCNs).
-
   ## Ingress rules:
-  hub_vcn_indoor_nsg_ingress_rules = merge(
-    { for cidr in toset(concat(var.onprem_cidrs, var.allowed_onprem_cidrs_to_fw_mgmt_interface)) : "INGRESS-FROM-ONPREM-${cidr}-RULE" => {
-      description = "Ingress from on-premises CIDR."
-      stateless   = false
+  hub_vcn_indoor_nsg_ingress_rules = {
+    "INGRESS-FROM-ANYWHERE-RULE" = {
+      description = "Ingress from anywhere."
+      stateless   = true
       protocol    = "ALL"
-      src         = "${cidr}"
+      src         = "0.0.0.0/0"
       src_type    = "CIDR_BLOCK"
-    } },
-    { for cidr in var.hub_vcn_cidrs : "INGRESS-FROM-HUB-VCN-${cidr}-RULE" => {
-      description = "Ingress from ${local.hub_vcn_display_name}."
-      stateless   = false
-      protocol    = "ALL"
-      src         = "${cidr}"
-      src_type    = "CIDR_BLOCK"
-    } },
-    local.add_tt_vcn1 == true && var.tt_vcn1_attach_to_drg == true ? { for cidr in var.tt_vcn1_cidrs : "INGRESS-FROM-TT-VCN-1-${cidr}-RULE" => {
-      description = "Ingress from ${local.tt_vcn1_display_name}."
-      stateless   = false
-      protocol    = "ALL"
-      src         = "${cidr}"
-      src_type    = "CIDR_BLOCK"
-    } } : {},
-    local.add_tt_vcn2 == true && var.tt_vcn2_attach_to_drg == true ? { for cidr in var.tt_vcn2_cidrs : "INGRESS-FROM-TT-VCN-2-${cidr}-RULE" => {
-      description = "Ingress from ${local.tt_vcn2_display_name}."
-      stateless   = false
-      protocol    = "ALL"
-      src         = "${cidr}"
-      src_type    = "CIDR_BLOCK"
-    } } : {},
-    local.add_tt_vcn3 == true && var.tt_vcn3_attach_to_drg == true ? { for cidr in var.tt_vcn3_cidrs : "INGRESS-FROM-TT-VCN-3-${cidr}-RULE" => {
-      description = "Ingress from ${local.tt_vcn3_display_name}."
-      stateless   = false
-      protocol    = "ALL"
-      src         = "${cidr}"
-      src_type    = "CIDR_BLOCK"
-    } } : {},
-    local.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true ? { for cidr in var.oke_vcn1_cidrs : "INGRESS-FROM-OKE-VCN-1-${cidr}-RULE" => {
-      description = "Ingress from ${local.oke_vcn1_display_name}."
-      stateless   = false
-      protocol    = "ALL"
-      src         = "${cidr}"
-      src_type    = "CIDR_BLOCK"
-    } } : {},
-    local.add_oke_vcn2 == true && var.oke_vcn2_attach_to_drg == true ? { for cidr in var.oke_vcn2_cidrs : "INGRESS-FROM-OKE-VCN-2-${cidr}-RULE" => {
-      description = "Ingress from ${local.oke_vcn2_display_name}."
-      stateless   = false
-      protocol    = "ALL"
-      src         = "${cidr}"
-      src_type    = "CIDR_BLOCK"
-    } } : {},
-    local.add_oke_vcn3 == true && var.oke_vcn3_attach_to_drg == true ? { for cidr in var.oke_vcn3_cidrs : "INGRESS-FROM-OKE-VCN-3-${cidr}-RULE" => {
-      description = "Ingress from ${local.oke_vcn3_display_name}."
-      stateless   = false
-      protocol    = "ALL"
-      src         = "${cidr}"
-      src_type    = "CIDR_BLOCK"
-    } } : {},
-    local.add_exa_vcn1 == true && var.exa_vcn1_attach_to_drg == true ? { for cidr in var.exa_vcn1_cidrs : "INGRESS-FROM-EXA-VCN-1-${cidr}-RULE" => {
-      description = "Ingress from ${local.exa_vcn1_display_name}."
-      stateless   = false
-      protocol    = "ALL"
-      src         = "${cidr}"
-      src_type    = "CIDR_BLOCK"
-    } } : {},
-    local.add_exa_vcn2 == true && var.exa_vcn2_attach_to_drg == true ? { for cidr in var.exa_vcn2_cidrs : "INGRESS-FROM-EXA-VCN-2-${cidr}-RULE" => {
-      description = "Ingress from ${local.exa_vcn2_display_name}."
-      stateless   = false
-      protocol    = "ALL"
-      src         = "${cidr}"
-      src_type    = "CIDR_BLOCK"
-    } } : {},
-    local.add_exa_vcn3 == true && var.exa_vcn3_attach_to_drg == true ? { for cidr in var.exa_vcn3_cidrs : "INGRESS-FROM-EXA-VCN-3-${cidr}-RULE" => {
-      description = "Ingress from ${local.exa_vcn3_display_name}."
-      stateless   = false
-      protocol    = "ALL"
-      src         = "${cidr}"
-      src_type    = "CIDR_BLOCK"
-    } } : {},
-    { for cidr in local.workload_cidrs_public : "INGRESS-FROM-VCN-${cidr}-RULE" => {
-      description = "Ingress from VCN with CIDR ${cidr}."
-      stateless   = false
-      protocol    = "ALL"
-      src         = "${cidr}"
-      src_type    = "CIDR_BLOCK"
-    } }
-  )
+    }
+  }
 
   ## Egress rules:
   hub_vcn_indoor_nsg_egress_rules = {
     "EGRESS-TO-ANYWHERE-RULE" = {
       description = "Egress to anywhere."
-      stateless   = false
-      protocol    = "TCP"
+      stateless   = true
+      protocol    = "ALL"
+      dst         = "0.0.0.0/0"
+      dst_type    = "CIDR_BLOCK"
+    }
+  }
+
+  hub_vcn_outdoor_allowed_public_cidr_ingress_rules = local.hub_vcn_outdoor_subnet_private == false ? { for cidr in local.hub_vcn_outdoor_allowed_public_cidrs : "INGRESS-FROM-EXTERNAL-${cidr}-RULE" => {
+    # For customized hub VCN deployments with overridden local.hub_vcn_outdoor_subnet_private and local.hub_vcn_outdoor_allowed_public_cidrs.
+    description = "Ingress from external CIDR ${cidr}."
+    stateless   = true
+    protocol    = "ALL"
+    src         = "${cidr}"
+    src_type    = "CIDR_BLOCK"
+    }
+  } : {}
+
+  hub_vcn_outdoor_nsg_ingress_rules = merge(
+    {
+      "INGRESS-FROM-LBR-NSG-RULE" = {
+        description = "Ingress from App Load Balancer NSG."
+        stateless   = true
+        protocol    = "ALL"
+        src         = "HUB-VCN-APP-LOAD-BALANCER-NSG"
+        src_type    = "NETWORK_SECURITY_GROUP"
+      }
+    },
+    local.hub_vcn_outdoor_allowed_public_cidr_ingress_rules
+  )
+
+  hub_vcn_outdoor_nsg_egress_rules = {
+    "EGRESS-TO-ANYWHERE-RULE" = {
+      description = "Egress to anywhere."
+      stateless   = true
+      protocol    = "ALL"
       dst         = "0.0.0.0/0"
       dst_type    = "CIDR_BLOCK"
     }
