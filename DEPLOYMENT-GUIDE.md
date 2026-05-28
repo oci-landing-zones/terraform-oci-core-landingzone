@@ -626,7 +626,7 @@ For customers preferring a managed firewall service, Core Landing Zone supports 
 - Require a second *terraform apply* that takes both OCIDs and rewires Hub/spoke route tables so north/south and east/west flows traverse the OCI Network Firewall.
 - Simplify management: because OCI Network Firewall is service-managed, there is no SSH management interface to maintain. Policy updates, logging destinations, and health are handled via OCI Console/API and audited automatically.
 
-As in the case of network appliances, Core Landing Zone also requires two Terraform applies to complete the OCI Network Firewall configuration. The first apply deploys the Network Firewall instance in the Hub VCN. By default it also deploys a default policy to *reject all traffic*. Users can also enter an existing policy with specific rules. The second apply is necessary to configure existing route tables with the Network Firewall. 
+As in the case of network appliances, Core Landing Zone also requires two Terraform applies to complete the OCI Network Firewall configuration. The first apply deploys the Network Firewall instance in the Hub VCN. If a policy isn't specified, Core Landing Zone deploys an empty policy, in which case OCI Network Firewall denies all traffic. Users can also enter an existing policy with specific rules. The second apply is necessary to configure existing route tables with the Network Firewall. 
 
 #### Detailed Deployment Workflow
 
@@ -635,7 +635,7 @@ As in the case of network appliances, Core Landing Zone also requires two Terraf
 3. Run the first *terraform plan/apply*.
 4. Collect the OCID of Network Firewall IP address, available in the *oci_firewall_ip_ocid* output variable. 
 5. If you didn't provide *oci_nfw_policy_ocid = \<existing-policy-ocid\>* in step 2:
-    -   Using the OCI Console, create a new firewall policy according to your use case requirements to replace the default *reject all traffic* policy. Record the policy OCID, as you will update the Terraform stack with it for the subsequent terraform execution.
+    -   Using the OCI Console, create a new firewall policy according to your use case requirements to replace the default *deny all traffic* policy. Record the policy OCID, as you will update the Terraform stack with it for the subsequent terraform execution.
     - Still using the OCI Console, associate your new policy with the Network Firewall.
     - Edit the Terraform configuration, by setting *oci_nfw_policy_ocid = \<new-policy-ocid\>*. The new policy gets associated with the Network Firewall Terraform configuration. Note that Core Landing Zone does not manage the user provided policy, only its association with the Network Firewall.
 6. Edit the Terraform configuration with the collected Network Firewall OCID in step 4, by setting *oci_nfw_ip_ocid = \<oci_firewall_ip_ocid\>*.

@@ -2,7 +2,7 @@
 
 This template shows how to deploy a CIS compliant landing zone using [OCI Core Landing Zone](../../) configured with a Hub & Spoke networking topology including OCI Network Firewall. It deploys Network Firewall in the Hub VCN, a Three Tier VCN, an Exadata VCN and an OKE VCN which are peered through the DRG. The DRG is configured to route traffic across all VCNs.
 
-Deploying a native OCI Network Firewall requires the Terraform configuration executed twice. In the first run Terraform creates all the networking resources, except the required routing to the Network Firewall. In the second run it updates the configuration with that routing, and optionally, with a user provided firewall policy (the first run creates a sample policy that rejects all traffic).
+Deploying a native OCI Network Firewall requires the Terraform configuration executed twice. In the first run Terraform creates all the networking resources, except the required routing to the Network Firewall. In the second run it updates the configuration with that routing, and optionally, with a user provided firewall policy (the first run creates an empty policy with no rules, in which case all traffic is denied).
 
 - For updating the routing, use variable *oci\_firewall\_ip\_ocid*. Assign it the value of output variable *oci\_firewall\_ip\_ocid*.
 - For updating the policy, use variable *oci\_nfw\_policy\_ocid*. You can create the policy in OCI Console according to your specific requirements.
