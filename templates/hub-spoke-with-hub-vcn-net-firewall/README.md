@@ -5,9 +5,10 @@ This template shows how to deploy a CIS compliant landing zone using [OCI Core L
 Deploying a native OCI Network Firewall requires the Terraform configuration executed twice. In the first run Terraform creates all the networking resources, except the required routing to the Network Firewall. In the second run it updates the configuration with that routing, and optionally, with a user provided firewall policy (the first run creates an empty policy with no rules, in which case all traffic is denied).
 
 - For updating the routing, use variable *oci\_firewall\_ip\_ocid*. Assign it the value of output variable *oci\_firewall\_ip\_ocid*.
-- For updating the policy, use variable *oci\_nfw\_policy\_ocid*. You can create the policy in OCI Console according to your specific requirements.
-- Before the second run, make sure to associate your policy to the OCI Network Firewall. Use OCI Console for this.
-
+- For updating the policy, use variable *oci\_nfw\_policy\_ocid*: 
+    1. Using the OCI Console, create a policy according to your specific requirements.
+    2. Using the OCI Console,associate the new policy to the OCI Network Firewall.
+    3. Update *oci\_nfw\_policy\_ocid* variable with the new policy OCID.
 
 ## Default Values
 
