@@ -541,19 +541,19 @@ exa_vcn1_additional_nsgs = {
 
 #### Cross-VCN Network Security Rules
 
-Core Landing Zone provides two sets of Network Security Groups (NSGs) for on-premises and cross-VCN connectivity, allowing for open and/or constrained connectivity.
+Core Landing Zone provides two Network Security Group (NSG) modes for on-premises and cross-VCN connectivity: open or constrained. Constrained NSGs are enabled by default and take precedence when both modes are enabled.
 
 ##### Cross-VCN Open NSGs
 
-- Enabled when *enable_cross_vcn_open_nsg = true*.
+- Enabled when *enable_cross_vcn_open_nsg = true* and *enable_cross_vcn_constrained_nsgs = false*.
 - Creates one NSG per VCN. The security rules allow *all protocols* from every other connected VCN CIDR, as well as on-premises CIDRs.
 - Automatically shrinks when you disconnect a VCN or remove an on-premises CIDR.
 - Ideal for lab environments or when another control point (for example, OCI Network Firewall or a third-party appliance) already performs deep inspection and segmentation.
 
 ##### Cross-VCN Constrained NSGs
 
-- Enforces an opinionated, stricter cross-vcn communication paths.
-- Enabled when *enable_cross_vcn_constrained_nsgs = true*. 
+- Enforces opinionated, stricter cross-VCN communication paths.
+- Enabled by default when *enable_cross_vcn_constrained_nsgs = true*. If both cross-VCN NSG modes are enabled, constrained NSGs take precedence.
 - Creates a few NSGs for each VCN. The security rules sources and destinations are defined according to a usage where the VCNs define an entry point for other consuming VCNs. For three-tier VCNs, this entrypoint is an endpoint deployed in the Web subnet; for OKE VCNs, it is an endpoint in the Services subnet; and for Exadata, it is an endpoint in the Client subnet. The protocols and ports in the security list are those configured by the *\*_ingress_destination_ports* variables available for each VCN. 
 - Automatically shrinks when you disconnect a VCN or remove an on-premises CIDR.
 - Ideal for environments where there is no control point (for example, OCI Network Firewall or a third-party appliance) to perform deep inspection and segmentation.

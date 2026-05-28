@@ -158,7 +158,7 @@ locals {
 
   # Open network security rules
   # Ingress
-  ingress_from_hub_jumphost_subnet_security_rule = (local.hub_with_vcn == true && var.deploy_bastion_jump_host == true) ? {
+  ingress_from_hub_jumphost_subnet_security_rule = (local.hub_with_vcn == true && var.add_hub_vcn_jumphost_subnet == true) ? {
     "INGRESS-FROM-HUB-JUMPHOST-SUBNET-RULE" = {
       description  = "Ingress from Hub VCN Jumphost subnet."
       stateless    = false
@@ -169,6 +169,182 @@ locals {
       dst_port_max = 22
     }
   } : {}
+
+  ingress_from_hub_web_subnet_into_tt_vcn1_web_security_rule = (local.hub_with_vcn == true && local.add_tt_vcn1 == true && var.tt_vcn1_attach_to_drg == true) ? {
+    for port in var.tt_vcn1_web_ingress_destination_ports : "INGRESS-FROM-HUB-WEB-ON-TT-VCN1-WEB-${port}-RULE" => {
+      description  = "Ingress from ${local.hub_vcn_web_subnet_display_name} over ${split(":", port)[0]} on ${split(":", port)[0] == "ICMP" ? "type/code ${split(":", port)[1]}" : "port ${split(":", port)[1]}"}."
+      stateless    = false
+      protocol     = split(":", port)[0]
+      src          = local.hub_vcn_web_subnet_cidr
+      src_type     = "CIDR_BLOCK"
+      dst_port_min = split(":", port)[0] != "ICMP" ? split(":", port)[1] : null
+      dst_port_max = split(":", port)[0] != "ICMP" ? split(":", port)[1] : null
+      icmp_type    = split(":", port)[0] == "ICMP" ? split("/", split(":", port)[1])[0] : null
+      icmp_code    = split(":", port)[0] == "ICMP" ? (length(split("/", split(":", port)[1])) > 1 ? split("/", split(":", port)[1])[1] : null) : null
+    }
+  } : {}
+
+  ingress_from_hub_web_subnet_into_tt_vcn1_app_security_rule = (local.hub_with_vcn == true && local.add_tt_vcn1 == true && var.tt_vcn1_attach_to_drg == true) ? {
+    for port in var.tt_vcn1_app_ingress_destination_ports : "INGRESS-FROM-HUB-WEB-ON-TT-VCN1-APP-${port}-RULE" => {
+      description  = "Ingress from ${local.hub_vcn_web_subnet_display_name} over ${split(":", port)[0]} on ${split(":", port)[0] == "ICMP" ? "type/code ${split(":", port)[1]}" : "port ${split(":", port)[1]}"}."
+      stateless    = false
+      protocol     = split(":", port)[0]
+      src          = local.hub_vcn_web_subnet_cidr
+      src_type     = "CIDR_BLOCK"
+      dst_port_min = split(":", port)[0] != "ICMP" ? split(":", port)[1] : null
+      dst_port_max = split(":", port)[0] != "ICMP" ? split(":", port)[1] : null
+      icmp_type    = split(":", port)[0] == "ICMP" ? split("/", split(":", port)[1])[0] : null
+      icmp_code    = split(":", port)[0] == "ICMP" ? (length(split("/", split(":", port)[1])) > 1 ? split("/", split(":", port)[1])[1] : null) : null
+    }
+  } : {}
+
+  ingress_from_hub_web_subnet_into_tt_vcn2_web_security_rule = (local.hub_with_vcn == true && local.add_tt_vcn2 == true && var.tt_vcn2_attach_to_drg == true) ? {
+    for port in var.tt_vcn2_web_ingress_destination_ports : "INGRESS-FROM-HUB-WEB-ON-TT-VCN2-WEB-${port}-RULE" => {
+      description  = "Ingress from ${local.hub_vcn_web_subnet_display_name} over ${split(":", port)[0]} on ${split(":", port)[0] == "ICMP" ? "type/code ${split(":", port)[1]}" : "port ${split(":", port)[1]}"}."
+      stateless    = false
+      protocol     = split(":", port)[0]
+      src          = local.hub_vcn_web_subnet_cidr
+      src_type     = "CIDR_BLOCK"
+      dst_port_min = split(":", port)[0] != "ICMP" ? split(":", port)[1] : null
+      dst_port_max = split(":", port)[0] != "ICMP" ? split(":", port)[1] : null
+      icmp_type    = split(":", port)[0] == "ICMP" ? split("/", split(":", port)[1])[0] : null
+      icmp_code    = split(":", port)[0] == "ICMP" ? (length(split("/", split(":", port)[1])) > 1 ? split("/", split(":", port)[1])[1] : null) : null
+    }
+  } : {}
+
+  ingress_from_hub_web_subnet_into_tt_vcn2_app_security_rule = (local.hub_with_vcn == true && local.add_tt_vcn2 == true && var.tt_vcn2_attach_to_drg == true) ? {
+    for port in var.tt_vcn2_app_ingress_destination_ports : "INGRESS-FROM-HUB-WEB-ON-TT-VCN2-APP-${port}-RULE" => {
+      description  = "Ingress from ${local.hub_vcn_web_subnet_display_name} over ${split(":", port)[0]} on ${split(":", port)[0] == "ICMP" ? "type/code ${split(":", port)[1]}" : "port ${split(":", port)[1]}"}."
+      stateless    = false
+      protocol     = split(":", port)[0]
+      src          = local.hub_vcn_web_subnet_cidr
+      src_type     = "CIDR_BLOCK"
+      dst_port_min = split(":", port)[0] != "ICMP" ? split(":", port)[1] : null
+      dst_port_max = split(":", port)[0] != "ICMP" ? split(":", port)[1] : null
+      icmp_type    = split(":", port)[0] == "ICMP" ? split("/", split(":", port)[1])[0] : null
+      icmp_code    = split(":", port)[0] == "ICMP" ? (length(split("/", split(":", port)[1])) > 1 ? split("/", split(":", port)[1])[1] : null) : null
+    }
+  } : {}
+
+  ingress_from_hub_web_subnet_into_tt_vcn3_web_security_rule = (local.hub_with_vcn == true && local.add_tt_vcn3 == true && var.tt_vcn3_attach_to_drg == true) ? {
+    for port in var.tt_vcn3_web_ingress_destination_ports : "INGRESS-FROM-HUB-WEB-ON-TT-VCN3-WEB-${port}-RULE" => {
+      description  = "Ingress from ${local.hub_vcn_web_subnet_display_name} over ${split(":", port)[0]} on ${split(":", port)[0] == "ICMP" ? "type/code ${split(":", port)[1]}" : "port ${split(":", port)[1]}"}."
+      stateless    = false
+      protocol     = split(":", port)[0]
+      src          = local.hub_vcn_web_subnet_cidr
+      src_type     = "CIDR_BLOCK"
+      dst_port_min = split(":", port)[0] != "ICMP" ? split(":", port)[1] : null
+      dst_port_max = split(":", port)[0] != "ICMP" ? split(":", port)[1] : null
+      icmp_type    = split(":", port)[0] == "ICMP" ? split("/", split(":", port)[1])[0] : null
+      icmp_code    = split(":", port)[0] == "ICMP" ? (length(split("/", split(":", port)[1])) > 1 ? split("/", split(":", port)[1])[1] : null) : null
+    }
+  } : {}
+
+  ingress_from_hub_web_subnet_into_tt_vcn3_app_security_rule = (local.hub_with_vcn == true && local.add_tt_vcn3 == true && var.tt_vcn3_attach_to_drg == true) ? {
+    for port in var.tt_vcn3_app_ingress_destination_ports : "INGRESS-FROM-HUB-WEB-ON-TT-VCN3-APP-${port}-RULE" => {
+      description  = "Ingress from ${local.hub_vcn_web_subnet_display_name} over ${split(":", port)[0]} on ${split(":", port)[0] == "ICMP" ? "type/code ${split(":", port)[1]}" : "port ${split(":", port)[1]}"}."
+      stateless    = false
+      protocol     = split(":", port)[0]
+      src          = local.hub_vcn_web_subnet_cidr
+      src_type     = "CIDR_BLOCK"
+      dst_port_min = split(":", port)[0] != "ICMP" ? split(":", port)[1] : null
+      dst_port_max = split(":", port)[0] != "ICMP" ? split(":", port)[1] : null
+      icmp_type    = split(":", port)[0] == "ICMP" ? split("/", split(":", port)[1])[0] : null
+      icmp_code    = split(":", port)[0] == "ICMP" ? (length(split("/", split(":", port)[1])) > 1 ? split("/", split(":", port)[1])[1] : null) : null
+    }
+  } : {}
+
+  ingress_from_hub_web_subnet_into_oke_vcn1_services_security_rule = (local.hub_with_vcn == true && local.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true) ? {
+    for port in var.oke_vcn1_services_ingress_destination_ports : "INGRESS-FROM-HUB-WEB-ON-OKE-VCN1-SERVICES-${port}-RULE" => {
+      description  = "Ingress from ${local.hub_vcn_web_subnet_display_name} over ${split(":", port)[0]} on ${split(":", port)[0] == "ICMP" ? "type/code ${split(":", port)[1]}" : "port ${split(":", port)[1]}"}."
+      stateless    = false
+      protocol     = split(":", port)[0]
+      src          = local.hub_vcn_web_subnet_cidr
+      src_type     = "CIDR_BLOCK"
+      dst_port_min = split(":", port)[0] != "ICMP" ? split(":", port)[1] : null
+      dst_port_max = split(":", port)[0] != "ICMP" ? split(":", port)[1] : null
+      icmp_type    = split(":", port)[0] == "ICMP" ? split("/", split(":", port)[1])[0] : null
+      icmp_code    = split(":", port)[0] == "ICMP" ? (length(split("/", split(":", port)[1])) > 1 ? split("/", split(":", port)[1])[1] : null) : null
+    }
+  } : {}
+
+  ingress_from_hub_web_subnet_into_oke_vcn2_services_security_rule = (local.hub_with_vcn == true && local.add_oke_vcn2 == true && var.oke_vcn2_attach_to_drg == true) ? {
+    for port in var.oke_vcn2_services_ingress_destination_ports : "INGRESS-FROM-HUB-WEB-ON-OKE-VCN2-SERVICES-${port}-RULE" => {
+      description  = "Ingress from ${local.hub_vcn_web_subnet_display_name} over ${split(":", port)[0]} on ${split(":", port)[0] == "ICMP" ? "type/code ${split(":", port)[1]}" : "port ${split(":", port)[1]}"}."
+      stateless    = false
+      protocol     = split(":", port)[0]
+      src          = local.hub_vcn_web_subnet_cidr
+      src_type     = "CIDR_BLOCK"
+      dst_port_min = split(":", port)[0] != "ICMP" ? split(":", port)[1] : null
+      dst_port_max = split(":", port)[0] != "ICMP" ? split(":", port)[1] : null
+      icmp_type    = split(":", port)[0] == "ICMP" ? split("/", split(":", port)[1])[0] : null
+      icmp_code    = split(":", port)[0] == "ICMP" ? (length(split("/", split(":", port)[1])) > 1 ? split("/", split(":", port)[1])[1] : null) : null
+    }
+  } : {}
+
+  ingress_from_hub_web_subnet_into_oke_vcn3_services_security_rule = (local.hub_with_vcn == true && local.add_oke_vcn3 == true && var.oke_vcn3_attach_to_drg == true) ? {
+    for port in var.oke_vcn3_services_ingress_destination_ports : "INGRESS-FROM-HUB-WEB-ON-OKE-VCN3-SERVICES-${port}-RULE" => {
+      description  = "Ingress from ${local.hub_vcn_web_subnet_display_name} over ${split(":", port)[0]} on ${split(":", port)[0] == "ICMP" ? "type/code ${split(":", port)[1]}" : "port ${split(":", port)[1]}"}."
+      stateless    = false
+      protocol     = split(":", port)[0]
+      src          = local.hub_vcn_web_subnet_cidr
+      src_type     = "CIDR_BLOCK"
+      dst_port_min = split(":", port)[0] != "ICMP" ? split(":", port)[1] : null
+      dst_port_max = split(":", port)[0] != "ICMP" ? split(":", port)[1] : null
+      icmp_type    = split(":", port)[0] == "ICMP" ? split("/", split(":", port)[1])[0] : null
+      icmp_code    = split(":", port)[0] == "ICMP" ? (length(split("/", split(":", port)[1])) > 1 ? split("/", split(":", port)[1])[1] : null) : null
+    }
+  } : {}
+
+  ingress_from_hub_web_subnet_into_exa_vcn1_integration_security_rule = (local.hub_with_vcn == true && local.add_exa_vcn1_integration_subnet == true && var.exa_vcn1_attach_to_drg == true) ? {
+    for port in var.exa_vcn1_integration_ingress_destination_ports : "INGRESS-FROM-HUB-WEB-ON-EXA-VCN1-INTEGRATION-${port}-RULE" => {
+      description  = "Ingress from ${local.hub_vcn_web_subnet_display_name} over ${split(":", port)[0]} on ${split(":", port)[0] == "ICMP" ? "type/code ${split(":", port)[1]}" : "port ${split(":", port)[1]}"}."
+      stateless    = false
+      protocol     = split(":", port)[0]
+      src          = local.hub_vcn_web_subnet_cidr
+      src_type     = "CIDR_BLOCK"
+      dst_port_min = split(":", port)[0] != "ICMP" ? split(":", port)[1] : null
+      dst_port_max = split(":", port)[0] != "ICMP" ? split(":", port)[1] : null
+      icmp_type    = split(":", port)[0] == "ICMP" ? split("/", split(":", port)[1])[0] : null
+      icmp_code    = split(":", port)[0] == "ICMP" ? (length(split("/", split(":", port)[1])) > 1 ? split("/", split(":", port)[1])[1] : null) : null
+    }
+  } : {}
+
+  ingress_from_hub_web_subnet_into_exa_vcn2_integration_security_rule = (local.hub_with_vcn == true && local.add_exa_vcn2_integration_subnet == true && var.exa_vcn2_attach_to_drg == true) ? {
+    for port in var.exa_vcn2_integration_ingress_destination_ports : "INGRESS-FROM-HUB-WEB-ON-EXA-VCN2-INTEGRATION-${port}-RULE" => {
+      description  = "Ingress from ${local.hub_vcn_web_subnet_display_name} over ${split(":", port)[0]} on ${split(":", port)[0] == "ICMP" ? "type/code ${split(":", port)[1]}" : "port ${split(":", port)[1]}"}."
+      stateless    = false
+      protocol     = split(":", port)[0]
+      src          = local.hub_vcn_web_subnet_cidr
+      src_type     = "CIDR_BLOCK"
+      dst_port_min = split(":", port)[0] != "ICMP" ? split(":", port)[1] : null
+      dst_port_max = split(":", port)[0] != "ICMP" ? split(":", port)[1] : null
+      icmp_type    = split(":", port)[0] == "ICMP" ? split("/", split(":", port)[1])[0] : null
+      icmp_code    = split(":", port)[0] == "ICMP" ? (length(split("/", split(":", port)[1])) > 1 ? split("/", split(":", port)[1])[1] : null) : null
+    }
+  } : {}
+
+  ingress_from_hub_web_subnet_into_exa_vcn3_integration_security_rule = (local.hub_with_vcn == true && local.add_exa_vcn3_integration_subnet == true && var.exa_vcn3_attach_to_drg == true) ? {
+    for port in var.exa_vcn3_integration_ingress_destination_ports : "INGRESS-FROM-HUB-WEB-ON-EXA-VCN3-INTEGRATION-${port}-RULE" => {
+      description  = "Ingress from ${local.hub_vcn_web_subnet_display_name} over ${split(":", port)[0]} on ${split(":", port)[0] == "ICMP" ? "type/code ${split(":", port)[1]}" : "port ${split(":", port)[1]}"}."
+      stateless    = false
+      protocol     = split(":", port)[0]
+      src          = local.hub_vcn_web_subnet_cidr
+      src_type     = "CIDR_BLOCK"
+      dst_port_min = split(":", port)[0] != "ICMP" ? split(":", port)[1] : null
+      dst_port_max = split(":", port)[0] != "ICMP" ? split(":", port)[1] : null
+      icmp_type    = split(":", port)[0] == "ICMP" ? split("/", split(":", port)[1])[0] : null
+      icmp_code    = split(":", port)[0] == "ICMP" ? (length(split("/", split(":", port)[1])) > 1 ? split("/", split(":", port)[1])[1] : null) : null
+    }
+  } : {}
+
+  from_hub_vcn_ingress_security_rules = { for cidr in var.hub_vcn_cidrs : "INGRESS-FROM-HUB-VCN-${cidr}-RULE" => {
+    description = "Ingress from ${local.hub_vcn_display_name}."
+    stateless   = false
+    protocol    = "ALL"
+    src         = cidr
+    src_type    = "CIDR_BLOCK"
+  } }
 
   from_tt_vcn_1_ingress_security_rules = { for cidr in var.tt_vcn1_cidrs : "INGRESS-FROM-TT-VCN1-${cidr}-RULE" => {
     description = "Ingress from ${local.tt_vcn1_display_name}."
@@ -251,6 +427,14 @@ locals {
   } }
 
   # Egress 
+  to_hub_vcn_egress_security_rules = { for cidr in var.hub_vcn_cidrs : "EGRESS-TO-HUB-VCN-${cidr}-RULE" => {
+    description = "Egress to ${local.hub_vcn_display_name}."
+    stateless   = false
+    protocol    = "ALL"
+    dst         = cidr
+    dst_type    = "CIDR_BLOCK"
+  } }
+
   to_tt_vcn_1_egress_security_rules = { for cidr in var.tt_vcn1_cidrs : "EGRESS-TO-TT-VCN1-${cidr}-RULE" => {
     description = "Egress to ${local.tt_vcn1_display_name}."
     stateless   = false

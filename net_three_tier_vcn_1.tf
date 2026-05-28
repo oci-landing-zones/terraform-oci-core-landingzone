@@ -426,17 +426,6 @@ locals {
                   dst_port_min = 22
                   dst_port_max = 22
                 }
-              } : {},
-              (var.tt_vcn1_attach_to_drg == true && local.hub_with_vcn == true && var.deploy_bastion_jump_host) ? {
-                "INGRESS-FROM-HUB-JUMPHOST-SUBNET-RULE" = {
-                  description  = "Ingress from Hub VCN Jumphost subnet."
-                  stateless    = false
-                  protocol     = "TCP"
-                  src          = local.hub_vcn_jumphost_subnet_cidr
-                  src_type     = "CIDR_BLOCK"
-                  dst_port_min = 22
-                  dst_port_max = 22
-                }
               } : {}
             ),
             egress_rules = merge(
@@ -487,17 +476,6 @@ locals {
                   protocol     = "TCP"
                   src          = "TT-VCN-1-BASTION-NSG"
                   src_type     = "NETWORK_SECURITY_GROUP"
-                  dst_port_min = 22
-                  dst_port_max = 22
-                }
-              } : {},
-              (var.tt_vcn1_attach_to_drg == true && local.hub_with_vcn == true && var.deploy_bastion_jump_host) ? {
-                "INGRESS-FROM-HUB-JUMPHOST-SUBNET-RULE" = {
-                  description  = "Ingress from Hub VCN Jumphost subnet."
-                  stateless    = false
-                  protocol     = "TCP"
-                  src          = local.hub_vcn_jumphost_subnet_cidr
-                  src_type     = "CIDR_BLOCK"
                   dst_port_min = 22
                   dst_port_max = 22
                 }
@@ -715,16 +693,17 @@ locals {
   #-------------------------------------------------------------
   # Cross VCN Open NSG
   #-------------------------------------------------------------
-  tt_vcn1_cross_vcn_open_nsg = (local.add_tt_vcn1 == true && var.tt_vcn1_attach_to_drg == true && var.enable_cross_vcn_open_nsg == true) ? {
+  tt_vcn1_cross_vcn_open_nsg = (local.add_tt_vcn1 == true && var.tt_vcn1_attach_to_drg == true && local.cross_vcn_open_nsg_enabled == true) ? {
     "TT-VCN-1-CROSS-VCN-OPEN-NSG" = {
       display_name  = "cross-vcn-open-nsg"
-      ingress_rules = merge(local.tt_vcn1_cross_vcn_open_nsg_ingress_security_rules, local.ingress_from_hub_jumphost_subnet_security_rule)
+      ingress_rules = local.tt_vcn1_cross_vcn_open_nsg_ingress_security_rules
       egress_rules  = local.tt_vcn1_cross_vcn_open_nsg_egress_security_rules
     }
   } : {}
 
   # Cross VCN Open NSG ingress security rules
   tt_vcn1_cross_vcn_open_nsg_ingress_security_rules = merge(
+    (local.hub_with_vcn == true) ? local.from_hub_vcn_ingress_security_rules : {},
     (var.add_tt_vcn2 == true && var.tt_vcn2_attach_to_drg == true) && (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.tt_vcn2_routable_vcns) == 0 || contains(var.tt_vcn2_routable_vcns, "TT-VCN-1")))) ? local.from_tt_vcn_2_ingress_security_rules : {},
     (var.add_tt_vcn3 == true && var.tt_vcn3_attach_to_drg == true) && (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.tt_vcn3_routable_vcns) == 0 || contains(var.tt_vcn3_routable_vcns, "TT-VCN-1")))) ? local.from_tt_vcn_3_ingress_security_rules : {},
     (var.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true) && (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.oke_vcn1_routable_vcns) == 0 || contains(var.oke_vcn1_routable_vcns, "TT-VCN-1")))) ? local.from_oke_vcn_1_ingress_security_rules : {},
@@ -737,6 +716,7 @@ locals {
   )
   # Cross VCN Open NSG egress security rules
   tt_vcn1_cross_vcn_open_nsg_egress_security_rules = merge(
+    (local.hub_with_vcn == true) ? local.to_hub_vcn_egress_security_rules : {},
     (var.add_tt_vcn2 == true && var.tt_vcn2_attach_to_drg == true) && (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.tt_vcn1_routable_vcns) == 0 || contains(var.tt_vcn1_routable_vcns, "TT-VCN-2")))) ? local.to_tt_vcn_2_egress_security_rules : {},
     (var.add_tt_vcn3 == true && var.tt_vcn3_attach_to_drg == true) && (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.tt_vcn1_routable_vcns) == 0 || contains(var.tt_vcn1_routable_vcns, "TT-VCN-3")))) ? local.to_tt_vcn_3_egress_security_rules : {},
     (var.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true) && (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.tt_vcn1_routable_vcns) == 0 || contains(var.tt_vcn1_routable_vcns, "OKE-VCN-1")))) ? local.to_oke_vcn_1_egress_security_rules : {},
@@ -755,7 +735,7 @@ locals {
   tt_vcn1_cross_vcn_lbr_nsg = (local.add_tt_vcn1 == true && var.tt_vcn1_attach_to_drg == true && var.enable_cross_vcn_constrained_nsgs == true) ? {
     "TT-VCN-1-CROSS-VCN-LBR-NSG" = {
       display_name  = "cross-vcn-lbr-nsg"
-      ingress_rules = merge(local.tt_vcn1_cross_vcn_lbr_nsg_ingress_security_rules, local.ingress_from_hub_jumphost_subnet_security_rule)
+      ingress_rules = merge(local.tt_vcn1_cross_vcn_lbr_nsg_ingress_security_rules, local.ingress_from_hub_web_subnet_into_tt_vcn1_web_security_rule, local.ingress_from_hub_jumphost_subnet_security_rule)
       egress_rules  = {}
     }
   } : {}
@@ -763,7 +743,7 @@ locals {
   tt_vcn1_cross_vcn_app_nsg = (local.add_tt_vcn1 == true && var.tt_vcn1_attach_to_drg == true && var.enable_cross_vcn_constrained_nsgs == true) ? {
     "TT-VCN-1-CROSS-VCN-APP-NSG" = {
       display_name  = "cross-vcn-app-nsg"
-      ingress_rules = local.ingress_from_hub_jumphost_subnet_security_rule
+      ingress_rules = merge(local.ingress_from_hub_web_subnet_into_tt_vcn1_app_security_rule, local.ingress_from_hub_jumphost_subnet_security_rule)
       egress_rules  = local.tt_vcn1_cross_vcn_app_nsg_egress_security_rules
     }
   } : {}

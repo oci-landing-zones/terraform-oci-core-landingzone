@@ -289,9 +289,17 @@ locals {
                 }
               },
               var.add_hub_vcn_jumphost_subnet == true && coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_east_west_entry_point_ocid, local.void) != local.void ? {
-                "JUMP-HOST-SUBNET-RULE" = { # Required for routing traffic destined to the jump host subnet in the Hub VCN. Without it, traffic doesn't reach the firewall because local VCN routes kick in first.
+                "JUMP-HOST-SUBNET-RULE" = { # Required for routing traffic destined to the jump host subnet in the Hub VCN. Without this, traffic doesn't reach the firewall because local VCN routes kick in first.
                   description       = "Traffic destined for ${local.hub_vcn_jumphost_subnet_display_name} is routed through the private IP address ${coalesce(var.oci_nfw_ip_ocid, local.void) != local.void ? coalesce(data.oci_core_private_ip.oci_firewall[0].ip_address, "undetermined") : coalesce(data.oci_core_private_ip.indoor_nlb[0].ip_address, "undetermined")}."
                   destination       = local.hub_vcn_jumphost_subnet_cidr
+                  destination_type  = "CIDR_BLOCK"
+                  network_entity_id = coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_east_west_entry_point_ocid)
+                }
+              } : {},
+              coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_east_west_entry_point_ocid, local.void) != local.void ? {
+                "WEB-SUBNET-RULE" = { # Required for routing traffic destined to the web subnet in the Hub VCN. Without this, traffic doesn't reach the firewall because local VCN routes kick in first.
+                  description       = "Traffic destined for ${local.hub_vcn_web_subnet_display_name} is routed through the private IP address ${coalesce(var.oci_nfw_ip_ocid, local.void) != local.void ? coalesce(data.oci_core_private_ip.oci_firewall[0].ip_address, "undetermined") : coalesce(data.oci_core_private_ip.indoor_nlb[0].ip_address, "undetermined")}."
+                  destination       = local.hub_vcn_web_subnet_cidr
                   destination_type  = "CIDR_BLOCK"
                   network_entity_id = coalesce(var.oci_nfw_ip_ocid, var.hub_vcn_east_west_entry_point_ocid)
                 }

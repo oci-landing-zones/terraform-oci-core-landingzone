@@ -18,13 +18,13 @@ variable "hub_deployment" {
 variable "enable_cross_vcn_constrained_nsgs" {
   type        = bool
   default     = true
-  description = "When true, Landing Zone provisions NSGs that enable DRG-attached and routable VCNs to connect with each other according to Landing Zone provided rules."
+  description = "When true, Landing Zone provisions constrained NSGs that enable DRG-attached and routable VCNs to connect with each other according to Landing Zone provided rules. Enabled by default and takes precedence over enable_cross_vcn_open_nsg when both are true."
 }
 
 variable "enable_cross_vcn_open_nsg" {
   type        = bool
   default     = false
-  description = "When true, Landing Zone provisions a NSG that enables DRG-attached and routable VCNs to fully connect with each other."
+  description = "When true, Landing Zone provisions an open NSG that enables DRG-attached and routable VCNs to fully connect with each other. Effective only when enable_cross_vcn_constrained_nsgs is false."
 }
 
 variable "define_hub_vcn_additional_nsgs" {
