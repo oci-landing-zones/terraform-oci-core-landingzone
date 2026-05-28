@@ -239,20 +239,7 @@ locals {
               OCI-NFW-POLICY-KEY = {
                 display_name   = "${var.service_label}-oci-firewall-initial-policy"
                 compartment_id = local.network_compartment_id
-                security_rules = {
-                  OCI-NFW-SECURITY_RULES-1 = {
-                    action = "REJECT"
-                    name   = "reject-all-rule"
-                    conditions = {
-                      prd_cond1_A = {
-                        applications = []
-                        destinations = []
-                        sources      = []
-                        urls         = []
-                      }
-                    }
-                  }
-                }
+                security_rules = {}
               }
             } : null
           }
