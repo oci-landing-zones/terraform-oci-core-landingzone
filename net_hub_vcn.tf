@@ -703,7 +703,7 @@ locals {
   hub_vcn_outdoor_allowed_public_cidr_ingress_rules = local.hub_vcn_outdoor_subnet_private == false ? { for cidr in local.hub_vcn_outdoor_allowed_public_cidrs : "INGRESS-FROM-EXTERNAL-${cidr}-RULE" => {
     # For customized hub VCN deployments with overridden local.hub_vcn_outdoor_subnet_private and local.hub_vcn_outdoor_allowed_public_cidrs.
     description = "Ingress from external CIDR ${cidr}."
-    stateless   = true
+    stateless   = false
     protocol    = "ALL"
     src         = "${cidr}"
     src_type    = "CIDR_BLOCK"
@@ -714,7 +714,7 @@ locals {
     {
       "INGRESS-FROM-LBR-NSG-RULE" = {
         description = "Ingress from App Load Balancer NSG."
-        stateless   = true
+        stateless   = false
         protocol    = "ALL"
         src         = "HUB-VCN-APP-LOAD-BALANCER-NSG"
         src_type    = "NETWORK_SECURITY_GROUP"
@@ -726,7 +726,7 @@ locals {
   hub_vcn_outdoor_nsg_egress_rules = {
     "EGRESS-TO-ANYWHERE-RULE" = {
       description = "Egress to anywhere."
-      stateless   = true
+      stateless   = false
       protocol    = "ALL"
       dst         = "0.0.0.0/0"
       dst_type    = "CIDR_BLOCK"
