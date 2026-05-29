@@ -41,7 +41,7 @@ module "core_lz" {
     # --- Firewall deployment option.
     hub_vcn_deploy_net_appliance_option    = "Marketplace Image"
     net_appliance_image_vendor             = "PaloAlto"
-    net_appliance_marketplace_image_name   = "Palo Alto Networks VM-Series Firewall"
+    net_appliance_marketplace_image_name   = "Palo Alto Networks VM-Series Next Generation Firewall"
     net_appliance_marketplace_image_version = "11.1.6-h7"
     #net_appliance_marketplace_image_ocid   = null # ocid can be used instead of name/version.
     net_appliance_name_prefix              = "panf"
