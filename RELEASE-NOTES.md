@@ -1,11 +1,20 @@
 # May 29, 2026 Release Notes - 1.6.0
 
+IN addition to bug fixes, release 1.6.0 brings in significant extensibility enhancements to Core Landing Zone networking across all supported workload types as well as IAM. New global variables have been introduced for more flexible standard deployments, while more advanced scenarios are supported via override variables.
+
+## Bug Fixes
+
+1. [Issue 39](https://github.com/oci-landing-zones/terraform-oci-core-landingzone/issues/39) fixed: Jump Host now deploys in the requested region.
+2. [Issue 47](https://github.com/oci-landing-zones/terraform-oci-core-landingzone/issues/47) addressed with enhanced documentation in [VARIABLES.md](./VARIABLES.md), [variables_security.tf](./variables_security.tf) and [schema.yml](./schema.yml).
+3. [Issue 48](https://github.com/oci-landing-zones/terraform-oci-core-landingzone/issues/48) addressed with enhanced documentation in [Deployment Guide](./DEPLOYMENT-GUIDE.md#extending-landing-zone-to-a-new-region) for Extending Core Landing Zone and fixes for deploying Compute instances in requested region.
+4. [Issue 50](https://github.com/oci-landing-zones/terraform-oci-core-landingzone/issues/50) fixed: OSMS policy removed.
+
 ## Networking Enhancements
 
 ### Generic
 
 1. Network route rules and security rules have been updated. Existing customers who uptake this release must be aware that route rules and security rules are going to be refreshed.
-2. Cross-VCN security rules are now defined in separate Network Security Groups. Core Landing Zone supports two modes for cross-VCN NSGs: constrained or open. Constrained NSGs are enabled by default and take precedence if both modes are enabled. Constrained NSGs are opinionated and useful in Hub/Spoke topologies where the Hub is the DRG. Open NSGs are useful in Hub/Spoke topologies where the Hub is a VCN with a firewall that enforces security rules. See [Cross-VCN Network Security Rules](./DEPLOYMENT-GUIDE.md#cross-vcn-network-security-rules) for details.
+2. Cross-VCN security rules are now defined in separate Network Security Groups than local security rules. Core Landing Zone supports two modes for cross-VCN NSGs: constrained or open. Constrained NSGs are enabled by default and take precedence for spoke VCNs if both modes are enabled. Constrained NSGs are opinionated and useful in Hub/Spoke topologies where the Hub is the DRG. Open NSGs are useful in Hub/Spoke topologies where the Hub is a VCN with a firewall that enforces security rules. See [Cross-VCN Network Security Rules](./DEPLOYMENT-GUIDE.md#cross-vcn-network-security-rules) for details.
 3. Configuration overrides are introduced for advanced networking scenarios. The available overridable variables are defined and described in [locals_overrides.tf](./locals_overrides.tf). Sample overrides are provided in [net_override.tf](./net_override.tf). [Terraform override files](https://developer.hashicorp.com/terraform/language/files/override) are useful for preserving customizations in face of future code updates to Core Landing Zone.
 
 ### Three-Tier VCNs
@@ -21,9 +30,9 @@
 ### OKE VCNs
 
 1. The Service subnet in OKE VCNs can now be made private through newly added **oke_vcn{1,2,3}_services_subnet_is_private** variables.
-2. A DB subnet can now be optionally deployed within OKE VCNs through newly added **add_oke_vcn{1,2,3}_db_subnet** variables, and further qualified with newly added **oke_vcn{1,2,3}_db_subnet_cidr**, **oke_vcn{1,2,3}_db_subnet_name** and **oke_vcn{1,2,3}_db_ingress_destination_ports** variables.
-3. Newly added global variables for capturing external CIDRs allowed into application endpoints in OKE Services subnets:
+2. Newly added global variables for capturing external CIDRs allowed into application endpoints in OKE Services subnets:
     - **oke_vcn{1,2,3}_external_allowed_cidrs_into_services_tier**: the list of external CIDRs blocks allowed ingress access on Services NSG (**services-nsg**) of **oke_vcn{1,2,3}** VCN. Use this to limit the range of IP addresses that can access the services tier. (the previously hardcoded value 0.0.0.0/0 is now the default.)
+3. A DB subnet can now be optionally deployed within OKE VCNs through newly added **add_oke_vcn{1,2,3}_db_subnet** variables, and further qualified with newly added **oke_vcn{1,2,3}_db_subnet_cidr**, **oke_vcn{1,2,3}_db_subnet_name** and **oke_vcn{1,2,3}_db_ingress_destination_ports** variables.
 4. Newly added global variables for capturing protocols and ports in NSG ingress rules, allowing for easier management of application listening ports at OCI network security rules level (previously hardcoded values are now the default.):
     - **oke_vcn{1,2,3}_services_ingress_destination_ports**: the list of protocols and destination ports allowed for ingress packets into Services NSG (**services-nsg**). Each value is a colon-separated pair like "TCP:443".
     - **oke_vcn{1,2,3}_db_ingress_destination_ports**: the list of protocols and destination ports allowed for ingress packets into DB NSG (**db-nsg**). Each value is a colon-separated pair like "TCP:1521".
@@ -50,54 +59,51 @@
 3. Variables **hub_vcn_mgmt_subnet_external_allowed_cidrs_for_http** and **hub_vcn_mgmt_subnet_external_allowed_cidrs_for_ssh** are replaced by newly added **allowed_onprem_cidrs_to_fw_mgmt_interface**, that works in conjunction with newly added **fw_mgmt_interface_ports**:
     - **allowed_onprem_cidrs_to_fw_mgmt_interface**: the list of on-premises CIDR blocks allowed access to Firewall management NSG (**mgmt-nsg**).
     - **fw_mgmt_interface_ports**: the list of protocols and ports allowed into Firewall Management NSG (**mgmt-nsg**) by the CIDRs provided in variable **allowed_onprem_cidrs_to_fw_mgmt_interface**. Each value is a colon-separated entry like \"TCP:22\".
-4. Application Load Balancer NSG (**app-load-balancer-nsg**) rules can be customized via override variables **hub_vcn_app_load_balancer_nsg_ingress_rules** and **hub_vcn_app_load_balancer_nsg_egress_rules**	
+4. Application Load Balancer NSG (**app-load-balancer-nsg**) default ingress rules are controlled by **onprem_cidrs** plus **hub_vcn_external_allowed_cidrs_into_web_tier** when the Hub Web subnet is public, and by **onprem_cidrs** only when the Hub Web subnet is private. Allowed ports come from **hub_vcn_web_ingress_destination_ports**. The public-subnet default remains **0.0.0.0/0** on **TCP:443**. Its rules can still be customized via override variables **hub_vcn_app_load_balancer_nsg_ingress_rules** and **hub_vcn_app_load_balancer_nsg_egress_rules**.
 5. Bastion/Jump Host subnet is now provisioned based on newly added **add_hub_vcn_jumphost_subnet** variable. OCI Bastion deployment is based on **deploy_bastion_service** variable and Jump host deployment is based on **deploy_bastion_jump_host** variable.
 6. Jump Host can now be provisioned based on OCI Marketplace image OCID, in addition to name/version. Variable **bastion_jump_host_marketplace_image_option** has been replaced by newly added **bastion_jump_host_marketplace_image_name** and **bastion_jump_host_image_source** has been introduced to let users indicate whether the image is custom, platform or marketplace.
 7. Network firewall appliance can now be provisioned based on OCI Marketplace image OCID, in addition to name/version. 
 8. Newly added variable **net_appliance_marketplace_image_version** replaces both **net_palo_alto_version** and **net_fortigate_version** when specifying the OCI Marketplace image version for the network firewall appliance.
 9. Additional NSGs for Hub, Three-tier, OKE, and Exadata VCNs can now be configured through **define_hub_vcn_additional_nsgs**, **hub_vcn_additional_nsgs**, **define_tt_vcn{1,2,3}_additional_nsgs**, **tt_vcn{1,2,3}_additional_nsgs**, **define_oke_vcn{1,2,3}_additional_nsgs**, **oke_vcn{1,2,3}_additional_nsgs**, **define_exa_vcn{1,2,3}_additional_nsgs**, and **exa_vcn{1,2,3}_additional_nsgs** variables. The NSG definition accepts a native HCL map/object or a JSON object string, and the Resource Manager UI exposes it as a multiline JSON field.
 
-### Global Variable Changes from 1.5.5 to 1.6.0
+## IAM Enhancements
+
+1. Core Landing Zone enclosed compartments can be augmented using newly added **additional_enclosed_compartments** override variable. The provided compartments are provisioned within the enclosing compartment. See [iam_override.tf](./iam_override.tf) for an example.
+2. Core Landing Zone IAM policies can be augmented using newly added **custom_policy_statements** override variable. The provided statements are put together in a separate policy at the enclosing compartment of the landing zone, and only when the enclosing compartment is not the Root compartment. *Use this with extreme caution as it may introduce security issues if not used properly. Make sure to follow the principle of least privilege when defining custom statements, ensuring to grant only the necessary permissions required for your use case.* See [iam_override.tf](./iam_override.tf) for an example.
+
+## Global Variable Changes from 1.5.5 to 1.6.0
 
 The table below summarizes all changes mentioned above. Before upgrading existing deployments, review any removed or replaced variables in your existing configurations. Variables shown with *{1,2,3}* exist once for each numbered VCN family member.
 
 | Change | Variable(s) in 1.5.5 | Variable(s) in 1.6.0 | Upgrade guidance / what's new |
 | --- | --- | --- | --- |
-| Removed | **customize_bastion_service** | None | This was a Resource Manager UI control and has no direct replacement. See **add_hub_vcn_jumphost_subnet**, **deploy_bastion_service** and the **bastion_service_\*** variables for controlling optional OCI Bastion Service provisioning. |
-| Removed | **customize_jumphost_subnet** | None | This was a Resource Manager UI control and has no direct replacement. See **add_hub_vcn_jumphost_subnet** variable for controlling optional Jump Host subnet provisioning. |
+| Removed | **customize_bastion_service** | None | This was a Resource Manager UI control and has no direct replacement. See **add_hub_vcn_jumphost_subnet** and **deploy_bastion_service** variables for controlling optional OCI Bastion Service provisioning. |
+| Removed | **customize_jumphost_subnet** | None | This was a Resource Manager UI control and has no direct replacement. See **add_hub_vcn_jumphost_subnet** and **deploy_bastion_jump_host** variables for controlling optional Jump Host subnet provisioning. |
 | Replaced | **bastion_jump_host_marketplace_image_option** | **bastion_jump_host_image_source**, **bastion_jump_host_marketplace_image_name**, **bastion_jump_host_marketplace_image_version**, **bastion_jump_host_marketplace_image_ocid** | Replace the old Marketplace image option with the new image source plus image name/version or image OCID. Use **bastion_jump_host_image_source** = *"Marketplace Image"* for Marketplace images. |
 | Replaced | **hub_vcn_mgmt_subnet_external_allowed_cidrs_for_http**, **hub_vcn_mgmt_subnet_external_allowed_cidrs_for_ssh** | **allowed_onprem_cidrs_to_fw_mgmt_interface**, **fw_mgmt_interface_ports** | Move allowed firewall-management CIDRs to **allowed_onprem_cidrs_to_fw_mgmt_interface**, and list allowed protocol/port pairs such as *TCP:22* or *TCP:443* in **fw_mgmt_interface_ports**. |
 | Replaced | **net_palo_alto_version** | **net_appliance_image_vendor**, **net_appliance_marketplace_image_name**, **net_appliance_marketplace_image_version**, **net_appliance_marketplace_image_ocid** | Set **net_appliance_image_vendor** = *"PaloAlto"*. For Marketplace images, provide either **net_appliance_marketplace_image_ocid** or **net_appliance_marketplace_image_name** plus optional **net_appliance_marketplace_image_version**. |
 | Replaced | **net_fortigate_version** | **net_appliance_image_vendor**, **net_appliance_marketplace_image_name**, **net_appliance_marketplace_image_version**, **net_appliance_marketplace_image_ocid** | Set **net_appliance_image_vendor** = *"Fortinet"*. For Marketplace images, provide either **net_appliance_marketplace_image_ocid** or **net_appliance_marketplace_image_name** plus optional **net_appliance_marketplace_image_version**. |
 | Added | None | **custom_id_domain_compartment_ocid** | Resource Manager helper input for selecting the compartment containing an existing custom identity domain. Terraform CLI deployments can continue using **custom_id_domain_ocid** directly. |
-| Added | None | **enable_cross_vcn_constrained_nsgs**, **enable_cross_vcn_open_nsg** | Controls the new cross-VCN NSG modes. Constrained NSGs are enabled by default and take precedence if both modes are true. Review these when upgrading Hub/Spoke deployments because route and security rules are refreshed in 1.6.0. |
+| Added | None | **enable_cross_vcn_constrained_nsgs**, **enable_cross_vcn_open_nsg** | Controls the new cross-VCN NSG modes. Constrained NSGs are enabled by default and take precedence for spoke VCNs if both modes are true. Hub VCN creates the open NSG when requested and leaves it unattached by default. |
 | Added | None | **add_hub_vcn_jumphost_subnet** | Controls whether the optional private Jump Host/Bastion subnet is created in the Hub VCN. |
 | Added | None | **allowed_onprem_cidrs_to_fw_mgmt_interface**, **fw_mgmt_interface_ports** | Provides a vendor-neutral way to allow selected on-premises CIDRs and ports into firewall management interfaces. |
+| Added | None | **hub_vcn_external_allowed_cidrs_into_web_tier**, **hub_vcn_web_ingress_destination_ports** | Controls default ingress CIDRs and protocol:port pairs for the Hub VCN Application Load Balancer NSG. Public Hub Web subnets allow **onprem_cidrs** plus **hub_vcn_external_allowed_cidrs_into_web_tier**; private Hub Web subnets allow **onprem_cidrs** only. Defaults preserve the existing public-subnet **0.0.0.0/0** on **TCP:443** behavior. |
 | Added | None | **net_appliance_image_vendor**, **net_appliance_marketplace_image_ocid**, **net_appliance_marketplace_image_name**, **net_appliance_marketplace_image_version** | Adds vendor and Marketplace image selection for Hub VCN network appliances, including support for Marketplace image OCIDs. |
 | Added | None | **bastion_jump_host_image_source**, **bastion_jump_host_marketplace_image_ocid**, **bastion_jump_host_marketplace_image_name**, **bastion_jump_host_marketplace_image_version**, **bastion_jump_host_platform_image_ocid** | Adds explicit image-source handling for Bastion Jump Host: Marketplace, platform, or custom images. |
 | Added | None | **define_hub_vcn_additional_nsgs**, **hub_vcn_additional_nsgs** | Allows additional Hub VCN NSGs to be defined without editing module internals. |
 | Added | None | **define_tt_vcn{1,2,3}_additional_nsgs**, **tt_vcn{1,2,3}_additional_nsgs** | Allows additional Three-Tier VCN NSGs to be defined per VCN. |
 | Added | None | **define_oke_vcn{1,2,3}_additional_nsgs**, **oke_vcn{1,2,3}_additional_nsgs** | Allows additional OKE VCN NSGs to be defined per VCN. |
 | Added | None | **define_exa_vcn{1,2,3}_additional_nsgs**, **exa_vcn{1,2,3}_additional_nsgs** | Allows additional Exadata VCN NSGs to be defined per VCN. |
-| Added | None | **tt_vcn{1,2,3}_external_allowed_cidrs_into_web_tier** | Lets users restrict external CIDRs allowed into Three-Tier Web/LBR tiers. Defaults preserve the previous broad behavior unless changed. |
+| Added | None | **tt_vcn{1,2,3}_external_allowed_cidrs_into_web_tier** | Lets users restrict external CIDRs allowed into Three-Tier Web/LBR tiers. Defaults preserve the existing behavior. |
 | Added | None | **tt_vcn{1,2,3}_web_ingress_destination_ports**, **tt_vcn{1,2,3}_app_ingress_destination_ports**, **tt_vcn{1,2,3}_db_ingress_destination_ports** | Exposes previously hardcoded Three-Tier NSG ingress destination ports. |
 | Added | None | **oke_vcn{1,2,3}_services_subnet_is_private** | Allows OKE services subnets to be made private. |
 | Added | None | **add_oke_vcn{1,2,3}_db_subnet**, **oke_vcn{1,2,3}_db_subnet_cidr**, **oke_vcn{1,2,3}_db_subnet_name** | Adds optional DB subnets to OKE VCNs. |
-| Added | None | **oke_vcn{1,2,3}_external_allowed_cidrs_into_services_tier** | Lets users restrict external CIDRs allowed into OKE services tiers. Defaults preserve the previous broad behavior unless changed. |
+| Added | None | **oke_vcn{1,2,3}_external_allowed_cidrs_into_services_tier** | Lets users restrict external CIDRs allowed into OKE services tiers. Defaults preserve the existing behavior. |
 | Added | None | **oke_vcn{1,2,3}_services_ingress_destination_ports**, **oke_vcn{1,2,3}_db_ingress_destination_ports** | Exposes OKE Services and DB NSG ingress destination ports. |
-| Added | None | **add_exa_vcn{1,2,3}_backup_subnet** | Makes Exadata backup subnets optional. Review this if your deployment assumes backup subnets are always created. |
+| Added | None | **add_exa_vcn{1,2,3}_backup_subnet** | Makes Exadata backup subnets optional. Defaults preserve existing behavior (true by default). |
 | Added | None | **add_exa_vcn{1,2,3}_integration_subnet**, **exa_vcn{1,2,3}_integration_subnet_cidr**, **exa_vcn{1,2,3}_integration_subnet_name** | Adds optional Exadata integration subnets. |
-| Added | None | **exa_vcn{1,2,3}_external_allowed_cidrs_into_client_tier**, **exa_vcn{1,2,3}_client_ingress_destination_ports** | Lets users restrict external CIDRs and destination ports for Exadata client tiers. |
-| Added | None | **exa_vcn{1,2,3}_external_allowed_cidrs_into_integration_tier**, **exa_vcn{1,2,3}_integration_ingress_destination_ports** | Lets users restrict external CIDRs and destination ports for Exadata integration tiers. |
-
-## Other Updates
-
-1. Core Landing Zone enclosed compartments can be augmented using newly added *additional_enclosed_compartments* override variable. The provided compartments are provisioned within the enclosing compartment. See [iam_override.tf](./iam_override.tf) for an example.
-2. Core Landing Zone IAM policies can be augmented using newly added *custom_policy_statements* override variable. The provided statements are put together in a separate policy at the enclosing compartment of the landing zone, and only when the enclosing compartment is not the Root compartment. *Use this with extreme caution as it may introduce security issues if not used properly. Make sure to follow the principle of least privilege when defining custom statements, ensuring to grant only the necessary permissions required for your use case.* See [iam_override.tf](./iam_override.tf) for an example.
-3. [Issue 39](https://github.com/oci-landing-zones/terraform-oci-core-landingzone/issues/39) fixed: Jump Host now deploys in the requested region.
-4. [Issue 47](https://github.com/oci-landing-zones/terraform-oci-core-landingzone/issues/47) addressed with enhanced documentation in [VARIABLES.md](./VARIABLES.md), [variables_security.tf](./variables_security.tf) and [schema.yml](./schema.yml).
-5. [Issue 48](https://github.com/oci-landing-zones/terraform-oci-core-landingzone/issues/48) addressed with enhanced documentation in [Deployment Guide](./DEPLOYMENT-GUIDE.md#extending-landing-zone-to-a-new-region) for Extending Core Landing Zone and fixes for deploying Compute instances in requested region.
-6. [Issue 50](https://github.com/oci-landing-zones/terraform-oci-core-landingzone/issues/50) fixed: OSMS policy removed.
+| Added | None | **exa_vcn{1,2,3}_external_allowed_cidrs_into_client_tier**, **exa_vcn{1,2,3}_client_ingress_destination_ports** | Lets users restrict external CIDRs and destination ports for Exadata client tier. |
+| Added | None | **exa_vcn{1,2,3}_external_allowed_cidrs_into_integration_tier**, **exa_vcn{1,2,3}_integration_ingress_destination_ports** | Lets users restrict external CIDRs and destination ports for Exadata integration tier. |
 
 
 # February 20, 2026 Release Notes - 1.5.5
