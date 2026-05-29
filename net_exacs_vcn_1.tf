@@ -515,8 +515,5 @@ locals {
     }
   } : {}
 
-  exa_vcn1_cross_vcn_integration_nsg_ingress_security_rules = merge(
-    local.ingress_from_hub_web_subnet_into_exa_vcn1_integration_security_rule,
-    (var.exa_vcn1_onprem_route_enable == true) && (local.hub_with_vcn == true || local.hub_with_drg_only == true) ? local.exa_vcn_1_integration_subnet_ingress_from_onprem_security_rules : {}
-  )
+  exa_vcn1_cross_vcn_integration_nsg_ingress_security_rules = (var.exa_vcn1_onprem_route_enable == true) && (local.hub_with_vcn == true || local.hub_with_drg_only == true) ? local.exa_vcn_1_integration_subnet_ingress_from_onprem_security_rules : {}
 }
