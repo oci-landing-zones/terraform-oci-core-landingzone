@@ -39,8 +39,8 @@ variable "custom_enclosing_compartment_name" {
   default     = null
   description = "Custom name of the enclosing compartment."
   validation {
-    condition = var.custom_enclosing_compartment_name == null ? true : (length(var.custom_enclosing_compartment_name) > 3 && !startswith(var.custom_enclosing_compartment_name, " ") ? true : false)
-    error_message = "Validation failed for variable custom_enclosing_compartment_name: it must be null, or a string longer than 3 characters that does not start with a space."
+    condition     = var.custom_enclosing_compartment_name == null ? true : (length(var.custom_enclosing_compartment_name) > 3 && !startswith(var.custom_enclosing_compartment_name, " ") ? true : false)
+    error_message = "VALIDATION FAILURE: Validation failed for variable custom_enclosing_compartment_name: it must be null, or a string longer than 3 characters that does not start with a space."
   }
 }
 variable "custom_network_compartment_name" {
@@ -48,8 +48,8 @@ variable "custom_network_compartment_name" {
   default     = null
   description = "Custom name of the network compartment."
   validation {
-    condition = var.custom_network_compartment_name == null ? true : (length(var.custom_network_compartment_name) > 3 && !startswith(var.custom_network_compartment_name, " ") ? true : false)
-    error_message = "Validation failed for variable custom_network_compartment_name: it must be null, or a string longer than 3 characters that does not start with a space."
+    condition     = var.custom_network_compartment_name == null ? true : (length(var.custom_network_compartment_name) > 3 && !startswith(var.custom_network_compartment_name, " ") ? true : false)
+    error_message = "VALIDATION FAILURE: Validation failed for variable custom_network_compartment_name: it must be null, or a string longer than 3 characters that does not start with a space."
   }
 }
 variable "custom_security_compartment_name" {
@@ -57,8 +57,8 @@ variable "custom_security_compartment_name" {
   default     = null
   description = "Custom name of the security compartment."
   validation {
-    condition = var.custom_security_compartment_name == null ? true : (length(var.custom_security_compartment_name) > 3 && !startswith(var.custom_security_compartment_name, " ") ? true : false)
-    error_message = "Validation failed for variable custom_security_compartment_name: it must be null, or a string longer than 3 characters that does not start with a space."
+    condition     = var.custom_security_compartment_name == null ? true : (length(var.custom_security_compartment_name) > 3 && !startswith(var.custom_security_compartment_name, " ") ? true : false)
+    error_message = "VALIDATION FAILURE: Validation failed for variable custom_security_compartment_name: it must be null, or a string longer than 3 characters that does not start with a space."
   }
 }
 variable "custom_app_compartment_name" {
@@ -66,8 +66,8 @@ variable "custom_app_compartment_name" {
   default     = null
   description = "Custom name of the app compartment."
   validation {
-    condition = var.custom_app_compartment_name == null ? true : (length(var.custom_app_compartment_name) > 3 && !startswith(var.custom_app_compartment_name, " ") ? true : false)
-    error_message = "Validation failed for variable custom_app_compartment_name: it must be null, or a string longer than 3 characters that does not start with a space."
+    condition     = var.custom_app_compartment_name == null ? true : (length(var.custom_app_compartment_name) > 3 && !startswith(var.custom_app_compartment_name, " ") ? true : false)
+    error_message = "VALIDATION FAILURE: Validation failed for variable custom_app_compartment_name: it must be null, or a string longer than 3 characters that does not start with a space."
   }
 }
 variable "custom_database_compartment_name" {
@@ -75,8 +75,8 @@ variable "custom_database_compartment_name" {
   default     = null
   description = "Custom name of the database compartment."
   validation {
-    condition = var.custom_database_compartment_name == null ? true : (length(var.custom_database_compartment_name) > 3 && !startswith(var.custom_database_compartment_name, " ") ? true : false)
-    error_message = "Validation failed for variable custom_database_compartment_name: it must be null, or a string longer than 3 characters that does not start with a space."
+    condition     = var.custom_database_compartment_name == null ? true : (length(var.custom_database_compartment_name) > 3 && !startswith(var.custom_database_compartment_name, " ") ? true : false)
+    error_message = "VALIDATION FAILURE: Validation failed for variable custom_database_compartment_name: it must be null, or a string longer than 3 characters that does not start with a space."
   }
 }
 variable "custom_exainfra_compartment_name" {
@@ -84,8 +84,8 @@ variable "custom_exainfra_compartment_name" {
   default     = null
   description = "Custom name of the exadata infrastructure compartment."
   validation {
-    condition = var.custom_exainfra_compartment_name == null ? true : (length(var.custom_exainfra_compartment_name) > 3 && !startswith(var.custom_exainfra_compartment_name, " ") ? true : false)
-    error_message = "Validation failed for variable custom_exainfra_compartment_name: it must be null, or a string longer than 3 characters that does not start with a space."
+    condition     = var.custom_exainfra_compartment_name == null ? true : (length(var.custom_exainfra_compartment_name) > 3 && !startswith(var.custom_exainfra_compartment_name, " ") ? true : false)
+    error_message = "VALIDATION FAILURE: Validation failed for variable custom_exainfra_compartment_name: it must be null, or a string longer than 3 characters that does not start with a space."
   }
 }
 # ------------------------------------------------------
@@ -409,7 +409,7 @@ variable "policies_in_root_compartment" {
   description = "Whether policies in the Root compartment should be created or simply used. If 'CREATE', you must be sure the user executing this stack has permissions to create policies in the Root compartment. If 'USE', policies must have been created previously."
   validation {
     condition     = contains(["CREATE", "USE"], var.policies_in_root_compartment)
-    error_message = "Validation failed for policies_in_root_compartment: valid values are CREATE or USE."
+    error_message = "VALIDATION FAILURE: Validation failed for policies_in_root_compartment: valid values are CREATE or USE."
   }
 }
 

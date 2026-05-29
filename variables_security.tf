@@ -21,7 +21,7 @@ variable "sz_security_policies" {
   description = "Additional Security Zones Policy OCIDs to add to security zone recipe (The default policies are added based on CIS level). To get a Security Zone policy OCID use the oci cli:  oci cloud-guard security-policy-collection list-security-policies --compartment-id <tenancy-ocid>."
   validation {
     condition     = length([for e in var.sz_security_policies : e if length(regexall("ocid1.securityzonessecuritypolicy.*", e)) > 0]) == length(var.sz_security_policies)
-    error_message = "Validation failed for sz_security_policies must be a valid Security Zone Policy OCID.  To get a Security Zone policy OCID use the oci cli:  oci cloud-guard security-policy-collection list-security-policies --compartment-id <tenancy-ocid>."
+    error_message = "VALIDATION FAILURE: Validation failed for sz_security_policies must be a valid Security Zone Policy OCID.  To get a Security Zone policy OCID use the oci cli:  oci cloud-guard security-policy-collection list-security-policies --compartment-id <tenancy-ocid>."
   }
 }
 
@@ -53,7 +53,7 @@ variable "cloud_guard_risk_level_threshold" {
   description = "Determines the minimum Risk level that triggers sending Cloud Guard problems to the defined Cloud Guard Email Endpoint. E.g. a setting of High will send notifications for Critical and High problems."
   validation {
     condition     = contains(["CRITICAL", "HIGH", "MEDIUM", "MINOR", "LOW"], upper(var.cloud_guard_risk_level_threshold))
-    error_message = "Validation failed for cloud_guard_risk_level_threshold: valid values (case insensitive) are CRITICAL, HIGH, MEDIUM, MINOR, LOW."
+    error_message = "VALIDATION FAILURE: Validation failed for cloud_guard_risk_level_threshold: valid values (case insensitive) are CRITICAL, HIGH, MEDIUM, MINOR, LOW."
   }
 }
 variable "cloud_guard_admin_email_endpoints" {
@@ -62,7 +62,7 @@ variable "cloud_guard_admin_email_endpoints" {
   description = "List of email addresses for Cloud Guard related notifications."
   validation {
     condition     = length([for e in var.cloud_guard_admin_email_endpoints : e if length(regexall("^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$", e)) > 0]) == length(var.cloud_guard_admin_email_endpoints)
-    error_message = "Validation failed cloud_guard_admin_email_endpoints: invalid email address."
+    error_message = "VALIDATION FAILURE: Validation failed cloud_guard_admin_email_endpoints: invalid email address."
   }
 }
 
@@ -80,7 +80,7 @@ variable "vss_scan_schedule" {
   default     = "WEEKLY"
   validation {
     condition     = contains(["WEEKLY", "DAILY"], upper(var.vss_scan_schedule))
-    error_message = "Validation failed for vss_scan_schedule: valid values are WEEKLY or DAILY (case insensitive)."
+    error_message = "VALIDATION FAILURE: Validation failed for vss_scan_schedule: valid values are WEEKLY or DAILY (case insensitive)."
   }
 }
 variable "vss_scan_day" {
@@ -89,7 +89,7 @@ variable "vss_scan_day" {
   default     = "SUNDAY"
   validation {
     condition     = contains(["SUNDAY", "MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY"], upper(var.vss_scan_day))
-    error_message = "Validation failed for vss_scan_day: valid values are SUNDAY, MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY, SATURDAY (case insensitive)."
+    error_message = "VALIDATION FAILURE: Validation failed for vss_scan_day: valid values are SUNDAY, MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY, SATURDAY (case insensitive)."
   }
 }
 variable "vss_port_scan_level" {
@@ -98,7 +98,7 @@ variable "vss_port_scan_level" {
   default     = "STANDARD"
   validation {
     condition     = contains(["STANDARD", "LIGHT", "NONE"], upper(var.vss_port_scan_level))
-    error_message = "Validation failed for vss_port_scan_level: valid values are STANDARD, LIGHT, NONE (case insensitive)."
+    error_message = "VALIDATION FAILURE: Validation failed for vss_port_scan_level: valid values are STANDARD, LIGHT, NONE (case insensitive)."
   }
 }
 variable "vss_agent_scan_level" {
@@ -107,7 +107,7 @@ variable "vss_agent_scan_level" {
   default     = "STANDARD"
   validation {
     condition     = contains(["STANDARD", "NONE"], upper(var.vss_agent_scan_level))
-    error_message = "Validation failed for vss_agent_scan_level: valid values are STANDARD, NONE (case insensitive)."
+    error_message = "VALIDATION FAILURE: Validation failed for vss_agent_scan_level: valid values are STANDARD, NONE (case insensitive)."
   }
 }
 variable "vss_agent_cis_benchmark_settings_scan_level" {
@@ -116,7 +116,7 @@ variable "vss_agent_cis_benchmark_settings_scan_level" {
   default     = "MEDIUM"
   validation {
     condition     = contains(["STRICT", "MEDIUM", "LIGHT", "NONE"], upper(var.vss_agent_cis_benchmark_settings_scan_level))
-    error_message = "Validation failed for vss_agent_cis_benchmark_settings_scan_level: valid values are STRICT, MEDIUM, LIGHT, NONE (case insensitive)."
+    error_message = "VALIDATION FAILURE: Validation failed for vss_agent_cis_benchmark_settings_scan_level: valid values are STRICT, MEDIUM, LIGHT, NONE (case insensitive)."
   }
 }
 variable "vss_enable_file_scan" {
@@ -181,7 +181,7 @@ variable "bastion_jump_host_marketplace_image_ocid" {
   description = "The marketplace image OCID for the jump host. Marketplace image information can be obtained by running the example in https://github.com/oci-landing-zones/terraform-oci-modules-workloads/tree/main/marketplace-images/examples/marketplace-images. NOTE THAT BY DEPLOYING A MARKETPLACE IMAGE USING TERRAFORM YOU ARE IMPLICITLY AGREEING WITH OCI MARKETPLACE TERMS FOR THE PRICING MODEL THAT APPLY TO THE SELECTED IMAGE."
   validation {
     condition     = var.bastion_jump_host_marketplace_image_ocid == null || can(regex("^ocid1\\.image\\.[a-z0-9]+\\..[a-zA-Z0-9]{60}$", var.bastion_jump_host_marketplace_image_ocid))
-    error_message = "Validation failure for bastion_jump_host_marketplace_image_ocid: it must be null or a valid OCI marketplace image OCID (e.g. ocid1.image.<realm>..<unique_id>)."
+    error_message = "VALIDATION FAILURE: Validation failure for bastion_jump_host_marketplace_image_ocid: it must be null or a valid OCI marketplace image OCID (e.g. ocid1.image.<realm>..<unique_id>)."
   }
 }
 
@@ -233,7 +233,7 @@ variable "bastion_service_allowed_cidrs" {
   description = "List of the bastion service allowed cidrs. This is required if deploy_bastion_service is set to true. Avoid 0.0.0.0/0 by all means."
   validation {
     condition     = length([for c in var.bastion_service_allowed_cidrs : c if length(regexall("^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/([0-9]|[1-2][0-9]|3[0-2]))?$", c)) > 0]) == length(var.bastion_service_allowed_cidrs)
-    error_message = "Validation failed for bastion_service_allowed_cidrs: values must be in CIDR notation. This is required if deploy_bastion_service is set to true. Be specific, avoid entering 0.0.0.0/0 by all means."
+    error_message = "VALIDATION FAILURE: Validation failed for bastion_service_allowed_cidrs: values must be in CIDR notation. This is required if deploy_bastion_service is set to true. Be specific, avoid entering 0.0.0.0/0 by all means."
   }
 }
 

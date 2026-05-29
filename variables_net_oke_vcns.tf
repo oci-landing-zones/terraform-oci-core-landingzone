@@ -29,7 +29,7 @@ variable "oke_vcn1_cidrs" {
   description = "The list of CIDR blocks for the VCN."
   validation {
     condition     = alltrue([for v in var.oke_vcn1_cidrs : can(cidrhost(v, 0))])
-    error_message = "Invalid value provided for oke_vcn1_cidrs variable: all values must be in valid CIDR notation (e.g., 10.3.0.0/16)."
+    error_message = "VALIDATION FAILURE: Invalid value provided for oke_vcn1_cidrs variable: all values must be in valid CIDR notation (e.g., 10.3.0.0/16)."
   }
 }
 
@@ -45,7 +45,7 @@ variable "oke_vcn1_routable_vcns" {
   description = "The VCN labels that this VCN can send traffic to. Only applicable for Network topology where a DRG is deployed as the hub. Valid values: TT-VCN-1, TT-VCN-2, TT-VCN-3, EXA-VCN-1, EXA-VCN-2, EXA-VCN3, OKE-VCN-2, OKE-VCN-3."
   validation {
     condition     = length(var.oke_vcn1_routable_vcns) == 0 ? true : (length(var.oke_vcn1_routable_vcns) == 0 || alltrue([for label in var.oke_vcn1_routable_vcns : contains(["TT-VCN-1", "TT-VCN-2", "TT-VCN-3", "EXA-VCN-1", "EXA-VCN-2", "EXA-VCN-3", "OKE-VCN-2", "OKE-VCN-3"], label)]))
-    error_message = "Invalid value provided for oke_vcn1_routable_vcns variable: it must be empty or contain only valid VCN labels: \"TT-VCN-1\",\"TT-VCN-2\",\"TT-VCN-3\",\"EXA-VCN-1\",\"EXA-VCN-2\",\"EXA-VCN-3\",\"OKE-VCN-2\",\"OKE-VCN-3\"."
+    error_message = "VALIDATION FAILURE: Invalid value provided for oke_vcn1_routable_vcns variable: it must be empty or contain only valid VCN labels: \"TT-VCN-1\",\"TT-VCN-2\",\"TT-VCN-3\",\"EXA-VCN-1\",\"EXA-VCN-2\",\"EXA-VCN-3\",\"OKE-VCN-2\",\"OKE-VCN-3\"."
   }
 }
 
@@ -68,7 +68,7 @@ variable "oke_vcn1_additional_nsgs" {
       can(keys(var.oke_vcn1_additional_nsgs)) ||
       can(keys(jsondecode(var.oke_vcn1_additional_nsgs)))
     )
-    error_message = "oke_vcn1_additional_nsgs must be null, empty, a map/object, or a JSON object string."
+    error_message = "VALIDATION FAILURE: oke_vcn1_additional_nsgs must be null, empty, a map/object, or a JSON object string."
   }
 }
 
@@ -78,7 +78,7 @@ variable "oke_vcn1_api_subnet_cidr" {
   description = "The API subnet CIDR block. It must be within the VCN CIDR blocks."
   validation {
     condition     = var.oke_vcn1_api_subnet_cidr == null || can(cidrhost(var.oke_vcn1_api_subnet_cidr, 0))
-    error_message = "Invalid value provided for oke_vcn1_api_subnet_cidr variable: value must be in valid CIDR notation (e.g., 10.3.0.0/16)."
+    error_message = "VALIDATION FAILURE: Invalid value provided for oke_vcn1_api_subnet_cidr variable: value must be in valid CIDR notation (e.g., 10.3.0.0/16)."
   }
 }
 
@@ -94,7 +94,7 @@ variable "oke_vcn1_workers_subnet_cidr" {
   description = "The Workers subnet CIDR block. It must be within the VCN CIDR blocks."
   validation {
     condition     = var.oke_vcn1_workers_subnet_cidr == null || can(cidrhost(var.oke_vcn1_workers_subnet_cidr, 0))
-    error_message = "Invalid value provided for oke_vcn1_workers_subnet_cidr variable: value must be in valid CIDR notation (e.g., 10.3.0.0/16)."
+    error_message = "VALIDATION FAILURE: Invalid value provided for oke_vcn1_workers_subnet_cidr variable: value must be in valid CIDR notation (e.g., 10.3.0.0/16)."
   }
 }
 
@@ -110,7 +110,7 @@ variable "oke_vcn1_services_subnet_cidr" {
   description = "The Services subnet CIDR block. It must be within the VCN CIDR blocks."
   validation {
     condition     = var.oke_vcn1_services_subnet_cidr == null || can(cidrhost(var.oke_vcn1_services_subnet_cidr, 0))
-    error_message = "Invalid value provided for oke_vcn1_services_subnet_cidr variable: value must be in valid CIDR notation (e.g., 10.3.0.0/16)."
+    error_message = "VALIDATION FAILURE: Invalid value provided for oke_vcn1_services_subnet_cidr variable: value must be in valid CIDR notation (e.g., 10.3.0.0/16)."
   }
 }
 
@@ -132,7 +132,7 @@ variable "oke_vcn1_external_allowed_cidrs_into_services_tier" {
   description = "The list of external CIDRs blocks allowed for ingress packets into oke_vcn1 VCN Services Network Security Group. Use this to limit the range of IP addresses that can access the services tier."
   validation {
     condition     = length(var.oke_vcn1_external_allowed_cidrs_into_services_tier) == 0 ? true : alltrue([for v in var.oke_vcn1_external_allowed_cidrs_into_services_tier : can(cidrhost(v, 0))])
-    error_message = "Invalid value provided for oke_vcn1_external_allowed_cidrs_into_services_tier variable: all values must be in valid CIDR notation (e.g., 178.231.15.71/32)."
+    error_message = "VALIDATION FAILURE: Invalid value provided for oke_vcn1_external_allowed_cidrs_into_services_tier variable: all values must be in valid CIDR notation (e.g., 178.231.15.71/32)."
   }
 }
 
@@ -142,7 +142,7 @@ variable "oke_vcn1_services_ingress_destination_ports" {
   description = "The list of protocols and destination ports allowed for ingress packets into OKE Services Network Security Group."
   validation {
     condition     = length(var.oke_vcn1_services_ingress_destination_ports) == 0 ? true : alltrue([for v in var.oke_vcn1_services_ingress_destination_ports : can(regex("^[^:]+:[^:]+$", v))])
-    error_message = "Invalid value provided for oke_vcn1_services_ingress_destination_ports variable: all values must be in the form protocol:port, with exactly one ':' separating protocol and port values."
+    error_message = "VALIDATION FAILURE: Invalid value provided for oke_vcn1_services_ingress_destination_ports variable: all values must be in the form protocol:port, with exactly one ':' separating protocol and port values."
   }
 }
 
@@ -159,7 +159,7 @@ variable "oke_vcn1_db_subnet_cidr" {
   description = "The Database subnet CIDR block. It must be within the VCN CIDR blocks."
   validation {
     condition     = var.oke_vcn1_db_subnet_cidr == null || can(cidrhost(var.oke_vcn1_db_subnet_cidr, 0))
-    error_message = "Invalid value provided for oke_vcn1_db_subnet_cidr variable: value must be in valid CIDR notation (e.g., 10.3.0.0/28)."
+    error_message = "VALIDATION FAILURE: Invalid value provided for oke_vcn1_db_subnet_cidr variable: value must be in valid CIDR notation (e.g., 10.3.0.0/28)."
   }
 }
 
@@ -175,7 +175,7 @@ variable "oke_vcn1_db_ingress_destination_ports" {
   description = "Protocols and destination ports allowed for ingress packets into the OKE VCN1 database Network Security Group. Each value must be in the form protocol:port (e.g., 'TCP:1521')."
   validation {
     condition     = length(var.oke_vcn1_db_ingress_destination_ports) == 0 ? true : alltrue([for v in var.oke_vcn1_db_ingress_destination_ports : can(regex("^[^:]+:[^:]+$", v))])
-    error_message = "Invalid value provided for oke_vcn1_db_ingress_destination_ports variable: all values must be in the form protocol:port, with exactly one ':' separating protocol and port values."
+    error_message = "VALIDATION FAILURE: Invalid value provided for oke_vcn1_db_ingress_destination_ports variable: all values must be in the form protocol:port, with exactly one ':' separating protocol and port values."
   }
 }
 
@@ -191,7 +191,7 @@ variable "oke_vcn1_mgmt_subnet_cidr" {
   description = "The Management subnet CIDR block. It must be within the VCN CIDR blocks."
   validation {
     condition     = var.oke_vcn1_mgmt_subnet_cidr == null || can(cidrhost(var.oke_vcn1_mgmt_subnet_cidr, 0))
-    error_message = "Invalid value provided for oke_vcn1_mgmt_subnet_cidr variable: value must be in valid CIDR notation (e.g., 10.3.0.0/16)."
+    error_message = "VALIDATION FAILURE: Invalid value provided for oke_vcn1_mgmt_subnet_cidr variable: value must be in valid CIDR notation (e.g., 10.3.0.0/16)."
   }
 }
 
@@ -213,7 +213,7 @@ variable "oke_vcn1_pods_subnet_cidr" {
   description = "The Pods subnet CIDR block. It must be within the VCN CIDR blocks."
   validation {
     condition     = var.oke_vcn1_pods_subnet_cidr == null || can(cidrhost(var.oke_vcn1_pods_subnet_cidr, 0))
-    error_message = "Invalid value provided for oke_vcn1_pods_subnet_cidr variable: value must be in valid CIDR notation (e.g., 10.3.0.0/16)."
+    error_message = "VALIDATION FAILURE: Invalid value provided for oke_vcn1_pods_subnet_cidr variable: value must be in valid CIDR notation (e.g., 10.3.0.0/16)."
   }
 }
 
@@ -256,7 +256,7 @@ variable "oke_vcn2_cidrs" {
   description = "The list of CIDR blocks for the VCN."
   validation {
     condition     = alltrue([for v in var.oke_vcn2_cidrs : can(cidrhost(v, 0))])
-    error_message = "Invalid value provided for oke_vcn2_cidrs variable: all values must be in valid CIDR notation (e.g., 10.4.0.0/16)."
+    error_message = "VALIDATION FAILURE: Invalid value provided for oke_vcn2_cidrs variable: all values must be in valid CIDR notation (e.g., 10.4.0.0/16)."
   }
 }
 
@@ -272,7 +272,7 @@ variable "oke_vcn2_routable_vcns" {
   description = "The VCN labels that this VCN can send traffic to. Only applicable for Network topology where a DRG is deployed as the hub. Valid values: TT-VCN-1, TT-VCN-2, TT-VCN-3, EXA-VCN-1, EXA-VCN-2, EXA-VCN3, OKE-VCN-1, OKE-VCN-3"
   validation {
     condition     = length(var.oke_vcn2_routable_vcns) == 0 ? true : (length(var.oke_vcn2_routable_vcns) == 0 || alltrue([for label in var.oke_vcn2_routable_vcns : contains(["TT-VCN-1", "TT-VCN-2", "TT-VCN-3", "EXA-VCN-1", "EXA-VCN-2", "EXA-VCN-3", "OKE-VCN-1", "OKE-VCN-3"], label)]))
-    error_message = "Invalid value provided for oke_vcn1_routable_vcns variable: it must be empty or contain only valid VCN labels: \"TT-VCN-1\",\"TT-VCN-2\",\"TT-VCN-3\",\"EXA-VCN-1\",\"EXA-VCN-2\",\"EXA-VCN-3\",\"OKE-VCN-1\",\"OKE-VCN-3\"."
+    error_message = "VALIDATION FAILURE: Invalid value provided for oke_vcn1_routable_vcns variable: it must be empty or contain only valid VCN labels: \"TT-VCN-1\",\"TT-VCN-2\",\"TT-VCN-3\",\"EXA-VCN-1\",\"EXA-VCN-2\",\"EXA-VCN-3\",\"OKE-VCN-1\",\"OKE-VCN-3\"."
   }
 }
 
@@ -295,7 +295,7 @@ variable "oke_vcn2_additional_nsgs" {
       can(keys(var.oke_vcn2_additional_nsgs)) ||
       can(keys(jsondecode(var.oke_vcn2_additional_nsgs)))
     )
-    error_message = "oke_vcn2_additional_nsgs must be null, empty, a map/object, or a JSON object string."
+    error_message = "VALIDATION FAILURE: oke_vcn2_additional_nsgs must be null, empty, a map/object, or a JSON object string."
   }
 }
 
@@ -305,7 +305,7 @@ variable "oke_vcn2_api_subnet_cidr" {
   description = "The API subnet CIDR block. It must be within the VCN CIDR blocks."
   validation {
     condition     = var.oke_vcn2_api_subnet_cidr == null || can(cidrhost(var.oke_vcn2_api_subnet_cidr, 0))
-    error_message = "Invalid value provided for oke_vcn2_api_subnet_cidr variable: value must be in valid CIDR notation (e.g., 10.4.0.0/16)."
+    error_message = "VALIDATION FAILURE: Invalid value provided for oke_vcn2_api_subnet_cidr variable: value must be in valid CIDR notation (e.g., 10.4.0.0/16)."
   }
 }
 
@@ -321,7 +321,7 @@ variable "oke_vcn2_workers_subnet_cidr" {
   description = "The Workers subnet CIDR block. It must be within the VCN CIDR blocks."
   validation {
     condition     = var.oke_vcn2_workers_subnet_cidr == null || can(cidrhost(var.oke_vcn2_workers_subnet_cidr, 0))
-    error_message = "Invalid value provided for oke_vcn2_workers_subnet_cidr variable: value must be in valid CIDR notation (e.g., 10.4.0.0/16)."
+    error_message = "VALIDATION FAILURE: Invalid value provided for oke_vcn2_workers_subnet_cidr variable: value must be in valid CIDR notation (e.g., 10.4.0.0/16)."
   }
 }
 
@@ -337,7 +337,7 @@ variable "oke_vcn2_services_subnet_cidr" {
   description = "The Services subnet CIDR block. It must be within the VCN CIDR blocks."
   validation {
     condition     = var.oke_vcn2_services_subnet_cidr == null || can(cidrhost(var.oke_vcn2_services_subnet_cidr, 0))
-    error_message = "Invalid value provided for oke_vcn2_services_subnet_cidr variable: value must be in valid CIDR notation (e.g., 10.4.0.0/16)."
+    error_message = "VALIDATION FAILURE: Invalid value provided for oke_vcn2_services_subnet_cidr variable: value must be in valid CIDR notation (e.g., 10.4.0.0/16)."
   }
 }
 
@@ -359,7 +359,7 @@ variable "oke_vcn2_external_allowed_cidrs_into_services_tier" {
   description = "The list of external CIDRs blocks allowed for ingress packets into oke_vcn2 VCN Services Network Security Group. Use this to limit the range of IP addresses that can access the services tier."
   validation {
     condition     = length(var.oke_vcn2_external_allowed_cidrs_into_services_tier) == 0 ? true : alltrue([for v in var.oke_vcn2_external_allowed_cidrs_into_services_tier : can(cidrhost(v, 0))])
-    error_message = "Invalid value provided for oke_vcn2_external_allowed_cidrs_into_services_tier variable: all values must be in valid CIDR notation (e.g., 178.231.15.71/32)."
+    error_message = "VALIDATION FAILURE: Invalid value provided for oke_vcn2_external_allowed_cidrs_into_services_tier variable: all values must be in valid CIDR notation (e.g., 178.231.15.71/32)."
   }
 }
 
@@ -369,7 +369,7 @@ variable "oke_vcn2_services_ingress_destination_ports" {
   description = "The list of protocols and destination ports allowed for ingress packets into OKE Services Network Security Group."
   validation {
     condition     = length(var.oke_vcn2_services_ingress_destination_ports) == 0 ? true : alltrue([for v in var.oke_vcn2_services_ingress_destination_ports : can(regex("^[^:]+:[^:]+$", v))])
-    error_message = "Invalid value provided for oke_vcn2_services_ingress_destination_ports variable: all values must be in the form protocol:port, with exactly one ':' separating protocol and port values."
+    error_message = "VALIDATION FAILURE: Invalid value provided for oke_vcn2_services_ingress_destination_ports variable: all values must be in the form protocol:port, with exactly one ':' separating protocol and port values."
   }
 }
 
@@ -385,7 +385,7 @@ variable "oke_vcn2_db_subnet_cidr" {
   description = "The Database subnet CIDR block. It must be within the VCN CIDR blocks."
   validation {
     condition     = var.oke_vcn2_db_subnet_cidr == null || can(cidrhost(var.oke_vcn2_db_subnet_cidr, 0))
-    error_message = "Invalid value provided for oke_vcn2_db_subnet_cidr variable: value must be in valid CIDR notation (e.g., 10.4.0.0/28)."
+    error_message = "VALIDATION FAILURE: Invalid value provided for oke_vcn2_db_subnet_cidr variable: value must be in valid CIDR notation (e.g., 10.4.0.0/28)."
   }
 }
 
@@ -401,7 +401,7 @@ variable "oke_vcn2_db_ingress_destination_ports" {
   description = "Protocols and destination ports allowed for ingress packets into the OKE VCN2 database Network Security Group. Each value must be in the form protocol:port (e.g., 'TCP:1521')."
   validation {
     condition     = length(var.oke_vcn2_db_ingress_destination_ports) == 0 ? true : alltrue([for v in var.oke_vcn2_db_ingress_destination_ports : can(regex("^[^:]+:[^:]+$", v))])
-    error_message = "Invalid value provided for oke_vcn2_db_ingress_destination_ports variable: all values must be in the form protocol:port, with exactly one ':' separating protocol and port values."
+    error_message = "VALIDATION FAILURE: Invalid value provided for oke_vcn2_db_ingress_destination_ports variable: all values must be in the form protocol:port, with exactly one ':' separating protocol and port values."
   }
 }
 
@@ -417,7 +417,7 @@ variable "oke_vcn2_mgmt_subnet_cidr" {
   description = "The Management subnet CIDR block. It must be within the VCN CIDR blocks."
   validation {
     condition     = var.oke_vcn2_mgmt_subnet_cidr == null || can(cidrhost(var.oke_vcn2_mgmt_subnet_cidr, 0))
-    error_message = "Invalid value provided for oke_vcn2_mgmt_subnet_cidr variable: value must be in valid CIDR notation (e.g., 10.4.0.0/16)."
+    error_message = "VALIDATION FAILURE: Invalid value provided for oke_vcn2_mgmt_subnet_cidr variable: value must be in valid CIDR notation (e.g., 10.4.0.0/16)."
   }
 }
 
@@ -439,7 +439,7 @@ variable "oke_vcn2_pods_subnet_cidr" {
   description = "The Pods subnet CIDR block. It must be within the VCN CIDR blocks."
   validation {
     condition     = var.oke_vcn2_pods_subnet_cidr == null || can(cidrhost(var.oke_vcn2_pods_subnet_cidr, 0))
-    error_message = "Invalid value provided for oke_vcn2_pods_subnet_cidr variable: value must be in valid CIDR notation (e.g., 10.4.0.0/16)."
+    error_message = "VALIDATION FAILURE: Invalid value provided for oke_vcn2_pods_subnet_cidr variable: value must be in valid CIDR notation (e.g., 10.4.0.0/16)."
   }
 }
 
@@ -482,7 +482,7 @@ variable "oke_vcn3_cidrs" {
   description = "The list of CIDR blocks for the VCN."
   validation {
     condition     = alltrue([for v in var.oke_vcn3_cidrs : can(cidrhost(v, 0))])
-    error_message = "Invalid value provided for oke_vcn3_cidrs variable: all values must be in valid CIDR notation (e.g., 10.5.0.0/16)."
+    error_message = "VALIDATION FAILURE: Invalid value provided for oke_vcn3_cidrs variable: all values must be in valid CIDR notation (e.g., 10.5.0.0/16)."
   }
 }
 
@@ -498,7 +498,7 @@ variable "oke_vcn3_routable_vcns" {
   description = "The VCN labels that this VCN can send traffic to. Only applicable for Network topology where a DRG is deployed as the hub. Valid values: TT-VCN-1, TT-VCN-2, TT-VCN-3, EXA-VCN-1, EXA-VCN-2, EXA-VCN3, OKE-VCN-1, OKE-VCN-2."
   validation {
     condition     = length(var.oke_vcn3_routable_vcns) == 0 ? true : (length(var.oke_vcn3_routable_vcns) == 0 || alltrue([for label in var.oke_vcn3_routable_vcns : contains(["TT-VCN-1", "TT-VCN-2", "TT-VCN-3", "EXA-VCN-1", "EXA-VCN-2", "EXA-VCN-3", "OKE-VCN-1", "OKE-VCN-2"], label)]))
-    error_message = "Invalid value provided for oke_vcn3_routable_vcns variable: it must be empty or contain only valid VCN labels: \"TT-VCN-1\",\"TT-VCN-2\",\"TT-VCN-3\",\"EXA-VCN-1\",\"EXA-VCN-2\",\"EXA-VCN-3\",\"OKE-VCN-1\",\"OKE-VCN-2\"."
+    error_message = "VALIDATION FAILURE: Invalid value provided for oke_vcn3_routable_vcns variable: it must be empty or contain only valid VCN labels: \"TT-VCN-1\",\"TT-VCN-2\",\"TT-VCN-3\",\"EXA-VCN-1\",\"EXA-VCN-2\",\"EXA-VCN-3\",\"OKE-VCN-1\",\"OKE-VCN-2\"."
   }
 }
 
@@ -521,7 +521,7 @@ variable "oke_vcn3_additional_nsgs" {
       can(keys(var.oke_vcn3_additional_nsgs)) ||
       can(keys(jsondecode(var.oke_vcn3_additional_nsgs)))
     )
-    error_message = "oke_vcn3_additional_nsgs must be null, empty, a map/object, or a JSON object string."
+    error_message = "VALIDATION FAILURE: oke_vcn3_additional_nsgs must be null, empty, a map/object, or a JSON object string."
   }
 }
 
@@ -531,7 +531,7 @@ variable "oke_vcn3_api_subnet_cidr" {
   description = "The API subnet CIDR block. It must be within the VCN CIDR blocks."
   validation {
     condition     = var.oke_vcn3_api_subnet_cidr == null || can(cidrhost(var.oke_vcn3_api_subnet_cidr, 0))
-    error_message = "Invalid value provided for oke_vcn3_api_subnet_cidr variable: value must be in valid CIDR notation (e.g., 10.5.0.0/16)."
+    error_message = "VALIDATION FAILURE: Invalid value provided for oke_vcn3_api_subnet_cidr variable: value must be in valid CIDR notation (e.g., 10.5.0.0/16)."
   }
 }
 
@@ -547,7 +547,7 @@ variable "oke_vcn3_workers_subnet_cidr" {
   description = "The Workers subnet CIDR block. It must be within the VCN CIDR blocks."
   validation {
     condition     = var.oke_vcn3_workers_subnet_cidr == null || can(cidrhost(var.oke_vcn3_workers_subnet_cidr, 0))
-    error_message = "Invalid value provided for oke_vcn3_workers_subnet_cidr variable: value must be in valid CIDR notation (e.g., 10.5.0.0/16)."
+    error_message = "VALIDATION FAILURE: Invalid value provided for oke_vcn3_workers_subnet_cidr variable: value must be in valid CIDR notation (e.g., 10.5.0.0/16)."
   }
 }
 
@@ -563,7 +563,7 @@ variable "oke_vcn3_services_subnet_cidr" {
   description = "The Services subnet CIDR block. It must be within the VCN CIDR blocks."
   validation {
     condition     = var.oke_vcn3_services_subnet_cidr == null || can(cidrhost(var.oke_vcn3_services_subnet_cidr, 0))
-    error_message = "Invalid value provided for oke_vcn3_services_subnet_cidr variable: value must be in valid CIDR notation (e.g., 10.5.0.0/16)."
+    error_message = "VALIDATION FAILURE: Invalid value provided for oke_vcn3_services_subnet_cidr variable: value must be in valid CIDR notation (e.g., 10.5.0.0/16)."
   }
 }
 
@@ -585,7 +585,7 @@ variable "oke_vcn3_external_allowed_cidrs_into_services_tier" {
   description = "The list of external CIDRs blocks allowed for ingress packets into oke_vcn3 VCN Services Network Security Group. Use this to limit the range of IP addresses that can access the services tier."
   validation {
     condition     = length(var.oke_vcn3_external_allowed_cidrs_into_services_tier) == 0 ? true : alltrue([for v in var.oke_vcn3_external_allowed_cidrs_into_services_tier : can(cidrhost(v, 0))])
-    error_message = "Invalid value provided for oke_vcn3_external_allowed_cidrs_into_services_tier variable: all values must be in valid CIDR notation (e.g., 178.231.15.71/32)."
+    error_message = "VALIDATION FAILURE: Invalid value provided for oke_vcn3_external_allowed_cidrs_into_services_tier variable: all values must be in valid CIDR notation (e.g., 178.231.15.71/32)."
   }
 }
 
@@ -595,7 +595,7 @@ variable "oke_vcn3_services_ingress_destination_ports" {
   description = "The list of protocols and destination ports allowed for ingress packets into OKE Services Network Security Group."
   validation {
     condition     = length(var.oke_vcn3_services_ingress_destination_ports) == 0 ? true : alltrue([for v in var.oke_vcn3_services_ingress_destination_ports : can(regex("^[^:]+:[^:]+$", v))])
-    error_message = "Invalid value provided for oke_vcn3_services_ingress_destination_ports variable: all values must be in the form protocol:port, with exactly one ':' separating protocol and port values."
+    error_message = "VALIDATION FAILURE: Invalid value provided for oke_vcn3_services_ingress_destination_ports variable: all values must be in the form protocol:port, with exactly one ':' separating protocol and port values."
   }
 }
 
@@ -611,7 +611,7 @@ variable "oke_vcn3_db_subnet_cidr" {
   description = "The Database subnet CIDR block. It must be within the VCN CIDR blocks."
   validation {
     condition     = var.oke_vcn3_db_subnet_cidr == null || can(cidrhost(var.oke_vcn3_db_subnet_cidr, 0))
-    error_message = "Invalid value provided for oke_vcn3_db_subnet_cidr variable: value must be in valid CIDR notation (e.g., 10.5.0.0/28)."
+    error_message = "VALIDATION FAILURE: Invalid value provided for oke_vcn3_db_subnet_cidr variable: value must be in valid CIDR notation (e.g., 10.5.0.0/28)."
   }
 }
 
@@ -627,7 +627,7 @@ variable "oke_vcn3_db_ingress_destination_ports" {
   description = "Protocols and destination ports allowed for ingress packets into the OKE VCN3 database Network Security Group. Each value must be in the form protocol:port (e.g., 'TCP:1521')."
   validation {
     condition     = length(var.oke_vcn3_db_ingress_destination_ports) == 0 ? true : alltrue([for v in var.oke_vcn3_db_ingress_destination_ports : can(regex("^[^:]+:[^:]+$", v))])
-    error_message = "Invalid value provided for oke_vcn3_db_ingress_destination_ports variable: all values must be in the form protocol:port, with exactly one ':' separating protocol and port values."
+    error_message = "VALIDATION FAILURE: Invalid value provided for oke_vcn3_db_ingress_destination_ports variable: all values must be in the form protocol:port, with exactly one ':' separating protocol and port values."
   }
 }
 
@@ -643,7 +643,7 @@ variable "oke_vcn3_mgmt_subnet_cidr" {
   description = "The Management subnet CIDR block. It must be within the VCN CIDR blocks."
   validation {
     condition     = var.oke_vcn3_mgmt_subnet_cidr == null || can(cidrhost(var.oke_vcn3_mgmt_subnet_cidr, 0))
-    error_message = "Invalid value provided for oke_vcn3_mgmt_subnet_cidr variable: value must be in valid CIDR notation (e.g., 10.5.0.0/16)."
+    error_message = "VALIDATION FAILURE: Invalid value provided for oke_vcn3_mgmt_subnet_cidr variable: value must be in valid CIDR notation (e.g., 10.5.0.0/16)."
   }
 }
 
@@ -665,7 +665,7 @@ variable "oke_vcn3_pods_subnet_cidr" {
   description = "The Pods subnet CIDR block. It must be within the VCN CIDR blocks."
   validation {
     condition     = var.oke_vcn3_pods_subnet_cidr == null || can(cidrhost(var.oke_vcn3_pods_subnet_cidr, 0))
-    error_message = "Invalid value provided for oke_vcn3_pods_subnet_cidr variable: value must be in valid CIDR notation (e.g., 10.5.0.0/16)."
+    error_message = "VALIDATION FAILURE: Invalid value provided for oke_vcn3_pods_subnet_cidr variable: value must be in valid CIDR notation (e.g., 10.5.0.0/16)."
   }
 }
 

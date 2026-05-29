@@ -20,7 +20,7 @@ variable "exa_vcn1_cidrs" {
   description = "The list of CIDR blocks for the VCN."
   validation {
     condition     = alltrue([for v in var.exa_vcn1_cidrs : can(cidrhost(v, 0))])
-    error_message = "Invalid value provided for exa_vcn1_cidrs variable: all values must be in valid CIDR notation (e.g., 172.16.0.0/20)."
+    error_message = "VALIDATION FAILURE: Invalid value provided for exa_vcn1_cidrs variable: all values must be in valid CIDR notation (e.g., 172.16.0.0/20)."
   }
 }
 variable "exa_vcn1_attach_to_drg" {
@@ -44,7 +44,7 @@ variable "exa_vcn1_external_allowed_cidrs_into_client_tier" {
   description = "The list of external CIDR blocks allowed for ingress packets into Exadata VCN1 Client Network Security Group. Use this to limit the range of IP addresses that can access the client tier."
   validation {
     condition     = length(var.exa_vcn1_external_allowed_cidrs_into_client_tier) == 0 ? true : alltrue([for v in var.exa_vcn1_external_allowed_cidrs_into_client_tier : can(cidrhost(v, 0))])
-    error_message = "Invalid value provided for exa_vcn1_external_allowed_cidrs_into_client_tier variable: all values must be in valid CIDR notation (e.g., 178.231.15.71/32)."
+    error_message = "VALIDATION FAILURE: Invalid value provided for exa_vcn1_external_allowed_cidrs_into_client_tier variable: all values must be in valid CIDR notation (e.g., 178.231.15.71/32)."
   }
 }
 variable "exa_vcn1_client_ingress_destination_ports" {
@@ -53,7 +53,7 @@ variable "exa_vcn1_client_ingress_destination_ports" {
   description = "The list of protocols and destination ports allowed for ingress packets into Exadata VCN1 Client Network Security Group."
   validation {
     condition     = length(var.exa_vcn1_client_ingress_destination_ports) == 0 ? true : alltrue([for v in var.exa_vcn1_client_ingress_destination_ports : can(regex("^[^:]+:[^:]+$", v))])
-    error_message = "Invalid value provided for exa_vcn1_client_ingress_destination_ports variable: all values must be in the form protocol:port, with exactly one ':' separating protocol and port values."
+    error_message = "VALIDATION FAILURE: Invalid value provided for exa_vcn1_client_ingress_destination_ports variable: all values must be in the form protocol:port, with exactly one ':' separating protocol and port values."
   }
 }
 variable "add_exa_vcn1_backup_subnet" {
@@ -92,7 +92,7 @@ variable "exa_vcn1_external_allowed_cidrs_into_integration_tier" {
   description = "The list of external CIDR blocks allowed for ingress packets into Exadata VCN1 Integration Network Security Group. Use this to limit the range of IP addresses that can access the integration tier."
   validation {
     condition     = length(var.exa_vcn1_external_allowed_cidrs_into_integration_tier) == 0 ? true : alltrue([for v in var.exa_vcn1_external_allowed_cidrs_into_integration_tier : can(cidrhost(v, 0))])
-    error_message = "Invalid value provided for exa_vcn1_external_allowed_cidrs_into_integration_tier variable: all values must be in valid CIDR notation (e.g., 178.231.15.71/32)."
+    error_message = "VALIDATION FAILURE: Invalid value provided for exa_vcn1_external_allowed_cidrs_into_integration_tier variable: all values must be in valid CIDR notation (e.g., 178.231.15.71/32)."
   }
 }
 variable "exa_vcn1_integration_ingress_destination_ports" {
@@ -101,7 +101,7 @@ variable "exa_vcn1_integration_ingress_destination_ports" {
   description = "The list of protocols and destination ports allowed for ingress packets into Exadata VCN1 Integration Network Security Group."
   validation {
     condition     = length(var.exa_vcn1_integration_ingress_destination_ports) == 0 ? true : alltrue([for v in var.exa_vcn1_integration_ingress_destination_ports : can(regex("^[^:]+:[^:]+$", v))])
-    error_message = "Invalid value provided for exa_vcn1_integration_ingress_destination_ports variable: all values must be in the form protocol:port, with exactly one ':' separating protocol and port values."
+    error_message = "VALIDATION FAILURE: Invalid value provided for exa_vcn1_integration_ingress_destination_ports variable: all values must be in the form protocol:port, with exactly one ':' separating protocol and port values."
   }
 }
 variable "exa_vcn1_routable_vcns" {
@@ -127,7 +127,7 @@ variable "exa_vcn1_additional_nsgs" {
       can(keys(var.exa_vcn1_additional_nsgs)) ||
       can(keys(jsondecode(var.exa_vcn1_additional_nsgs)))
     )
-    error_message = "exa_vcn1_additional_nsgs must be null, empty, a map/object, or a JSON object string."
+    error_message = "VALIDATION FAILURE: exa_vcn1_additional_nsgs must be null, empty, a map/object, or a JSON object string."
   }
 }
 variable "exa_vcn1_onprem_route_enable" {
@@ -155,7 +155,7 @@ variable "exa_vcn2_cidrs" {
   description = "The list of CIDR blocks for the VCN."
   validation {
     condition     = alltrue([for v in var.exa_vcn2_cidrs : can(cidrhost(v, 0))])
-    error_message = "Invalid value provided for exa_vcn2_cidrs variable: all values must be in valid CIDR notation (e.g., 172.17.0.0/20)."
+    error_message = "VALIDATION FAILURE: Invalid value provided for exa_vcn2_cidrs variable: all values must be in valid CIDR notation (e.g., 172.17.0.0/20)."
   }
 }
 variable "exa_vcn2_attach_to_drg" {
@@ -184,7 +184,7 @@ variable "exa_vcn2_external_allowed_cidrs_into_client_tier" {
   description = "The list of external CIDR blocks allowed for ingress packets into Exadata VCN2 Client Network Security Group. Use this to limit the range of IP addresses that can access the client tier."
   validation {
     condition     = length(var.exa_vcn2_external_allowed_cidrs_into_client_tier) == 0 ? true : alltrue([for v in var.exa_vcn2_external_allowed_cidrs_into_client_tier : can(cidrhost(v, 0))])
-    error_message = "Invalid value provided for exa_vcn2_external_allowed_cidrs_into_client_tier variable: all values must be in valid CIDR notation (e.g., 178.231.15.71/32)."
+    error_message = "VALIDATION FAILURE: Invalid value provided for exa_vcn2_external_allowed_cidrs_into_client_tier variable: all values must be in valid CIDR notation (e.g., 178.231.15.71/32)."
   }
 }
 variable "exa_vcn2_client_ingress_destination_ports" {
@@ -193,7 +193,7 @@ variable "exa_vcn2_client_ingress_destination_ports" {
   description = "The list of protocols and destination ports allowed for ingress packets into Exadata VCN2 Client Network Security Group."
   validation {
     condition     = length(var.exa_vcn2_client_ingress_destination_ports) == 0 ? true : alltrue([for v in var.exa_vcn2_client_ingress_destination_ports : can(regex("^[^:]+:[^:]+$", v))])
-    error_message = "Invalid value provided for exa_vcn2_client_ingress_destination_ports variable: all values must be in the form protocol:port, with exactly one ':' separating protocol and port values."
+    error_message = "VALIDATION FAILURE: Invalid value provided for exa_vcn2_client_ingress_destination_ports variable: all values must be in the form protocol:port, with exactly one ':' separating protocol and port values."
   }
 }
 variable "add_exa_vcn2_backup_subnet" {
@@ -232,7 +232,7 @@ variable "exa_vcn2_external_allowed_cidrs_into_integration_tier" {
   description = "The list of external CIDR blocks allowed for ingress packets into Exadata VCN2 Integration Network Security Group. Use this to limit the range of IP addresses that can access the integration tier."
   validation {
     condition     = length(var.exa_vcn2_external_allowed_cidrs_into_integration_tier) == 0 ? true : alltrue([for v in var.exa_vcn2_external_allowed_cidrs_into_integration_tier : can(cidrhost(v, 0))])
-    error_message = "Invalid value provided for exa_vcn2_external_allowed_cidrs_into_integration_tier variable: all values must be in valid CIDR notation (e.g., 178.231.15.71/32)."
+    error_message = "VALIDATION FAILURE: Invalid value provided for exa_vcn2_external_allowed_cidrs_into_integration_tier variable: all values must be in valid CIDR notation (e.g., 178.231.15.71/32)."
   }
 }
 variable "exa_vcn2_integration_ingress_destination_ports" {
@@ -241,7 +241,7 @@ variable "exa_vcn2_integration_ingress_destination_ports" {
   description = "The list of protocols and destination ports allowed for ingress packets into Exadata VCN2 Integration Network Security Group."
   validation {
     condition     = length(var.exa_vcn2_integration_ingress_destination_ports) == 0 ? true : alltrue([for v in var.exa_vcn2_integration_ingress_destination_ports : can(regex("^[^:]+:[^:]+$", v))])
-    error_message = "Invalid value provided for exa_vcn2_integration_ingress_destination_ports variable: all values must be in the form protocol:port, with exactly one ':' separating protocol and port values."
+    error_message = "VALIDATION FAILURE: Invalid value provided for exa_vcn2_integration_ingress_destination_ports variable: all values must be in the form protocol:port, with exactly one ':' separating protocol and port values."
   }
 }
 variable "exa_vcn2_routable_vcns" {
@@ -267,7 +267,7 @@ variable "exa_vcn2_additional_nsgs" {
       can(keys(var.exa_vcn2_additional_nsgs)) ||
       can(keys(jsondecode(var.exa_vcn2_additional_nsgs)))
     )
-    error_message = "exa_vcn2_additional_nsgs must be null, empty, a map/object, or a JSON object string."
+    error_message = "VALIDATION FAILURE: exa_vcn2_additional_nsgs must be null, empty, a map/object, or a JSON object string."
   }
 }
 variable "exa_vcn2_onprem_route_enable" {
@@ -294,7 +294,7 @@ variable "exa_vcn3_cidrs" {
   description = "The list of CIDR blocks for the VCN."
   validation {
     condition     = alltrue([for v in var.exa_vcn3_cidrs : can(cidrhost(v, 0))])
-    error_message = "Invalid value provided for exa_vcn3_cidrs variable: all values must be in valid CIDR notation (e.g., 172.18.0.0/20)."
+    error_message = "VALIDATION FAILURE: Invalid value provided for exa_vcn3_cidrs variable: all values must be in valid CIDR notation (e.g., 172.18.0.0/20)."
   }
 }
 variable "exa_vcn3_attach_to_drg" {
@@ -324,7 +324,7 @@ variable "exa_vcn3_external_allowed_cidrs_into_client_tier" {
   description = "The list of external CIDR blocks allowed for ingress packets into Exadata VCN3 Client Network Security Group. Use this to limit the range of IP addresses that can access the client tier."
   validation {
     condition     = length(var.exa_vcn3_external_allowed_cidrs_into_client_tier) == 0 ? true : alltrue([for v in var.exa_vcn3_external_allowed_cidrs_into_client_tier : can(cidrhost(v, 0))])
-    error_message = "Invalid value provided for exa_vcn3_external_allowed_cidrs_into_client_tier variable: all values must be in valid CIDR notation (e.g., 178.231.15.71/32)."
+    error_message = "VALIDATION FAILURE: Invalid value provided for exa_vcn3_external_allowed_cidrs_into_client_tier variable: all values must be in valid CIDR notation (e.g., 178.231.15.71/32)."
   }
 }
 variable "exa_vcn3_client_ingress_destination_ports" {
@@ -333,7 +333,7 @@ variable "exa_vcn3_client_ingress_destination_ports" {
   description = "The list of protocols and destination ports allowed for ingress packets into Exadata VCN3 Client Network Security Group."
   validation {
     condition     = length(var.exa_vcn3_client_ingress_destination_ports) == 0 ? true : alltrue([for v in var.exa_vcn3_client_ingress_destination_ports : can(regex("^[^:]+:[^:]+$", v))])
-    error_message = "Invalid value provided for exa_vcn3_client_ingress_destination_ports variable: all values must be in the form protocol:port, with exactly one ':' separating protocol and port values."
+    error_message = "VALIDATION FAILURE: Invalid value provided for exa_vcn3_client_ingress_destination_ports variable: all values must be in the form protocol:port, with exactly one ':' separating protocol and port values."
   }
 }
 variable "add_exa_vcn3_backup_subnet" {
@@ -372,7 +372,7 @@ variable "exa_vcn3_external_allowed_cidrs_into_integration_tier" {
   description = "The list of external CIDR blocks allowed for ingress packets into Exadata VCN3 Integration Network Security Group. Use this to limit the range of IP addresses that can access the integration tier."
   validation {
     condition     = length(var.exa_vcn3_external_allowed_cidrs_into_integration_tier) == 0 ? true : alltrue([for v in var.exa_vcn3_external_allowed_cidrs_into_integration_tier : can(cidrhost(v, 0))])
-    error_message = "Invalid value provided for exa_vcn3_external_allowed_cidrs_into_integration_tier variable: all values must be in valid CIDR notation (e.g., 178.231.15.71/32)."
+    error_message = "VALIDATION FAILURE: Invalid value provided for exa_vcn3_external_allowed_cidrs_into_integration_tier variable: all values must be in valid CIDR notation (e.g., 178.231.15.71/32)."
   }
 }
 variable "exa_vcn3_integration_ingress_destination_ports" {
@@ -381,7 +381,7 @@ variable "exa_vcn3_integration_ingress_destination_ports" {
   description = "The list of protocols and destination ports allowed for ingress packets into Exadata VCN3 Integration Network Security Group."
   validation {
     condition     = length(var.exa_vcn3_integration_ingress_destination_ports) == 0 ? true : alltrue([for v in var.exa_vcn3_integration_ingress_destination_ports : can(regex("^[^:]+:[^:]+$", v))])
-    error_message = "Invalid value provided for exa_vcn3_integration_ingress_destination_ports variable: all values must be in the form protocol:port, with exactly one ':' separating protocol and port values."
+    error_message = "VALIDATION FAILURE: Invalid value provided for exa_vcn3_integration_ingress_destination_ports variable: all values must be in the form protocol:port, with exactly one ':' separating protocol and port values."
   }
 }
 variable "exa_vcn3_routable_vcns" {
@@ -407,7 +407,7 @@ variable "exa_vcn3_additional_nsgs" {
       can(keys(var.exa_vcn3_additional_nsgs)) ||
       can(keys(jsondecode(var.exa_vcn3_additional_nsgs)))
     )
-    error_message = "exa_vcn3_additional_nsgs must be null, empty, a map/object, or a JSON object string."
+    error_message = "VALIDATION FAILURE: exa_vcn3_additional_nsgs must be null, empty, a map/object, or a JSON object string."
   }
 }
 variable "exa_vcn3_onprem_route_enable" {

@@ -11,7 +11,7 @@ variable "onprem_cidrs" {
   default     = []
   validation {
     condition     = length(var.onprem_cidrs) == 0 ? true : alltrue([for v in var.onprem_cidrs : can(cidrhost(v, 0))])
-    error_message = "Validation failed for onprem_cidrs: all values must be in CIDR notation (e.g., 10.0.0.0/24)."
+    error_message = "VALIDATION FAILURE: Validation failed for onprem_cidrs: all values must be in CIDR notation (e.g., 10.0.0.0/24)."
   }
 }
 
@@ -21,7 +21,7 @@ variable "allowed_onprem_cidrs_to_fw_mgmt_interface" {
   description = "List of on-prem CIDR blocks allowed to connect to Firewall Management interface. Provide a valid CIDR and configure variable fw_mgmt_interface_ports for enabling access.  Leave empty for no access."
   validation {
     condition     = length(var.allowed_onprem_cidrs_to_fw_mgmt_interface) == 0 ? true : alltrue([for v in var.allowed_onprem_cidrs_to_fw_mgmt_interface : can(cidrhost(v, 0))])
-    error_message = "Invalid value provided for allowed_onprem_cidrs_to_fw_mgmt_interface variable: all values must be in valid CIDR notation (e.g., 10.0.0.0/24)."
+    error_message = "VALIDATION FAILURE: Invalid value provided for allowed_onprem_cidrs_to_fw_mgmt_interface variable: all values must be in valid CIDR notation (e.g., 10.0.0.0/24)."
   }
 }
 # --------------------------------------------------------------------------
@@ -134,7 +134,7 @@ variable "fastconnect_virtual_circuit_bandwidth_shape" {
   description = "Bandwidth level (shape) of the Fast Connect virtual circuit."
   validation {
     condition     = length(regexall("^\\d+\\sGbps$", var.fastconnect_virtual_circuit_bandwidth_shape)) > 0
-    error_message = "The bandwidth shape of the FC virtual circuit must be in the form '<number> Gbps', e.g., '1 Gbps', '10 Gbps'"
+    error_message = "VALIDATION FAILURE: The bandwidth shape of the FC virtual circuit must be in the form '<number> Gbps', e.g., '1 Gbps', '10 Gbps'"
   }
 }
 
@@ -144,7 +144,7 @@ variable "fastconnect_virtual_circuit_bandwidth_custom_shape" {
   description = "Custom bandwidth level (shape) of the FastConnect virtual circuit. For example: '5 Gbps'"
   validation {
     condition     = length(regexall("^\\d+\\sGbps$", var.fastconnect_virtual_circuit_bandwidth_custom_shape)) > 0
-    error_message = "The bandwidth shape of the FC virtual circuit must be in the form '<number> Gbps', e.g. '2 Gbps', '5 Gbps'"
+    error_message = "VALIDATION FAILURE: The bandwidth shape of the FC virtual circuit must be in the form '<number> Gbps', e.g. '2 Gbps', '5 Gbps'"
   }
 }
 

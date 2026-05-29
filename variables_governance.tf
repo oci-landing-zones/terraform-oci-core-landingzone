@@ -10,7 +10,7 @@ variable "budget_alert_threshold" {
   description = "The threshold for triggering the alert expressed as a percentage of the monthly forecast spend. 100% is the default."
   validation {
     condition     = var.budget_alert_threshold > 0 && var.budget_alert_threshold < 10000
-    error_message = "Validation failed for budget_alert_threshold: The threshold percentage should be greater than 0 and less than or equal to 10,000, with no leading zeros and a maximum of 2 decimal places."
+    error_message = "VALIDATION FAILURE: Validation failed for budget_alert_threshold: The threshold percentage should be greater than 0 and less than or equal to 10,000, with no leading zeros and a maximum of 2 decimal places."
   }
 }
 variable "budget_amount" {
@@ -29,6 +29,6 @@ variable "budget_alert_email_endpoints" {
   description = "List of email addresses for budget alerts. (Type an email address and hit enter to enter multiple values)"
   validation {
     condition     = length([for e in var.budget_alert_email_endpoints : e if length(regexall("^[a-zA-Z0-9.!#$%&'*/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$", e)) > 0]) == length(var.budget_alert_email_endpoints)
-    error_message = "Validation failed budget_alert_email_endpoints: invalid email address."
+    error_message = "VALIDATION FAILURE: Validation failed budget_alert_email_endpoints: invalid email address."
   }
 }
