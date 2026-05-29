@@ -73,37 +73,72 @@ In addition to bug fixes, release 1.6.0 brings in significant extensibility enha
 
 ## Global Variable Changes from 1.5.5 to 1.6.0
 
-The table below summarizes all changes mentioned above. Before upgrading existing deployments, review any removed or replaced variables in your existing configurations. Variables shown with *{1,2,3}* exist once for each numbered VCN family member.
+The list below summarizes all changes mentioned above. Before upgrading existing deployments, review any removed or replaced variables in your existing configurations. Variables shown with *{1,2,3}* exist once for each numbered VCN family member.
 
-| Change | Variable(s) in 1.5.5 | Variable(s) in 1.6.0 | Upgrade guidance / what's new |
-| --- | --- | --- | --- |
-| Removed | **customize_bastion_service** | None | This was a Resource Manager UI control and has no direct replacement. See **add_hub_vcn_jumphost_subnet** and **deploy_bastion_service** variables for controlling optional OCI Bastion Service provisioning. |
-| Removed | **customize_jumphost_subnet** | None | This was a Resource Manager UI control and has no direct replacement. See **add_hub_vcn_jumphost_subnet** and **deploy_bastion_jump_host** variables for controlling optional Jump Host subnet provisioning. |
-| Replaced | **bastion_jump_host_marketplace_image_option** | **bastion_jump_host_image_source**, **bastion_jump_host_marketplace_image_name**, **bastion_jump_host_marketplace_image_version**, **bastion_jump_host_marketplace_image_ocid** | Replace the old Marketplace image option with the new image source plus image name/version or image OCID. Use **bastion_jump_host_image_source** = *"Marketplace Image"* for Marketplace images. |
-| Replaced | **hub_vcn_mgmt_subnet_external_allowed_cidrs_for_http**, **hub_vcn_mgmt_subnet_external_allowed_cidrs_for_ssh** | **allowed_onprem_cidrs_to_fw_mgmt_interface**, **fw_mgmt_interface_ports** | Move allowed firewall-management CIDRs to **allowed_onprem_cidrs_to_fw_mgmt_interface**, and list allowed protocol/port pairs such as *TCP:22* or *TCP:443* in **fw_mgmt_interface_ports**. |
-| Replaced | **net_palo_alto_version** | **net_appliance_image_vendor**, **net_appliance_marketplace_image_name**, **net_appliance_marketplace_image_version**, **net_appliance_marketplace_image_ocid** | Set **net_appliance_image_vendor** = *"PaloAlto"*. For Marketplace images, provide either **net_appliance_marketplace_image_ocid** or **net_appliance_marketplace_image_name** plus optional **net_appliance_marketplace_image_version**. |
-| Replaced | **net_fortigate_version** | **net_appliance_image_vendor**, **net_appliance_marketplace_image_name**, **net_appliance_marketplace_image_version**, **net_appliance_marketplace_image_ocid** | Set **net_appliance_image_vendor** = *"Fortinet"*. For Marketplace images, provide either **net_appliance_marketplace_image_ocid** or **net_appliance_marketplace_image_name** plus optional **net_appliance_marketplace_image_version**. |
-| Added | None | **custom_id_domain_compartment_ocid** | Resource Manager helper input for selecting the compartment containing an existing custom identity domain. Terraform CLI deployments can continue using **custom_id_domain_ocid** directly. |
-| Added | None | **enable_cross_vcn_constrained_nsgs**, **enable_cross_vcn_open_nsg** | Controls the new cross-VCN NSG modes. Constrained NSGs are enabled by default and take precedence for spoke VCNs if both modes are true. Hub VCN creates the open NSG when requested and leaves it unattached by default. |
-| Added | None | **add_hub_vcn_jumphost_subnet** | Controls whether the optional private Jump Host/Bastion subnet is created in the Hub VCN. |
-| Added | None | **allowed_onprem_cidrs_to_fw_mgmt_interface**, **fw_mgmt_interface_ports** | Provides a vendor-neutral way to allow selected on-premises CIDRs and ports into firewall management interfaces. |
-| Added | None | **hub_vcn_external_allowed_cidrs_into_web_tier**, **hub_vcn_web_ingress_destination_ports** | Controls default ingress CIDRs and protocol:port pairs for the Hub VCN Application Load Balancer NSG. Public Hub Web subnets allow **onprem_cidrs** plus **hub_vcn_external_allowed_cidrs_into_web_tier**; private Hub Web subnets allow **onprem_cidrs** only. Defaults preserve the existing public-subnet **0.0.0.0/0** on **TCP:443** behavior. |
-| Added | None | **net_appliance_image_vendor**, **net_appliance_marketplace_image_ocid**, **net_appliance_marketplace_image_name**, **net_appliance_marketplace_image_version** | Adds vendor and Marketplace image selection for Hub VCN network appliances, including support for Marketplace image OCIDs. |
-| Added | None | **bastion_jump_host_image_source**, **bastion_jump_host_marketplace_image_ocid**, **bastion_jump_host_marketplace_image_name**, **bastion_jump_host_marketplace_image_version**, **bastion_jump_host_platform_image_ocid** | Adds explicit image-source handling for Bastion Jump Host: Marketplace, platform, or custom images. |
-| Added | None | **define_hub_vcn_additional_nsgs**, **hub_vcn_additional_nsgs** | Allows additional Hub VCN NSGs to be defined without editing module internals. |
-| Added | None | **define_tt_vcn{1,2,3}_additional_nsgs**, **tt_vcn{1,2,3}_additional_nsgs** | Allows additional Three-Tier VCN NSGs to be defined per VCN. |
-| Added | None | **define_oke_vcn{1,2,3}_additional_nsgs**, **oke_vcn{1,2,3}_additional_nsgs** | Allows additional OKE VCN NSGs to be defined per VCN. |
-| Added | None | **define_exa_vcn{1,2,3}_additional_nsgs**, **exa_vcn{1,2,3}_additional_nsgs** | Allows additional Exadata VCN NSGs to be defined per VCN. |
-| Added | None | **tt_vcn{1,2,3}_external_allowed_cidrs_into_web_tier** | Lets users restrict external CIDRs allowed into Three-Tier Web/LBR tiers. Defaults preserve the existing behavior. |
-| Added | None | **tt_vcn{1,2,3}_web_ingress_destination_ports**, **tt_vcn{1,2,3}_app_ingress_destination_ports**, **tt_vcn{1,2,3}_db_ingress_destination_ports** | Exposes previously hardcoded Three-Tier NSG ingress destination ports. |
-| Added | None | **oke_vcn{1,2,3}_services_subnet_is_private** | Allows OKE services subnets to be made private. |
-| Added | None | **add_oke_vcn{1,2,3}_db_subnet**, **oke_vcn{1,2,3}_db_subnet_cidr**, **oke_vcn{1,2,3}_db_subnet_name** | Adds optional DB subnets to OKE VCNs. |
-| Added | None | **oke_vcn{1,2,3}_external_allowed_cidrs_into_services_tier** | Lets users restrict external CIDRs allowed into OKE services tiers. Defaults preserve the existing behavior. |
-| Added | None | **oke_vcn{1,2,3}_services_ingress_destination_ports**, **oke_vcn{1,2,3}_db_ingress_destination_ports** | Exposes OKE Services and DB NSG ingress destination ports. |
-| Added | None | **add_exa_vcn{1,2,3}_backup_subnet** | Makes Exadata backup subnets optional. Defaults preserve existing behavior (true by default). |
-| Added | None | **add_exa_vcn{1,2,3}_integration_subnet**, **exa_vcn{1,2,3}_integration_subnet_cidr**, **exa_vcn{1,2,3}_integration_subnet_name** | Adds optional Exadata integration subnets. |
-| Added | None | **exa_vcn{1,2,3}_external_allowed_cidrs_into_client_tier**, **exa_vcn{1,2,3}_client_ingress_destination_ports** | Lets users restrict external CIDRs and destination ports for Exadata client tier. |
-| Added | None | **exa_vcn{1,2,3}_external_allowed_cidrs_into_integration_tier**, **exa_vcn{1,2,3}_integration_ingress_destination_ports** | Lets users restrict external CIDRs and destination ports for Exadata integration tier. |
+### Removed Variables
+
+- **customize_bastion_service**
+  This was a Resource Manager UI control and has no direct replacement. Use **add_hub_vcn_jumphost_subnet** and **deploy_bastion_service** to control optional OCI Bastion Service provisioning.
+- **customize_jumphost_subnet**
+  This was a Resource Manager UI control and has no direct replacement. Use **add_hub_vcn_jumphost_subnet** and **deploy_bastion_jump_host** to control optional Jump Host subnet provisioning.
+
+### Replaced Variables
+
+- **bastion_jump_host_marketplace_image_option**
+  Replaced by **bastion_jump_host_image_source**, **bastion_jump_host_marketplace_image_name**, **bastion_jump_host_marketplace_image_version**, and **bastion_jump_host_marketplace_image_ocid**. Use **bastion_jump_host_image_source** = *"Marketplace Image"* for Marketplace images.
+- **hub_vcn_mgmt_subnet_external_allowed_cidrs_for_http** and **hub_vcn_mgmt_subnet_external_allowed_cidrs_for_ssh**
+  Replaced by **allowed_onprem_cidrs_to_fw_mgmt_interface** and **fw_mgmt_interface_ports**. Move allowed firewall-management CIDRs to **allowed_onprem_cidrs_to_fw_mgmt_interface**, and list allowed protocol/port pairs such as *TCP:22* or *TCP:443* in **fw_mgmt_interface_ports**.
+- **net_palo_alto_version**
+  Replaced by **net_appliance_image_vendor**, **net_appliance_marketplace_image_name**, **net_appliance_marketplace_image_version**, and **net_appliance_marketplace_image_ocid**. Set **net_appliance_image_vendor** = *"PaloAlto"*.
+- **net_fortigate_version**
+  Replaced by **net_appliance_image_vendor**, **net_appliance_marketplace_image_name**, **net_appliance_marketplace_image_version**, and **net_appliance_marketplace_image_ocid**. Set **net_appliance_image_vendor** = *"Fortinet"*.
+
+For Marketplace network appliance images, provide either **net_appliance_marketplace_image_ocid** or **net_appliance_marketplace_image_name** plus optional **net_appliance_marketplace_image_version**.
+
+### Added Variables
+
+- **custom_id_domain_compartment_ocid**
+  Resource Manager helper input for selecting the compartment containing an existing custom identity domain. Terraform CLI deployments can continue using **custom_id_domain_ocid** directly.
+- **enable_cross_vcn_constrained_nsgs** and **enable_cross_vcn_open_nsg**
+  Controls the new cross-VCN NSG modes. Constrained NSGs are enabled by default and take precedence for spoke VCNs if both modes are true. Hub VCN creates the open NSG when requested and leaves it unattached by default.
+- **add_hub_vcn_jumphost_subnet**
+  Controls whether the optional private Jump Host/Bastion subnet is created in the Hub VCN.
+- **allowed_onprem_cidrs_to_fw_mgmt_interface** and **fw_mgmt_interface_ports**
+  Provides a vendor-neutral way to allow selected on-premises CIDRs and ports into firewall management interfaces.
+- **hub_vcn_external_allowed_cidrs_into_web_tier** and **hub_vcn_web_ingress_destination_ports**
+  Controls default ingress CIDRs and protocol:port pairs for the Hub VCN Application Load Balancer NSG. Public Hub Web subnets allow **onprem_cidrs** plus **hub_vcn_external_allowed_cidrs_into_web_tier**; private Hub Web subnets allow **onprem_cidrs** only. Defaults preserve the existing public-subnet **0.0.0.0/0** on **TCP:443** behavior.
+- **net_appliance_image_vendor**, **net_appliance_marketplace_image_ocid**, **net_appliance_marketplace_image_name**, and **net_appliance_marketplace_image_version**
+  Adds vendor and Marketplace image selection for Hub VCN network appliances, including support for Marketplace image OCIDs.
+- **bastion_jump_host_image_source**, **bastion_jump_host_marketplace_image_ocid**, **bastion_jump_host_marketplace_image_name**, **bastion_jump_host_marketplace_image_version**, and **bastion_jump_host_platform_image_ocid**
+  Adds explicit image-source handling for Bastion Jump Host: Marketplace, platform, or custom images.
+- **define_hub_vcn_additional_nsgs** and **hub_vcn_additional_nsgs**
+  Allows additional Hub VCN NSGs to be defined without editing module internals.
+- **define_tt_vcn{1,2,3}_additional_nsgs** and **tt_vcn{1,2,3}_additional_nsgs**
+  Allows additional Three-Tier VCN NSGs to be defined per VCN.
+- **define_oke_vcn{1,2,3}_additional_nsgs** and **oke_vcn{1,2,3}_additional_nsgs**
+  Allows additional OKE VCN NSGs to be defined per VCN.
+- **define_exa_vcn{1,2,3}_additional_nsgs** and **exa_vcn{1,2,3}_additional_nsgs**
+  Allows additional Exadata VCN NSGs to be defined per VCN.
+- **tt_vcn{1,2,3}_external_allowed_cidrs_into_web_tier**
+  Lets users restrict external CIDRs allowed into Three-Tier Web/LBR tiers. Defaults preserve the existing behavior.
+- **tt_vcn{1,2,3}_web_ingress_destination_ports**, **tt_vcn{1,2,3}_app_ingress_destination_ports**, and **tt_vcn{1,2,3}_db_ingress_destination_ports**
+  Exposes previously hardcoded Three-Tier NSG ingress destination ports.
+- **oke_vcn{1,2,3}_services_subnet_is_private**
+  Allows OKE services subnets to be made private.
+- **add_oke_vcn{1,2,3}_db_subnet**, **oke_vcn{1,2,3}_db_subnet_cidr**, and **oke_vcn{1,2,3}_db_subnet_name**
+  Adds optional DB subnets to OKE VCNs.
+- **oke_vcn{1,2,3}_external_allowed_cidrs_into_services_tier**
+  Lets users restrict external CIDRs allowed into OKE services tiers. Defaults preserve the existing behavior.
+- **oke_vcn{1,2,3}_services_ingress_destination_ports** and **oke_vcn{1,2,3}_db_ingress_destination_ports**
+  Exposes OKE Services and DB NSG ingress destination ports.
+- **add_exa_vcn{1,2,3}_backup_subnet**
+  Makes Exadata backup subnets optional. Defaults preserve existing behavior (true by default).
+- **add_exa_vcn{1,2,3}_integration_subnet**, **exa_vcn{1,2,3}_integration_subnet_cidr**, and **exa_vcn{1,2,3}_integration_subnet_name**
+  Adds optional Exadata integration subnets.
+- **exa_vcn{1,2,3}_external_allowed_cidrs_into_client_tier** and **exa_vcn{1,2,3}_client_ingress_destination_ports**
+  Lets users restrict external CIDRs and destination ports for Exadata client tier.
+- **exa_vcn{1,2,3}_external_allowed_cidrs_into_integration_tier** and **exa_vcn{1,2,3}_integration_ingress_destination_ports**
+  Lets users restrict external CIDRs and destination ports for Exadata integration tier.
 
 
 # February 20, 2026 Release Notes - 1.5.5
