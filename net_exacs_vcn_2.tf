@@ -507,7 +507,7 @@ locals {
     (var.add_exa_vcn3 == true && var.exa_vcn3_attach_to_drg == true) && (local.hub_with_vcn == true || (local.hub_with_drg_only == true && (length(var.exa_vcn2_routable_vcns) == 0 || contains(var.exa_vcn2_routable_vcns, "EXA-VCN-3")))) ? local.exa_vcn_3_client_subnet_egress_security_rules : {}
   )
 
-  exa_vcn2_cross_vcn_integration_nsg = (local.add_exa_vcn2_integration_subnet == true && var.exa_vcn2_attach_to_drg == true && var.enable_cross_vcn_constrained_nsgs == true && length(local.exa_vcn2_cross_vcn_integration_nsg_ingress_security_rules) > 0) ? {
+  exa_vcn2_cross_vcn_integration_nsg = (local.add_exa_vcn2_integration_subnet == true && var.exa_vcn2_attach_to_drg == true && var.enable_cross_vcn_constrained_nsgs == true) ? {
     "EXA-VCN-2-CROSS-VCN-INTEGRATION-NSG" = {
       display_name  = "cross-vcn-integration-nsg"
       ingress_rules = merge(local.exa_vcn2_cross_vcn_integration_nsg_ingress_security_rules, local.ingress_from_hub_jumphost_subnet_security_rule)
