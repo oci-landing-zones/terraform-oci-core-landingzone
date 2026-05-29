@@ -1,6 +1,6 @@
 # May 29, 2026 Release Notes - 1.6.0
 
-IN addition to bug fixes, release 1.6.0 brings in significant extensibility enhancements to Core Landing Zone networking across all supported workload types as well as IAM. New global variables have been introduced for more flexible standard deployments, while more advanced scenarios are supported via override variables.
+In addition to bug fixes, release 1.6.0 brings in significant extensibility enhancements to Core Landing Zone networking across all supported workload types, as well as to IAM. New global variables have been introduced for more flexible standard deployments, while more advanced scenarios are supported via override variables.
 
 ## Bug Fixes
 
@@ -13,7 +13,7 @@ IN addition to bug fixes, release 1.6.0 brings in significant extensibility enha
 
 ### Generic
 
-1. Network route rules and security rules have been updated. Existing customers who uptake this release must be aware that route rules and security rules are going to be refreshed.
+1. Network route rules and security rules have been updated. Existing customers who uptake this release will have route rules and security rules refreshed.
 2. Cross-VCN security rules are now defined in separate Network Security Groups than local security rules. Core Landing Zone supports two modes for cross-VCN NSGs: constrained or open. Constrained NSGs are enabled by default and take precedence for spoke VCNs if both modes are enabled. Constrained NSGs are opinionated and useful in Hub/Spoke topologies where the Hub is the DRG. Open NSGs are useful in Hub/Spoke topologies where the Hub is a VCN with a firewall that enforces security rules. See [Cross-VCN Network Security Rules](./DEPLOYMENT-GUIDE.md#cross-vcn-network-security-rules) for details.
 3. Configuration overrides are introduced for advanced networking scenarios. The available overridable variables are defined and described in [locals_overrides.tf](./locals_overrides.tf). Sample overrides are provided in [net_override.tf](./net_override.tf). [Terraform override files](https://developer.hashicorp.com/terraform/language/files/override) are useful for preserving customizations in face of future code updates to Core Landing Zone.
 
