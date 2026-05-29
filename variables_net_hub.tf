@@ -18,13 +18,13 @@ variable "hub_deployment" {
 variable "enable_cross_vcn_constrained_nsgs" {
   type        = bool
   default     = true
-  description = "When true, Landing Zone provisions constrained NSGs that enable DRG-attached and routable VCNs to connect with each other according to Landing Zone provided rules. Enabled by default and takes precedence over enable_cross_vcn_open_nsg when both are true."
+  description = "When true, Landing Zone provisions constrained NSGs that enable DRG-attached and routable VCNs to connect with each other according to Landing Zone provided rules. Enabled by default and takes precedence over enable_cross_vcn_open_nsg for spoke VCNs when both are true."
 }
 
 variable "enable_cross_vcn_open_nsg" {
   type        = bool
   default     = false
-  description = "When true, Landing Zone provisions an open NSG that enables DRG-attached and routable VCNs to fully connect with each other. Effective only when enable_cross_vcn_constrained_nsgs is false."
+  description = "When true, Landing Zone provisions an open NSG that enables DRG-attached and routable VCNs to fully connect with each other. For spoke VCNs, it is effective only when enable_cross_vcn_constrained_nsgs is false. For Hub VCN, the open NSG is created when requested and left unattached by default."
 }
 
 variable "define_hub_vcn_additional_nsgs" {
@@ -46,7 +46,7 @@ variable "hub_vcn_additional_nsgs" {
       can(keys(var.hub_vcn_additional_nsgs)) ||
       can(keys(jsondecode(var.hub_vcn_additional_nsgs)))
     )
-    error_message = "hub_vcn_additional_nsgs must be null, empty, a map/object, or a JSON object string."
+    error_message = "VALIDATION FAILURE: hub_vcn_additional_nsgs must be null, empty, a map/object, or a JSON object string."
   }
 }
 
@@ -76,7 +76,7 @@ variable "hub_vcn_cidrs" {
   description = "List of CIDR blocks for the Hub VCN."
   validation {
     condition     = alltrue([for v in var.hub_vcn_cidrs : can(cidrhost(v, 0))])
-    error_message = "Invalid value provided for hub_vcn_cidrs variable: all values must be in valid CIDR notation (e.g., 10.0.0.0/20)."
+    error_message = "VALIDATION FAILURE: Invalid value provided for hub_vcn_cidrs variable: all values must be in valid CIDR notation (e.g., 10.0.0.0/20)."
   }
 }
 # ------------------------------------------------------
@@ -94,7 +94,7 @@ variable "net_appliance_image_vendor" {
   description = "The image vendor for the network appliance. Applicable when hub_vcn_deploy_net_appliance_option is set to 'Marketplace Image' or 'User-Provided Virtual Network Appliance'. Used to select the default Network Load Balancer health checker. Valid values are: 'PaloAlto', 'Fortinet', 'Other'."
   validation {
     condition     = contains(["PALOALTO", "FORTINET", "OTHER"], upper(coalesce(var.net_appliance_image_vendor, "OTHER")))
-    error_message = "Validation failure for net_appliance_image_vendor: it must be null or one of: \"PaloAlto\", \"Fortinet\", \"Other\" (case insensitive)."
+    error_message = "VALIDATION FAILURE: Validation failure for net_appliance_image_vendor: it must be null or one of: \"PaloAlto\", \"Fortinet\", \"Other\" (case insensitive)."
   }
 }
 
@@ -104,7 +104,7 @@ variable "net_appliance_marketplace_image_ocid" {
   description = "The marketplace image OCID for the network appliance. Applicable when hub_vcn_deploy_net_appliance_option is set to 'Marketplace Image'. Marketplace image information can be obtained by running the example in https://github.com/oci-landing-zones/terraform-oci-modules-workloads/tree/main/marketplace-images/examples/marketplace-images. NOTE THAT BY DEPLOYING A MARKETPLACE IMAGE USING TERRAFORM YOU ARE IMPLICITLY AGREEING WITH OCI MARKETPLACE TERMS FOR THE PRICING MODEL THAT APPLY TO THE SELECTED IMAGE."
   validation {
     condition     = var.net_appliance_marketplace_image_ocid == null || can(regex("^ocid1\\.image\\.[a-z0-9]+\\..[a-zA-Z0-9]{60}$", var.net_appliance_marketplace_image_ocid))
-    error_message = "Validation failure for net_appliance_marketplace_image_ocid: it must be null or a valid OCI marketplace image OCID (e.g. ocid1.image.<realm>..<unique_id>)."
+    error_message = "VALIDATION FAILURE: Validation failure for net_appliance_marketplace_image_ocid: it must be null or a valid OCI marketplace image OCID (e.g. ocid1.image.<realm>..<unique_id>)."
   }
 }
 
@@ -212,13 +212,31 @@ variable "hub_vcn_web_subnet_cidr" {
   description = "The Hub VCN Web subnet CIDR block. It must be within the VCN CIDR blocks."
   validation {
     condition     = var.hub_vcn_web_subnet_cidr == null || can(cidrhost(var.hub_vcn_web_subnet_cidr, 0))
-    error_message = "Invalid value provided for hub_vcn_web_subnet_cidr variable: value must be in valid CIDR notation (e.g., 192.168.0.0/24)."
+    error_message = "VALIDATION FAILURE: Invalid value provided for hub_vcn_web_subnet_cidr variable: value must be in valid CIDR notation (e.g., 192.168.0.0/24)."
   }
 }
 variable "hub_vcn_web_subnet_is_private" {
   type        = bool
   default     = false
   description = "Whether the Web subnet private. It is public by default."
+}
+variable "hub_vcn_external_allowed_cidrs_into_web_tier" {
+  type        = list(string)
+  default     = ["0.0.0.0/0"]
+  description = "The list of external CIDR blocks allowed for ingress packets into the Hub VCN App Load Balancer Network Security Group. Effective only when hub_vcn_web_subnet_is_private is false. Use this to limit the range of IP addresses that can access the Hub VCN web tier."
+  validation {
+    condition     = length(var.hub_vcn_external_allowed_cidrs_into_web_tier) == 0 ? true : alltrue([for v in var.hub_vcn_external_allowed_cidrs_into_web_tier : can(cidrhost(v, 0))])
+    error_message = "VALIDATION FAILURE: Invalid value provided for hub_vcn_external_allowed_cidrs_into_web_tier variable: all values must be in valid CIDR notation (e.g., 178.231.15.71/32)."
+  }
+}
+variable "hub_vcn_web_ingress_destination_ports" {
+  type        = list(string)
+  default     = ["TCP:443"]
+  description = "The list of protocols and destination ports allowed for ingress packets into the Hub VCN App Load Balancer Network Security Group. These ports are allowed from onprem_cidrs plus hub_vcn_external_allowed_cidrs_into_web_tier when the Hub VCN Web subnet is public, and from onprem_cidrs when it is private. Each list value is a colon-separated entry like 'TCP:443'."
+  validation {
+    condition     = length(var.hub_vcn_web_ingress_destination_ports) == 0 ? true : alltrue([for v in var.hub_vcn_web_ingress_destination_ports : can(regex("^[^:]+:[^:]+$", v))])
+    error_message = "VALIDATION FAILURE: Invalid value provided for hub_vcn_web_ingress_destination_ports variable: all values must be in the form protocol:port, with exactly one ':' separating protocol and port values."
+  }
 }
 # -------------------------------------------
 # ----- Networking - Hub Mgmt Subnet
@@ -234,7 +252,7 @@ variable "hub_vcn_mgmt_subnet_cidr" {
   description = "The Hub VCN Management subnet CIDR block. It must be within the VCN CIDR blocks."
   validation {
     condition     = var.hub_vcn_mgmt_subnet_cidr == null || can(cidrhost(var.hub_vcn_mgmt_subnet_cidr, 0))
-    error_message = "Invalid value provided for hub_vcn_mgmt_subnet_cidr variable: value must be in valid CIDR notation (e.g., 192.168.0.0/24)."
+    error_message = "VALIDATION FAILURE: Invalid value provided for hub_vcn_mgmt_subnet_cidr variable: value must be in valid CIDR notation (e.g., 192.168.0.0/24)."
   }
 }
 variable "fw_mgmt_interface_ports" {
@@ -243,7 +261,7 @@ variable "fw_mgmt_interface_ports" {
   description = "The list of protocols and ports allowed into Firewall Management interface by the CIDRs provided in variable allowed_onprem_cidrs_to_fw_mgmt_interface. Each value is a colon-separated entry like \"TCP:22\"."
   validation {
     condition     = length(var.fw_mgmt_interface_ports) == 0 ? true : alltrue([for v in var.fw_mgmt_interface_ports : can(regex("^[^:]+:[^:]+$", v))])
-    error_message = "Invalid value provided for fw_mgmt_interface_ports variable: all values must be in the form protocol:port, with exactly one ':' separating protocol and port values."
+    error_message = "VALIDATION FAILURE: Invalid value provided for fw_mgmt_interface_ports variable: all values must be in the form protocol:port, with exactly one ':' separating protocol and port values."
   }
 }
 # -------------------------------------------
@@ -260,7 +278,7 @@ variable "hub_vcn_outdoor_subnet_cidr" {
   description = "The Hub VCN Outdoor subnet CIDR block. It must be within the VCN CIDR blocks."
   validation {
     condition     = var.hub_vcn_outdoor_subnet_cidr == null || can(cidrhost(var.hub_vcn_outdoor_subnet_cidr, 0))
-    error_message = "Invalid value provided for hub_vcn_outdoor_subnet_cidr variable: value must be in valid CIDR notation (e.g., 192.168.0.0/24)."
+    error_message = "VALIDATION FAILURE: Invalid value provided for hub_vcn_outdoor_subnet_cidr variable: value must be in valid CIDR notation (e.g., 192.168.0.0/24)."
   }
 }
 # -------------------------------------------
@@ -277,7 +295,7 @@ variable "hub_vcn_indoor_subnet_cidr" {
   description = "The Hub VCN Indoor subnet CIDR block. It must be within the VCN CIDR blocks."
   validation {
     condition     = var.hub_vcn_indoor_subnet_cidr == null || can(cidrhost(var.hub_vcn_indoor_subnet_cidr, 0))
-    error_message = "Invalid value provided for hub_vcn_indoor_subnet_cidr variable: value must be in valid CIDR notation (e.g., 192.168.0.0/24)."
+    error_message = "VALIDATION FAILURE: Invalid value provided for hub_vcn_indoor_subnet_cidr variable: value must be in valid CIDR notation (e.g., 192.168.0.0/24)."
   }
 }
 # -------------------------------------------
@@ -299,7 +317,7 @@ variable "hub_vcn_jumphost_subnet_cidr" {
   description = "The Hub VCN Jump Host subnet CIDR block. It must be within the VCN CIDR blocks."
   validation {
     condition     = var.hub_vcn_jumphost_subnet_cidr == null || can(cidrhost(var.hub_vcn_jumphost_subnet_cidr, 0))
-    error_message = "Invalid value provided for hub_vcn_jumphost_subnet_cidr variable: value must be in valid CIDR notation (e.g., 192.168.0.0/24)."
+    error_message = "VALIDATION FAILURE: Invalid value provided for hub_vcn_jumphost_subnet_cidr variable: value must be in valid CIDR notation (e.g., 192.168.0.0/24)."
   }
 }
 

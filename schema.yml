@@ -197,6 +197,8 @@ variableGroups:
       - "hub_vcn_web_subnet_name"
       - "hub_vcn_web_subnet_cidr"
       - "hub_vcn_web_subnet_is_private"
+      - "hub_vcn_external_allowed_cidrs_into_web_tier"
+      - "hub_vcn_web_ingress_destination_ports"
       - "hub_vcn_mgmt_subnet_name"
       - "hub_vcn_mgmt_subnet_cidr"
       - "allowed_onprem_cidrs_to_fw_mgmt_interface"
@@ -4099,7 +4101,7 @@ variables:
   enable_cross_vcn_constrained_nsgs:
     type: boolean
     title: "Enable Cross-VCN Constrained NSGs?"
-    description: "When true, Core Landing Zone provisions NSGs that enable DRG-attached and routable VCNs to connect with each other according to Landing Zone provided rules. If a firewall is deployed, you may want to set this to false, set \"Enable Cross-VCN Open NSG?\" to true and have the network security rules implemented in the firewall. If you are just connecting the VCNs through a DRG without a firewall, you may want to set this to true. Alternatively, provide your own security rules via \"*_additional_nsgs\" variable override for specifying your own controls."
+    description: "When true, Core Landing Zone provisions NSGs that enable DRG-attached and routable VCNs to connect with each other according to Landing Zone provided rules. Enabled by default and takes precedence over open NSGs for spoke VCNs when both modes are enabled. Hub VCN keeps its constrained defaults even when open NSG is requested. If a firewall is deployed, you may want to set this to false, set \"Enable Cross-VCN Open NSG?\" to true and have the network security rules implemented in the firewall. If you are just connecting the VCNs through a DRG without a firewall, you may want to set this to true. Alternatively, provide your own security rules via \"*_additional_nsgs\" variable override for specifying your own controls."
     required: false
     visible: 
       and:
@@ -4121,7 +4123,7 @@ variables:
   enable_cross_vcn_open_nsg:
     type: boolean
     title: "Enable Cross-VCN Open NSG?"
-    description: "When true, Core Landing Zone provisions a NSG that enables DRG-attached and routable VCNs to fully connect with each other. If a firewall is deployed, set this to true and have the network security controls implemented in the firewall. If you are just connecting the VCNs through a DRG without a firewall, you may want to leave this as false and set \"Enable Cross-VCN Constrained NSGs?\" to true. Alternatively, provide your own security rules via \"*_additional_nsgs\" variable override for specifying your own controls."
+    description: "When true, Core Landing Zone provisions a NSG that enables DRG-attached and routable VCNs to fully connect with each other. For spoke VCNs, constrained NSGs take precedence when both modes are enabled. For Hub VCN, the open NSG is created when requested and left unattached by default. If a firewall is deployed, set this to true and have the network security controls implemented in the firewall. If you are just connecting the VCNs through a DRG without a firewall, you may want to leave this as false and set \"Enable Cross-VCN Constrained NSGs?\" to true. Alternatively, provide your own security rules via \"*_additional_nsgs\" variable override for specifying your own controls."
     required: false
     visible: 
       and:
@@ -5322,6 +5324,48 @@ variables:
             - ${hub_deployment_option}
             - "VCN or on-premises connectivity routed through DMZ VCN with Network Virtual Appliance existing DRG (DMZ VCN will be created and DRG ID required)"
 
+  hub_vcn_external_allowed_cidrs_into_web_tier:
+    type: array
+    items:
+      type: string
+    uniqueItems: true
+    title: "List of external CIDR blocks allowed to access the Hub Web tier"
+    description: "Enter the CIDR blocks allowed to access load balancers deployed in the Hub VCN Web tier."
+    required: false
+    visible:
+      and:
+        - define_net
+        - customize_hub_vcn_subnets
+        - or:
+          - eq:
+            - ${hub_deployment_option}
+            - "VCN or on-premises connectivity routing through DMZ VCN with Network Virtual Appliance (DRG and DMZ VCN will be created)"
+          - eq:
+            - ${hub_deployment_option}
+            - "VCN or on-premises connectivity routed through DMZ VCN with Network Virtual Appliance existing DRG (DMZ VCN will be created and DRG ID required)"
+        - eq:
+          - ${hub_vcn_web_subnet_is_private}
+          - false
+
+  hub_vcn_web_ingress_destination_ports:
+    type: array
+    items:
+      type: string
+    uniqueItems: true
+    title: "List of destination ports allowed to be accessed in the Hub Web tier"
+    description: "Enter the protocol:port pairs allowed into load balancers deployed in the Hub VCN Web tier. When the Hub Web subnet is public, these ports are allowed from on-premises CIDRs defined in onprem_cidrs plus the external CIDR blocks above. When it is private, these ports are allowed from onprem_cidrs. Each value is a colon-separated entry like \"TCP:443\"."
+    required: false
+    visible:
+      and:
+        - define_net
+        - customize_hub_vcn_subnets
+        - or:
+          - eq:
+            - ${hub_deployment_option}
+            - "VCN or on-premises connectivity routing through DMZ VCN with Network Virtual Appliance (DRG and DMZ VCN will be created)"
+          - eq:
+            - ${hub_deployment_option}
+            - "VCN or on-premises connectivity routed through DMZ VCN with Network Virtual Appliance existing DRG (DMZ VCN will be created and DRG ID required)"
 # -------------------------------------------
 # ----- Networking - Hub Mgmt Subnet
 #--------------------------------------------

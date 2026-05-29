@@ -308,7 +308,7 @@ The Hub VCN NSGs protect shared ingress, inspection, management, and operator ac
   - **ingress:** from on-premises CIDRs over SSH port 22.
   - **egress:** to firewall management, Oracle Services Network (OSN), and selected spoke subnets over SSH port 22.
 - **app-load-balancer-nsg**
-  - **ingress:** from external CIDRs allowed to reach load balancers deployed in the Hub VCN.
+  - **ingress:** when the Hub Web subnet is public, from *onprem_cidrs* plus the external CIDRs defined by *hub_vcn_external_allowed_cidrs_into_web_tier*, over ports defined by *hub_vcn_web_ingress_destination_ports*. When the Hub Web subnet is private, allowed CIDRs come only from *onprem_cidrs*.
   - **egress:** controlled by *hub_vcn_app_load_balancer_nsg_egress_rules*.
 
 Attach Hub-specific custom NSGs by setting *define_hub_vcn_additional_nsgs = true* and providing *hub_vcn_additional_nsgs* as a native HCL map/object or JSON object string. This is useful for SD-WAN edge VNICs, shared service endpoints, or custom hub appliances that should not be mixed into the default management, jump host, or inspection NSGs.
@@ -541,29 +541,28 @@ exa_vcn1_additional_nsgs = {
 
 #### Cross-VCN Network Security Rules
 
-Core Landing Zone provides two Network Security Group (NSG) modes for on-premises and cross-VCN connectivity: open or constrained. Constrained NSGs are enabled by default and take precedence when both modes are enabled.
+Core Landing Zone provides two Network Security Group (NSG) modes for on-premises and cross-VCN connectivity: open or constrained. Constrained NSGs are enabled by default and take precedence for spoke VCNs when both modes are enabled. Hub VCN keeps its default constrained connectivity rules for upgrade continuity; when open NSG is requested for Hub VCN, the open NSG is created and left unattached by default.
 
 ##### Cross-VCN Open NSGs
 
-- Enabled when *enable_cross_vcn_open_nsg = true* and *enable_cross_vcn_constrained_nsgs = false*.
-- Creates one NSG per VCN. The security rules allow *all protocols* from every other connected VCN CIDR, as well as on-premises CIDRs.
+- Enables open security rules for cross-VCN communication paths. The security rules allow *all protocols* from every other connected VCN CIDR, as well as on-premises CIDRs. One NSG is created per VCN.
+- Enabled for spoke VCNs when *enable_cross_vcn_open_nsg = true* and *enable_cross_vcn_constrained_nsgs = false*. For Hub VCN, it is created when *enable_cross_vcn_open_nsg = true*.
 - Automatically shrinks when you disconnect a VCN or remove an on-premises CIDR.
 - Ideal for lab environments or when another control point (for example, OCI Network Firewall or a third-party appliance) already performs deep inspection and segmentation.
 
 ##### Cross-VCN Constrained NSGs
 
-- Enforces opinionated, stricter cross-VCN communication paths.
-- Enabled by default when *enable_cross_vcn_constrained_nsgs = true*. If both cross-VCN NSG modes are enabled, constrained NSGs take precedence.
-- Creates a few NSGs for each VCN. The security rules sources and destinations are defined according to a usage where the VCNs define an entry point for other consuming VCNs. For three-tier VCNs, this entrypoint is an endpoint deployed in the Web subnet; for OKE VCNs, it is an endpoint in the Services subnet; and for Exadata, it is an endpoint in the Client subnet. The protocols and ports in the security list are those configured by the *\*_ingress_destination_ports* variables available for each VCN. 
+- Enforces opinionated, stricter cross-VCN communication paths. The security rules sources and destinations are defined according to a usage where the VCNs define an entry point for other consuming networks For three-tier VCNs, this entrypoint is an endpoint deployed in the Web subnet; for OKE VCNs, it is an endpoint in the Services subnet; and for Exadata, it is an endpoint in the Client subnet. The protocols and ports in the security list are those configured by the *\*_ingress_destination_ports* variables available for each VCN. A few NSGs are created per VCN.
+- Enabled by default when *enable_cross_vcn_constrained_nsgs = true*. If both cross-VCN NSG modes are enabled, constrained NSGs take precedence for spoke VCNs. Hub VCN keeps its constrained defaults even when the open NSG is requested.
 - Automatically shrinks when you disconnect a VCN or remove an on-premises CIDR.
 - Ideal for environments where there is no control point (for example, OCI Network Firewall or a third-party appliance) to perform deep inspection and segmentation.
 
 - **Three-tier Cross-VCN NSGs**  
   - **cross-vcn-lbr-nsg**:
-    - **ingress**: from other three-tier app subnets, OKE pods, OKE workers, on-premises CIDRs, and the Hub VCN Jump Host subnet. 
+    - **ingress**: from other three-tier app subnets, OKE pods, OKE workers, Hub VCN Jump Host, Hub VCN web subnets, and on-premises CIDRs.
     - **egress**: no egress path to other VCNs.  
   - **cross-vcn-app-nsg**:
-    - **ingress**: from the Hub VCN Jump Host subnet for SSH connectivity.
+    - **ingress**: from the Hub VCN Jump Host subnet for SSH connectivity, and from Hub VCN Web subnet for application endpoint connectivity.
     - **egress**: to three-tier web subnets, OKE services subnets, and Exadata client subnets.  
   - **cross-vcn-db-nsg**:
     - **ingress**: from Exadata client subnets (for shared database services) and the Hub VCN Jump Host subnet.
@@ -573,7 +572,7 @@ Core Landing Zone provides two Network Security Group (NSG) modes for on-premise
 
 - **OKE Cross-VCN NSGs**  
   - **cross-vcn-services-nsg**:
-    - **ingress**: from other OKE workers/pods subnets, three-tier app subnets, on-prem CIDRs, and the Hub VCN Jump Host.
+    - **ingress**: from other OKE workers/pods subnets, three-tier app, on-prem CIDRs, Hub VCN Jump Host, Hub VCN Web subnets, and on-premises CIDRs.
     - **egress**: no egress path to other VCNs. 
   - **cross-vcn-workers-nsg**:
     - **ingress**: from the Hub VCN Jump Host subnet.
