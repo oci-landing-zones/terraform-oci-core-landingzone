@@ -13,14 +13,16 @@ locals {
   tag_namespace_compartment_id = var.extend_landing_zone_to_new_region == false ? var.tenancy_ocid : null
   tag_defaults_compartment_id  = var.extend_landing_zone_to_new_region == false ? var.tenancy_ocid : null
 
-  all_tags_defined_tags  = {}
-  all_tags_freeform_tags = {}
-
+  all_tags_defined_tags   = {}
+  all_tags_freeform_tags  = {}
+ 
   tags_configuration = {
     default_compartment_id = local.tag_namespace_compartment_id,
     cis_namespace_name     = length(local.tag_namespace_name) > 0 ? local.tag_namespace_name : local.default_tag_namespace_name
     default_defined_tags   = local.tags_defined_tags,
     default_freeform_tags  = local.tags_freeform_tags
+
+    namespaces = local.custom_tag_namespaces
 
     # namespaces = {
     #   ARCH-CENTER-NAMESPACE = {

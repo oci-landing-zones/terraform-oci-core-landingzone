@@ -831,7 +831,7 @@ Landing Zone implements three facets of resources tagging:
 
 - **Tag Defaults**: Landing Zone provisions *CreatedBy* (who) and *CreatedOn* (when) tag defaults in a brand new tag namespace if the *Oracle-Tags* namespace is not available in the tenancy. Tag defaults allow for automatic tagging on any subsequently deployed resources. This is mandated by CIS Foundations Benchmark and it is extremely useful for identifying who created a particular resource and when.
 - **Landing Zone tag**: Landing Zone uses a free-form tag to tag all provisioned resources with the simple objective of identifying them as Landing Zone resources.
-- **Customer-defined tags**: Customers can also tag Landing Zone resources as they wish, either via defined tags or free-form tags. Defined tags imply the creation of a tag namespace, while free-form tags do not. This is the approach that customers take when aiming for tag-based policies and cost tracking. As Landing Zone cannot predict namespaces and tag names, custom tags are considered a customization.
+- **Customer-defined tags**: Customers can also tag Landing Zone resources as they wish, either via defined tags or free-form tags. Defined tags imply the creation of a tag namespace, while free-form tags do not. This is the approach that customers take when aiming for tag-based policies and cost tracking. As Landing Zone cannot predict namespaces and tag names, custom tags are considered a customization. Use the *custom_tag_namespaces* override to provision additional customer-defined tag namespaces and tags with the Landing Zone. See [iam_override.tf](./iam_override.tf) for an example.
 
 # <a name="scenarios"></a>4. Deployment Scenarios
 
@@ -1329,7 +1329,7 @@ Note that the custom compartment names are taken literally, i.e., they are not c
 
 The following variables have been verified for overrides. While it is technically possible to override any variable, overriding a variable not in the list has not been verified and can lead to unexpected outcomes.
 
-- **additional_enclosed_compartments**: defines the additional compartments to be deployed within the chosen enclosing compartment. 
+- **additional_enclosed_compartments**: defines the additional compartments to be deployed within the chosen enclosing compartment.
 
 Overriding the default compartment names is also supported. Use the following variables:
 

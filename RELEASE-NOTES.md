@@ -70,6 +70,7 @@ In addition to bug fixes, release 1.6.0 brings in significant extensibility enha
 
 1. Core Landing Zone enclosed compartments can be augmented using newly added **additional_enclosed_compartments** override variable. The provided compartments are provisioned within the enclosing compartment. See [iam_override.tf](./iam_override.tf) for an example.
 2. Core Landing Zone IAM policies can be augmented using newly added **custom_policy_statements** override variable. The provided statements are put together in a separate policy at the enclosing compartment of the landing zone, and only when the enclosing compartment is not the Root compartment. *Use this with extreme caution as it may introduce security issues if not used properly. Make sure to follow the principle of least privilege when defining custom statements, ensuring to grant only the necessary permissions required for your use case.* See [iam_override.tf](./iam_override.tf) for an example.
+3. Core Landing Zone can provision additional customer-defined tag namespaces and tags through the newly added **custom_tag_namespaces** override variable. These tag namespaces are created in addition to the default tag namespace and tags. See [iam_override.tf](./iam_override.tf) for an example.
 
 ## Global Variable Changes from 1.5.5 to 1.6.0
 
