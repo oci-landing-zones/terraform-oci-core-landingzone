@@ -910,8 +910,7 @@ variables:
       - "New Identity Domain"
       - "Default Domain"
       - "Use Custom Identity Domain"
-    default: "Default Domain"
-
+  
   new_identity_domain_name:
     type: string
     title: "New Identity Domain Name"
