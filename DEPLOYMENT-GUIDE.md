@@ -541,19 +541,20 @@ exa_vcn1_additional_nsgs = {
 
 #### Cross-VCN Network Security Rules
 
-Core Landing Zone provides two Network Security Group (NSG) modes for on-premises and cross-VCN connectivity: open or constrained. Constrained NSGs are enabled by default and take precedence for spoke VCNs when both modes are enabled. Hub VCN keeps its default constrained connectivity rules for upgrade continuity; when open NSG is requested for Hub VCN, the open NSG is created and left unattached by default.
+Core Landing Zone provides two Network Security Group (NSG) modes for on-premises and cross-VCN connectivity: open or constrained. Constrained NSGs are enabled by default. Open and constrained NSGs can coexist for spoke VCNs, which supports a two-apply migration from constrained rules to open rules without forcing Terraform to create the open NSGs and destroy the constrained NSGs in the same plan. Hub VCN keeps its default constrained connectivity rules for upgrade continuity; when open NSG is requested for Hub VCN, the open NSG is created and left unattached by default.
 
 ##### Cross-VCN Open NSGs
 
 - Enables open security rules for cross-VCN communication paths. The security rules allow *all protocols* from every other connected VCN CIDR, as well as on-premises CIDRs. One NSG is created per VCN.
-- Enabled for spoke VCNs when *enable_cross_vcn_open_nsg = true* and *enable_cross_vcn_constrained_nsgs = false*. For Hub VCN, it is created when *enable_cross_vcn_open_nsg = true*.
+- Enabled for spoke VCNs when *enable_cross_vcn_open_nsg = true*. For Hub VCN, it is created when *enable_cross_vcn_open_nsg = true*.
 - Automatically shrinks when you disconnect a VCN or remove an on-premises CIDR.
 - Ideal for lab environments or when another control point (for example, OCI Network Firewall or a third-party appliance) already performs deep inspection and segmentation.
+- To migrate an existing deployment from constrained cross-VCN NSGs to open cross-VCN NSGs, use two applies. First set *enable_cross_vcn_open_nsg = true* and leave *enable_cross_vcn_constrained_nsgs = true* so Terraform creates the open NSGs. After that apply succeeds, set *enable_cross_vcn_constrained_nsgs = false* and apply again to remove the constrained NSGs.
 
 ##### Cross-VCN Constrained NSGs
 
 - Enforces opinionated, stricter cross-VCN communication paths. The security rules sources and destinations are defined according to a usage where the VCNs define an entry point for other consuming networks For three-tier VCNs, this entrypoint is an endpoint deployed in the Web subnet; for OKE VCNs, it is an endpoint in the Services subnet; and for Exadata, it is an endpoint in the Client subnet. The protocols and ports in the security list are those configured by the *\*_ingress_destination_ports* variables available for each VCN. A few NSGs are created per VCN.
-- Enabled by default when *enable_cross_vcn_constrained_nsgs = true*. If both cross-VCN NSG modes are enabled, constrained NSGs take precedence for spoke VCNs. Hub VCN keeps its constrained defaults even when the open NSG is requested.
+- Enabled by default when *enable_cross_vcn_constrained_nsgs = true*. If both cross-VCN NSG modes are enabled, both constrained and open NSGs are created for spoke VCNs. Hub VCN keeps its constrained defaults even when the open NSG is requested.
 - Automatically shrinks when you disconnect a VCN or remove an on-premises CIDR.
 - Ideal for environments where there is no control point (for example, OCI Network Firewall or a third-party appliance) to perform deep inspection and segmentation.
 

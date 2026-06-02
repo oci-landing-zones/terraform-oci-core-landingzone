@@ -34,9 +34,9 @@ locals {
 
   void = "__VOID__"
 
-  # Constrained cross-VCN NSGs take precedence when both cross-VCN NSG modes are enabled.
+  # Open and constrained cross-VCN NSGs can coexist to support two-apply migrations.
   cross_vcn_constrained_nsgs_enabled = var.enable_cross_vcn_constrained_nsgs
-  cross_vcn_open_nsg_enabled         = var.enable_cross_vcn_open_nsg && !local.cross_vcn_constrained_nsgs_enabled
+  cross_vcn_open_nsg_enabled         = var.enable_cross_vcn_open_nsg
 
   # Whether VCN CIS check overrides are allowed to take effect.
   # Network rules should only be relaxed when there is a firewall in place to inspect the traffic, such as when using OCI NFW or a Network appliance in the Hub VCN. 

@@ -14,7 +14,7 @@ In addition to bug fixes, release 1.6.0 brings in significant extensibility enha
 ### Generic
 
 1. Network route rules and security rules have been updated. Existing customers who uptake this release will have route rules and security rules refreshed.
-2. Cross-VCN security rules are now defined in separate Network Security Groups than local security rules. Core Landing Zone supports two modes for cross-VCN NSGs: constrained or open. Constrained NSGs are enabled by default and take precedence for spoke VCNs if both modes are enabled. Constrained NSGs are opinionated and useful in Hub/Spoke topologies where the Hub is the DRG. Open NSGs are useful in Hub/Spoke topologies where the Hub is a VCN with a firewall that enforces security rules. See [Cross-VCN Network Security Rules](./DEPLOYMENT-GUIDE.md#cross-vcn-network-security-rules) for details.
+2. Cross-VCN security rules are now defined in separate Network Security Groups than local security rules. Core Landing Zone supports two modes for cross-VCN NSGs: constrained or open. Constrained NSGs are enabled by default. Open and constrained NSGs can coexist for spoke VCNs, which supports migrating to open NSGs in two applies. Constrained NSGs are opinionated and useful in Hub/Spoke topologies where the Hub is the DRG. Open NSGs are useful in Hub/Spoke topologies where the Hub is a VCN with a firewall that enforces security rules. See [Cross-VCN Network Security Rules](./DEPLOYMENT-GUIDE.md#cross-vcn-network-security-rules) for details.
 3. Configuration overrides are introduced for advanced networking scenarios. The available overridable variables are defined and described in [locals_overrides.tf](./locals_overrides.tf). Sample overrides are provided in [net_override.tf](./net_override.tf). [Terraform override files](https://developer.hashicorp.com/terraform/language/files/override) are useful for preserving customizations in face of future code updates to Core Landing Zone.
 
 ### Three-Tier VCNs
@@ -100,7 +100,7 @@ For Marketplace network appliance images, provide either **net_appliance_marketp
 - **custom_id_domain_compartment_ocid**
   Resource Manager helper input for selecting the compartment containing an existing custom identity domain. Terraform CLI deployments can continue using **custom_id_domain_ocid** directly.
 - **enable_cross_vcn_constrained_nsgs** and **enable_cross_vcn_open_nsg**
-  Controls the new cross-VCN NSG modes. Constrained NSGs are enabled by default and take precedence for spoke VCNs if both modes are true. Hub VCN creates the open NSG when requested and leaves it unattached by default.
+  Controls the new cross-VCN NSG modes. Constrained NSGs are enabled by default. Open and constrained NSGs can coexist for spoke VCNs to support a two-apply migration from constrained to open rules. Hub VCN creates the open NSG when requested and leaves it unattached by default.
 - **add_hub_vcn_jumphost_subnet**
   Controls whether the optional private Jump Host/Bastion subnet is created in the Hub VCN.
 - **allowed_onprem_cidrs_to_fw_mgmt_interface** and **fw_mgmt_interface_ports**
