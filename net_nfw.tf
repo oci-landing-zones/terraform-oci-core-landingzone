@@ -266,6 +266,6 @@ module "lz_nlb" {
 
 module "native_oci_firewall" {
   count                 = local.chosen_firewall_option == "OCINFW" ? 1 : 0
-  source                = "github.com/oci-landing-zones/terraform-oci-modules-networking?ref=v0.8.2"
+  source                = "github.com/oci-landing-zones/terraform-oci-modules-networking?ref=nsg-cycle"
   network_configuration = local.network_firewall_network_configuration
 }
