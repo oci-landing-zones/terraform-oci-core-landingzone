@@ -168,7 +168,7 @@ variable "fastconnect_virtual_circuit_oracle_bgp_peering_ip" {
 
 variable "fastconnect_virtual_circuit_routing_policy" {
   type        = string
-  default     = null
+  default     = "REGIONAL"
   description = "Defines the BGP relationship for exchanging routes. (Valid values include REGIONAL, GLOBAL)."
 }
 
@@ -204,7 +204,7 @@ variable "fastconnect_virtual_circuit_vlan" {
 
 variable "fastconnect_virtual_circuit_ip_mtu" {
   type        = number
-  default     = null
+  default     = 1500
   description = "The MTU value to assign to the FastConnect virtual circuit. Supported values are: 1500, 9000. Default is 1500."
 }
 

@@ -729,21 +729,18 @@ variables:
     type: boolean
     title: "Extend an Existing Landing Zone Deployment to Another Region?"
     description: "Check to reuse the compartments, identity domains, dynamic groups, groups, and policies from a previously deployed Landing Zone in another region. When set to true, compartments, identity domains, groups, dynamic groups, policies and resources at the home region are not provisioned."
-    default: false
     visible: true
 
   customize_iam:
     type: boolean
     title: "Customize Default IAM Settings?"
     description: "Check if you need to customize the settings for compartments, identity domains, groups, and policies."
-    default: false
     visible: true
 
   define_net:
     type: boolean
     title: "Define Networking Topology?"
     description: "Check to define networking resources. If you do not select, the Landing Zone does NOT deploy any networks."
-    default: false
     visible: true
 
   # Zero Trust Packet Routing (ZPR)
@@ -751,7 +748,6 @@ variables:
     type: boolean
     title: "Enable Zero Trust Packet Routing (ZPR)?"
     description: "If checked, a ZPR namespace, security attributes, and ZPR policies are created. ZPR namespace along with security attributes are created in the enclosing compartment. ZPR policies are created in the Root compartment. For details, please see <a href=\"https://docs.oracle.com/en-us/iaas/Content/zero-trust-packet-routing/overview.htm\">ZPR Overview</a>."
-    default: false
     required: false
     visible: define_net
 
@@ -786,7 +782,6 @@ variables:
       - "Yes, deploy new"
       - "Yes, use existing"
       - "No"
-    default: "Yes, deploy new"
     visible:
       eq:
         - ${extend_landing_zone_to_new_region}
@@ -960,7 +955,6 @@ variables:
     type: boolean
     title: "Deploy IAM groups and dynamic groups in existing Identity Domain?"
     description: "Check this box to enable Landing Zone to create IAM Domain Groups and Dynamic Groups in the existing, non-default Identity Domain."
-    default: false
     required: false
     visible:
       eq:
@@ -1215,7 +1209,6 @@ variables:
     enum:
       - "Yes"
       - "No, use existing"
-    default: "Yes"
 
   rm_existing_iam_admin_group_name:
     type: oci:identity:groups:id
@@ -1357,7 +1350,6 @@ variables:
     enum:
       - "Yes"
       - "No, use existing"
-    default: "Yes"
 
   existing_security_fun_dyn_group_name:
     type: oci:identity:dynamicgroups:id
@@ -1422,7 +1414,6 @@ variables:
       - "CREATE"
       - "USE"
     required: true
-    default: "CREATE"
   
   # enable_template_policies:
   #   type: boolean
@@ -1495,7 +1486,6 @@ variables:
 
   tt_vcn1_routable_vcns:
     type: enum
-    default: null
     title: "Routable VCNs"
     description: "Select the VCN labels that this VCN can send traffic to. Only applicable for Hub/Spoke topology where a DRG is deployed as the hub."
     additionalProps:
@@ -1790,7 +1780,6 @@ variables:
 
   tt_vcn2_routable_vcns:
     type: enum
-    default: null
     title: "Routable VCNs"
     description: "Select the VCN labels that this VCN can send traffic to. Only applicable for Hub/Spoke topology where a DRG is deployed as the hub."
     additionalProps:
@@ -2086,7 +2075,6 @@ variables:
 
   tt_vcn3_routable_vcns:
     type: enum
-    default: null
     title: "Routable VCNs"
     description: "Select the VCN labels that this VCN can send traffic to. Only applicable for Hub/Spoke topology where a DRG is deployed as the hub."
     additionalProps:
@@ -2380,7 +2368,6 @@ variables:
 
   exa_vcn1_routable_vcns:
     type: enum
-    default: null
     title: "Routable VCNs"
     description: "Select the VCN labels that this VCN can send traffic to. Only applicable for Hub/Spoke topology where a DRG is deployed as the hub."
     additionalProps:
@@ -2629,7 +2616,6 @@ variables:
 
   exa_vcn2_routable_vcns:
     type: enum
-    default: null
     title: "Routable VCNs"
     description: "Select the VCN labels that this VCN can send traffic to. Only applicable for Hub/Spoke topology where a DRG is deployed as the hub."
     additionalProps:
@@ -2878,7 +2864,6 @@ variables:
 
   exa_vcn3_routable_vcns:
     type: enum
-    default: null
     title: "Routable VCNs"
     description: "Select the VCN labels that this VCN can send traffic to. Only applicable for Hub/Spoke topology where a DRG is deployed as the hub."
     additionalProps:
@@ -3141,7 +3126,6 @@ variables:
 
   oke_vcn1_routable_vcns:
     type: enum
-    default: null
     title: "Routable VCNs"
     description: "Select the VCN labels that this VCN can send traffic to. Only applicable for Hub/Spoke topology where a DRG is deployed as the hub."
     additionalProps:
@@ -3470,7 +3454,6 @@ variables:
 
   oke_vcn2_routable_vcns:
     type: enum
-    default: null
     title: "Routable VCNs"
     description: "Select the VCN labels that this VCN can send traffic to. Only applicable for Hub/Spoke topology where a DRG is deployed as the hub."
     additionalProps:
@@ -3799,7 +3782,6 @@ variables:
 
   oke_vcn3_routable_vcns:
     type: enum
-    default: null
     title: "Routable VCNs"
     description: "Select the VCN labels that this VCN can send traffic to. Only applicable for Hub/Spoke topology where a DRG is deployed as the hub."
     additionalProps:
@@ -4066,7 +4048,6 @@ variables:
       - "VCN or on-premises connectivity routing via DRG (existing DRG)"
       - "VCN or on-premises connectivity routing through DMZ VCN with Network Virtual Appliance (DRG and DMZ VCN will be created)"
       - "VCN or on-premises connectivity routed through DMZ VCN with Network Virtual Appliance existing DRG (DMZ VCN will be created and DRG ID required)"
-    default: "No cross-VCN or on-premises connectivity"    
       
   existing_drg_ocid:
     type: string
@@ -4183,7 +4164,6 @@ variables:
     title: "Define Hub VCN Additional NSGs?"
     description: "When checked, Core Landing Zone provisions the additional Hub VCN NSGs defined in the field below."
     required: false
-    default: false
     visible:
       and:
         - define_net
@@ -4201,7 +4181,6 @@ variables:
     title: "Hub VCN Additional NSGs"
     description: "JSON object defining additional NSGs for the Hub VCN. The top-level object keys are NSG keys. Each NSG must include display_name and can include ingress_rules and egress_rules objects."
     required: false
-    default: "{}"
     visible:
       and:
         - define_net
@@ -4219,7 +4198,6 @@ variables:
     title: "Define TT-VCN-1 Additional NSGs?"
     description: "When checked, Core Landing Zone provisions the additional TT-VCN-1 NSGs defined in the field below."
     required: false
-    default: false
     visible:
       and:
         - define_net
@@ -4231,7 +4209,6 @@ variables:
     title: "TT-VCN-1 Additional NSGs"
     description: "JSON object defining additional NSGs for TT-VCN-1. The top-level object keys are NSG keys. Each NSG must include display_name and can include ingress_rules and egress_rules objects."
     required: false
-    default: "{}"
     visible:
       and:
         - define_net
@@ -4243,7 +4220,6 @@ variables:
     title: "Define TT-VCN-2 Additional NSGs?"
     description: "When checked, Core Landing Zone provisions the additional TT-VCN-2 NSGs defined in the field below."
     required: false
-    default: false
     visible:
       and:
         - define_net
@@ -4255,7 +4231,6 @@ variables:
     title: "TT-VCN-2 Additional NSGs"
     description: "JSON object defining additional NSGs for TT-VCN-2. The top-level object keys are NSG keys. Each NSG must include display_name and can include ingress_rules and egress_rules objects."
     required: false
-    default: "{}"
     visible:
       and:
         - define_net
@@ -4267,7 +4242,6 @@ variables:
     title: "Define TT-VCN-3 Additional NSGs?"
     description: "When checked, Core Landing Zone provisions the additional TT-VCN-3 NSGs defined in the field below."
     required: false
-    default: false
     visible:
       and:
         - define_net
@@ -4279,7 +4253,6 @@ variables:
     title: "TT-VCN-3 Additional NSGs"
     description: "JSON object defining additional NSGs for TT-VCN-3. The top-level object keys are NSG keys. Each NSG must include display_name and can include ingress_rules and egress_rules objects."
     required: false
-    default: "{}"
     visible:
       and:
         - define_net
@@ -4291,7 +4264,6 @@ variables:
     title: "Define OKE-VCN-1 Additional NSGs?"
     description: "When checked, Core Landing Zone provisions the additional OKE-VCN-1 NSGs defined in the field below."
     required: false
-    default: false
     visible:
       and:
         - define_net
@@ -4303,7 +4275,6 @@ variables:
     title: "OKE-VCN-1 Additional NSGs"
     description: "JSON object defining additional NSGs for OKE-VCN-1. The top-level object keys are NSG keys. Each NSG must include display_name and can include ingress_rules and egress_rules objects."
     required: false
-    default: "{}"
     visible:
       and:
         - define_net
@@ -4315,7 +4286,6 @@ variables:
     title: "Define OKE-VCN-2 Additional NSGs?"
     description: "When checked, Core Landing Zone provisions the additional OKE-VCN-2 NSGs defined in the field below."
     required: false
-    default: false
     visible:
       and:
         - define_net
@@ -4327,7 +4297,6 @@ variables:
     title: "OKE-VCN-2 Additional NSGs"
     description: "JSON object defining additional NSGs for OKE-VCN-2. The top-level object keys are NSG keys. Each NSG must include display_name and can include ingress_rules and egress_rules objects."
     required: false
-    default: "{}"
     visible:
       and:
         - define_net
@@ -4339,7 +4308,6 @@ variables:
     title: "Define OKE-VCN-3 Additional NSGs?"
     description: "When checked, Core Landing Zone provisions the additional OKE-VCN-3 NSGs defined in the field below."
     required: false
-    default: false
     visible:
       and:
         - define_net
@@ -4351,7 +4319,6 @@ variables:
     title: "OKE-VCN-3 Additional NSGs"
     description: "JSON object defining additional NSGs for OKE-VCN-3. The top-level object keys are NSG keys. Each NSG must include display_name and can include ingress_rules and egress_rules objects."
     required: false
-    default: "{}"
     visible:
       and:
         - define_net
@@ -4363,7 +4330,6 @@ variables:
     title: "Define EXA-VCN-1 Additional NSGs?"
     description: "When checked, Core Landing Zone provisions the additional EXA-VCN-1 NSGs defined in the field below."
     required: false
-    default: false
     visible:
       and:
         - define_net
@@ -4375,7 +4341,6 @@ variables:
     title: "EXA-VCN-1 Additional NSGs"
     description: "JSON object defining additional NSGs for EXA-VCN-1. The top-level object keys are NSG keys. Each NSG must include display_name and can include ingress_rules and egress_rules objects."
     required: false
-    default: "{}"
     visible:
       and:
         - define_net
@@ -4387,7 +4352,6 @@ variables:
     title: "Define EXA-VCN-2 Additional NSGs?"
     description: "When checked, Core Landing Zone provisions the additional EXA-VCN-2 NSGs defined in the field below."
     required: false
-    default: false
     visible:
       and:
         - define_net
@@ -4399,7 +4363,6 @@ variables:
     title: "EXA-VCN-2 Additional NSGs"
     description: "JSON object defining additional NSGs for EXA-VCN-2. The top-level object keys are NSG keys. Each NSG must include display_name and can include ingress_rules and egress_rules objects."
     required: false
-    default: "{}"
     visible:
       and:
         - define_net
@@ -4411,7 +4374,6 @@ variables:
     title: "Define EXA-VCN-3 Additional NSGs?"
     description: "When checked, Core Landing Zone provisions the additional EXA-VCN-3 NSGs defined in the field below."
     required: false
-    default: false
     visible:
       and:
         - define_net
@@ -4423,7 +4385,6 @@ variables:
     title: "EXA-VCN-3 Additional NSGs"
     description: "JSON object defining additional NSGs for EXA-VCN-3. The top-level object keys are NSG keys. Each NSG must include display_name and can include ingress_rules and egress_rules objects."
     required: false
-    default: "{}"
     visible:
       and:
         - define_net
@@ -4913,7 +4874,6 @@ variables:
       - "Create New IPSec VPN"
       - "Create New FastConnect and IPSec"
       - "Use Existing On-Premises Connection"
-    default: "None"   
 
   fastconnect_virtual_circuit_name:
     type: string
@@ -4944,7 +4904,6 @@ variables:
       - "1 Gbps"
       - "10 Gbps"
       - "Custom"
-    default: "1 Gbps"
 
   fastconnect_virtual_circuit_bandwidth_custom_shape:
     type: string
@@ -4971,7 +4930,6 @@ variables:
     enum:
       - "PRIVATE"
       - "PUBLIC"
-    default: "PRIVATE"
   
   fastconnect_virtual_circuit_provider_service_id:
     type: string
@@ -5064,7 +5022,6 @@ variables:
         - eq:
           - ${on_premises_connection_option}
           - "Create New FastConnect and IPSec"
-    default: false
 
   fastconnect_virtual_circuit_routing_policy:
     type: enum
@@ -5081,7 +5038,6 @@ variables:
     enum:
       - "REGIONAL"
       - "GLOBAL"
-    default: "REGIONAL"
 
   fastconnect_virtual_circuit_ip_mtu:
     type: enum
@@ -5098,7 +5054,6 @@ variables:
     enum:
       - "1500"
       - "9000"
-    default: "1500"
 
   ipsec_vpn_name:
     type: string
@@ -5600,7 +5555,6 @@ variables:
     type: boolean
     title: "Additional Notification Endpoints"
     description: "Allows for notifications that are not required by CIS Benchmark."
-    default: false
   
   compute_admin_email_endpoints:
     type: array
@@ -5656,14 +5610,12 @@ variables:
     type: boolean
     title: "Create alarms as enabled?"
     description: "Whether a alarms should be created in an enabled state by default. If unchecked, alarms will be created but not emit alerts."
-    default: false
     visible: notifications_advanced_options
     
   create_events_as_enabled:
     type: boolean
     title: "Create events as enabled?"
     description: "Whether events should be created in an enabled state by default. If unchecked, events will be created but not emit notifications."
-    default: false
     visible: notifications_advanced_options
 
   alarm_message_format:
@@ -5701,7 +5653,6 @@ variables:
     title: "Minimum Risk Level Threshold"
     description: "Determines the minimum risk level that will trigger an event and send information about the problem to the Cloud Guard Email Endpoints. E.g. a minimum risk level of High will include problems with High or Critical risk levels. Applicable to both Landing Zone managed target and existing target."
     required: false
-    default: High
     enum:
       - Critical
       - High
@@ -5725,7 +5676,6 @@ variables:
     type: boolean
     title: Enable Security Zones
     description: "Determines if Security Zones are enabled in Landing Zone compartments. When set to true, the Security Zone is enabled for the enclosing compartment. If no enclosing compartment is used, then the Security Zone is not enabled."
-    default: false
 
   security_zones_reporting_region:
     type: oci:identity:region:name
@@ -5763,7 +5713,6 @@ variables:
     required: true
     title: "Activate Service Connector? (This might incur some cost)"
     description: "Whether Service Connector should be activated. If true, costs my incur due to usage of Object Storage bucket, Streaming or Function."
-    default: false
     visible: enable_service_connector
   
   service_connector_target_kind:
@@ -5771,7 +5720,6 @@ variables:
     required: false
     title: "Service Connector Target Kind"
     description: "Service Connector Hub target resource. Valid values are \"objectstorage\", \"streaming\", \"functions\" or \"logginganalytics\". In case of \"objectstorage\", a new bucket is created. In case of \"streaming\", you can provide an existing stream ocid in \"existing_service_connector_target_stream_id\" and that stream is used. If no ocid is provided, a new stream is created. In case of \"functions\", you must provide the existing function ocid in \"existing_service_connector_target_function_id\". If case of \"logginganalytics\", a log group for Logging Analytics service is created and the service is enabled if not already."
-    default: objectstorage
     visible: enable_service_connector
     enum:
       - objectstorage
@@ -5784,7 +5732,6 @@ variables:
     required: true
     title: "Onboard Logging Analytics?"
     description: "Whether Logging Analytics will be enabled in the tenancy. If true, the Logging Analytics service will be enabled in the tenancy and a new Logging Analytics Namespace will be created. If false, the existing Logging Analytics namespace will be used. Only applicable if \"service_connector_target_kind\" is set to \"logginganalytics\"."
-    default: false
     visible:
       and:
         - ${enable_service_connector}
@@ -5969,7 +5916,6 @@ variables:
     type: boolean
     title: "Create a default budget?"
     description: "If checked, a budget will be created at the root or enclosing compartment and based on forecast spend."
-    default: false
   
   budget_alert_threshold:
     type: integer
@@ -6142,7 +6088,6 @@ variables:
     type: boolean
     title: "Customize Jump Host?"
     required: false
-    default: false
     description: "Check to set custom options for Jump host instance."
     visible: deploy_bastion_jump_host
 
@@ -6247,7 +6192,6 @@ variables:
     title: "Vault Type"
     description: "The type of the vault. The default value type is DEFAULT."
     required: false
-    default: "DEFAULT"
     enum:
       - "DEFAULT"
       - "VIRTUAL_PRIVATE"
