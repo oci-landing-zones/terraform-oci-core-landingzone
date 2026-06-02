@@ -139,20 +139,16 @@ locals {
 
   health_checkers = {
     "FORTINET" = {
-      protocol    = "HTTP"
+      protocol    = "TCP"
       port        = 8008
-      return_code = 200
-      url_path    = "/"
     }
     "PALOALTO" = {
       protocol = "TCP"
       port     = 22
     }
     "OTHER" = {
-      protocol    = "HTTP"
+      protocol    = "TCP"
       port        = 80
-      return_code = 200
-      url_path    = "/"
     }
   }
 
