@@ -27,11 +27,14 @@ locals {
 #    MY-NAMESPACE = {
 #        name        = "my-namespace"
 #        description = "Tag namespace sample"
+#        compartment_id = local.enclosing_compartment_id # optional, if not specified, the tag namespace is created in the Root compartment
 #        is_retired  = false
 #        tags = {
 #            COST-CENTER-TAG = {
-#                name        = "costcenter"
-#                description = "Cost center tag sample"
+#                name             = "costcenter"
+#                description      = "Cost center tag sample" # optional
+#                is_cost_tracking = true                     # optional
+#                valid_values     = ["1001", "1002", "1003"] # optional
 #            }
 #        }
 #    }
