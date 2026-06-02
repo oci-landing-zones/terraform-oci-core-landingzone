@@ -336,14 +336,14 @@ locals {
         local.chosen_firewall_option != "OCINFW" ? {
           "HUB-VCN-OUTDOOR-NLB-NSG" = {
             display_name  = "outdoor-nlb-nsg"
-            ingress_rules = local.hub_vcn_outdoor_nsg_ingress_rules
+            ingress_rules = local.hub_vcn_outdoor_nlb_nsg_ingress_rules
             egress_rules  = local.hub_vcn_outdoor_nsg_egress_rules
           }
         } : {},
         local.chosen_firewall_option != "OCINFW" ? {
           "HUB-VCN-OUTDOOR-FW-NSG" = {
             display_name  = "outdoor-fw-nsg"
-            ingress_rules = local.hub_vcn_outdoor_nsg_ingress_rules
+            ingress_rules = local.hub_vcn_outdoor_fw_nsg_ingress_rules
             egress_rules  = local.hub_vcn_outdoor_nsg_egress_rules
           }
         } : {},
@@ -723,18 +723,28 @@ locals {
     }
   } : {}
 
-  hub_vcn_outdoor_nsg_ingress_rules = merge(
+  hub_vcn_outdoor_fw_nsg_ingress_rules = merge(
     {
-      "INGRESS-FROM-LBR-NSG-RULE" = {
-        description = "Ingress from App Load Balancer NSG."
+      "INGRESS-FROM-NLB-NSG-RULE" = {
+        description = "Ingress from outdoor NLB NSG."
         stateless   = false
         protocol    = "ALL"
-        src         = "HUB-VCN-APP-LOAD-BALANCER-NSG"
+        src         = "HUB-VCN-OUTDOOR-NLB-NSG"
         src_type    = "NETWORK_SECURITY_GROUP"
       }
     },
     local.hub_vcn_outdoor_allowed_public_cidr_ingress_rules
   )
+
+  hub_vcn_outdoor_nlb_nsg_ingress_rules = {
+    "INGRESS-FROM-LBR-NSG-RULE" = {
+      description = "Ingress from App Load Balancer NSG."
+      stateless   = false
+      protocol    = "ALL"
+      src         = "HUB-VCN-APP-LOAD-BALANCER-NSG"
+      src_type    = "NETWORK_SECURITY_GROUP"
+    }
+  }
 
   hub_vcn_outdoor_nsg_egress_rules = {
     "EGRESS-TO-ANYWHERE-RULE" = {
