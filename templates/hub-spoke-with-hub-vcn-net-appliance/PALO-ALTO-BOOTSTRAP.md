@@ -1,4 +1,4 @@
-# Palo Alto Firewall Bootstrap
+# Palo Alto Networks VM-Series Firewall Bootstrap
 
 This document explains how to bootstrap the Palo Alto Networks VM-Series nodes deployed by the Core Landing Zone network appliance template. Core Landing Zone deploys the OCI infrastructure, the VM-Series instances, and the network load balancers. The firewall nodes still need an initial PAN-OS configuration before traffic can reliably pass through the appliance pair.
 
