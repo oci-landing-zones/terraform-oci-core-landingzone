@@ -1,4 +1,4 @@
-# May 29, 2026 Release Notes - 1.6.0
+# June 03, 2026 Release Notes - 1.6.0
 
 In addition to bug fixes, release 1.6.0 brings in significant extensibility enhancements to Core Landing Zone networking across all supported workload types, as well as to IAM. New global variables have been introduced for more flexible standard deployments, while more advanced scenarios are supported via override variables.
 
@@ -65,6 +65,7 @@ In addition to bug fixes, release 1.6.0 brings in significant extensibility enha
 7. Network firewall appliance can now be provisioned based on OCI Marketplace image OCID, in addition to name/version. 
 8. Newly added variable **net_appliance_marketplace_image_version** replaces both **net_palo_alto_version** and **net_fortigate_version** when specifying the OCI Marketplace image version for the network firewall appliance.
 9. Additional NSGs for Hub, Three-tier, OKE, and Exadata VCNs can now be configured through **define_hub_vcn_additional_nsgs**, **hub_vcn_additional_nsgs**, **define_tt_vcn{1,2,3}_additional_nsgs**, **tt_vcn{1,2,3}_additional_nsgs**, **define_oke_vcn{1,2,3}_additional_nsgs**, **oke_vcn{1,2,3}_additional_nsgs**, **define_exa_vcn{1,2,3}_additional_nsgs**, and **exa_vcn{1,2,3}_additional_nsgs** variables. The NSG definition accepts a native HCL map/object or a JSON object string, and the Resource Manager UI exposes it as a multiline JSON field.
+10. Basic bootstrapping configuration for Palo Alto Networks VM-Series Firewall. See [Palo Alto Firewall Bootstrap](./templates/hub-spoke-with-hub-vcn-net-appliance/PALO-ALTO-BOOTSTRAP.md).
 
 ## IAM Enhancements
 
