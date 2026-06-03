@@ -8,7 +8,7 @@ The variables to update for the second time execution are **hub_vcn_north_south_
 - **hub_vcn_north_south_entry_point_ocid** takes the OCID value in **nlb_private_ip_addresses.OUTDOOR-NLB**
 - **hub_vcn_east_west_entry_point_ocid** takes the OCID value in **nlb_private_ip_addresses.INDOOR_NLB**.
 
-**Note**: this example only becomes functionally complete from a network routing perspective once you configure the network firewall appliance.
+**Note**: this example only becomes functionally complete from a network routing perspective once you configure the network firewall appliance for connectivity. See [Palo Alto Firewall Bootstrap](./PALO-ALTO-BOOTSTRAP.md) for basic configuration and management access instructions over SSH and HTTPS through OCI Bastion.
 
 ## Deployment Scenario 1: Fortinet Firewall
 
@@ -95,7 +95,7 @@ Perform a new Plan, followed by an Apply.
     - $ terraform plan
     - $ terraform apply
 4. Take note of the values in the output **nlb_private_ip_addresses**.
-5. Uncomment and update the variables **hub_vcn_north_south_entry_point_ocid** and **hub_vcn_north_south_entry_point_ocid** as instructed in *main.tf.fortinet.template*.
+5. Uncomment and update the variables **hub_vcn_north_south_entry_point_ocid** and **hub_vcn_east_west_entry_point_ocid** as instructed in *main.tf.fortinet.template*.
 6. In this folder, execute Terraform plan and apply again:
     - $ terraform plan
     - $ terraform apply
@@ -185,8 +185,10 @@ Perform a new Plan, followed by an Apply.
     - $ terraform plan
     - $ terraform apply
 4. Take note of the values in the output **nlb_private_ip_addresses**.
-5. Uncomment and update the variables **hub_vcn_north_south_entry_point_ocid** and **hub_vcn_north_south_entry_point_ocid** as instructed in *main.tf.paloalto.template*.
+5. Uncomment and update the variables **hub_vcn_north_south_entry_point_ocid** and **hub_vcn_east_west_entry_point_ocid** as instructed in *main.tf.paloalto.template*.
 6. In this folder, execute Terraform plan and apply again:
     - $ terraform plan
-    - $ terraform apply    
+    - $ terraform apply  
+7. Optionally bootstrap both Palo Alto nodes by following [Palo Alto Firewall Bootstrap](./PALO-ALTO-BOOTSTRAP.md). The provided basic configuration is permissive and used to validate connectivity. 
+
 

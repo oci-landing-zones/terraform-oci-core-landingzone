@@ -613,7 +613,7 @@ Core Landing Zone requires two Terraform applies to complete the network applian
 3. Collect the OCIDs of NLB private IPs, available in *nlb_private_ip_addresses.OUTDOOR-NLB* and *nlb_private_ip_addresses.INDOOR_NLB* output variables. These are the OCIDs you will reference as entry points in the second Terraform execution.
 4. Set *hub_vcn_north_south_entry_point_ocid = nlb_private_ip_addresses.OUTDOOR-NLB* and *hub_vcn_east_west_entry_point_ocid = nlb_private_ip_addresses.INDOOR_NLB* in the Terraform configuration input variables.
 5. Run the second *terraform plan/apply*. Core Landing Zone rewires the route tables, so traffic flows through the appropriate network appliance interfaces.
-6. **Following the second apply, appliances' administrators must deploy policies for allowing overall network connectivity.**
+6. **Following the second apply, appliances' administrators must deploy policies for allowing overall network connectivity.** See [Palo Alto Firewall Bootstrap](./templates/hub-spoke-with-hub-vcn-net-appliance/PALO-ALTO-BOOTSTRAP.md) for Palo Alto Networks VM-Series Firewall basic configuration.
 
 Core Landing Zone also supports appliances deployed separately, as long as they support the required network interfaces described. In this case, Core Landing Zone provisions all required network infrastructure (Hub VCN, subnets, routing, network security rules), while the appliances configuration manages the network load balancers and the appliance itself.
 
@@ -1246,11 +1246,13 @@ The diagram shows three NSGs (Network Security Groups) with the Hub VCN that are
 
 - **Mgmt NSG**: meant for 3rd-party Firewall management interfaces only.
     - Only ingress paths are allowed: from "OnPrem", from JumpHost NSG and from Mgmt subnet (required by OCI Bastion Service port forwarding session).
-    - As a rule of thumb, use the JumpHost for connecting over SSH in order to provide initial firewall configuration. Then deploy OCI Bastion Service port forwarding session (see **Note** below) for accessing the firewall admin interface over HTTP.
+    - As a rule of thumb, use the JumpHost for connecting over SSH in order to provide initial firewall configuration. Then deploy OCI Bastion Service port forwarding session (see **Note** below) for accessing the firewall admin interface over HTTPS.
 
 - **Indoor NSG**: Landing Zone routes SSH requests from jump host for runtime packet inspection once Landing Zone is updated with Firewall network endpoints.        
 
-**Note:** The *OCI Bastion Service (port forwarding session)* associated with *FW Mgmt VNIC* (in white) is not deployed by the Landing Zone. It must be deployed separately for access to the firewall management interface over HTTP. 
+**Note:** The *OCI Bastion Service (port forwarding session)* associated with *FW Mgmt VNIC* (in white) is not deployed by the Landing Zone. It must be deployed separately for access to the firewall management interface over HTTPS.
+
+For Palo Alto VM-Series deployments, see [Palo Alto Firewall Bootstrap](./templates/hub-spoke-with-hub-vcn-net-appliance/PALO-ALTO-BOOTSTRAP.md) for basic configuration and the SSH and HTTPS management paths through OCI Bastion service.
 
 The landing zone key variables controlling jump host and Bastion service provisioning are shown next:
 
