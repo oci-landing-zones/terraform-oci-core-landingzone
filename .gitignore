@@ -6,6 +6,7 @@
 .worktrees/
 **/*.zip
 **/*.py
+!templates/hub-spoke-with-hub-vcn-net-appliance/generate_panf_config.py
 
 # .tfstate files
 *.tfstate
