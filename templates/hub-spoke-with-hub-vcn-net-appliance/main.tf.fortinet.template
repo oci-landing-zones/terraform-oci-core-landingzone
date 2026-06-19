@@ -16,7 +16,7 @@
 # Fortinet Firewall
 # ----------------------------------------------------------------------------------------
 
-module "core_lz_fortinet" {
+module "core_lz" {
     source = "../../"
     # ------------------------------------------------------
     # ----- Environment
@@ -36,30 +36,35 @@ module "core_lz_fortinet" {
 
     # --- Hub deployment option: a DRG is deployed.
     hub_deployment_option = "VCN or on-premises connectivity routing through DMZ VCN with Network Virtual Appliance (DRG and DMZ VCN will be created)"
-    hub_vcn_cidrs         = ["192.168.0.0/24"]
+    hub_vcn_cidrs         = ["192.168.0.0/26"]
 
     # --- Firewall deployment option.
-    hub_vcn_deploy_net_appliance_option = "Fortinet FortiGate Firewall"
-    net_fortigate_version               = "7.2.9_(_X_64)"
-    net_appliance_flex_shape_memory     = 56
-    net_appliance_flex_shape_cpu        = 2
-    net_appliance_boot_volume_size      = 60
-    net_appliance_public_rsa_key        = #Enter the Public RSA Key
-    net_appliance_shape                 = VM.Standard.E4.Flex 
+    hub_vcn_deploy_net_appliance_option    = "Marketplace Image"
+    net_appliance_image_vendor             = "Fortinet"
+    net_appliance_marketplace_image_name   = "Fortinet FortiGate Firewall"
+    net_appliance_marketplace_image_version = "7.6.4_(_X64_)"
+    #net_appliance_marketplace_image_ocid   = null # ocid can be used instead of name/version.
+    net_appliance_name_prefix              = "fortinet"
+    net_appliance_shape                    = "VM.Standard3.Flex"
+    net_appliance_flex_shape_memory        = 56
+    net_appliance_flex_shape_cpu           = 4
+    net_appliance_boot_volume_size         = 60
+    net_appliance_public_rsa_key           = "replace-with-public-key-path-or-key-string"
 
     # --- Spoke VCN: three-tier VCN 1
     add_tt_vcn1                   = true
-    tt_vcn1_cidrs                 = ["192.168.0.0/24"]
+    tt_vcn1_cidrs                 = ["10.0.0.0/20"]
     tt_vcn1_attach_to_drg         = true
     
     # --- ExaData VCN:
     add_exa_vcn1                   = true
-    exa_vcn1_cidrs                 = ["192.168.0.0/24"]
+    exa_vcn1_cidrs                 = ["172.16.0.0/20"]
     exa_vcn1_attach_to_drg         = true
 
+    # --- OKE VCN
     add_oke_vcn1                   = true
-    oke_vcn1_cni_type              = native
-    oke_vcn1_cidrs                 = ["192.168.0.0/24"]
+    oke_vcn1_cni_type              = "native"
+    oke_vcn1_cidrs                 = ["10.3.0.0/16"]
     oke_vcn1_attach_to_drg         = true
 
     # --- Routing to Firewall. Uncomment and update the two variables below for the second time execution.

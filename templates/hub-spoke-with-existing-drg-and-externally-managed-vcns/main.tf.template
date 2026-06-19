@@ -31,31 +31,17 @@ module "core_lz" {
     define_net            = true # enables network resources provisioning
 
     # --- Hub deployment option: a Hub VCN is deployed.
-    hub_deployment_option = "VCN or on-premises connectivity routing through DMZ VCN with Network Virtual Appliance (DRG and DMZ VCN will be created)"
-    onprem_cidrs = ["100.0.0.0/24"]
-    hub_vcn_deploy_net_appliance_option = "Don't deploy any network appliance at this time"
-
+    hub_deployment_option = "VCN or on-premises connectivity routing via DRG (existing DRG)" # use existing DRG
+    existing_drg_ocid = "ocid1.drg..replace-with-existing-drg-ocid"
+    
     # -- Additional OCIDs that are allowed access to the hub vcn web subnet
     workloadvcn_ocids_public_access = ["ocid1.vcn.oc1...aaaaa...yba", "ocid1.vcn.oc1...aaaaaa...q7a"]  # replace with your OCIDs
 
     # -- Additional OCIDs that are allowed access to the existing LZ on-premises connection
     workloadvcn_ocids_onprem_access = ["ocid1.vcn.oc1.iad...aaaaa...q7a", "ocid1.vcn.oc1.iad...aaaaaa...tga"] # replace with your OCIDs
 
-    # -- IPSec
-    on_premises_connection_option = "Create New IPSec VPN"
-    cpe_ip_address                      = "129.146.105.156"
-    cpe_device_shape_vendor             = "Libreswan"
-    ipsec_customer_bgp_asn              = "65000"
-    ipsec_tunnel1_customer_interface_ip = "10.10.10.1/30"
-    ipsec_tunnel1_oracle_interface_ip   = "10.10.10.2/30"
-    ipsec_tunnel2_customer_interface_ip = "10.10.10.5/30"
-    ipsec_tunnel2_oracle_interface_ip   = "10.10.10.6/30"
-
-    # -- Three-Tier VCN
-    add_tt_vcn1                 = true
-    tt_vcn1_attach_to_drg       = true
-    tt_vcn1_onprem_route_enable = true
-    tt_vcn1_name                = "TT-VCN-1"
+    # onprem CIDRs are added in routes for workloadvcn_ocids_onprem_access
+    onprem_cidrs = ["10.0.0.0/16"]
 
     # ------------------------------------------------------
     # ----- Notifications

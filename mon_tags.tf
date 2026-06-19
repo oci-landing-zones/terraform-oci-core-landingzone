@@ -13,28 +13,30 @@ locals {
   tag_namespace_compartment_id = var.extend_landing_zone_to_new_region == false ? var.tenancy_ocid : null
   tag_defaults_compartment_id  = var.extend_landing_zone_to_new_region == false ? var.tenancy_ocid : null
 
-  all_tags_defined_tags  = {}
-  all_tags_freeform_tags = {}
-
+  all_tags_defined_tags   = {}
+  all_tags_freeform_tags  = {}
+ 
   tags_configuration = {
     default_compartment_id = local.tag_namespace_compartment_id,
     cis_namespace_name     = length(local.tag_namespace_name) > 0 ? local.tag_namespace_name : local.default_tag_namespace_name
     default_defined_tags   = local.tags_defined_tags,
     default_freeform_tags  = local.tags_freeform_tags
 
-    namespaces = {
-      ARCH-CENTER-NAMESPACE = {
-        name        = "ArchitectureCenter\\oci-core-landing-zone-${var.service_label}"
-        description = "${var.lz_provenant_label} tag namespace for OCI Architecture Center."
-        is_retired  = false
-        tags = {
-          ARCH-CENTER-TAG = {
-            name        = "release"
-            description = "${var.lz_provenant_label} tag for OCI Architecture Center."
-          }
-        }
-      }
-    }
+    namespaces = local.custom_tag_namespaces
+
+    # namespaces = {
+    #   ARCH-CENTER-NAMESPACE = {
+    #     name        = "ArchitectureCenter\\oci-core-landing-zone-${var.service_label}"
+    #     description = "${var.lz_provenant_label} tag namespace for OCI Architecture Center."
+    #     is_retired  = false
+    #     tags = {
+    #       ARCH-CENTER-TAG = {
+    #         name        = "release"
+    #         description = "${var.lz_provenant_label} tag for OCI Architecture Center."
+    #       }
+    #     }
+    #   }
+    # }
   }
 
   ##### DON'T TOUCH ANYTHING BELOW #####
@@ -48,7 +50,7 @@ locals {
 }
 
 module "lz_tags" {
-  source             = "github.com/oci-landing-zones/terraform-oci-modules-governance//tags?ref=v0.1.5"
+  source             = "github.com/oci-landing-zones/terraform-oci-modules-governance//tags?ref=v0.1.6"
   count              = var.extend_landing_zone_to_new_region == false ? 1 : 0
   providers          = { oci = oci.home }
   tags_configuration = local.tags_configuration

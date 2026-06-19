@@ -11,7 +11,7 @@ locals {
 
 module "lz_top_compartment" {
   count                      = var.extend_landing_zone_to_new_region == false && local.deploy_enclosing_compartment ? 1 : 0
-  source                     = "github.com/oci-landing-zones/terraform-oci-modules-iam//compartments?ref=v0.3.1"
+  source                     = "github.com/oci-landing-zones/terraform-oci-modules-iam//compartments?ref=v0.3.4"
   providers                  = { oci = oci.home }
   tenancy_ocid               = var.tenancy_ocid
   compartments_configuration = local.enclosing_compartment_configuration
@@ -19,7 +19,7 @@ module "lz_top_compartment" {
 
 module "lz_compartments" {
   count                      = var.extend_landing_zone_to_new_region == false ? 1 : 0
-  source                     = "github.com/oci-landing-zones/terraform-oci-modules-iam//compartments?ref=v0.3.1"
+  source                     = "github.com/oci-landing-zones/terraform-oci-modules-iam//compartments?ref=v0.3.4"
   providers                  = { oci = oci.home }
   tenancy_ocid               = var.tenancy_ocid
   compartments_configuration = local.enclosed_compartments_configuration
@@ -61,12 +61,12 @@ locals {
   #----------------------------------------------------------------------------------------------------------
   #----- Provided compartment names
   #----------------------------------------------------------------------------------------------------------
-  provided_enclosing_compartment_name = var.custom_enclosing_compartment_name != null ? var.custom_enclosing_compartment_name : "${var.service_label}-top-cmp"
-  provided_network_compartment_name   = var.custom_network_compartment_name != null ? var.custom_network_compartment_name : "${var.service_label}-network-cmp"
-  provided_security_compartment_name  = var.custom_security_compartment_name != null ? var.custom_security_compartment_name : "${var.service_label}-security-cmp"
-  provided_app_compartment_name       = var.custom_app_compartment_name != null ? var.custom_app_compartment_name : "${var.service_label}-app-cmp"
-  provided_database_compartment_name  = var.custom_database_compartment_name != null ? var.custom_database_compartment_name : "${var.service_label}-database-cmp"
-  provided_exainfra_compartment_name  = var.custom_exainfra_compartment_name != null ? var.custom_exainfra_compartment_name : "${var.service_label}-exainfra-cmp"
+  provided_enclosing_compartment_name = var.custom_enclosing_compartment_name != null ? trimspace(var.custom_enclosing_compartment_name) : "${var.service_label}-top-cmp"
+  provided_network_compartment_name   = var.custom_network_compartment_name != null   ? trimspace(var.custom_network_compartment_name)   : "${var.service_label}-network-cmp"
+  provided_security_compartment_name  = var.custom_security_compartment_name != null  ? trimspace(var.custom_security_compartment_name)  : "${var.service_label}-security-cmp"
+  provided_app_compartment_name       = var.custom_app_compartment_name != null       ? trimspace(var.custom_app_compartment_name)       : "${var.service_label}-app-cmp"
+  provided_database_compartment_name  = var.custom_database_compartment_name != null  ? trimspace(var.custom_database_compartment_name)  : "${var.service_label}-database-cmp"
+  provided_exainfra_compartment_name  = var.custom_exainfra_compartment_name != null  ? trimspace(var.custom_exainfra_compartment_name)  : "${var.service_label}-exainfra-cmp"
 
   #----------------------------------------------------------------------
   #----- Auxiliary object for Terraform ternary operator satisfaction
@@ -146,15 +146,6 @@ locals {
   } : {}
 
   lz_default_enclosed_compartments = merge(local.network_cmp, local.security_cmp, local.app_cmp, local.database_cmp, local.exainfra_cmp)
-
-  # For adding compartments to Core Landing Zone, override additional_enclosed_compartments variable with a map of additional compartments, like:
-  # additional_enclosed_compartments = {
-  #     DEVOPS-CMP = { 
-  #         name = "${var.service_label}-devops-cmp", 
-  #         description = "Core Landing Zone custom DevOps compartment" 
-  #     }
-  # }
-  additional_enclosed_compartments = {}
 
   all_enclosed_compartments = merge(local.lz_default_enclosed_compartments, local.additional_enclosed_compartments)
   #------------------------------------------------------------------------

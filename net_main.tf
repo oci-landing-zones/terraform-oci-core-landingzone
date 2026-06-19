@@ -2,6 +2,7 @@
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl/
 
 locals {
+
   lz_network_configuration = {
     default_compartment_id = local.network_compartment_id
     network_configuration_categories = {
@@ -14,7 +15,7 @@ locals {
 }
 
 module "lz_network" {
-  source                = "github.com/oci-landing-zones/terraform-oci-modules-networking?ref=v0.7.8"
+  source                = "github.com/oci-landing-zones/terraform-oci-modules-networking?ref=v0.8.2"
   depends_on            = [module.lz_zpr]
   network_configuration = local.lz_network_configuration
   network_dependency = local.use_existing_drg ? {
@@ -23,4 +24,19 @@ module "lz_network" {
     }
   } : null
   tenancy_ocid = var.tenancy_ocid
+}
+
+resource "null_resource" "validate_hub_vcn_outdoor_allowed_public_cidrs" {
+  count = var.define_net && local.hub_with_vcn && length(local.hub_vcn_outdoor_allowed_public_cidrs) > 0 ? 1 : 0
+  triggers = {
+    cidrs = join(",", local.hub_vcn_outdoor_allowed_public_cidrs)
+  }
+  lifecycle {
+    precondition {
+      condition = alltrue([
+        for cidr in local.hub_vcn_outdoor_allowed_public_cidrs : trimspace(cidr) != "0.0.0.0/0"
+      ])
+      error_message = "VALIDATION FAILURE: hub_vcn_outdoor_allowed_public_cidrs must not include 0.0.0.0/0."
+    }
+  }
 }

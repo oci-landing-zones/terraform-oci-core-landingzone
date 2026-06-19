@@ -24,7 +24,7 @@ module "core_lz" {
     private_key_path     = "path-to-pem-file-with-private-key"               # Replace with user private key local path.
     private_key_password = ""                                                # Replace with private key password, if any.
     region               = "us-phoenix-1" # Replace with region name.
-    service_label        = "existingID"     # Prefix prepended to deployed resource names. 
+    service_label        = "newdomain"     # Prefix prepended to deployed resource names. 
 
     # ------------------------------------------------------
     # ----- Notifications
@@ -38,10 +38,8 @@ module "core_lz" {
     enable_security_zones=false # Set to true if Security Zones are required.
 
     # ------------------------------------------------------
-    # ----- Existing Identity Domain
+    # ----- New Identity Domain
     # ------------------------------------------------------
     identity_domain_option = "New Identity Domain" # Designate to Landing Zone that you want to create a new identity domain.
-    new_identity_domain_name = "" # the name of the new identity domain
     new_identity_domain_license_type = "free" # the license type of the new identity domain. Value to use: free, premium
-    customize_iam = true # Whether Landing Zone IAM settings are to be customized.
 }

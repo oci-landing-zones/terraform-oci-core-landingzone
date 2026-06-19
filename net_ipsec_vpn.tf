@@ -10,7 +10,7 @@ locals {
       LZ-CPE = {
         compartment_id               = local.network_compartment_id,
         ip_address                   = var.cpe_ip_address,
-        display_name                 = length(var.cpe_name) > 0 ? var.cpe_name : "${var.service_label}-cpe",
+        display_name                 = coalesce(var.cpe_name,"${var.service_label}-${lower(var.cpe_device_shape_vendor)}-cpe"),
         cpe_device_shape_vendor_name = var.cpe_device_shape_vendor
       }
     }
@@ -23,8 +23,8 @@ locals {
         drg_key = local.deploy_new_drg == true ? "HUB-DRG" : null
         drg_id  = local.use_existing_drg == true ? var.existing_drg_ocid : null
 
-        display_name  = length(var.ipsec_vpn_name) > 0 ? var.ipsec_vpn_name : "${var.service_label}-oci-ipsec-vpn",
-        static_routes = var.onprem_cidrs
+        display_name  = coalesce(var.ipsec_vpn_name,"${var.service_label}-${lower(var.cpe_device_shape_vendor)}-ipsec-vpn"),
+        static_routes = local.all_onprem_cidrs
         tunnels_management = {
           tunnel_1 = {
             routing = "BGP",

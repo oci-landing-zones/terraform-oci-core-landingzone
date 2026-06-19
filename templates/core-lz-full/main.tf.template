@@ -1,0 +1,776 @@
+# Copyright (c) 2024, 2026, Oracle and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl/
+
+# ----------------------------------------------------------------------------------------
+# Core Landing Zone - Full Option Showcase
+# ----------------------------------------------------------------------------------------
+# This template is intentionally verbose. It is meant to show end users the main Core
+# Landing Zone options in one place, with a practical default path enabled and alternate
+# paths left commented nearby.
+#
+# Before running:
+# 1. Copy or rename this file to main.tf.
+# 2. Replace all placeholder OCIDs, email addresses, CIDRs, regions, and key paths.
+# 3. Review cost-impacting options such as OCI Network Firewall, Vault, Service Connector,
+#    Vulnerability Scanning, FastConnect, IPSec VPN, and Bastion.
+# 4. Run:
+#      terraform init
+#      terraform plan
+#      terraform apply
+# ----------------------------------------------------------------------------------------
+
+module "core_lz" {
+  source = "../../"
+
+  # ======================================================================================
+  # Environment and Required Provider Inputs
+  # ======================================================================================
+  # These values identify the tenancy, API signing user, private key, and target region.
+  # In OCI Resource Manager, these may be supplied by the stack instead of hardcoded here.
+  tenancy_ocid         = "ocid1.tenancy.oc1..replace-with-tenancy-ocid"
+  user_ocid            = "ocid1.user.oc1..replace-with-user-ocid"
+  fingerprint          = "replace-with-api-key-fingerprint"
+  private_key_path     = "~/.oci/oci_api_key.pem"
+  private_key_password = ""
+  region               = "us-ashburn-1"
+
+  # A short prefix prepended to deployed resources. Must start with a letter and be <= 15 chars.
+  service_label = "full"
+
+  # Use "1" for CIS Level 1 or "2" for stricter controls such as Vault-backed encryption.
+  cis_level = "2"
+
+  # Set true for free-tier tenancies, where Cloud Guard and Security Zones are unavailable.
+  is_free_tenancy = false
+
+  # Use this when extending an existing landing zone into another OCI region.
+  extend_landing_zone_to_new_region = false
+
+  # Display concise resource outputs after apply.
+  display_output = true
+
+  # Optional provenance tags applied to Landing Zone managed resources.
+  lz_provenant_prefix  = "core"
+  lz_provenant_version = "1.6.0"
+  lz_provenant_label   = "Core Landing Zone Full Template"
+
+  # ======================================================================================
+  # IAM - Compartments
+  # ======================================================================================
+
+  # --------------------------------------------------------------------------------------
+  # Active path: deploy a new enclosing compartment, plus network, security, application,
+  # database, and Exadata infrastructure compartments.
+  # --------------------------------------------------------------------------------------
+
+  enclosing_compartment_options     = "Yes, deploy new"
+  enclosing_compartment_parent_ocid = null # Root compartment is the default when null
+
+  deploy_app_cmp      = true
+  deploy_database_cmp = true
+  deploy_exainfra_cmp = true
+
+  custom_enclosing_compartment_name = "corelz-full-enclosing-cmp"
+  custom_network_compartment_name   = "corelz-full-network-cmp"
+  custom_security_compartment_name  = "corelz-full-security-cmp"
+  custom_app_compartment_name       = "corelz-full-application-cmp"
+  custom_database_compartment_name  = "corelz-full-database-cmp"
+  custom_exainfra_compartment_name  = "corelz-full-exadata-infra-cmp"
+
+  # --------------------------------------------------------------------------------------
+  # Alternate path 1: use an existing enclosing compartment.
+  # --------------------------------------------------------------------------------------
+  # enclosing_compartment_options      = "Yes, use existing"
+  # existing_enclosing_compartment_ocid = "ocid1.compartment.oc1..replace-with-existing-enclosing-compartment"
+
+  # --------------------------------------------------------------------------------------
+  # Alternate path 2: use the Root compartment as the enclosing compartment.
+  # AVOID THIS, as it may lead to sprawl and lack of organization for Landing Zone resources.
+  # --------------------------------------------------------------------------------------
+  # enclosing_compartment_options = "No"
+  # deploy_app_cmp                = false
+  # deploy_database_cmp           = false
+  # deploy_exainfra_cmp           = false
+
+
+  # ======================================================================================
+  # IAM - Identity Domain, Groups and Dynamic Groups
+  # ======================================================================================
+  # Use exactly one of the identity-domain paths below. Resource Manager UI-only controls
+  # such as groups_options and dyn_groups_options are intentionally not used here; Terraform
+  # decides whether to create or use existing groups from the variables in each path.
+  #
+  # --------------------------------------------------------------------------------------
+  # Active path: create a new identity domain and create new groups/dynamic groups in it.
+  #---------------------------------------------------------------------------------------
+  identity_domain_option           = "New Identity Domain"
+  new_identity_domain_name         = "corelz-identity-domain"
+  new_identity_domain_license_type = "free"
+
+  # ---------------------------------------------------------------------------------------
+  # Alternate path 1: use the Default identity domain and create new groups/dynamic groups.
+  # ---------------------------------------------------------------------------------------
+  # identity_domain_option = "Default Domain"
+
+  # ---------------------------------------------------------------------------------------
+  # Alternate path 2: use the Default identity domain with existing groups/dynamic groups.
+  # ---------------------------------------------------------------------------------------
+  # identity_domain_option                        = "Default Domain"
+
+  # If you leave any of the group variables below unset or empty, Core LZ creates that group/dynamic group in the Default Domain. 
+  # Set all of them to use only existing groups/dynamic groups.
+  # existing_iam_admin_group_name                 = ["core-iam-admins"]
+  # existing_cred_admin_group_name                = ["core-credential-admins"]
+  # existing_security_admin_group_name            = ["core-security-admins"]
+  # existing_network_admin_group_name             = ["core-network-admins"]
+  # existing_appdev_admin_group_name              = ["core-appdev-admins"]
+  # existing_database_admin_group_name            = ["core-database-admins"]
+  # existing_auditor_group_name                   = ["core-auditors"]
+  # existing_announcement_reader_group_name       = ["core-announcement-readers"]
+  # existing_exainfra_admin_group_name            = ["core-exadata-infra-admins"]
+  # existing_cost_admin_group_name                = ["core-cost-admins"]
+  # existing_storage_admin_group_name             = ["core-storage-admins"]
+  # existing_ag_admin_group_name                  = ["core-access-governance-admins"]
+  # existing_security_fun_dyn_group_name          = "core-security-functions-dg"
+  # existing_appdev_fun_dyn_group_name            = "core-appdev-functions-dg"
+  # existing_compute_agent_dyn_group_name         = "core-compute-agent-dg"
+  # existing_database_kms_dyn_group_name          = "core-database-kms-dg"
+  # existing_net_fw_app_dyn_group_name            = "core-network-firewall-dg" # Required only when using Fortinet.
+
+  # ----------------------------------------------------------------------------------------------
+  # Alternate path 3: use a custom existing identity domain and create new groups/dynamic groups.
+  # ----------------------------------------------------------------------------------------------
+  # identity_domain_option      = "Use Custom Identity Domain"
+  # custom_id_domain_ocid       = "ocid1.domain.oc1..replace-with-domain-ocid"
+  # deploy_custom_domain_groups = true
+
+  # ---------------------------------------------------------------------------------------------
+  # Alternate path 4: use a custom existing identity domain with existing groups/dynamic groups.
+  # ---------------------------------------------------------------------------------------------
+  # identity_domain_option                             = "Use Custom Identity Domain"
+  # custom_id_domain_ocid                              = "ocid1.domain.oc1..replace-with-domain-ocid"
+  # deploy_custom_domain_groups                         = false
+  # rm_existing_id_domain_iam_admin_group_name          = ["core-iam-admins"]
+  # rm_existing_id_domain_cred_admin_group_name         = ["core-credential-admins"]
+  # rm_existing_id_domain_security_admin_group_name     = ["core-security-admins"]
+  # rm_existing_id_domain_network_admin_group_name      = ["core-network-admins"]
+  # rm_existing_id_domain_appdev_admin_group_name       = ["core-appdev-admins"]
+  # rm_existing_id_domain_database_admin_group_name     = ["core-database-admins"]
+  # rm_existing_id_domain_auditor_group_name            = ["core-auditors"]
+  # rm_existing_id_domain_announcement_reader_group_name = ["core-announcement-readers"]
+  # rm_existing_id_domain_exainfra_admin_group_name     = ["core-exadata-infra-admins"]
+  # rm_existing_id_domain_cost_admin_group_name         = ["core-cost-admins"]
+  # rm_existing_id_domain_storage_admin_group_name      = ["core-storage-admins"]
+  # rm_existing_id_domain_ag_admin_group_name           = ["core-access-governance-admins"]
+  # existing_id_domain_security_fun_dyn_group_name      = "core-security-functions-dg"
+  # existing_id_domain_appdev_fun_dyn_group_name        = "core-appdev-functions-dg"
+  # existing_id_domain_compute_agent_dyn_group_name     = "core-compute-agent-dg"
+  # existing_id_domain_database_kms_dyn_group_name      = "core-database-kms-dg"
+  # existing_id_domain_net_fw_app_dyn_group_name        = "core-network-firewall-dg" # Required only when using Fortinet.
+
+
+  # ======================================================================================
+  # IAM - Policies
+  # ======================================================================================
+  # Root policies are created by this stack. Use "USE" only when root policies already exist.
+  policies_in_root_compartment = "CREATE" # "CREATE" is default.
+
+
+  # ======================================================================================
+  # Governance - Budget
+  # ======================================================================================
+  create_budget                = true
+  budget_amount                = 15000
+  budget_alert_threshold       = 80
+  budget_alert_email_endpoints = ["finops@example.com"]
+
+
+  # ======================================================================================
+  # Security Services - Security Zones, Cloud Guard, Vulnerability Scanning, Vault
+  # ======================================================================================
+  # Cloud Guard
+  enable_cloud_guard_cloned_recipes = true
+  cloud_guard_reporting_region      = null
+  cloud_guard_risk_level_threshold  = "High"
+  cloud_guard_admin_email_endpoints = ["soc@example.com"]
+
+  # Security Zones
+  enable_security_zones = true
+  # security_zones_reporting_region = "us-ashburn-1" # Optional, defaults to tenancy home region if unset.
+  # sz_security_policies            = [] # Add existing Security Zone policy OCIDs as needed.
+
+  # Vulnerability Scanning Service
+  vss_create                                  = true
+  vss_scan_schedule                           = "DAILY"
+  vss_scan_day                                = "SUNDAY"
+  vss_port_scan_level                         = "STANDARD"
+  vss_agent_scan_level                        = "STANDARD"
+  vss_agent_cis_benchmark_settings_scan_level = "MEDIUM"
+  vss_enable_file_scan                        = true
+  vss_folders_to_scan                         = ["/"]
+
+  # Vault Service
+  enable_vault = true
+  vault_type   = "VIRTUAL_PRIVATE"
+  # vault_replica_region = "us-ashburn-1" # Set to a region name to enable vault replication.
+
+
+  # ======================================================================================
+  # Monitoring, Notifications, and Service Connector Hub
+  # ======================================================================================
+  network_admin_email_endpoints  = ["network.admin@example.com"]
+  security_admin_email_endpoints = ["security.admin@example.com"]
+  storage_admin_email_endpoints  = ["storage.admin@example.com"]
+  compute_admin_email_endpoints  = ["compute.admin@example.com"]
+  budget_admin_email_endpoints   = ["budget.admin@example.com"]
+  database_admin_email_endpoints = ["database.admin@example.com"]
+  exainfra_admin_email_endpoints = ["exadata.admin@example.com"]
+
+  notifications_advanced_options = true
+  create_alarms_as_enabled       = true
+  create_events_as_enabled       = true
+  alarm_message_format           = "PRETTY_JSON"
+
+  enable_service_connector      = true
+  activate_service_connector    = true
+  service_connector_target_kind = "logginganalytics"
+  onboard_logging_analytics     = true
+
+  # Alternate Service Connector targets:
+  # service_connector_target_kind = "objectstorage"
+  # existing_service_connector_bucket_vault_compartment_id = "ocid1.compartment.oc1..replace-with-vault-compartment"
+  # existing_service_connector_bucket_vault_id             = "ocid1.vault.oc1..replace-with-vault"
+  # existing_service_connector_bucket_key_id               = "ocid1.key.oc1..replace-with-key"
+  #
+  # service_connector_target_kind          = "streaming"
+  # existing_service_connector_target_stream_id = "ocid1.stream.oc1..replace-with-stream"
+  #
+  # service_connector_target_kind            = "functions"
+  # existing_service_connector_target_function_id = "ocid1.fnfunc.oc1..replace-with-function"
+
+
+  # ======================================================================================
+  # Networking - Hub and Cross-VCN Connectivity
+  # ======================================================================================
+  define_net = true # Required for enabling any networking features, including the hub, spoke VCNs, and cross-VCN connectivity.
+
+  # --------------------------------------------------------------------------------------
+  # Active path: create a DRG and DMZ Hub VCN. Spoke VCNs attach to the DRG.
+  # --------------------------------------------------------------------------------------
+  hub_deployment_option = "VCN or on-premises connectivity routing through DMZ VCN with Network Virtual Appliance (DRG and DMZ VCN will be created)"
+
+  # Alternate hub options:
+  # hub_deployment_option = "No cross-VCN or on-premises connectivity"
+  # hub_deployment_option = "VCN or on-premises connectivity routing via DRG (DRG will be created)"
+  # hub_deployment_option = "VCN or on-premises connectivity routing via DRG (existing DRG)"
+  # existing_drg_ocid     = "ocid1.drg.oc1..replace-with-existing-drg"
+  # hub_deployment_option = "VCN or on-premises connectivity routed through DMZ VCN with Network Virtual Appliance existing DRG (DMZ VCN will be created and DRG ID required)"
+  # hub_deployment_option = "No cross-VCN with on-premises connectivity using an existing DRG"
+  # hub_deployment_option = "No cross-VCN with on-premises connectivity using a new DRG"
+
+  # Cross-VCN NSG style.  
+  enable_cross_vcn_open_nsg         = true  # Open mode is useful when a firewall in the Hub VCN enforces security policies.
+  enable_cross_vcn_constrained_nsgs = false # Constrained mode is opinionated. Useful when there's no firewall enforcing security policies.
+
+  hub_vcn_name                    = "corelz-full-hub"
+  hub_vcn_cidrs                   = ["10.80.0.0/23"]
+  hub_vcn_enable_internet_gateway = true
+
+  hub_vcn_web_subnet_name       = "hub-web"
+  hub_vcn_web_subnet_cidr       = "10.80.0.0/25"
+  hub_vcn_web_subnet_is_private = false
+  hub_vcn_mgmt_subnet_name      = "hub-mgmt"
+  hub_vcn_mgmt_subnet_cidr      = "10.80.0.128/26"
+  hub_vcn_indoor_subnet_name    = "hub-indoor"
+  hub_vcn_indoor_subnet_cidr    = "10.80.1.0/25"
+  hub_vcn_outdoor_subnet_name   = "hub-outdoor"    # Ignored for 'OCI Native Firewall'. Only applicable for network firewall appliances, like Palo Alto or Fortinet.
+  hub_vcn_outdoor_subnet_cidr   = "10.80.0.192/26" # Ignored for 'OCI Native Firewall'. Only applicable for network firewall appliances, like Palo Alto or Fortinet.
+
+
+  # ======================================================================================
+  # Networking - Firewall / Network Appliance
+  # ======================================================================================
+
+  # --------------------------------------------------------------------------------------
+  # Active path: OCI Network Firewall. 
+  # --------------------------------------------------------------------------------------
+  # NOTICE that any Firewall deployment by Core LZ requires two Terraform apply runs. 
+  # This is because the firewall private IPis not created until the first apply, 
+  # but this private IP is needed to complete the DRG routing configuration. 
+  # The variables 'oci_nfw_ip_ocid' and (optionally) 'oci_nfw_policy_ocid' must be updated
+  # with actual values after the first apply to complete the deployment.
+  # --------------------------------------------------------------------------------------
+  hub_vcn_deploy_net_appliance_option = "OCI Native Firewall"
+  enable_native_firewall_threat_log   = true
+  enable_native_firewall_traffic_log  = true
+
+  # This value is not known until after the first apply when OCI Network Firewall is deployed, because the firewall endpoint is created during the apply. 
+  # For the first apply, set this to null. For the second apply, update this variable with the actual private IP OCID output (oci_nfw_ip_ocid) to complete the configuration.
+  oci_nfw_ip_ocid = null # for the second apply, set this to "ocid1.privateip.oc1.replace-with-oci-nfw-private-ip-output-from-first-terraform-run" 
+
+  # You can provide an existing OCI Network Firewall policy OCID here if you want to create the firewall with an existing policy on the first apply. 
+  # If left null, a default policy (rejects all traffic) is created and associated with the firewall during the first apply.
+  oci_nfw_policy_ocid = null # for the second apply, set this to "ocid1.networkfirewallpolicy.oc1.replace-with-existing-policy-ocid-or-policy-created-by-first-terraform-run"
+
+  # --------------------------------------------------------------------------------------
+  # Alternate path 1: no firewall appliance, but keep Hub VCN networking ready.
+  # --------------------------------------------------------------------------------------
+  # hub_vcn_deploy_net_appliance_option = "Don't deploy any network appliance at this time"
+
+  # --------------------------------------------------------------------------------------
+  # Alternate path 2: deploy an OCI Marketplace Palo Alto Networks VM-Series Firewall image.
+  # --------------------------------------------------------------------------------------
+  # hub_vcn_deploy_net_appliance_option    = "Marketplace Image"
+  # net_appliance_image_vendor             = "PaloAlto"
+  # net_appliance_marketplace_image_ocid   = null # ocid can be used instead of name/version.
+  # net_appliance_marketplace_image_name   = "Palo Alto Networks VM-Series Firewall"
+  # net_appliance_marketplace_image_version = "11.1.6-h7"
+  # net_appliance_name_prefix              = "corelz-panf"
+  # net_appliance_shape                    = "VM.Standard3.Flex"
+  # net_appliance_flex_shape_memory        = 56
+  # net_appliance_flex_shape_cpu           = 4
+  # net_appliance_boot_volume_size         = 60
+  # net_appliance_public_rsa_key           = "replace-with-public-key-path-or-key-string"
+
+  # The firewall management NSG allows only the CIDRs and ports below.
+  # allowed_onprem_cidrs_to_fw_mgmt_interface = ["10.10.10.0/24"]     
+  # fw_mgmt_interface_ports                   = ["TCP:22", "TCP:443"] 
+
+  # For the second terraform apply, provide firewall load balancer private IP OCIDs.
+  # hub_vcn_north_south_entry_point_ocid = "ocid1.privateip.oc1..replace-with-nlb_private_ip_addresses.OUTDOOR-NLB.id-output-from-first-terraform-run"
+  # hub_vcn_east_west_entry_point_ocid   = "ocid1.privateip.oc1..replace-with-nlb_private_ip_addresses.INDOOR_NLB.id-output-from-first-terraform-run"
+
+  # --------------------------------------------------------------------------------------
+  # Alternate path 3: deploy an OCI Marketplace Fortinet FortiGate Firewall image.
+  # --------------------------------------------------------------------------------------
+  # hub_vcn_deploy_net_appliance_option    = "Marketplace Image"
+  # net_appliance_image_vendor             = "Fortinet"
+  # net_appliance_marketplace_image_ocid   = null # ocid can be used instead of name/version.
+  # net_appliance_marketplace_image_name   = "Fortinet FortiGate Firewall"
+  # net_appliance_marketplace_image_version = "7.6.4_(_X64_)"
+  # net_appliance_name_prefix              = "corelz-fortinet"
+  # net_appliance_shape                    = "VM.Standard3.Flex"
+  # net_appliance_flex_shape_memory        = 56
+  # net_appliance_flex_shape_cpu           = 4
+  # net_appliance_boot_volume_size         = 60
+  # net_appliance_public_rsa_key           = "replace-with-public-key-path-or-key-string"
+
+  # The firewall management NSG allows only the CIDRs and ports below.
+  # allowed_onprem_cidrs_to_fw_mgmt_interface = ["10.10.10.0/24"]     
+  # fw_mgmt_interface_ports                   = ["TCP:22", "TCP:443"]
+
+  # For the second terraform apply, provide firewall load balancer private IP OCIDs.
+  # hub_vcn_north_south_entry_point_ocid = "ocid1.privateip.oc1..replace-with-nlb_private_ip_addresses.OUTDOOR-NLB.id-output-from-first-terraform-run"
+  # hub_vcn_east_west_entry_point_ocid   = "ocid1.privateip.oc1..replace-with-nlb_private_ip_addresses.INDOOR_NLB.id-output-from-first-terraform-run"
+
+  # --------------------------------------------------------------------------------------
+  # Alternate path 4: deploy a user-provided virtual network appliance image 
+  # --------------------------------------------------------------------------------------
+  # hub_vcn_deploy_net_appliance_option    = "User-Provided Virtual Network Appliance"
+  # net_appliance_image_ocid               = "ocid1.image.oc1..replace-with-custom-network-appliance-image"
+  # net_appliance_image_vendor             = "Fortinet"
+  # net_appliance_name_prefix              = "corelz-fortinet"
+  # net_appliance_shape                    = "VM.Standard3.Flex"
+  # net_appliance_flex_shape_memory        = 56
+  # net_appliance_flex_shape_cpu           = 4
+  # net_appliance_boot_volume_size         = 60
+  # net_appliance_public_rsa_key           = "replace-with-public-key-path-or-key-string"
+
+  # The firewall management NSG allows only the CIDRs and ports below.
+  # allowed_onprem_cidrs_to_fw_mgmt_interface = ["10.10.10.0/24"]     
+  # fw_mgmt_interface_ports                   = ["TCP:22", "TCP:443"]
+
+  # For the second terraform apply, provide firewall load balancer private IP OCIDs.
+  # hub_vcn_north_south_entry_point_ocid = "ocid1.privateip.oc1..replace-with-nlb_private_ip_addresses.OUTDOOR-NLB.id-output-from-first-terraform-run"
+  # hub_vcn_east_west_entry_point_ocid   = "ocid1.privateip.oc1..replace-with-nlb_private_ip_addresses.INDOOR_NLB.id-output-from-first-terraform-run"
+
+  # ======================================================================================
+  # Networking - On-Premises Connectivity
+  # ======================================================================================
+  # onprem_cidrs variable is key for on-premises connectivity through IPSec VPN or FastConnect, regardless of whether or not the connectivity itself is managed by Core LZ. 
+  # This is because onprem_cidrs is used for DRG route table and security rule configuration in the Hub VCN. 
+  # Make sure to set onprem_cidrs to the correct CIDRs for your on-premises environment to ensure proper routing and security rules are in place.
+  onprem_cidrs = ["10.10.0.0/16"]
+
+  # --------------------------------------------------------------------------------------
+  # Active path: Core LZ does not manage on-premises connectivity. 
+  # Note that on-premises connectivity can still be established externally to Core LZ.
+  # --------------------------------------------------------------------------------------
+  on_premises_connection_option = "None"
+  
+  # --------------------------------------------------------------------------------------
+  # Alternate path 1: create both FastConnect and IPSec VPN connectivity.
+  # --------------------------------------------------------------------------------------
+  # on_premises_connection_option = "Create New FastConnect Virtual Circuit and IPSec VPN"
+
+  # FastConnect virtual circuit parameters.
+  # fastconnect_virtual_circuit_name                                    = "core-full-fastconnect"
+  # fastconnect_virtual_circuit_type                                    = "PRIVATE"
+  # fastconnect_virtual_circuit_bandwidth_shape                         = "1 Gbps"
+  # fastconnect_virtual_circuit_bandwidth_custom_shape                  = "5 Gbps"
+  # fastconnect_virtual_circuit_customer_asn                            = "65100"
+  # fastconnect_virtual_circuit_customer_bgp_peering_ip                 = "169.254.20.2/30"
+  # fastconnect_virtual_circuit_oracle_bgp_peering_ip                   = "169.254.20.1/30"
+  # fastconnect_virtual_circuit_routing_policy                          = "REGIONAL"
+  # fastconnect_virtual_circuit_provider_service_id                     = "ocid1.providerservice.oc1..replace-with-provider-service"
+  # fastconnect_virtual_circuit_provider_service_key_name               = "replace-with-provider-service-key"
+  # fastconnect_virtual_circuit_cross_connect_or_cross_connect_group_id = null
+  # fastconnect_virtual_circuit_bgp_md5auth_key                         = null
+  # fastconnect_virtual_circuit_vlan                                    = null
+  # fastconnect_virtual_circuit_ip_mtu                                  = 1500
+  # fastconnect_virtual_circuit_is_bfd_enabled                          = false
+
+  # IPSec VPN parameters.
+  # cpe_name                            = "corelz-full-cpe"
+  # cpe_ip_address                      = "203.0.113.10"
+  # cpe_device_shape_vendor             = "Palo Alto"
+  # ipsec_vpn_name                      = "corelz-full-ipsec-vpn"
+  # ipsec_customer_bgp_asn              = "65100"
+  # ipsec_tunnel1_customer_interface_ip = "169.254.10.2/30" # /30 or /31 CIDR is required for tunnel IP.
+  # ipsec_tunnel1_oracle_interface_ip   = "169.254.10.1/30" # /30 or /31 CIDR is required for tunnel IP.
+  # ipsec_tunnel1_shared_secret         = null              # If left null, a random shared secret is generated by OCI.
+  # ipsec_tunnel1_ike_version           = "V2"
+  # ipsec_tunnel2_customer_interface_ip = "169.254.11.2/30" # /30 or /31 CIDR is required for tunnel IP.
+  # ipsec_tunnel2_oracle_interface_ip   = "169.254.11.1/30" # /30 or /31 CIDR is required for tunnel IP.
+  # ipsec_tunnel2_shared_secret         = null              # If left null, a random shared secret is generated by OCI.
+  # ipsec_tunnel2_ike_version           = "V2"
+
+  # --------------------------------------------------------------------------------------
+  # Alternate path 2: create an IPSec VPN only.
+  # --------------------------------------------------------------------------------------
+  # on_premises_connection_option      = "Create New IPSec VPN"
+  # cpe_name                           = "corelz-full-cpe"
+  # cpe_ip_address                     = "203.0.113.10"
+  # cpe_device_shape_vendor            = "Libreswan"
+  # ipsec_vpn_name                     = "corelz-full-ipsec-vpn"
+  # ipsec_customer_bgp_asn             = "65100"
+  # ipsec_tunnel1_customer_interface_ip = "169.254.10.2/30" # /30 or /31 CIDR is required for tunnel IP.
+  # ipsec_tunnel1_oracle_interface_ip   = "169.254.10.1/30" # /30 or /31 CIDR is required for tunnel IP.
+  # ipsec_tunnel1_shared_secret         = null              # If left null, a random shared secret is generated by OCI.
+  # ipsec_tunnel1_ike_version           = "V2"
+  # ipsec_tunnel2_customer_interface_ip = "169.254.11.2/30" # /30 or /31 CIDR is required for tunnel IP.
+  # ipsec_tunnel2_oracle_interface_ip   = "169.254.11.1/30" # /30 or /31 CIDR is required for tunnel IP.
+  # ipsec_tunnel2_shared_secret         = null              # If left null, a random shared secret is generated by OCI.
+  # ipsec_tunnel2_ike_version           = "V2"
+
+  # --------------------------------------------------------------------------------------
+  # Alternate path 3: create a FastConnect virtual circuit only.
+  # --------------------------------------------------------------------------------------
+  # on_premises_connection_option = "Create New FastConnect Virtual Circuit"
+  # fastconnect_virtual_circuit_name                    = "core-full-fastconnect"
+  # fastconnect_virtual_circuit_type                    = "PRIVATE"
+  # fastconnect_virtual_circuit_bandwidth_shape         = "1 Gbps"
+  # fastconnect_virtual_circuit_bandwidth_custom_shape  = "5 Gbps"
+  # fastconnect_virtual_circuit_customer_asn            = "65100"
+  # fastconnect_virtual_circuit_customer_bgp_peering_ip = "169.254.20.2/30"
+  # fastconnect_virtual_circuit_oracle_bgp_peering_ip   = "169.254.20.1/30"
+  # fastconnect_virtual_circuit_routing_policy          = "REGIONAL"
+  # fastconnect_virtual_circuit_provider_service_id     = "ocid1.providerservice.oc1..replace-with-provider-service"
+  # fastconnect_virtual_circuit_provider_service_key_name = "replace-with-provider-service-key"
+  # fastconnect_virtual_circuit_cross_connect_or_cross_connect_group_id = null
+  # fastconnect_virtual_circuit_bgp_md5auth_key         = null
+  # fastconnect_virtual_circuit_vlan                    = null
+  # fastconnect_virtual_circuit_ip_mtu                  = 1500
+  # fastconnect_virtual_circuit_is_bfd_enabled          = false
+
+
+  # ======================================================================================
+  # Networking - Bastion Service and Jump Host
+  # ======================================================================================
+  add_hub_vcn_jumphost_subnet  = true
+  hub_vcn_jumphost_subnet_name = "hub-jumphost"
+  hub_vcn_jumphost_subnet_cidr = "10.80.1.128/26"
+
+  deploy_bastion_service        = true
+  bastion_service_name          = "core-full-bastion"
+  bastion_service_allowed_cidrs = ["198.51.100.0/24"]
+
+  deploy_bastion_jump_host              = true
+  bastion_jump_host_instance_name       = "corelz-full-jump-host"
+  bastion_jump_host_ssh_public_key_path = "~/.ssh/id_rsa.pub"
+  bastion_jump_host_instance_shape      = "VM.Standard.E4.Flex"
+  bastion_jump_host_boot_volume_size    = 60
+  bastion_jump_host_flex_shape_memory   = 16
+  bastion_jump_host_flex_shape_cpu      = 2
+
+  # --------------------------------------------------------------------------------------
+  # Active path: Marketplace image by name/version or image OCID.
+  # --------------------------------------------------------------------------------------
+  bastion_jump_host_image_source               = "Marketplace Image"
+  bastion_jump_host_marketplace_image_name     = "Oracle Linux 8 STIG"
+  bastion_jump_host_marketplace_image_version  = "Oracle-Linux-8.10-2025.06.24-STIG"
+  bastion_jump_host_marketplace_image_ocid     = null # ocid can be used instead of name/version.
+
+  # --------------------------------------------------------------------------------------
+  # Alternate path 1: platform image. Provide the regional platform image OCID.
+  # --------------------------------------------------------------------------------------
+  # bastion_jump_host_image_source        = "Platform Image"
+  # bastion_jump_host_platform_image_ocid = "ocid1.image.oc1..replace-with-platform-image-ocid"
+
+  # --------------------------------------------------------------------------------------
+  # Alternate path 2: custom image.
+  # --------------------------------------------------------------------------------------
+  # bastion_jump_host_image_source      = "Custom Image"
+  # bastion_jump_host_custom_image_ocid = "ocid1.image.oc1..replace-with-custom-jump-host-image"
+
+
+  # ======================================================================================
+  # Networking - Three-Tier (Spoke) VCNs
+  # ======================================================================================
+
+  # --------------------------------------------------------------------------------------
+  # Three-Tier VCN 1
+  # --------------------------------------------------------------------------------------
+  add_tt_vcn1                 = true
+  tt_vcn1_name                = "corelz-tt-dev-vcn"
+  tt_vcn1_cidrs               = ["10.81.0.0/20"]
+  tt_vcn1_attach_to_drg       = true
+  tt_vcn1_routable_vcns       = ["TT-VCN-2", "OKE-VCN-1", "EXA-VCN-1"] # Only applicable when DRG is the Hub (i.e., no Hub VCN).
+  tt_vcn1_onprem_route_enable = true
+
+  tt_vcn1_web_subnet_name                       = "web-subnet"
+  tt_vcn1_web_subnet_cidr                       = "10.81.0.0/24"
+  tt_vcn1_web_subnet_is_private                 = false
+  tt_vcn1_external_allowed_cidrs_into_web_tier  = ["198.51.100.0/24"]
+  tt_vcn1_web_ingress_destination_ports         = ["TCP:443"]
+  tt_vcn1_app_subnet_name                       = "app-subnet"
+  tt_vcn1_app_subnet_cidr                       = "10.81.1.0/24"
+  tt_vcn1_app_ingress_destination_ports         = ["TCP:80", "TCP:443"]
+  tt_vcn1_db_subnet_name                        = "db-subnet"
+  tt_vcn1_db_subnet_cidr                        = "10.81.2.0/24"
+  tt_vcn1_db_ingress_destination_ports          = ["TCP:1521", "TCP:1522"]
+  deploy_tt_vcn1_bastion_subnet                 = true
+  tt_vcn1_bastion_subnet_name                   = "bastion-subnet"
+  tt_vcn1_bastion_subnet_cidr                   = "10.81.3.0/28"
+  tt_vcn1_bastion_is_access_via_public_endpoint = false
+  tt_vcn1_bastion_subnet_allowed_cidrs          = []
+
+    # --------------------------------------------------------------------------------------
+  # Three-Tier VCN 2
+  # --------------------------------------------------------------------------------------
+  add_tt_vcn2                 = true
+  tt_vcn2_name                = "corelz-tt-test-vcn"
+  tt_vcn2_cidrs               = ["10.82.0.0/20"]
+  tt_vcn2_attach_to_drg       = true
+  tt_vcn2_routable_vcns       = ["TT-VCN-1", "OKE-VCN-1", "OKE-VCN-2", "EXA-VCN-1"] # Only applicable when DRG is the Hub (i.e., no Hub VCN).
+  tt_vcn2_onprem_route_enable = true
+
+  tt_vcn2_web_subnet_name                       = "web-subnet"
+  tt_vcn2_web_subnet_cidr                      = "10.82.0.0/24"
+  tt_vcn2_web_subnet_is_private                = true
+  tt_vcn2_external_allowed_cidrs_into_web_tier = ["10.10.0.0/16"]
+  tt_vcn2_web_ingress_destination_ports        = ["TCP:443"]
+  tt_vcn2_app_subnet_name                      = "app-subnet"
+  tt_vcn2_app_subnet_cidr                      = "10.82.1.0/24"
+  tt_vcn2_app_ingress_destination_ports        = ["TCP:80", "TCP:443"]
+  tt_vcn2_db_subnet_name                       = "db-subnet"
+  tt_vcn2_db_subnet_cidr                       = "10.82.2.0/24"
+  tt_vcn2_db_ingress_destination_ports         = ["TCP:1521", "TCP:1522"]
+  deploy_tt_vcn2_bastion_subnet                = false
+
+  # --------------------------------------------------------------------------------------
+  # Three-Tier VCN 3
+  # --------------------------------------------------------------------------------------
+  add_tt_vcn3                 = true
+  tt_vcn3_name                = "corelz-tt-prod-vcn"
+  tt_vcn3_cidrs               = ["10.83.0.0/20"]
+  tt_vcn3_attach_to_drg       = true
+  tt_vcn3_routable_vcns       = ["TT-VCN-1", "TT-VCN-2", "EXA-VCN-2", "OKE-VCN-3"] # Only applicable when DRG is the Hub (i.e., no Hub VCN).
+  tt_vcn3_onprem_route_enable = false
+
+  tt_vcn3_web_subnet_name                      = "web-subnet"
+  tt_vcn3_web_subnet_cidr                      = "10.83.0.0/24"
+  tt_vcn3_web_subnet_is_private                = true
+  tt_vcn3_external_allowed_cidrs_into_web_tier = ["10.10.0.0/16"]
+  tt_vcn3_web_ingress_destination_ports        = ["TCP:443"]
+  tt_vcn3_app_subnet_name                      = "app-subnet"
+  tt_vcn3_app_subnet_cidr                      = "10.83.1.0/24"
+  tt_vcn3_app_ingress_destination_ports        = ["TCP:80", "TCP:443"]
+  tt_vcn3_db_subnet_name                       = "db-subnet"
+  tt_vcn3_db_subnet_cidr                       = "10.83.2.0/24"
+  tt_vcn3_db_ingress_destination_ports         = ["TCP:1521", "TCP:1522"]
+  deploy_tt_vcn3_bastion_subnet                = false
+
+
+  # ======================================================================================
+  # Networking - OKE VCNs
+  # ======================================================================================
+
+  # --------------------------------------------------------------------------------------
+  # OKE VCN 1
+  # --------------------------------------------------------------------------------------
+  add_oke_vcn1                 = true
+  oke_vcn1_name                = "corelz-oke-dev-vcn"
+  oke_vcn1_cidrs               = ["10.84.0.0/16"]
+  oke_vcn1_cni_type            = "Native"
+  oke_vcn1_attach_to_drg       = true
+  oke_vcn1_routable_vcns       = ["TT-VCN-1", "TT-VCN-2", "EXA-VCN-1"] # Only applicable when DRG is the Hub (i.e., no Hub VCN).
+  oke_vcn1_onprem_route_enable = true
+
+  oke_vcn1_api_subnet_name                           = "api-subnet"
+  oke_vcn1_api_subnet_cidr                           = "10.84.0.0/28"
+  oke_vcn1_workers_subnet_name                       = "workers-subnet"
+  oke_vcn1_workers_subnet_cidr                       = "10.84.1.0/24"
+  oke_vcn1_services_subnet_name                      = "services-subnet"
+  oke_vcn1_services_subnet_cidr                      = "10.84.2.0/24"
+  oke_vcn1_services_subnet_is_private                = false
+  oke_vcn1_external_allowed_cidrs_into_services_tier = ["198.51.100.0/24"]
+  oke_vcn1_services_ingress_destination_ports        = ["TCP:443"]
+  add_oke_vcn1_db_subnet                             = true
+  oke_vcn1_db_subnet_name                            = "db-subnet"
+  oke_vcn1_db_subnet_cidr                            = "10.84.3.0/24"
+  oke_vcn1_db_ingress_destination_ports              = ["TCP:1521"]
+  add_oke_vcn1_mgmt_subnet                           = true
+  oke_vcn1_mgmt_subnet_name                          = "mgmt-subnet"
+  oke_vcn1_mgmt_subnet_cidr                          = "10.84.4.0/24"
+  oke_vcn1_pods_subnet_name                          = "pods-subnet"
+  oke_vcn1_pods_subnet_cidr                          = "10.84.128.0/17"
+
+  # --------------------------------------------------------------------------------------
+  # OKE VCN 2
+  # --------------------------------------------------------------------------------------
+  add_oke_vcn2                 = true
+  oke_vcn2_name                = "corelz-oke-test-vcn"
+  oke_vcn2_cidrs               = ["10.85.0.0/16"]
+  oke_vcn2_cni_type            = "Flannel"
+  oke_vcn2_attach_to_drg       = true
+  oke_vcn2_routable_vcns       = ["TT-VCN-2", "OKE-VCN-1", "EXA-VCN-1"] # Only applicable when DRG is the Hub (i.e., no Hub VCN).
+  oke_vcn2_onprem_route_enable = false
+
+  oke_vcn2_api_subnet_name                           = "api-subnet"
+  oke_vcn2_api_subnet_cidr                           = "10.85.0.0/28"
+  oke_vcn2_workers_subnet_name                       = "workers-subnet"
+  oke_vcn2_workers_subnet_cidr                       = "10.85.1.0/24"
+  oke_vcn2_services_subnet_name                      = "services-subnet"
+  oke_vcn2_services_subnet_cidr                      = "10.85.2.0/24"
+  oke_vcn2_services_subnet_is_private                = true
+  oke_vcn2_external_allowed_cidrs_into_services_tier = ["10.10.0.0/16"]
+  oke_vcn2_services_ingress_destination_ports        = ["TCP:443"]
+  add_oke_vcn2_db_subnet                             = true
+  oke_vcn2_db_subnet_name                            = "db-subnet"
+  oke_vcn2_db_subnet_cidr                            = "10.85.3.0/24"
+  oke_vcn2_db_ingress_destination_ports              = ["TCP:1521"]
+  add_oke_vcn2_mgmt_subnet                           = true
+  oke_vcn2_mgmt_subnet_name                          = "mgmt-subnet"
+  oke_vcn2_mgmt_subnet_cidr                          = "10.85.4.0/24"
+
+  # --------------------------------------------------------------------------------------
+  # OKE VCN 3
+  # --------------------------------------------------------------------------------------
+  add_oke_vcn3                 = true
+  oke_vcn3_name                = "corelz-oke-prod-vcn"
+  oke_vcn3_cidrs               = ["10.86.0.0/16"]
+  oke_vcn3_cni_type            = "Native"
+  oke_vcn3_attach_to_drg       = true
+  oke_vcn3_routable_vcns       = ["TT-VCN-3", "OKE-VCN-1", "EXA-VCN-2"] # Only applicable when DRG is the Hub (i.e., no Hub VCN).
+  oke_vcn3_onprem_route_enable = false
+
+  oke_vcn3_api_subnet_name                           = "api-subnet"
+  oke_vcn3_api_subnet_cidr                           = "10.86.0.0/28"
+  oke_vcn3_workers_subnet_name                       = "workers-subnet"
+  oke_vcn3_workers_subnet_cidr                       = "10.86.1.0/24"
+  oke_vcn3_services_subnet_name                      = "services-subnet"
+  oke_vcn3_services_subnet_cidr                      = "10.86.2.0/24"
+  oke_vcn3_services_subnet_is_private                = true
+  oke_vcn3_external_allowed_cidrs_into_services_tier = ["10.10.0.0/16"]
+  oke_vcn3_services_ingress_destination_ports        = ["TCP:443"]
+  add_oke_vcn3_db_subnet                             = true
+  oke_vcn3_db_subnet_name                            = "db-subnet"
+  oke_vcn3_db_subnet_cidr                            = "10.86.3.0/24"
+  oke_vcn3_db_ingress_destination_ports              = ["TCP:1521"]
+  add_oke_vcn3_mgmt_subnet                           = true
+  oke_vcn3_mgmt_subnet_name                          = "mgmt-subnet"
+  oke_vcn3_mgmt_subnet_cidr                          = "10.86.4.0/24"
+  oke_vcn3_pods_subnet_name                          = "pods-subnet"
+  oke_vcn3_pods_subnet_cidr                          = "10.86.128.0/17"
+
+
+  # ======================================================================================
+  # Networking - Exadata VCNs
+  # ======================================================================================
+
+  # --------------------------------------------------------------------------------------
+  # Exadata VCN 1
+  # --------------------------------------------------------------------------------------
+  add_exa_vcn1                 = true
+  exa_vcn1_name                = "corelz-exa-dev-vcn"
+  exa_vcn1_cidrs               = ["172.40.0.0/20"]
+  exa_vcn1_attach_to_drg       = true
+  exa_vcn1_routable_vcns       = ["TT-VCN-1", "TT-VCN-2", "OKE-VCN-1"] # Only applicable when DRG is the Hub (i.e., no Hub VCN).
+  exa_vcn1_onprem_route_enable = true
+
+  exa_vcn1_client_subnet_name                           = "client-subnet"
+  exa_vcn1_client_subnet_cidr                           = "172.40.0.0/24"
+  exa_vcn1_external_allowed_cidrs_into_client_tier      = ["10.10.0.0/16"]
+  exa_vcn1_client_ingress_destination_ports             = ["TCP:1521", "TCP:1522"]
+  add_exa_vcn1_backup_subnet                            = true
+  exa_vcn1_backup_subnet_name                           = "backup-subnet"
+  exa_vcn1_backup_subnet_cidr                           = "172.40.1.0/24"
+  add_exa_vcn1_integration_subnet                       = true
+  exa_vcn1_integration_subnet_name                      = "integration-subnet"
+  exa_vcn1_integration_subnet_cidr                      = "172.40.2.0/24"
+  exa_vcn1_external_allowed_cidrs_into_integration_tier = ["10.10.0.0/16"]
+  exa_vcn1_integration_ingress_destination_ports        = ["TCP:443", "TCP:7809"]
+
+  # --------------------------------------------------------------------------------------
+  # Exadata VCN 2
+  # --------------------------------------------------------------------------------------
+  add_exa_vcn2                 = true
+  exa_vcn2_name                = "corelz-exa-test-vcn"
+  exa_vcn2_cidrs               = ["172.41.0.0/20"]
+  exa_vcn2_attach_to_drg       = true
+  exa_vcn2_routable_vcns       = ["TT-VCN-3", "OKE-VCN-3", "EXA-VCN-1"] # Only applicable when DRG is the Hub (i.e., no Hub VCN).
+  exa_vcn2_onprem_route_enable = false
+
+  exa_vcn2_client_subnet_name                           = "client-subnet"
+  exa_vcn2_client_subnet_cidr                           = "172.41.0.0/24"
+  exa_vcn2_external_allowed_cidrs_into_client_tier      = ["10.10.0.0/16"]
+  exa_vcn2_client_ingress_destination_ports             = ["TCP:1521", "TCP:1522"]
+  add_exa_vcn2_backup_subnet                            = true
+  exa_vcn2_backup_subnet_name                           = "backup-subnet"
+  exa_vcn2_backup_subnet_cidr                           = "172.41.1.0/24"
+  add_exa_vcn2_integration_subnet                       = true
+  exa_vcn2_integration_subnet_name                      = "integration-subnet"
+  exa_vcn2_integration_subnet_cidr                      = "172.41.2.0/24"
+  exa_vcn2_external_allowed_cidrs_into_integration_tier = ["10.10.0.0/16"]
+  exa_vcn2_integration_ingress_destination_ports        = ["TCP:443", "TCP:7809"]
+
+  # --------------------------------------------------------------------------------------
+  # Exadata VCN 3
+  # --------------------------------------------------------------------------------------
+  add_exa_vcn3                 = true
+  exa_vcn3_name                = "corelz-exa-prod-vcn"
+  exa_vcn3_cidrs               = ["172.42.0.0/20"]
+  exa_vcn3_attach_to_drg       = true
+  exa_vcn3_routable_vcns       = ["TT-VCN-1", "TT-VCN-2", "OKE-VCN-2"] # Only applicable when DRG is the Hub (i.e., no Hub VCN).
+  exa_vcn3_onprem_route_enable = false
+
+  exa_vcn3_client_subnet_name                           = "client-subnet"
+  exa_vcn3_client_subnet_cidr                           = "172.42.0.0/24"
+  exa_vcn3_external_allowed_cidrs_into_client_tier      = ["10.10.0.0/16"]
+  exa_vcn3_client_ingress_destination_ports             = ["TCP:1521", "TCP:1522"]
+  add_exa_vcn3_backup_subnet                            = true
+  exa_vcn3_backup_subnet_name                           = "backup-subnet"
+  exa_vcn3_backup_subnet_cidr                           = "172.42.1.0/24"
+  add_exa_vcn3_integration_subnet                       = true
+  exa_vcn3_integration_subnet_name                      = "integration-subnet"
+  exa_vcn3_integration_subnet_cidr                      = "172.42.2.0/24"
+  exa_vcn3_external_allowed_cidrs_into_integration_tier = ["10.10.0.0/16"]
+  exa_vcn3_integration_ingress_destination_ports        = ["TCP:443", "TCP:7809"]
+
+
+  # ======================================================================================
+  # Networking - Externally managed VCNs
+  # ======================================================================================
+  # Attach externally managed VCNs to the Core LZ DRG for public or on-premises access.
+  # workloadvcn_ocids_public_access = ["ocid1.vcn.oc1..replace-with-vcn-needing-public-access"]
+  # workloadvcn_ocids_onprem_access = ["ocid1.vcn.oc1..replace-with-vcn-needing-onprem-access"]
+
+  
+  # ======================================================================================
+  # Zero Trust Packet Routing (ZPR)
+  # ======================================================================================
+  # ZPR is optional. Keep it disabled unless your tenancy and operating model are ready for it.
+  enable_zpr         = false
+  zpr_namespace_name = "corelz-zpr"
+}

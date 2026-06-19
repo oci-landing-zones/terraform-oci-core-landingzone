@@ -1,23 +1,47 @@
 # Copyright (c) 2025 Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+
+# --------------------------------------------------------------------------
+# ----- Networking - On-Premises CIDR ranges
+#---------------------------------------------------------------------------
+
+variable "onprem_cidrs" {
+  type        = list(string)
+  description = "List of on-premises CIDR blocks allowed to connect to the Landing Zone network via a DRG."
+  default     = []
+  validation {
+    condition     = length(var.onprem_cidrs) == 0 ? true : alltrue([for v in var.onprem_cidrs : can(cidrhost(v, 0))])
+    error_message = "VALIDATION FAILURE: Validation failed for onprem_cidrs: all values must be in CIDR notation (e.g., 10.0.0.0/24)."
+  }
+}
+
+variable "allowed_onprem_cidrs_to_fw_mgmt_interface" {
+  type        = list(string)
+  default     = []
+  description = "List of on-prem CIDR blocks allowed to connect to Firewall Management interface. Provide a valid CIDR and configure variable fw_mgmt_interface_ports for enabling access.  Leave empty for no access."
+  validation {
+    condition     = length(var.allowed_onprem_cidrs_to_fw_mgmt_interface) == 0 ? true : alltrue([for v in var.allowed_onprem_cidrs_to_fw_mgmt_interface : can(cidrhost(v, 0))])
+    error_message = "VALIDATION FAILURE: Invalid value provided for allowed_onprem_cidrs_to_fw_mgmt_interface variable: all values must be in valid CIDR notation (e.g., 10.0.0.0/24)."
+  }
+}
 # --------------------------------------------------------------------------
 # ----- Networking - On-Premises Connectivity - CPE
 #---------------------------------------------------------------------------
 variable "cpe_name" {
   type        = string
-  default     = ""
+  default     = null
   description = "Display name of the Customer-Premises Equipment (CPE)."
 }
 
 variable "cpe_ip_address" {
   type        = string
-  default     = ""
+  default     = null
   description = "Public IP address used by the Customer-Premises Equipment (CPE) so that a VPN connection can be established."
 }
 
 variable "cpe_device_shape_vendor" {
   type        = string
-  default     = ""
+  default     = null
   description = "Name of the device shape vendor used by the Customer-Premises Equipment (CPE). See the list of verified CPE devices for more information."
 }
 
@@ -26,25 +50,25 @@ variable "cpe_device_shape_vendor" {
 #---------------------------------------------------------------------------
 variable "ipsec_vpn_name" {
   type        = string
-  default     = ""
+  default     = null
   description = "Display name of the IPSec VPN."
 }
 
 variable "ipsec_customer_bgp_asn" {
   type        = string
-  default     = ""
+  default     = null
   description = "Customer on-premises network's Autonomous System Number."
 }
 
 variable "ipsec_tunnel1_customer_interface_ip" {
   type        = string
-  default     = ""
+  default     = null
   description = "The first IP CIDR block used on the customer side for BGP peering for IPSec Tunnel 1."
 }
 
 variable "ipsec_tunnel1_oracle_interface_ip" {
   type        = string
-  default     = ""
+  default     = null
   description = "The first IP CIDR block provided by OCI for BGP peering for IPSec Tunnel 1."
 }
 
@@ -62,13 +86,13 @@ variable "ipsec_tunnel1_ike_version" {
 
 variable "ipsec_tunnel2_customer_interface_ip" {
   type        = string
-  default     = ""
+  default     = null
   description = "The second IP CIDR block used on the customer side for BGP peering for IPSec Tunnel 2."
 }
 
 variable "ipsec_tunnel2_oracle_interface_ip" {
   type        = string
-  default     = ""
+  default     = null
   description = "The second IP CIDR block provided by OCI for BGP peering for IPSec Tunnel 2."
 }
 
@@ -94,7 +118,7 @@ variable "on_premises_connection_option" {
 
 variable "fastconnect_virtual_circuit_name" {
   type        = string
-  default     = ""
+  default     = null
   description = "The name for the FastConnect virtual circuit."
 }
 
@@ -110,7 +134,7 @@ variable "fastconnect_virtual_circuit_bandwidth_shape" {
   description = "Bandwidth level (shape) of the Fast Connect virtual circuit."
   validation {
     condition     = length(regexall("^\\d+\\sGbps$", var.fastconnect_virtual_circuit_bandwidth_shape)) > 0
-    error_message = "The bandwidth shape of the FC virtual circuit must be in the form '<number> Gbps', e.g., '1 Gbps', '10 Gbps'"
+    error_message = "VALIDATION FAILURE: The bandwidth shape of the FC virtual circuit must be in the form '<number> Gbps', e.g., '1 Gbps', '10 Gbps'"
   }
 }
 
@@ -120,7 +144,7 @@ variable "fastconnect_virtual_circuit_bandwidth_custom_shape" {
   description = "Custom bandwidth level (shape) of the FastConnect virtual circuit. For example: '5 Gbps'"
   validation {
     condition     = length(regexall("^\\d+\\sGbps$", var.fastconnect_virtual_circuit_bandwidth_custom_shape)) > 0
-    error_message = "The bandwidth shape of the FC virtual circuit must be in the form '<number> Gbps', e.g. '2 Gbps', '5 Gbps'"
+    error_message = "VALIDATION FAILURE: The bandwidth shape of the FC virtual circuit must be in the form '<number> Gbps', e.g. '2 Gbps', '5 Gbps'"
   }
 }
 
@@ -144,7 +168,7 @@ variable "fastconnect_virtual_circuit_oracle_bgp_peering_ip" {
 
 variable "fastconnect_virtual_circuit_routing_policy" {
   type        = string
-  default     = null
+  default     = "REGIONAL"
   description = "Defines the BGP relationship for exchanging routes. (Valid values include REGIONAL, GLOBAL)."
 }
 
@@ -180,7 +204,7 @@ variable "fastconnect_virtual_circuit_vlan" {
 
 variable "fastconnect_virtual_circuit_ip_mtu" {
   type        = number
-  default     = null
+  default     = 1500
   description = "The MTU value to assign to the FastConnect virtual circuit. Supported values are: 1500, 9000. Default is 1500."
 }
 

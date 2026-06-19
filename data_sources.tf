@@ -16,12 +16,16 @@ data "oci_identity_compartment" "existing_enclosing_compartment" {
 }
 
 data "oci_identity_domain" "existing_identity_domain" {
-  count     = var.identity_domain_option == "Use Custom Identity Domain" == true ? 1 : 0
+  count     = var.identity_domain_option == "Use Custom Identity Domain" ? 1 : 0
   domain_id = trimspace(var.custom_id_domain_ocid)
   lifecycle {
     precondition {
-      condition     = var.custom_id_domain_ocid != null
-      error_message = "Existing domain id must be provided when using an existing domain."
+      condition     = var.custom_id_domain_ocid != null && length(trimspace(var.custom_id_domain_ocid)) > 0
+      error_message = "VALIDATION FAILURE: custom_id_domain_ocid must be provided when identity_domain_option is 'Use Custom Identity Domain'."
+    }
+    postcondition {
+      condition     = try(length(trimspace(self.display_name)) > 0, false) && try(length(trimspace(self.url)) > 0, false)
+      error_message = "VALIDATION FAILURE: custom_id_domain_ocid must identify an existing identity domain that is accessible to the executing user. The identity domain lookup returned no display name or URL."
     }
   }
 }
@@ -207,4 +211,23 @@ data "oci_core_images" "platform_oel_images" {
   shape                    = var.bastion_jump_host_instance_shape
   sort_by                  = "TIMECREATED"
   sort_order               = "DESC"
+}
+
+data "oci_identity_availability_domains" "ads" {
+  compartment_id = var.tenancy_ocid
+}
+
+data "oci_core_private_ip" "oci_firewall" {
+  count         = var.oci_nfw_ip_ocid != null ? 1 : 0
+  private_ip_id = var.oci_nfw_ip_ocid
+}
+
+data "oci_core_private_ip" "indoor_nlb" {
+  count         = var.hub_vcn_east_west_entry_point_ocid != null ? 1 : 0
+  private_ip_id = var.hub_vcn_east_west_entry_point_ocid
+}
+
+data "oci_core_private_ip" "outdoor_nlb" {
+  count         = var.hub_vcn_north_south_entry_point_ocid != null ? 1 : 0
+  private_ip_id = var.hub_vcn_north_south_entry_point_ocid
 }

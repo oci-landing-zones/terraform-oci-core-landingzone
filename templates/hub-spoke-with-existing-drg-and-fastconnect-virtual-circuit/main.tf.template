@@ -23,7 +23,7 @@ module "core_lz" {
   private_key_path     = "path-to-pem-file-with-private-key"               # Replace with user private key local path.
   private_key_password = ""                                                # Replace with private key password, if any.
   region               = "us-phoenix-1"                                    # Replace with region name.
-  service_label        = "ocifastconnect"                                  # Prefix prepended to deployed resource names.
+  service_label        = "fc"                                              # Prefix prepended to deployed resource names.
 
   # ------------------------------------------------------
   # ----- Networking
@@ -31,29 +31,29 @@ module "core_lz" {
   define_net = true # enables network resources provisioning
 
   # --- Hub deployment option: a Hub VCN is deployed.
-  hub_deployment_option = "VCN or on-premises connectivity routing through DMZ VCN with Network Virtual Appliance (DRG and DMZ VCN will be created)"
-  hub_vcn_cidrs         = ["192.168.0.0/24"]
+  hub_deployment_option = "VCN or on-premises connectivity routing via DRG (existing DRG)" # use existing DRG
+  existing_drg_ocid = "ocid1.drg..replace-with-existing-drg-ocid"
 
   # -- Network - On-Premises Connectivity - FastConnect Virtual Circuit
   on_premises_connection_option                       = "Create New FastConnect Virtual Circuit"
-  onprem_cidrs                                        = ["x.x.x.x/x"]                   ## Replace with the CIDR range of on-premises network
+  onprem_cidrs                                        = ["10.0.0.0/16"]                 ## Replace with the CIDR range of on-premises network
   fastconnect_virtual_circuit_bandwidth_shape         = "1 Gbps"                        ## Replace with virtual circuit shape
   fastconnect_virtual_circuit_type                    = "PRIVATE"
   fastconnect_virtual_circuit_provider_service_id     = "ocid1.providerservice.oc1.xxx" ## Replace with the OCID of the fastconnect partner provider
-  fastconnect_virtual_circuit_customer_asn            = "xxxxx"                         ## Replace with valid value for customer asn
+  fastconnect_virtual_circuit_customer_asn            = "65100"                         ## Replace with valid value for customer asn
   fastconnect_virtual_circuit_customer_bgp_peering_ip = "10.10.10.1/30"
   fastconnect_virtual_circuit_oracle_bgp_peering_ip   = "10.10.10.2/30"
 
   # --- Spoke VCN: three-tier VCN 1
   add_tt_vcn1                 = true
   tt_vcn1_onprem_route_enable = true
-  tt_vcn1_cidrs               = ["10.0.0.0/20"]
+  tt_vcn1_cidrs               = ["172.16.0.0/24"]
   tt_vcn1_attach_to_drg       = true
 
   # --- Spoke VCN: Exadata VCN 1
   add_exa_vcn1                 = true
   exa_vcn1_onprem_route_enable = true
-  exa_vcn1_cidrs               = ["172.16.0.0/20"]
+  exa_vcn1_cidrs               = ["172.16.1.0/24"]
   exa_vcn1_attach_to_drg       = true
 
   # ------------------------------------------------------

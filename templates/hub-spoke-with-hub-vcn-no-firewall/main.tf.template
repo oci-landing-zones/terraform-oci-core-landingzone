@@ -12,6 +12,10 @@
 # ----- $ terraform apply
 # ----------------------------------------------------------------------------------------
 
+# ----------------------------------------------------------------------------------------
+# Hub VCN with no Firewall Deployment
+# ----------------------------------------------------------------------------------------
+
 module "core_lz" {
     source = "../../"
     # ------------------------------------------------------
@@ -23,31 +27,35 @@ module "core_lz" {
     private_key_path     = "path-to-pem-file-with-private-key"               # Replace with user private key local path.
     private_key_password = ""                                                # Replace with private key password, if any.
     region               = "us-phoenix-1" # Replace with region name.
-    service_label        = "ocibastion"   # Prefix prepended to deployed resource names.
+    service_label        = "nofw"     # Prefix prepended to deployed resource names. 
 
     # ------------------------------------------------------
     # ----- Networking
     # ------------------------------------------------------
-    define_net            = true # enables network resources provisioning
+    define_net  = true # enables network resources provisioning
 
-    # --- Hub deployment option: a Hub VCN is deployed.
-    hub_deployment_option    = "VCN or on-premises connectivity routing through DMZ VCN with Network Virtual Appliance (DRG and DMZ VCN will be created)"
-    hub_vcn_cidrs            = ["192.168.0.0/24"]
-
-    # -- Bastion Jump Host options: deploy jump host and enable bastion service
-    deploy_bastion_jump_host = true
-    deploy_bastion_service   = true
-    bastion_service_allowed_cidrs = ["x.x.x.x"] # Replace with Bastion service CIDR block allow list
-
-    # --- Spoke VCN: three-tier VCN 1
-    add_tt_vcn1                    = true
-    tt_vcn1_cidrs                  = ["10.0.0.0/20"]
-    tt_vcn1_attach_to_drg          = true
+    # --- Hub deployment option: a DRG and Hub VCN are deployed.
+    hub_deployment_option = "VCN or on-premises connectivity routing through DMZ VCN with Network Virtual Appliance (DRG and DMZ VCN will be created)"
+    hub_vcn_cidrs         = ["172.16.0.0/26"]
     
-    # --- Spoke VCN: Exadata VCN 1
-    add_exa_vcn1                   = true
-    exa_vcn1_cidrs                 = ["172.16.0.0/20"]
-    exa_vcn1_attach_to_drg         = true
+    add_hub_vcn_jumphost_subnet = true # deploy jump host subnet
+
+    deploy_bastion_jump_host = true    # deploy jump host in the jump host subnet
+    bastion_jump_host_image_source               = "Marketplace Image"
+    bastion_jump_host_marketplace_image_name     = "Oracle Linux 8 STIG"
+    bastion_jump_host_marketplace_image_version  = "Oracle-Linux-8.10-2025.06.24-STIG"
+    bastion_jump_host_ssh_public_key_path = "~/.ssh/id_rsa.pub"
+    bastion_jump_host_instance_shape      = "VM.Standard.E4.Flex"
+    bastion_jump_host_boot_volume_size    = 60
+    bastion_jump_host_flex_shape_memory   = 16
+    bastion_jump_host_flex_shape_cpu      = 2
+
+    deploy_bastion_service   = true
+    bastion_service_allowed_cidrs = ["198.51.100.0/24"]
+
+    # --- Routing to Firewall. Uncomment and update the two variables below for the second time execution after the firewall is deployed.
+    # hub_vcn_north_south_entry_point_ocid = "replace with the OCID value of the OCI private IP address of the firewall untrust interface."
+    # hub_vcn_east_west_entry_point_ocid   = "replace with the OCID value of the OCI private IP address of the firewall trust interface."
 
     # ------------------------------------------------------
     # ----- Notifications

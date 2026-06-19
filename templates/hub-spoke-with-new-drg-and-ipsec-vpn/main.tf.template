@@ -23,40 +23,39 @@ module "core_lz" {
   private_key_path     = "path-to-pem-file-with-private-key"               # Replace with user private key local path.
   private_key_password = ""                                                # Replace with private key password, if any.
   region               = "us-phoenix-1"                                    # Replace with region name.
-  service_label        = "ociipsecvpn"                                     # Prefix prepended to deployed resource names.
+  service_label        = "ipsecvpn"                                     # Prefix prepended to deployed resource names.
 
   # ------------------------------------------------------
   # ----- Networking
   # ------------------------------------------------------
   define_net = true # enables network resources provisioning
 
-  # --- Hub deployment option: a Hub VCN is deployed.
-  hub_deployment_option = "VCN or on-premises connectivity routing through DMZ VCN with Network Virtual Appliance (DRG and DMZ VCN will be created)"
-  hub_vcn_cidrs         = ["192.168.0.0/24"]
+  # --- Hub deployment option: a DRG is deployed.
+  hub_deployment_option = "VCN or on-premises connectivity routing via DRG (DRG will be created)"
 
   # -- Network - On-Premises Connectivity - IPSec Site-to-Site VPN
   on_premises_connection_option       = "Create New IPSec VPN"
-  onprem_cidrs                        = ["x.x.x.x/x"]             ## Replace with the CIDR range of on-premises network
+  onprem_cidrs                        = ["10.0.0.0/16"]           ## Replace with the CIDR range of on-premises network
   cpe_ip_address                      = "x.x.x.x"                 ## Replace with the IP address of CPE public IP
-  cpe_device_shape_vendor             = "Libreswan"
+  cpe_device_shape_vendor             = "Libreswan" # Valid names are: "Fortinet", "Cisco", "Juniper", "Furukawa", "Check Point", "Palo Alto", "Yamaha", "Libreswan", "NEC", "WatchGuard", "Other".
   ipsec_customer_bgp_asn              = "65000"
-  ipsec_tunnel1_customer_interface_ip = "10.10.10.1/30"
-  ipsec_tunnel1_oracle_interface_ip   = "10.10.10.2/30"
+  ipsec_tunnel1_customer_interface_ip = "10.10.10.1/30" # Customer provided IP CIDR block used on the CPE side for BGP peering in IPSec Tunnel 1.
+  ipsec_tunnel1_oracle_interface_ip   = "10.10.10.2/30" # Customer provided IP CIDR block used on the OCI side for BGP peering in IPSec Tunnel 1.
   ipsec_tunnel1_ike_version           = "V1"
-  ipsec_tunnel2_customer_interface_ip = "10.10.10.5/30"
-  ipsec_tunnel2_oracle_interface_ip   = "10.10.10.6/30"
+  ipsec_tunnel2_customer_interface_ip = "10.10.10.5/30" # Customer provided IP CIDR block used on the CPE side for BGP peering in IPSec Tunnel 2.
+  ipsec_tunnel2_oracle_interface_ip   = "10.10.10.6/30" # Customer provided IP CIDR block used on the OCI side for BGP peering in IPSec Tunnel 2.
   ipsec_tunnel2_ike_version           = "V1"
 
   # --- Spoke VCN: three-tier VCN 1
   add_tt_vcn1                 = true
   tt_vcn1_onprem_route_enable = true
-  tt_vcn1_cidrs               = ["10.0.0.0/20"]
+  tt_vcn1_cidrs               = ["172.16.0.0/24"]
   tt_vcn1_attach_to_drg       = true
 
   # --- Spoke VCN: Exadata VCN 1
   add_exa_vcn1                 = true
   exa_vcn1_onprem_route_enable = true
-  exa_vcn1_cidrs               = ["172.16.0.0/20"]
+  exa_vcn1_cidrs               = ["172.16.1.0/24"]
   exa_vcn1_attach_to_drg       = true
 
   # ------------------------------------------------------

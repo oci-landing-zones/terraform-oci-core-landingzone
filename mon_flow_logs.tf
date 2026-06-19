@@ -52,8 +52,8 @@ locals {
 }
 
 module "lz_flow_logs" {
-  depends_on            = [module.lz_network, module.lz_compartments]
-  source                = "github.com/oci-landing-zones/terraform-oci-modules-observability//logging?ref=v0.2.4"
+  depends_on            = [module.lz_compartments]
+  source                = "github.com/oci-landing-zones/terraform-oci-modules-observability//logging?ref=v0.2.5"
   logging_configuration = local.logging_configuration
   tenancy_ocid          = var.tenancy_ocid
 }

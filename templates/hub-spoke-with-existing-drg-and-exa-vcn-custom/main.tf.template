@@ -1,0 +1,57 @@
+# Copyright (c) 2023, 2025, Oracle and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl/
+
+# -------------------------------------------------------------------------------------
+# -- Shows single-VCN Exadata networking with custom client and integration ingress.
+# -- 1. Rename this file to main.tf.
+# -- 2. Provide/review the variable assignments below.
+# -- 3. In this folder, execute the typical Terraform workflow:
+# ----- $ terraform init
+# ----- $ terraform plan
+# ----- $ terraform apply
+# -------------------------------------------------------------------------------------
+module "core_lz" {
+    source = "../../"
+    # ------------------------------------------------------
+    # ----- Environment
+    # ------------------------------------------------------
+    tenancy_ocid         = "ocid1.tenancy.oc1..exampleuniqueID"
+    user_ocid            = "ocid1.user.oc1..exampleuniqueID"
+    fingerprint          = "aa:bb:cc:dd:ee:ff:00:11:22:33:44:55:66:77:88:99"
+    private_key_path     = "path-to-private-key.pem"
+    private_key_password = ""
+    region               = "us-phoenix-1"
+    service_label        = "exacs"
+
+    deploy_app_cmp = false # do not deploy app compartment, as this example focuses on Exadata networking.
+
+    # ------------------------------------------------------
+    # ----- Exadata Networking
+    # ------------------------------------------------------
+    define_net   = true
+    hub_deployment_option = "VCN or on-premises connectivity routing via DRG (existing DRG)" # use existing DRG
+    existing_drg_ocid = "ocid1.drg..replace-with-existing-drg-ocid"
+
+    add_exa_vcn1 = true
+    exa_vcn1_attach_to_drg = true
+    
+    exa_vcn1_name                              = "exa-prod"
+    exa_vcn1_cidrs                             = ["172.20.0.0/20"]
+    exa_vcn1_client_subnet_cidr                = "172.20.0.0/24"
+    exa_vcn1_backup_subnet_cidr                = "172.20.1.0/24"
+    add_exa_vcn1_integration_subnet            = true
+    exa_vcn1_integration_subnet_cidr           = "172.20.2.0/24"
+    exa_vcn1_client_ingress_destination_ports  = ["TCP:1521", "TCP:1522"]
+    exa_vcn1_external_allowed_cidrs_into_client_tier = ["203.0.113.20/32"]
+    exa_vcn1_integration_ingress_destination_ports   = ["TCP:443", "TCP:8443"]
+    exa_vcn1_external_allowed_cidrs_into_integration_tier = ["198.51.100.0/24"]
+
+    exa_vcn1_onprem_route_enable = true # enables route rule in DRG for routing to on-premises network from Exadata VCN. This is required for Exadata to communicate with on-premises network if you have a hybrid environment, and is also required for the integration use case in this example.
+    onprem_cidrs                  = ["10.0.0.0/16"] # used in DRG route rules for routing to on-premises network. Replace with your on-premises CIDR.
+    
+    # ------------------------------------------------------
+    # ----- Notifications
+    # ------------------------------------------------------
+    network_admin_email_endpoints  = ["email.address@example.com"]
+    security_admin_email_endpoints = ["email.address@example.com"]
+}

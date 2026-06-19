@@ -38,45 +38,64 @@ variable "custom_enclosing_compartment_name" {
   type        = string
   default     = null
   description = "Custom name of the enclosing compartment."
+  validation {
+    condition     = var.custom_enclosing_compartment_name == null ? true : (length(var.custom_enclosing_compartment_name) > 3 && !startswith(var.custom_enclosing_compartment_name, " ") ? true : false)
+    error_message = "VALIDATION FAILURE: Validation failed for variable custom_enclosing_compartment_name: it must be null, or a string longer than 3 characters that does not start with a space."
+  }
 }
 variable "custom_network_compartment_name" {
   type        = string
   default     = null
   description = "Custom name of the network compartment."
+  validation {
+    condition     = var.custom_network_compartment_name == null ? true : (length(var.custom_network_compartment_name) > 3 && !startswith(var.custom_network_compartment_name, " ") ? true : false)
+    error_message = "VALIDATION FAILURE: Validation failed for variable custom_network_compartment_name: it must be null, or a string longer than 3 characters that does not start with a space."
+  }
 }
 variable "custom_security_compartment_name" {
   type        = string
   default     = null
   description = "Custom name of the security compartment."
+  validation {
+    condition     = var.custom_security_compartment_name == null ? true : (length(var.custom_security_compartment_name) > 3 && !startswith(var.custom_security_compartment_name, " ") ? true : false)
+    error_message = "VALIDATION FAILURE: Validation failed for variable custom_security_compartment_name: it must be null, or a string longer than 3 characters that does not start with a space."
+  }
 }
 variable "custom_app_compartment_name" {
   type        = string
   default     = null
   description = "Custom name of the app compartment."
+  validation {
+    condition     = var.custom_app_compartment_name == null ? true : (length(var.custom_app_compartment_name) > 3 && !startswith(var.custom_app_compartment_name, " ") ? true : false)
+    error_message = "VALIDATION FAILURE: Validation failed for variable custom_app_compartment_name: it must be null, or a string longer than 3 characters that does not start with a space."
+  }
 }
 variable "custom_database_compartment_name" {
   type        = string
   default     = null
   description = "Custom name of the database compartment."
+  validation {
+    condition     = var.custom_database_compartment_name == null ? true : (length(var.custom_database_compartment_name) > 3 && !startswith(var.custom_database_compartment_name, " ") ? true : false)
+    error_message = "VALIDATION FAILURE: Validation failed for variable custom_database_compartment_name: it must be null, or a string longer than 3 characters that does not start with a space."
+  }
 }
 variable "custom_exainfra_compartment_name" {
   type        = string
   default     = null
   description = "Custom name of the exadata infrastructure compartment."
+  validation {
+    condition     = var.custom_exainfra_compartment_name == null ? true : (length(var.custom_exainfra_compartment_name) > 3 && !startswith(var.custom_exainfra_compartment_name, " ") ? true : false)
+    error_message = "VALIDATION FAILURE: Validation failed for variable custom_exainfra_compartment_name: it must be null, or a string longer than 3 characters that does not start with a space."
+  }
 }
 # ------------------------------------------------------
 # ----- IAM - Identity Domains
 #-------------------------------------------------------
-//variable "use_custom_id_domain" {
-//  type        = bool
-//  default     = false
-//  description = "Whether to use an existing identity domain with groups and dynamic groups to grant landing zone IAM policies. If false, groups and dynamic groups from the Default identity domain are utilized."
-//}
-# variable "custom_id_domain_name" {
-#   type        = string
-#   default     = null
-#   description = "The existing identity domain name."
-# }
+variable "custom_id_domain_compartment_ocid" {
+  type        = string
+  default     = null
+  description = "The existing identity domain compartment OCID. Applicable to RMS deployments only, used for UI displaying."
+}
 variable "custom_id_domain_ocid" {
   type        = string
   default     = null
@@ -179,7 +198,7 @@ variable "identity_domain_option" {
 }
 variable "new_identity_domain_name" {
   type        = string
-  default     = ""
+  default     = null
   description = "The name of the new identity domain if the option to create a new identity domain is chosen."
 }
 variable "new_identity_domain_license_type" {
@@ -210,7 +229,7 @@ variable "new_identity_domain_license_type" {
 variable "groups_options" {
   type        = string
   default     = "Yes"
-  description = "Whether to deploy new groups or use existing groups."
+  description = "Whether to deploy new groups or use existing groups. Applicable to RMS deployments only, used for UI displaying."
 }
 variable "rm_existing_iam_admin_group_name" {
   type        = string
@@ -351,8 +370,9 @@ variable "existing_ag_admin_group_name" {
 # ----- IAM - Dynamic Groups
 #-------------------------------------------------------
 variable "dyn_groups_options" {
-  type    = string
-  default = "Yes"
+  type        = string
+  default     = "Yes"
+  description = "Whether to deploy new dynamic groups or use existing dynamic groups. Applicable to RMS deployments only, used for UI displaying."
 }
 variable "existing_security_fun_dyn_group_name" {
   type        = string
@@ -389,7 +409,7 @@ variable "policies_in_root_compartment" {
   description = "Whether policies in the Root compartment should be created or simply used. If 'CREATE', you must be sure the user executing this stack has permissions to create policies in the Root compartment. If 'USE', policies must have been created previously."
   validation {
     condition     = contains(["CREATE", "USE"], var.policies_in_root_compartment)
-    error_message = "Validation failed for policies_in_root_compartment: valid values are CREATE or USE."
+    error_message = "VALIDATION FAILURE: Validation failed for policies_in_root_compartment: valid values are CREATE or USE."
   }
 }
 

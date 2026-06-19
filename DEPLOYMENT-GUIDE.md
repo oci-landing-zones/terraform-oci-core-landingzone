@@ -17,7 +17,7 @@
     1. [Security Services](#security-services)
     1. [Deploying Lifecycle Environments](#deploying-lifecycle-environments)
     1. [Zero Trust Packet Routing (ZPR)](#zpr-use)
-    1. [Bastion Service](#bastion-use)
+    1. [Remote Access over SSH](#bastion-use)
     1. [Express Deployment](#express-use)
     1. [Customizing Compartments](#custom-cmp)
 1. [Ways to Deploy](#ways-to-deploy)
@@ -29,15 +29,17 @@
 
 Customers often ask us about best practices when deploying to OCI and how to automate that deployment for creating a secure tenancy. In response, we have created the OCI Core Landing Zone Reference Implementation.
 
-This reference implementation (referred to as the **Landing Zone** in the rest of this document) is a blend of CIS (Center for Internet Security) Foundations Benchmark for OCI recommendations with OCI architecture best practices, provided as Terraform code, resulting in an opinionated, configurable, and automated deployment approach for OCI.
+This reference implementation (referred to as the **Landing Zone** or **Core Landing Zone** in the rest of this document) is a blend of CIS (Center for Internet Security) Foundations Benchmark for OCI recommendations with OCI architecture best practices, provided as Terraform code, resulting in an opinionated, configurable, and automated deployment approach for OCI.
 
 The [CIS Oracle Cloud Infrastructure Foundations Benchmark]( https://www.cisecurity.org/benchmark/oracle_cloud) provides prescriptive guidance when working with OCI as it defines fundamental security principles that do not require any further mapping or refinement. The benchmark recommends: *"Ensure service level admins are created to manage resources of particular service"*, *"Ensure no network security groups allow ingress from 0.0.0.0/0 to port 22"*, *"Ensure Cloud Guard is enabled in the root compartment of the tenancy"*. The benchmark also defines configuration profiles, relating to criticality levels of particular security controls. Version 1.1 of the document defines two configuration profiles: level 1 and level 2. Items in Level 1 intend to be practical and prudent, providing security focused best practice hardening of a technology. Level 2 extends level 1 and is intended for environments where security is more critical than manageability and usability, acting as defense-in-depth measure.
 
 The benchmark document does not include guidance on architectural best practices for OCI, for example: compartment design, network topology, connectivity/routing patterns, lifecycle environments, and how these aspects fit together into a cohesive implementation. The Landing Zone accounts for all these requirements and can be used *as is*, customized or used as a model for other implementations.
 
-Customers do not incur any costs when deploying the Landing Zone and the code is publicly available in GitHub [https://github.com/oci-landing-zones/oci-core-landingzone](https://github.com/oci-landing-zones/oci-core-landingzone) under the OCI Landing Zones project. The main idea behind Landing Zone is to allow for fast enablement of security guard rails where workloads can be subsequently deployed safely. Users are not required to have extensive Terraform knowledge to use the Landing Zone *as is* and should be able to deploy it after entering a few configuration variables.
+In most cases, customers do not incur any costs when deploying the Landing Zone and the code is publicly available in GitHub [https://github.com/oci-landing-zones/oci-core-landingzone](https://github.com/oci-landing-zones/oci-core-landingzone) under the OCI Landing Zones project. The main idea behind Landing Zone is to allow for fast enablement of security guard rails where workloads can be subsequently deployed safely. Users are not required to have extensive Terraform knowledge to use the Landing Zone *as is* and should be able to deploy it after defining a few configuration variables.
 
-Landing Zone does not provision any resources where workloads are directly executed on, like Compute instances, Databases, Containers, or Functions. Instead, it provides the appropriate placeholders and attachment points for such resources. As a mental model, picture the Landing Zone as an airport, where choppers (workloads) can land safely. For example, the Landing Zone provides the compartment where databases are expected to be created along with the OCI IAM policies and groups that allow database administrators to manage databases. Additionally, it provides the network structures that database administrators should use when provisioning a database, like subnets and NSGs (Network Security Groups). On top of that, Landing Zone configures various OCI services for a strong security posture.
+**Note**: there might be associated costs when customers choose to deploy firewalls (either OCI Network Firewall service or 3rd-party network appliances), deploy FastConnect, or when consolidating logs in OCI streaming or OCI Object Storage. 
+
+Landing Zone does not provision any resources where workloads are directly executed on, like Compute instances (except when deploying network appliances and jump hosts), Databases, Containers, or Functions. Instead, it provides the appropriate placeholders and attachment points for such resources. As a mental model, picture the Landing Zone as an airport, where choppers (workloads) can land safely. For example, the Landing Zone provides the compartment where databases are expected to be created along with the OCI IAM policies and groups that allow database administrators to manage databases. Additionally, it provides the network structures that database administrators should use when provisioning a database, like subnets and NSGs (Network Security Groups). On top of that, Landing Zone configures various OCI services for a strong security posture.
 
 Customer workloads often require extra resources like network, policies, etc. Using Landing Zone as the foundation, workload resources will be created. But at a later time, any additional workload will require separate, similar resources to be created.
 Therefore, Landing Zone facilitates some workload use cases with generic [extensions](https://github.com/oci-landing-zones/oci-core-landingzone/extensions/). 
@@ -51,7 +53,7 @@ The Landing Zone team monitors OCI services and evaluates new additions and upda
 
 The Landing Zone can be run as the tenancy administrator (any user that is a member of the Administrators group) or as a user with narrower permissions.
 
-By default, Landing Zone requires tenancy administrator permissions in the tenancy to deploy because it needs to create policies and compartment at the **root** compartment. Depending on a customer’s specific requirements, it also be created in an enclosing compartment up to five levels under the **root** compartment with the groups and dynamic groups residing in the **root** compartment.
+By default, Landing Zone requires tenancy administrator permissions in the tenancy to deploy because it needs to create policies and compartments at the *Root* compartment. 
 
 ## <a name="green-field-and-brown-field-deployments"></a>2.2 Green Field and Brown Field Deployments
 
@@ -69,7 +71,7 @@ Routing rules or network security rules required by specific workloads are handl
 
 ## <a name="networking-2"></a>2.3 Networking
 
-The Landing Zone can provision a variety of network topologies to meet the needs of different organizations. While many resources in Landing Zone including networking can easily be updated by changing variables, these changes may cause a resource like a VCN (Virtual Cloud Network) or a subnet to be destroyed. However, these resources cannot be destroyed if they contain resources in them, like compute instances or databases. Due to this, it is recommended to consider the following areas before you begin your deployment:
+The Landing Zone can provision a variety of network topologies to meet the needs of different organizations. While many resources in Landing Zone including networking can easily be updated by changing variables, these changes may cause a resource like a VCN (Virtual Cloud Network) or a subnet to be destroyed. However, these resources cannot be destroyed if they contain resources in them, like Compute instances or databases. Due to this, it is recommended to consider the following areas before you begin your deployment:
 
 1. Type of Workload
 1. Number of Workloads
@@ -185,7 +187,9 @@ Two extra compartments can be provisioned based on user choice:
 
 - **Exainfra**: designed to hold Exadata infrastructure resources that are primarily managed by Exadata administrators. It is recommended for customers where Exadata infrastructure and databases are managed by different groups.
 
-- **Enclosing compartment**: designed to enclose the aforementioned compartments in a single top compartment. When deploying as a non administrator, an enclosing compartment is mandatory.
+- **Enclosing compartment**: designed to enclose the aforementioned compartments within a single top compartment. It is highly recommended as it provides a boundary for your landing zone deployment.
+
+Note that Core Landing Zone enclosed compartments can be augmented using newly added *additional_enclosed_compartments* override variable. The provided compartments are provisioned within the enclosing compartment. See [iam_override.tf](./iam_override.tf) for an example.
 
 ### Groups
 
@@ -218,11 +222,13 @@ The Landing Zone defines four dynamic groups to satisfy common needs of workload
 
 ### Policies
 
-The Landing Zone policies implement segregation of duties and follow least privilege across the different personas (groups). Segregation of duties is implemented by granting specific permissions to a single target group on a single target compartment. For example, only *Network Administrators* can manage the network family, and this is done only in the *Network* compartment. Only *Database Administrators* can manage databases, and this is done only in the *Database* compartment. Least privilege is followed when deploying a database, *Database Administrators* are entitled to use the network managed by *Network Administrators* in the *Network* compartment. Some policies are common to all groups, like the ability to use Cloud Shell in tenancy and to manage Resource Manager stacks in their specific compartments. The policy list is extensive, comprehensive, and human-readable. We recommend reviewing *config/iam\_policies.tf* for additional details.
+The Landing Zone policies implement segregation of duties and follow least privilege across the different personas (groups). Segregation of duties is implemented by granting specific permissions to a single target group on a single target compartment. For example, only *Network Administrators* can manage the network family, and this is done only in the *Network* compartment. Only *Database Administrators* can manage databases, and this is done only in the *Database* compartment. Least privilege is followed when deploying a database, *Database Administrators* are entitled to use the network managed by *Network Administrators* in the *Network* compartment. Some policies are common to all groups, like the ability to use Cloud Shell in tenancy and to manage Resource Manager stacks in their specific compartments. We recommend reviewing *config/iam\_policies.tf* for additional details.
 
 Policies are attached at different compartments depending on the presence of an enclosing compartment. If Landing Zone compartments are deployed directly under the Root compartment (thus no enclosing compartment), all policies are attached to the Root compartment. If Landing Zone compartments are deployed within an enclosing compartment, some policies are attached to the Root compartment, while some are attached to the enclosing compartment itself. This is to allow for free movement of Landing Zone compartments without the need to change policy statements. The policies at Root compartment are applied to resources at the tenancy level.
 
-In OCI, services also need to be explicitly granted. The Landing Zone provisions policies authorizing Cloud Guard, Vulnerability Scanning Service and OS Management Service the necessary actions for their functioning. We recommend reviewing *config/iam\_service\_policies.tf* for additional details.
+In OCI, services also need to be explicitly granted. Core Landing Zone provisions policies authorizing Cloud Guard, Vulnerability Scanning Service and other services the necessary actions for their functioning. We recommend reviewing *config/iam\_service\_policies.tf* for additional details.
+
+The policy list is extensive, human-readable, but non-exhaustive. Policies can be augmented using newly added *custom_policy_statements* override variable. The provided statements are put together in a separate policy at the enclosing compartment of the landing zone, but only when the enclosing compartment is not the Root compartment. *Use this with extreme caution as it may introduce security issues if not used properly. Make sure to follow the principle of least privilege when defining custom statements, ensuring to grant only the necessary permissions required for your use case.*
 
 ### Integration with Pre-existing Identity Domains
 
@@ -230,25 +236,572 @@ The Landing Zone now provides the ability to integrate groups and dynamic groups
 
 ## <a name="network-configuration"></a>3.2 Network Configuration
 
-The Landing Zone supports a variety of networking types:
+Core Landing Zone provides a flexible network configuration, ranging from isolated VCNs to Hub/Spoke topology with or without a firewall. It natively manages the following workload-specific VCN configurations:
 
-- **Standard Three-Tier Web Application VCN**: up to four subnets are provisioned, one to host load balancers, one for application servers (middle-tiers) and one for database servers. Optionally, a subnet (either public or private) for jump hosts is available. The load balancer subnet can be made either public or private. The application servers' and database servers' are always created private. Route rules and network security rules are configured based on provided connectivity settings.
+- **Standard Three-Tier Web Application VCN**: designed for traditional three-tier applications, up to four subnets are provisioned, one to host load balancers, one for application servers (middle-tiers) and one for database servers. Optionally, a subnet (either public or private) for jump hosts is available. The load balancer subnet can be made either public or private. The application servers' and database servers' are always created private. Route rules and network security rules are configured based on typical requirements of three-tier applications.
 
-- **Exadata Cloud Service (ExaCS) VCN**: two private subnets are provisioned, according to ExaCS requirements. One subnet for the Exadata client (the database itself) and one for database backups. Route rules and network security rules are configured based on ExaCS requirements and provided connectivity settings.
+- **Exadata Cloud Service (ExaCS) VCN**: designed for Oracle Exadata workloads, up to three private subnets are provisioned. One subnet for the Exadata client (the database itself) and optional subnets database backup and integration (for Oracle GoldenGate, and other integration solutions, for instance). Route rules and network security rules are configured based on Exadata Cloud Service requirements.
 
-- **Oracle Kubernetes Engine (OKE) VCN**: one public and up to four private subnets are provisioned, according to OKE requirements. Public facing is the Services subnet, where service like load balancers are expected to be deployed. The others are Workers, API, Management and Pods (available for Native Pod Networking CNI) subnets. Route rules and network security rules are configured based on OKE requirements and provided connectivity settings.
+- **Oracle Kubernetes Engine (OKE) VCN**: designed for Kubernetes-based workloads, up to six subnets are provisioned, according to OKE requirements: Services subnet (public or private), where service like load balancers are expected to be deployed; Workers, API, Management, Pods (available for Native Pod Networking CNI) and Database subnets. Route rules and network security rules are configured based on OKE requirements.
 
-The Landing Zone supports up to three VCNs of each type.
+Three VCNs of each type are supported. All VCNs can be configured with no Internet connectivity or for on-premises connectivity. Inbound SSH access (TCP port 22) from 0.0.0.0/0 IP range is prohibited, but Core Landing Zone may be configured to leverage OCI Bastion Service for secure, restricted access from the Internet, an on-premises CIDR block, or both.
 
-Regardless the networking types, these VCNs can be deployed standalone or all connected via OCI DRG V2 service in a Hub & Spoke topology. When deploying Hub & Spoke, either a Hub VCN (aka DMZ VCN) can be provisioned or the DRG itself used as the hub. The Landing Zone also optionally deploys a network appliance or OCI Native Firewall in the Hub VCN to control/secure all inbound and outbound traffic routing in the spoke VCNs.
+In addition to these managed VCNs, Core Landing Zone allows for integrating externally managed VCNs into its managed Hub/Spoke topology. These VCNs are brought into the topology as spokes, having their connectivity into landing zone networking managed by Core Landing Zone. In essence, they are integrated as any other Core Landing Zone managed VCN, but are managed independently. This unlocks the integration of specific workload types not covered by Core Landing Zone. 
 
-The Landing Zone DRG also allows for attachments from additional, externally managed VCNs. This allows for updates to routing so that all Landing Zone resources are centrally managed. In this operational model, resources that are created by the Landing Zone are not altered by the external workload. A workload only creates and updates resources that are owned by the workload. A shared resource like the hub DRG falls under the management of the Landing Zone. 
+- **Hub (aka DMZ) VCN**: a single VCN designed for the deployment of OCI Network Firewall or third-party network firewall appliances to control/secure all inbound and outbound traffic in the spoke VCNs. Core Landing Zone leverages OCI DRG service when implementing Hub/Spoke topology.
 
-<img src="images/External_VCN1.png" alt="External VCN" width="800"/>
+Due to the very nature of Terraform, VCNs can be add, modified and deleted on-demand. Core Landing Zone allows for switching back and forth between isolated and Hub/Spoke, however it is recommended to plan the target design and avoid switching, as manual actions might be needed.
 
-All VCNs can be configured with no Internet connectivity or for on-premises connectivity. Inbound SSH access (TCP port 22) from 0.0.0.0/0 IP range is prohibited, but the Landing Zone may be configured to leverage OCI Bastion Service for secure, restricted access from the Internet, an on-premises CIDR block, or both.
+### Routing Patterns
 
-Due to the very nature of Terraform, it is possible to add, modify and delete VCNs. Landing Zone allows for switching back and forth between standalone and Hub & Spoke, however it is recommended to plan for a specific design, as manual actions might be needed when switching.
+Core Landing Zone routing is opinionated to keep tenancy-wide guardrails intact while letting teams layer in additional connectivity (firewalls, FastConnect, IPSec) without replacing VCNs. Three core scenarios are supported:
+
+#### 1. Isolated Spoke VCNs (no DRG attachment)
+
+- Three-tier, OKE, and Exadata spokes can be provisioned with *\*_attach_to_drg = false* (default). In this mode each VCN routes northbound directly to its Internet Gateway. No inter-VCN routes exist and the DRG is not aware of the spoke CIDRs, effectively creating siloed landing pads for workloads that must remain isolated.
+- Internet ingress/egress is controlled per subnet: public subnets route to spoke's local Internet Gateway, whereas private subnets target the NAT Gateway.
+- Access to Oracle Services Network (OSN) endpoints (Object Storage, Autonomous Database, etc.) is handled through service gateways that are local to each isolated VCN, keeping traffic on the Oracle backbone without traversing the public internet.
+
+#### 2. Spokes attached to DRG without a Hub VCN
+
+- When *\*_attach_to_drg = true* but no Hub VCN is deployed, the DRG becomes the common hub. Route tables in each spoke point specific CIDRs to the DRG, enabling east-west connectivity still subject to network security rules.
+- Internet egress still goes through each spoke’s local Internet or NAT gateway, and OSN access uses local service gateways. Because there is no centralized Hub VCN, ingress filtering is handled by NSGs and security lists on each VCN boundary.
+- Access to Oracle Services Network (OSN) endpoints (Object Storage, Autonomous Database, etc.) is handled through service gateways that are local to each isolated VCN, keeping traffic on the Oracle backbone without traversing the public internet.
+
+#### 3. Spokes attached to DRG with Hub VCN + firewall/appliance
+
+- Enabling the Hub VCN (with or without OCI Network Firewall/third-party appliance) introduces a DMZ VCN that acts as the DRG attachment point for north-south and east-west flows. Spokes advertise their CIDRs to the DRG and route inter-VCN traffic via the Hub, where additional inspection, traffic steering, or shared services (like OCI Bastion service) live.
+- Internet-bound routes in the spokes target the DRG, which in turn forwards traffic to the Hub VCN’s NAT Gateway only after passing through the firewall/appliance endpoints. 
+- Internet ingress traffic follows the inverse path (IGW -> firewall/appliance -> DRG -> spoke).
+- Connectivity to Oracle Services Network stays local on each spoke VCN.
+- Core Landing Zone supports OCI Native Network Firewall and 3rd-party network appliances. In both cases, two-pass Terraform applies ensure the firewall OCID (OCI Native Firewall) or network load balancer private IP OCIDs (third-party network appliances) are captured and fed back into *hub_vcn_\*_entry_point_ocid* variables so DRG route tables remain consistent.
+
+#### Cross-VCN Routing
+
+In cross-vcn and on-premises connectivity scenarios, the subnet route tables in a VCN always target the DRG for such destinations. The DRG route tables (those associated with DRG attachments) are configured either with dynamic routes (along with route distributions) when a Hub VCN is not deployed or with a single static route targeting the Hub VCN attachment when a Hub VCN is deployed.
+
+In the scenario where a Hub VCN is not deployed, by default, a DRG-attached spoke VCN routes to any other DRG-attached spoke VCN. These routes can be constrained through *\*_routable_vcns* variables available to each VCN. Along with spoke VCN labels (*TT-VCN-1*, *TT-VCN-2*, *TT-VCN-3*, *OKE-VCN-1*, *OKE-VCN-2*, *OKE-VCN-3*, *EXA-VCN-1*, *EXA-VCN-2*, *EXA-VCN-3*), cross-vcn routing can be managed. For example, when *tt_vcn1_routable_vcns = ["OKE-VCN-1","EXA-VCN-1]*, then tt_vcn1 VCN can only communicate to oke_vcn1 and exa_vcn1, even when there are other VCNs attached to the DRG.
+
+### Network Security Rules Patterns
+
+Core Landing Zone favors NSGs (Network Security Groups) over security lists. Security lists attach rules to subnets — every VNIC in a subnet inherits every rule, whether it needs it or not. NSGs attach rules to individual VNICs (or groups of them), allowing for fine-grained access control and micro-segmentation. NSGs have the ability to reference another NSG as a source or destination in a rule, rather than a CIDR block, allowing for expressing exactly the traffic each workload needs — nothing more. A batch job and a public API living in the same subnet can have completely different security postures. 
+
+Security lists are deployed by Core Landing Zone only for very generic rules in some cases, or to satisfy some services that still do not support NSGs (like OCI Bastion service) or if explicitly requested by users through Terraform overrides.
+
+**Since NSGs are not inherited by resources, they must explicitly associated by customers on a per-resource basis.**.
+
+Core Landing Zone native NSGs enforce opinionated connectivity for each workload type. The following sections describe the default NSGs controlling traffic inside each VCN. When the VCNs are connected and on-premises connectivity is configured, another set of cross-vcn NSGs is deployed (see section **Cross-VCN Network Security Rules**). Customers can also bring their own NSGs through the *define_\*_additional_nsgs* and *\*_additional_nsgs* variables.
+
+#### Hub VCN NSGs
+
+The Hub VCN NSGs protect shared ingress, inspection, management, and operator access points. The same VNIC-level additional NSG model applies to Hub VCN resources, just for shared hub services instead of workload spokes.
+
+- **outdoor-nlb-nsg** and **outdoor-fw-nsg**
+  - **ingress:** from the Hub VCN application load balancer NSG and, when the outdoor subnet is public, from allowed external CIDRs.
+  - **egress:** to any destination, allowing the outdoor side of the inspection path to forward north-south traffic.
+- **indoor-nlb-nsg**, **indoor-fw-nsg**, and **oci-firewall-nsg**
+  - **ingress:** from Hub, spoke, and on-premises CIDRs that must traverse east-west or north-south inspection paths.
+  - **egress:** to any destination after inspection.
+- **mgmt-nsg**
+  - **ingress:** from approved on-premises management CIDRs, the jump host NSG, and the management subnet paths required for appliance administration.
+- **jump-host-nsg** (optional)
+  - **ingress:** from on-premises CIDRs over SSH port 22.
+  - **egress:** to firewall management, Oracle Services Network (OSN), and selected spoke subnets over SSH port 22.
+- **app-load-balancer-nsg**
+  - **ingress:** when the Hub Web subnet is public, from *onprem_cidrs* plus the external CIDRs defined by *hub_vcn_external_allowed_cidrs_into_web_tier*, over ports defined by *hub_vcn_web_ingress_destination_ports*. When the Hub Web subnet is private, allowed CIDRs come only from *onprem_cidrs*.
+  - **egress:** controlled by *hub_vcn_app_load_balancer_nsg_egress_rules*.
+
+Attach Hub-specific custom NSGs by setting *define_hub_vcn_additional_nsgs = true* and providing *hub_vcn_additional_nsgs* as a native HCL map/object or JSON object string. This is useful for SD-WAN edge VNICs, shared service endpoints, or custom hub appliances that should not be mixed into the default management, jump host, or inspection NSGs.
+
+For example, set the following variables for a custom Hub VCN shared DNS forwarder NSG:
+
+```hcl
+define_hub_vcn_additional_nsgs = true
+
+hub_vcn_additional_nsgs = {
+  "HUB-VCN-SHARED-DNS-FORWARDER-NSG" = {
+    display_name = "hub-shared-dns-forwarder-nsg"
+    ingress_rules = {
+      "INGRESS-FROM-SPOKES-DNS-UDP" = {
+        description  = "Allow spoke VCN clients to query a Hub VCN DNS forwarder over UDP."
+        stateless    = false
+        protocol     = "UDP"
+        src          = "10.60.0.0/16"
+        src_type     = "CIDR_BLOCK"
+        dst_port_min = 53
+        dst_port_max = 53
+      }
+    }
+    egress_rules = {
+      "EGRESS-TO-ONPREM-DNS-UDP" = {
+        description  = "Allow the Hub VCN DNS forwarder to relay DNS queries to an on-premises resolver over UDP."
+        stateless    = false
+        protocol     = "UDP"
+        dst          = "172.20.10.53/32"
+        dst_type     = "CIDR_BLOCK"
+        dst_port_min = 53
+        dst_port_max = 53
+      }
+    }
+  }
+}
+```
+
+#### Three-Tier VCN NSGs
+
+The NSGs in Three-tier VCNs enforce the classic load balancer → application layer → database path. They also enable SSH connectivity into servers eventually deployed in the VCN.
+
+- **lbr-nsg**
+  - **ingress**: from the list of external CIDRs/protocols/ports defined by the combination of *tt_vcn\*_external_allowed_cidrs_into_web_tier* and *tt_vcn\*_web_ingress_destination_ports*.
+  - **egress**: to *app-nsg* on the ports defined by *tt_vcn\*_app_ingress_destination_ports*; to Oracle Services Network (OSN) over HTTPS port 443.
+- **app-nsg**
+  - **ingress:** from *lbr-nsg* on the protocols/ports defined by *tt_vcn\*_app_ingress_destination_ports*.
+  - **egress:** to *db-nsg* on the protocols/ports defined by *tt_vcn\*_db_ingress_destination_ports*; to Oracle Services Network (OSN) over HTTPS port 443; to other destinations for satisfying Internet-bound traffic over NAT gateway.
+- **db-nsg**
+  - **ingress:** from *app-nsg* on the protocols/ports defined by *tt_vcn\*_db_ingress_destination_ports*.
+  - **egress:** to Oracle Services Network (OSN) over HTTPS port 443; to other destinations for satisfying Internet-bound traffic over NAT gateway.
+- **bastion-nsg** (optional)
+  - **ingress:** from *tt_vcn\*_bastion_subnet_allowed_cidrs* or from OCI Bastion service deployed in *bastion-subnet*. Both over SSH port 22.
+  - **egress:** to *lbr-nsg*, *app-nsg*, and *db-nsg* over SSH port 22; to Oracle Services Network (OSN) over HTTPS port 443.
+
+**Note**: *lbr-nsg*, *app-nsg* and *db-nsg* optionally provide ingress security rules for SSH connectivity from *bastion-nsg* and Hub VCN Jump Host subnet over port 22.
+
+Attach workload-specific NSGs on a per-spoke basis by setting *define_tt_vcn\*_additional_nsgs = true* and providing *tt_vcn\*_additional_nsgs* as a native HCL map/object or JSON object string, supplementing the global constrained/open NSGs without modifying the core module. For example, set the following variables for custom *TT-VCN-1* NSGs:
+
+```hcl
+define_tt_vcn1_additional_nsgs = true
+
+tt_vcn1_additional_nsgs = {
+  "TT-VCN-1-OBSERVABILITY-NSG" = {
+    display_name = "tt-vcn-1-observability-nsg"
+    ingress_rules = {
+      "INGRESS-FROM-MONITORING-SUBNET-NODE-EXPORTER" = {
+        description  = "Allow a monitoring subnet to scrape node exporter metrics from workload hosts."
+        stateless    = false
+        protocol     = "TCP"
+        src          = "10.0.8.0/24"
+        src_type     = "CIDR_BLOCK"
+        dst_port_min = 9100
+        dst_port_max = 9100
+      }
+    }
+    egress_rules = {
+      "EGRESS-TO-ONPREM-SIEM-SYSLOG-TLS" = {
+        description  = "Allow workload hosts to forward security logs to an on-premises SIEM over TLS."
+        stateless    = false
+        protocol     = "TCP"
+        dst          = "172.20.15.10/32"
+        dst_type     = "CIDR_BLOCK"
+        dst_port_min = 6514
+        dst_port_max = 6514
+      }
+    }
+  }
+  "TT-VCN-1-GENAI-PRIVATE-ENDPOINT-NSG" = {
+    display_name = "tt-vcn-1-genai-private-endpoint-nsg"
+    ingress_rules = {
+      "INGRESS-FROM-APP-NSG-HTTPS" = {
+        description  = "Allow application hosts in the Core Landing Zone app NSG to reach an OCI Generative AI private endpoint."
+        stateless    = false
+        protocol     = "TCP"
+        src          = "TT-VCN-1-APP-NSG"
+        src_type     = "NETWORK_SECURITY_GROUP"
+        dst_port_min = 443
+        dst_port_max = 443
+      }
+    }
+    egress_rules = {}
+  }
+}
+```
+
+#### OKE VCN NSGs
+
+The NSGs in OKE VCNs enforce the load balancer(services) → workers/pods layer → database path. They also connectivity to OKE API endpoint across the cluster and SSH connectivity into servers eventually deployed in the VCN.
+
+- **services-nsg**
+  - **ingress:** from the list of external CIDRs/protocols/ports defined by the combination of *oke_vcn\*_external_allowed_cidrs_into_services_tier* and *oke_vcn\*_services_ingress_destination_ports*. 
+  - **egress:** to *workers-nsg*.
+- **workers-nsg**
+  - **ingress:** from *services-nsg*; from itself (for node-to-node connectivity); from *api-nsg*; from *pods-nsg* (Native CNI).
+  - **egress:** to itself (for node-to-node connectivity); to *api-nsg*; to *pods-nsg* (Native CNI); to *db-nsg* on the protocols/ports defined by *oke_vcn\*_db_ingress_destination_ports*; to Oracle Services Network (OSN) over HTTPS port 443; to other destinations for satisfying Internet-bound traffic over NAT gateway.
+- **pods-nsg** (when *\*_cni_type = "NATIVE"*)
+  - **ingress:** from *workers-nsg*; from *api-nsg*, from itself (for pod-to-pod connectivity).
+  - **egress:** to itself (for pod-to-pod connectivity); to *api-nsg*; to *db-nsg* on the protocols/ports defined by *oke_vcn\*_db_ingress_destination_ports*; to Oracle Services Network (OSN) over HTTPS port 443; to other destinations for satisfying Internet-bound traffic over NAT gateway.
+- **api-nsg**
+  - **ingress:** from *workers-nsg*; from *pods-nsg*; from *mgmt-nsg*; from Hub VCN Jump Host subnet;.
+  - **egress:** to *workers-nsg*; to *pods-nsg*; to Oracle Services Network (OSN) over HTTPS port 443.
+- **mgmt-nsg** (optional)
+  - **ingress:** none.
+  - **egress:** to *api-nsg*; to *workers-nsg*; to Oracle Services Network (OSN) over HTTPS port 443; to other destinations for satisfying Internet-bound traffic over NAT gateway.
+- **db-nsg** (optional)
+  - **ingress:** ingress from *workers-nsg* and *pods-nsg* on the protocols/ports defined by *oke_vcn\*_db_ingress_destination_ports*.
+  - **egress:** to Oracle Services Network (OSN) over HTTPS port 443; to other destinations for satisfying Internet-bound traffic over NAT gateway.
+
+**Note 1**: *workers_nsg* optionally provide ingress security rules for SSH connectivity from *mgmt_nsg* and Hub VCN Jump Host subnet over port 22.
+**Note 2**: *api_nsg* optionally provides ingress security rules for cluster management from *mgmt_nsg* and Hub VCN Jump Host subnet over port 6443.
+
+Attach workload-specific NSGs on a per-spoke basis by setting *define_oke_vcn\*_additional_nsgs = true* and providing *oke_vcn\*_additional_nsgs* as a native HCL map/object or JSON object string, supplementing the global constrained/open NSGs without modifying the core module. For example, set the following variables for a custom *OKE-VCN-1* NSG:
+
+```hcl
+define_oke_vcn1_additional_nsgs = true
+
+oke_vcn1_additional_nsgs = {
+  "OKE-VCN-1-PLATFORM-TOOLS-NSG" = {
+    display_name = "oke-vcn-1-platform-tools-nsg"
+    ingress_rules = {
+      "INGRESS-FROM-SCANNER-CIDR-WEBHOOK" = {
+        description  = "Allow a vulnerability scanner subnet to reach an admission controller webhook."
+        stateless    = false
+        protocol     = "TCP"
+        src          = "10.40.12.0/24"
+        src_type     = "CIDR_BLOCK"
+        dst_port_min = 8443
+        dst_port_max = 8443
+      }
+    }
+    egress_rules = {
+      "EGRESS-TO-PRIVATE-REGISTRY" = {
+        description  = "Allow worker nodes to pull images from a private registry mirror."
+        stateless    = false
+        protocol     = "TCP"
+        dst          = "10.40.20.25/32"
+        dst_type     = "CIDR_BLOCK"
+        dst_port_min = 5000
+        dst_port_max = 5000
+      }
+      "EGRESS-TO-OSN-HTTPS" = {
+        description  = "Allow platform tools to reach all services in Oracle Services Network over HTTPS."
+        stateless    = false
+        protocol     = "TCP"
+        dst          = "all-services"
+        dst_type     = "SERVICE_CIDR_BLOCK"
+        dst_port_min = 443
+        dst_port_max = 443
+      }
+    }
+  }
+}
+```
+ 
+#### Exadata Cloud Service VCN NSGs
+
+- **client-nsg**
+  - **ingress:** from itself on protocols/ports defined in *exa_vcn\*_client_ingress_destination_ports*, on TCP:22 for SSH, and on TCP:6200 for Oracle Notification Service (FAN/ONS); from the Hub VCN Jump Host subnet;
+  - **egress:** to itself on protocols/ports defined in *exa_vcn\*_client_ingress_destination_ports*, on TCP:22 for SSH, and on TCP:6200 for Oracle Notification Service (FAN/ONS); to Oracle Services Network (OSN) over HTTPS port 443.
+- **backup-nsg** (optional)
+  - **ingress:** none.
+  - **egress:** to Oracle Services Network (OSN) over HTTPS port 443.
+- **integration-nsg** (optional)
+  - **ingress:** from *client-nsg* and from the list of external CIDRs defined by *exa_vcn\*_external_allowed_cidrs_to_ports_into_integration_tier* into protocols and ports defined by *exa_vcn\*_integration_ingress_destination_ports*.
+  - **egress:**  to *client-nsg* on protocols and ports defined by *exa_vcn\*_client_ingress_destination_ports*.
+
+Attach workload-specific NSGs on a per-spoke basis by setting *define_exa_vcn\*_additional_nsgs = true* and providing *exa_vcn\*_additional_nsgs* as a native HCL map/object or JSON object string, supplementing the native client, integration, and cross-VCN NSGs without modifying the core module. For example, set the following variables for a custom *EXA-VCN-1* NSG:
+
+```hcl
+define_exa_vcn1_additional_nsgs = true
+
+exa_vcn1_additional_nsgs = {
+  "EXA-VCN-1-REPLICATION-NSG" = {
+    display_name = "exa-vcn-1-replication-nsg"
+    ingress_rules = {
+      "INGRESS-FROM-GOLDENGATE-SUBNET-TCPS" = {
+        description  = "Allow GoldenGate hosts to connect to encrypted database listeners."
+        stateless    = false
+        protocol     = "TCP"
+        src          = "10.50.20.0/24"
+        src_type     = "CIDR_BLOCK"
+        dst_port_min = 2484
+        dst_port_max = 2484
+      }
+      "INGRESS-FROM-DBA-SUBNET-ICMP-ECHO" = {
+        description = "Allow database administrators to run ICMP ping checks from a controlled operations subnet."
+        stateless   = false
+        protocol    = "ICMP"
+        src         = "10.50.10.0/24"
+        src_type    = "CIDR_BLOCK"
+        icmp_type   = 8
+        icmp_code   = 0
+      }
+    }
+    egress_rules = {
+      "EGRESS-TO-REMOTE-STANDBY-SQLNET" = {
+        description  = "Allow replication traffic to a remote standby database network."
+        stateless    = false
+        protocol     = "TCP"
+        dst          = "172.20.50.0/24"
+        dst_type     = "CIDR_BLOCK"
+        dst_port_min = 1521
+        dst_port_max = 1522
+      }
+    }
+  }
+}
+```
+
+#### Cross-VCN Network Security Rules
+
+Core Landing Zone provides two Network Security Group (NSG) modes for on-premises and cross-VCN connectivity: open or constrained. Constrained NSGs are enabled by default. Open and constrained NSGs can coexist for spoke VCNs, which supports a two-apply migration from constrained rules to open rules without forcing Terraform to create the open NSGs and destroy the constrained NSGs in the same plan. Hub VCN keeps its default constrained connectivity rules for upgrade continuity; when open NSG is requested for Hub VCN, the open NSG is created and left unattached by default.
+
+##### Cross-VCN Open NSGs
+
+- Enables open security rules for cross-VCN communication paths. The security rules allow *all protocols* from every other connected VCN CIDR, as well as on-premises CIDRs. One NSG is created per VCN.
+- Enabled for spoke VCNs when *enable_cross_vcn_open_nsg = true*. For Hub VCN, it is created when *enable_cross_vcn_open_nsg = true*.
+- Automatically shrinks when you disconnect a VCN or remove an on-premises CIDR.
+- Ideal for lab environments or when another control point (for example, OCI Network Firewall or a third-party appliance) already performs deep inspection and segmentation.
+- To migrate an existing deployment from constrained cross-VCN NSGs to open cross-VCN NSGs, use two applies. First set *enable_cross_vcn_open_nsg = true* and leave *enable_cross_vcn_constrained_nsgs = true* so Terraform creates the open NSGs. After that apply succeeds, set *enable_cross_vcn_constrained_nsgs = false* and apply again to remove the constrained NSGs.
+
+##### Cross-VCN Constrained NSGs
+
+- Enforces opinionated, stricter cross-VCN communication paths. The security rules sources and destinations are defined according to a usage where the VCNs define an entry point for other consuming networks For three-tier VCNs, this entrypoint is an endpoint deployed in the Web subnet; for OKE VCNs, it is an endpoint in the Services subnet; and for Exadata, it is an endpoint in the Client subnet. The protocols and ports in the security list are those configured by the *\*_ingress_destination_ports* variables available for each VCN. A few NSGs are created per VCN.
+- Enabled by default when *enable_cross_vcn_constrained_nsgs = true*. If both cross-VCN NSG modes are enabled, both constrained and open NSGs are created for spoke VCNs. Hub VCN keeps its constrained defaults even when the open NSG is requested.
+- Automatically shrinks when you disconnect a VCN or remove an on-premises CIDR.
+- Ideal for environments where there is no control point (for example, OCI Network Firewall or a third-party appliance) to perform deep inspection and segmentation.
+
+- **Three-tier Cross-VCN NSGs**  
+  - **cross-vcn-lbr-nsg**:
+    - **ingress**: from other three-tier app subnets, OKE pods, OKE workers, Hub VCN Jump Host, Hub VCN web subnets, and on-premises CIDRs.
+    - **egress**: no egress path to other VCNs.  
+  - **cross-vcn-app-nsg**:
+    - **ingress**: from the Hub VCN Jump Host subnet for SSH connectivity, and from Hub VCN Web subnet for application endpoint connectivity.
+    - **egress**: to three-tier web subnets, OKE services subnets, and Exadata client subnets.  
+  - **cross-vcn-db-nsg**:
+    - **ingress**: from Exadata client subnets (for shared database services) and the Hub VCN Jump Host subnet.
+    - **egress**: to Exadata client subnets, ensuring hosted databases or schemas can replicate to Exadata but do not initiate other east-west connections. 
+
+  ![Cross-VCN Constrained NSGs for Three Tier VCNs](images/cross-vcn-constrained-nsgs-for-tt-vcns.png)
+
+- **OKE Cross-VCN NSGs**  
+  - **cross-vcn-services-nsg**:
+    - **ingress**: from other OKE workers/pods subnets, three-tier app, on-prem CIDRs, Hub VCN Jump Host, Hub VCN Web subnets, and on-premises CIDRs.
+    - **egress**: no egress path to other VCNs. 
+  - **cross-vcn-workers-nsg**:
+    - **ingress**: from the Hub VCN Jump Host subnet.
+    - **egress**: to other OKE services subnets, three-tier web subnets, and Exadata client subnets.  
+  - **cross-vcn-pods-nsg**:
+    - **ingress**: from the Hub VCN Jump Host subnet.
+    - **egress**: to other OKE services subnets, three-tier web subnets, and Exadata client subnets.  
+  - **cross-vcn-db-nsg**:
+    - **ingress**: from Exadata client subnets and the Hub VCN Jump Host subnet.
+    - **egress**: to Exadata client subnets, ensuring Kubernetes-hosted databases or schemas can replicate to Exadata but do not initiate other east-west connections.
+
+  ![Cross-VCN Constrained NSGs for OKE VCNs](images/cross-vcn-constrained-nsgs-for-oke-vcns.png)
+
+- **Exadata Cross-VCN NSGs**  
+  - **cross-vcn-client-nsg** is the single NSG for Exadata VCNs. 
+    - **ingress**: from every consumer tier that needs database services (three-tier app and DB subnets, OKE worker/pod/db subnets, other Exadata client subnets, on-premises CIDRs) and the Hub VCN Jump Host subnet for SSH connectivity.  
+    - **egress**: to other VCNs' DB subnets, including three-tier DB subnets, OKE DB subnets and other Exadata client subnets, covering replication, backup, or shared service scenarios without exposing the database network to arbitrary destinations. 
+
+  ![Cross-VCN Constrained NSGs for Exa VCNs](images/cross-vcn-constrained-nsgs-for-exa-vcns.png)
+
+Note that you can still provide your own NSGs with the *define_\*_additional_nsgs* and *\*_additional_nsgs* variables in addition to Core Landing Zone managed ones, but the constrained set provides a strong, opinionated starting point.
+
+### Third-Party Network Appliances
+
+Core Landing Zone natively supports the inlined deployment of a network firewall appliance. The image source can be a pre-built custom image available in the tenancy or an [OCI Marketplace](https://cloud.oracle.com/marketplace) image (Fortinet FortiGate or Palo Alto Networks VM-Series, with BYOL - Bring Your Own License - license type). The appliance is deployed as an active/active pair of OCI Compute instances behind a pair of OCI network load balancers, wired in a classic “sandwich” topology that preserves trust boundaries and isolates management access through three exposed network interfaces:
+
+- **Management interface**: lives in a dedicated subnet, and can be accessed by CIDRs in *allowed_onprem_cidrs_to_fw_mgmt_interface* and Bastion/jump-host NSGs in Hub VCN. Appliance administrators can reach it from on-premises via FastConnect/IPSec (using the approved CIDRs) or from the Internet by connecting through OCI Bastion or the hardened jump host in the Hub VCN. Only control-plane protocols (SSH/HTTPS) are allowed; no workload traffic traverses this interface.
+- **Outdoor (untrust) interface**: front-ended by the OUTDOOR network load balancer. It receives north/south traffic from the internet or NAT gateways before forwarding it into the appliance. Spoke route tables send 0.0.0.0/0 (or specific external prefixes) toward *hub_vcn_north_south_entry_point_ocid*, ensuring every egress flow is inspected.
+- **Indoor (trust) interface**: front-ended by the INDOOR network load balancer. DRG route tables point east/west spoke traffic and on-premises return traffic to *hub_vcn_east_west_entry_point_ocid*, forcing packets to re-enter the trusted side of the appliance before hitting workloads.
+
+Core Landing Zone requires two Terraform applies to complete the network appliance configuration. The first apply builds the appliances, load balancers, and DRG attachments. The second apply populates both entry point OCIDs with the generated private IPs so every spoke/on-prem route consistently targets the proper outdoor/indoor interface. **Following the second apply, appliances' administrators must deploy policies for allowing overall network connectivity.**
+
+#### Detailed Deployment Workflow
+
+1. In a Hub VCN deployment, choose the appliance vendor (*hub_vcn_deploy_net_appliance_option = "Palo Alto Networks VM-Series Firewall"|"Fortinet FortiGate Firewall"*), and supply specific parameters like version, SSH public key, shape, allowed management CIDRs, and others.
+2. Run the first *terraform plan/apply* to deploy Hub VCN and the appliances.
+3. Collect the OCIDs of NLB private IPs, available in *nlb_private_ip_addresses.OUTDOOR-NLB* and *nlb_private_ip_addresses.INDOOR_NLB* output variables. These are the OCIDs you will reference as entry points in the second Terraform execution.
+4. Set *hub_vcn_north_south_entry_point_ocid = nlb_private_ip_addresses.OUTDOOR-NLB* and *hub_vcn_east_west_entry_point_ocid = nlb_private_ip_addresses.INDOOR_NLB* in the Terraform configuration input variables.
+5. Run the second *terraform plan/apply*. Core Landing Zone rewires the route tables, so traffic flows through the appropriate network appliance interfaces.
+6. **Following the second apply, appliances' administrators must deploy policies for allowing overall network connectivity.** See [Palo Alto Firewall Bootstrap](./templates/hub-spoke-with-hub-vcn-net-appliance/PALO-ALTO-BOOTSTRAP.md) for Palo Alto Networks VM-Series Firewall basic configuration.
+
+Core Landing Zone also supports appliances deployed separately, as long as they support the required network interfaces described. In this case, Core Landing Zone provisions all required network infrastructure (Hub VCN, subnets, routing, network security rules), while the appliances configuration manages the network load balancers and the appliance itself.
+
+### OCI Network Firewall
+
+For customers preferring a managed firewall service, Core Landing Zone supports OCI Network Firewall, a managed next-generation firewall and Intrusion Detection and Prevention Service (IDS/IPS) that is powered by Palo Alto Networks. It is an OCI cloud native regional highly-available service that gives visibility into all traffic in your OCI tenancy. Upon request (*hub_vcn_deploy_net_appliance_option = "OCI Native Firewall"*), Core Landing Zone will:
+
+- Provision an OCI Network Firewall instance in the Hub VCN and enable Threat/Traffic logging when *enable_native_firewall_threat_log* and *enable_native_firewall_traffic_log* are true.
+- Expose the forwarding IP OCID via the *oci_firewall_ip_ocid* output after the first *terraform apply*. Administrators create or reuse a firewall policy in OCI Console, capture its OCID (*oci_nfw_policy_ocid*), and associate it with the firewall.
+- Require a second *terraform apply* that takes both OCIDs and rewires Hub/spoke route tables so north/south and east/west flows traverse the OCI Network Firewall.
+- Simplify management: because OCI Network Firewall is service-managed, there is no SSH management interface to maintain. Policy updates, logging destinations, and health are handled via OCI Console/API and audited automatically.
+
+As in the case of network appliances, Core Landing Zone also requires two Terraform applies to complete the OCI Network Firewall configuration. The first apply deploys the Network Firewall instance in the Hub VCN. If a policy isn't specified, Core Landing Zone deploys an empty policy, in which case OCI Network Firewall denies all traffic. Users can also enter an existing policy with specific rules. The second apply is necessary to configure existing route tables with the Network Firewall. 
+
+#### Detailed Deployment Workflow
+
+1. In a Hub VCN deployment, set *hub_vcn_deploy_net_appliance_option = "OCI Native Firewall"*
+2. Optionally provide an existing policy OCID by setting *oci_nfw_policy_ocid = \<existing-policy-ocid\>*
+3. Run the first *terraform plan/apply*.
+4. Collect the OCID of Network Firewall IP address, available in the *oci_firewall_ip_ocid* output variable. 
+5. If you didn't provide *oci_nfw_policy_ocid = \<existing-policy-ocid\>* in step 2:
+    -   Using the OCI Console, create a new firewall policy according to your use case requirements to replace the default *deny all traffic* policy. Record the policy OCID, as you will update the Terraform stack with it for the subsequent terraform execution.
+    - **Still using the OCI Console, associate your new policy with the Network Firewall.**
+    - Edit the Terraform configuration, by setting *oci_nfw_policy_ocid = \<new-policy-ocid\>*. The new policy gets associated with the Network Firewall Terraform configuration. Note that Core Landing Zone does not manage the user provided policy, only its association with the Network Firewall.
+6. Edit the Terraform configuration with the collected Network Firewall OCID in step 4, by setting *oci_nfw_ip_ocid = \<oci_firewall_ip_ocid\>*.
+7. Run the second *terraform plan/apply*. Core Landing Zone rewires the route tables, so traffic flows through OCI Network Firewall.
+
+For OCI Resource Manager users, this is where the collected information is used in the RMS stack:
+
+![nfw_deploy_update.png](images/nfw_deploy_update.png)
+
+### FastConnect and IPSec VPN Provisioning
+
+Landing Zone can provision connectivity to on-premises networks through FastConnect and/or IPSec VPN:
+
+- **FastConnect**: set *on_premises_connection_option = "Create New FastConnect Virtual Circuit"* (or the combined FastConnect + IPSec option) and populate the bandwidth shape, VLAN, BGP peering IPs, provider service ID, and customer ASN variables. Terraform creates the virtual circuit, attaches it to the DRG, and updates spoke route tables when *_onprem_route_enable = true*.
+- **IPSec VPN**: set *on_premises_connection_option = "Create New IPSec VPN"* and provide CPE information plus tunnel IPs, BGP ASN, and optional shared secrets/IKE versions. The resulting tunnels attach to the same DRG attachment used by the Hub so that spokes automatically learn the on-premises CIDRs.
+- Both options can coexist (*"Create New FastConnect Virtual Circuit and IPSec VPN"*) for high availability. In that case the DRG routing policy is configured so on-premises prefixes are advertised across both transports, and failover is handled natively by DRG route priority.
+
+### Advanced Networking Scenarios
+
+Core Landing Zone supports many networking scenarios through its global variables, as detailed earlier in this section. When workloads demand even finer-grained routing, security list, or governance postures, you can redefine the existing local variables in [locals_overrides.tf](./locals_overrides.tf) inside a *\*_override.tf* file (see provided sample [net_override.tf](./net_override.tf)). These overrides unlock the following scenarios:
+
+VCN CIS check overrides only take effect when traffic inspection is in place. Core Landing Zone allows these overrides when *oci_nfw_ip_ocid* is provided, or when both *hub_vcn_east_west_entry_point_ocid* and *hub_vcn_north_south_entry_point_ocid* are provided for a third-party network appliance. Use these overrides with extreme caution, ensuring custom NSG and security list rules do not expose sensitive ports to the Internet.
+
+#### Hub VCN Integration with SD-WAN
+
+- Toggle *hub_vcn_outdoor_subnet_private* to expose the outdoor subnet publicly for SD-WAN edge devices.
+- Use *hub_vcn_outdoor_allowed_public_cidrs* to narrowly define which CIDRs may reach the public outdoor subnet.
+- Replace Hub VCN subnet security lists via *hub_vcn_web_subnet_security_list*, *hub_vcn_outdoor_subnet_security_list*, *hub_vcn_indoor_subnet_security_list*, *hub_vcn_mgmt_subnet_security_list*, and *hub_vcn_jumphost_subnet_security_list*.
+- Relax governance by toggling *hub_vcn_cis_checks_enabled*, if a deviation from CIS networking guardrails is absolutely required and the firewall-gating condition above is met.
+
+#### Three-tier Spokes with Bespoke East-West Controls
+
+The three-tier spoke security list, CIS guardrails, and intra-VCN routing settings are Terraform local overrides. Define them in the provided [net_override.tf](./net_override.tf) sample as the starting point, so that the base Landing Zone files can still be upgraded safely.
+
+- Override any of the web, app, database, or bastion subnet security lists per VCN (*tt_vcn\*_web_subnet_security_list*, *tt_vcn\*_app_subnet_security_list*, *tt_vcn\*_db_subnet_security_list*, *tt_vcn\*_bastion_subnet_security_list*) to align with workload-specific port matrices or allow all ingress/egress traffic in the VCNs, delegating the fine-grained controls to a firewall.
+- Force every intra-VCN flow through the DRG for centralized inspection by enabling *tt_vcn\*_enable_intra_vcn_drg_route*, which is useful when a Hub firewall must see even subnet-to-subnet traffic.
+- Relax governance by toggling *tt_vcn\*_cis_checks_enabled*, if a deviation from CIS networking guardrails is absolutely required and the firewall-gating condition above is met.
+
+The following *net_override.tf* pattern replaces the web, app, database, and bastion subnet security lists for *TT-VCN-1*, and routes intra-VCN traffic through the DRG:
+
+```hcl
+locals {
+  tt_vcn1_web_subnet_security_list = {
+    display_name  = "web-subnet-security-list"
+    ingress_rules = local.security_lists_default_ingress_rules
+    egress_rules  = local.security_lists_default_egress_rules
+  }
+
+  tt_vcn1_app_subnet_security_list = {
+    display_name  = "app-subnet-security-list"
+    ingress_rules = local.security_lists_default_ingress_rules
+    egress_rules  = local.security_lists_default_egress_rules
+  }
+
+  tt_vcn1_db_subnet_security_list = {
+    display_name  = "db-subnet-security-list"
+    ingress_rules = local.security_lists_default_ingress_rules
+    egress_rules  = local.security_lists_default_egress_rules
+  }
+
+  tt_vcn1_bastion_subnet_security_list = {
+    display_name  = "bastion-subnet-security-list"
+    ingress_rules = local.security_lists_default_ingress_rules
+    egress_rules  = local.security_lists_default_egress_rules
+  }
+
+  tt_vcn1_enable_intra_vcn_drg_route = true
+}
+```
+
+Use the same pattern for *TT-VCN-2* and *TT-VCN-3* by replacing the prefix with *tt_vcn2_* or *tt_vcn3_*.
+
+#### OKE Spokes with Bespoke East-West Controls
+
+The OKE spoke security list, CIS guardrails, and intra-VCN routing settings are Terraform local overrides. Define them in the provided [net_override.tf](./net_override.tf) sample as the starting point, so that the base Landing Zone files can still be upgraded safely.
+
+- Override any of the api, workers, pods, services, mgmt, or database subnet security lists per VCN (*oke_vcn\*_api_subnet_security_list*, *oke_vcn\*_workers_subnet_security_list*, *oke_vcn\*_pods_subnet_security_list*, *oke_vcn\*_services_subnet_security_list*, *oke_vcn\*_mgmt_subnet_security_list*, *oke_vcn\*_db_subnet_security_list*) to align with workload-specific port matrices or allow all ingress/egress traffic in the VCNs, delegating the fine-grained controls to a firewall.
+- Force every intra-VCN flow through the DRG for centralized inspection by enabling *oke_vcn\*_enable_intra_vcn_drg_route*, which is useful when a Hub firewall must see even subnet-to-subnet traffic.
+- Relax governance by toggling *oke_vcn\*_cis_checks_enabled*, if a deviation from CIS networking guardrails is absolutely required and the firewall-gating condition above is met.
+
+The following *net_override.tf* pattern replaces the API, workers, pods, services, management, and database subnet security lists for *OKE-VCN-1*, and routes intra-VCN traffic through the DRG:
+
+```hcl
+locals {
+  oke_vcn1_api_subnet_security_list = {
+    display_name  = "api-subnet-security-list"
+    ingress_rules = local.security_lists_default_ingress_rules
+    egress_rules  = local.security_lists_default_egress_rules
+  }
+
+  oke_vcn1_workers_subnet_security_list = {
+    display_name  = "workers-subnet-security-list"
+    ingress_rules = local.security_lists_default_ingress_rules
+    egress_rules  = local.security_lists_default_egress_rules
+  }
+
+  oke_vcn1_pods_subnet_security_list = {
+    display_name  = "pods-subnet-security-list"
+    ingress_rules = local.security_lists_default_ingress_rules
+    egress_rules  = local.security_lists_default_egress_rules
+  }
+
+  oke_vcn1_services_subnet_security_list = {
+    display_name  = "services-subnet-security-list"
+    ingress_rules = local.security_lists_default_ingress_rules
+    egress_rules  = local.security_lists_default_egress_rules
+  }
+
+  oke_vcn1_mgmt_subnet_security_list = {
+    display_name  = "mgmt-subnet-security-list"
+    ingress_rules = local.security_lists_default_ingress_rules
+    egress_rules  = local.security_lists_default_egress_rules
+  }
+
+  oke_vcn1_db_subnet_security_list = {
+    display_name  = "db-subnet-security-list"
+    ingress_rules = local.security_lists_default_ingress_rules
+    egress_rules  = local.security_lists_default_egress_rules
+  }
+
+  oke_vcn1_enable_intra_vcn_drg_route = true
+}
+```
+
+Use the same pattern for *OKE-VCN-2* and *OKE-VCN-3* by replacing the prefix with *oke_vcn2_* or *oke_vcn3_*.
+
+#### Exadata Cloud Service Spokes with Bespoke East-West Controls
+
+The Exadata Cloud Service (ExaCS) spoke security list, CIS guardrails, and intra-VCN routing settings are Terraform local overrides. Define them in the provided [net_override.tf](./net_override.tf) sample as the starting point, so that the base Landing Zone files can still be upgraded safely.
+
+- Override Exadata client, backup, or integration subnet security lists per VCN (*exa_vcn\*_client_subnet_security_list*, *exa_vcn\*_backup_subnet_security_list*, *exa_vcn\*_integration_subnet_security_list*) to align with workload-specific routing inspection patterns or to delegate fine-grained subnet controls to a firewall. These overrides are available for *EXA-VCN-1*, *EXA-VCN-2*, and *EXA-VCN-3*.
+- The client subnet override replaces the default client subnet security list whenever the Exadata VCN is deployed. Backup and integration subnet overrides are only used when the matching *add_exa_vcn\*_backup_subnet* or *add_exa_vcn\*_integration_subnet* toggle is enabled.
+- Force client-to-integration and integration-to-client flows through the DRG for centralized inspection by enabling *exa_vcn\*_enable_intra_vcn_drg_route*. This only adds the client and integration subnet route rules when the Exadata VCN is attached to the DRG, and it is most useful when a Hub firewall must inspect traffic between those two Exadata subnets.
+- Relax governance by toggling *exa_vcn\*_cis_checks_enabled*, if a deviation from CIS networking guardrails is absolutely required and the firewall-gating condition above is met.
+
+The following *net_override.tf* pattern replaces the client, backup, and integration subnet security lists for *EXA-VCN-1*, and routes client/integration subnet traffic through the DRG:
+
+```hcl
+locals {
+  exa_vcn1_client_subnet_security_list = {
+    display_name  = "client-subnet-security-list"
+    ingress_rules = local.security_lists_default_ingress_rules
+    egress_rules  = local.security_lists_default_egress_rules
+  }
+
+  exa_vcn1_backup_subnet_security_list = {
+    display_name  = "backup-subnet-security-list"
+    ingress_rules = local.security_lists_default_ingress_rules
+    egress_rules  = local.security_lists_default_egress_rules
+  }
+
+  exa_vcn1_integration_subnet_security_list = {
+    display_name  = "integration-subnet-security-list"
+    ingress_rules = local.security_lists_default_ingress_rules
+    egress_rules  = local.security_lists_default_egress_rules
+  }
+
+  exa_vcn1_enable_intra_vcn_drg_route = true
+}
+```
+
+Use the same pattern for *EXA-VCN-2* and *EXA-VCN-3* by replacing the prefix with *exa_vcn2_* or *exa_vcn3_*.
+
+#### Shared Security List Templates
+- Populate *security_lists_default_ingress_rules* and *security_lists_default_egress_rules* with reusable rule blocks, then reference them from any override to keep rule definitions consistent across spokes without copying identical ingress/egress statements.
+
 
 ## <a name="governance-3"></a>3.3 Governance
 
@@ -278,7 +831,7 @@ Landing Zone implements three facets of resources tagging:
 
 - **Tag Defaults**: Landing Zone provisions *CreatedBy* (who) and *CreatedOn* (when) tag defaults in a brand new tag namespace if the *Oracle-Tags* namespace is not available in the tenancy. Tag defaults allow for automatic tagging on any subsequently deployed resources. This is mandated by CIS Foundations Benchmark and it is extremely useful for identifying who created a particular resource and when.
 - **Landing Zone tag**: Landing Zone uses a free-form tag to tag all provisioned resources with the simple objective of identifying them as Landing Zone resources.
-- **Customer-defined tags**: Customers can also tag Landing Zone resources as they wish, either via defined tags or free-form tags. Defined tags imply the creation of a tag namespace, while free-form tags do not. This is the approach that customers take when aiming for tag-based policies and cost tracking. As Landing Zone cannot predict namespaces and tag names, custom tags are considered a customization.
+- **Customer-defined tags**: Customers can also tag Landing Zone resources as they wish, either via defined tags or free-form tags. Defined tags imply the creation of a tag namespace, while free-form tags do not. This is the approach that customers take when aiming for tag-based policies and cost tracking. As Landing Zone cannot predict namespaces and tag names, custom tags are considered a customization. Use the *custom_tag_namespaces* override to provision additional customer-defined tag namespaces and tags with the Landing Zone. See [iam_override.tf](./iam_override.tf) for an example.
 
 # <a name="scenarios"></a>4. Deployment Scenarios
 
@@ -359,67 +912,72 @@ Landing Zone resources can be managed by user groups and leverage dynamic groups
 
 ### Extending Landing Zone to a New Region
 
-When you run Landing Zone's Terraform, some resources are created in the home region, while others are created in a region of choice. Among home region resources are compartments, groups, dynamic groups, policies, tag defaults and an infrastructure for IAM related notifications (including events, topics and subscriptions). Among resources created in the region of choice are VCNs, Log Groups, and those pertaining to security services like Vault Service, Vulnerability Scanning, Service Connector Hub, Bastion. The home region resources are automatically made available by OCI in all subscribed regions.
+When you run Core Landing Zone's Terraform, some resources are created in the home region, while others are created in a region of choice. Among home region resources are compartments, groups, dynamic groups, policies, tag defaults and an infrastructure for IAM related notifications (including events, topics and subscriptions). Among resources created in the region of choice are VCNs, Log Groups, and those pertaining to security services like Vault Service, Vulnerability Scanning, Service Connector Hub, Bastion. The home region resources are automatically made available by OCI in all subscribed regions.
 
 Some customers want to extend their Landing Zone to more than one region of choice, while reusing the home region resources. One typical use case is setting up a second region of choice for disaster recovery, reusing the same home region Landing Zone resources. A more broad use case is implementing a single global Landing Zone across all subscribed regions. The configuration variable controlling this Landing Zone behavior is self explanatory:
 
-- **extend\_landing\_zone\_to\_new\_region**: whether Landing Zone is being extended to a new region. When set to true, compartments, groups, dynamic groups, policies and resources pertaining to home region are not provisioned.
+- **extend\_landing\_zone\_to\_new\_region**: whether Core Landing Zone is being extended to a new region. When set to true, compartments, groups, dynamic groups, policies and resources pertaining to home region are not provisioned.
 
-> **_NOTE:_** when extending the Landing Zone, the Terraform code has to be deployed in a new region. Therefore, a distinct set of configuration variables is needed. If using Terraform CLI, use Terraform workspaces. If using OCI Resource Manager, use a separate Stack. Check [Ways to Deploy](#ways-to-deploy) section for more details.
+Two other mandatory aspects are the service label and compartment names. When extending, the same *service_label* value must be used in the extended region deployment.  If compartment names were customized in the primary region deployment, those same compartment names must be used in the extended region deployment as well.
+
+> **_NOTE:_** when extending Core Landing Zone, the Terraform code has to be deployed in a new region. In other words, a new Terraform configuration is required. Check [Ways to Deploy](#ways-to-deploy) section for more details.
+
+The example below illustrates the relevant Core Landing Zone configuration variables for the primary and extended regions:
+
+#### Primary Region Configuration
+```
+region               = "us-phoenix-1"  
+service_label        = "corelz"        
+
+custom_enclosing_compartment_name = "my-custom-top-cmp"
+custom_network_compartment_name   = "my-custom-network-cmp"
+custom_app_compartment_name       = "my-custom-app-cmp"
+custom_database_compartment_name  = "my-custom-database-cmp"
+custom_security_compartment_name  = "my-custom-security-cmp"
+
+# Other variables
+...
+```
+
+#### Extended Region Configuration
+```
+extend_landing_zone_to_new_region = true
+
+region               = "us-chicago-1"  # extended region
+service_label        = "corelz"        # same value as in the primary region configuration
+
+# If compartment names are customized in the primary region configuration, they must have the same values in this configuration. Otherwise, this block MUST NOT be added.
+custom_enclosing_compartment_name = "my-custom-top-cmp"
+custom_network_compartment_name   = "my-custom-network-cmp"
+custom_app_compartment_name       = "my-custom-app-cmp"
+custom_database_compartment_name  = "my-custom-database-cmp"
+custom_security_compartment_name  = "my-custom-security-cmp"
+
+# Other variables
+...
+```
 
 ## <a name="networking-4"></a>4.2 Networking
 
-See deployment scenarios under the [templates](./templates/) folder:
+Core Landing Zone can scale from single VCN deployment to large hub-and-spoke deployments supporting a mix of traditional three tier, cloud native and Oracle Exadata workloads. A Dynamic Routing Gateway (DRG) always provides cross-VCN routing, while an optional Hub (aka DMZ) VCN adds centralized inspection and bastion access. On-premises connectivity via FastConnect or Site to Site IPSec VCN can also be enabled.
 
-- [No Networking](./templates/cis-basic/)
-- [Single Three-Tier VCN with default settings](./templates/standalone-three-tier-vcn-defaults/)
-- [Single Three-Tier VCN with ZPR enabled](./templates/standalone-three-tier-vcn-zpr/)
-- [Single Three-Tier VCN with custom settings](./templates/standalone-three-tier-vcn-custom/)
-- [Multiple Three-Tier VCNs peered through DRG](./templates/hub-spoke-with-drg-and-three-tier-vcns)
-- [Multiple VCN types peered through a Hub VCN with native Network Firewall](./templates/hub-spoke-with-hub-vcn-net-firewall)
-- [Multiple VCN types peered through a Hub VCN with third party network appliance](./templates/hub-spoke-with-hub-vcn-net-appliance)
-- [Multiple VCN types peered through a Hub VCN with a Bastion Service enabled on a jump host](./templates/hub-spoke-with-hub-vcn-bastion-jump-host)
-- [On-premises connectivity through a Hub VCN with Site-to-Site VPN using IPSec](./templates/hub-spoke-with-hub-vcn-ipsec-vpn)
-- [On-premises connectivity through a Hub VCN with FastConnect virtual circuits](./templates/hub-spoke-with-hub-vcn-fastconnect-virtual-circuit)
-- [Hub DRG including externally managed VCN using IPSec/LibreSwan](./templates/externally-managed-vcns)
+### Sample Templates for Networking Deployment Scenarios
 
-#### Landing Zone OCI Network Firewall Option
-
-OCI Network Firewall is a managed next-generation firewall and Intrusion Detection and Prevention Service (IDS/IPS) that is powered by Palo Alto Networks. It is an OCI cloud-native service, available with Core Landing Zone. The Landing Zone offers simple setup and deployment of the Network Firewall service, which gives you visibility into traffic entering your cloud environment (North-South) via IGW and traffic between subnets (East-West) via DRG routing. The Core Landing Zone implementation deploys a Hub & Spoke network topology with a Network Firewall in the Hub VCN.
-
-To use this service with Landing Zone, there must be two consecutive executions of `terraform apply`. The first pass sets up the Network Firewall instance with a single default policy to *reject all traffic*. The second pass configures the Network Firewall with information of OCIDs collected after the first pass, including a *user created network firewall policy* for your specific use case. In more detail:
-
-- Run the first `terraform apply` (either from RMS or CLI).
-- Collect the Network Firewall forwarding IP OCID from the created instance.
-- Create a new firewall policy for your use case to replace the default `reject all` policy.
-- Edit the RMS stack to add the above information or, if using Terraform CLI, change the associated variable values named below.
-- Run the second `terraform apply` incorporating the Network Firewall forwarding IP address for routing rules, and if supplied, your firewall policy as the new default.
-
-This is where the collected information is used in the RMS stack:
-![nfw_deploy_update.png](images/nfw_deploy_update.png)
-For Terraform CLI deployment, use these variables:
-
-- **oci\_firewall\_ip\_ocid**
-- **oci\_nfw\_policy\_ocid**
-
-If updated in the stack this way, the new user policy is baked into the Network Firewall configuration. Core Landing Zone doesn't manage your use case firewall policy - only the association of it with the Network Firewall.
-
-
-#### Landing Zone Third Party Firewall Options
-
-Alternatively, Core Landing Zone supports use of a third party *network appliance* (VM instance) with either Palo Alto Networks VM-Series Next Generation Firewall or Fortinet FortiGate Next-Gen Firewall.  Both options leverage compute images available in the [OCI Marketplace](https://cloud.oracle.com/marketplace) with Bring Your Own Licensing (BYOL).
-
-Both OCI and Third Party firewall options are provided separately in the deployment scenario templates above.
-
-#### Cross-VCN Connectivity Patterns
-
-The diagram below demonstrates Landing Zone *permitted routing* in a mixed VCN deployment by each **source VCN type** to any other three potential destinations by type.
-
-* **Three-Tier** - Web outbound are green lines, App outbound are blue lines and DB outbound are orange lines.
-* **OKE** - Web outbound are green lines, Workers outbound are blue lines and Pods outbound are orange lines.
-* **Exadata** - Client outbound are blue lines.
-
-![Cross-VCN-traffic-patterns](images/Cross-VCN-traffic-patterns.png)
+| Template name | Template link | Primary Scenario |
+| --- | --- | --- |
+| Core Landing Zone Basic | [templates/cis-basic](./templates/cis-basic/) | IAM, governance, notifications, and budgets without Core LZ-managed networking. Use when VCNs and connectivity are managed outside the landing zone. |
+| Core Landing Zone Full | [templates/core-lz-full](./templates/core-lz-full/) | Complete reference landing zone with hub-and-spoke networking, security services, governance, optional workload VCNs, and optional on-premises connectivity. |
+| Core Landing Zone with Standalone Default Three-Tier VCN | [templates/standalone-three-tier-vcn-defaults](./templates/standalone-three-tier-vcn-defaults/) | Single reference three-tier VCN with public web and private app/database tiers, internet access, flow logs, and default landing-zone guardrails. |
+| Core Landing Zone with Standalone Custom Three-Tier VCN | [templates/standalone-three-tier-vcn-custom](./templates/standalone-three-tier-vcn-custom/) | Single three-tier VCN where CIDRs, subnet names, subnet exposure, and bastion settings are explicitly customized. |
+| Core Landing Zone with Standalone Three Tier VCN and ZPR | [templates/standalone-three-tier-vcn-zpr](./templates/standalone-three-tier-vcn-zpr/) | Single three-tier VCN with Zero Trust Packet Routing enabled from the first deployment. |
+| Core Landing Zone with New DRG and Three Tier VCNs | [templates/hub-spoke-with-new-drg-and-three-tier-vcns](./templates/hub-spoke-with-new-drg-and-three-tier-vcns/) | Multiple three-tier spokes attached to a newly created DRG, using DRG routing for cross-VCN connectivity without a hub VCN. |
+| Core Landing Zone with No Firewall | [templates/hub-spoke-with-hub-vcn-no-firewall](./templates/hub-spoke-with-hub-vcn-no-firewall/) | Hub VCN and DRG deployment without an active firewall appliance, useful for staging a DMZ before firewall insertion. |
+| Core Landing Zone with OCI Network Firewall | [templates/hub-spoke-with-hub-vcn-net-firewall](./templates/hub-spoke-with-hub-vcn-net-firewall/) | Hub VCN with OCI Network Firewall, threat and traffic logs, and routing that can be completed after the firewall private IP is known. |
+| Core Landing Zone with Network Firewall Appliance | [templates/hub-spoke-with-hub-vcn-net-appliance](./templates/hub-spoke-with-hub-vcn-net-appliance/) | Hub VCN with Fortinet FortiGate or Palo Alto VM-Series appliances fronted by network load balancers for north-south and east-west inspection. |
+| Core Landing Zone with Existing DRG and FastConnect Virtual Circuit | [templates/hub-spoke-with-existing-drg-and-fastconnect-virtual-circuit](./templates/hub-spoke-with-existing-drg-and-fastconnect-virtual-circuit/) | Reuse an existing DRG and add a FastConnect virtual circuit for dedicated on-premises connectivity. |
+| Core Landing Zone with new DRG and Site to Site IPSec VPN | [templates/hub-spoke-with-new-drg-and-ipsec-vpn](./templates/hub-spoke-with-new-drg-and-ipsec-vpn/) | Create a new DRG, CPE, and IPSec VPN tunnels for site-to-site on-premises connectivity. |
+| Core Landing Zone with Existing DRG and Externally Managed VCNs | [templates/hub-spoke-with-existing-drg-and-externally-managed-vcns](./templates/hub-spoke-with-existing-drg-and-externally-managed-vcns/) | Reuse an existing DRG and route externally managed workload VCNs through landing-zone public or on-premises access paths. |
+| Core Landing Zone with Existing DRG and Custom ExaCS VCN | [templates/hub-spoke-with-existing-drg-and-exa-vcn-custom](./templates/hub-spoke-with-existing-drg-and-exa-vcn-custom/) | Reuse an existing DRG with custom Exadata Cloud Service VCN CIDRs, subnet settings, and DRG attachment behavior. |
 
 ## <a name="governance-4"></a>4.3 Governance
 ### Operational Monitoring
@@ -662,22 +1220,52 @@ in <zpr_namespace_name>.net:exa-vcn-1 VCN allow '10.1.2.0/24' to connect to <zpr
 ```
 in <zpr_namespace_name>.net:exa-vcn-1 VCN allow '<bastion service CIDR>/32' to connect to <zpr_namespace_name>.bastion:<service_label> endpoints with protocol='tcp/22'
 ```
-## <a name="bastion-use"></a>4.7 Bastion Service
+## <a name="bastion-use"></a>4.7 Remote Access over SSH
 
-OCI Core Landing Zone supports Bastions. Bastions provide restricted and time-limited access to target resources that don't have public endpoints.
-Bastions let authorized users connect from specific IP addresses to target resources using Secure Shell (SSH) sessions. When connected, users can interact with the target resource by using any software or protocol supported by SSH. For example, you can use the Remote Desktop Protocol (RDP) to connect to a Windows host, or use Oracle Net Services to connect to a database. Targets can include resources like compute instances , DB systems , and Autonomous Database for Transaction Processing and Mixed Workloads databases. Bastions are essential in tenancies with stricter resource controls. For example, you can use a bastion to access Compute instances in compartments that are associated with a security zone. Instances in a security zone cannot have public endpoints. Integration with Oracle Cloud Infrastructure Identity and Access Management (IAM) lets you control who can access a bastion or a session and what they can do with those resources.
+OCI Core Landing Zone enables remote access to private resources via a combination of a jump host with OCI Bastion service. The main idea is providing private access to the jump host via the Bastion service, and using the jump host as a bridge to resources in other VCNs. Both the Bastion service and the jump host are deployed in a specific "JumpHost" subnet within the Hub VCN. 
 
-The diagram below shows the OCI Core Landing Zone Bastion Pattern in Hub VCN:
+[OCI Bastion service](https://docs.oracle.com/en-us/iaas/Content/Bastion/home.htm) provides restricted and time-limited access to target resources that don't have public endpoints.
+It allows authorized users to connect from specific IP addresses to target resources using Secure Shell (SSH) sessions. When connected, users can interact with the target resource by using any software or protocol supported by SSH. For example, you can use the Remote Desktop Protocol (RDP) to connect to a Windows host, or use Oracle Net Services to connect to a database. Supported targets include resources like Compute instances and DB systems. Bastion service is important in environments with stricter resource controls, as in compartments associated with an OCI Security Zone that do not allow public endpoints. Additionally, integration with Oracle Cloud Infrastructure Identity and Access Management (IAM) allows controlling who can instantiate a Bastion service session.
+
+**Notice that OCI Core Landing Zone does not provision a Bastion service _session_. That is required to be manually created afterwards.**
+
+The diagram below shows Landing Zone's pattern for remote access over SSH. 
 
 <img src="images/arch_bastion.png" alt="Bastion Architecture" width="800"/>
 
-#### To deploy a bastion service, it must be enabled at the tenancy level.
+As depicted, there are two ways for SSH'ing into Landing Zone networks through the Hub VCN:
+- Directly from OnPrem hosts (see the blue arrow from "OnPrem")
+- Through a jump host, accessible via OCI Bastion Service managed SSH session (in yellow).
 
-- **deploy\_bastion\_service**: Whether a bastion service is enabled as part of this Landing Zone. By default, no bastion resources are created.
-- **bastion\_service\_name**: The name of the bastion service. The assigned value is <service_label>-bastion.
-- **bastion\_service\_allowed\_cidrs**: The list of the CIDR block(s) allowed to access the bastion service.
+The diagram shows three NSGs (Network Security Groups) with the Hub VCN that are relevant to this scenario: JumpHost NSG, Mgmt NSG and Indoor NSG (all in green):
+- **JumpHost NSG**: meant to be associated with jump hosts that provide access to Landing Zone VCNs.
+    - Ingress access is allowed from "OnPrem" and JumpHost subnet (required by OCI Bastion Service managed SSH session).
+    - If a firewall is deployed, SSH requests originating from the jump host are routed through the firewall (dashed red line leading to Indoor NSG). Otherwise, the SSH requests are routed directly through the DRG (whole red arrow leading to DRG).
+    - Firewall must be configured with proper routing.
+    - Egress access is provided to specific NSGs in three-tier (TT), OKE and Exa VCNs (red arrows leaving DRG).
 
-To enable the bastion service during deployment using OCI Resource Manager UI:
+- **Mgmt NSG**: meant for 3rd-party Firewall management interfaces only.
+    - Only ingress paths are allowed: from "OnPrem", from JumpHost NSG and from Mgmt subnet (required by OCI Bastion Service port forwarding session).
+    - As a rule of thumb, use the JumpHost for connecting over SSH in order to provide initial firewall configuration. Then deploy OCI Bastion Service port forwarding session (see **Note** below) for accessing the firewall admin interface over HTTPS.
+
+- **Indoor NSG**: Landing Zone routes SSH requests from jump host for runtime packet inspection once Landing Zone is updated with Firewall network endpoints.        
+
+**Note:** The *OCI Bastion Service (port forwarding session)* associated with *FW Mgmt VNIC* (in white) is not deployed by the Landing Zone. It must be deployed separately for access to the firewall management interface over HTTPS.
+
+For Palo Alto VM-Series deployments, see [Palo Alto Firewall Bootstrap](./templates/hub-spoke-with-hub-vcn-net-appliance/PALO-ALTO-BOOTSTRAP.md) for basic configuration and the SSH and HTTPS management paths through OCI Bastion service.
+
+The landing zone key variables controlling jump host and Bastion service provisioning are shown next:
+
+- **deploy\_bastion\_jump\_host**: Whether a jump host is provisioned. It is false by default.
+- **bastion\_jump\_host\_marketplace\_image\_option**: The name of an **OCI Marketplace** Compute image for the jump host. Default is null. Some available options are: "Oracle Linux 8 STIG" (free), "CIS Hardened Image Level 1 on Oracle Linux 8" (paid). See OCI Markeplace for more and make sure the spelling is exactly as it shows in OCI Marketplace. It has precedence over platform and custom images.
+- **bastion\_jump\_host\_platform\_image\_ocid**: The OCID of an **OCI Platform** Comput image for the the jump host. Default is null. It has precedence over custom image.
+- **bastion\_jump\_host\_custom\_image\_ocid**: The OCID of a custom Compute image for the jump host. Default is null.
+- **deploy\_bastion\_service**: Whether OCI Bastion service is provisioned. It is false by default.
+- **bastion\_service\_allowed\_cidrs**: The list of the CIDR block(s) allowed to connect to OCI Bastion service. Avoid entering "0.0.0.0/0".
+
+See [VARIABLES.md](./VARIABLES.md#security) for the complete list of available variables.
+
+To enable the Bastion service during deployment using OCI Resource Manager UI:
 1) Check _"Define Networking?"_ in the General section
 2) Check _"Deploy a Jump Host for SSH access?"_ in the Networking - Hub & Spoke Topology section
 3) Check _"Deploy Bastion Service"_ in the Bastion Jump Host section
@@ -743,7 +1331,7 @@ Note that the custom compartment names are taken literally, i.e., they are not c
 
 The following variables have been verified for overrides. While it is technically possible to override any variable, overriding a variable not in the list has not been verified and can lead to unexpected outcomes.
 
-- **additional_enclosed_compartments**: defines the additional compartments to be deployed within the chosen enclosing compartment. 
+- **additional_enclosed_compartments**: defines the additional compartments to be deployed within the chosen enclosing compartment.
 
 Overriding the default compartment names is also supported. Use the following variables:
 
