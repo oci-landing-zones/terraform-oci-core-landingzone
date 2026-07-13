@@ -4396,7 +4396,7 @@ variables:
     title: "Deploy Network Firewall?"
     description: "Choose one of the available options for deploying a network firewall in the Hub VCN. Costs may be incurred. If you choose to deploy using a Marketplace Image, you are required to provide either the image OCID or the image name and (optionally) version. Marketplace image information can be obtained by running <a href=\"https://github.com/oci-landing-zones/terraform-oci-modules-workloads/tree/main/marketplace-images/examples/marketplace-images\" target=\"_blank\">Marketplace Images</a>. NOTE THAT BY DEPLOYING A MARKETPLACE IMAGE USING THIS TERRAFORM MODULE YOU ARE IMPLICITLY AGREEING WITH ALL OCI MARKETPLACE TERMS, INCLUDING THE PRICING MODEL TERMS THAT APPLY TO THE SELECTED IMAGE."
     enum:
-      - "Don't deploy any network firewall at this time"
+      - "Don't deploy any network appliance at this time"
       - "Marketplace Image"
       - "User-Provided Virtual Network Appliance"
       - "OCI Native Firewall"
@@ -4641,7 +4641,7 @@ variables:
         - not:
           - eq:
             - ${hub_vcn_deploy_net_appliance_option}
-            - "Don\"t deploy any network appliance at this time"
+            - "Don't deploy any network appliance at this time"
         - not:    
             - eq:
               - ${hub_vcn_deploy_net_appliance_option}
@@ -4668,7 +4668,7 @@ variables:
           - not:   
             - eq: 
               - ${hub_vcn_deploy_net_appliance_option}
-              - "Don\"t deploy any network appliance at this time"
+              - "Don't deploy any network appliance at this time"
           - not:    
             - eq:
               - ${hub_vcn_deploy_net_appliance_option}
@@ -4697,7 +4697,7 @@ variables:
           - not:   
             - eq: 
               - ${hub_vcn_deploy_net_appliance_option}
-              - "Don\"t deploy any network appliance at this time"
+              - "Don't deploy any network appliance at this time"
           - not:    
             - eq:
               - ${hub_vcn_deploy_net_appliance_option}
@@ -4726,7 +4726,7 @@ variables:
           - not:   
             - eq: 
               - ${hub_vcn_deploy_net_appliance_option}
-              - "Don\"t deploy any network appliance at this time"
+              - "Don't deploy any network appliance at this time"
           - not:
             - eq:
               - ${hub_vcn_deploy_net_appliance_option}
@@ -4755,7 +4755,7 @@ variables:
           - not:   
             - eq: 
               - ${hub_vcn_deploy_net_appliance_option}
-              - "Don\"t deploy any network appliance at this time"
+              - "Don't deploy any network appliance at this time"
           - not:    
             - eq:
               - ${hub_vcn_deploy_net_appliance_option}
@@ -4783,7 +4783,7 @@ variables:
         - not: 
           - eq:
             - ${hub_vcn_deploy_net_appliance_option}
-            - "Don\"t deploy any network appliance at this time"
+            - "Don't deploy any network appliance at this time"
         - not:    
             - eq:
               - ${hub_vcn_deploy_net_appliance_option}
