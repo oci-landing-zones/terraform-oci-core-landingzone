@@ -608,7 +608,7 @@ Core Landing Zone requires two Terraform applies to complete the network applian
 
 #### Detailed Deployment Workflow
 
-1. In a Hub VCN deployment, choose the appliance vendor (*hub_vcn_deploy_net_appliance_option = "Palo Alto Networks VM-Series Firewall"|"Fortinet FortiGate Firewall"*), and supply specific parameters like version, SSH public key, shape, allowed management CIDRs, and others.
+1. In a Hub VCN deployment, choose the marketplace appliance path (*hub_vcn_deploy_net_appliance_option = "Marketplace Image"*), set the appliance vendor (*net_appliance_image_vendor = "PaloAlto"|"Fortinet"*), and supply specific parameters like image name or version, SSH public key, shape, allowed management CIDRs, and others.
 2. Run the first *terraform plan/apply* to deploy Hub VCN and the appliances.
 3. Collect the OCIDs of NLB private IPs, available in *nlb_private_ip_addresses.OUTDOOR-NLB* and *nlb_private_ip_addresses.INDOOR_NLB* output variables. These are the OCIDs you will reference as entry points in the second Terraform execution.
 4. Set *hub_vcn_north_south_entry_point_ocid = nlb_private_ip_addresses.OUTDOOR-NLB* and *hub_vcn_east_west_entry_point_ocid = nlb_private_ip_addresses.INDOOR_NLB* in the Terraform configuration input variables.
