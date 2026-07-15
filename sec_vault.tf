@@ -108,7 +108,7 @@ locals {
     }
   } : {}
 
-  managed_nfw_key = var.cis_level == "2" && var.hub_vcn_deploy_net_appliance_option != "Don't deploy any network appliance at this time" && var.hub_vcn_deploy_net_appliance_option != "OCI Native Firewall" ? {
+  managed_nfw_key = var.cis_level == "2" && local.chosen_firewall_option != "NO" && local.chosen_firewall_option != "OCINFW" ? {
     (local.nfw_key_mapkey) = {
       vault_key     = local.vault_key
       name          = "${var.service_label}-nfw-key"

@@ -4638,14 +4638,13 @@ variables:
           - eq:
             - ${hub_deployment_option}
             - "VCN or on-premises connectivity routed through DMZ VCN with Network Virtual Appliance existing DRG (DMZ VCN will be created and DRG ID required)"
-        - not:
+        - or:
           - eq:
             - ${hub_vcn_deploy_net_appliance_option}
-            - "Don\"t deploy any network appliance at this time"
-        - not:    
-            - eq:
-              - ${hub_vcn_deploy_net_appliance_option}
-              - "OCI Native Firewall"
+            - "Marketplace Image"
+          - eq:
+            - ${hub_vcn_deploy_net_appliance_option}
+            - "User-Provided Virtual Network Appliance"
       
   net_appliance_shape:
     type: oci:core:instanceshape:name
@@ -4664,19 +4663,13 @@ variables:
           - eq:
             - ${hub_deployment_option}
             - "VCN or on-premises connectivity routed through DMZ VCN with Network Virtual Appliance existing DRG (DMZ VCN will be created and DRG ID required)"
-        - and: 
-          - not:   
-            - eq: 
-              - ${hub_vcn_deploy_net_appliance_option}
-              - "Don\"t deploy any network appliance at this time"
-          - not:    
-            - eq:
-              - ${hub_vcn_deploy_net_appliance_option}
-              - "OCI Firewall Service"
-          - not:    
-            - eq:
-              - ${hub_vcn_deploy_net_appliance_option}
-              - "OCI Native Firewall"
+        - or:
+          - eq:
+            - ${hub_vcn_deploy_net_appliance_option}
+            - "Marketplace Image"
+          - eq:
+            - ${hub_vcn_deploy_net_appliance_option}
+            - "User-Provided Virtual Network Appliance"
 
   net_appliance_flex_shape_memory:
     type: string
@@ -4693,19 +4686,13 @@ variables:
           - eq:
             - ${hub_deployment_option}
             - "VCN or on-premises connectivity routed through DMZ VCN with Network Virtual Appliance existing DRG (DMZ VCN will be created and DRG ID required)"
-        - and: 
-          - not:   
-            - eq: 
-              - ${hub_vcn_deploy_net_appliance_option}
-              - "Don\"t deploy any network appliance at this time"
-          - not:    
-            - eq:
-              - ${hub_vcn_deploy_net_appliance_option}
-              - "OCI Firewall Service"
-          - not:    
-            - eq:
-              - ${hub_vcn_deploy_net_appliance_option}
-              - "OCI Native Firewall"
+        - or:
+          - eq:
+            - ${hub_vcn_deploy_net_appliance_option}
+            - "Marketplace Image"
+          - eq:
+            - ${hub_vcn_deploy_net_appliance_option}
+            - "User-Provided Virtual Network Appliance"
 
   net_appliance_flex_shape_cpu:
     type: string
@@ -4722,19 +4709,13 @@ variables:
           - eq:
             - ${hub_deployment_option}
             - "VCN or on-premises connectivity routed through DMZ VCN with Network Virtual Appliance existing DRG (DMZ VCN will be created and DRG ID required)"
-        - and: 
-          - not:   
-            - eq: 
-              - ${hub_vcn_deploy_net_appliance_option}
-              - "Don\"t deploy any network appliance at this time"
-          - not:
-            - eq:
-              - ${hub_vcn_deploy_net_appliance_option}
-              - "OCI Firewall Service" 
-          - not:    
-            - eq:
-              - ${hub_vcn_deploy_net_appliance_option}
-              - "OCI Native Firewall"         
+        - or:
+          - eq:
+            - ${hub_vcn_deploy_net_appliance_option}
+            - "Marketplace Image"
+          - eq:
+            - ${hub_vcn_deploy_net_appliance_option}
+            - "User-Provided Virtual Network Appliance"
 
   net_appliance_boot_volume_size:
     type: string
@@ -4751,19 +4732,13 @@ variables:
           - eq:
             - ${hub_deployment_option}
             - "VCN or on-premises connectivity routed through DMZ VCN with Network Virtual Appliance existing DRG (DMZ VCN will be created and DRG ID required)"
-        - and: 
-          - not:   
-            - eq: 
-              - ${hub_vcn_deploy_net_appliance_option}
-              - "Don\"t deploy any network appliance at this time"
-          - not:    
-            - eq:
-              - ${hub_vcn_deploy_net_appliance_option}
-              - "OCI Firewall Service"
-          - not:    
-            - eq:
-              - ${hub_vcn_deploy_net_appliance_option}
-              - "OCI Native Firewall"
+        - or:
+          - eq:
+            - ${hub_vcn_deploy_net_appliance_option}
+            - "Marketplace Image"
+          - eq:
+            - ${hub_vcn_deploy_net_appliance_option}
+            - "User-Provided Virtual Network Appliance"
 
   net_appliance_public_rsa_key:
     type: oci:core:ssh:publickey
@@ -4780,14 +4755,13 @@ variables:
           - eq:
             - ${hub_deployment_option}
             - "VCN or on-premises connectivity routed through DMZ VCN with Network Virtual Appliance existing DRG (DMZ VCN will be created and DRG ID required)"
-        - not: 
+        - or:
           - eq:
             - ${hub_vcn_deploy_net_appliance_option}
-            - "Don\"t deploy any network appliance at this time"
-        - not:    
-            - eq:
-              - ${hub_vcn_deploy_net_appliance_option}
-              - "OCI Native Firewall"
+            - "Marketplace Image"
+          - eq:
+            - ${hub_vcn_deploy_net_appliance_option}
+            - "User-Provided Virtual Network Appliance"
 
   hub_vcn_north_south_entry_point_ocid:
     type: string
