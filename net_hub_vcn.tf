@@ -29,6 +29,16 @@ locals {
   hub_vcn_outdoor_uses_nat_gateway = (local.chosen_firewall_option != "OCINFW" && local.hub_vcn_outdoor_subnet_private == true)
   hub_vcn_deploy_nat_gateway       = (local.chosen_firewall_option == "OCINFW" || local.hub_vcn_mgmt_uses_nat_gateway || local.hub_vcn_outdoor_uses_nat_gateway)
 
+  tt_vcn1_cidrs_attached = local.add_tt_vcn1 == true && var.tt_vcn1_attach_to_drg == true ? var.tt_vcn1_cidrs : []
+  tt_vcn2_cidrs_attached = local.add_tt_vcn2 == true && var.tt_vcn2_attach_to_drg == true ? var.tt_vcn2_cidrs : []
+  tt_vcn3_cidrs_attached = local.add_tt_vcn3 == true && var.tt_vcn3_attach_to_drg == true ? var.tt_vcn3_cidrs : []
+  oke_vcn1_cidrs_attached = local.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true ? var.oke_vcn1_cidrs : []
+  oke_vcn2_cidrs_attached = local.add_oke_vcn2 == true && var.oke_vcn2_attach_to_drg == true ? var.oke_vcn2_cidrs : []
+  oke_vcn3_cidrs_attached = local.add_oke_vcn3 == true && var.oke_vcn3_attach_to_drg == true ? var.oke_vcn3_cidrs : []
+  exa_vcn1_cidrs_attached = local.add_exa_vcn1 == true && var.exa_vcn1_attach_to_drg == true ? var.exa_vcn1_cidrs : []
+  exa_vcn2_cidrs_attached = local.add_exa_vcn2 == true && var.exa_vcn2_attach_to_drg == true ? var.exa_vcn2_cidrs : []
+  exa_vcn3_cidrs_attached = local.add_exa_vcn3 == true && var.exa_vcn3_attach_to_drg == true ? var.exa_vcn3_cidrs : []
+
   hub_vcn = local.hub_with_vcn == true ? { # local variable hub_with_vcn is defined in net_hub_drg.tf.
     "HUB-VCN" = {
       enable_cis_checks                = false # This is consciously done here to let any traffic to enter the firewall for inspection.
@@ -216,10 +226,28 @@ locals {
                   description        = "Traffic destined for all OCI services in Oracle Services Network is routed through Service Gateway."
                   destination        = "all-services"
                   destination_type   = "SERVICE_CIDR_BLOCK"
-                },
+                }
+              },
+              local.chosen_firewall_option != "OCINFW" ? { 
                 "DRG-RULE" = {
-                  network_entity_key = "HUB-DRG"
+                  network_entity_key = "HUB-DRG" # All outbound traffic routed to DRG in 3rd-party firewall scenario.
                   description        = "Traffic destined for networks outside the VCN is routed through the DRG."
+                  destination        = "0.0.0.0/0"
+                  destination_type   = "CIDR_BLOCK"
+                }
+              } : { for cidr in toset(concat(local.tt_vcn1_cidrs_attached, local.tt_vcn2_cidrs_attached, local.tt_vcn3_cidrs_attached, 
+                                             local.oke_vcn1_cidrs_attached, local.oke_vcn2_cidrs_attached, local.oke_vcn3_cidrs_attached,
+                                             local.exa_vcn1_cidrs_attached, local.exa_vcn2_cidrs_attached, local.exa_vcn3_cidrs_attached,
+                                             local.combined_workload_cidrs, var.onprem_cidrs)) : "DRG-RULE-${cidr}" => {
+                  network_entity_key = "HUB-DRG" # Outbound traffic to VCNs and on-premises networks routed to DRG in OCI Firewall scenario.
+                  description        = "Traffic destined for remote CIDR ${cidr} is routed through the DRG."
+                  destination        = cidr
+                  destination_type   = "CIDR_BLOCK"
+                } if cidr != "0.0.0.0/0" },
+              {
+                "EVERYWHERE-ELSE-RULE" = {
+                  network_entity_key = "HUB-VCN-NAT-GATEWAY" # All remaining outbound traffic routed to NAT Gateway in OCI Firewall scenario.
+                  description        = "Traffic destined for networks outside the VCN is routed through the NAT Gateway."
                   destination        = "0.0.0.0/0"
                   destination_type   = "CIDR_BLOCK"
                 }
@@ -528,6 +556,39 @@ locals {
                   stateless    = false
                   protocol     = "TCP"
                   dst          = local.oke_vcn3_workers_subnet_cidr
+                  dst_type     = "CIDR_BLOCK"
+                  dst_port_min = 22
+                  dst_port_max = 22
+                }
+              } : {},
+              var.add_oke_vcn1 == true && var.oke_vcn1_attach_to_drg == true && var.add_oke_vcn1_mgmt_subnet == true && local.hub_with_vcn == true ? {
+                "EGRESS-TO-OKE-VCN-1-MGMT-SUBNET-RULE" = {
+                  description  = "Egress to ${local.oke_vcn1_mgmt_subnet_display_name}."
+                  stateless    = false
+                  protocol     = "TCP"
+                  dst          = local.oke_vcn1_mgmt_subnet_cidr
+                  dst_type     = "CIDR_BLOCK"
+                  dst_port_min = 22
+                  dst_port_max = 22
+                }
+              } : {},
+              var.add_oke_vcn2 == true && var.oke_vcn2_attach_to_drg == true && var.add_oke_vcn2_mgmt_subnet == true && local.hub_with_vcn == true ? {
+                "EGRESS-TO-OKE-VCN-2-MGMT-SUBNET-RULE" = {
+                  description  = "Egress to ${local.oke_vcn2_mgmt_subnet_display_name}."
+                  stateless    = false
+                  protocol     = "TCP"
+                  dst          = local.oke_vcn2_mgmt_subnet_cidr
+                  dst_type     = "CIDR_BLOCK"
+                  dst_port_min = 22
+                  dst_port_max = 22
+                }
+              } : {},
+              var.add_oke_vcn3 == true && var.oke_vcn3_attach_to_drg == true && var.add_oke_vcn3_mgmt_subnet == true && local.hub_with_vcn == true ? {
+                "EGRESS-TO-OKE-VCN-3-MGMT-SUBNET-RULE" = {
+                  description  = "Egress to ${local.oke_vcn3_mgmt_subnet_display_name}."
+                  stateless    = false
+                  protocol     = "TCP"
+                  dst          = local.oke_vcn3_mgmt_subnet_cidr
                   dst_type     = "CIDR_BLOCK"
                   dst_port_min = 22
                   dst_port_max = 22
