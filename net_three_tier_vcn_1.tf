@@ -544,7 +544,7 @@ locals {
                   dst_port_max = 22
                 }
               } : {},
-              (var.tt_vcn1_attach_to_drg == true && local.hub_with_vcn == true && var.deploy_bastion_jump_host) ? {
+              (var.tt_vcn1_attach_to_drg == true && local.hub_with_vcn == true && var.add_hub_vcn_jumphost_subnet) ? {
                 "INGRESS-FROM-HUB-JUMPHOST-SUBNET-RULE" = {
                   description  = "Ingress from Hub VCN Jumphost subnet."
                   stateless    = false
