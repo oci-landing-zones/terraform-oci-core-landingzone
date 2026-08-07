@@ -730,7 +730,7 @@ locals {
                   dst_port_max = 6443
                 }
               } : {},
-              (local.hub_with_vcn == true && var.deploy_bastion_jump_host == true) ? {
+              (local.hub_with_vcn == true && var.add_hub_vcn_jumphost_subnet == true) ? {
                 "INGRESS-FROM-HUB-JUMPHOST-SUBNET-RULE" = {
                   description  = "Ingress from Hub VCN Jumphost Subnet for management access to the Kubernetes API endpoint."
                   stateless    = false
@@ -898,7 +898,7 @@ locals {
                   dst_port_max = 22
                 }
               } : {},
-              (local.hub_with_vcn == true && var.deploy_bastion_jump_host == true) ? {
+              (local.hub_with_vcn == true && var.add_hub_vcn_jumphost_subnet == true) ? {
                 "INGRESS-FROM-HUB-JUMPHOST-SUBNET-RULE" = {
                   description  = "Ingress from Hub VCN Jumphost Subnet for SSH. Required for inbound connections from jump hosts in the Hub VCN."
                   stateless    = false
@@ -994,8 +994,18 @@ locals {
                 dst_type    = "CIDR_BLOCK"
               }
             },
-            ingress_rules = {}
-          }
+            ingress_rules = (local.hub_with_vcn == true && var.add_hub_vcn_jumphost_subnet == true) ? {
+              "INGRESS-FROM-HUB-JUMPHOST-SUBNET-RULE" = {
+                description  = "Ingress from Hub VCN Jumphost Subnet for SSH. Required for inbound connections from jump hosts in the Hub VCN."
+                stateless    = false
+                protocol     = "TCP"
+                src          = local.hub_vcn_jumphost_subnet_cidr
+                src_type     = "CIDR_BLOCK"
+                dst_port_min = 22
+                dst_port_max = 22
+              }
+            } : {}
+          } 
         } : {},
         upper(var.oke_vcn1_cni_type) == "NATIVE" ? {
           "OKE-VCN-1-PODS-NSG" = {
