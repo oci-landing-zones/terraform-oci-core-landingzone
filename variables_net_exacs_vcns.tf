@@ -56,6 +56,16 @@ variable "exa_vcn1_client_ingress_destination_ports" {
     error_message = "VALIDATION FAILURE: Invalid value provided for exa_vcn1_client_ingress_destination_ports variable: all values must be in the form protocol:port, with exactly one ':' separating protocol and port values."
   }
 }
+variable "enable_exa_vcn1_rcv_infra" {
+  type        = bool
+  default     = false
+  description = "Whether to enable the Autonomous Recovery Service infrastructure for databases in EXA-VCN-1 client subnet."
+}
+variable "exa_vcn1_rcv_backup_retention_period_in_days" {
+  type        = number
+  default     = 30
+  description = "The number of days to retain backup data in the Autonomous Recovery Service for databases in EXA-VCN-1 client subnet."
+}
 variable "add_exa_vcn1_backup_subnet" {
   type        = bool
   default     = true
@@ -196,6 +206,16 @@ variable "exa_vcn2_client_ingress_destination_ports" {
     error_message = "VALIDATION FAILURE: Invalid value provided for exa_vcn2_client_ingress_destination_ports variable: all values must be in the form protocol:port, with exactly one ':' separating protocol and port values."
   }
 }
+variable "enable_exa_vcn2_rcv_infra" {
+  type        = bool
+  default     = false
+  description = "Whether to enable the Autonomous Recovery Service infrastructure for databases in EXA-VCN-2 client subnet."
+}
+variable "exa_vcn2_rcv_backup_retention_period_in_days" {
+  type        = number
+  default     = 30
+  description = "The number of days to retain backup data in the Autonomous Recovery Service for databases in EXA-VCN-2 client subnet."
+}
 variable "add_exa_vcn2_backup_subnet" {
   type        = bool
   default     = true
@@ -335,6 +355,16 @@ variable "exa_vcn3_client_ingress_destination_ports" {
     condition     = length(var.exa_vcn3_client_ingress_destination_ports) == 0 ? true : alltrue([for v in var.exa_vcn3_client_ingress_destination_ports : can(regex("^[^:]+:[^:]+$", v))])
     error_message = "VALIDATION FAILURE: Invalid value provided for exa_vcn3_client_ingress_destination_ports variable: all values must be in the form protocol:port, with exactly one ':' separating protocol and port values."
   }
+}
+variable "enable_exa_vcn3_rcv_infra" {
+  type        = bool
+  default     = false
+  description = "Whether to enable the Autonomous Recovery Service infrastructure for databases in EXA-VCN-3 client subnet."
+}
+variable "exa_vcn3_rcv_backup_retention_period_in_days" {
+  type        = number
+  default     = 30
+  description = "The number of days to retain backup data in the Autonomous Recovery Service for databases in EXA-VCN-3 client subnet."
 }
 variable "add_exa_vcn3_backup_subnet" {
   type        = bool

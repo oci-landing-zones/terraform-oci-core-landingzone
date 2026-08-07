@@ -269,6 +269,8 @@ variableGroups:
       - "tt_vcn1_cidrs"
       - "tt_vcn1_attach_to_drg"
       - "tt_vcn1_routable_vcns"
+      - "enable_tt_vcn1_rcv_infra"
+      - "tt_vcn1_rcv_backup_retention_period_in_days"
       - "customize_tt_vcn1_subnets"
       - "tt_vcn1_web_subnet_name"
       - "tt_vcn1_web_subnet_cidr"
@@ -292,6 +294,8 @@ variableGroups:
       - "tt_vcn2_cidrs"
       - "tt_vcn2_attach_to_drg"
       - "tt_vcn2_routable_vcns"
+      - "tt_vcn2_enable_rcv_infra"
+      - "tt_vcn2_rcv_backup_retention_period_in_days"
       - "customize_tt_vcn2_subnets"
       - "tt_vcn2_web_subnet_name"
       - "tt_vcn2_web_subnet_cidr"
@@ -315,6 +319,8 @@ variableGroups:
       - "tt_vcn3_cidrs"
       - "tt_vcn3_attach_to_drg"
       - "tt_vcn3_routable_vcns"
+      - "enable_tt_vcn3_rcv_infra"
+      - "tt_vcn3_rcv_backup_retention_period_in_days"
       - "customize_tt_vcn3_subnets"
       - "tt_vcn3_web_subnet_name"
       - "tt_vcn3_web_subnet_cidr"
@@ -342,6 +348,8 @@ variableGroups:
       - "exa_vcn1_cidrs"
       - "exa_vcn1_attach_to_drg"
       - "exa_vcn1_routable_vcns"
+      - "enable_exa_vcn1_rcv_infra"
+      - "exa_vcn1_rcv_backup_retention_period_in_days"
       - "customize_exa_vcn1_subnets"
       - "exa_vcn1_client_subnet_name"
       - "exa_vcn1_client_subnet_cidr"
@@ -361,6 +369,8 @@ variableGroups:
       - "exa_vcn2_cidrs"
       - "exa_vcn2_attach_to_drg"
       - "exa_vcn2_routable_vcns"
+      - "enable_exa_vcn2_rcv_infra"
+      - "exa_vcn2_rcv_backup_retention_period_in_days"
       - "customize_exa_vcn2_subnets"
       - "exa_vcn2_client_subnet_name"
       - "exa_vcn2_client_subnet_cidr"
@@ -380,6 +390,8 @@ variableGroups:
       - "exa_vcn3_name"
       - "exa_vcn3_attach_to_drg"
       - "exa_vcn3_routable_vcns"
+      - "enable_exa_vcn3_rcv_infra"
+      - "exa_vcn3_rcv_backup_retention_period_in_days"
       - "customize_exa_vcn3_subnets"
       - "exa_vcn3_client_subnet_name"
       - "exa_vcn3_client_subnet_cidr"
@@ -423,6 +435,8 @@ variableGroups:
       - "oke_vcn1_db_subnet_name"
       - "oke_vcn1_db_subnet_cidr"
       - "oke_vcn1_db_ingress_destination_ports"
+      - "enable_oke_vcn1_rcv_infra"
+      - "oke_vcn1_rcv_backup_retention_period_in_days"
       - "add_oke_vcn2"
       - "oke_vcn2_onprem_route_enable"
       - "oke_vcn2_cni_type"
@@ -449,6 +463,8 @@ variableGroups:
       - "oke_vcn2_db_subnet_name"
       - "oke_vcn2_db_subnet_cidr"
       - "oke_vcn2_db_ingress_destination_ports"
+      - "enable_oke_vcn2_rcv_infra"
+      - "oke_vcn2_rcv_backup_retention_period_in_days"
       - "add_oke_vcn3"
       - "oke_vcn3_onprem_route_enable"
       - "oke_vcn3_cni_type"
@@ -475,6 +491,8 @@ variableGroups:
       - "oke_vcn3_db_subnet_name"
       - "oke_vcn3_db_subnet_cidr"
       - "oke_vcn3_db_ingress_destination_ports"
+      - "enable_oke_vcn3_rcv_infra"
+      - "oke_vcn3_rcv_backup_retention_period_in_days"
     visible: define_net
 
   - title: "Networking - Additional NSGs"
@@ -1512,6 +1530,27 @@ variables:
             - ${hub_deployment_option}
             - "VCN or on-premises connectivity routing via DRG (existing DRG)"
 
+  enable_tt_vcn1_rcv_infra:
+    type: boolean
+    title: "Enable Autonomous Recovery Service for Oracle databases in this VCN ?"
+    description: "Check to provision the infrastructure required by the Autonomous Recovery Service for Oracle databases in this VCN."
+    required: false
+    visible:
+      and:
+        - define_net
+        - add_tt_vcn1
+
+  tt_vcn1_rcv_backup_retention_period_in_days:
+    type: integer
+    title: "Autonomous Recovery Service Backup Retention Period (in days)"
+    description: "The number of days to retain backups in the Autonomous Recovery Service (RCV) for Oracle databases in this VCN."
+    required: false
+    visible:
+      and:
+        - define_net
+        - add_tt_vcn1
+        - enable_tt_vcn1_rcv_infra
+
   customize_tt_vcn1_subnets:
     type: boolean
     title: "Customize VCN Subnets?"
@@ -1806,6 +1845,26 @@ variables:
             - ${hub_deployment_option}
             - "VCN or on-premises connectivity routing via DRG (existing DRG)"
 
+  tt_vcn2_enable_rcv_infra:
+    type: boolean
+    title: "Enable Autonomous Recovery Service for Oracle databases in this VCN ?"
+    description: "Check to provision the infrastructure required by the Autonomous Recovery Service for Oracle databases in this VCN."
+    required: false
+    visible:
+      and:
+        - define_net
+        - add_tt_vcn2
+
+  tt_vcn2_rcv_backup_retention_period_in_days:
+    type: integer
+    title: "Autonomous Recovery Service Backup Retention Period (in days)"
+    description: "The number of days to retain backups in the Autonomous Recovery Service (RCV) for Oracle databases in this VCN."
+    required: false
+    visible:
+      and:
+        - define_net
+        - add_tt_vcn2
+        - tt_vcn2_enable_rcv_infra
 
   customize_tt_vcn2_subnets:
     type: boolean
@@ -2101,6 +2160,27 @@ variables:
             - ${hub_deployment_option}
             - "VCN or on-premises connectivity routing via DRG (existing DRG)"
 
+  enable_tt_vcn3_rcv_infra:
+    type: boolean
+    title: "Enable Autonomous Recovery Service for Oracle databases in this VCN ?"
+    description: "Check to provision the infrastructure required by the Autonomous Recovery Service for Oracle databases in this VCN."
+    required: false
+    visible:
+      and:
+        - define_net
+        - add_tt_vcn3
+
+  tt_vcn3_rcv_backup_retention_period_in_days:
+    type: integer
+    title: "Autonomous Recovery Service Backup Retention Period (in days)"
+    description: "The number of days to retain backups in the Autonomous Recovery Service (RCV) for Oracle databases in this VCN."
+    required: false
+    visible:
+      and:
+        - define_net
+        - add_tt_vcn3
+        - enable_tt_vcn3_rcv_infra
+
   customize_tt_vcn3_subnets:
     type: boolean
     title: "Customize VCN Subnets?"
@@ -2394,6 +2474,27 @@ variables:
             - ${hub_deployment_option}
             - "VCN or on-premises connectivity routing via DRG (existing DRG)"
 
+  enable_exa_vcn1_rcv_infra:
+    type: boolean
+    title: "Enable Autonomous Recovery Service for Oracle databases in this VCN ?"
+    description: "Check to provision the infrastructure required by the Autonomous Recovery Service for Oracle databases in this VCN."
+    required: false
+    visible:
+      and:
+        - define_net
+        - add_exa_vcn1
+
+  exa_vcn1_rcv_backup_retention_period_in_days:
+    type: integer
+    title: "Autonomous Recovery Service Backup Retention Period (in days)"
+    description: "The number of days to retain backups in the Autonomous Recovery Service (RCV) for Oracle databases in this VCN."
+    required: false
+    visible:
+      and:
+        - define_net
+        - add_exa_vcn1
+        - enable_exa_vcn1_rcv_infra
+
   customize_exa_vcn1_subnets:
     type: boolean
     title: "Customize VCN Subnets?"
@@ -2642,6 +2743,27 @@ variables:
             - ${hub_deployment_option}
             - "VCN or on-premises connectivity routing via DRG (existing DRG)"
 
+  enable_exa_vcn2_rcv_infra:
+    type: boolean
+    title: "Enable Autonomous Recovery Service for Oracle databases in this VCN ?"
+    description: "Check to provision the infrastructure required by the Autonomous Recovery Service for Oracle databases in this VCN."
+    required: false
+    visible:
+      and:
+        - define_net
+        - add_exa_vcn2
+
+  exa_vcn2_rcv_backup_retention_period_in_days:
+    type: integer
+    title: "Autonomous Recovery Service Backup Retention Period (in days)"
+    description: "The number of days to retain backups in the Autonomous Recovery Service (RCV) for Oracle databases in this VCN."
+    required: false
+    visible:
+      and:
+        - define_net
+        - add_exa_vcn2
+        - enable_exa_vcn2_rcv_infra
+
   customize_exa_vcn2_subnets:
     type: boolean
     title: "Customize VCN Subnets?"
@@ -2889,6 +3011,27 @@ variables:
           - eq:
             - ${hub_deployment_option}
             - "VCN or on-premises connectivity routing via DRG (existing DRG)"
+
+  enable_exa_vcn3_rcv_infra:
+    type: boolean
+    title: "Enable Autonomous Recovery Service for Oracle databases in this VCN ?"
+    description: "Check to provision the infrastructure required by the Autonomous Recovery Service for Oracle databases in this VCN."
+    required: false
+    visible:
+      and:
+        - define_net
+        - add_exa_vcn3
+
+  exa_vcn3_rcv_backup_retention_period_in_days:
+    type: integer
+    title: "Autonomous Recovery Service Backup Retention Period (in days)"
+    description: "The number of days to retain backups in the Autonomous Recovery Service (RCV) for Oracle databases in this VCN."
+    required: false
+    visible:
+      and:
+        - define_net
+        - add_exa_vcn3
+        - enable_exa_vcn3_rcv_infra
 
   customize_exa_vcn3_subnets:
     type: boolean
@@ -3348,6 +3491,31 @@ variables:
         - add_oke_vcn1
         - add_oke_vcn1_db_subnet
 
+  enable_oke_vcn1_rcv_infra:
+    type: boolean
+    title: "Enable Autonomous Recovery Service for Oracle databases in this VCN ?"
+    description: "Check to provision the infrastructure required by the Autonomous Recovery Service for Oracle databases in this VCN."
+    required: false
+    visible:
+      and:
+        - define_net
+        - customize_oke_vcn1_subnets
+        - add_oke_vcn1
+        - add_oke_vcn1_db_subnet
+
+  oke_vcn1_rcv_backup_retention_period_in_days:
+    type: integer
+    title: "Autonomous Recovery Service Backup Retention Period (in days)"
+    description: "The number of days to retain backups in the Autonomous Recovery Service (RCV) for Oracle databases in this VCN."
+    required: false
+    visible:
+      and:
+        - define_net
+        - customize_oke_vcn1_subnets
+        - add_oke_vcn1
+        - add_oke_vcn1_db_subnet
+        - enable_oke_vcn1_rcv_infra
+
   oke_vcn1_pods_subnet_name:
     type: string
     title: "Pods Subnet Name"
@@ -3676,6 +3844,31 @@ variables:
         - add_oke_vcn2
         - add_oke_vcn2_db_subnet
 
+  enable_oke_vcn2_rcv_infra:
+    type: boolean
+    title: "Enable Autonomous Recovery Service for Oracle databases in this VCN ?"
+    description: "Check to provision the infrastructure required by the Autonomous Recovery Service for Oracle databases in this VCN."
+    required: false
+    visible:
+      and:
+        - define_net
+        - customize_oke_vcn2_subnets
+        - add_oke_vcn2
+        - add_oke_vcn2_db_subnet
+
+  oke_vcn2_rcv_backup_retention_period_in_days:
+    type: integer
+    title: "Autonomous Recovery Service Backup Retention Period (in days)"
+    description: "The number of days to retain backups in the Autonomous Recovery Service (RCV) for Oracle databases in this VCN."
+    required: false
+    visible:
+      and:
+        - define_net
+        - customize_oke_vcn2_subnets
+        - add_oke_vcn2
+        - add_oke_vcn2_db_subnet
+        - enable_oke_vcn2_rcv_infra
+
   oke_vcn2_pods_subnet_name:
     type: string
     title: "Pods Subnet Name"
@@ -4003,6 +4196,31 @@ variables:
         - customize_oke_vcn3_subnets
         - add_oke_vcn3
         - add_oke_vcn3_db_subnet
+
+  enable_oke_vcn3_rcv_infra:
+    type: boolean
+    title: "Enable Autonomous Recovery Service for Oracle databases in this VCN ?"
+    description: "Check to provision the infrastructure required by the Autonomous Recovery Service for Oracle databases in this VCN."
+    required: false
+    visible:
+      and:
+        - define_net
+        - customize_oke_vcn3_subnets
+        - add_oke_vcn3
+        - add_oke_vcn3_db_subnet
+
+  oke_vcn3_rcv_backup_retention_period_in_days:
+    type: integer
+    title: "Autonomous Recovery Service Backup Retention Period (in days)"
+    description: "The number of days to retain backups in the Autonomous Recovery Service (RCV) for Oracle databases in this VCN."
+    required: false
+    visible:
+      and:
+        - define_net
+        - customize_oke_vcn3_subnets
+        - add_oke_vcn3
+        - add_oke_vcn3_db_subnet
+        - enable_oke_vcn3_rcv_infra
 
   oke_vcn3_pods_subnet_name:
     type: string
