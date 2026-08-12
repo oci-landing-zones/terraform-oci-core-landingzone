@@ -1134,7 +1134,7 @@ locals {
             )
           }
         } : {},
-        var.oke_vcn1_enable_rcv_infra && var.deploy_database_cmp && var.add_oke_vcn1_db_subnet ? {
+        var.enable_oke_vcn1_rcv_infra && var.deploy_database_cmp && var.add_oke_vcn1_db_subnet ? {
           "OKE-VCN-1-RCV-NSG" = {
             display_name = "rcv-nsg"
             ingress_rules = {
