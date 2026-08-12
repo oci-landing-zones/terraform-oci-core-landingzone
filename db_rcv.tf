@@ -157,6 +157,10 @@ locals {
 
 module "lz_rcv" {
   source = "github.com/oci-landing-zones/terraform-oci-modules-oracle-database//autonomous-recovery-service?ref=rcv"
+  providers = {
+    oci                  = oci
+    oci.home             = oci.home
+  }  
   autonomous_recovery_service_configuration = local.autonomous_recovery_service_configuration
   tenancy_ocid = var.tenancy_ocid  
 }
