@@ -294,7 +294,7 @@ variableGroups:
       - "tt_vcn2_cidrs"
       - "tt_vcn2_attach_to_drg"
       - "tt_vcn2_routable_vcns"
-      - "tt_vcn2_enable_rcv_infra"
+      - "enable_tt_vcn2_rcv_infra"
       - "tt_vcn2_rcv_backup_retention_period_in_days"
       - "customize_tt_vcn2_subnets"
       - "tt_vcn2_web_subnet_name"
@@ -1845,7 +1845,7 @@ variables:
             - ${hub_deployment_option}
             - "VCN or on-premises connectivity routing via DRG (existing DRG)"
 
-  tt_vcn2_enable_rcv_infra:
+  enable_tt_vcn2_rcv_infra:
     type: boolean
     title: "Enable Autonomous Recovery Service for Oracle databases in this VCN ?"
     description: "Check to provision the infrastructure required by the Autonomous Recovery Service for Oracle databases in this VCN."
@@ -1864,7 +1864,7 @@ variables:
       and:
         - define_net
         - add_tt_vcn2
-        - tt_vcn2_enable_rcv_infra
+        - enable_tt_vcn2_rcv_infra
 
   customize_tt_vcn2_subnets:
     type: boolean
