@@ -1530,27 +1530,6 @@ variables:
             - ${hub_deployment_option}
             - "VCN or on-premises connectivity routing via DRG (existing DRG)"
 
-  enable_tt_vcn1_rcv_infra:
-    type: boolean
-    title: "Enable Autonomous Recovery Service for Oracle databases in this VCN ?"
-    description: "Check to provision the infrastructure required by the Autonomous Recovery Service for Oracle databases in this VCN."
-    required: false
-    visible:
-      and:
-        - define_net
-        - add_tt_vcn1
-
-  tt_vcn1_rcv_backup_retention_period_in_days:
-    type: integer
-    title: "Autonomous Recovery Service Backup Retention Period (in days)"
-    description: "The number of days to retain backups in the Autonomous Recovery Service (RCV) for Oracle databases in this VCN."
-    required: false
-    visible:
-      and:
-        - define_net
-        - add_tt_vcn1
-        - enable_tt_vcn1_rcv_infra
-
   customize_tt_vcn1_subnets:
     type: boolean
     title: "Customize VCN Subnets?"
@@ -1691,6 +1670,29 @@ variables:
         - define_net
         - customize_tt_vcn1_subnets
         - add_tt_vcn1
+
+  enable_tt_vcn1_rcv_infra:
+    type: boolean
+    title: "Enable Autonomous Recovery Service for Oracle databases in this VCN ?"
+    description: "Check to provision the infrastructure required by the Autonomous Recovery Service for Oracle databases in this VCN. The database subnet is registered as the Recovery subnet."
+    required: false
+    visible:
+      and:
+        - define_net
+        - add_tt_vcn1
+        - customize_tt_vcn1_subnets
+
+  tt_vcn1_rcv_backup_retention_period_in_days:
+    type: integer
+    title: "Autonomous Recovery Service Backup Retention Period (in days)"
+    description: "The number of days to retain backups in the Autonomous Recovery Service (RCV) for Oracle databases in this VCN."
+    required: false
+    visible:
+      and:
+        - define_net
+        - add_tt_vcn1
+        - customize_tt_vcn1_subnets
+        - enable_tt_vcn1_rcv_infra      
 
   deploy_tt_vcn1_bastion_subnet:
     type: boolean
@@ -1845,27 +1847,6 @@ variables:
             - ${hub_deployment_option}
             - "VCN or on-premises connectivity routing via DRG (existing DRG)"
 
-  enable_tt_vcn2_rcv_infra:
-    type: boolean
-    title: "Enable Autonomous Recovery Service for Oracle databases in this VCN ?"
-    description: "Check to provision the infrastructure required by the Autonomous Recovery Service for Oracle databases in this VCN."
-    required: false
-    visible:
-      and:
-        - define_net
-        - add_tt_vcn2
-
-  tt_vcn2_rcv_backup_retention_period_in_days:
-    type: integer
-    title: "Autonomous Recovery Service Backup Retention Period (in days)"
-    description: "The number of days to retain backups in the Autonomous Recovery Service (RCV) for Oracle databases in this VCN."
-    required: false
-    visible:
-      and:
-        - define_net
-        - add_tt_vcn2
-        - enable_tt_vcn2_rcv_infra
-
   customize_tt_vcn2_subnets:
     type: boolean
     title: "Customize VCN Subnets?"
@@ -2006,6 +1987,29 @@ variables:
         - define_net
         - customize_tt_vcn2_subnets
         - add_tt_vcn2
+
+  enable_tt_vcn2_rcv_infra:
+    type: boolean
+    title: "Enable Autonomous Recovery Service for Oracle databases in this VCN ?"
+    description: "Check to provision the infrastructure required by the Autonomous Recovery Service for Oracle databases in this VCN. The database subnet is registered as the Recovery subnet."
+    required: false
+    visible:
+      and:
+        - define_net
+        - add_tt_vcn2
+        - customize_tt_vcn2_subnets
+
+  tt_vcn2_rcv_backup_retention_period_in_days:
+    type: integer
+    title: "Autonomous Recovery Service Backup Retention Period (in days)"
+    description: "The number of days to retain backups in the Autonomous Recovery Service (RCV) for Oracle databases in this VCN."
+    required: false
+    visible:
+      and:
+        - define_net
+        - add_tt_vcn2
+        - customize_tt_vcn2_subnets
+        - enable_tt_vcn2_rcv_infra
 
   deploy_tt_vcn2_bastion_subnet:
     type: boolean
@@ -2160,27 +2164,6 @@ variables:
             - ${hub_deployment_option}
             - "VCN or on-premises connectivity routing via DRG (existing DRG)"
 
-  enable_tt_vcn3_rcv_infra:
-    type: boolean
-    title: "Enable Autonomous Recovery Service for Oracle databases in this VCN ?"
-    description: "Check to provision the infrastructure required by the Autonomous Recovery Service for Oracle databases in this VCN."
-    required: false
-    visible:
-      and:
-        - define_net
-        - add_tt_vcn3
-
-  tt_vcn3_rcv_backup_retention_period_in_days:
-    type: integer
-    title: "Autonomous Recovery Service Backup Retention Period (in days)"
-    description: "The number of days to retain backups in the Autonomous Recovery Service (RCV) for Oracle databases in this VCN."
-    required: false
-    visible:
-      and:
-        - define_net
-        - add_tt_vcn3
-        - enable_tt_vcn3_rcv_infra
-
   customize_tt_vcn3_subnets:
     type: boolean
     title: "Customize VCN Subnets?"
@@ -2321,6 +2304,29 @@ variables:
         - define_net
         - customize_tt_vcn3_subnets
         - add_tt_vcn3
+
+  enable_tt_vcn3_rcv_infra:
+    type: boolean
+    title: "Enable Autonomous Recovery Service for Oracle databases in this VCN ?"
+    description: "Check to provision the infrastructure required by the Autonomous Recovery Service for Oracle databases in this VCN. The database subnet is registered as the Recovery subnet."
+    required: false
+    visible:
+      and:
+        - define_net
+        - add_tt_vcn3
+        - customize_tt_vcn3_subnets
+
+  tt_vcn3_rcv_backup_retention_period_in_days:
+    type: integer
+    title: "Autonomous Recovery Service Backup Retention Period (in days)"
+    description: "The number of days to retain backups in the Autonomous Recovery Service (RCV) for Oracle databases in this VCN."
+    required: false
+    visible:
+      and:
+        - define_net
+        - add_tt_vcn3
+        - customize_tt_vcn3_subnets
+        - enable_tt_vcn3_rcv_infra
 
   deploy_tt_vcn3_bastion_subnet:
     type: boolean
@@ -2477,7 +2483,7 @@ variables:
   enable_exa_vcn1_rcv_infra:
     type: boolean
     title: "Enable Autonomous Recovery Service for Oracle databases in this VCN ?"
-    description: "Check to provision the infrastructure required by the Autonomous Recovery Service for Oracle databases in this VCN."
+    description: "Check to provision the infrastructure required by the Autonomous Recovery Service for Oracle databases in this VCN. The backup subnet is registered as the Recovery subnet, if provided. Otherwise, the client subnet is registered as the Recovery subnet."
     required: false
     visible:
       and:
@@ -2746,7 +2752,7 @@ variables:
   enable_exa_vcn2_rcv_infra:
     type: boolean
     title: "Enable Autonomous Recovery Service for Oracle databases in this VCN ?"
-    description: "Check to provision the infrastructure required by the Autonomous Recovery Service for Oracle databases in this VCN."
+    description: "Check to provision the infrastructure required by the Autonomous Recovery Service for Oracle databases in this VCN. The backup subnet is registered as the Recovery subnet, if provided. Otherwise, the client subnet is registered as the Recovery subnet."
     required: false
     visible:
       and:
@@ -3015,7 +3021,7 @@ variables:
   enable_exa_vcn3_rcv_infra:
     type: boolean
     title: "Enable Autonomous Recovery Service for Oracle databases in this VCN ?"
-    description: "Check to provision the infrastructure required by the Autonomous Recovery Service for Oracle databases in this VCN."
+    description: "Check to provision the infrastructure required by the Autonomous Recovery Service for Oracle databases in this VCN. The backup subnet is registered as the Recovery subnet, if provided. Otherwise, the client subnet is registered as the Recovery subnet."
     required: false
     visible:
       and:
@@ -3494,7 +3500,7 @@ variables:
   enable_oke_vcn1_rcv_infra:
     type: boolean
     title: "Enable Autonomous Recovery Service for Oracle databases in this VCN ?"
-    description: "Check to provision the infrastructure required by the Autonomous Recovery Service for Oracle databases in this VCN."
+    description: "Check to provision the infrastructure required by the Autonomous Recovery Service for Oracle databases in this VCN. The database subnet is registered as the Recovery subnet."
     required: false
     visible:
       and:
@@ -3847,7 +3853,7 @@ variables:
   enable_oke_vcn2_rcv_infra:
     type: boolean
     title: "Enable Autonomous Recovery Service for Oracle databases in this VCN ?"
-    description: "Check to provision the infrastructure required by the Autonomous Recovery Service for Oracle databases in this VCN."
+    description: "Check to provision the infrastructure required by the Autonomous Recovery Service for Oracle databases in this VCN. The database subnet is registered as the Recovery subnet."
     required: false
     visible:
       and:
@@ -4200,7 +4206,7 @@ variables:
   enable_oke_vcn3_rcv_infra:
     type: boolean
     title: "Enable Autonomous Recovery Service for Oracle databases in this VCN ?"
-    description: "Check to provision the infrastructure required by the Autonomous Recovery Service for Oracle databases in this VCN."
+    description: "Check to provision the infrastructure required by the Autonomous Recovery Service for Oracle databases in this VCN. The database subnet is registered as the Recovery subnet."
     required: false
     visible:
       and:
