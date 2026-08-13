@@ -17,6 +17,7 @@
     1. [Security Services](#security-services)
     1. [Deploying Lifecycle Environments](#deploying-lifecycle-environments)
     1. [Zero Trust Packet Routing (ZPR)](#zpr-use)
+    1. [Autonomous Recovery Service](#rcv)
     1. [Remote Access over SSH](#bastion-use)
     1. [Express Deployment](#express-use)
     1. [Customizing Compartments](#custom-cmp)
@@ -1254,7 +1255,7 @@ For each enabled VCN, the Landing Zone creates:
 
 - A Recovery Service subnet resource associated with the database-facing subnet shown above.
 - A protection policy using the configured backup retention period.
-- A VCN-local `rcv-nsg` that allows TCP ports 2484 and 8005. The allowed source is the DB subnet CIDR for three-tier and OKE VCNs, and the client subnet CIDR for Exadata VCNs.
+- A VCN-local `rcv-nsg` that allows TCP ports 2484 and 8005. The allowed source is the DB subnet CIDR for three-tier and OKE VCNs, and the client or backup subnet CIDR for Exadata VCNs.
 
 When the Landing Zone manages IAM policies, it also grants the database administrators group permission to manage `recovery-service-family` in the database compartment.
 

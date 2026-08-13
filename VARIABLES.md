@@ -385,12 +385,12 @@
 | oke\_vcn2\_rcv\_backup\_retention\_period\_in\_days | The number of days to retain backup data in the Autonomous Recovery Service for databases in OKE-VCN-2 db subnet. | number | 30 | no |
 | enable\_oke\_vcn3\_rcv\_infra | Whether to enable the Autonomous Recovery Service infrastructure for databases in OKE-VCN-3 db subnet. | bool | false | no |
 | oke\_vcn3\_rcv\_backup\_retention\_period\_in\_days | The number of days to retain backup data in the Autonomous Recovery Service for databases in OKE-VCN-3 db subnet. | number | 30 | no |
-| enable\_exa\_vcn1\_rcv\_infra | Whether to enable the Autonomous Recovery Service infrastructure for databases in EXA-VCN-1 client subnet. | bool | false | no |
-| exa\_vcn1\_rcv\_backup\_retention\_period\_in\_days | The number of days to retain backup data in the Autonomous Recovery Service for databases in EXA-VCN-1 client subnet. | number | 30 | no |
-| enable\_exa\_vcn2\_rcv\_infra | Whether to enable the Autonomous Recovery Service infrastructure for databases in EXA-VCN-2 client subnet. | bool | false | no |
-| exa\_vcn2\_rcv\_backup\_retention\_period\_in\_days | The number of days to retain backup data in the Autonomous Recovery Service for databases in EXA-VCN-2 client subnet. | number | 30 | no |
-| enable\_exa\_vcn3\_rcv\_infra | Whether to enable the Autonomous Recovery Service infrastructure for databases in EXA-VCN-3 client subnet. | bool | false | no |
-| exa\_vcn3\_rcv\_backup\_retention\_period\_in\_days | The number of days to retain backup data in the Autonomous Recovery Service for databases in EXA-VCN-3 client subnet. | number | 30 | no |
+| enable\_exa\_vcn1\_rcv\_infra | Whether to enable the Autonomous Recovery Service infrastructure for databases in EXA-VCN-1 backup (if provided) or client subnet. | bool | false | no |
+| exa\_vcn1\_rcv\_backup\_retention\_period\_in\_days | The number of days to retain backup data in the Autonomous Recovery Service for databases in EXA-VCN-1 backup (if provided) or client subnet. | number | 30 | no |
+| enable\_exa\_vcn2\_rcv\_infra | Whether to enable the Autonomous Recovery Service infrastructure for databases in EXA-VCN-2 backup (if provided) or client subnet. | bool | false | no |
+| exa\_vcn2\_rcv\_backup\_retention\_period\_in\_days | The number of days to retain backup data in the Autonomous Recovery Service for databases in EXA-VCN-2 backup (if provided) or client subnet. | number | 30 | no |
+| enable\_exa\_vcn3\_rcv\_infra | Whether to enable the Autonomous Recovery Service infrastructure for databases in EXA-VCN-3 backup (if provided) or client subnet. | bool | false | no |
+| exa\_vcn3\_rcv\_backup\_retention\_period\_in\_days | The number of days to retain backup data in the Autonomous Recovery Service for databases in EXA-VCN-3 backup (if provided) or client subnet. | number | 30 | no |
 
 ### <a name="hub-and-spoke-networking"></a> Hub and Spoke Networking
 

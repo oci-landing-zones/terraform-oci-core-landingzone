@@ -154,7 +154,7 @@ variable "enable_tt_vcn1_rcv_infra" {
 variable "tt_vcn1_rcv_backup_retention_period_in_days" {
   type        = number
   default     = 30
-  description = "The number of days to retain backup data in the Autonomous Recovery Service for databases inTT-VCN-1 db subnet."
+  description = "The number of days to retain backup data in the Autonomous Recovery Service for databases in TT-VCN-1 db subnet."
 }
 variable "deploy_tt_vcn1_bastion_subnet" {
   type        = bool
