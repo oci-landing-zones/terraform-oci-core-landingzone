@@ -414,7 +414,7 @@ locals {
                 description  = "Allows ingress connectivity to TCP port 2484."
                 stateless    = false
                 protocol     = "TCP"
-                src          = local.exa_vcn2_client_subnet_cidr
+                src          = var.add_exa_vcn2_backup_subnet ? local.exa_vcn2_backup_subnet_cidr : local.exa_vcn2_client_subnet_cidr
                 src_type     = "CIDR_BLOCK"
                 dst_port_min = 2484
                 dst_port_max = 2484
@@ -423,7 +423,7 @@ locals {
                 description  = "Allows ingress connectivity to TCP port 8005."
                 stateless    = false
                 protocol     = "TCP"
-                src          = local.exa_vcn2_client_subnet_cidr
+                src          = var.add_exa_vcn2_backup_subnet ? local.exa_vcn2_backup_subnet_cidr : local.exa_vcn2_client_subnet_cidr
                 src_type     = "CIDR_BLOCK"
                 dst_port_min = 8005
                 dst_port_max = 8005
