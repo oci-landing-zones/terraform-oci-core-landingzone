@@ -1239,7 +1239,7 @@ Each supported VCN exposes an enable input and a backup retention input. Replace
 | OKE | `enable_oke_vcnN_rcv_infra` | `oke_vcnN_rcv_backup_retention_period_in_days` |
 | Exadata | `enable_exa_vcnN_rcv_infra` | `exa_vcnN_rcv_backup_retention_period_in_days` |
 
-The retention inputs are numbers and default to 30 days. Infrastructure is created only when `deploy_database_cmp` is `true`, the matching VCN is added, and its Recovery Service enable input is `true`. OKE VCN support also requires the matching optional database subnet input, `add_oke_vcnN_db_subnet`, to be `true`.
+The retention inputs are numbers and default to 0 days, meaning protection policies are disabled by default. Protection policies are only enabled for values greater than 0. Infrastructure is created only when `deploy_database_cmp` is `true`, the matching VCN is added, and its Recovery Service enable input is `true`. OKE VCN support also requires the matching optional database subnet input, `add_oke_vcnN_db_subnet`, to be `true`.
 
 ### Supported Resources
 
@@ -1254,7 +1254,7 @@ The Landing Zone supports Recovery Service infrastructure for the following VCNs
 For each enabled VCN, the Landing Zone creates:
 
 - A Recovery Service subnet resource associated with the database-facing subnet shown above.
-- A protection policy using the configured backup retention period.
+- A protection policy using the configured backup retention period (greater than zero).
 - A VCN-local `rcv-nsg` that allows TCP ports 2484 and 8005. The allowed source is the DB subnet CIDR for three-tier and OKE VCNs, and the client or backup subnet CIDR for Exadata VCNs.
 
 When the Landing Zone manages IAM policies, it also grants the database administrators group permission to manage `recovery-service-family` in the database compartment.

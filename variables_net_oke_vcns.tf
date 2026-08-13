@@ -185,8 +185,8 @@ variable "enable_oke_vcn1_rcv_infra" {
 }
 variable "oke_vcn1_rcv_backup_retention_period_in_days" {
   type        = number
-  default     = 30
-  description = "The number of days to retain backup data in the Autonomous Recovery Service for databases in OKE-VCN-1 db subnet."
+  default     = 0
+  description = "The number of days to retain backup data in the Autonomous Recovery Service for databases in OKE-VCN-1 db subnet. Enter a value greater than 0 to enable the policy."
 }
 
 variable "add_oke_vcn1_mgmt_subnet" {
@@ -421,8 +421,8 @@ variable "enable_oke_vcn2_rcv_infra" {
 }
 variable "oke_vcn2_rcv_backup_retention_period_in_days" {
   type        = number
-  default     = 30
-  description = "The number of days to retain backup data in the Autonomous Recovery Service for databases in OKE-VCN-2 db subnet."
+  default     = 0
+  description = "The number of days to retain backup data in the Autonomous Recovery Service for databases in OKE-VCN-2 db subnet. Enter a value greater than 0 to enable the policy."
 }
 
 variable "add_oke_vcn2_mgmt_subnet" {
@@ -657,8 +657,8 @@ variable "enable_oke_vcn3_rcv_infra" {
 }
 variable "oke_vcn3_rcv_backup_retention_period_in_days" {
   type        = number
-  default     = 30
-  description = "The number of days to retain backup data in the Autonomous Recovery Service for databases in OKE-VCN-3 db subnet."
+  default     = 0
+  description = "The number of days to retain backup data in the Autonomous Recovery Service for databases in OKE-VCN-3 db subnet. Enter a value greater than 0 to enable the policy."
 }
 
 variable "add_oke_vcn3_mgmt_subnet" {

@@ -59,12 +59,12 @@ variable "exa_vcn1_client_ingress_destination_ports" {
 variable "enable_exa_vcn1_rcv_infra" {
   type        = bool
   default     = false
-  description = "Whether to enable the Autonomous Recovery Service infrastructure for databases in EXA-VCN-1 client subnet."
+  description = "Whether to enable the Autonomous Recovery Service infrastructure for databases in EXA-VCN-1 backup or client subnet."
 }
 variable "exa_vcn1_rcv_backup_retention_period_in_days" {
   type        = number
-  default     = 30
-  description = "The number of days to retain backup data in the Autonomous Recovery Service for databases in EXA-VCN-1 client subnet."
+  default     = 0
+  description = "The number of days to retain backup data in the Autonomous Recovery Service for databases in EXA-VCN-1 backup or client subnet. Enter a value greater than 0 to enable the policy."
 }
 variable "add_exa_vcn1_backup_subnet" {
   type        = bool
@@ -209,12 +209,12 @@ variable "exa_vcn2_client_ingress_destination_ports" {
 variable "enable_exa_vcn2_rcv_infra" {
   type        = bool
   default     = false
-  description = "Whether to enable the Autonomous Recovery Service infrastructure for databases in EXA-VCN-2 client subnet."
+  description = "Whether to enable the Autonomous Recovery Service infrastructure for databases in EXA-VCN-2 backup or client subnet."
 }
 variable "exa_vcn2_rcv_backup_retention_period_in_days" {
   type        = number
-  default     = 30
-  description = "The number of days to retain backup data in the Autonomous Recovery Service for databases in EXA-VCN-2 client subnet."
+  default     = 0
+  description = "The number of days to retain backup data in the Autonomous Recovery Service for databases in EXA-VCN-2 backup or client subnet. Enter a value greater than 0 to enable the policy."
 }
 variable "add_exa_vcn2_backup_subnet" {
   type        = bool
@@ -359,12 +359,12 @@ variable "exa_vcn3_client_ingress_destination_ports" {
 variable "enable_exa_vcn3_rcv_infra" {
   type        = bool
   default     = false
-  description = "Whether to enable the Autonomous Recovery Service infrastructure for databases in EXA-VCN-3 client subnet."
+  description = "Whether to enable the Autonomous Recovery Service infrastructure for databases in EXA-VCN-3 backup or client subnet."
 }
 variable "exa_vcn3_rcv_backup_retention_period_in_days" {
   type        = number
-  default     = 30
-  description = "The number of days to retain backup data in the Autonomous Recovery Service for databases in EXA-VCN-3 client subnet."
+  default     = 0
+  description = "The number of days to retain backup data in the Autonomous Recovery Service for databases in EXA-VCN-3 backup or client subnet. Enter a value greater than 0 to enable the policy."
 }
 variable "add_exa_vcn3_backup_subnet" {
   type        = bool
