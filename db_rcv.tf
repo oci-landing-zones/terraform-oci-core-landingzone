@@ -152,11 +152,16 @@ locals {
     default_compartment_id = local.database_compartment_id
     recovery_subnets       = local.recovery_subnets
     protection_policies    = local.protection_policies
-  } : {}
+  } : {
+    default_compartment_id = null
+    recovery_subnets       = null
+    protection_policies    = null
+  }
 }
 
 module "lz_rcv" {
   source = "github.com/oci-landing-zones/terraform-oci-modules-oracle-database//autonomous-recovery-service?ref=rcv"
+  count = local.enable_database_compartment && length(local.recovery_subnets) > 0 ? 1 : 0
   providers = {
     oci                  = oci
     oci.home             = oci.home
