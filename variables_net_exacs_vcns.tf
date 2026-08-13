@@ -64,7 +64,12 @@ variable "enable_exa_vcn1_rcv_infra" {
 variable "exa_vcn1_rcv_backup_retention_period_in_days" {
   type        = number
   default     = 0
-  description = "The number of days to retain backup data in the Autonomous Recovery Service for databases in EXA-VCN-1 backup or client subnet. Enter a value greater than 0 to enable the policy."
+  description = "The number of days to retain backup data in the Autonomous Recovery Service for databases in EXA-VCN-1 backup or client subnet. Use 0 to disable the policy; otherwise, the minimum is 14 days."
+
+  validation {
+    condition     = var.exa_vcn1_rcv_backup_retention_period_in_days == 0 || var.exa_vcn1_rcv_backup_retention_period_in_days >= 14
+    error_message = "The backup retention period must be 0 or at least 14 days."
+  }
 }
 variable "add_exa_vcn1_backup_subnet" {
   type        = bool
@@ -214,7 +219,12 @@ variable "enable_exa_vcn2_rcv_infra" {
 variable "exa_vcn2_rcv_backup_retention_period_in_days" {
   type        = number
   default     = 0
-  description = "The number of days to retain backup data in the Autonomous Recovery Service for databases in EXA-VCN-2 backup or client subnet. Enter a value greater than 0 to enable the policy."
+  description = "The number of days to retain backup data in the Autonomous Recovery Service for databases in EXA-VCN-2 backup or client subnet. Use 0 to disable the policy; otherwise, the minimum is 14 days."
+
+  validation {
+    condition     = var.exa_vcn2_rcv_backup_retention_period_in_days == 0 || var.exa_vcn2_rcv_backup_retention_period_in_days >= 14
+    error_message = "The backup retention period must be 0 or at least 14 days."
+  }
 }
 variable "add_exa_vcn2_backup_subnet" {
   type        = bool
@@ -364,7 +374,12 @@ variable "enable_exa_vcn3_rcv_infra" {
 variable "exa_vcn3_rcv_backup_retention_period_in_days" {
   type        = number
   default     = 0
-  description = "The number of days to retain backup data in the Autonomous Recovery Service for databases in EXA-VCN-3 backup or client subnet. Enter a value greater than 0 to enable the policy."
+  description = "The number of days to retain backup data in the Autonomous Recovery Service for databases in EXA-VCN-3 backup or client subnet. Use 0 to disable the policy; otherwise, the minimum is 14 days."
+
+  validation {
+    condition     = var.exa_vcn3_rcv_backup_retention_period_in_days == 0 || var.exa_vcn3_rcv_backup_retention_period_in_days >= 14
+    error_message = "The backup retention period must be 0 or at least 14 days."
+  }
 }
 variable "add_exa_vcn3_backup_subnet" {
   type        = bool

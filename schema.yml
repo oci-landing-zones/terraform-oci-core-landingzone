@@ -1709,7 +1709,7 @@ variables:
   tt_vcn1_rcv_backup_retention_period_in_days:
     type: integer
     title: "Autonomous Recovery Service Backup Retention Period (in days)"
-    description: "The number of days to retain backups in the Autonomous Recovery Service (RCV) for Oracle databases in this VCN."
+    description: "The number of days to retain backups in the Autonomous Recovery Service (RCV) for Oracle databases in this VCN. Use 0 to disable the protection policy; otherwise, the minimum is 14 days."
     required: false
     visible:
       and:
@@ -2026,7 +2026,7 @@ variables:
   tt_vcn2_rcv_backup_retention_period_in_days:
     type: integer
     title: "Autonomous Recovery Service Backup Retention Period (in days)"
-    description: "The number of days to retain backups in the Autonomous Recovery Service (RCV) for Oracle databases in this VCN."
+    description: "The number of days to retain backups in the Autonomous Recovery Service (RCV) for Oracle databases in this VCN. Use 0 to disable the protection policy; otherwise, the minimum is 14 days."
     required: false
     visible:
       and:
@@ -2343,7 +2343,7 @@ variables:
   tt_vcn3_rcv_backup_retention_period_in_days:
     type: integer
     title: "Autonomous Recovery Service Backup Retention Period (in days)"
-    description: "The number of days to retain backups in the Autonomous Recovery Service (RCV) for Oracle databases in this VCN."
+    description: "The number of days to retain backups in the Autonomous Recovery Service (RCV) for Oracle databases in this VCN. Use 0 to disable the protection policy; otherwise, the minimum is 14 days."
     required: false
     visible:
       and:
@@ -2517,7 +2517,7 @@ variables:
   exa_vcn1_rcv_backup_retention_period_in_days:
     type: integer
     title: "Autonomous Recovery Service Backup Retention Period (in days)"
-    description: "The number of days to retain backups in the Autonomous Recovery Service (RCV) for Oracle databases in this VCN."
+    description: "The number of days to retain backups in the Autonomous Recovery Service (RCV) for Oracle databases in this VCN. Use 0 to disable the protection policy; otherwise, the minimum is 14 days."
     required: false
     visible:
       and:
@@ -2786,7 +2786,7 @@ variables:
   exa_vcn2_rcv_backup_retention_period_in_days:
     type: integer
     title: "Autonomous Recovery Service Backup Retention Period (in days)"
-    description: "The number of days to retain backups in the Autonomous Recovery Service (RCV) for Oracle databases in this VCN."
+    description: "The number of days to retain backups in the Autonomous Recovery Service (RCV) for Oracle databases in this VCN. Use 0 to disable the protection policy; otherwise, the minimum is 14 days."
     required: false
     visible:
       and:
@@ -3055,7 +3055,7 @@ variables:
   exa_vcn3_rcv_backup_retention_period_in_days:
     type: integer
     title: "Autonomous Recovery Service Backup Retention Period (in days)"
-    description: "The number of days to retain backups in the Autonomous Recovery Service (RCV) for Oracle databases in this VCN."
+    description: "The number of days to retain backups in the Autonomous Recovery Service (RCV) for Oracle databases in this VCN. Use 0 to disable the protection policy; otherwise, the minimum is 14 days."
     required: false
     visible:
       and:
@@ -3536,7 +3536,7 @@ variables:
   oke_vcn1_rcv_backup_retention_period_in_days:
     type: integer
     title: "Autonomous Recovery Service Backup Retention Period (in days)"
-    description: "The number of days to retain backups in the Autonomous Recovery Service (RCV) for Oracle databases in this VCN."
+    description: "The number of days to retain backups in the Autonomous Recovery Service (RCV) for Oracle databases in this VCN. Use 0 to disable the protection policy; otherwise, the minimum is 14 days."
     required: false
     visible:
       and:
@@ -3889,7 +3889,7 @@ variables:
   oke_vcn2_rcv_backup_retention_period_in_days:
     type: integer
     title: "Autonomous Recovery Service Backup Retention Period (in days)"
-    description: "The number of days to retain backups in the Autonomous Recovery Service (RCV) for Oracle databases in this VCN."
+    description: "The number of days to retain backups in the Autonomous Recovery Service (RCV) for Oracle databases in this VCN. Use 0 to disable the protection policy; otherwise, the minimum is 14 days."
     required: false
     visible:
       and:
@@ -4242,7 +4242,7 @@ variables:
   oke_vcn3_rcv_backup_retention_period_in_days:
     type: integer
     title: "Autonomous Recovery Service Backup Retention Period (in days)"
-    description: "The number of days to retain backups in the Autonomous Recovery Service (RCV) for Oracle databases in this VCN."
+    description: "The number of days to retain backups in the Autonomous Recovery Service (RCV) for Oracle databases in this VCN. Use 0 to disable the protection policy; otherwise, the minimum is 14 days."
     required: false
     visible:
       and:

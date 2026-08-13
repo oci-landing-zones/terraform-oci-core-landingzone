@@ -154,7 +154,12 @@ variable "enable_tt_vcn1_rcv_infra" {
 variable "tt_vcn1_rcv_backup_retention_period_in_days" {
   type        = number
   default     = 0
-  description = "The number of days to retain backup data in the Autonomous Recovery Service for databases in TT-VCN-1 db subnet. Enter a value greater than 0 to enable the policy."
+  description = "The number of days to retain backup data in the Autonomous Recovery Service for databases in TT-VCN-1 db subnet. Use 0 to disable the policy; otherwise, the minimum is 14 days."
+
+  validation {
+    condition     = var.tt_vcn1_rcv_backup_retention_period_in_days == 0 || var.tt_vcn1_rcv_backup_retention_period_in_days >= 14
+    error_message = "The backup retention period must be 0 or at least 14 days."
+  }
 }
 variable "deploy_tt_vcn1_bastion_subnet" {
   type        = bool
@@ -348,7 +353,12 @@ variable "enable_tt_vcn2_rcv_infra" {
 variable "tt_vcn2_rcv_backup_retention_period_in_days" {
   type        = number
   default     = 0
-  description = "The number of days to retain backup data in the Autonomous Recovery Service for databases in TT-VCN-2 db subnet. Enter a value greater than 0 to enable the policy."
+  description = "The number of days to retain backup data in the Autonomous Recovery Service for databases in TT-VCN-2 db subnet. Use 0 to disable the policy; otherwise, the minimum is 14 days."
+
+  validation {
+    condition     = var.tt_vcn2_rcv_backup_retention_period_in_days == 0 || var.tt_vcn2_rcv_backup_retention_period_in_days >= 14
+    error_message = "The backup retention period must be 0 or at least 14 days."
+  }
 }
 variable "deploy_tt_vcn2_bastion_subnet" {
   type        = bool
@@ -542,7 +552,12 @@ variable "enable_tt_vcn3_rcv_infra" {
 variable "tt_vcn3_rcv_backup_retention_period_in_days" {
   type        = number
   default     = 0
-  description = "The number of days to retain backup data in the Autonomous Recovery Service for databases in TT-VCN-3 db subnet. Enter a value greater than 0 to enable the policy."
+  description = "The number of days to retain backup data in the Autonomous Recovery Service for databases in TT-VCN-3 db subnet. Use 0 to disable the policy; otherwise, the minimum is 14 days."
+
+  validation {
+    condition     = var.tt_vcn3_rcv_backup_retention_period_in_days == 0 || var.tt_vcn3_rcv_backup_retention_period_in_days >= 14
+    error_message = "The backup retention period must be 0 or at least 14 days."
+  }
 }
 variable "deploy_tt_vcn3_bastion_subnet" {
   type        = bool
