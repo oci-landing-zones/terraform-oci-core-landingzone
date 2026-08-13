@@ -261,7 +261,7 @@ variableGroups:
         - add_hub_vcn_jumphost_subnet
         - deploy_bastion_jump_host
 
-  - title: "Networking - Three Tier VCNs"
+  - title: "Networking - Three Tier VCN 1"
     variables:
       - "add_tt_vcn1"
       - "tt_vcn1_onprem_route_enable"
@@ -288,6 +288,10 @@ variableGroups:
       - "tt_vcn1_bastion_subnet_cidr"
       - "tt_vcn1_bastion_is_access_via_public_endpoint"
       - "tt_vcn1_bastion_subnet_allowed_cidrs"
+    visible: define_net
+
+  - title: "Networking - Three Tier VCN 2"
+    variables:
       - "add_tt_vcn2"
       - "tt_vcn2_onprem_route_enable"
       - "tt_vcn2_name"
@@ -313,6 +317,10 @@ variableGroups:
       - "tt_vcn2_bastion_subnet_cidr"
       - "tt_vcn2_bastion_is_access_via_public_endpoint"
       - "tt_vcn2_bastion_subnet_allowed_cidrs"
+    visible: define_net
+
+  - title: "Networking - Three Tier VCN 3"
+    variables:
       - "add_tt_vcn3"
       - "tt_vcn3_onprem_route_enable"
       - "tt_vcn3_name"
@@ -340,7 +348,7 @@ variableGroups:
       - "tt_vcn3_bastion_subnet_allowed_cidrs"
     visible: define_net
 
-  - title: "Networking - Exadata Cloud Service VCNs"
+  - title: "Networking - Exadata Cloud Service VCN 1"
     variables:
       - "add_exa_vcn1"
       - "exa_vcn1_onprem_route_enable"
@@ -363,6 +371,10 @@ variableGroups:
       - "exa_vcn1_integration_subnet_cidr"
       - "exa_vcn1_external_allowed_cidrs_into_integration_tier"
       - "exa_vcn1_integration_ingress_destination_ports"
+    visible: define_net
+
+  - title: "Networking - Exadata Cloud Service VCN 2"
+    variables:
       - "add_exa_vcn2"
       - "exa_vcn2_onprem_route_enable"
       - "exa_vcn2_name"
@@ -384,6 +396,10 @@ variableGroups:
       - "exa_vcn2_integration_subnet_cidr"
       - "exa_vcn2_external_allowed_cidrs_into_integration_tier"
       - "exa_vcn2_integration_ingress_destination_ports"
+    visible: define_net
+
+  - title: "Networking - Exadata Cloud Service VCN 3"
+    variables:
       - "add_exa_vcn3"
       - "exa_vcn3_onprem_route_enable"
       - "exa_vcn3_cidrs"
@@ -407,7 +423,7 @@ variableGroups:
       - "exa_vcn3_integration_ingress_destination_ports"
     visible: define_net
 
-  - title: "Networking - OKE VCNs"
+  - title: "Networking - OKE VCN 1"
     variables:
       - "add_oke_vcn1"
       - "oke_vcn1_onprem_route_enable"
@@ -437,6 +453,10 @@ variableGroups:
       - "oke_vcn1_db_ingress_destination_ports"
       - "enable_oke_vcn1_rcv_infra"
       - "oke_vcn1_rcv_backup_retention_period_in_days"
+    visible: define_net
+
+  - title: "Networking - OKE VCN 2"
+    variables:
       - "add_oke_vcn2"
       - "oke_vcn2_onprem_route_enable"
       - "oke_vcn2_cni_type"
@@ -465,6 +485,10 @@ variableGroups:
       - "oke_vcn2_db_ingress_destination_ports"
       - "enable_oke_vcn2_rcv_infra"
       - "oke_vcn2_rcv_backup_retention_period_in_days"
+    visible: define_net
+
+  - title: "Networking - OKE VCN 3"
+    variables:
       - "add_oke_vcn3"
       - "oke_vcn3_onprem_route_enable"
       - "oke_vcn3_cni_type"
