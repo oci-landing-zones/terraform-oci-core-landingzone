@@ -1239,7 +1239,7 @@ Each supported VCN exposes an enable input and a backup retention input. Replace
 | OKE | `enable_oke_vcnN_rcv_infra` | `oke_vcnN_rcv_backup_retention_period_in_days` |
 | Exadata | `enable_exa_vcnN_rcv_infra` | `exa_vcnN_rcv_backup_retention_period_in_days` |
 
-The retention inputs are numbers and default to 0 days, meaning protection policies are disabled by default. Protection policies are only enabled for values greater than 0. Infrastructure is created only when `deploy_database_cmp` is `true`, the matching VCN is added, and its Recovery Service enable input is `true`. OKE VCN support also requires the matching optional database subnet input, `add_oke_vcnN_db_subnet`, to be `true`.
+The retention inputs are numbers and default to 0 days, meaning protection policies are disabled by default. Use 0 to disable a protection policy; otherwise, the minimum is 14 days. Infrastructure is created only when `deploy_database_cmp` is `true`, the matching VCN is added, and its Recovery Service enable input is `true`. OKE VCN support also requires the matching optional database subnet input, `add_oke_vcnN_db_subnet`, to be `true`.
 
 ### Supported Resources
 
@@ -1254,10 +1254,12 @@ The Landing Zone supports Recovery Service infrastructure for the following VCNs
 For each enabled VCN, the Landing Zone creates:
 
 - A Recovery Service subnet resource associated with the database-facing subnet shown above.
-- A protection policy using the configured backup retention period (greater than zero).
+- A protection policy using the configured backup retention period (at least 14 days).
 - A VCN-local `rcv-nsg` that allows TCP ports 2484 and 8005. The allowed source is the DB subnet CIDR for three-tier and OKE VCNs, and the client or backup subnet CIDR for Exadata VCNs.
 
-When the Landing Zone manages IAM policies, it also grants the database administrators group permission to manage `recovery-service-family` in the database compartment.
+When the Landing Zone manages IAM policies, it grants the database administrators group permission to manage `recovery-service-family` in the database compartment. The tenancy-level services policy also allows the Database Service and Recovery Service to manage `recovery-service-family`, and allows the Database Service to manage tag namespaces so protected databases can inherit tags from their source databases.
+
+To preserve least privilege, Core Landing Zone does not grant Recovery Service tenancy-wide management of `virtual-network-family`. OCI databases have built-in access to network resources within their database VCN; if a deployment demonstrates that additional network permissions are required, grant only the necessary individual network resource types in the network compartment.
 
 For a minimal configuration, see [Core Landing Zone with Standalone Default Three-Tier VCN](./templates/standalone-three-tier-vcn-defaults/), which enables Autonomous Recovery Service for `TT-VCN-1` with a 30-day retention period.
 
