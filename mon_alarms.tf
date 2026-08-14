@@ -86,7 +86,7 @@ locals {
   #--------------------------------------------------------------------
   #-- Database Alarms
   #--------------------------------------------------------------------
-  database_alarms = length(var.database_admin_email_endpoints) > 0 ? {
+  database_alarms = length(var.database_admin_email_endpoints) > 0 && local.enable_database_compartment ? {
     DATABASE-ALARM-ADB-HIGH-CPU = {
       compartment_id           = local.database_compartment_id
       display_name             = "${var.service_label}-adb-cpu-alarm"
