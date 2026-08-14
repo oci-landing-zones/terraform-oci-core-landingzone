@@ -42,7 +42,7 @@
 | custom\_security\_compartment\_name                         | Custom name of the security compartment. | string | null | no |
 | deploy\_app\_cmp                                            | Whether the application compartment is deployed. | bool | true | no |
 | deploy\_database\_cmp                                       | Whether the database compartment is deployed. | bool | true | no |
-| deploy\_exainfra\_cmp                                       | Whether a separate compartment for Exadata Cloud Service Infrastructure is deployed. | bool | false | no |
+| deploy\_exainfra\_cmp                                       | Whether a separate infrastructure compartment for Exadata Cloud Service and Exadata Cloud@Customer is deployed. | bool | false | no |
 | dyn\_groups\_options                                        | Whether to deploy new dynamic groups or use existing dynamic groups. Applicable to RMS deployments only, used for UI displaying. | string | "Yes" | no |
 | enclosing\_compartment\_parent\_ocid                        | The existing compartment where Landing Zone enclosing compartment is created. | string | null | no |
 | existing\_ag\_admin\_group\_name                            | The existing group to which Access Governance management policies will be granted to. | list(string) | [] | no |
@@ -56,7 +56,7 @@
 | existing\_database\_admin\_group\_name                      | The existing group to which database management policies will be granted to. | list(string) | [] | no |
 | existing\_database\_kms\_dyn\_group\_name                   | Existing database dynamic group for database to access keys. | string | "" | no |
 | existing\_enclosing\_compartment\_ocid                      | The existing compartment where Landing Zone compartments (Network, Security, App, Database) are created. | string | null | no |
-| existing\_exainfra\_admin\_group\_name                      | The existing group to which Exadata Cloud Service infrastructure management policies will be granted to. | list(string) | [] | no |
+| existing\_exainfra\_admin\_group\_name                      | The existing group to which Exadata Cloud Service and Exadata Cloud@Customer infrastructure management policies will be granted. | list(string) | [] | no |
 | existing\_iam\_admin\_group\_name                           | The existing group to which IAM management policies will be granted to. | list(string) | [] | no |
 | existing\_id\_domain\_appdev\_fun\_dyn\_group\_name         | The existing dynamic group name in the existing identity domain for executing applications functions. | string | "" | no |
 | existing\_id\_domain\_compute\_agent\_dyn\_group\_name      | The existing dynamic group name in the existing identity domain for Compute agents. | string | "" | no |
@@ -80,7 +80,7 @@
 | rm\_existing\_cost\_admin\_group\_name                      | Only applicable to RMS deployments. The existing group to which cost management policies will be granted to. | string | "" | no |
 | rm\_existing\_cred\_admin\_group\_name                      | Only applicable to RMS deployments. The existing group to which credentials management policies will be granted to. | string | "" | no |
 | rm\_existing\_database\_admin\_group\_name                  | Only applicable to RMS deployments. The existing group to which database management policies will be granted to. | string | "" | no |
-| rm\_existing\_exainfra\_admin\_group\_name                  | Only applicable to RMS deployments. The existing group to which Exadata Cloud Service infrastructure management policies will be granted to. | string | "" | no |
+| rm\_existing\_exainfra\_admin\_group\_name                  | Only applicable to RMS deployments. The existing group to which Exadata Cloud Service and Exadata Cloud@Customer infrastructure management policies will be granted. | string | "" | no |
 | rm\_existing\_iam\_admin\_group\_name                       | Only applicable to RMS deployments. The existing group to which IAM management policies will be granted to. | string | "" | no |
 | rm\_existing\_network\_admin\_group\_name                   | Only applicable to RMS deployments. The existing group to which network management policies will be granted to. | string | "" | no |
 | rm\_existing\_security\_admin\_group\_name                  | Only applicable to RMS deployments. The existing group to which security policies will be granted to. | string | "" | no |
@@ -92,7 +92,7 @@
 | rm\_existing\_id\_domain\_cost\_admin\_group\_name          | The existing cost admin group name in the existing identity domain. | list(string) | [] | no |
 | rm\_existing\_id\_domain\_cred\_admin\_group\_name          | The existing credentials admin group name in the existing identity domain. | list(string) | [] | no |
 | rm\_existing\_id\_domain\_database\_admin\_group\_name      | The existing database admin group name in the existing identity domain. | list(string) | [] | no |
-| rm\_existing\_id\_domain\_exainfra\_admin\_group\_name      | The existing Exadata CS infrastructure admin group name in the existing identity domain. | list(string) | [] | no |
+| rm\_existing\_id\_domain\_exainfra\_admin\_group\_name      | The existing Exadata infrastructure admin group name in the existing identity domain. | list(string) | [] | no |
 | rm\_existing\_id\_domain\_iam\_admin\_group\_name           | The existing IAM admin group name in the existing identity domain. | list(string) | [] | no |
 | rm\_existing\_id\_domain\_network\_admin\_group\_name       | The existing network admin group name in the existing identity domain. | list(string) | [] | no |
 | rm\_existing\_id\_domain\_security\_admin\_group\_name      | The existing security admin group name in the existing identity domain. | list(string) | [] | no |

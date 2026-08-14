@@ -138,7 +138,7 @@ locals {
   exainfra_cmp = local.enable_exainfra_compartment ? {
     (local.exainfra_compartment_key) : {
       name : local.provided_exainfra_compartment_name,
-      description : "${var.lz_provenant_label} compartment for Exadata Cloud Service infrastructure.",
+      description : "${var.lz_provenant_label} compartment for Exadata Cloud Service and Exadata Cloud@Customer infrastructure.",
       defined_tags : local.cmps_defined_tags,
       freeform_tags : local.cmps_freeform_tags,
       children : {}

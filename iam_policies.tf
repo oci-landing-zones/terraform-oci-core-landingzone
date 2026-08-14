@@ -202,7 +202,7 @@ locals {
   network_admin_grants = concat(local.network_admin_grants_on_network_cmp, local.network_admin_grants_on_security_cmp)
 
   ## Database admin grants on Database compartment
-  database_admin_grants_on_database_cmp = local.enable_database_compartment ? [
+  database_admin_grants_on_database_cmp = local.enable_database_compartment ? concat([
     "allow group ${join(",", local.database_admin_group_name)} to read all-resources in compartment ${local.database_compartment_name}",
     "allow group ${join(",", local.database_admin_group_name)} to manage db-systems in compartment ${local.database_compartment_name}",
     "allow group ${join(",", local.database_admin_group_name)} to manage db-nodes in compartment ${local.database_compartment_name}",
@@ -232,7 +232,15 @@ locals {
     "allow group ${join(",", local.database_admin_group_name)} to use vnics in compartment ${local.database_compartment_name}",
     "allow group ${join(",", local.database_admin_group_name)} to manage keys in compartment ${local.database_compartment_name}",
     "allow group ${join(",", local.database_admin_group_name)} to use key-delegate in compartment ${local.database_compartment_name}",
-  "allow group ${join(",", local.database_admin_group_name)} to manage secret-family in compartment ${local.database_compartment_name}"] : []
+    "allow group ${join(",", local.database_admin_group_name)} to manage secret-family in compartment ${local.database_compartment_name}"
+    ], local.enable_exainfra_compartment ? [] : [
+    "allow group ${join(",", local.database_admin_group_name)} to manage cloud-exadata-infrastructures in compartment ${local.database_compartment_name}",
+    "allow group ${join(",", local.database_admin_group_name)} to manage cloud-vmclusters in compartment ${local.database_compartment_name}",
+    "allow group ${join(",", local.database_admin_group_name)} to manage exadata-infrastructures in compartment ${local.database_compartment_name}",
+    "allow group ${join(",", local.database_admin_group_name)} to manage vmclusters in compartment ${local.database_compartment_name}",
+    "allow group ${join(",", local.database_admin_group_name)} to manage backups in compartment ${local.database_compartment_name}",
+    "allow group ${join(",", local.database_admin_group_name)} to manage backup-destinations in compartment ${local.database_compartment_name}"
+  ]) : []
 
   ## Database admin grants on Network compartment
   database_admin_grants_on_network_cmp = local.enable_network_compartment ? [
@@ -255,12 +263,16 @@ locals {
   database_admin_grants_on_exainfra_cmp = local.enable_exainfra_compartment ? [
     "allow group ${join(",", local.database_admin_group_name)} to read cloud-exadata-infrastructures in compartment ${local.exainfra_compartment_name}",
     "allow group ${join(",", local.database_admin_group_name)} to use cloud-vmclusters in compartment ${local.exainfra_compartment_name}",
+    "allow group ${join(",", local.database_admin_group_name)} to read exadata-infrastructures in compartment ${local.exainfra_compartment_name}",
+    "allow group ${join(",", local.database_admin_group_name)} to use vmclusters in compartment ${local.exainfra_compartment_name}",
     "allow group ${join(",", local.database_admin_group_name)} to read work-requests in compartment ${local.exainfra_compartment_name}",
     "allow group ${join(",", local.database_admin_group_name)} to manage db-nodes in compartment ${local.exainfra_compartment_name}",
     "allow group ${join(",", local.database_admin_group_name)} to manage db-homes in compartment ${local.exainfra_compartment_name}",
     "allow group ${join(",", local.database_admin_group_name)} to manage databases in compartment ${local.exainfra_compartment_name}",
     "allow group ${join(",", local.database_admin_group_name)} to manage pluggable-databases in compartment ${local.exainfra_compartment_name}",
     "allow group ${join(",", local.database_admin_group_name)} to manage db-backups in compartment ${local.exainfra_compartment_name}",
+    "allow group ${join(",", local.database_admin_group_name)} to manage backups in compartment ${local.exainfra_compartment_name}",
+    "allow group ${join(",", local.database_admin_group_name)} to manage backup-destinations in compartment ${local.exainfra_compartment_name}",
   "allow group ${join(",", local.database_admin_group_name)} to manage data-safe-family in compartment ${local.exainfra_compartment_name}"] : []
 
   ## All database admin grants
@@ -335,6 +347,8 @@ locals {
   exainfra_admin_grants_on_exainfra_cmp = local.enable_exainfra_compartment ? [
     "allow group ${join(",", local.exainfra_admin_group_name)} to manage cloud-exadata-infrastructures in compartment ${local.exainfra_compartment_name}",
     "allow group ${join(",", local.exainfra_admin_group_name)} to manage cloud-vmclusters in compartment ${local.exainfra_compartment_name}",
+    "allow group ${join(",", local.exainfra_admin_group_name)} to manage exadata-infrastructures in compartment ${local.exainfra_compartment_name}",
+    "allow group ${join(",", local.exainfra_admin_group_name)} to manage vmclusters in compartment ${local.exainfra_compartment_name}",
     "allow group ${join(",", local.exainfra_admin_group_name)} to read work-requests in compartment ${local.exainfra_compartment_name}",
     "allow group ${join(",", local.exainfra_admin_group_name)} to manage bastion-session in compartment ${local.exainfra_compartment_name}",
     "allow group ${join(",", local.exainfra_admin_group_name)} to manage instance-family in compartment ${local.exainfra_compartment_name}",
@@ -493,7 +507,7 @@ locals {
     } : null
   } : {}
 
-  database_admin_policy = local.enable_database_compartment == true ? {
+  database_admin_policy = local.enable_database_admin_persona ? {
     (local.database_admin_policy_name) = length(local.database_admin_grants) > 0 ? {
       compartment_id = local.enclosing_compartment_id
       name           = local.database_admin_policy_name
