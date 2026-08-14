@@ -11,7 +11,7 @@ locals {
 
 module "lz_notifications" {
   # depends_on = [null_resource.wait_on_compartments]
-  source               = "github.com/oci-landing-zones/terraform-oci-modules-observability//events?ref=v0.2.5"
+  source               = "github.com/oci-landing-zones/terraform-oci-modules-observability//events?ref=exa-events-alarms"
   events_configuration = local.regional_events_configuration
   topics_dependency    = module.lz_regional_topics.topics
 }
