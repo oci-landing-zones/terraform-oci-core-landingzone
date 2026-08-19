@@ -917,8 +917,8 @@ variables:
 
   deploy_exainfra_cmp:
     type: boolean
-    title: "Deploy ExaCS Infra Compartment?"
-    description: "Whether a separate compartment for Exadata Cloud Service Infrastructure is deployed."
+    title: "Deploy Exadata Infrastructure Compartment?"
+    description: "Whether a separate infrastructure compartment for Exadata Cloud Service and Exadata Cloud@Customer is deployed."
     visible: 
       eq:
         - ${extend_landing_zone_to_new_region}
@@ -926,8 +926,8 @@ variables:
 
   custom_exainfra_compartment_name:
     type: string
-    title: "ExaCS Infra Compartment Name"
-    description: "The custom name of the ExaCS Infra compartment. If none is provided, the default name for the ExaCS Infra compartment will be used."
+    title: "Exadata Infrastructure Compartment Name"
+    description: "The custom name of the Exadata infrastructure compartment. If none is provided, the default name will be used."
     required: false
     visible: 
       or:
