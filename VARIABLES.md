@@ -6,6 +6,7 @@
 - [Three Tier Networking](#three-tier-networking)
 - [EXA Networking](#exa-networking)
 - [OKE Networking](#oke-networking)
+- [Autonomous Recovery Service](#autonomous-recovery-service)
 - [Hub and Spoke Networking](#hub-and-spoke-networking)
 - [On-Premises Networking](#on-prem-networking)
 - [Monitoring](#monitoring)
@@ -368,6 +369,29 @@
 | oke\_vcn3\_workers\_subnet\_dns | The Workers subnet DNS name. Use only letters and numbers, no special characters. | string | null | no |
 | oke\_vcn3\_workers\_subnet\_name | The Workers subnet name. | string | null | no |
 
+### <a name="autonomous-recovery-service"></a> Autonomous Recovery Service
+
+| Variable Name | Description | Type | Default | Required |
+|---------------|-------------|------|---------|----------|
+| enable\_tt\_vcn1\_rcv\_infra | Whether to enable the Autonomous Recovery Service infrastructure for databases in TT-VCN-1 db subnet. | bool | false | no |
+| tt\_vcn1\_rcv\_backup\_retention\_period\_in\_days | The number of days to retain backup data in the Autonomous Recovery Service for databases in TT-VCN-1 db subnet. Use 0 to disable the policy; otherwise, the minimum is 14 days. | number | 0 | no |
+| enable\_tt\_vcn2\_rcv\_infra | Whether to enable the Autonomous Recovery Service infrastructure for databases inTT-VCN-2 db subnet. | bool | false | no |
+| tt\_vcn2\_rcv\_backup\_retention\_period\_in\_days | The number of days to retain backup data in the Autonomous Recovery Service for databases in TT-VCN-2 db subnet. Use 0 to disable the policy; otherwise, the minimum is 14 days. | number | 0 | no |
+| enable\_tt\_vcn3\_rcv\_infra | Whether to enable the Autonomous Recovery Service infrastructure for databases in TT-VCN-3 db subnet. | bool | false | no |
+| tt\_vcn3\_rcv\_backup\_retention\_period\_in\_days | The number of days to retain backup data in the Autonomous Recovery Service for databases in TT-VCN-3 db subnet. Use 0 to disable the policy; otherwise, the minimum is 14 days. | number | 0 | no |
+| enable\_oke\_vcn1\_rcv\_infra | Whether to enable the Autonomous Recovery Service infrastructure for databases in OKE-VCN-1 db subnet. | bool | false | no |
+| oke\_vcn1\_rcv\_backup\_retention\_period\_in\_days | The number of days to retain backup data in the Autonomous Recovery Service for databases in OKE-VCN-1 db subnet. Use 0 to disable the policy; otherwise, the minimum is 14 days. | number | 0 | no |
+| enable\_oke\_vcn2\_rcv\_infra | Whether to enable the Autonomous Recovery Service infrastructure for databases in OKE-VCN-2 db subnet. | bool | false | no |
+| oke\_vcn2\_rcv\_backup\_retention\_period\_in\_days | The number of days to retain backup data in the Autonomous Recovery Service for databases in OKE-VCN-2 db subnet. Use 0 to disable the policy; otherwise, the minimum is 14 days. | number | 0 | no |
+| enable\_oke\_vcn3\_rcv\_infra | Whether to enable the Autonomous Recovery Service infrastructure for databases in OKE-VCN-3 db subnet. | bool | false | no |
+| oke\_vcn3\_rcv\_backup\_retention\_period\_in\_days | The number of days to retain backup data in the Autonomous Recovery Service for databases in OKE-VCN-3 db subnet. Use 0 to disable the policy; otherwise, the minimum is 14 days. | number | 0 | no |
+| enable\_exa\_vcn1\_rcv\_infra | Whether to enable the Autonomous Recovery Service infrastructure for databases in EXA-VCN-1 backup (if provided) or client subnet. | bool | false | no |
+| exa\_vcn1\_rcv\_backup\_retention\_period\_in\_days | The number of days to retain backup data in the Autonomous Recovery Service for databases in EXA-VCN-1 backup (if provided) or client subnet. Use 0 to disable the policy; otherwise, the minimum is 14 days. | number | 0 | no |
+| enable\_exa\_vcn2\_rcv\_infra | Whether to enable the Autonomous Recovery Service infrastructure for databases in EXA-VCN-2 backup (if provided) or client subnet. | bool | false | no |
+| exa\_vcn2\_rcv\_backup\_retention\_period\_in\_days | The number of days to retain backup data in the Autonomous Recovery Service for databases in EXA-VCN-2 backup (if provided) or client subnet. Use 0 to disable the policy; otherwise, the minimum is 14 days. | number | 0 | no |
+| enable\_exa\_vcn3\_rcv\_infra | Whether to enable the Autonomous Recovery Service infrastructure for databases in EXA-VCN-3 backup (if provided) or client subnet. | bool | false | no |
+| exa\_vcn3\_rcv\_backup\_retention\_period\_in\_days | The number of days to retain backup data in the Autonomous Recovery Service for databases in EXA-VCN-3 backup (if provided) or client subnet. Use 0 to disable the policy; otherwise, the minimum is 14 days. | number | 0 | no |
+
 ### <a name="hub-and-spoke-networking"></a> Hub and Spoke Networking
 
 | Variable Name | Description | Type | Default | Required |
@@ -383,7 +407,7 @@
 | hub\_deployment\_option | The available options for hub deployment. Valid values: 'No cross-VCN or on-premises connectivity', 'VCN or on-premises connectivity routing via DRG (DRG will be created)', 'VCN or on-premises connectivity routing via DRG (existing DRG)', 'VCN or on-premises connectivity routing through DMZ VCN with Network Virtual Appliance (DRG and DMZ VCN will be created)', 'VCN or on-premises connectivity routed through DMZ VCN with Network Virtual Appliance existing DRG (DMZ VCN will be created and DRG ID required)'. All the VCNs that attach to the DRG join the topology as spokes. | string | "No cross-VCN or on-premises connectivity" | no |
 | hub\_vcn\_additional\_nsgs | Additional NSGs for the Hub VCN. Accepts either a native HCL map/object or a JSON object string. Only used when define\_hub\_vcn\_additional\_nsgs is true. | any | {} | no |
 | hub\_vcn\_cidrs | List of CIDR blocks for the Hub VCN. | list(string) | ["192.168.0.0/26"] | no |
-| hub\_vcn\_deploy\_net\_appliance\_option | The network appliance option for deploying in the Hub VCN. Valid values: 'Don't deploy any network appliance at this time' (default), 'Palo Alto Networks VM-Series Firewall', 'Fortinet FortiGate Firewall', 'User-Provided Virtual Network Appliance', and 'OCI Native Firewall'. Costs are incurred. | string | "Don't deploy any network appliance at this time" | no |
+| hub\_vcn\_deploy\_net\_appliance\_option | The network appliance option for deploying in the Hub VCN. Valid values: 'Don't deploy any network firewall at this time' (default), 'Marketplace Image', 'User-Provided Virtual Network Appliance', and 'OCI Native Firewall'. Costs are incurred. | string | "Don't deploy any network firewall at this time" | no |
 | hub\_vcn\_dns | The Hub VCN DNS name. | string | null | no |
 | hub\_vcn\_enable\_internet\_gateway | When checked, access from the Internet is enabled into the Hub VCN via an Internet Gateway. When unchecked, an Internet Gateway is not deployed and access from Internet is blocked. | bool | true | no |
 | hub\_vcn\_east\_west\_entry\_point\_ocid |The OCID of the private IP address of the Indoor Network Load Balancer, where inbound internal cross-vcn traffic (East/West) traffic is sent to in the Hub VCN. | string | null | no |
@@ -407,7 +431,7 @@
 | hub\_vcn\_web\_subnet\_jump\_host\_allowed\_cidrs | List of CIDRs allowed to SSH into the Web subnet via a jump host eventually deployed in the Web subnet. Leave empty for no access. | list(string) | [] | no |
 | hub\_vcn\_web\_subnet\_name | The Hub VCN Web subnet name. | string | null | no |
 | hub\_vcn\_web\_ingress\_destination\_ports | The list of protocols and destination ports allowed for ingress packets into the Hub VCN App Load Balancer NSG. These ports are allowed from onprem\_cidrs plus hub\_vcn\_external\_allowed\_cidrs\_into\_web\_tier when the Hub VCN Web subnet is public, and from onprem\_cidrs when it is private. Each value is a colon-separated entry like "TCP:443". | list(string) | ["TCP:443"] | no |
-| hub\_vcn\_deploy\_net\_appliance\_option | The network appliance option to deploy in the Hub VCN. | string | Default is "Don't deploy any network appliance at this time". Other valid values: "Marketplace Image", "User-Provided Virtual Network Appliance", "OCI Native Firewall". Costs may be incurred. For "Marketplace Image", users are required to provide either net\_appliance\_marketplace\_image\_ocid or net\_appliance\_marketplace\_image\_name (with optional net\_appliance\_marketplace\_image\_version) variables. **NOTE THAT BY DEPLOYING A MARKETPLACE IMAGE USING THIS TERRAFORM MODULE YOU ARE IMPLICITLY AGREEING WITH ALL OCI MARKETPLACE TERMS, INCLUDING THE PRICING MODEL THAT APPLY TO THE SELECTED IMAGE.** Marketplace image information can be obtained by running [Marketplace Images](https://github.com/oci-landing-zones/terraform-oci-modules-workloads/tree/main/marketplace-images/examples/marketplace-images). For "User-Provided Virtual Network Appliance", users are required to provide net\_appliance\_image\_ocid variable. | no |
+| hub\_vcn\_deploy\_net\_appliance\_option | The network appliance option to deploy in the Hub VCN. | string | Default is "Don't deploy any network firewall at this time". Other valid values: "Marketplace Image", "User-Provided Virtual Network Appliance", "OCI Native Firewall". Costs may be incurred. For "Marketplace Image", users are required to provide either net\_appliance\_marketplace\_image\_ocid or net\_appliance\_marketplace\_image\_name (with optional net\_appliance\_marketplace\_image\_version) variables. **NOTE THAT BY DEPLOYING A MARKETPLACE IMAGE USING THIS TERRAFORM MODULE YOU ARE IMPLICITLY AGREEING WITH ALL OCI MARKETPLACE TERMS, INCLUDING THE PRICING MODEL THAT APPLY TO THE SELECTED IMAGE.** Marketplace image information can be obtained by running [Marketplace Images](https://github.com/oci-landing-zones/terraform-oci-modules-workloads/tree/main/marketplace-images/examples/marketplace-images). For "User-Provided Virtual Network Appliance", users are required to provide net\_appliance\_image\_ocid variable. | no |
 | net\_appliance\_image\_vendor | The image vendor for the network appliance. Valid values are "PALOALTO", "FORTINET", "OTHER". Used to select the default Network Load Balancer health checker for Marketplace Image and User-Provided Virtual Network Appliance deployments. | string | null | no |
 | net\_appliance\_marketplace\_image\_ocid   | The marketplace image OCID for the network appliance. Applicable when hub\_vcn\_deploy\_net\_appliance\_option is set to "Marketplace Image". | string | null | no |
 | net\_appliance\_marketplace\_image\_name   | The marketplace image name for the network appliance. Applicable when hub\_vcn\_deploy\_net\_appliance\_option is set to "Marketplace Image". | string | null | no |

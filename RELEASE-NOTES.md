@@ -1,3 +1,9 @@
+# Unreleased Release Notes
+
+## Bug Fixes
+
+1. [Issue 56](https://github.com/oci-landing-zones/terraform-oci-core-landingzone/issues/56) fixed: selecting **hub_vcn_deploy_net_appliance_option="Don't deploy any network firewall at this time"** in Resource Manager no longer shows appliance-only fields or fails with invalid firewall option indexing.
+
 # June 03, 2026 Release Notes - 1.6.0
 
 In addition to bug fixes, release 1.6.0 brings in significant extensibility enhancements to Core Landing Zone networking across all supported workload types, as well as to IAM. New global variables have been introduced for more flexible standard deployments, while more advanced scenarios are supported via override variables.

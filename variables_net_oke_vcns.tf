@@ -178,6 +178,21 @@ variable "oke_vcn1_db_ingress_destination_ports" {
     error_message = "VALIDATION FAILURE: Invalid value provided for oke_vcn1_db_ingress_destination_ports variable: all values must be in the form protocol:port, with exactly one ':' separating protocol and port values."
   }
 }
+variable "enable_oke_vcn1_rcv_infra" {
+  type        = bool
+  default     = false
+  description = "Whether to enable the Autonomous Recovery Service infrastructure for databases in OKE-VCN-1 db subnet."
+}
+variable "oke_vcn1_rcv_backup_retention_period_in_days" {
+  type        = number
+  default     = 0
+  description = "The number of days to retain backup data in the Autonomous Recovery Service for databases in OKE-VCN-1 db subnet. Use 0 to disable the policy; otherwise, the minimum is 14 days."
+
+  validation {
+    condition     = var.oke_vcn1_rcv_backup_retention_period_in_days == 0 || var.oke_vcn1_rcv_backup_retention_period_in_days >= 14
+    error_message = "The backup retention period must be 0 or at least 14 days."
+  }
+}
 
 variable "add_oke_vcn1_mgmt_subnet" {
   type        = bool
@@ -404,6 +419,21 @@ variable "oke_vcn2_db_ingress_destination_ports" {
     error_message = "VALIDATION FAILURE: Invalid value provided for oke_vcn2_db_ingress_destination_ports variable: all values must be in the form protocol:port, with exactly one ':' separating protocol and port values."
   }
 }
+variable "enable_oke_vcn2_rcv_infra" {
+  type        = bool
+  default     = false
+  description = "Whether to enable the Autonomous Recovery Service infrastructure for databases in OKE-VCN-2 db subnet."
+}
+variable "oke_vcn2_rcv_backup_retention_period_in_days" {
+  type        = number
+  default     = 0
+  description = "The number of days to retain backup data in the Autonomous Recovery Service for databases in OKE-VCN-2 db subnet. Use 0 to disable the policy; otherwise, the minimum is 14 days."
+
+  validation {
+    condition     = var.oke_vcn2_rcv_backup_retention_period_in_days == 0 || var.oke_vcn2_rcv_backup_retention_period_in_days >= 14
+    error_message = "The backup retention period must be 0 or at least 14 days."
+  }
+}
 
 variable "add_oke_vcn2_mgmt_subnet" {
   type        = bool
@@ -628,6 +658,21 @@ variable "oke_vcn3_db_ingress_destination_ports" {
   validation {
     condition     = length(var.oke_vcn3_db_ingress_destination_ports) == 0 ? true : alltrue([for v in var.oke_vcn3_db_ingress_destination_ports : can(regex("^[^:]+:[^:]+$", v))])
     error_message = "VALIDATION FAILURE: Invalid value provided for oke_vcn3_db_ingress_destination_ports variable: all values must be in the form protocol:port, with exactly one ':' separating protocol and port values."
+  }
+}
+variable "enable_oke_vcn3_rcv_infra" {
+  type        = bool
+  default     = false
+  description = "Whether to enable the Autonomous Recovery Service infrastructure for databases in OKE-VCN-3 db subnet."
+}
+variable "oke_vcn3_rcv_backup_retention_period_in_days" {
+  type        = number
+  default     = 0
+  description = "The number of days to retain backup data in the Autonomous Recovery Service for databases in OKE-VCN-3 db subnet. Use 0 to disable the policy; otherwise, the minimum is 14 days."
+
+  validation {
+    condition     = var.oke_vcn3_rcv_backup_retention_period_in_days == 0 || var.oke_vcn3_rcv_backup_retention_period_in_days >= 14
+    error_message = "The backup retention period must be 0 or at least 14 days."
   }
 }
 

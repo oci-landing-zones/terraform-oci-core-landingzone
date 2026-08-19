@@ -84,8 +84,12 @@ variable "hub_vcn_cidrs" {
 #-------------------------------------------------------
 variable "hub_vcn_deploy_net_appliance_option" {
   type        = string
-  default     = "Don't deploy any network appliance at this time"
-  description = "The network appliance option for deploying in the Hub VCN. Valid values: 'Don't deploy any network appliance at this time' (default), 'Marketplace Image', 'User-Provided Virtual Network Appliance', and 'OCI Native Firewall'. Costs are incurred. For 'Marketplace Image', users are required to provide either net_appliance_marketplace_image_ocid or net_appliance_marketplace_image_name (with optional net_appliance_marketplace_image_version) variables. For 'User-Provided Virtual Network Appliance', users are required to provide net_appliance_image_ocid variable."
+  default     = "Don't deploy any network firewall at this time"
+  description = "The network appliance option for deploying in the Hub VCN. Valid values: 'Don't deploy any network firewall at this time' (default), 'Marketplace Image', 'User-Provided Virtual Network Appliance', and 'OCI Native Firewall'. Costs are incurred. For 'Marketplace Image', users are required to provide either net_appliance_marketplace_image_ocid or net_appliance_marketplace_image_name (with optional net_appliance_marketplace_image_version) variables. For 'User-Provided Virtual Network Appliance', users are required to provide net_appliance_image_ocid variable."
+  validation {
+    condition     = contains(["Don't deploy any network firewall at this time", "Marketplace Image", "User-Provided Virtual Network Appliance", "OCI Native Firewall"], var.hub_vcn_deploy_net_appliance_option)
+    error_message = "VALIDATION FAILURE: hub_vcn_deploy_net_appliance_option must be one of: \"Don't deploy any network firewall at this time\", \"Marketplace Image\", \"User-Provided Virtual Network Appliance\", \"OCI Native Firewall\"."
+  }
 }
 
 variable "net_appliance_image_vendor" {

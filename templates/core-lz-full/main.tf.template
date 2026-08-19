@@ -315,7 +315,7 @@ module "core_lz" {
   # --------------------------------------------------------------------------------------
   # Alternate path 1: no firewall appliance, but keep Hub VCN networking ready.
   # --------------------------------------------------------------------------------------
-  # hub_vcn_deploy_net_appliance_option = "Don't deploy any network appliance at this time"
+  # hub_vcn_deploy_net_appliance_option = "Don't deploy any network firewall at this time"
 
   # --------------------------------------------------------------------------------------
   # Alternate path 2: deploy an OCI Marketplace Palo Alto Networks VM-Series Firewall image.
