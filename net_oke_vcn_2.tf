@@ -1144,6 +1144,31 @@ locals {
             )
           }
         } : {},
+        var.enable_oke_vcn2_rcv_infra && var.deploy_database_cmp && var.add_oke_vcn2_db_subnet ? {
+          "OKE-VCN-2-RCV-NSG" = {
+            display_name = "rcv-nsg"
+            ingress_rules = {
+              "INGRESS-TO-PORT-2484-RULE" = {
+                description  = "Allows ingress connectivity to TCP port 2484."
+                stateless    = false
+                protocol     = "TCP"
+                src          = local.oke_vcn2_db_subnet_cidr
+                src_type     = "CIDR_BLOCK"
+                dst_port_min = 2484
+                dst_port_max = 2484
+              }
+              "INGRESS-TO-PORT-8005-RULE" = {
+                description  = "Allows ingress connectivity to TCP port 8005."
+                stateless    = false
+                protocol     = "TCP"
+                src          = local.oke_vcn2_db_subnet_cidr
+                src_type     = "CIDR_BLOCK"
+                dst_port_min = 8005
+                dst_port_max = 8005
+              }
+            }
+          }
+        } : {},
         local.oke_vcn2_cross_vcn_open_nsg,
         local.oke_vcn2_cross_vcn_services_nsg,
         local.oke_vcn2_cross_vcn_workers_nsg,

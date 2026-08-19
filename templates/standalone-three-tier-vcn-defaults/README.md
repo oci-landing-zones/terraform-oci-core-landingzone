@@ -3,6 +3,7 @@
 This template shows how to deploy a CIS compliant landing zone using [OCI Core Landing Zone](../../) configuration. 
 
 In this template, a single default three-tier VCN is deployed. Additionally, the following services are enabled:
+  - [Database Autonomous Recovery Service](https://docs.oracle.com/en-us/iaas/recovery-service/index.html) infrastructure is created for databases in the three-tier VCN DB subnet with a 30-day backup retention period.
   - [Connector Hub](https://docs.oracle.com/en-us/iaas/Content/connector-hub/overview.htm), for logging consolidation. Collected logs are sent to an OCI stream.
   - A [Security Zone](https://docs.oracle.com/en-us/iaas/security-zone/using/security-zones.htm) is created for the deployment. The Security Zone target is the landing zone top (enclosing) compartment.
   - [Vulnerability Scanning Service](https://docs.oracle.com/en-us/iaas/scanning/using/overview.htm#scanning_overview) is configured to scan Compute instances that are eventually deployed in the landing zone.
@@ -19,6 +20,8 @@ This template has the following parameters set:
 | *service_label* | A unique identifier to prefix the resources | "defvcn" |
 | *define_net* | Check to define networking resources. By default, the Landing Zone does NOT deploy any networks.     | true |
 | *add_tt_vcn1* | Click to add a three-tier VCN, with three subnets: web (public by default), application (private) and database (private). An optional subnet (private by default) for bastion deployment is also available.     | true |
+| *enable_tt_vcn1_rcv_infra* | Whether to enable Autonomous Recovery Service infrastructure for databases in the TT-VCN-1 DB subnet. | true |
+| *tt_vcn1_rcv_backup_retention_period_in_days* | Number of days to retain backup data in Autonomous Recovery Service for databases in the TT-VCN-1 DB subnet. | 30 |
 | *network_admin_email_endpoints* | List of email addresses that receive notifications for networking related events. | ["email.address@example.com"] |
 | *security_admin_email_endpoints* | List of email addresses that receive notifications for security related events. | ["email.address@example.com"] |
 | *enable_service_connector* | Whether Service Connector should be enabled. If true, a single Service Connector is managed for all services log sources and the designated target specified in 'Service Connector Target Kind'. The Service Connector resource is created in INACTIVE state. To activate, check 'Activate Service Connector?' (costs may incur).      | true |
@@ -36,7 +39,7 @@ This template can be deployed using OCI Resource Manager Service (RMS) or Terraf
 
 By clicking the button below, you are redirected to an OCI RMS Stack with variables pre-assigned for deployment. 
 
-[![Deploy_To_OCI](../../images/DeployToOCI.svg)](https://cloud.oracle.com/resourcemanager/stacks/create?zipUrl=https://github.com/oci-landing-zones/terraform-oci-core-landingzone/archive/refs/heads/release-1.6.0.zip&zipUrlVariables={"service_label":"defvcn","network_admin_email_endpoints":["email.address@example.com"],"security_admin_email_endpoints":["email.address@example.com"],"define_net":true,"add_tt_vcn1":true,"enable_service_connector":true,"activate_service_connector":true,"service_connector_target_kind":"streaming","enable_security_zones":true,"vss_create":true,"create_budget":true})
+[![Deploy_To_OCI](../../images/DeployToOCI.svg)](https://cloud.oracle.com/resourcemanager/stacks/create?zipUrl=https://github.com/oci-landing-zones/terraform-oci-core-landingzone/archive/refs/heads/release-1.6.0.zip&zipUrlVariables={"service_label":"defvcn","network_admin_email_endpoints":["email.address@example.com"],"security_admin_email_endpoints":["email.address@example.com"],"define_net":true,"add_tt_vcn1":true,"enable_tt_vcn1_rcv_infra":true,"tt_vcn1_rcv_backup_retention_period_in_days":30,"enable_service_connector":true,"activate_service_connector":true,"service_connector_target_kind":"streaming","enable_security_zones":true,"vss_create":true,"create_budget":true})
 
 You are required to review/adjust the following variable settings:
  - Make sure to pick an OCI region for deployment.

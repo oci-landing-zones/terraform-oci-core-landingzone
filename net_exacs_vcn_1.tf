@@ -406,6 +406,31 @@ locals {
             }
           }
         } : {},
+        var.enable_exa_vcn1_rcv_infra && var.deploy_database_cmp ? {
+          "EXA-VCN-1-RCV-NSG" = {
+            display_name = "rcv-nsg"
+            ingress_rules = {
+              "INGRESS-TO-PORT-2484-RULE" = {
+                description  = "Allows ingress connectivity to TCP port 2484."
+                stateless    = false
+                protocol     = "TCP"
+                src          = var.add_exa_vcn1_backup_subnet ? local.exa_vcn1_backup_subnet_cidr : local.exa_vcn1_client_subnet_cidr
+                src_type     = "CIDR_BLOCK"
+                dst_port_min = 2484
+                dst_port_max = 2484
+              }
+              "INGRESS-TO-PORT-8005-RULE" = {
+                description  = "Allows ingress connectivity to TCP port 8005."
+                stateless    = false
+                protocol     = "TCP"
+                src          = var.add_exa_vcn1_backup_subnet ? local.exa_vcn1_backup_subnet_cidr : local.exa_vcn1_client_subnet_cidr
+                src_type     = "CIDR_BLOCK"
+                dst_port_min = 8005
+                dst_port_max = 8005
+              }
+            }
+          }
+        } : {},
         local.exa_vcn1_cross_vcn_open_nsg,
         local.exa_vcn1_cross_vcn_client_nsg,
         local.exa_vcn1_cross_vcn_integration_nsg,

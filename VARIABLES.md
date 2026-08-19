@@ -6,6 +6,7 @@
 - [Three Tier Networking](#three-tier-networking)
 - [EXA Networking](#exa-networking)
 - [OKE Networking](#oke-networking)
+- [Autonomous Recovery Service](#autonomous-recovery-service)
 - [Hub and Spoke Networking](#hub-and-spoke-networking)
 - [On-Premises Networking](#on-prem-networking)
 - [Monitoring](#monitoring)
@@ -367,6 +368,29 @@
 | oke\_vcn3\_workers\_subnet\_cidr | The Workers subnet CIDR block. It must be within the VCN CIDR blocks. | string | null | no |
 | oke\_vcn3\_workers\_subnet\_dns | The Workers subnet DNS name. Use only letters and numbers, no special characters. | string | null | no |
 | oke\_vcn3\_workers\_subnet\_name | The Workers subnet name. | string | null | no |
+
+### <a name="autonomous-recovery-service"></a> Autonomous Recovery Service
+
+| Variable Name | Description | Type | Default | Required |
+|---------------|-------------|------|---------|----------|
+| enable\_tt\_vcn1\_rcv\_infra | Whether to enable the Autonomous Recovery Service infrastructure for databases in TT-VCN-1 db subnet. | bool | false | no |
+| tt\_vcn1\_rcv\_backup\_retention\_period\_in\_days | The number of days to retain backup data in the Autonomous Recovery Service for databases in TT-VCN-1 db subnet. Use 0 to disable the policy; otherwise, the minimum is 14 days. | number | 0 | no |
+| enable\_tt\_vcn2\_rcv\_infra | Whether to enable the Autonomous Recovery Service infrastructure for databases inTT-VCN-2 db subnet. | bool | false | no |
+| tt\_vcn2\_rcv\_backup\_retention\_period\_in\_days | The number of days to retain backup data in the Autonomous Recovery Service for databases in TT-VCN-2 db subnet. Use 0 to disable the policy; otherwise, the minimum is 14 days. | number | 0 | no |
+| enable\_tt\_vcn3\_rcv\_infra | Whether to enable the Autonomous Recovery Service infrastructure for databases in TT-VCN-3 db subnet. | bool | false | no |
+| tt\_vcn3\_rcv\_backup\_retention\_period\_in\_days | The number of days to retain backup data in the Autonomous Recovery Service for databases in TT-VCN-3 db subnet. Use 0 to disable the policy; otherwise, the minimum is 14 days. | number | 0 | no |
+| enable\_oke\_vcn1\_rcv\_infra | Whether to enable the Autonomous Recovery Service infrastructure for databases in OKE-VCN-1 db subnet. | bool | false | no |
+| oke\_vcn1\_rcv\_backup\_retention\_period\_in\_days | The number of days to retain backup data in the Autonomous Recovery Service for databases in OKE-VCN-1 db subnet. Use 0 to disable the policy; otherwise, the minimum is 14 days. | number | 0 | no |
+| enable\_oke\_vcn2\_rcv\_infra | Whether to enable the Autonomous Recovery Service infrastructure for databases in OKE-VCN-2 db subnet. | bool | false | no |
+| oke\_vcn2\_rcv\_backup\_retention\_period\_in\_days | The number of days to retain backup data in the Autonomous Recovery Service for databases in OKE-VCN-2 db subnet. Use 0 to disable the policy; otherwise, the minimum is 14 days. | number | 0 | no |
+| enable\_oke\_vcn3\_rcv\_infra | Whether to enable the Autonomous Recovery Service infrastructure for databases in OKE-VCN-3 db subnet. | bool | false | no |
+| oke\_vcn3\_rcv\_backup\_retention\_period\_in\_days | The number of days to retain backup data in the Autonomous Recovery Service for databases in OKE-VCN-3 db subnet. Use 0 to disable the policy; otherwise, the minimum is 14 days. | number | 0 | no |
+| enable\_exa\_vcn1\_rcv\_infra | Whether to enable the Autonomous Recovery Service infrastructure for databases in EXA-VCN-1 backup (if provided) or client subnet. | bool | false | no |
+| exa\_vcn1\_rcv\_backup\_retention\_period\_in\_days | The number of days to retain backup data in the Autonomous Recovery Service for databases in EXA-VCN-1 backup (if provided) or client subnet. Use 0 to disable the policy; otherwise, the minimum is 14 days. | number | 0 | no |
+| enable\_exa\_vcn2\_rcv\_infra | Whether to enable the Autonomous Recovery Service infrastructure for databases in EXA-VCN-2 backup (if provided) or client subnet. | bool | false | no |
+| exa\_vcn2\_rcv\_backup\_retention\_period\_in\_days | The number of days to retain backup data in the Autonomous Recovery Service for databases in EXA-VCN-2 backup (if provided) or client subnet. Use 0 to disable the policy; otherwise, the minimum is 14 days. | number | 0 | no |
+| enable\_exa\_vcn3\_rcv\_infra | Whether to enable the Autonomous Recovery Service infrastructure for databases in EXA-VCN-3 backup (if provided) or client subnet. | bool | false | no |
+| exa\_vcn3\_rcv\_backup\_retention\_period\_in\_days | The number of days to retain backup data in the Autonomous Recovery Service for databases in EXA-VCN-3 backup (if provided) or client subnet. Use 0 to disable the policy; otherwise, the minimum is 14 days. | number | 0 | no |
 
 ### <a name="hub-and-spoke-networking"></a> Hub and Spoke Networking
 
