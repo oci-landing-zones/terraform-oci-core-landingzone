@@ -262,7 +262,8 @@ locals {
     "allow group ${join(",", local.database_admin_group_name)} to manage databases in compartment ${local.exainfra_compartment_name}",
     "allow group ${join(",", local.database_admin_group_name)} to manage pluggable-databases in compartment ${local.exainfra_compartment_name}",
     "allow group ${join(",", local.database_admin_group_name)} to manage db-backups in compartment ${local.exainfra_compartment_name}",
-  "allow group ${join(",", local.database_admin_group_name)} to manage data-safe-family in compartment ${local.exainfra_compartment_name}"] : []
+    "allow group ${join(",", local.database_admin_group_name)} to manage data-safe-family in compartment ${local.exainfra_compartment_name}",
+    "allow group ${join(",", local.database_admin_group_name)} to manage recovery-service-family in compartment ${local.exainfra_compartment_name}"] : []
 
   ## All database admin grants
   database_admin_grants = concat(local.database_admin_grants_on_database_cmp, local.database_admin_grants_on_network_cmp,

@@ -148,8 +148,8 @@ locals {
   recovery_subnets    = merge(local.tt_vcn1_rcv_subnet, local.tt_vcn2_rcv_subnet, local.tt_vcn3_rcv_subnet, local.oke_vcn1_rcv_subnet, local.oke_vcn2_rcv_subnet, local.oke_vcn3_rcv_subnet, local.exa_vcn1_rcv_subnet, local.exa_vcn2_rcv_subnet, local.exa_vcn3_rcv_subnet)
   protection_policies = merge(local.tt_vcn1_rcv_protection_policy, local.tt_vcn2_rcv_protection_policy, local.tt_vcn3_rcv_protection_policy, local.oke_vcn1_rcv_protection_policy, local.oke_vcn2_rcv_protection_policy, local.oke_vcn3_rcv_protection_policy, local.exa_vcn1_rcv_protection_policy, local.exa_vcn2_rcv_protection_policy, local.exa_vcn3_rcv_protection_policy)
 
-  autonomous_recovery_service_configuration = local.enable_database_compartment && length(local.recovery_subnets) > 0 ? {
-    default_compartment_id = local.database_compartment_id
+  autonomous_recovery_service_configuration = (local.enable_database_compartment || local.enable_exainfra_compartment) && length(local.recovery_subnets) > 0 ? {
+    default_compartment_id = coalesce(local.exainfra_compartment_id, local.database_compartment_id)
     recovery_subnets       = local.recovery_subnets
     protection_policies    = local.protection_policies
   } : {
@@ -161,7 +161,7 @@ locals {
 
 module "lz_rcv" {
   source = "github.com/oci-landing-zones/terraform-oci-modules-oracle-database//autonomous-recovery-service?ref=rcv"
-  count = local.enable_database_compartment && length(local.recovery_subnets) > 0 ? 1 : 0
+  count = (local.enable_database_compartment || local.enable_exainfra_compartment) && length(local.recovery_subnets) > 0 ? 1 : 0
   providers = {
     oci                  = oci
     oci.home             = oci.home
