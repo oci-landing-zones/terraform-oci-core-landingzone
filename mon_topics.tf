@@ -12,14 +12,14 @@ locals {
 
 module "lz_home_region_topics" {
   count  = var.extend_landing_zone_to_new_region == false ? 1 : 0
-  source = "github.com/oci-landing-zones/terraform-oci-modules-observability//notifications?ref=v0.2.5"
+  source = "github.com/oci-landing-zones/terraform-oci-modules-observability//notifications?ref=release-0.2.7"
   # depends_on = [ null_resource.wait_on_compartments ]
   providers                   = { oci = oci.home }
   notifications_configuration = local.home_region_notifications_configuration
 }
 
 module "lz_regional_topics" {
-  source = "github.com/oci-landing-zones/terraform-oci-modules-observability//notifications?ref=v0.2.5"
+  source = "github.com/oci-landing-zones/terraform-oci-modules-observability//notifications?ref=release-0.2.7"
   # depends_on = [ null_resource.wait_on_compartments ]
   notifications_configuration = local.regional_notifications_configuration
 }
@@ -183,8 +183,8 @@ locals {
       defined_tags   = local.topics_defined_tags
       freeform_tags  = local.topics_freeform_tags
       subscriptions = [
-        { protocol = "EMAIL"
-          values   = var.exainfra_admin_email_endpoints
+        { protocol = "EMAIL" 
+          values = var.exainfra_admin_email_endpoints 
         }
       ]
     }
