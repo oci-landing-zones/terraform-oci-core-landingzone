@@ -236,7 +236,7 @@ locals {
           "EXA-VCN-1-CLIENT-NSG" = {
             display_name = "client-nsg"
             ingress_rules = merge(
-              local.hub_with_vcn == true && var.exa_vcn1_attach_to_drg == true && local.add_exa_vcn1 == true && var.deploy_bastion_jump_host == true ? {
+              local.hub_with_vcn == true && var.exa_vcn1_attach_to_drg == true && local.add_exa_vcn1 == true && var.add_hub_vcn_jumphost_subnet == true ? {
                 "INGRESS-FROM-SSH-HUB-VCN-RULE" = {
                   description  = "Allows SSH connections from ${local.hub_vcn_jumphost_subnet_cidr} in Hub VCN Jumphost subnet."
                   stateless    = false
@@ -402,6 +402,31 @@ locals {
                 dst_port_max = split(":", port)[0] != "ICMP" ? split(":", port)[1] : null
                 icmp_type    = split(":", port)[0] == "ICMP" ? split("/", split(":", port)[1])[0] : null
                 icmp_code    = split(":", port)[0] == "ICMP" ? (length(split("/", split(":", port)[1])) > 1 ? split("/", split(":", port)[1])[1] : null) : null
+              }
+            }
+          }
+        } : {},
+        var.enable_exa_vcn1_rcv_infra && var.deploy_database_cmp ? {
+          "EXA-VCN-1-RCV-NSG" = {
+            display_name = "rcv-nsg"
+            ingress_rules = {
+              "INGRESS-TO-PORT-2484-RULE" = {
+                description  = "Allows ingress connectivity to TCP port 2484."
+                stateless    = false
+                protocol     = "TCP"
+                src          = var.add_exa_vcn1_backup_subnet ? local.exa_vcn1_backup_subnet_cidr : local.exa_vcn1_client_subnet_cidr
+                src_type     = "CIDR_BLOCK"
+                dst_port_min = 2484
+                dst_port_max = 2484
+              }
+              "INGRESS-TO-PORT-8005-RULE" = {
+                description  = "Allows ingress connectivity to TCP port 8005."
+                stateless    = false
+                protocol     = "TCP"
+                src          = var.add_exa_vcn1_backup_subnet ? local.exa_vcn1_backup_subnet_cidr : local.exa_vcn1_client_subnet_cidr
+                src_type     = "CIDR_BLOCK"
+                dst_port_min = 8005
+                dst_port_max = 8005
               }
             }
           }

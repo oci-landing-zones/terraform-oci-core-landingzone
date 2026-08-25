@@ -730,7 +730,7 @@ locals {
                   dst_port_max = 6443
                 }
               } : {},
-              (local.hub_with_vcn == true && var.deploy_bastion_jump_host == true) ? {
+              (local.hub_with_vcn == true && var.add_hub_vcn_jumphost_subnet == true) ? {
                 "INGRESS-FROM-HUB-JUMPHOST-SUBNET-RULE" = {
                   description  = "Ingress from Hub VCN Jumphost Subnet for management access to the Kubernetes API endpoint."
                   stateless    = false
@@ -898,7 +898,7 @@ locals {
                   dst_port_max = 22
                 }
               } : {},
-              (local.hub_with_vcn == true && var.deploy_bastion_jump_host == true) ? {
+              (local.hub_with_vcn == true && var.add_hub_vcn_jumphost_subnet == true) ? {
                 "INGRESS-FROM-HUB-JUMPHOST-SUBNET-RULE" = {
                   description  = "Ingress from Hub VCN Jumphost Subnet for SSH. Required for inbound connections from jump hosts in the Hub VCN."
                   stateless    = false
@@ -994,8 +994,18 @@ locals {
                 dst_type    = "CIDR_BLOCK"
               }
             },
-            ingress_rules = {}
-          }
+            ingress_rules = (local.hub_with_vcn == true && var.add_hub_vcn_jumphost_subnet == true) ? {
+              "INGRESS-FROM-HUB-JUMPHOST-SUBNET-RULE" = {
+                description  = "Ingress from Hub VCN Jumphost Subnet for SSH. Required for inbound connections from jump hosts in the Hub VCN."
+                stateless    = false
+                protocol     = "TCP"
+                src          = local.hub_vcn_jumphost_subnet_cidr
+                src_type     = "CIDR_BLOCK"
+                dst_port_min = 22
+                dst_port_max = 22
+              }
+            } : {}
+          } 
         } : {},
         upper(var.oke_vcn1_cni_type) == "NATIVE" ? {
           "OKE-VCN-1-PODS-NSG" = {
@@ -1132,6 +1142,31 @@ locals {
                 icmp_code    = split(":", port)[0] == "ICMP" ? (length(split("/", split(":", port)[1])) > 1 ? split("/", split(":", port)[1])[1] : null) : null
               } } : {}
             )
+          }
+        } : {},
+        var.enable_oke_vcn1_rcv_infra && var.deploy_database_cmp && var.add_oke_vcn1_db_subnet ? {
+          "OKE-VCN-1-RCV-NSG" = {
+            display_name = "rcv-nsg"
+            ingress_rules = {
+              "INGRESS-TO-PORT-2484-RULE" = {
+                description  = "Allows ingress connectivity to TCP port 2484."
+                stateless    = false
+                protocol     = "TCP"
+                src          = local.oke_vcn1_db_subnet_cidr
+                src_type     = "CIDR_BLOCK"
+                dst_port_min = 2484
+                dst_port_max = 2484
+              }
+              "INGRESS-TO-PORT-8005-RULE" = {
+                description  = "Allows ingress connectivity to TCP port 8005."
+                stateless    = false
+                protocol     = "TCP"
+                src          = local.oke_vcn1_db_subnet_cidr
+                src_type     = "CIDR_BLOCK"
+                dst_port_min = 8005
+                dst_port_max = 8005
+              }
+            }
           }
         } : {},
         local.oke_vcn1_cross_vcn_open_nsg,

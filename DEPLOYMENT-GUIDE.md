@@ -18,6 +18,7 @@
     1. [Handling Database Infrastructure](#database-infrastructure)
     1. [Deploying Lifecycle Environments](#deploying-lifecycle-environments)
     1. [Zero Trust Packet Routing (ZPR)](#zpr-use)
+    1. [Autonomous Recovery Service](#rcv)
     1. [Remote Access over SSH](#bastion-use)
     1. [Express Deployment](#express-use)
     1. [Customizing Compartments](#custom-cmp)
@@ -609,7 +610,7 @@ Core Landing Zone requires two Terraform applies to complete the network applian
 
 #### Detailed Deployment Workflow
 
-1. In a Hub VCN deployment, choose the appliance vendor (*hub_vcn_deploy_net_appliance_option = "Palo Alto Networks VM-Series Firewall"|"Fortinet FortiGate Firewall"*), and supply specific parameters like version, SSH public key, shape, allowed management CIDRs, and others.
+1. In a Hub VCN deployment, choose the marketplace appliance path (*hub_vcn_deploy_net_appliance_option = "Marketplace Image"*), set the appliance vendor (*net_appliance_image_vendor = "PaloAlto"|"Fortinet"*), and supply specific parameters like image name or version, SSH public key, shape, allowed management CIDRs, and others.
 2. Run the first *terraform plan/apply* to deploy Hub VCN and the appliances.
 3. Collect the OCIDs of NLB private IPs, available in *nlb_private_ip_addresses.OUTDOOR-NLB* and *nlb_private_ip_addresses.INDOOR_NLB* output variables. These are the OCIDs you will reference as entry points in the second Terraform execution.
 4. Set *hub_vcn_north_south_entry_point_ocid = nlb_private_ip_addresses.OUTDOOR-NLB* and *hub_vcn_east_west_entry_point_ocid = nlb_private_ip_addresses.INDOOR_NLB* in the Terraform configuration input variables.
@@ -1256,6 +1257,54 @@ in <zpr_namespace_name>.net:exa-vcn-1 VCN allow '10.1.2.0/24' to connect to <zpr
 ```
 in <zpr_namespace_name>.net:exa-vcn-1 VCN allow '<bastion service CIDR>/32' to connect to <zpr_namespace_name>.bastion:<service_label> endpoints with protocol='tcp/22'
 ```
+## <a name="rcv"></a>4.7 Autonomous Recovery Service
+
+### Overview
+
+[OCI Database Autonomous Recovery Service](https://docs.oracle.com/en-us/iaas/recovery-service/index.html) is a centralized, fully managed backup solution for OCI databases. Core Landing Zone can provision the network, protection policy, and IAM infrastructure needed to use the service with databases in supported three-tier, OKE, and Exadata VCNs.
+
+Recovery Service support is opt-in for each VCN. Enabling it does not register protected databases or manage backup jobs and restore operations; those database lifecycle actions are performed separately after the Landing Zone infrastructure is available.
+
+### Interface Design
+
+Each supported VCN exposes an enable input and a backup retention input.
+
+| VCN type | Number of VCNs | Enable input | Retention input | Number of VCNs |
+| --- | --- | --- | --- | --- |
+| Three-tier | `enable_tt_vcn1_rcv_infra` | true \| false| `tt_vcn1_rcv_backup_retention_period_in_days` | 0 for disabled, or number of days 14 or more |
+| Three-tier | `enable_tt_vcn2_rcv_infra` | true \| false| `tt_vcn2_rcv_backup_retention_period_in_days` | 0 for disabled, or number of days 14 or more |
+| Three-tier | `enable_tt_vcn3_rcv_infra` | true \| false| `tt_vcn3_rcv_backup_retention_period_in_days` | 0 for disabled, or number of days 14 or more |
+| OKE | `enable_oke_vcn1_rcv_infra` | true \| false| `oke_vcn2_rcv_backup_retention_period_in_days` |  0 for disabled, or number of days 14 or more |
+| OKE | `enable_oke_vcn2_rcv_infra` | true \| false| `oke_vcn2_rcv_backup_retention_period_in_days` |  0 for disabled, or number of days 14 or more |
+| OKE | `enable_oke_vcn3_rcv_infra` | true \| false| `oke_vcn3_rcv_backup_retention_period_in_days` |  0 for disabled, or number of days 14 or more |
+| Exadata | `enable_exa_vcn1_rcv_infra` | true \| false| `exa_vcn3_rcv_backup_retention_period_in_days` | 0 for disabled, or number of days 14 or more |
+| Exadata | `enable_exa_vcn2_rcv_infra` | true \| false| `exa_vcn2_rcv_backup_retention_period_in_days` | 0 for disabled, or number of days 14 or more |
+| Exadata | `enable_exa_vcn3_rcv_infra` | true \| false| `exa_vcn3_rcv_backup_retention_period_in_days` | 0 for disabled, or number of days 14 or more |
+
+The retention inputs are numbers and default to 0 days, meaning protection policies are disabled by default. Use 0 to disable a protection policy; otherwise, the minimum is 14 days. Infrastructure is created only when `deploy_exainfra_cmp` or `deploy_database_cmp` is `true`, the matching VCN is added, and its Recovery Service enable input is `true`. OKE VCN support also requires the matching optional database subnet provisioned.
+
+### Supported Resources
+
+The Landing Zone supports Recovery Service infrastructure for the following VCNs and subnet arrangements:
+
+| VCN type | Supported VCNs | Subnet associated with the Recovery Service subnet | Provisioning condition |
+| --- | --- | --- | --- |
+| Three-tier | TT-VCN-1, TT-VCN-2, TT-VCN-3 | DB subnet | Matching VCN and Recovery Service enable inputs |
+| OKE | OKE-VCN-1, OKE-VCN-2, OKE-VCN-3 | Optional DB subnet | Matching VCN, DB subnet, and Recovery Service enable inputs |
+| Exadata | EXA-VCN-1, EXA-VCN-2, EXA-VCN-3 | Backup subnet when enabled; otherwise client subnet | Matching VCN and Recovery Service enable inputs |
+
+For each enabled VCN, the Landing Zone creates:
+
+- A Recovery Service subnet resource associated with the database-facing subnet shown above.
+- A protection policy using the configured backup retention period (at least 14 days).
+- A VCN-local `rcv-nsg` that allows TCP ports 2484 and 8005. The allowed source is the DB subnet CIDR for three-tier and OKE VCNs, and the client or backup subnet CIDR for Exadata VCNs.
+
+When the Landing Zone manages IAM policies, it grants the database administrators group permission to manage `recovery-service-family` in the exainfra and database compartments. The tenancy-level services policy also allows the Database Service and Recovery Service to manage `recovery-service-family`, and allows the Database Service to manage tag namespaces so protected databases can inherit tags from their source databases.
+
+To preserve least privilege, Core Landing Zone does not grant Recovery Service tenancy-wide management of `virtual-network-family`. OCI databases have built-in access to network resources within their database VCN; if a deployment demonstrates that additional network permissions are required, grant only the necessary individual network resource types in the network compartment.
+
+For a minimal configuration, see [Core Landing Zone with Standalone Default Three-Tier VCN](./templates/standalone-three-tier-vcn-defaults/), which enables Autonomous Recovery Service for `TT-VCN-1` with a 30-day retention period.
+
 ## <a name="bastion-use"></a>4.8 Remote Access over SSH
 
 OCI Core Landing Zone enables remote access to private resources via a combination of a jump host with OCI Bastion service. The main idea is providing private access to the jump host via the Bastion service, and using the jump host as a bridge to resources in other VCNs. Both the Bastion service and the jump host are deployed in a specific "JumpHost" subnet within the Hub VCN. 

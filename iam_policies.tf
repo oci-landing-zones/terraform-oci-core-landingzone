@@ -235,7 +235,8 @@ locals {
     "allow group ${join(",", local.database_admin_group_name)} to use vnics in compartment ${local.database_compartment_name}",
     "allow group ${join(",", local.database_admin_group_name)} to manage keys in compartment ${local.database_compartment_name}",
     "allow group ${join(",", local.database_admin_group_name)} to use key-delegate in compartment ${local.database_compartment_name}",
-    "allow group ${join(",", local.database_admin_group_name)} to manage secret-family in compartment ${local.database_compartment_name}"
+    "allow group ${join(",", local.database_admin_group_name)} to manage secret-family in compartment ${local.database_compartment_name}",
+    "allow group ${join(",", local.database_admin_group_name)} to manage recovery-service-family in compartment ${local.database_compartment_name}"
     ], local.enable_exainfra_compartment ? [] : [
     "allow group ${join(",", local.database_admin_group_name)} to manage cloud-exadata-infrastructures in compartment ${local.database_compartment_name}",
     "allow group ${join(",", local.database_admin_group_name)} to manage cloud-vmclusters in compartment ${local.database_compartment_name}",
@@ -244,7 +245,7 @@ locals {
     "allow group ${join(",", local.database_admin_group_name)} to manage backups in compartment ${local.database_compartment_name}",
     "allow group ${join(",", local.database_admin_group_name)} to manage backup-destinations in compartment ${local.database_compartment_name}",
     "allow group ${join(",", local.database_admin_group_name)} to manage db-console-connection in compartment ${local.database_compartment_name}",
-    "allow group ${join(",", local.database_admin_group_name)} to manage db-console-history in compartment ${local.database_compartment_name}"
+    "allow group ${join(",", local.database_admin_group_name)} to manage db-console-history in compartment ${local.database_compartment_name}",
   ]) : []
 
   ## Database admin grants on Network compartment
@@ -281,7 +282,8 @@ locals {
     "allow group ${join(",", local.database_admin_group_name)} to manage data-safe-family in compartment ${local.exainfra_compartment_name}",
     "allow group ${join(",", local.database_admin_group_name)} to manage database-software-images in compartment ${local.exainfra_compartment_name}",
     "allow group ${join(",", local.database_admin_group_name)} to manage dbnode-console-connection in compartment ${local.exainfra_compartment_name}",
-    "allow group ${join(",", local.database_admin_group_name)} to manage dbnode-console-history in compartment ${local.exainfra_compartment_name}"] : []
+    "allow group ${join(",", local.database_admin_group_name)} to manage dbnode-console-history in compartment ${local.exainfra_compartment_name}",
+    "allow group ${join(",", local.database_admin_group_name)} to manage recovery-service-family in compartment ${local.exainfra_compartment_name}"] : []
 
   ## All database admin grants
   database_admin_grants = concat(local.database_admin_grants_on_database_cmp, local.database_admin_grants_on_network_cmp,
@@ -416,7 +418,7 @@ locals {
   autonomous_database_grants = concat(local.autonomous_database_grants_on_database_cmp, local.autonomous_database_grants_on_security_cmp)
 
   ## Network firewall appliance grant. Primarily for Fortinet's Fortigate
-  net_fw_app_grants_on_enclosing_cmp = local.firewall_options[var.hub_vcn_deploy_net_appliance_option] == "FORTINET" && local.net_fw_app_dynamic_group_name != null ? [
+  net_fw_app_grants_on_enclosing_cmp = local.chosen_firewall_option == "FORTINET" && local.net_fw_app_dynamic_group_name != null ? [
   "allow dynamic-group ${local.net_fw_app_dynamic_group_name} to read all-resources in ${local.policy_scope}"] : []
 
   ## Storage admin grants
@@ -584,7 +586,7 @@ locals {
     } : null
   } : {}
 
-  net_fw_app_policy = local.firewall_options[var.hub_vcn_deploy_net_appliance_option] == "FORTINET" ? {
+  net_fw_app_policy = local.chosen_firewall_option == "FORTINET" ? {
     (local.net_fw_app_policy_name) = length(local.net_fw_app_grants_on_enclosing_cmp) > 0 ? {
       compartment_id = local.enclosing_compartment_id
       name           = local.net_fw_app_policy_name
