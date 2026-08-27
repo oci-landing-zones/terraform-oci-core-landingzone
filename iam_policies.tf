@@ -19,6 +19,7 @@ locals {
   database_dynamic_group_policy_name = "${var.service_label}-database-dynamic-group-policy"
   appdev_admin_root_policy_name      = "${var.service_label}-appdev-admin-root-policy"
   appdev_admin_policy_name           = "${var.service_label}-appdev-admin-policy"
+  ai_foundation_policy_name          = "${var.service_label}-ai-foundation-policy"
   iam_admin_policy_name              = "${var.service_label}-iam-admin-policy"
   iam_admin_root_policy_name         = "${var.service_label}-iam-admin-root-policy"
   cred_admin_policy_name             = "${var.service_label}-credential-admin-policy"
@@ -353,6 +354,59 @@ locals {
   appdev_admin_grants = concat(local.appdev_admin_grants_on_appdev_cmp, local.appdev_admin_grants_on_network_cmp,
   local.appdev_admin_grants_on_security_cmp, local.appdev_admin_grants_on_database_cmp)
 
+  appdev_ai_grants = concat(
+    var.enable_generative_ai_infra && local.enable_app_compartment ? ["allow group ${join(",", local.appdev_admin_group_name)} to manage generative-ai-family in compartment ${local.app_compartment_name}"] : [],
+    var.enable_data_science_infra && local.enable_app_compartment ? ["allow group ${join(",", local.appdev_admin_group_name)} to manage data-science-family in compartment ${local.app_compartment_name}", "allow group ${join(",", local.appdev_admin_group_name)} to manage dataflow-family in compartment ${local.app_compartment_name}"] : [],
+    var.enable_prebuilt_ai_services_infra && local.enable_app_compartment ? ["allow group ${join(",", local.appdev_admin_group_name)} to manage ai-service-language-family in compartment ${local.app_compartment_name}", "allow group ${join(",", local.appdev_admin_group_name)} to manage ai-service-vision-family in compartment ${local.app_compartment_name}", "allow group ${join(",", local.appdev_admin_group_name)} to manage ai-service-speech-family in compartment ${local.app_compartment_name}", "allow group ${join(",", local.appdev_admin_group_name)} to manage ai-service-document-family in compartment ${local.app_compartment_name}"] : [],
+    var.enable_ai_compute_infra && local.enable_app_compartment ? ["allow group ${join(",", local.appdev_admin_group_name)} to manage compute-management-family in compartment ${local.app_compartment_name}", "allow group ${join(",", local.appdev_admin_group_name)} to manage compute-clusters in compartment ${local.app_compartment_name}", "allow group ${join(",", local.appdev_admin_group_name)} to manage compute-capacity-reservations in compartment ${local.app_compartment_name}"] : []
+  )
+
+  ai_data_science_runtime_grants = var.enable_data_science_infra && local.enable_app_compartment ? [
+    "allow dynamic-group ${local.data_science_runtime_dynamic_group_name} to use log-groups in compartment ${local.app_compartment_name} where request.principal.compartment.id = '${local.app_compartment_id}'",
+  "allow dynamic-group ${local.data_science_runtime_dynamic_group_name} to use log-content in compartment ${local.app_compartment_name} where request.principal.compartment.id = '${local.app_compartment_id}'"] : []
+
+  generative_ai_object_and_secret_compartment_names = concat(
+    local.enable_app_compartment ? [local.app_compartment_name] : [],
+    local.enable_database_compartment ? [local.database_compartment_name] : [],
+    local.enable_security_compartment ? [local.security_compartment_name] : [],
+    local.enable_exainfra_compartment ? [local.exainfra_compartment_name] : []
+  )
+
+  generative_ai_database_tools_compartment_names = concat(
+    local.enable_app_compartment ? [local.app_compartment_name] : [],
+    local.enable_database_compartment ? [local.database_compartment_name] : [],
+    local.enable_exainfra_compartment ? [local.exainfra_compartment_name] : []
+  )
+
+  generative_ai_database_compartment_names = concat(
+    local.enable_database_compartment ? [local.database_compartment_name] : [],
+    local.enable_exainfra_compartment ? [local.exainfra_compartment_name] : []
+  )
+
+  generative_ai_platform_grants = var.enable_generative_ai_infra && local.enable_app_compartment ? [
+    "allow dynamic-group ${local.genai_hosted_applications_dynamic_group_name} to read repos in compartment ${local.app_compartment_name} where request.principal.compartment.id = '${local.app_compartment_id}'",
+    "allow dynamic-group ${local.genai_hosted_applications_dynamic_group_name} to read vss-family in compartment ${local.app_compartment_name} where request.principal.compartment.id = '${local.app_compartment_id}'",
+  "allow dynamic-group ${local.genai_semantic_stores_dynamic_group_name} to use generative-ai-family in compartment ${local.app_compartment_name} where request.principal.compartment.id = '${local.app_compartment_id}'"] : []
+
+  generative_ai_managed_access_grants = var.enable_generative_ai_infra && var.generative_ai_data_access_policy_mode == "CORELZ_MANAGED" && local.enable_app_compartment ? concat(
+    ["allow any-user to manage generative-ai-response in compartment ${local.app_compartment_name} where ALL {request.principal.type='generativeaiapikey'}"],
+    flatten([for compartment_name in local.generative_ai_object_and_secret_compartment_names : [
+      "allow dynamic-group ${local.genai_vector_store_connectors_dynamic_group_name} to read object-family in compartment ${compartment_name} where request.principal.compartment.id = '${local.app_compartment_id}'",
+      "allow dynamic-group ${local.genai_semantic_stores_dynamic_group_name} to read secret-family in compartment ${compartment_name} where request.principal.compartment.id = '${local.app_compartment_id}'"
+    ]]),
+    [for compartment_name in local.generative_ai_database_tools_compartment_names :
+      "allow dynamic-group ${local.genai_semantic_stores_dynamic_group_name} to use database-tools-family in compartment ${compartment_name} where request.principal.compartment.id = '${local.app_compartment_id}'"
+    ],
+    flatten([for compartment_name in local.generative_ai_database_compartment_names : [
+      "allow dynamic-group ${local.genai_semantic_stores_dynamic_group_name} to read database-family in compartment ${compartment_name} where request.principal.compartment.id = '${local.app_compartment_id}'",
+      "allow dynamic-group ${local.genai_semantic_stores_dynamic_group_name} to read autonomous-database-family in compartment ${compartment_name} where request.principal.compartment.id = '${local.app_compartment_id}'"
+    ]])
+  ) : []
+
+  generative_ai_runtime_grants = concat(local.generative_ai_platform_grants, local.generative_ai_managed_access_grants)
+
+  ai_foundation_grants = concat(local.appdev_ai_grants, local.ai_data_science_runtime_grants, local.generative_ai_runtime_grants)
+
   ## Exainfra admin grants on Exinfra compartment
   exainfra_admin_grants_on_exainfra_cmp = local.enable_exainfra_compartment ? [
     "allow group ${join(",", local.exainfra_admin_group_name)} to manage cloud-exadata-infrastructures in compartment ${local.exainfra_compartment_name}",
@@ -553,6 +607,17 @@ locals {
     } : null
   } : {}
 
+  ai_foundation_policy = local.enable_app_compartment && length(local.ai_foundation_grants) > 0 ? {
+    (local.ai_foundation_policy_name) = {
+      compartment_id = local.enclosing_compartment_id
+      name           = local.ai_foundation_policy_name
+      description    = "${var.lz_provenant_label} consolidated policy for enabled AI administration and runtime identities."
+      defined_tags   = local.policies_defined_tags
+      freeform_tags  = local.policies_freeform_tags
+      statements     = local.ai_foundation_grants
+    }
+  } : {}
+
   iam_admin_policy = length(local.iam_admin_grants_on_enclosing_cmp) > 0 ? {
     (local.iam_admin_policy_name) = {
       compartment_id = local.enclosing_compartment_id
@@ -610,7 +675,7 @@ locals {
 
   policies = merge(local.compute_agent_policy, local.database_dyn_group_policy, local.network_admin_policy, local.security_admin_policy,
     local.database_admin_policy, local.database_admin_exainfra_policy, local.appdev_admin_policy, local.iam_admin_policy, local.storage_admin_policy,
-  local.exainfra_policy, local.net_fw_app_policy, local.custom_policy)
+  local.exainfra_policy, local.net_fw_app_policy, local.ai_foundation_policy, local.custom_policy)
 
   #-- Basic grants on Root compartment
   basic_grants_default_grantees = concat(local.security_admin_group_name, local.network_admin_group_name, local.appdev_admin_group_name, local.database_admin_group_name, local.storage_admin_group_name)

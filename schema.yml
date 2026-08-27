@@ -23,6 +23,7 @@ variableGroups:
     variables:
     - "extend_landing_zone_to_new_region"
     - "customize_iam"
+    - "define_ai_foundations"
     - "define_net"
     - "enable_zpr"
     - "zpr_namespace_name"
@@ -43,7 +44,7 @@ variableGroups:
       - "deploy_exainfra_cmp"
       - "custom_exainfra_compartment_name"
     visible: customize_iam
-    
+
   - title: "Identity Domains"
     variables:
       - "identity_domain_option"
@@ -94,6 +95,10 @@ variableGroups:
       - "existing_id_domain_compute_agent_dyn_group_name"
       - "existing_id_domain_database_kms_dyn_group_name" 
       - "existing_id_domain_net_fw_app_dyn_group_name"
+      - "existing_id_domain_ai_data_science_runtime_dyn_group_name"
+      - "existing_id_domain_ai_genai_vector_store_connectors_dyn_group_name"
+      - "existing_id_domain_ai_genai_hosted_applications_dyn_group_name"
+      - "existing_id_domain_ai_genai_semantic_stores_dyn_group_name"
     visible:
       and:
         - eq:
@@ -141,6 +146,10 @@ variableGroups:
       - "existing_compute_agent_dyn_group_name"
       - "existing_database_kms_dyn_group_name" 
       - "existing_net_fw_app_dyn_group_name"
+      - "existing_ai_data_science_runtime_dyn_group_name"
+      - "existing_ai_genai_vector_store_connectors_dyn_group_name"
+      - "existing_ai_genai_hosted_applications_dyn_group_name"
+      - "existing_ai_genai_semantic_stores_dyn_group_name"
     visible:
       and:
         - eq:
@@ -165,6 +174,15 @@ variableGroups:
         - eq:
           - ${customize_iam}
           - true
+
+  - title: "AI Foundation"
+    variables:
+      - "enable_generative_ai_infra"
+      - "generative_ai_data_access_policy_mode"
+      - "enable_data_science_infra"
+      - "enable_prebuilt_ai_services_infra"
+      - "enable_ai_compute_infra"
+    visible: define_ai_foundations
   
   - title: "Network Topology"
     variables:
@@ -624,6 +642,7 @@ variableGroups:
       - "storage_admin_email_endpoints"
       - "database_admin_email_endpoints"
       - "exainfra_admin_email_endpoints"
+      - "ai_admin_email_endpoints"
       - "budget_admin_email_endpoints"
       - "create_alarms_as_enabled"
       - "create_events_as_enabled"
@@ -779,6 +798,12 @@ variables:
     description: "Check if you need to customize the settings for compartments, identity domains, groups, and policies."
     visible: true
 
+  define_ai_foundations:
+    type: boolean
+    title: "Define AI Foundations?"
+    description: "Check to define AI foundations resources. If you do not select, the Landing Zone does NOT deploy any infrastructure for AI foundations."
+    visible: true
+
   define_net:
     type: boolean
     title: "Define Networking Topology?"
@@ -898,6 +923,65 @@ variables:
     description: "The custom name of the app compartment. If none is provided, the default name for the app compartment will be used."
     required: false
     visible: deploy_app_cmp
+
+  enable_generative_ai_infra:
+    type: boolean
+    title: "Enable Generative AI Infrastructure?"
+    description: "Enables OCI Generative AI administration prerequisites and grants."
+    default: false
+    required: false
+    visible: 
+      and:
+        - deploy_app_cmp
+        - define_ai_foundations
+
+  enable_data_science_infra:
+    type: boolean
+    title: "Enable Data Science Infrastructure?"
+    description: "Enables Data Science, Data Flow, and Data Science runtime identity prerequisites."
+    default: false
+    required: false
+    visible: 
+      and:
+        - deploy_app_cmp
+        - define_ai_foundations
+
+  enable_prebuilt_ai_services_infra:
+    type: boolean
+    title: "Enable Prebuilt AI Services Infrastructure?"
+    description: "Enables Language, Vision, Speech, and Document Understanding prerequisites."
+    default: false
+    required: false
+    visible: 
+      and:
+        - deploy_app_cmp
+        - define_ai_foundations
+
+  enable_ai_compute_infra:
+    type: boolean
+    title: "Enable AI Compute Infrastructure?"
+    description: "Enables Compute cluster, Compute management, and capacity reservation prerequisites."
+    default: false
+    required: false
+    visible: 
+      and:
+        - deploy_app_cmp
+        - define_ai_foundations
+
+  generative_ai_data_access_policy_mode:
+    type: enum
+    title: "Generative AI Data Access Policy Mode"
+    description: "Choose CORELZ_MANAGED for Core Landing Zone to authorize AI foundations resources at the compartment level. Choose WORKLOAD_MANAGED for having custom policies defined by workload stacks, that can provision stricter policies at the resource level."
+    enum:
+      - "CORELZ_MANAGED"
+      - "WORKLOAD_MANAGED"
+    default: "CORELZ_MANAGED"
+    required: false
+    visible:
+      and:
+        - deploy_app_cmp
+        - define_ai_foundations
+        - enable_generative_ai_infra
 
   deploy_database_cmp:
     type: boolean
@@ -1243,6 +1327,54 @@ variables:
         - not:
             - deploy_custom_domain_groups
 
+  existing_id_domain_ai_data_science_runtime_dyn_group_name:
+    type: string
+    title: "Existing Data Science Runtime Dynamic Group Name"
+    description: "Existing dynamic group name in the existing identity domain for Data Science runtimes."
+    visible:
+      and:
+        - eq:
+            - ${identity_domain_option}
+            - "Use Custom Identity Domain"
+        - not:
+            - deploy_custom_domain_groups
+
+  existing_id_domain_ai_genai_vector_store_connectors_dyn_group_name:
+    type: string
+    title: "Existing Generative AI Vector Store Connectors Dynamic Group Name"
+    description: "Existing dynamic group name in the existing identity domain for Generative AI vector store connectors."
+    visible:
+      and:
+        - eq:
+            - ${identity_domain_option}
+            - "Use Custom Identity Domain"
+        - not:
+            - deploy_custom_domain_groups
+
+  existing_id_domain_ai_genai_hosted_applications_dyn_group_name:
+    type: string
+    title: "Existing Generative AI Hosted Applications Dynamic Group Name"
+    description: "Existing dynamic group name in the existing identity domain for Generative AI hosted applications and deployments."
+    visible:
+      and:
+        - eq:
+            - ${identity_domain_option}
+            - "Use Custom Identity Domain"
+        - not:
+            - deploy_custom_domain_groups
+
+  existing_id_domain_ai_genai_semantic_stores_dyn_group_name:
+    type: string
+    title: "Existing Generative AI Semantic Stores Dynamic Group Name"
+    description: "Existing dynamic group name in the existing identity domain for Generative AI semantic stores."
+    visible:
+      and:
+        - eq:
+            - ${identity_domain_option}
+            - "Use Custom Identity Domain"
+        - not:
+            - deploy_custom_domain_groups
+
   groups_options:
     type: enum
     title: "Deploy New Groups?"
@@ -1447,6 +1579,50 @@ variables:
       eq:
         - ${dyn_groups_options}
         - "No, use existing"      
+
+  existing_ai_data_science_runtime_dyn_group_name:
+    type: oci:identity:dynamicgroups:id
+    dependsOn:
+      compartmentId: ${tenancy_ocid}
+    title: "Existing Data Science Runtime Dynamic Group Name"
+    description: "Existing Data Science runtime dynamic group."
+    visible:
+      eq:
+        - ${dyn_groups_options}
+        - "No, use existing"
+
+  existing_ai_genai_vector_store_connectors_dyn_group_name:
+    type: oci:identity:dynamicgroups:id
+    dependsOn:
+      compartmentId: ${tenancy_ocid}
+    title: "Existing Generative AI Vector Store Connectors Dynamic Group Name"
+    description: "Existing Generative AI vector store connectors dynamic group."
+    visible:
+      eq:
+        - ${dyn_groups_options}
+        - "No, use existing"
+
+  existing_ai_genai_hosted_applications_dyn_group_name:
+    type: oci:identity:dynamicgroups:id
+    dependsOn:
+      compartmentId: ${tenancy_ocid}
+    title: "Existing Generative AI Hosted Applications Dynamic Group Name"
+    description: "Existing Generative AI hosted applications and deployments dynamic group."
+    visible:
+      eq:
+        - ${dyn_groups_options}
+        - "No, use existing"
+
+  existing_ai_genai_semantic_stores_dyn_group_name:
+    type: oci:identity:dynamicgroups:id
+    dependsOn:
+      compartmentId: ${tenancy_ocid}
+    title: "Existing Generative AI Semantic Stores Dynamic Group Name"
+    description: "Existing Generative AI semantic stores dynamic group."
+    visible:
+      eq:
+        - ${dyn_groups_options}
+        - "No, use existing"
 
   policies_in_root_compartment:
     type: enum
@@ -5817,6 +5993,17 @@ variables:
     required: false
     description: "List of email addresses for all Exadata infrastructure related notifications. (Type an email address and hit enter to enter multiple values)"
     visible: notifications_advanced_options  
+
+  ai_admin_email_endpoints:
+    type: array
+    items:
+      type: string
+    uniqueItems: true
+    title: "AI Admin Email Endpoints"
+    required: false
+    default: []
+    description: "List of email addresses for all AI related notifications. (Type an email address and hit enter to enter multiple values)"
+    visible: notifications_advanced_options
 
   budget_admin_email_endpoints:
     type: array

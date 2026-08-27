@@ -2,6 +2,7 @@
 
 - [General](#general)
 - [Identity](#identity)
+- [AI Foundation](#ai-foundation)
 - [Security](#security)
 - [Three Tier Networking](#three-tier-networking)
 - [EXA Networking](#exa-networking)
@@ -98,6 +99,28 @@
 | rm\_existing\_id\_domain\_network\_admin\_group\_name       | The existing network admin group name in the existing identity domain. | list(string) | [] | no |
 | rm\_existing\_id\_domain\_security\_admin\_group\_name      | The existing security admin group name in the existing identity domain. | list(string) | [] | no |
 | rm\_existing\_id\_domain\_storage\_admin\_group\_name       | The existing storage admin group name in the existing identity domain. | list(string) | [] | no |
+
+### <a name="ai-foundation"></a> AI Foundation
+
+| Variable Name | Description | Type | Default | Required |
+|---------------|-------------|------|---------|----------|
+| enable\_generative\_ai\_infra | Enables OCI Generative AI administration and Enterprise AI resource-principal prerequisites. | bool | false | no |
+| enable\_data\_science\_infra | Enables Data Science, Data Flow, and Data Science runtime identity prerequisites in the Application compartment. | bool | false | no |
+| enable\_prebuilt\_ai\_services\_infra | Enables Language, Vision, Speech, and Document Understanding prerequisites in the Application compartment. | bool | false | no |
+| enable\_ai\_compute\_infra | Enables Compute cluster, Compute management, and capacity reservation prerequisites in the Application compartment. | bool | false | no |
+| generative\_ai\_data\_access\_policy\_mode | Chooses whether Core LZ or workload stacks own Generative AI API-key authorization and runtime data-access grants. Valid values are CORELZ_MANAGED and WORKLOAD_MANAGED. | string | "CORELZ_MANAGED" | no |
+| existing\_ai\_data\_science\_runtime\_dyn\_group\_name | Existing Default Identity Domain Data Science runtime dynamic group to reuse. | string | "" | no |
+| existing\_ai\_genai\_vector\_store\_connectors\_dyn\_group\_name | Existing Default Identity Domain Generative AI vector store connectors dynamic group to reuse. | string | "" | no |
+| existing\_ai\_genai\_hosted\_applications\_dyn\_group\_name | Existing Default Identity Domain Generative AI hosted applications dynamic group to reuse. | string | "" | no |
+| existing\_ai\_genai\_semantic\_stores\_dyn\_group\_name | Existing Default Identity Domain Generative AI semantic stores dynamic group to reuse. | string | "" | no |
+| existing\_id\_domain\_ai\_data\_science\_runtime\_dyn\_group\_name | Existing custom Identity Domain Data Science runtime dynamic group to reuse. | string | "" | no |
+| existing\_id\_domain\_ai\_genai\_vector\_store\_connectors\_dyn\_group\_name | Existing custom Identity Domain Generative AI vector store connectors dynamic group to reuse. | string | "" | no |
+| existing\_id\_domain\_ai\_genai\_hosted\_applications\_dyn\_group\_name | Existing custom Identity Domain Generative AI hosted applications dynamic group to reuse. | string | "" | no |
+| existing\_id\_domain\_ai\_genai\_semantic\_stores\_dyn\_group\_name | Existing custom Identity Domain Generative AI semantic stores dynamic group to reuse. | string | "" | no |
+
+The four `*_infra` inputs enable prerequisites only: Core LZ does not create AI models, endpoints, API keys, projects, vector stores, semantic stores, hosted applications, Data Science projects, OKE clusters, GPU instances, databases, or application pipelines. Every enabled AI service requires `deploy_app_cmp = true`.
+
+`CORELZ_MANAGED` authorizes Generative AI API keys to use the Responses API. Vector store connectors can read Object Storage and semantic stores can read secrets across enabled Application, Database, Security, and Exainfra compartments. Semantic stores can use Database Tools in Application, Database, and Exainfra, and read database metadata in Database and Exainfra. `WORKLOAD_MANAGED` retains all Enterprise AI dynamic groups and required hosted-application and semantic-store platform grants, but leaves the Responses API and data-access policies to workload stacks. IAM allow grants are additive: a narrower workload allow policy does not remove a broader Core LZ allow policy. To migrate safely, deploy the narrower workload policies first, verify API-key and resource-principal access, then update Core LZ to `WORKLOAD_MANAGED` to remove the compartment-level statements.
 
 ### <a name="security"></a> Security
 
@@ -506,6 +529,7 @@
 | Variable Name | Description | Type | Default | Required |
 |---------------|-------------|------|---------|----------|
 | activate\_service\_connector | Whether Service Connector should be activated. If true, costs my incur due to usage of Object Storage bucket, Streaming or Function. | bool | false | no |
+| ai\_admin\_email\_endpoints | Optional unique email endpoints for AI notifications, alarms, and events in the Application compartment. | list(string) | [] | no |
 | alarm\_message\_format | Format of the message sent by Alarms | string | "PRETTY_JSON" | no |
 | budget\_admin\_email\_endpoints | List of email addresses for all budget related notifications such as budget and finance. (Type an email address and hit enter to enter multiple values) | list(string) | [] | no |
 | compute\_admin\_email\_endpoints | List of email addresses for all compute related notifications. (Type an email address and hit enter to enter multiple values) | list(string) | [] | no |
