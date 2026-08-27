@@ -279,7 +279,7 @@ variableGroups:
         - add_hub_vcn_jumphost_subnet
         - deploy_bastion_jump_host
 
-  - title: "Networking - Three Tier VCNs"
+  - title: "Networking - Three Tier VCN 1"
     variables:
       - "add_tt_vcn1"
       - "tt_vcn1_onprem_route_enable"
@@ -299,11 +299,17 @@ variableGroups:
       - "tt_vcn1_db_subnet_name"
       - "tt_vcn1_db_subnet_cidr"
       - "tt_vcn1_db_ingress_destination_ports"
+      - "enable_tt_vcn1_rcv_infra"
+      - "tt_vcn1_rcv_backup_retention_period_in_days"
       - "deploy_tt_vcn1_bastion_subnet"
       - "tt_vcn1_bastion_subnet_name"
       - "tt_vcn1_bastion_subnet_cidr"
       - "tt_vcn1_bastion_is_access_via_public_endpoint"
       - "tt_vcn1_bastion_subnet_allowed_cidrs"
+    visible: define_net
+
+  - title: "Networking - Three Tier VCN 2"
+    variables:
       - "add_tt_vcn2"
       - "tt_vcn2_onprem_route_enable"
       - "tt_vcn2_name"
@@ -322,11 +328,17 @@ variableGroups:
       - "tt_vcn2_db_subnet_name"
       - "tt_vcn2_db_subnet_cidr"
       - "tt_vcn2_db_ingress_destination_ports"
+      - "enable_tt_vcn2_rcv_infra"
+      - "tt_vcn2_rcv_backup_retention_period_in_days"
       - "deploy_tt_vcn2_bastion_subnet"
       - "tt_vcn2_bastion_subnet_name"
       - "tt_vcn2_bastion_subnet_cidr"
       - "tt_vcn2_bastion_is_access_via_public_endpoint"
       - "tt_vcn2_bastion_subnet_allowed_cidrs"
+    visible: define_net
+
+  - title: "Networking - Three Tier VCN 3"
+    variables:
       - "add_tt_vcn3"
       - "tt_vcn3_onprem_route_enable"
       - "tt_vcn3_name"
@@ -345,6 +357,8 @@ variableGroups:
       - "tt_vcn3_db_subnet_name"
       - "tt_vcn3_db_subnet_cidr"
       - "tt_vcn3_db_ingress_destination_ports"
+      - "enable_tt_vcn3_rcv_infra"
+      - "tt_vcn3_rcv_backup_retention_period_in_days"
       - "deploy_tt_vcn3_bastion_subnet"
       - "tt_vcn3_bastion_subnet_name"
       - "tt_vcn3_bastion_subnet_cidr"
@@ -352,7 +366,7 @@ variableGroups:
       - "tt_vcn3_bastion_subnet_allowed_cidrs"
     visible: define_net
 
-  - title: "Networking - Exadata Cloud Service VCNs"
+  - title: "Networking - Exadata Cloud Service VCN 1"
     variables:
       - "add_exa_vcn1"
       - "exa_vcn1_onprem_route_enable"
@@ -360,6 +374,8 @@ variableGroups:
       - "exa_vcn1_cidrs"
       - "exa_vcn1_attach_to_drg"
       - "exa_vcn1_routable_vcns"
+      - "enable_exa_vcn1_rcv_infra"
+      - "exa_vcn1_rcv_backup_retention_period_in_days"
       - "customize_exa_vcn1_subnets"
       - "exa_vcn1_client_subnet_name"
       - "exa_vcn1_client_subnet_cidr"
@@ -373,12 +389,18 @@ variableGroups:
       - "exa_vcn1_integration_subnet_cidr"
       - "exa_vcn1_external_allowed_cidrs_into_integration_tier"
       - "exa_vcn1_integration_ingress_destination_ports"
+    visible: define_net
+
+  - title: "Networking - Exadata Cloud Service VCN 2"
+    variables:
       - "add_exa_vcn2"
       - "exa_vcn2_onprem_route_enable"
       - "exa_vcn2_name"
       - "exa_vcn2_cidrs"
       - "exa_vcn2_attach_to_drg"
       - "exa_vcn2_routable_vcns"
+      - "enable_exa_vcn2_rcv_infra"
+      - "exa_vcn2_rcv_backup_retention_period_in_days"
       - "customize_exa_vcn2_subnets"
       - "exa_vcn2_client_subnet_name"
       - "exa_vcn2_client_subnet_cidr"
@@ -392,12 +414,18 @@ variableGroups:
       - "exa_vcn2_integration_subnet_cidr"
       - "exa_vcn2_external_allowed_cidrs_into_integration_tier"
       - "exa_vcn2_integration_ingress_destination_ports"
+    visible: define_net
+
+  - title: "Networking - Exadata Cloud Service VCN 3"
+    variables:
       - "add_exa_vcn3"
       - "exa_vcn3_onprem_route_enable"
       - "exa_vcn3_cidrs"
       - "exa_vcn3_name"
       - "exa_vcn3_attach_to_drg"
       - "exa_vcn3_routable_vcns"
+      - "enable_exa_vcn3_rcv_infra"
+      - "exa_vcn3_rcv_backup_retention_period_in_days"
       - "customize_exa_vcn3_subnets"
       - "exa_vcn3_client_subnet_name"
       - "exa_vcn3_client_subnet_cidr"
@@ -413,7 +441,7 @@ variableGroups:
       - "exa_vcn3_integration_ingress_destination_ports"
     visible: define_net
 
-  - title: "Networking - OKE VCNs"
+  - title: "Networking - OKE VCN 1"
     variables:
       - "add_oke_vcn1"
       - "oke_vcn1_onprem_route_enable"
@@ -441,6 +469,12 @@ variableGroups:
       - "oke_vcn1_db_subnet_name"
       - "oke_vcn1_db_subnet_cidr"
       - "oke_vcn1_db_ingress_destination_ports"
+      - "enable_oke_vcn1_rcv_infra"
+      - "oke_vcn1_rcv_backup_retention_period_in_days"
+    visible: define_net
+
+  - title: "Networking - OKE VCN 2"
+    variables:
       - "add_oke_vcn2"
       - "oke_vcn2_onprem_route_enable"
       - "oke_vcn2_cni_type"
@@ -467,6 +501,12 @@ variableGroups:
       - "oke_vcn2_db_subnet_name"
       - "oke_vcn2_db_subnet_cidr"
       - "oke_vcn2_db_ingress_destination_ports"
+      - "enable_oke_vcn2_rcv_infra"
+      - "oke_vcn2_rcv_backup_retention_period_in_days"
+    visible: define_net
+
+  - title: "Networking - OKE VCN 3"
+    variables:
       - "add_oke_vcn3"
       - "oke_vcn3_onprem_route_enable"
       - "oke_vcn3_cni_type"
@@ -493,6 +533,8 @@ variableGroups:
       - "oke_vcn3_db_subnet_name"
       - "oke_vcn3_db_subnet_cidr"
       - "oke_vcn3_db_ingress_destination_ports"
+      - "enable_oke_vcn3_rcv_infra"
+      - "oke_vcn3_rcv_backup_retention_period_in_days"
     visible: define_net
 
   - title: "Networking - Additional NSGs"
@@ -959,8 +1001,8 @@ variables:
 
   deploy_exainfra_cmp:
     type: boolean
-    title: "Deploy ExaCS Infra Compartment?"
-    description: "Whether a separate compartment for Exadata Cloud Service Infrastructure is deployed."
+    title: "Deploy Exadata Infrastructure Compartment?"
+    description: "Whether a separate infrastructure compartment for Exadata Cloud Service and Exadata Cloud@Customer is deployed."
     visible: 
       eq:
         - ${extend_landing_zone_to_new_region}
@@ -968,8 +1010,8 @@ variables:
 
   custom_exainfra_compartment_name:
     type: string
-    title: "ExaCS Infra Compartment Name"
-    description: "The custom name of the ExaCS Infra compartment. If none is provided, the default name for the ExaCS Infra compartment will be used."
+    title: "Exadata Infrastructure Compartment Name"
+    description: "The custom name of the Exadata infrastructure compartment. If none is provided, the default name will be used."
     required: false
     visible: 
       or:
@@ -1829,6 +1871,29 @@ variables:
         - customize_tt_vcn1_subnets
         - add_tt_vcn1
 
+  enable_tt_vcn1_rcv_infra:
+    type: boolean
+    title: "Enable Autonomous Recovery Service for Oracle databases in this VCN ?"
+    description: "Check to provision the infrastructure required by the Autonomous Recovery Service for Oracle databases in this VCN. The database subnet is registered as the Recovery subnet."
+    required: false
+    visible:
+      and:
+        - define_net
+        - add_tt_vcn1
+        - customize_tt_vcn1_subnets
+
+  tt_vcn1_rcv_backup_retention_period_in_days:
+    type: integer
+    title: "Autonomous Recovery Service Backup Retention Period (in days)"
+    description: "The number of days to retain backups in the Autonomous Recovery Service (RCV) for Oracle databases in this VCN. Use 0 to disable the protection policy; otherwise, the minimum is 14 days."
+    required: false
+    visible:
+      and:
+        - define_net
+        - add_tt_vcn1
+        - customize_tt_vcn1_subnets
+        - enable_tt_vcn1_rcv_infra      
+
   deploy_tt_vcn1_bastion_subnet:
     type: boolean
     title: "Deploy Bastion Subnet?"
@@ -1982,7 +2047,6 @@ variables:
             - ${hub_deployment_option}
             - "VCN or on-premises connectivity routing via DRG (existing DRG)"
 
-
   customize_tt_vcn2_subnets:
     type: boolean
     title: "Customize VCN Subnets?"
@@ -2123,6 +2187,29 @@ variables:
         - define_net
         - customize_tt_vcn2_subnets
         - add_tt_vcn2
+
+  enable_tt_vcn2_rcv_infra:
+    type: boolean
+    title: "Enable Autonomous Recovery Service for Oracle databases in this VCN ?"
+    description: "Check to provision the infrastructure required by the Autonomous Recovery Service for Oracle databases in this VCN. The database subnet is registered as the Recovery subnet."
+    required: false
+    visible:
+      and:
+        - define_net
+        - add_tt_vcn2
+        - customize_tt_vcn2_subnets
+
+  tt_vcn2_rcv_backup_retention_period_in_days:
+    type: integer
+    title: "Autonomous Recovery Service Backup Retention Period (in days)"
+    description: "The number of days to retain backups in the Autonomous Recovery Service (RCV) for Oracle databases in this VCN. Use 0 to disable the protection policy; otherwise, the minimum is 14 days."
+    required: false
+    visible:
+      and:
+        - define_net
+        - add_tt_vcn2
+        - customize_tt_vcn2_subnets
+        - enable_tt_vcn2_rcv_infra
 
   deploy_tt_vcn2_bastion_subnet:
     type: boolean
@@ -2418,6 +2505,29 @@ variables:
         - customize_tt_vcn3_subnets
         - add_tt_vcn3
 
+  enable_tt_vcn3_rcv_infra:
+    type: boolean
+    title: "Enable Autonomous Recovery Service for Oracle databases in this VCN ?"
+    description: "Check to provision the infrastructure required by the Autonomous Recovery Service for Oracle databases in this VCN. The database subnet is registered as the Recovery subnet."
+    required: false
+    visible:
+      and:
+        - define_net
+        - add_tt_vcn3
+        - customize_tt_vcn3_subnets
+
+  tt_vcn3_rcv_backup_retention_period_in_days:
+    type: integer
+    title: "Autonomous Recovery Service Backup Retention Period (in days)"
+    description: "The number of days to retain backups in the Autonomous Recovery Service (RCV) for Oracle databases in this VCN. Use 0 to disable the protection policy; otherwise, the minimum is 14 days."
+    required: false
+    visible:
+      and:
+        - define_net
+        - add_tt_vcn3
+        - customize_tt_vcn3_subnets
+        - enable_tt_vcn3_rcv_infra
+
   deploy_tt_vcn3_bastion_subnet:
     type: boolean
     title: "Deploy Bastion Subnet?"
@@ -2569,6 +2679,27 @@ variables:
           - eq:
             - ${hub_deployment_option}
             - "VCN or on-premises connectivity routing via DRG (existing DRG)"
+
+  enable_exa_vcn1_rcv_infra:
+    type: boolean
+    title: "Enable Autonomous Recovery Service for Oracle databases in this VCN ?"
+    description: "Check to provision the infrastructure required by the Autonomous Recovery Service for Oracle databases in this VCN. The backup subnet is registered as the Recovery subnet, if provided. Otherwise, the client subnet is registered as the Recovery subnet."
+    required: false
+    visible:
+      and:
+        - define_net
+        - add_exa_vcn1
+
+  exa_vcn1_rcv_backup_retention_period_in_days:
+    type: integer
+    title: "Autonomous Recovery Service Backup Retention Period (in days)"
+    description: "The number of days to retain backups in the Autonomous Recovery Service (RCV) for Oracle databases in this VCN. Use 0 to disable the protection policy; otherwise, the minimum is 14 days."
+    required: false
+    visible:
+      and:
+        - define_net
+        - add_exa_vcn1
+        - enable_exa_vcn1_rcv_infra
 
   customize_exa_vcn1_subnets:
     type: boolean
@@ -2818,6 +2949,27 @@ variables:
             - ${hub_deployment_option}
             - "VCN or on-premises connectivity routing via DRG (existing DRG)"
 
+  enable_exa_vcn2_rcv_infra:
+    type: boolean
+    title: "Enable Autonomous Recovery Service for Oracle databases in this VCN ?"
+    description: "Check to provision the infrastructure required by the Autonomous Recovery Service for Oracle databases in this VCN. The backup subnet is registered as the Recovery subnet, if provided. Otherwise, the client subnet is registered as the Recovery subnet."
+    required: false
+    visible:
+      and:
+        - define_net
+        - add_exa_vcn2
+
+  exa_vcn2_rcv_backup_retention_period_in_days:
+    type: integer
+    title: "Autonomous Recovery Service Backup Retention Period (in days)"
+    description: "The number of days to retain backups in the Autonomous Recovery Service (RCV) for Oracle databases in this VCN. Use 0 to disable the protection policy; otherwise, the minimum is 14 days."
+    required: false
+    visible:
+      and:
+        - define_net
+        - add_exa_vcn2
+        - enable_exa_vcn2_rcv_infra
+
   customize_exa_vcn2_subnets:
     type: boolean
     title: "Customize VCN Subnets?"
@@ -3065,6 +3217,27 @@ variables:
           - eq:
             - ${hub_deployment_option}
             - "VCN or on-premises connectivity routing via DRG (existing DRG)"
+
+  enable_exa_vcn3_rcv_infra:
+    type: boolean
+    title: "Enable Autonomous Recovery Service for Oracle databases in this VCN ?"
+    description: "Check to provision the infrastructure required by the Autonomous Recovery Service for Oracle databases in this VCN. The backup subnet is registered as the Recovery subnet, if provided. Otherwise, the client subnet is registered as the Recovery subnet."
+    required: false
+    visible:
+      and:
+        - define_net
+        - add_exa_vcn3
+
+  exa_vcn3_rcv_backup_retention_period_in_days:
+    type: integer
+    title: "Autonomous Recovery Service Backup Retention Period (in days)"
+    description: "The number of days to retain backups in the Autonomous Recovery Service (RCV) for Oracle databases in this VCN. Use 0 to disable the protection policy; otherwise, the minimum is 14 days."
+    required: false
+    visible:
+      and:
+        - define_net
+        - add_exa_vcn3
+        - enable_exa_vcn3_rcv_infra
 
   customize_exa_vcn3_subnets:
     type: boolean
@@ -3524,6 +3697,31 @@ variables:
         - add_oke_vcn1
         - add_oke_vcn1_db_subnet
 
+  enable_oke_vcn1_rcv_infra:
+    type: boolean
+    title: "Enable Autonomous Recovery Service for Oracle databases in this VCN ?"
+    description: "Check to provision the infrastructure required by the Autonomous Recovery Service for Oracle databases in this VCN. The database subnet is registered as the Recovery subnet."
+    required: false
+    visible:
+      and:
+        - define_net
+        - customize_oke_vcn1_subnets
+        - add_oke_vcn1
+        - add_oke_vcn1_db_subnet
+
+  oke_vcn1_rcv_backup_retention_period_in_days:
+    type: integer
+    title: "Autonomous Recovery Service Backup Retention Period (in days)"
+    description: "The number of days to retain backups in the Autonomous Recovery Service (RCV) for Oracle databases in this VCN. Use 0 to disable the protection policy; otherwise, the minimum is 14 days."
+    required: false
+    visible:
+      and:
+        - define_net
+        - customize_oke_vcn1_subnets
+        - add_oke_vcn1
+        - add_oke_vcn1_db_subnet
+        - enable_oke_vcn1_rcv_infra
+
   oke_vcn1_pods_subnet_name:
     type: string
     title: "Pods Subnet Name"
@@ -3852,6 +4050,31 @@ variables:
         - add_oke_vcn2
         - add_oke_vcn2_db_subnet
 
+  enable_oke_vcn2_rcv_infra:
+    type: boolean
+    title: "Enable Autonomous Recovery Service for Oracle databases in this VCN ?"
+    description: "Check to provision the infrastructure required by the Autonomous Recovery Service for Oracle databases in this VCN. The database subnet is registered as the Recovery subnet."
+    required: false
+    visible:
+      and:
+        - define_net
+        - customize_oke_vcn2_subnets
+        - add_oke_vcn2
+        - add_oke_vcn2_db_subnet
+
+  oke_vcn2_rcv_backup_retention_period_in_days:
+    type: integer
+    title: "Autonomous Recovery Service Backup Retention Period (in days)"
+    description: "The number of days to retain backups in the Autonomous Recovery Service (RCV) for Oracle databases in this VCN. Use 0 to disable the protection policy; otherwise, the minimum is 14 days."
+    required: false
+    visible:
+      and:
+        - define_net
+        - customize_oke_vcn2_subnets
+        - add_oke_vcn2
+        - add_oke_vcn2_db_subnet
+        - enable_oke_vcn2_rcv_infra
+
   oke_vcn2_pods_subnet_name:
     type: string
     title: "Pods Subnet Name"
@@ -4179,6 +4402,31 @@ variables:
         - customize_oke_vcn3_subnets
         - add_oke_vcn3
         - add_oke_vcn3_db_subnet
+
+  enable_oke_vcn3_rcv_infra:
+    type: boolean
+    title: "Enable Autonomous Recovery Service for Oracle databases in this VCN ?"
+    description: "Check to provision the infrastructure required by the Autonomous Recovery Service for Oracle databases in this VCN. The database subnet is registered as the Recovery subnet."
+    required: false
+    visible:
+      and:
+        - define_net
+        - customize_oke_vcn3_subnets
+        - add_oke_vcn3
+        - add_oke_vcn3_db_subnet
+
+  oke_vcn3_rcv_backup_retention_period_in_days:
+    type: integer
+    title: "Autonomous Recovery Service Backup Retention Period (in days)"
+    description: "The number of days to retain backups in the Autonomous Recovery Service (RCV) for Oracle databases in this VCN. Use 0 to disable the protection policy; otherwise, the minimum is 14 days."
+    required: false
+    visible:
+      and:
+        - define_net
+        - customize_oke_vcn3_subnets
+        - add_oke_vcn3
+        - add_oke_vcn3_db_subnet
+        - enable_oke_vcn3_rcv_infra
 
   oke_vcn3_pods_subnet_name:
     type: string
@@ -4814,14 +5062,13 @@ variables:
           - eq:
             - ${hub_deployment_option}
             - "VCN or on-premises connectivity routed through DMZ VCN with Network Virtual Appliance existing DRG (DMZ VCN will be created and DRG ID required)"
-        - not:
+        - or:
           - eq:
             - ${hub_vcn_deploy_net_appliance_option}
-            - "Don\"t deploy any network appliance at this time"
-        - not:    
-            - eq:
-              - ${hub_vcn_deploy_net_appliance_option}
-              - "OCI Native Firewall"
+            - "Marketplace Image"
+          - eq:
+            - ${hub_vcn_deploy_net_appliance_option}
+            - "User-Provided Virtual Network Appliance"
       
   net_appliance_shape:
     type: oci:core:instanceshape:name
@@ -4840,19 +5087,13 @@ variables:
           - eq:
             - ${hub_deployment_option}
             - "VCN or on-premises connectivity routed through DMZ VCN with Network Virtual Appliance existing DRG (DMZ VCN will be created and DRG ID required)"
-        - and: 
-          - not:   
-            - eq: 
-              - ${hub_vcn_deploy_net_appliance_option}
-              - "Don\"t deploy any network appliance at this time"
-          - not:    
-            - eq:
-              - ${hub_vcn_deploy_net_appliance_option}
-              - "OCI Firewall Service"
-          - not:    
-            - eq:
-              - ${hub_vcn_deploy_net_appliance_option}
-              - "OCI Native Firewall"
+        - or:
+          - eq:
+            - ${hub_vcn_deploy_net_appliance_option}
+            - "Marketplace Image"
+          - eq:
+            - ${hub_vcn_deploy_net_appliance_option}
+            - "User-Provided Virtual Network Appliance"
 
   net_appliance_flex_shape_memory:
     type: string
@@ -4869,19 +5110,13 @@ variables:
           - eq:
             - ${hub_deployment_option}
             - "VCN or on-premises connectivity routed through DMZ VCN with Network Virtual Appliance existing DRG (DMZ VCN will be created and DRG ID required)"
-        - and: 
-          - not:   
-            - eq: 
-              - ${hub_vcn_deploy_net_appliance_option}
-              - "Don\"t deploy any network appliance at this time"
-          - not:    
-            - eq:
-              - ${hub_vcn_deploy_net_appliance_option}
-              - "OCI Firewall Service"
-          - not:    
-            - eq:
-              - ${hub_vcn_deploy_net_appliance_option}
-              - "OCI Native Firewall"
+        - or:
+          - eq:
+            - ${hub_vcn_deploy_net_appliance_option}
+            - "Marketplace Image"
+          - eq:
+            - ${hub_vcn_deploy_net_appliance_option}
+            - "User-Provided Virtual Network Appliance"
 
   net_appliance_flex_shape_cpu:
     type: string
@@ -4898,19 +5133,13 @@ variables:
           - eq:
             - ${hub_deployment_option}
             - "VCN or on-premises connectivity routed through DMZ VCN with Network Virtual Appliance existing DRG (DMZ VCN will be created and DRG ID required)"
-        - and: 
-          - not:   
-            - eq: 
-              - ${hub_vcn_deploy_net_appliance_option}
-              - "Don\"t deploy any network appliance at this time"
-          - not:
-            - eq:
-              - ${hub_vcn_deploy_net_appliance_option}
-              - "OCI Firewall Service" 
-          - not:    
-            - eq:
-              - ${hub_vcn_deploy_net_appliance_option}
-              - "OCI Native Firewall"         
+        - or:
+          - eq:
+            - ${hub_vcn_deploy_net_appliance_option}
+            - "Marketplace Image"
+          - eq:
+            - ${hub_vcn_deploy_net_appliance_option}
+            - "User-Provided Virtual Network Appliance"
 
   net_appliance_boot_volume_size:
     type: string
@@ -4927,19 +5156,13 @@ variables:
           - eq:
             - ${hub_deployment_option}
             - "VCN or on-premises connectivity routed through DMZ VCN with Network Virtual Appliance existing DRG (DMZ VCN will be created and DRG ID required)"
-        - and: 
-          - not:   
-            - eq: 
-              - ${hub_vcn_deploy_net_appliance_option}
-              - "Don\"t deploy any network appliance at this time"
-          - not:    
-            - eq:
-              - ${hub_vcn_deploy_net_appliance_option}
-              - "OCI Firewall Service"
-          - not:    
-            - eq:
-              - ${hub_vcn_deploy_net_appliance_option}
-              - "OCI Native Firewall"
+        - or:
+          - eq:
+            - ${hub_vcn_deploy_net_appliance_option}
+            - "Marketplace Image"
+          - eq:
+            - ${hub_vcn_deploy_net_appliance_option}
+            - "User-Provided Virtual Network Appliance"
 
   net_appliance_public_rsa_key:
     type: oci:core:ssh:publickey
@@ -4956,14 +5179,13 @@ variables:
           - eq:
             - ${hub_deployment_option}
             - "VCN or on-premises connectivity routed through DMZ VCN with Network Virtual Appliance existing DRG (DMZ VCN will be created and DRG ID required)"
-        - not: 
+        - or:
           - eq:
             - ${hub_vcn_deploy_net_appliance_option}
-            - "Don\"t deploy any network appliance at this time"
-        - not:    
-            - eq:
-              - ${hub_vcn_deploy_net_appliance_option}
-              - "OCI Native Firewall"
+            - "Marketplace Image"
+          - eq:
+            - ${hub_vcn_deploy_net_appliance_option}
+            - "User-Provided Virtual Network Appliance"
 
   hub_vcn_north_south_entry_point_ocid:
     type: string

@@ -12,14 +12,14 @@ locals {
 
 module "lz_home_region_topics" {
   count  = var.extend_landing_zone_to_new_region == false ? 1 : 0
-  source = "github.com/oci-landing-zones/terraform-oci-modules-observability//notifications?ref=v0.2.5"
+  source = "github.com/oci-landing-zones/terraform-oci-modules-observability//notifications?ref=release-0.2.7"
   # depends_on = [ null_resource.wait_on_compartments ]
   providers                   = { oci = oci.home }
   notifications_configuration = local.home_region_notifications_configuration
 }
 
 module "lz_regional_topics" {
-  source = "github.com/oci-landing-zones/terraform-oci-modules-observability//notifications?ref=v0.2.5"
+  source = "github.com/oci-landing-zones/terraform-oci-modules-observability//notifications?ref=release-0.2.7"
   # depends_on = [ null_resource.wait_on_compartments ]
   notifications_configuration = local.regional_notifications_configuration
 }
@@ -118,9 +118,9 @@ locals {
   #-- Database Topic
   #--------------------------------------------------------------------
   database_topic_key = "DATABASE-TOPIC"
-  database_topic = length(var.database_admin_email_endpoints) > 0 ? {
+  database_topic = length(var.database_admin_email_endpoints) > 0 && local.enable_database_admin_persona ? {
     (local.database_topic_key) = {
-      compartment_id = local.database_compartment_id
+      compartment_id = local.enable_database_compartment ? local.database_compartment_id : local.exainfra_compartment_id
       name           = "${var.service_label}-database-topic"
       description    = "Landing Zone topic for database performance related notifications."
       defined_tags   = local.topics_defined_tags
@@ -175,16 +175,16 @@ locals {
   #-- Exadata Topic
   #--------------------------------------------------------------------
   exainfra_topic_key = "EXAINFRA-TOPIC"
-  exainfra_topic = length(var.exainfra_admin_email_endpoints) > 0 && var.deploy_exainfra_cmp == true ? {
+  exainfra_topic = length(var.exainfra_admin_email_endpoints) > 0 && local.enable_database_admin_persona ? {
     (local.exainfra_topic_key) = {
-      compartment_id = local.exainfra_compartment_id
+      compartment_id = local.enable_exainfra_compartment ? local.exainfra_compartment_id : local.database_compartment_id
       name           = "${var.service_label}-exainfra-topic"
       description    = "Landing Zone topic for Exadata infrastructure notifications."
       defined_tags   = local.topics_defined_tags
       freeform_tags  = local.topics_freeform_tags
       subscriptions = [
-        { protocol = "EMAIL"
-          values   = var.exainfra_admin_email_endpoints
+        { protocol = "EMAIL" 
+          values = var.exainfra_admin_email_endpoints 
         }
       ]
     }

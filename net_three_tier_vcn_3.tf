@@ -544,7 +544,7 @@ locals {
                   dst_port_max = 22
                 }
               } : {},
-              (var.tt_vcn3_attach_to_drg == true && local.hub_with_vcn == true && var.deploy_bastion_jump_host) ? {
+              (var.tt_vcn3_attach_to_drg == true && local.hub_with_vcn == true && var.add_hub_vcn_jumphost_subnet) ? {
                 "INGRESS-FROM-HUB-JUMPHOST-SUBNET-RULE" = {
                   description  = "Ingress from Hub VCN Jumphost subnet."
                   stateless    = false
@@ -642,6 +642,31 @@ locals {
                 }
               }
             ) # inner merge function
+          }
+        } : {},
+        var.enable_tt_vcn3_rcv_infra && var.deploy_database_cmp ? {
+          "TT-VCN-3-RCV-NSG" = {
+            display_name = "rcv-nsg"
+            ingress_rules = {
+              "INGRESS-TO-PORT-2484-RULE" = {
+                description  = "Allows ingress connectivity to TCP port 2484."
+                stateless    = false
+                protocol     = "TCP"
+                src          = local.tt_vcn3_db_subnet_cidr
+                src_type     = "CIDR_BLOCK"
+                dst_port_min = 2484
+                dst_port_max = 2484
+              }
+              "INGRESS-TO-PORT-8005-RULE" = {
+                description  = "Allows ingress connectivity to TCP port 8005."
+                stateless    = false
+                protocol     = "TCP"
+                src          = local.tt_vcn3_db_subnet_cidr
+                src_type     = "CIDR_BLOCK"
+                dst_port_min = 8005
+                dst_port_max = 8005
+              }
+            }
           }
         } : {},
         local.tt_vcn3_cross_vcn_open_nsg,

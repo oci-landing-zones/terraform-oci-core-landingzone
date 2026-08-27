@@ -4,13 +4,13 @@
 locals {
 
   firewall_options = {
-    "Don't deploy any network appliance at this time" = "NO",
-    "Marketplace Image"                               = "MARKETPLACE",
-    "User-Provided Virtual Network Appliance"         = "CUSTOM",
-    "OCI Native Firewall"                             = "OCINFW"
+    "Don't deploy any network firewall at this time" = "NO",
+    "Marketplace Image"                              = "MARKETPLACE",
+    "User-Provided Virtual Network Appliance"        = "CUSTOM",
+    "OCI Native Firewall"                            = "OCINFW"
   }
 
-  chosen_firewall_option = local.firewall_options[var.hub_vcn_deploy_net_appliance_option]
+  chosen_firewall_option = lookup(local.firewall_options, var.hub_vcn_deploy_net_appliance_option, "INVALID")
 
   net_appliance_image_source = local.chosen_firewall_option == "CUSTOM" ? "custom_image" : "marketplace_image"
 
@@ -139,16 +139,16 @@ locals {
 
   health_checkers = {
     "FORTINET" = {
-      protocol    = "TCP"
-      port        = 8008
+      protocol = "TCP"
+      port     = 8008
     }
     "PALOALTO" = {
       protocol = "TCP"
       port     = 22
     }
     "OTHER" = {
-      protocol    = "TCP"
-      port        = 80
+      protocol = "TCP"
+      port     = 80
     }
   }
 

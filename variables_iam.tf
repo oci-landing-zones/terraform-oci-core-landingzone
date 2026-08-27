@@ -82,7 +82,7 @@ variable "deploy_database_cmp" {
 variable "deploy_exainfra_cmp" {
   type        = bool
   default     = false
-  description = "Whether a separate compartment for Exadata Cloud Service Infrastructure is deployed."
+  description = "Whether a separate infrastructure compartment for Exadata Cloud Service and Exadata Cloud@Customer is deployed."
 }
 variable "custom_enclosing_compartment_name" {
   type        = string
@@ -199,7 +199,7 @@ variable "rm_existing_id_domain_announcement_reader_group_name" {
 variable "rm_existing_id_domain_exainfra_admin_group_name" {
   type        = list(string)
   default     = []
-  description = "The existing Exadata CS infrastructure admin group name in the existing identity domain."
+  description = "The existing Exadata infrastructure admin group name in the existing identity domain."
 }
 variable "rm_existing_id_domain_cost_admin_group_name" {
   type        = list(string)
@@ -394,12 +394,12 @@ variable "existing_announcement_reader_group_name" {
 variable "rm_existing_exainfra_admin_group_name" {
   type        = string
   default     = ""
-  description = "Only applicable to RMS deployments. The existing group to which Exadata Cloud Service infrastructure management policies will be granted to."
+  description = "Only applicable to RMS deployments. The existing group to which Exadata Cloud Service and Exadata Cloud@Customer infrastructure management policies will be granted."
 }
 variable "existing_exainfra_admin_group_name" {
   type        = list(string)
   default     = []
-  description = "The existing group to which Exadata Cloud Service infrastructure management policies will be granted to."
+  description = "The existing group to which Exadata Cloud Service and Exadata Cloud@Customer infrastructure management policies will be granted."
 }
 
 variable "rm_existing_cost_admin_group_name" {

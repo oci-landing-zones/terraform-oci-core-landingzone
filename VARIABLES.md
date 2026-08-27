@@ -7,6 +7,7 @@
 - [Three Tier Networking](#three-tier-networking)
 - [EXA Networking](#exa-networking)
 - [OKE Networking](#oke-networking)
+- [Autonomous Recovery Service](#autonomous-recovery-service)
 - [Hub and Spoke Networking](#hub-and-spoke-networking)
 - [On-Premises Networking](#on-prem-networking)
 - [Monitoring](#monitoring)
@@ -43,7 +44,7 @@
 | custom\_security\_compartment\_name                         | Custom name of the security compartment. | string | null | no |
 | deploy\_app\_cmp                                            | Whether the application compartment is deployed. | bool | true | no |
 | deploy\_database\_cmp                                       | Whether the database compartment is deployed. | bool | true | no |
-| deploy\_exainfra\_cmp                                       | Whether a separate compartment for Exadata Cloud Service Infrastructure is deployed. | bool | false | no |
+| deploy\_exainfra\_cmp                                       | Whether a separate infrastructure compartment for Exadata Cloud Service and Exadata Cloud@Customer is deployed. | bool | false | no |
 | dyn\_groups\_options                                        | Whether to deploy new dynamic groups or use existing dynamic groups. Applicable to RMS deployments only, used for UI displaying. | string | "Yes" | no |
 | enclosing\_compartment\_parent\_ocid                        | The existing compartment where Landing Zone enclosing compartment is created. | string | null | no |
 | existing\_ag\_admin\_group\_name                            | The existing group to which Access Governance management policies will be granted to. | list(string) | [] | no |
@@ -57,7 +58,7 @@
 | existing\_database\_admin\_group\_name                      | The existing group to which database management policies will be granted to. | list(string) | [] | no |
 | existing\_database\_kms\_dyn\_group\_name                   | Existing database dynamic group for database to access keys. | string | "" | no |
 | existing\_enclosing\_compartment\_ocid                      | The existing compartment where Landing Zone compartments (Network, Security, App, Database) are created. | string | null | no |
-| existing\_exainfra\_admin\_group\_name                      | The existing group to which Exadata Cloud Service infrastructure management policies will be granted to. | list(string) | [] | no |
+| existing\_exainfra\_admin\_group\_name                      | The existing group to which Exadata Cloud Service and Exadata Cloud@Customer infrastructure management policies will be granted. | list(string) | [] | no |
 | existing\_iam\_admin\_group\_name                           | The existing group to which IAM management policies will be granted to. | list(string) | [] | no |
 | existing\_id\_domain\_appdev\_fun\_dyn\_group\_name         | The existing dynamic group name in the existing identity domain for executing applications functions. | string | "" | no |
 | existing\_id\_domain\_compute\_agent\_dyn\_group\_name      | The existing dynamic group name in the existing identity domain for Compute agents. | string | "" | no |
@@ -81,7 +82,7 @@
 | rm\_existing\_cost\_admin\_group\_name                      | Only applicable to RMS deployments. The existing group to which cost management policies will be granted to. | string | "" | no |
 | rm\_existing\_cred\_admin\_group\_name                      | Only applicable to RMS deployments. The existing group to which credentials management policies will be granted to. | string | "" | no |
 | rm\_existing\_database\_admin\_group\_name                  | Only applicable to RMS deployments. The existing group to which database management policies will be granted to. | string | "" | no |
-| rm\_existing\_exainfra\_admin\_group\_name                  | Only applicable to RMS deployments. The existing group to which Exadata Cloud Service infrastructure management policies will be granted to. | string | "" | no |
+| rm\_existing\_exainfra\_admin\_group\_name                  | Only applicable to RMS deployments. The existing group to which Exadata Cloud Service and Exadata Cloud@Customer infrastructure management policies will be granted. | string | "" | no |
 | rm\_existing\_iam\_admin\_group\_name                       | Only applicable to RMS deployments. The existing group to which IAM management policies will be granted to. | string | "" | no |
 | rm\_existing\_network\_admin\_group\_name                   | Only applicable to RMS deployments. The existing group to which network management policies will be granted to. | string | "" | no |
 | rm\_existing\_security\_admin\_group\_name                  | Only applicable to RMS deployments. The existing group to which security policies will be granted to. | string | "" | no |
@@ -93,7 +94,7 @@
 | rm\_existing\_id\_domain\_cost\_admin\_group\_name          | The existing cost admin group name in the existing identity domain. | list(string) | [] | no |
 | rm\_existing\_id\_domain\_cred\_admin\_group\_name          | The existing credentials admin group name in the existing identity domain. | list(string) | [] | no |
 | rm\_existing\_id\_domain\_database\_admin\_group\_name      | The existing database admin group name in the existing identity domain. | list(string) | [] | no |
-| rm\_existing\_id\_domain\_exainfra\_admin\_group\_name      | The existing Exadata CS infrastructure admin group name in the existing identity domain. | list(string) | [] | no |
+| rm\_existing\_id\_domain\_exainfra\_admin\_group\_name      | The existing Exadata infrastructure admin group name in the existing identity domain. | list(string) | [] | no |
 | rm\_existing\_id\_domain\_iam\_admin\_group\_name           | The existing IAM admin group name in the existing identity domain. | list(string) | [] | no |
 | rm\_existing\_id\_domain\_network\_admin\_group\_name       | The existing network admin group name in the existing identity domain. | list(string) | [] | no |
 | rm\_existing\_id\_domain\_security\_admin\_group\_name      | The existing security admin group name in the existing identity domain. | list(string) | [] | no |
@@ -391,6 +392,29 @@ The four `*_infra` inputs enable prerequisites only: Core LZ does not create AI 
 | oke\_vcn3\_workers\_subnet\_dns | The Workers subnet DNS name. Use only letters and numbers, no special characters. | string | null | no |
 | oke\_vcn3\_workers\_subnet\_name | The Workers subnet name. | string | null | no |
 
+### <a name="autonomous-recovery-service"></a> Autonomous Recovery Service
+
+| Variable Name | Description | Type | Default | Required |
+|---------------|-------------|------|---------|----------|
+| enable\_tt\_vcn1\_rcv\_infra | Whether to enable the Autonomous Recovery Service infrastructure for databases in TT-VCN-1 db subnet. | bool | false | no |
+| tt\_vcn1\_rcv\_backup\_retention\_period\_in\_days | The number of days to retain backup data in the Autonomous Recovery Service for databases in TT-VCN-1 db subnet. Use 0 to disable the policy; otherwise, the minimum is 14 days. | number | 0 | no |
+| enable\_tt\_vcn2\_rcv\_infra | Whether to enable the Autonomous Recovery Service infrastructure for databases inTT-VCN-2 db subnet. | bool | false | no |
+| tt\_vcn2\_rcv\_backup\_retention\_period\_in\_days | The number of days to retain backup data in the Autonomous Recovery Service for databases in TT-VCN-2 db subnet. Use 0 to disable the policy; otherwise, the minimum is 14 days. | number | 0 | no |
+| enable\_tt\_vcn3\_rcv\_infra | Whether to enable the Autonomous Recovery Service infrastructure for databases in TT-VCN-3 db subnet. | bool | false | no |
+| tt\_vcn3\_rcv\_backup\_retention\_period\_in\_days | The number of days to retain backup data in the Autonomous Recovery Service for databases in TT-VCN-3 db subnet. Use 0 to disable the policy; otherwise, the minimum is 14 days. | number | 0 | no |
+| enable\_oke\_vcn1\_rcv\_infra | Whether to enable the Autonomous Recovery Service infrastructure for databases in OKE-VCN-1 db subnet. | bool | false | no |
+| oke\_vcn1\_rcv\_backup\_retention\_period\_in\_days | The number of days to retain backup data in the Autonomous Recovery Service for databases in OKE-VCN-1 db subnet. Use 0 to disable the policy; otherwise, the minimum is 14 days. | number | 0 | no |
+| enable\_oke\_vcn2\_rcv\_infra | Whether to enable the Autonomous Recovery Service infrastructure for databases in OKE-VCN-2 db subnet. | bool | false | no |
+| oke\_vcn2\_rcv\_backup\_retention\_period\_in\_days | The number of days to retain backup data in the Autonomous Recovery Service for databases in OKE-VCN-2 db subnet. Use 0 to disable the policy; otherwise, the minimum is 14 days. | number | 0 | no |
+| enable\_oke\_vcn3\_rcv\_infra | Whether to enable the Autonomous Recovery Service infrastructure for databases in OKE-VCN-3 db subnet. | bool | false | no |
+| oke\_vcn3\_rcv\_backup\_retention\_period\_in\_days | The number of days to retain backup data in the Autonomous Recovery Service for databases in OKE-VCN-3 db subnet. Use 0 to disable the policy; otherwise, the minimum is 14 days. | number | 0 | no |
+| enable\_exa\_vcn1\_rcv\_infra | Whether to enable the Autonomous Recovery Service infrastructure for databases in EXA-VCN-1 backup (if provided) or client subnet. | bool | false | no |
+| exa\_vcn1\_rcv\_backup\_retention\_period\_in\_days | The number of days to retain backup data in the Autonomous Recovery Service for databases in EXA-VCN-1 backup (if provided) or client subnet. Use 0 to disable the policy; otherwise, the minimum is 14 days. | number | 0 | no |
+| enable\_exa\_vcn2\_rcv\_infra | Whether to enable the Autonomous Recovery Service infrastructure for databases in EXA-VCN-2 backup (if provided) or client subnet. | bool | false | no |
+| exa\_vcn2\_rcv\_backup\_retention\_period\_in\_days | The number of days to retain backup data in the Autonomous Recovery Service for databases in EXA-VCN-2 backup (if provided) or client subnet. Use 0 to disable the policy; otherwise, the minimum is 14 days. | number | 0 | no |
+| enable\_exa\_vcn3\_rcv\_infra | Whether to enable the Autonomous Recovery Service infrastructure for databases in EXA-VCN-3 backup (if provided) or client subnet. | bool | false | no |
+| exa\_vcn3\_rcv\_backup\_retention\_period\_in\_days | The number of days to retain backup data in the Autonomous Recovery Service for databases in EXA-VCN-3 backup (if provided) or client subnet. Use 0 to disable the policy; otherwise, the minimum is 14 days. | number | 0 | no |
+
 ### <a name="hub-and-spoke-networking"></a> Hub and Spoke Networking
 
 | Variable Name | Description | Type | Default | Required |
@@ -406,7 +430,7 @@ The four `*_infra` inputs enable prerequisites only: Core LZ does not create AI 
 | hub\_deployment\_option | The available options for hub deployment. Valid values: 'No cross-VCN or on-premises connectivity', 'VCN or on-premises connectivity routing via DRG (DRG will be created)', 'VCN or on-premises connectivity routing via DRG (existing DRG)', 'VCN or on-premises connectivity routing through DMZ VCN with Network Virtual Appliance (DRG and DMZ VCN will be created)', 'VCN or on-premises connectivity routed through DMZ VCN with Network Virtual Appliance existing DRG (DMZ VCN will be created and DRG ID required)'. All the VCNs that attach to the DRG join the topology as spokes. | string | "No cross-VCN or on-premises connectivity" | no |
 | hub\_vcn\_additional\_nsgs | Additional NSGs for the Hub VCN. Accepts either a native HCL map/object or a JSON object string. Only used when define\_hub\_vcn\_additional\_nsgs is true. | any | {} | no |
 | hub\_vcn\_cidrs | List of CIDR blocks for the Hub VCN. | list(string) | ["192.168.0.0/26"] | no |
-| hub\_vcn\_deploy\_net\_appliance\_option | The network appliance option for deploying in the Hub VCN. Valid values: 'Don't deploy any network appliance at this time' (default), 'Palo Alto Networks VM-Series Firewall', 'Fortinet FortiGate Firewall', 'User-Provided Virtual Network Appliance', and 'OCI Native Firewall'. Costs are incurred. | string | "Don't deploy any network appliance at this time" | no |
+| hub\_vcn\_deploy\_net\_appliance\_option | The network appliance option for deploying in the Hub VCN. Valid values: 'Don't deploy any network firewall at this time' (default), 'Marketplace Image', 'User-Provided Virtual Network Appliance', and 'OCI Native Firewall'. Costs are incurred. | string | "Don't deploy any network firewall at this time" | no |
 | hub\_vcn\_dns | The Hub VCN DNS name. | string | null | no |
 | hub\_vcn\_enable\_internet\_gateway | When checked, access from the Internet is enabled into the Hub VCN via an Internet Gateway. When unchecked, an Internet Gateway is not deployed and access from Internet is blocked. | bool | true | no |
 | hub\_vcn\_east\_west\_entry\_point\_ocid |The OCID of the private IP address of the Indoor Network Load Balancer, where inbound internal cross-vcn traffic (East/West) traffic is sent to in the Hub VCN. | string | null | no |
@@ -430,7 +454,7 @@ The four `*_infra` inputs enable prerequisites only: Core LZ does not create AI 
 | hub\_vcn\_web\_subnet\_jump\_host\_allowed\_cidrs | List of CIDRs allowed to SSH into the Web subnet via a jump host eventually deployed in the Web subnet. Leave empty for no access. | list(string) | [] | no |
 | hub\_vcn\_web\_subnet\_name | The Hub VCN Web subnet name. | string | null | no |
 | hub\_vcn\_web\_ingress\_destination\_ports | The list of protocols and destination ports allowed for ingress packets into the Hub VCN App Load Balancer NSG. These ports are allowed from onprem\_cidrs plus hub\_vcn\_external\_allowed\_cidrs\_into\_web\_tier when the Hub VCN Web subnet is public, and from onprem\_cidrs when it is private. Each value is a colon-separated entry like "TCP:443". | list(string) | ["TCP:443"] | no |
-| hub\_vcn\_deploy\_net\_appliance\_option | The network appliance option to deploy in the Hub VCN. | string | Default is "Don't deploy any network appliance at this time". Other valid values: "Marketplace Image", "User-Provided Virtual Network Appliance", "OCI Native Firewall". Costs may be incurred. For "Marketplace Image", users are required to provide either net\_appliance\_marketplace\_image\_ocid or net\_appliance\_marketplace\_image\_name (with optional net\_appliance\_marketplace\_image\_version) variables. **NOTE THAT BY DEPLOYING A MARKETPLACE IMAGE USING THIS TERRAFORM MODULE YOU ARE IMPLICITLY AGREEING WITH ALL OCI MARKETPLACE TERMS, INCLUDING THE PRICING MODEL THAT APPLY TO THE SELECTED IMAGE.** Marketplace image information can be obtained by running [Marketplace Images](https://github.com/oci-landing-zones/terraform-oci-modules-workloads/tree/main/marketplace-images/examples/marketplace-images). For "User-Provided Virtual Network Appliance", users are required to provide net\_appliance\_image\_ocid variable. | no |
+| hub\_vcn\_deploy\_net\_appliance\_option | The network appliance option to deploy in the Hub VCN. | string | Default is "Don't deploy any network firewall at this time". Other valid values: "Marketplace Image", "User-Provided Virtual Network Appliance", "OCI Native Firewall". Costs may be incurred. For "Marketplace Image", users are required to provide either net\_appliance\_marketplace\_image\_ocid or net\_appliance\_marketplace\_image\_name (with optional net\_appliance\_marketplace\_image\_version) variables. **NOTE THAT BY DEPLOYING A MARKETPLACE IMAGE USING THIS TERRAFORM MODULE YOU ARE IMPLICITLY AGREEING WITH ALL OCI MARKETPLACE TERMS, INCLUDING THE PRICING MODEL THAT APPLY TO THE SELECTED IMAGE.** Marketplace image information can be obtained by running [Marketplace Images](https://github.com/oci-landing-zones/terraform-oci-modules-workloads/tree/main/marketplace-images/examples/marketplace-images). For "User-Provided Virtual Network Appliance", users are required to provide net\_appliance\_image\_ocid variable. | no |
 | net\_appliance\_image\_vendor | The image vendor for the network appliance. Valid values are "PALOALTO", "FORTINET", "OTHER". Used to select the default Network Load Balancer health checker for Marketplace Image and User-Provided Virtual Network Appliance deployments. | string | null | no |
 | net\_appliance\_marketplace\_image\_ocid   | The marketplace image OCID for the network appliance. Applicable when hub\_vcn\_deploy\_net\_appliance\_option is set to "Marketplace Image". | string | null | no |
 | net\_appliance\_marketplace\_image\_name   | The marketplace image name for the network appliance. Applicable when hub\_vcn\_deploy\_net\_appliance\_option is set to "Marketplace Image". | string | null | no |
