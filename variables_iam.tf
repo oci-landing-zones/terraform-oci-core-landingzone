@@ -24,6 +24,56 @@ variable "deploy_app_cmp" {
   default     = true
   description = "Whether the application compartment is deployed."
 }
+
+variable "enable_generative_ai_infra" {
+  type        = bool
+  default     = false
+  description = "Whether Generative AI administration prerequisites and grants are enabled."
+  validation {
+    condition     = !var.enable_generative_ai_infra || var.deploy_app_cmp
+    error_message = "VALIDATION FAILURE: enable_generative_ai_infra requires deploy_app_cmp to be true."
+  }
+}
+
+variable "enable_data_science_infra" {
+  type        = bool
+  default     = false
+  description = "Whether Data Science, Data Flow, and Data Science runtime identity prerequisites are enabled."
+  validation {
+    condition     = !var.enable_data_science_infra || var.deploy_app_cmp
+    error_message = "VALIDATION FAILURE: enable_data_science_infra requires deploy_app_cmp to be true."
+  }
+}
+
+variable "enable_prebuilt_ai_services_infra" {
+  type        = bool
+  default     = false
+  description = "Whether Language, Vision, Speech, and Document Understanding prerequisites are enabled."
+  validation {
+    condition     = !var.enable_prebuilt_ai_services_infra || var.deploy_app_cmp
+    error_message = "VALIDATION FAILURE: enable_prebuilt_ai_services_infra requires deploy_app_cmp to be true."
+  }
+}
+
+variable "enable_ai_compute_infra" {
+  type        = bool
+  default     = false
+  description = "Whether AI compute cluster, compute management, and capacity reservation prerequisites are enabled."
+  validation {
+    condition     = !var.enable_ai_compute_infra || var.deploy_app_cmp
+    error_message = "VALIDATION FAILURE: enable_ai_compute_infra requires deploy_app_cmp to be true."
+  }
+}
+
+variable "generative_ai_data_access_policy_mode" {
+  type        = string
+  default     = "CORELZ_MANAGED"
+  description = "Whether Core Landing Zone or workload stacks manage Generative AI API-key authorization and runtime data access."
+  validation {
+    condition     = contains(["CORELZ_MANAGED", "WORKLOAD_MANAGED"], var.generative_ai_data_access_policy_mode)
+    error_message = "VALIDATION FAILURE: generative_ai_data_access_policy_mode must be CORELZ_MANAGED or WORKLOAD_MANAGED."
+  }
+}
 variable "deploy_database_cmp" {
   type        = bool
   default     = true
@@ -190,6 +240,26 @@ variable "existing_id_domain_net_fw_app_dyn_group_name" {
   type        = string
   default     = ""
   description = "The existing dynamic group name in the existing identity domain for running network firewall appliances."
+}
+variable "existing_id_domain_ai_data_science_runtime_dyn_group_name" {
+  type        = string
+  default     = ""
+  description = "The existing dynamic group name in the existing identity domain for Data Science runtimes."
+}
+variable "existing_id_domain_ai_genai_vector_store_connectors_dyn_group_name" {
+  type        = string
+  default     = ""
+  description = "The existing dynamic group name in the existing identity domain for Generative AI vector store connectors."
+}
+variable "existing_id_domain_ai_genai_hosted_applications_dyn_group_name" {
+  type        = string
+  default     = ""
+  description = "The existing dynamic group name in the existing identity domain for Generative AI hosted applications and deployments."
+}
+variable "existing_id_domain_ai_genai_semantic_stores_dyn_group_name" {
+  type        = string
+  default     = ""
+  description = "The existing dynamic group name in the existing identity domain for Generative AI semantic stores."
 }
 variable "identity_domain_option" {
   type        = string
@@ -398,6 +468,26 @@ variable "existing_net_fw_app_dyn_group_name" {
   type        = string
   default     = ""
   description = "Existing network firewall appliance dynamic group for reading firewall instances."
+}
+variable "existing_ai_data_science_runtime_dyn_group_name" {
+  type        = string
+  default     = ""
+  description = "Existing Data Science runtime dynamic group."
+}
+variable "existing_ai_genai_vector_store_connectors_dyn_group_name" {
+  type        = string
+  default     = ""
+  description = "Existing Generative AI vector store connector dynamic group."
+}
+variable "existing_ai_genai_hosted_applications_dyn_group_name" {
+  type        = string
+  default     = ""
+  description = "Existing Generative AI hosted applications and deployments dynamic group."
+}
+variable "existing_ai_genai_semantic_stores_dyn_group_name" {
+  type        = string
+  default     = ""
+  description = "Existing Generative AI semantic store dynamic group."
 }
 
 # ------------------------------------------------------

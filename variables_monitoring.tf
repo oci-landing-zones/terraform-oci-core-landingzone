@@ -75,6 +75,11 @@ variable "exainfra_admin_email_endpoints" {
     error_message = "VALIDATION FAILURE: Validation failed for exainfra_admin_email_endpoints: invalid email address."
   }
 }
+variable "ai_admin_email_endpoints" {
+  type        = list(string)
+  default     = []
+  description = "List of email addresses for all AI related notifications. (Type an email address and hit enter to enter multiple values)"
+}
 variable "create_alarms_as_enabled" {
   type        = bool
   default     = false
