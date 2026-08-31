@@ -46,7 +46,13 @@ locals {
     "Allow service vulnerability-scanning-service to read vnics in tenancy",
   "Allow service vulnerability-scanning-service to read vnic-attachments in tenancy"]
 
-    # The name of the File Storage service user depends on your realm . 
+  recovery_service_statements = [
+    "Allow service database to manage recovery-service-family in tenancy",
+    "Allow service rcs to manage recovery-service-family in tenancy",
+    "Allow service database to manage tagnamespace in tenancy"
+  ]
+
+  # The name of the File Storage service user depends on your realm.
   # For realms with realm key numbers of 10 or less, the pattern for the File Storage service user is FssOc<n>Prod, where n is the realm key number. 
   # Realms with a realm key number greater than 10 have a service user of fssocprod.
   # https://docs.oracle.com/en-us/iaas/Content/File/Tasks/encrypt-file-system.htm
@@ -62,7 +68,7 @@ locals {
       compartment_id = var.tenancy_ocid
       name           = "${var.service_label}-services-policy"
       description    = "${var.lz_provenant_label} policy for OCI services."
-      statements     = concat(local.cloud_guard_statements, local.vss_statements, local.keys_access_statements)
+      statements     = concat(local.cloud_guard_statements, local.vss_statements, local.recovery_service_statements, local.keys_access_statements)
       defined_tags   = local.service_policy_defined_tags
       freeform_tags  = local.service_policy_freeform_tags
     }

@@ -15,8 +15,10 @@
     1. [Networking](#networking-4)
     1. [Governance](#governance-4)
     1. [Security Services](#security-services)
+    1. [Handling Database Infrastructure](#database-infrastructure)
     1. [Deploying Lifecycle Environments](#deploying-lifecycle-environments)
     1. [Zero Trust Packet Routing (ZPR)](#zpr-use)
+    1. [Autonomous Recovery Service](#rcv)
     1. [Remote Access over SSH](#bastion-use)
     1. [Express Deployment](#express-use)
     1. [Customizing Compartments](#custom-cmp)
@@ -185,7 +187,7 @@ At least four compartments are provisioned:
 
 Two extra compartments can be provisioned based on user choice:
 
-- **Exainfra**: designed to hold Exadata infrastructure resources that are primarily managed by Exadata administrators. It is recommended for customers where Exadata infrastructure and databases are managed by different groups.
+- **Exainfra**: designed to hold Exadata Cloud Service and Exadata Cloud@Customer infrastructure, VM clusters, and the databases hosted by those VM clusters. It is recommended when Exadata infrastructure and databases are managed by different groups.
 
 - **Enclosing compartment**: designed to enclose the aforementioned compartments within a single top compartment. It is highly recommended as it provides a boundary for your landing zone deployment.
 
@@ -203,8 +205,8 @@ By default, the Landing Zone defines the following personas that account for mos
 - **Security Administrators**: manage security services and resources including Vaults, Keys, Logging, Vulnerability Scanning, Web Application Firewall, Bastion, Service Connector Hub, ZPR.
 - **Network Administrators**: manage OCI network family, including VCNs, Load Balancers, DRGs, VNICs, IP addresses, OCI Network Firewall.
 - **Application Administrators**: manage application related resources including Compute images, OCI Functions, Kubernetes clusters, Streams, Object Storage, Block Storage, File Storage.
-- **Database Administrators**: manage database services, including Oracle VMDB (Virtual Machine), BMDB (Bare Metal), ADB (Autonomous databases), and ExaCS databases in Database compartment (and optionally at ExaCS compartment).
-- **ExaCS (Exadata Cloud Service) Administrators** (only created when ExaCS compartment is created): manage ExaCS infrastructure and VM clusters in the ExaCS compartment.
+- **Database Administrators**: manage database services, including Oracle VMDB (Virtual Machine), BMDB (Bare Metal), ADB (Autonomous databases), and databases hosted by Exadata Cloud Service or Exadata Cloud@Customer VM clusters. When the Exainfra compartment exists, database administrators use its VM clusters and manage the databases and backups hosted there. Otherwise, they also manage Exadata infrastructure and VM clusters in the Database compartment.
+- **Exadata Infrastructure Administrators** (only created when the Exainfra compartment is created): manage Exadata Cloud Service and Exadata Cloud@Customer infrastructure and VM clusters in the Exainfra compartment, while database management remains with Database Administrators.
 - **Storage Administrators**: the only group allowed to delete storage resources, including buckets, volumes and files. Used as a protection measure against inadvertent deletion of storage resources.
 - **Access Governance**: the group used by the Access Governance instance to query OCI services in the tenancy.
 
@@ -222,7 +224,7 @@ The Landing Zone defines four dynamic groups to satisfy common needs of workload
 
 ### Policies
 
-The Landing Zone policies implement segregation of duties and follow least privilege across the different personas (groups). Segregation of duties is implemented by granting specific permissions to a single target group on a single target compartment. For example, only *Network Administrators* can manage the network family, and this is done only in the *Network* compartment. Only *Database Administrators* can manage databases, and this is done only in the *Database* compartment. Least privilege is followed when deploying a database, *Database Administrators* are entitled to use the network managed by *Network Administrators* in the *Network* compartment. Some policies are common to all groups, like the ability to use Cloud Shell in tenancy and to manage Resource Manager stacks in their specific compartments. We recommend reviewing *config/iam\_policies.tf* for additional details.
+The Landing Zone policies implement segregation of duties and follow least privilege across the different personas (groups). Segregation of duties is implemented by granting specific permissions to a single target group on a single target compartment. For example, only *Network Administrators* can manage the network family, and this is done only in the *Network* compartment. Least privilege is followed when deploying a database: *Database Administrators* can use the network managed by *Network Administrators* in the *Network* compartment. When an Exainfra compartment is deployed, *Exadata Infrastructure Administrators* manage Exadata Cloud Service and Exadata Cloud@Customer infrastructure and VM clusters there, while *Database Administrators* use the VM clusters and manage the databases and backups hosted in the same compartment. When no Exainfra compartment is deployed, these Exadata responsibilities are intentionally consolidated under *Database Administrators* in the Database compartment. Some policies are common to all groups, like the ability to use Cloud Shell in tenancy and to manage Resource Manager stacks in their specific compartments. We recommend reviewing *config/iam\_policies.tf* for additional details.
 
 Policies are attached at different compartments depending on the presence of an enclosing compartment. If Landing Zone compartments are deployed directly under the Root compartment (thus no enclosing compartment), all policies are attached to the Root compartment. If Landing Zone compartments are deployed within an enclosing compartment, some policies are attached to the Root compartment, while some are attached to the enclosing compartment itself. This is to allow for free movement of Landing Zone compartments without the need to change policy statements. The policies at Root compartment are applied to resources at the tenancy level.
 
@@ -608,7 +610,7 @@ Core Landing Zone requires two Terraform applies to complete the network applian
 
 #### Detailed Deployment Workflow
 
-1. In a Hub VCN deployment, choose the appliance vendor (*hub_vcn_deploy_net_appliance_option = "Palo Alto Networks VM-Series Firewall"|"Fortinet FortiGate Firewall"*), and supply specific parameters like version, SSH public key, shape, allowed management CIDRs, and others.
+1. In a Hub VCN deployment, choose the marketplace appliance path (*hub_vcn_deploy_net_appliance_option = "Marketplace Image"*), set the appliance vendor (*net_appliance_image_vendor = "PaloAlto"|"Fortinet"*), and supply specific parameters like image name or version, SSH public key, shape, allowed management CIDRs, and others.
 2. Run the first *terraform plan/apply* to deploy Hub VCN and the appliances.
 3. Collect the OCIDs of NLB private IPs, available in *nlb_private_ip_addresses.OUTDOOR-NLB* and *nlb_private_ip_addresses.INDOOR_NLB* output variables. These are the OCIDs you will reference as entry points in the second Terraform execution.
 4. Set *hub_vcn_north_south_entry_point_ocid = nlb_private_ip_addresses.OUTDOOR-NLB* and *hub_vcn_east_west_entry_point_ocid = nlb_private_ip_addresses.INDOOR_NLB* in the Terraform configuration input variables.
@@ -1108,7 +1110,42 @@ For more details on VSS in Landing Zone, check blog post [Vulnerability Scanning
 
 > **_NOTE:_** VSS is not mandated by CIS Foundations Benchmark.
 
-## <a name="deploying-lifecycle-environments"></a>4.5 Deploying Lifecycle Environments
+## <a name="database-infrastructure"></a>4.5 Handling Database Infrastructure
+
+Core Landing Zone does not provision database systems, Exadata infrastructure, VM clusters, or databases. It provisions the compartments, administrator personas, and compartment-scoped IAM policies required to deploy and operate those resources. The Database Administrator persona is enabled whenever either the Database compartment or the Exainfra compartment is enabled.
+
+The resulting behavior is:
+
+| `deploy_database_cmp` | `deploy_exainfra_cmp` | Database Administrator | Exadata Infrastructure Administrator | Database infrastructure handling |
+|---|---|---|---|---|
+| `false` | `false` | Disabled | Disabled | No Database or Exainfra compartment or corresponding administrator group or policy is deployed. |
+| `true` | `false` | Enabled | Disabled | Database Administrators manage database services and the complete Exadata Cloud Service and Exadata Cloud@Customer stack in the Database compartment. |
+| `false` | `true` | Enabled | Enabled | Exadata Infrastructure Administrators manage infrastructure and VM clusters in the Exainfra compartment. Database Administrators manage the databases and backups hosted by those VM clusters in the same compartment. No Database compartment is deployed. |
+| `true` | `true` | Enabled | Enabled | Database Administrators manage general database services in the Database compartment. Exadata infrastructure, VM clusters, and their hosted databases reside in the Exainfra compartment, with infrastructure and database responsibilities separated as described below. |
+
+When a persona is enabled, Core Landing Zone either creates its group or grants the policies to the configured existing group.
+
+### Dedicated Exainfra Compartment
+
+When **deploy_exainfra_cmp** is `true`, Core Landing Zone preserves segregation of duties in the Exainfra compartment:
+
+- **Exadata Infrastructure Administrators** manage Exadata Cloud Service infrastructure and cloud VM clusters (`cloud-exadata-infrastructures` and `cloud-vmclusters`) and Exadata Cloud@Customer infrastructure and VM clusters (`exadata-infrastructures` and `vmclusters`).
+- **Database Administrators** can read the Exadata infrastructure, use its VM clusters, and manage the database nodes, database homes, databases, pluggable databases, work requests, backups, and backup destinations associated with those clusters.
+- **Database Administrators do not manage the Exadata infrastructure or VM clusters** in this topology.
+
+The Database Administrator persona and policy remain enabled when **deploy_database_cmp** is `false`, because databases hosted by the VM clusters still require a database administrator in the Exainfra compartment.
+
+### Database Compartment Without a Dedicated Exainfra Compartment
+
+When **deploy_database_cmp** is `true` and **deploy_exainfra_cmp** is `false`, Core Landing Zone does not create an Exadata Infrastructure Administrator persona or policy. Database Administrators receive compartment-scoped permissions to manage both Exadata Cloud Service and Exadata Cloud@Customer infrastructure, VM clusters, databases, backups, and backup destinations in the Database compartment. This topology intentionally consolidates infrastructure and database administration under one persona.
+
+### VM Cluster and Database Placement
+
+An Exadata database is created from a VM cluster, and OCI presents VM clusters from the selected compartment during database creation. OCI also moves a VM cluster and its dependent resources together when changing compartments for both [Exadata Cloud@Customer VM clusters](https://docs.oracle.com/en-us/iaas/tools/oci-cli/latest/oci_cli_docs/cmdref/db/vm-cluster/change-compartment.html) and [Exadata Cloud Service cloud VM clusters](https://docs.oracle.com/en-us/iaas/tools/oci-cli/latest/oci_cli_docs/cmdref/db/cloud-vm-cluster/change-compartment.html). Consequently, the database-management policies must target the compartment that contains the hosting VM cluster. This is why databases hosted by Exadata VM clusters are managed in the Exainfra compartment when it exists, rather than in the separate Database compartment.
+
+The Exadata grants described in this section are scoped to the Database or Exainfra compartment; they do not grant tenancy-wide management of database infrastructure. For the individual Exadata Cloud@Customer IAM resource types and permissions, see [Policy Details for Oracle Exadata Database Service on Cloud@Customer](https://docs.oracle.com/en-us/iaas/exadata/doc/ecc-policy-details.html).
+
+## <a name="deploying-lifecycle-environments"></a>4.6 Deploying Lifecycle Environments
 
 Lifecycle environments refer to the different stages a workload goes through in the course of availability: typically, development, test and production or simply dev, test, prod.
 
@@ -1132,7 +1169,7 @@ Fully isolated environments require distinct Terraform configurations, therefore
 
 The middle ground approach is typically used by organizations that see network and security as shared services and want to provide separate environments for application and database resources. This is coming soon in the Landing Zone.
 
-## <a name="zpr-use"></a>4.6 Zero Trust Packet Routing (ZPR)
+## <a name="zpr-use"></a>4.7 Zero Trust Packet Routing (ZPR)
 
 OCI Core Landing Zone supports Zero Trust Packet Routing (ZPR). ZPR prevents unauthorized access with intent-based security policies that you write for OCI resources and assign security attributes to. Security attributes are labels that ZPR uses to identify and organize OCI resources. ZPR enforces policy at the network level each time access is requested, regardless of potential network architecture changes or misconfigurations.
 
@@ -1220,7 +1257,55 @@ in <zpr_namespace_name>.net:exa-vcn-1 VCN allow '10.1.2.0/24' to connect to <zpr
 ```
 in <zpr_namespace_name>.net:exa-vcn-1 VCN allow '<bastion service CIDR>/32' to connect to <zpr_namespace_name>.bastion:<service_label> endpoints with protocol='tcp/22'
 ```
-## <a name="bastion-use"></a>4.7 Remote Access over SSH
+## <a name="rcv"></a>4.7 Autonomous Recovery Service
+
+### Overview
+
+[OCI Database Autonomous Recovery Service](https://docs.oracle.com/en-us/iaas/recovery-service/index.html) is a centralized, fully managed backup solution for OCI databases. Core Landing Zone can provision the network, protection policy, and IAM infrastructure needed to use the service with databases in supported three-tier, OKE, and Exadata VCNs.
+
+Recovery Service support is opt-in for each VCN. Enabling it does not register protected databases or manage backup jobs and restore operations; those database lifecycle actions are performed separately after the Landing Zone infrastructure is available.
+
+### Interface Design
+
+Each supported VCN exposes an enable input and a backup retention input.
+
+| VCN type | Number of VCNs | Enable input | Retention input | Number of VCNs |
+| --- | --- | --- | --- | --- |
+| Three-tier | `enable_tt_vcn1_rcv_infra` | true \| false| `tt_vcn1_rcv_backup_retention_period_in_days` | 0 for disabled, or number of days 14 or more |
+| Three-tier | `enable_tt_vcn2_rcv_infra` | true \| false| `tt_vcn2_rcv_backup_retention_period_in_days` | 0 for disabled, or number of days 14 or more |
+| Three-tier | `enable_tt_vcn3_rcv_infra` | true \| false| `tt_vcn3_rcv_backup_retention_period_in_days` | 0 for disabled, or number of days 14 or more |
+| OKE | `enable_oke_vcn1_rcv_infra` | true \| false| `oke_vcn2_rcv_backup_retention_period_in_days` |  0 for disabled, or number of days 14 or more |
+| OKE | `enable_oke_vcn2_rcv_infra` | true \| false| `oke_vcn2_rcv_backup_retention_period_in_days` |  0 for disabled, or number of days 14 or more |
+| OKE | `enable_oke_vcn3_rcv_infra` | true \| false| `oke_vcn3_rcv_backup_retention_period_in_days` |  0 for disabled, or number of days 14 or more |
+| Exadata | `enable_exa_vcn1_rcv_infra` | true \| false| `exa_vcn3_rcv_backup_retention_period_in_days` | 0 for disabled, or number of days 14 or more |
+| Exadata | `enable_exa_vcn2_rcv_infra` | true \| false| `exa_vcn2_rcv_backup_retention_period_in_days` | 0 for disabled, or number of days 14 or more |
+| Exadata | `enable_exa_vcn3_rcv_infra` | true \| false| `exa_vcn3_rcv_backup_retention_period_in_days` | 0 for disabled, or number of days 14 or more |
+
+The retention inputs are numbers and default to 0 days, meaning protection policies are disabled by default. Use 0 to disable a protection policy; otherwise, the minimum is 14 days. Infrastructure is created only when `deploy_exainfra_cmp` or `deploy_database_cmp` is `true`, the matching VCN is added, and its Recovery Service enable input is `true`. OKE VCN support also requires the matching optional database subnet provisioned.
+
+### Supported Resources
+
+The Landing Zone supports Recovery Service infrastructure for the following VCNs and subnet arrangements:
+
+| VCN type | Supported VCNs | Subnet associated with the Recovery Service subnet | Provisioning condition |
+| --- | --- | --- | --- |
+| Three-tier | TT-VCN-1, TT-VCN-2, TT-VCN-3 | DB subnet | Matching VCN and Recovery Service enable inputs |
+| OKE | OKE-VCN-1, OKE-VCN-2, OKE-VCN-3 | Optional DB subnet | Matching VCN, DB subnet, and Recovery Service enable inputs |
+| Exadata | EXA-VCN-1, EXA-VCN-2, EXA-VCN-3 | Backup subnet when enabled; otherwise client subnet | Matching VCN and Recovery Service enable inputs |
+
+For each enabled VCN, the Landing Zone creates:
+
+- A Recovery Service subnet resource associated with the database-facing subnet shown above.
+- A protection policy using the configured backup retention period (at least 14 days).
+- A VCN-local `rcv-nsg` that allows TCP ports 2484 and 8005. The allowed source is the DB subnet CIDR for three-tier and OKE VCNs, and the client or backup subnet CIDR for Exadata VCNs.
+
+When the Landing Zone manages IAM policies, it grants the database administrators group permission to manage `recovery-service-family` in the exainfra and database compartments. The tenancy-level services policy also allows the Database Service and Recovery Service to manage `recovery-service-family`, and allows the Database Service to manage tag namespaces so protected databases can inherit tags from their source databases.
+
+To preserve least privilege, Core Landing Zone does not grant Recovery Service tenancy-wide management of `virtual-network-family`. OCI databases have built-in access to network resources within their database VCN; if a deployment demonstrates that additional network permissions are required, grant only the necessary individual network resource types in the network compartment.
+
+For a minimal configuration, see [Core Landing Zone with Standalone Default Three-Tier VCN](./templates/standalone-three-tier-vcn-defaults/), which enables Autonomous Recovery Service for `TT-VCN-1` with a 30-day retention period.
+
+## <a name="bastion-use"></a>4.8 Remote Access over SSH
 
 OCI Core Landing Zone enables remote access to private resources via a combination of a jump host with OCI Bastion service. The main idea is providing private access to the jump host via the Bastion service, and using the jump host as a bridge to resources in other VCNs. Both the Bastion service and the jump host are deployed in a specific "JumpHost" subnet within the Hub VCN. 
 
@@ -1276,11 +1361,11 @@ The default bastion service name is the value of *service\_label* variable conca
 <img src="images/Deploy_Bastion2.png" alt="Deploy Bastion" width="800"/>
 <img src="images/Deploy_Bastion3.png" alt="Deploy Bastion" width="800"/>
 
-## <a name="express-use"></a>4.8 Express Deployment
+## <a name="express-use"></a>4.9 Express Deployment
 
 Core Landing Zone offers an "express" deployment method for a streamlined RMS experience; the express method provides a reduced number of input options. There is a "Free Tenancy?" option that when checked makes the User Interface hide the Cloud Guard and Security Zones input sections because those services are not available with a free tenancy. The default behavior is false (unchecked). For CLI activation, use the *is\_free\_tenancy* variable. Additionally, there is a "Display Security/Logging/Governance Settings?" checkbox (*display\_security\_logging\_governance\_settings* variable) that when clicked, displays the available settings for setting up Cloud Guard, Security Zones, Logging, Vulnerability Scanning and Cost Management.
 
-## <a name="custom-cmp"></a>4.9 Customizing Compartments
+## <a name="custom-cmp"></a>4.10 Customizing Compartments
 
 Core Landing Zone supports suppressing and adding compartments to its [compartments topology](./images/arch_simple.png).
 
@@ -1291,11 +1376,11 @@ For suppressing compartments, use the following variables:
 
 **Note:** When suppressing a compartment, the Core Landing Zone also suppresses groups, dynamic groups and policies associated with the suppressed compartment.
 
-For adding a compartment for Exadata Cloud service, use the following variable:
+For adding a compartment for Exadata Cloud Service and Exadata Cloud@Customer infrastructure, use the following variable:
 
-- **deploy_exainfa_cmp**: when true, a compartment for Exadata Cloud Service resources is deployed. Default value is false.
+- **deploy_exainfra_cmp**: when true, a compartment for Exadata Cloud Service and Exadata Cloud@Customer infrastructure, VM clusters, and their databases is deployed. Default value is false.
 
-**Note:** When adding a compartment for Exadata Cloud service, the Core Landing Zone also adds a group and policies for managing Exadata Cloud resources in the compartment.
+**Note:** When adding the Exainfra compartment, Core Landing Zone creates separate Exadata infrastructure and database administrator responsibilities. Without it, database administrators manage both Exadata infrastructure and database resources in the Database compartment.
 
 For adding other compartments to Core Landing Zone topology, users should override the **additional_enclosed_compartments** variable, utilizing [Terraform overrides feature](https://developer.hashicorp.com/terraform/language/files/override).The idea is that users provide a file name that ends with *_override.tf*, overriding some existing variables in the Core Landing Zone original code. This approach allows for customizations without changing the original code, thus providing protection against eventual updates to Core Landing Zone code base.  
 
@@ -1323,7 +1408,7 @@ For changing the default compartment names without using an override, users shou
 - **custom_security_compartment_name**: the user-provided security compartment name.
 - **custom_app_compartment_name**: the user-provided app compartment name when **deploy_app_cmp** is true.
 - **custom_database_compartment_name**: the user-provided database compartment name when **deploy_database_cmp** is true.
-- **custom_exainfra_compartment_name**: the user-provided Exadata Cloud Service compartment name when **deploy_exainfa_cmp** is true.
+- **custom_exainfra_compartment_name**: the user-provided Exadata infrastructure compartment name when **deploy_exainfra_cmp** is true.
 
 Note that the custom compartment names are taken literally, i.e., they are not concatenated with service_label variable or any other prefix.
 

@@ -26,7 +26,9 @@ locals {
   identity_domain_dynamic_groups_configuration = {
     default_identity_domain_id : "NEW-DOMAIN"
     dynamic_groups : merge(local.security_functions_dynamic_group, local.appdev_functions_dynamic_group,
-    local.appdev_computeagent_dynamic_group, local.database_kms_dynamic_group, local.net_fw_app_dynamic_group)
+      local.appdev_computeagent_dynamic_group, local.database_kms_dynamic_group, local.net_fw_app_dynamic_group,
+      local.data_science_runtime_dynamic_group, local.genai_vector_store_connectors_dynamic_group,
+    local.genai_hosted_applications_dynamic_group, local.genai_semantic_stores_dynamic_group)
 
   }
 }
@@ -39,5 +41,5 @@ module "lz_new_identity_domain" {
   identity_domains_configuration               = local.identity_domains_configuration
   identity_domain_groups_configuration         = local.identity_domain_groups_configuration
   identity_domain_dynamic_groups_configuration = local.identity_domain_dynamic_groups_configuration
-  identity_domains_dependency                   = {}
+  identity_domains_dependency                  = {}
 }

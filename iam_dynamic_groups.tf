@@ -6,11 +6,15 @@ locals {
   #------------------------------------------------------------------------------------------------------
   custom_dynamic_groups_configuration = null
 
-  custom_security_fun_dyn_group_name        = null
-  custom_appdev_fun_dyn_group_name          = null
-  custom_appdev_computeagent_dyn_group_name = null
-  custom_database_kms_dyn_group_name        = null
-  custom_net_fw_app_dyn_group_name          = null
+  custom_security_fun_dyn_group_name                  = null
+  custom_appdev_fun_dyn_group_name                    = null
+  custom_appdev_computeagent_dyn_group_name           = null
+  custom_database_kms_dyn_group_name                  = null
+  custom_net_fw_app_dyn_group_name                    = null
+  custom_data_science_runtime_dyn_group_name          = null
+  custom_genai_vector_store_connectors_dyn_group_name = null
+  custom_genai_hosted_applications_dyn_group_name     = null
+  custom_genai_semantic_stores_dyn_group_name         = null
 
   custom_dynamic_groups_defined_tags  = null
   custom_dynamic_groups_freeform_tags = null
@@ -167,7 +171,7 @@ locals {
   default_net_fw_app_dynamic_group_name  = "net-fw-app-dynamic-group"
   provided_net_fw_app_dynamic_group_name = coalesce(local.custom_net_fw_app_dyn_group_name, "${var.service_label}-${local.default_net_fw_app_dynamic_group_name}")
 
-  net_fw_app_dynamic_group = length(trimspace(var.existing_net_fw_app_dyn_group_name)) == 0 && local.firewall_options[var.hub_vcn_deploy_net_appliance_option] == "FORTINET" && local.enable_network_compartment == true ? {
+  net_fw_app_dynamic_group = length(trimspace(var.existing_net_fw_app_dyn_group_name)) == 0 && local.chosen_firewall_option == "FORTINET" && local.enable_network_compartment == true ? {
     (local.net_fw_app_dynamic_group_key) = {
       name          = local.provided_net_fw_app_dynamic_group_name
       description   = "${var.lz_provenant_label} dynamic group for network firewall appliances."
@@ -177,7 +181,7 @@ locals {
     }
   } : {}
 
-  custom_domain_net_fw_app_dynamic_group = var.deploy_custom_domain_groups && local.firewall_options[var.hub_vcn_deploy_net_appliance_option] == "FORTINET" && local.enable_network_compartment == true ? {
+  custom_domain_net_fw_app_dynamic_group = var.deploy_custom_domain_groups && local.chosen_firewall_option == "FORTINET" && local.enable_network_compartment == true ? {
     (local.net_fw_app_dynamic_group_key) = {
       identity_domain_id = trimspace(var.custom_id_domain_ocid)
       name               = local.provided_net_fw_app_dynamic_group_name
@@ -188,17 +192,124 @@ locals {
     }
   } : {}
 
+  #--------------------------------------------------------------------
+  #-- AI Dynamic Groups
+  #--------------------------------------------------------------------
+  data_science_runtime_dynamic_group_key           = "AI-DATA-SCIENCE-RUNTIME-DYNAMIC-GROUP"
+  default_data_science_runtime_dynamic_group_name  = "ai-data-science-runtime-dynamic-group"
+  provided_data_science_runtime_dynamic_group_name = coalesce(local.custom_data_science_runtime_dyn_group_name, "${var.service_label}-${local.default_data_science_runtime_dynamic_group_name}")
+
+  data_science_runtime_dynamic_group = (var.identity_domain_option == "New Identity Domain" || length(trimspace(var.existing_ai_data_science_runtime_dyn_group_name)) == 0) && var.enable_data_science_infra && local.enable_app_compartment ? {
+    (local.data_science_runtime_dynamic_group_key) = {
+      name          = local.provided_data_science_runtime_dynamic_group_name
+      description   = "${var.lz_provenant_label} dynamic group for Data Science runtime execution."
+      matching_rule = "ANY {resource.type = 'datasciencenotebooksession', resource.type = 'datasciencemodeldeployment', resource.type = 'datasciencejobrun', resource.type = 'datasciencepipelinerun'}"
+      defined_tags  = local.dynamic_groups_defined_tags
+      freeform_tags = local.dynamic_groups_freeform_tags
+    }
+  } : {}
+
+  custom_domain_data_science_runtime_dynamic_group = var.deploy_custom_domain_groups && var.enable_data_science_infra && local.enable_app_compartment ? {
+    (local.data_science_runtime_dynamic_group_key) = {
+      identity_domain_id = trimspace(var.custom_id_domain_ocid)
+      name               = local.provided_data_science_runtime_dynamic_group_name
+      description        = "${var.lz_provenant_label} dynamic group for Data Science runtime execution."
+      matching_rule      = "ANY {resource.type = 'datasciencenotebooksession', resource.type = 'datasciencemodeldeployment', resource.type = 'datasciencejobrun', resource.type = 'datasciencepipelinerun'}"
+      defined_tags       = local.dynamic_groups_defined_tags
+      freeform_tags      = local.dynamic_groups_freeform_tags
+    }
+  } : {}
+
+  genai_vector_store_connectors_dynamic_group_key           = "AI-GENAI-VECTOR-STORE-CONNECTORS-DYNAMIC-GROUP"
+  default_genai_vector_store_connectors_dynamic_group_name  = "ai-genai-vector-store-connectors-dynamic-group"
+  provided_genai_vector_store_connectors_dynamic_group_name = coalesce(local.custom_genai_vector_store_connectors_dyn_group_name, "${var.service_label}-${local.default_genai_vector_store_connectors_dynamic_group_name}")
+
+  genai_vector_store_connectors_dynamic_group = (var.identity_domain_option == "New Identity Domain" || length(trimspace(var.existing_ai_genai_vector_store_connectors_dyn_group_name)) == 0) && var.enable_generative_ai_infra && local.enable_app_compartment ? {
+    (local.genai_vector_store_connectors_dynamic_group_key) = {
+      name          = local.provided_genai_vector_store_connectors_dynamic_group_name
+      description   = "${var.lz_provenant_label} dynamic group for Generative AI vector store connectors."
+      matching_rule = "ALL {resource.type = 'generativeaivectorconnector', resource.compartment.id = '${local.app_compartment_id}'}"
+      defined_tags  = local.dynamic_groups_defined_tags
+      freeform_tags = local.dynamic_groups_freeform_tags
+    }
+  } : {}
+
+  custom_domain_genai_vector_store_connectors_dynamic_group = var.deploy_custom_domain_groups && var.enable_generative_ai_infra && local.enable_app_compartment ? {
+    (local.genai_vector_store_connectors_dynamic_group_key) = {
+      identity_domain_id = trimspace(var.custom_id_domain_ocid)
+      name               = local.provided_genai_vector_store_connectors_dynamic_group_name
+      description        = "${var.lz_provenant_label} dynamic group for Generative AI vector store connectors."
+      matching_rule      = "ALL {resource.type = 'generativeaivectorconnector', resource.compartment.id = '${local.app_compartment_id}'}"
+      defined_tags       = local.dynamic_groups_defined_tags
+      freeform_tags      = local.dynamic_groups_freeform_tags
+    }
+  } : {}
+
+  genai_hosted_applications_dynamic_group_key           = "AI-GENAI-HOSTED-APPLICATIONS-DYNAMIC-GROUP"
+  default_genai_hosted_applications_dynamic_group_name  = "ai-genai-hosted-applications-dynamic-group"
+  provided_genai_hosted_applications_dynamic_group_name = coalesce(local.custom_genai_hosted_applications_dyn_group_name, "${var.service_label}-${local.default_genai_hosted_applications_dynamic_group_name}")
+
+  genai_hosted_applications_dynamic_group = (var.identity_domain_option == "New Identity Domain" || length(trimspace(var.existing_ai_genai_hosted_applications_dyn_group_name)) == 0) && var.enable_generative_ai_infra && local.enable_app_compartment ? {
+    (local.genai_hosted_applications_dynamic_group_key) = {
+      name          = local.provided_genai_hosted_applications_dynamic_group_name
+      description   = "${var.lz_provenant_label} dynamic group for Generative AI hosted applications and deployments."
+      matching_rule = "ANY {resource.type = 'generativeaihostedapplication', resource.type = 'generativeaihostedapplicationiam', resource.type = 'generativeaihosteddeployment'}"
+      defined_tags  = local.dynamic_groups_defined_tags
+      freeform_tags = local.dynamic_groups_freeform_tags
+    }
+  } : {}
+
+  custom_domain_genai_hosted_applications_dynamic_group = var.deploy_custom_domain_groups && var.enable_generative_ai_infra && local.enable_app_compartment ? {
+    (local.genai_hosted_applications_dynamic_group_key) = {
+      identity_domain_id = trimspace(var.custom_id_domain_ocid)
+      name               = local.provided_genai_hosted_applications_dynamic_group_name
+      description        = "${var.lz_provenant_label} dynamic group for Generative AI hosted applications and deployments."
+      matching_rule      = "ANY {resource.type = 'generativeaihostedapplication', resource.type = 'generativeaihostedapplicationiam', resource.type = 'generativeaihosteddeployment'}"
+      defined_tags       = local.dynamic_groups_defined_tags
+      freeform_tags      = local.dynamic_groups_freeform_tags
+    }
+  } : {}
+
+  genai_semantic_stores_dynamic_group_key           = "AI-GENAI-SEMANTIC-STORES-DYNAMIC-GROUP"
+  default_genai_semantic_stores_dynamic_group_name  = "ai-genai-semantic-stores-dynamic-group"
+  provided_genai_semantic_stores_dynamic_group_name = coalesce(local.custom_genai_semantic_stores_dyn_group_name, "${var.service_label}-${local.default_genai_semantic_stores_dynamic_group_name}")
+
+  genai_semantic_stores_dynamic_group = (var.identity_domain_option == "New Identity Domain" || length(trimspace(var.existing_ai_genai_semantic_stores_dyn_group_name)) == 0) && var.enable_generative_ai_infra && local.enable_app_compartment ? {
+    (local.genai_semantic_stores_dynamic_group_key) = {
+      name          = local.provided_genai_semantic_stores_dynamic_group_name
+      description   = "${var.lz_provenant_label} dynamic group for Generative AI semantic stores."
+      matching_rule = "ALL {resource.type = 'generativeaisemanticstore', resource.compartment.id = '${local.app_compartment_id}'}"
+      defined_tags  = local.dynamic_groups_defined_tags
+      freeform_tags = local.dynamic_groups_freeform_tags
+    }
+  } : {}
+
+  custom_domain_genai_semantic_stores_dynamic_group = var.deploy_custom_domain_groups && var.enable_generative_ai_infra && local.enable_app_compartment ? {
+    (local.genai_semantic_stores_dynamic_group_key) = {
+      identity_domain_id = trimspace(var.custom_id_domain_ocid)
+      name               = local.provided_genai_semantic_stores_dynamic_group_name
+      description        = "${var.lz_provenant_label} dynamic group for Generative AI semantic stores."
+      matching_rule      = "ALL {resource.type = 'generativeaisemanticstore', resource.compartment.id = '${local.app_compartment_id}'}"
+      defined_tags       = local.dynamic_groups_defined_tags
+      freeform_tags      = local.dynamic_groups_freeform_tags
+    }
+  } : {}
+
   #------------------------------------------------------------------------
   #----- Dynamic groups configuration definition. Input to module.
   #------------------------------------------------------------------------
   dynamic_groups_configuration = {
     dynamic_groups : merge(local.security_functions_dynamic_group, local.appdev_functions_dynamic_group,
-    local.appdev_computeagent_dynamic_group, local.database_kms_dynamic_group, local.net_fw_app_dynamic_group)
+      local.appdev_computeagent_dynamic_group, local.database_kms_dynamic_group, local.net_fw_app_dynamic_group,
+      local.data_science_runtime_dynamic_group, local.genai_vector_store_connectors_dynamic_group,
+    local.genai_hosted_applications_dynamic_group, local.genai_semantic_stores_dynamic_group)
   }
 
   custom_domain_dynamic_groups_configuration = {
     dynamic_groups : merge(local.custom_domain_security_functions_dynamic_group, local.custom_domain_appdev_functions_dynamic_group,
-    local.custom_domain_appdev_computeagent_dynamic_group, local.custom_domain_database_kms_dynamic_group, local.custom_domain_net_fw_app_dynamic_group)
+      local.custom_domain_appdev_computeagent_dynamic_group, local.custom_domain_database_kms_dynamic_group, local.custom_domain_net_fw_app_dynamic_group,
+      local.custom_domain_data_science_runtime_dynamic_group, local.custom_domain_genai_vector_store_connectors_dynamic_group,
+    local.custom_domain_genai_hosted_applications_dynamic_group, local.custom_domain_genai_semantic_stores_dynamic_group)
   }
   empty_dynamic_groups_configuration = {
     dynamic_groups : {}
@@ -214,9 +325,13 @@ locals {
   #----- Hence the usage of provided_* local variables instead of the dynamic groups 
   #----- module output for the true case in the assignments below.
   #----------------------------------------------------------------------------------------
-  security_functions_dynamic_group_name  = var.identity_domain_option != "Use Custom Identity Domain" ? (length(trimspace(var.existing_security_fun_dyn_group_name)) == 0 ? local.provided_security_functions_dynamic_group_name : (length(regexall("^ocid1.dynamicgroup.oc.*$", var.existing_security_fun_dyn_group_name)) > 0 ? local.all_existing_dynamic_groups[var.existing_security_fun_dyn_group_name].name : var.existing_security_fun_dyn_group_name)) : var.deploy_custom_domain_groups == true ? ("'${local.custom_id_domain_name}'/'${trimspace(local.provided_security_functions_dynamic_group_name)}'") : ("'${local.custom_id_domain_name}'/'${trimspace(var.existing_id_domain_security_fun_dyn_group_name)}'")
-  appdev_functions_dynamic_group_name    = var.identity_domain_option != "Use Custom Identity Domain" ? (length(trimspace(var.existing_appdev_fun_dyn_group_name)) == 0 ? local.provided_appdev_functions_dynamic_group_name : (length(regexall("^ocid1.dynamicgroup.oc.*$", var.existing_appdev_fun_dyn_group_name)) > 0 ? local.all_existing_dynamic_groups[var.existing_appdev_fun_dyn_group_name].name : var.existing_appdev_fun_dyn_group_name)) : var.deploy_custom_domain_groups == true ? ("'${local.custom_id_domain_name}'/'${trimspace(local.provided_appdev_functions_dynamic_group_name)}'") : ("'${local.custom_id_domain_name}'/'${trimspace(var.existing_id_domain_appdev_fun_dyn_group_name)}'")
-  appdev_computeagent_dynamic_group_name = var.identity_domain_option != "Use Custom Identity Domain" ? (length(trimspace(var.existing_compute_agent_dyn_group_name)) == 0 ? local.provided_appdev_computeagent_dynamic_group_name : (length(regexall("^ocid1.dynamicgroup.oc.*$", var.existing_compute_agent_dyn_group_name)) > 0 ? local.all_existing_dynamic_groups[var.existing_compute_agent_dyn_group_name].name : var.existing_compute_agent_dyn_group_name)) : var.deploy_custom_domain_groups == true ? ("'${local.custom_id_domain_name}'/'${trimspace(local.provided_appdev_computeagent_dynamic_group_name)}'") : ("'${local.custom_id_domain_name}'/'${trimspace(var.existing_id_domain_compute_agent_dyn_group_name)}'")
-  database_kms_dynamic_group_name        = var.identity_domain_option != "Use Custom Identity Domain" ? (length(trimspace(var.existing_database_kms_dyn_group_name)) == 0 ? local.provided_database_kms_dynamic_group_name : (length(regexall("^ocid1.dynamicgroup.oc.*$", var.existing_database_kms_dyn_group_name)) > 0 ? local.all_existing_dynamic_groups[var.existing_database_kms_dyn_group_name].name : var.existing_database_kms_dyn_group_name)) : var.deploy_custom_domain_groups == true ? ("'${local.custom_id_domain_name}'/'${trimspace(local.provided_database_kms_dynamic_group_name)}'") : ("'${local.custom_id_domain_name}'/'${trimspace(var.existing_id_domain_database_kms_dyn_group_name)}'")
-  net_fw_app_dynamic_group_name          = local.firewall_options[var.hub_vcn_deploy_net_appliance_option] == "FORTINET" ? (var.identity_domain_option != "Use Custom Identity Domain" ? (length(trimspace(var.existing_net_fw_app_dyn_group_name)) == 0 ? local.provided_net_fw_app_dynamic_group_name : (length(regexall("^ocid1.dynamicgroup.oc.*$", var.existing_net_fw_app_dyn_group_name)) > 0 ? local.all_existing_dynamic_groups[var.existing_net_fw_app_dyn_group_name].name : var.existing_net_fw_app_dyn_group_name)) : var.deploy_custom_domain_groups == true ? ("'${local.custom_id_domain_name}'/'${trimspace(local.provided_net_fw_app_dynamic_group_name)}'") : ("'${local.custom_id_domain_name}'/'${trimspace(var.existing_id_domain_net_fw_app_dyn_group_name)}'")) : null
+  security_functions_dynamic_group_name            = var.identity_domain_option != "Use Custom Identity Domain" ? (length(trimspace(var.existing_security_fun_dyn_group_name)) == 0 ? local.provided_security_functions_dynamic_group_name : (length(regexall("^ocid1.dynamicgroup.oc.*$", var.existing_security_fun_dyn_group_name)) > 0 ? local.all_existing_dynamic_groups[var.existing_security_fun_dyn_group_name].name : var.existing_security_fun_dyn_group_name)) : var.deploy_custom_domain_groups == true ? ("'${local.custom_id_domain_name}'/'${trimspace(local.provided_security_functions_dynamic_group_name)}'") : ("'${local.custom_id_domain_name}'/'${trimspace(var.existing_id_domain_security_fun_dyn_group_name)}'")
+  appdev_functions_dynamic_group_name              = var.identity_domain_option != "Use Custom Identity Domain" ? (length(trimspace(var.existing_appdev_fun_dyn_group_name)) == 0 ? local.provided_appdev_functions_dynamic_group_name : (length(regexall("^ocid1.dynamicgroup.oc.*$", var.existing_appdev_fun_dyn_group_name)) > 0 ? local.all_existing_dynamic_groups[var.existing_appdev_fun_dyn_group_name].name : var.existing_appdev_fun_dyn_group_name)) : var.deploy_custom_domain_groups == true ? ("'${local.custom_id_domain_name}'/'${trimspace(local.provided_appdev_functions_dynamic_group_name)}'") : ("'${local.custom_id_domain_name}'/'${trimspace(var.existing_id_domain_appdev_fun_dyn_group_name)}'")
+  appdev_computeagent_dynamic_group_name           = var.identity_domain_option != "Use Custom Identity Domain" ? (length(trimspace(var.existing_compute_agent_dyn_group_name)) == 0 ? local.provided_appdev_computeagent_dynamic_group_name : (length(regexall("^ocid1.dynamicgroup.oc.*$", var.existing_compute_agent_dyn_group_name)) > 0 ? local.all_existing_dynamic_groups[var.existing_compute_agent_dyn_group_name].name : var.existing_compute_agent_dyn_group_name)) : var.deploy_custom_domain_groups == true ? ("'${local.custom_id_domain_name}'/'${trimspace(local.provided_appdev_computeagent_dynamic_group_name)}'") : ("'${local.custom_id_domain_name}'/'${trimspace(var.existing_id_domain_compute_agent_dyn_group_name)}'")
+  database_kms_dynamic_group_name                  = var.identity_domain_option != "Use Custom Identity Domain" ? (length(trimspace(var.existing_database_kms_dyn_group_name)) == 0 ? local.provided_database_kms_dynamic_group_name : (length(regexall("^ocid1.dynamicgroup.oc.*$", var.existing_database_kms_dyn_group_name)) > 0 ? local.all_existing_dynamic_groups[var.existing_database_kms_dyn_group_name].name : var.existing_database_kms_dyn_group_name)) : var.deploy_custom_domain_groups == true ? ("'${local.custom_id_domain_name}'/'${trimspace(local.provided_database_kms_dynamic_group_name)}'") : ("'${local.custom_id_domain_name}'/'${trimspace(var.existing_id_domain_database_kms_dyn_group_name)}'")
+  net_fw_app_dynamic_group_name                    = local.firewall_options[var.hub_vcn_deploy_net_appliance_option] == "FORTINET" ? (var.identity_domain_option != "Use Custom Identity Domain" ? (length(trimspace(var.existing_net_fw_app_dyn_group_name)) == 0 ? local.provided_net_fw_app_dynamic_group_name : (length(regexall("^ocid1.dynamicgroup.oc.*$", var.existing_net_fw_app_dyn_group_name)) > 0 ? local.all_existing_dynamic_groups[var.existing_net_fw_app_dyn_group_name].name : var.existing_net_fw_app_dyn_group_name)) : var.deploy_custom_domain_groups == true ? ("'${local.custom_id_domain_name}'/'${trimspace(local.provided_net_fw_app_dynamic_group_name)}'") : ("'${local.custom_id_domain_name}'/'${trimspace(var.existing_id_domain_net_fw_app_dyn_group_name)}'")) : null
+  data_science_runtime_dynamic_group_name          = var.identity_domain_option == "New Identity Domain" ? ("'${local.new_identity_domain_name}'/'${trimspace(local.provided_data_science_runtime_dynamic_group_name)}'") : var.identity_domain_option != "Use Custom Identity Domain" ? (length(trimspace(var.existing_ai_data_science_runtime_dyn_group_name)) == 0 ? local.provided_data_science_runtime_dynamic_group_name : (length(regexall("^ocid1.dynamicgroup.oc.*$", var.existing_ai_data_science_runtime_dyn_group_name)) > 0 ? local.all_existing_dynamic_groups[var.existing_ai_data_science_runtime_dyn_group_name].name : var.existing_ai_data_science_runtime_dyn_group_name)) : var.deploy_custom_domain_groups == true ? ("'${local.custom_id_domain_name}'/'${trimspace(local.provided_data_science_runtime_dynamic_group_name)}'") : ("'${local.custom_id_domain_name}'/'${trimspace(var.existing_id_domain_ai_data_science_runtime_dyn_group_name)}'")
+  genai_vector_store_connectors_dynamic_group_name = var.identity_domain_option == "New Identity Domain" ? ("'${local.new_identity_domain_name}'/'${trimspace(local.provided_genai_vector_store_connectors_dynamic_group_name)}'") : var.identity_domain_option != "Use Custom Identity Domain" ? (length(trimspace(var.existing_ai_genai_vector_store_connectors_dyn_group_name)) == 0 ? local.provided_genai_vector_store_connectors_dynamic_group_name : (length(regexall("^ocid1.dynamicgroup.oc.*$", var.existing_ai_genai_vector_store_connectors_dyn_group_name)) > 0 ? local.all_existing_dynamic_groups[var.existing_ai_genai_vector_store_connectors_dyn_group_name].name : var.existing_ai_genai_vector_store_connectors_dyn_group_name)) : var.deploy_custom_domain_groups == true ? ("'${local.custom_id_domain_name}'/'${trimspace(local.provided_genai_vector_store_connectors_dynamic_group_name)}'") : ("'${local.custom_id_domain_name}'/'${trimspace(var.existing_id_domain_ai_genai_vector_store_connectors_dyn_group_name)}'")
+  genai_hosted_applications_dynamic_group_name     = var.identity_domain_option == "New Identity Domain" ? ("'${local.new_identity_domain_name}'/'${trimspace(local.provided_genai_hosted_applications_dynamic_group_name)}'") : var.identity_domain_option != "Use Custom Identity Domain" ? (length(trimspace(var.existing_ai_genai_hosted_applications_dyn_group_name)) == 0 ? local.provided_genai_hosted_applications_dynamic_group_name : (length(regexall("^ocid1.dynamicgroup.oc.*$", var.existing_ai_genai_hosted_applications_dyn_group_name)) > 0 ? local.all_existing_dynamic_groups[var.existing_ai_genai_hosted_applications_dyn_group_name].name : var.existing_ai_genai_hosted_applications_dyn_group_name)) : var.deploy_custom_domain_groups == true ? ("'${local.custom_id_domain_name}'/'${trimspace(local.provided_genai_hosted_applications_dynamic_group_name)}'") : ("'${local.custom_id_domain_name}'/'${trimspace(var.existing_id_domain_ai_genai_hosted_applications_dyn_group_name)}'")
+  genai_semantic_stores_dynamic_group_name         = var.identity_domain_option == "New Identity Domain" ? ("'${local.new_identity_domain_name}'/'${trimspace(local.provided_genai_semantic_stores_dynamic_group_name)}'") : var.identity_domain_option != "Use Custom Identity Domain" ? (length(trimspace(var.existing_ai_genai_semantic_stores_dyn_group_name)) == 0 ? local.provided_genai_semantic_stores_dynamic_group_name : (length(regexall("^ocid1.dynamicgroup.oc.*$", var.existing_ai_genai_semantic_stores_dyn_group_name)) > 0 ? local.all_existing_dynamic_groups[var.existing_ai_genai_semantic_stores_dyn_group_name].name : var.existing_ai_genai_semantic_stores_dyn_group_name)) : var.deploy_custom_domain_groups == true ? ("'${local.custom_id_domain_name}'/'${trimspace(local.provided_genai_semantic_stores_dynamic_group_name)}'") : ("'${local.custom_id_domain_name}'/'${trimspace(var.existing_id_domain_ai_genai_semantic_stores_dyn_group_name)}'")
 }

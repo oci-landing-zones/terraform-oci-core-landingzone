@@ -11,7 +11,7 @@ locals {
 
 module "lz_notifications" {
   # depends_on = [null_resource.wait_on_compartments]
-  source               = "github.com/oci-landing-zones/terraform-oci-modules-observability//events?ref=v0.2.5"
+  source               = "github.com/oci-landing-zones/terraform-oci-modules-observability//events?ref=release-0.2.7"
   events_configuration = local.regional_events_configuration
   topics_dependency    = module.lz_regional_topics.topics
 }
@@ -19,7 +19,7 @@ module "lz_notifications" {
 module "lz_home_region_notifications" {
   count = var.extend_landing_zone_to_new_region == false ? 1 : 0
   # depends_on = [null_resource.wait_on_compartments]
-  source               = "github.com/oci-landing-zones/terraform-oci-modules-observability//events?ref=v0.2.5"
+  source               = "github.com/oci-landing-zones/terraform-oci-modules-observability//events?ref=release-0.2.7"
   providers            = { oci = oci.home }
   events_configuration = local.home_region_events_configuration
   topics_dependency    = module.lz_home_region_topics[0].topics
@@ -110,29 +110,44 @@ locals {
   #--------------------------------------------------------------------
   #-- Database Events
   #--------------------------------------------------------------------
-  database_events_key = "DATABASE-EVENTS"
-  database_events = length(var.database_admin_email_endpoints) > 0 ? {
-    (local.storage_events_key) = {
-      compartment_id                  = local.database_compartment_id
-      event_display_name              = "${var.service_label}-notify-on-database-changes-rule"
-      event_description               = "Landing Zone events rule to detect when database resources are created, updated or deleted in the database compartment."
-      preconfigured_events_categories = ["database"]
-      destination_topic_ids           = ["DATABASE-TOPIC"]
-      is_enabled                      = var.create_events_as_enabled
-      defined_tags                    = local.notifications_defined_tags
-      freeform_tags                   = local.notifications_freeform_tags
-    }
-  } : {}
+  database_events_key          = "DATABASE-EVENTS"
+  exainfra_database_events_key = "EXAINFRA-DATABASE-EVENTS"
+  database_events = length(var.database_admin_email_endpoints) > 0 && local.enable_database_admin_persona ? merge(
+    local.enable_database_compartment ? {
+      (local.database_events_key) = {
+        compartment_id                  = local.database_compartment_id
+        event_display_name              = "${var.service_label}-notify-on-database-changes-rule"
+        event_description               = "Landing Zone events rule to detect when database resources are created, updated or deleted in the database compartment."
+        preconfigured_events_categories = ["database"]
+        destination_topic_ids           = ["DATABASE-TOPIC"]
+        is_enabled                      = var.create_events_as_enabled
+        defined_tags                    = local.notifications_defined_tags
+        freeform_tags                   = local.notifications_freeform_tags
+      }
+    } : {},
+    local.enable_exainfra_compartment ? {
+      (local.exainfra_database_events_key) = {
+        compartment_id                  = local.exainfra_compartment_id
+        event_display_name              = "${var.service_label}-notify-on-exainfra-database-changes-rule"
+        event_description               = "Landing Zone events rule to detect when database resources are created, updated or deleted in the Exadata infrastructure compartment."
+        preconfigured_events_categories = ["database"]
+        destination_topic_ids           = ["DATABASE-TOPIC"]
+        is_enabled                      = var.create_events_as_enabled
+        defined_tags                    = local.notifications_defined_tags
+        freeform_tags                   = local.notifications_freeform_tags
+      }
+    } : {}
+  ) : {}
 
   #--------------------------------------------------------------------
   #-- Exainfra Events
   #--------------------------------------------------------------------
   exainfra_events_key = "EXAINFRA-EVENTS"
-  exainfra_events = length(var.exainfra_admin_email_endpoints) > 0 && var.deploy_exainfra_cmp == true ? {
-    (local.storage_events_key) = {
-      compartment_id                  = local.exainfra_compartment_id
+  exainfra_events = length(var.exainfra_admin_email_endpoints) > 0 && local.enable_database_admin_persona ? {
+    (local.exainfra_events_key) = {
+      compartment_id                  = local.enable_exainfra_compartment ? local.exainfra_compartment_id : local.database_compartment_id
       event_display_name              = "${var.service_label}-notify-on-exainfra-changes-rule"
-      event_description               = "Landing Zone events rule to detect Exadata infrastructure events."
+      event_description               = "Landing Zone events rule to detect Exadata infrastructure events in the database infrastructure compartment."
       preconfigured_events_categories = ["exainfra"]
       destination_topic_ids           = ["EXAINFRA-TOPIC"]
       is_enabled                      = var.create_events_as_enabled
