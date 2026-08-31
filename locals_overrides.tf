@@ -21,6 +21,8 @@ locals {
   #-----------------------------------------------
   # Hub VCN overrides:
   #-----------------------------------------------
+  # Additional static DRG route rules keyed by Core LZ-managed DRG route table key.
+  additional_drg_route_rules = {}
   # Whether HUB VCN Outdoor subnet is private (default) or public.
   # Override it to true for enabling sd-wan connectivity into a 3rd-party firewall deployed in the Hub VCN.
   hub_vcn_outdoor_subnet_private = true

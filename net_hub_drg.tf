@@ -208,7 +208,10 @@ locals {
             "EXA-VCN-1-DRG-ROUTE-TABLE" = {
               display_name                      = "${local.exa_vcn1_display_name}-drg-route-table"
               import_drg_route_distribution_key = local.hub_with_vcn == false ? "EXA-VCN-1-DRG-IMPORT-ROUTE-DISTRIBUTION" : null
-              route_rules                       = local.hub_with_vcn == true ? { "EXA-VCN-1-TO-ANYWHERE-ROUTE-RULE" = local.anywhere_drg_route_rule } : null
+              route_rules = merge(
+                local.hub_with_vcn == true ? { "EXA-VCN-1-TO-ANYWHERE-ROUTE-RULE" = local.anywhere_drg_route_rule } : {},
+                try(local.additional_drg_route_rules["EXA-VCN-1-DRG-ROUTE-TABLE"], {})
+              )
             }
           } : {},
           (local.add_exa_vcn2 == true && var.exa_vcn2_attach_to_drg == true) ? {
