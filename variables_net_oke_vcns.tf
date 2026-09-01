@@ -11,6 +11,66 @@ variable "add_oke_vcn1" {
   description = "Whether to add a VCN configured for OKE workload deployments, with at least three subnets: service (public by default), workers (private) and API endpoint (private). Additionally, a private subnet for pods deployment is created if the OKE CNI Type is 'Native'. You can also enable an extra private subnet for managing the OKE cluster. The added VCN is labelled 'OKE-VCN-1'. The label should be used in the '*_routable_vcns' fields of other VCNs for constraining network traffic to those respective VCNs in a Network topology."
 }
 
+# ------------------------------------------------------
+# ----- private endpoint networking
+# ------------------------------------------------------
+variable "add_oke_vcn1_private_endpoint_subnet" {
+  type        = bool
+  default     = false
+  description = "Whether to add the OKE-VCN-1 shared private endpoint subnet."
+}
+variable "oke_vcn1_private_endpoint_subnet_name" {
+  type        = string
+  default     = null
+  description = "The OKE-VCN-1 private endpoint subnet name."
+}
+variable "oke_vcn1_private_endpoint_subnet_cidr" {
+  type        = string
+  default     = null
+  description = "The OKE-VCN-1 private endpoint subnet CIDR. When null, Core Landing Zone derives a /28."
+  validation {
+    condition     = var.oke_vcn1_private_endpoint_subnet_cidr == null || can(cidrhost(var.oke_vcn1_private_endpoint_subnet_cidr, 0))
+    error_message = "VALIDATION FAILURE: oke_vcn1_private_endpoint_subnet_cidr must be null or a valid CIDR."
+  }
+}
+variable "add_oke_vcn2_private_endpoint_subnet" {
+  type        = bool
+  default     = false
+  description = "Whether to add the OKE-VCN-2 shared private endpoint subnet."
+}
+variable "oke_vcn2_private_endpoint_subnet_name" {
+  type        = string
+  default     = null
+  description = "The OKE-VCN-2 private endpoint subnet name."
+}
+variable "oke_vcn2_private_endpoint_subnet_cidr" {
+  type        = string
+  default     = null
+  description = "The OKE-VCN-2 private endpoint subnet CIDR. When null, Core Landing Zone derives a /28."
+  validation {
+    condition     = var.oke_vcn2_private_endpoint_subnet_cidr == null || can(cidrhost(var.oke_vcn2_private_endpoint_subnet_cidr, 0))
+    error_message = "VALIDATION FAILURE: oke_vcn2_private_endpoint_subnet_cidr must be null or a valid CIDR."
+  }
+}
+variable "add_oke_vcn3_private_endpoint_subnet" {
+  type        = bool
+  default     = false
+  description = "Whether to add the OKE-VCN-3 shared private endpoint subnet."
+}
+variable "oke_vcn3_private_endpoint_subnet_name" {
+  type        = string
+  default     = null
+  description = "The OKE-VCN-3 private endpoint subnet name."
+}
+variable "oke_vcn3_private_endpoint_subnet_cidr" {
+  type        = string
+  default     = null
+  description = "The OKE-VCN-3 private endpoint subnet CIDR. When null, Core Landing Zone derives a /28."
+  validation {
+    condition     = var.oke_vcn3_private_endpoint_subnet_cidr == null || can(cidrhost(var.oke_vcn3_private_endpoint_subnet_cidr, 0))
+    error_message = "VALIDATION FAILURE: oke_vcn3_private_endpoint_subnet_cidr must be null or a valid CIDR."
+  }
+}
 variable "oke_vcn1_cni_type" {
   type        = string
   default     = "Flannel"

@@ -10,6 +10,7 @@
 **/*.py
 !templates/hub-spoke-with-hub-vcn-net-appliance/generate_panf_config.py
 !tests_ai/schema_ai_foundation_fields_test.py
+!tests_ai/schema_ai_networking_fields_test.py
 
 # .tfstate files
 *.tfstate

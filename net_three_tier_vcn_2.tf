@@ -19,6 +19,9 @@ locals {
   tt_vcn2_bastion_subnet_display_name = coalesce(var.tt_vcn2_bastion_subnet_name, "${var.service_label}-three-tier-vcn-2-bastion-subnet")
   tt_vcn2_bastion_subnet_dns_label    = substr(replace(coalesce(var.tt_vcn2_bastion_subnet_name, "bastion-subnet"), "/[^\\w]/", ""), 0, 14)
   tt_vcn2_bastion_subnet_cidr         = var.deploy_tt_vcn2_bastion_subnet == true ? coalesce(var.tt_vcn2_bastion_subnet_cidr, cidrsubnet(var.tt_vcn2_cidrs[0], 9, 96)) : null
+  tt_vcn2_private_endpoint_subnet_display_name = coalesce(var.tt_vcn2_private_endpoint_subnet_name, "${var.service_label}-three-tier-vcn-2-private-endpoint-subnet")
+  tt_vcn2_private_endpoint_subnet_dns_label    = substr(replace(coalesce(var.tt_vcn2_private_endpoint_subnet_name, "pe-subnet"), "/[^\\w]/", ""), 0, 14)
+  tt_vcn2_private_endpoint_subnet_cidr         = coalesce(var.tt_vcn2_private_endpoint_subnet_cidr, try(cidrsubnet(var.tt_vcn2_cidrs[0], 28 - tonumber(split("/", var.tt_vcn2_cidrs[0])[1]), pow(2, 28 - tonumber(split("/", var.tt_vcn2_cidrs[0])[1])) - 1), null))
 
   ## This variable defines the allowed CIDR and port combinations for ingress into the TT-VCN-2 web tier subnet.
   tt_vcn2_external_allowed_cidrs_to_ports_into_web_tier = local.add_tt_vcn2 == true ? flatten([for cidr in var.tt_vcn2_external_allowed_cidrs_into_web_tier : [for port in var.tt_vcn2_web_ingress_destination_ports : "${trimspace(cidr)},${trimspace(port)}"] if length(var.tt_vcn2_external_allowed_cidrs_into_web_tier) > 0 && length(var.tt_vcn2_web_ingress_destination_ports) > 0]) : []
@@ -82,6 +85,19 @@ locals {
             route_table_key           = "TT-VCN-2-BASTION-SUBNET-ROUTE-TABLE"
             security_list_keys        = ["TT-VCN-2-BASTION-SUBNET-SL"]
           }
+        } : {},
+        var.add_tt_vcn2_private_endpoint_subnet == true ? {
+          "TT-VCN-2-PRIVATE-ENDPOINT-SUBNET" = {
+            cidr_block                 = local.tt_vcn2_private_endpoint_subnet_cidr
+            dhcp_options_key           = "default_dhcp_options"
+            display_name               = local.tt_vcn2_private_endpoint_subnet_display_name
+            dns_label                  = local.tt_vcn2_private_endpoint_subnet_dns_label
+            ipv6cidr_blocks            = []
+            prohibit_internet_ingress  = true
+            prohibit_public_ip_on_vnic = true
+            route_table_key            = "TT-VCN-2-PRIVATE-ENDPOINT-ROUTE-TABLE"
+            security_list_keys         = local.tt_vcn2_private_endpoint_subnet_security_list != null ? ["TT-VCN-2-PRIVATE-ENDPOINT-SL"] : []
+          }
         } : {}
       ) # merge function
 
@@ -123,6 +139,9 @@ locals {
         } : {},
         local.tt_vcn2_db_subnet_security_list != null ? {
           "TT-VCN-2-DB-SUBNET-SL" = local.tt_vcn2_db_subnet_security_list
+        } : {},
+        var.add_tt_vcn2_private_endpoint_subnet && local.tt_vcn2_private_endpoint_subnet_security_list != null ? {
+          "TT-VCN-2-PRIVATE-ENDPOINT-SL" = local.tt_vcn2_private_endpoint_subnet_security_list
         } : {}
       )
 
@@ -397,6 +416,28 @@ locals {
               )
             )
           }
+        } : {},
+        var.add_tt_vcn2_private_endpoint_subnet == true ? {
+          "TT-VCN-2-PRIVATE-ENDPOINT-ROUTE-TABLE" = {
+            display_name = "private-endpoint-route-table"
+            route_rules = merge(
+              local.tt_vcn2_enable_intra_vcn_drg_route && var.tt_vcn2_attach_to_drg ? {
+                "APP-SUBNET-RULE" = {
+                  network_entity_key = "HUB-DRG"
+                  description        = "Traffic destined for the Application subnet is routed through the DRG."
+                  destination        = local.tt_vcn2_app_subnet_cidr
+                  destination_type   = "CIDR_BLOCK"
+                }
+                "DB-SUBNET-RULE" = {
+                  network_entity_key = "HUB-DRG"
+                  description        = "Traffic destined for the Database subnet is routed through the DRG."
+                  destination        = local.tt_vcn2_db_subnet_cidr
+                  destination_type   = "CIDR_BLOCK"
+                }
+              } : {},
+              local.tt_vcn2_private_endpoint_subnet_additional_route_rules
+            )
+          }
         } : {}
       ) # merge function
 
@@ -533,6 +574,17 @@ locals {
                 icmp_type    = split(":", port)[0] == "ICMP" ? split("/", split(":", port)[1])[0] : null
                 icmp_code    = split(":", port)[0] == "ICMP" ? (length(split("/", split(":", port)[1])) > 1 ? split("/", split(":", port)[1])[1] : null) : null
               } },
+              { for port in var.tt_vcn2_db_ingress_destination_ports : "INGRESS-FROM-AIDP-NSG-ON-${port}-RULE" => {
+                description  = "Ingress from AIDP NSG over ${split(":", port)[0]} on ${split(":", port)[0] == "ICMP" ? "type/code ${split(":", port)[1]}" : "port ${split(":", port)[1]}"}."
+                stateless    = false
+                protocol     = split(":", port)[0]
+                src          = "TT-VCN-2-AIDP-NSG"
+                src_type     = "NETWORK_SECURITY_GROUP"
+                dst_port_min = split(":", port)[0] != "ICMP" ? split(":", port)[1] : null
+                dst_port_max = split(":", port)[0] != "ICMP" ? split(":", port)[1] : null
+                icmp_type    = split(":", port)[0] == "ICMP" ? split("/", split(":", port)[1])[0] : null
+                icmp_code    = split(":", port)[0] == "ICMP" ? (length(split("/", split(":", port)[1])) > 1 ? split("/", split(":", port)[1])[1] : null) : null
+              } if var.enable_aidp_infra == true },
               var.deploy_tt_vcn2_bastion_subnet == true ? {
                 "INGRESS-FROM-BASTION-RULE" = {
                   description  = "Ingress from Bastion NSG."
@@ -667,6 +719,131 @@ locals {
                 dst_port_max = 8005
               }
             }
+          }
+        } : {},
+        var.enable_generative_ai_infra == true ? {
+          "TT-VCN-2-GEN-AI-NSG" = {
+            display_name = "gen-ai-nsg"
+            ingress_rules = var.add_tt_vcn2_private_endpoint_subnet ? {
+              "INGRESS-FROM-APP-NSG-HTTPS" = {
+                description  = "Allows HTTPS from the Application NSG."
+                stateless    = false
+                protocol     = "TCP"
+                src          = "TT-VCN-2-APP-NSG"
+                src_type     = "NETWORK_SECURITY_GROUP"
+                dst_port_min = 443
+                dst_port_max = 443
+              }
+              "INGRESS-FROM-DB-NSG-HTTPS" = {
+                description  = "Allows HTTPS from the Database NSG."
+                stateless    = false
+                protocol     = "TCP"
+                src          = "TT-VCN-2-DB-NSG"
+                src_type     = "NETWORK_SECURITY_GROUP"
+                dst_port_min = 443
+                dst_port_max = 443
+              }
+            } : {}
+            egress_rules = var.add_tt_vcn2_private_endpoint_subnet ? {} : {
+              "EGRESS-TO-OSN-HTTPS" = {
+                description  = "Allows HTTPS to Generative AI through the Oracle Services Network."
+                stateless    = false
+                protocol     = "TCP"
+                dst          = "all-services"
+                dst_type     = "SERVICE_CIDR_BLOCK"
+                dst_port_min = 443
+                dst_port_max = 443
+              }
+            }
+          }
+        } : {},
+        var.enable_aidp_infra == true ? {
+          "TT-VCN-2-AIDP-NSG" = {
+            display_name = "aidp-nsg"
+            ingress_rules = merge(
+              var.add_tt_vcn2_private_endpoint_subnet ? merge(
+                {
+                  "INGRESS-FROM-AIDP-NSG-TO-TCP-443-RULE" = {
+                    description  = "Ingress from AIDP NSG to HTTPS-based private endpoints."
+                    stateless    = false
+                    protocol     = "TCP"
+                    src          = "TT-VCN-2-AIDP-NSG"
+                    src_type     = "NETWORK_SECURITY_GROUP"
+                    dst_port_min = 443
+                    dst_port_max = 443
+                  }
+                  "INGRESS-FROM-AIDP-NSG-TO-ORACLE-DATABASE-RULE" = {
+                    description  = "Ingress from AIDP NSG to Oracle Database private endpoints."
+                    stateless    = false
+                    protocol     = "TCP"
+                    src          = "TT-VCN-2-AIDP-NSG"
+                    src_type     = "NETWORK_SECURITY_GROUP"
+                    dst_port_min = 1521
+                    dst_port_max = 1522
+                  }
+                  "INGRESS-FROM-AIDP-NSG-TO-TCP-9092-RULE" = {
+                    description  = "Ingress from AIDP NSG to Kafka-compatible private endpoints."
+                    stateless    = false
+                    protocol     = "TCP"
+                    src          = "TT-VCN-2-AIDP-NSG"
+                    src_type     = "NETWORK_SECURITY_GROUP"
+                    dst_port_min = 9092
+                    dst_port_max = 9092
+                  }
+                },
+                { for port in var.tt_vcn2_db_ingress_destination_ports : "INGRESS-FROM-AIDP-NSG-ON-${port}-RULE" => {
+                  description  = "Ingress from AIDP NSG to same-VCN databases over port ${port}."
+                  stateless    = false
+                  protocol     = split(":", port)[0]
+                  src          = "TT-VCN-2-AIDP-NSG"
+                  src_type     = "NETWORK_SECURITY_GROUP"
+                  dst_port_min = split(":", port)[1]
+                  dst_port_max = split(":", port)[1]
+                } }
+              ) : {},
+              local.tt_vcn2_aidp_nsg_additional_ingress_rules
+            )
+            egress_rules = merge(
+              var.add_tt_vcn2_private_endpoint_subnet ? {} : {
+                "EGRESS-TO-OSN-HTTPS" = {
+                  description  = "Egress to HTTPS endpoints on Oracle Services Network."
+                  stateless    = false
+                  protocol     = "TCP"
+                  dst          = "all-services"
+                  dst_type     = "SERVICE_CIDR_BLOCK"
+                  dst_port_min = 443
+                  dst_port_max = 443
+                }
+                "EGRESS-TO-OSN-DATABASE" = {
+                  description  = "Egress to databases in Oracle Services Network."
+                  stateless    = false
+                  protocol     = "TCP"
+                  dst          = "all-services"
+                  dst_type     = "SERVICE_CIDR_BLOCK"
+                  dst_port_min = 1521
+                  dst_port_max = 1522
+                }
+                "EGRESS-TO-OSN-STREAMING-KAFKA" = {
+                  description  = "Egress to Kafka-compatible private endpoints in Oracle Services Network."
+                  stateless    = false
+                  protocol     = "TCP"
+                  dst          = "all-services"
+                  dst_type     = "SERVICE_CIDR_BLOCK"
+                  dst_port_min = 9092
+                  dst_port_max = 9092
+                }
+              },
+              { for port in var.tt_vcn2_db_ingress_destination_ports : "EGRESS-TO-DB-NSG-ON-${port}-RULE" => {
+                description  = "Egress to same-VCN databases over ${port}."
+                stateless    = false
+                protocol     = split(":", port)[0]
+                dst          = "TT-VCN-2-DB-NSG"
+                dst_type     = "NETWORK_SECURITY_GROUP"
+                dst_port_min = split(":", port)[1]
+                dst_port_max = split(":", port)[1]
+              } },
+              local.tt_vcn2_aidp_nsg_additional_egress_rules
+            )
           }
         } : {},
         local.tt_vcn2_cross_vcn_open_nsg,

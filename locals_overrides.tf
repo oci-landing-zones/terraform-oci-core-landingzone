@@ -16,7 +16,7 @@ locals {
   # Use this with extreme caution as it may introduce security risks if not used properly. Make sure to follow the principle of least privilege when defining custom policies, and only grant the necessary permissions required for your use case.
   custom_policy_statements = []
   # Custom tag namespaces and tags to be provisioned by the landing zone. These are in addition to the default tag namespace and tags created for the landing zone, and can be used for custom tagging strategies.
-  custom_tag_namespaces   = {}
+  custom_tag_namespaces = {}
 
   #-----------------------------------------------
   # Hub VCN overrides:
@@ -165,6 +165,39 @@ locals {
   exa_vcn3_cis_checks_enabled = true
   # Whether client/integration intra-VCN traffic for EXA VCN3 is routed through DRG.
   exa_vcn3_enable_intra_vcn_drg_route = false
+
+  # Private endpoint subnet and AIDP NSG overrides.
+  tt_vcn1_private_endpoint_subnet_security_list           = null
+  tt_vcn1_private_endpoint_subnet_additional_route_rules  = {}
+  tt_vcn2_private_endpoint_subnet_security_list           = null
+  tt_vcn2_private_endpoint_subnet_additional_route_rules  = {}
+  tt_vcn3_private_endpoint_subnet_security_list           = null
+  tt_vcn3_private_endpoint_subnet_additional_route_rules  = {}
+  oke_vcn1_private_endpoint_subnet_security_list          = null
+  oke_vcn1_private_endpoint_subnet_additional_route_rules = {}
+  oke_vcn2_private_endpoint_subnet_security_list          = null
+  oke_vcn2_private_endpoint_subnet_additional_route_rules = {}
+  oke_vcn3_private_endpoint_subnet_security_list          = null
+  oke_vcn3_private_endpoint_subnet_additional_route_rules = {}
+  exa_vcn1_private_endpoint_subnet_security_list          = null
+  exa_vcn1_private_endpoint_subnet_additional_route_rules = {}
+  exa_vcn2_private_endpoint_subnet_security_list          = null
+  exa_vcn2_private_endpoint_subnet_additional_route_rules = {}
+  exa_vcn3_private_endpoint_subnet_security_list          = null
+  exa_vcn3_private_endpoint_subnet_additional_route_rules = {}
+
+  tt_vcn1_aidp_nsg_additional_ingress_rules  = {}
+  tt_vcn1_aidp_nsg_additional_egress_rules   = {}
+  tt_vcn2_aidp_nsg_additional_ingress_rules  = {}
+  tt_vcn2_aidp_nsg_additional_egress_rules   = {}
+  tt_vcn3_aidp_nsg_additional_ingress_rules  = {}
+  tt_vcn3_aidp_nsg_additional_egress_rules   = {}
+  exa_vcn1_aidp_nsg_additional_ingress_rules = {}
+  exa_vcn1_aidp_nsg_additional_egress_rules  = {}
+  exa_vcn2_aidp_nsg_additional_ingress_rules = {}
+  exa_vcn2_aidp_nsg_additional_egress_rules  = {}
+  exa_vcn3_aidp_nsg_additional_ingress_rules = {}
+  exa_vcn3_aidp_nsg_additional_egress_rules  = {}
 
   #-----------------------------------------------
   # Default security lists rules.

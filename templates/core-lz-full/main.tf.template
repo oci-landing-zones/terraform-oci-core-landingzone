@@ -187,10 +187,12 @@ module "core_lz" {
   # AI Foundation
   # ======================================================================================
   # These flags enable Core LZ AI prerequisites and IAM grants in the Application compartment.
+  # Generative AI and AIDP also create their service NSGs automatically in supported VCNs.
   enable_generative_ai_infra        = true
   enable_data_science_infra         = true
   enable_prebuilt_ai_services_infra = true
   enable_ai_compute_infra           = true
+  enable_aidp_infra                 = true
 
   # Core LZ manages the baseline Generative AI API-key and runtime data-access grants.
   generative_ai_data_access_policy_mode = "CORELZ_MANAGED"
@@ -542,7 +544,9 @@ module "core_lz" {
   # --------------------------------------------------------------------------------------
   # Three-Tier VCN 1
   # --------------------------------------------------------------------------------------
+  # Private endpoint subnet flags are independent of AI service flags and derive /28 by default.
   add_tt_vcn1                 = true
+  add_tt_vcn1_private_endpoint_subnet = true
   tt_vcn1_name                = "corelz-tt-dev-vcn"
   tt_vcn1_cidrs               = ["10.81.0.0/20"]
   tt_vcn1_attach_to_drg       = true
@@ -570,6 +574,7 @@ module "core_lz" {
   # Three-Tier VCN 2
   # --------------------------------------------------------------------------------------
   add_tt_vcn2                 = true
+  add_tt_vcn2_private_endpoint_subnet = true
   tt_vcn2_name                = "corelz-tt-test-vcn"
   tt_vcn2_cidrs               = ["10.82.0.0/20"]
   tt_vcn2_attach_to_drg       = true
@@ -593,6 +598,7 @@ module "core_lz" {
   # Three-Tier VCN 3
   # --------------------------------------------------------------------------------------
   add_tt_vcn3                 = true
+  add_tt_vcn3_private_endpoint_subnet = true
   tt_vcn3_name                = "corelz-tt-prod-vcn"
   tt_vcn3_cidrs               = ["10.83.0.0/20"]
   tt_vcn3_attach_to_drg       = true
@@ -621,6 +627,7 @@ module "core_lz" {
   # OKE VCN 1
   # --------------------------------------------------------------------------------------
   add_oke_vcn1                 = true
+  add_oke_vcn1_private_endpoint_subnet = true
   oke_vcn1_name                = "corelz-oke-dev-vcn"
   oke_vcn1_cidrs               = ["10.84.0.0/16"]
   oke_vcn1_cni_type            = "Native"
@@ -651,6 +658,7 @@ module "core_lz" {
   # OKE VCN 2
   # --------------------------------------------------------------------------------------
   add_oke_vcn2                 = true
+  add_oke_vcn2_private_endpoint_subnet = true
   oke_vcn2_name                = "corelz-oke-test-vcn"
   oke_vcn2_cidrs               = ["10.85.0.0/16"]
   oke_vcn2_cni_type            = "Flannel"
@@ -679,6 +687,7 @@ module "core_lz" {
   # OKE VCN 3
   # --------------------------------------------------------------------------------------
   add_oke_vcn3                 = true
+  add_oke_vcn3_private_endpoint_subnet = true
   oke_vcn3_name                = "corelz-oke-prod-vcn"
   oke_vcn3_cidrs               = ["10.86.0.0/16"]
   oke_vcn3_cni_type            = "Native"
@@ -714,6 +723,7 @@ module "core_lz" {
   # Exadata VCN 1
   # --------------------------------------------------------------------------------------
   add_exa_vcn1                 = true
+  add_exa_vcn1_private_endpoint_subnet = true
   exa_vcn1_name                = "corelz-exa-dev-vcn"
   exa_vcn1_cidrs               = ["172.40.0.0/20"]
   exa_vcn1_attach_to_drg       = true
@@ -737,6 +747,7 @@ module "core_lz" {
   # Exadata VCN 2
   # --------------------------------------------------------------------------------------
   add_exa_vcn2                 = true
+  add_exa_vcn2_private_endpoint_subnet = true
   exa_vcn2_name                = "corelz-exa-test-vcn"
   exa_vcn2_cidrs               = ["172.41.0.0/20"]
   exa_vcn2_attach_to_drg       = true
@@ -760,6 +771,7 @@ module "core_lz" {
   # Exadata VCN 3
   # --------------------------------------------------------------------------------------
   add_exa_vcn3                 = true
+  add_exa_vcn3_private_endpoint_subnet = true
   exa_vcn3_name                = "corelz-exa-prod-vcn"
   exa_vcn3_cidrs               = ["172.42.0.0/20"]
   exa_vcn3_attach_to_drg       = true
