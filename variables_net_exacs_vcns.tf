@@ -465,3 +465,64 @@ variable "customize_exa_vcn3_subnets" {
   default     = false
   description = "If true, allows for the customization of default subnets settings. Applicable to RMS deployments only, used for UI displaying."
 }
+
+# ------------------------------------------------------
+# ----- Private endpoint networking
+# ------------------------------------------------------
+variable "add_exa_vcn1_private_endpoint_subnet" {
+  type        = bool
+  default     = false
+  description = "Whether to add the EXA-VCN-1 shared private endpoint subnet."
+}
+variable "exa_vcn1_private_endpoint_subnet_name" {
+  type        = string
+  default     = null
+  description = "The EXA-VCN-1 private endpoint subnet name."
+}
+variable "exa_vcn1_private_endpoint_subnet_cidr" {
+  type        = string
+  default     = null
+  description = "The EXA-VCN-1 private endpoint subnet CIDR. When null, Core Landing Zone derives a /28."
+  validation {
+    condition     = var.exa_vcn1_private_endpoint_subnet_cidr == null || can(cidrhost(var.exa_vcn1_private_endpoint_subnet_cidr, 0))
+    error_message = "VALIDATION FAILURE: exa_vcn1_private_endpoint_subnet_cidr must be null or a valid CIDR."
+  }
+}
+variable "add_exa_vcn2_private_endpoint_subnet" {
+  type        = bool
+  default     = false
+  description = "Whether to add the EXA-VCN-2 shared private endpoint subnet."
+}
+variable "exa_vcn2_private_endpoint_subnet_name" {
+  type        = string
+  default     = null
+  description = "The EXA-VCN-2 private endpoint subnet name."
+}
+variable "exa_vcn2_private_endpoint_subnet_cidr" {
+  type        = string
+  default     = null
+  description = "The EXA-VCN-2 private endpoint subnet CIDR. When null, Core Landing Zone derives a /28."
+  validation {
+    condition     = var.exa_vcn2_private_endpoint_subnet_cidr == null || can(cidrhost(var.exa_vcn2_private_endpoint_subnet_cidr, 0))
+    error_message = "VALIDATION FAILURE: exa_vcn2_private_endpoint_subnet_cidr must be null or a valid CIDR."
+  }
+}
+variable "add_exa_vcn3_private_endpoint_subnet" {
+  type        = bool
+  default     = false
+  description = "Whether to add the EXA-VCN-3 shared private endpoint subnet."
+}
+variable "exa_vcn3_private_endpoint_subnet_name" {
+  type        = string
+  default     = null
+  description = "The EXA-VCN-3 private endpoint subnet name."
+}
+variable "exa_vcn3_private_endpoint_subnet_cidr" {
+  type        = string
+  default     = null
+  description = "The EXA-VCN-3 private endpoint subnet CIDR. When null, Core Landing Zone derives a /28."
+  validation {
+    condition     = var.exa_vcn3_private_endpoint_subnet_cidr == null || can(cidrhost(var.exa_vcn3_private_endpoint_subnet_cidr, 0))
+    error_message = "VALIDATION FAILURE: exa_vcn3_private_endpoint_subnet_cidr must be null or a valid CIDR."
+  }
+}
