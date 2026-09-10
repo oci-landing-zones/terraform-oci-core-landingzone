@@ -246,8 +246,8 @@ locals {
     "allow group ${join(",", local.database_admin_group_name)} to manage vmclusters in compartment ${local.database_compartment_name}",
     "allow group ${join(",", local.database_admin_group_name)} to manage backups in compartment ${local.database_compartment_name}",
     "allow group ${join(",", local.database_admin_group_name)} to manage backup-destinations in compartment ${local.database_compartment_name}",
-    "allow group ${join(",", local.database_admin_group_name)} to manage db-console-connection in compartment ${local.database_compartment_name}",
-    "allow group ${join(",", local.database_admin_group_name)} to manage db-console-history in compartment ${local.database_compartment_name}",
+    "allow group ${join(",", local.database_admin_group_name)} to manage dbnode-console-connection in compartment ${local.database_compartment_name}",
+    "allow group ${join(",", local.database_admin_group_name)} to manage dbnode-console-history in compartment ${local.database_compartment_name}",
   ]) : []
 
   ## Database admin grants on Network compartment
@@ -385,7 +385,7 @@ locals {
   aidp_compartment_grants = var.enable_aidp_infra && local.enable_app_compartment ? [
     "allow any-user to manage log-groups in compartment ${local.app_compartment_name} where all {request.principal.type='aidataplatform'}",
     "allow any-user to read log-content in compartment ${local.app_compartment_name} where all {request.principal.type='aidataplatform'}",
-    "allow any-user to use metrics in compartment ${local.app_compartment_name} where all {request.principal.type='aidataplatform',target.metrics.namespace='oracle_aidataplatform'}",
+    #"allow any-user to use metrics in compartment ${local.app_compartment_name} where all {request.principal.type='aidataplatform',target.metrics.namespace='oracle_aidataplatform'}", ## buggy statement
     "allow any-user to manage buckets in compartment ${local.app_compartment_name} where all {request.principal.type='aidataplatform',any {request.permission='BUCKET_CREATE',request.permission='BUCKET_INSPECT',request.permission='BUCKET_READ',request.permission='BUCKET_UPDATE'}}",
     "allow any-user to manage buckets in compartment ${local.app_compartment_name} where all {request.principal.id=target.resource.tag.orcl-aidp.governingAidpId,any {request.permission='BUCKET_DELETE',request.permission='PAR_MANAGE',request.permission='RETENTION_RULE_LOCK',request.permission='RETENTION_RULE_MANAGE'}}",
     "allow any-user to read objectstorage-namespaces in compartment ${local.app_compartment_name} where all {request.principal.type='aidataplatform',request.permission='OBJECTSTORAGE_NAMESPACE_READ'}",
