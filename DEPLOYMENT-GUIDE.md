@@ -13,6 +13,7 @@
 1. [Deployment Scenarios](#scenarios)
     1. [Identity & Access Management](#iam)
     1. [Networking](#networking-4)
+    1. [Deploying Infrastructure for managed AI services](#managed-ai-services)
     1. [Governance](#governance-4)
     1. [Security Services](#security-services)
     1. [Handling Database Infrastructure](#database-infrastructure)
@@ -399,8 +400,8 @@ tt_vcn1_additional_nsgs = {
       }
     }
   }
-  "TT-VCN-1-GENAI-PRIVATE-ENDPOINT-NSG" = {
-    display_name = "tt-vcn-1-genai-private-endpoint-nsg"
+  "TT-VCN-1-CUSTOM-AI-CLIENT-NSG" = {
+    display_name = "custom-ai-client-nsg"
     ingress_rules = {
       "INGRESS-FROM-APP-NSG-HTTPS" = {
         description  = "Allow application hosts in the Core Landing Zone app NSG to reach an OCI Generative AI private endpoint."
@@ -981,7 +982,78 @@ Core Landing Zone can scale from single VCN deployment to large hub-and-spoke de
 | Core Landing Zone with Existing DRG and Externally Managed VCNs | [templates/hub-spoke-with-existing-drg-and-externally-managed-vcns](./templates/hub-spoke-with-existing-drg-and-externally-managed-vcns/) | Reuse an existing DRG and route externally managed workload VCNs through landing-zone public or on-premises access paths. |
 | Core Landing Zone with Existing DRG and Custom ExaCS VCN | [templates/hub-spoke-with-existing-drg-and-exa-vcn-custom](./templates/hub-spoke-with-existing-drg-and-exa-vcn-custom/) | Reuse an existing DRG with custom Exadata Cloud Service VCN CIDRs, subnet settings, and DRG attachment behavior. |
 
-## <a name="governance-4"></a>4.3 Governance
+## <a name="managed-ai-services"></a>4.3 Deploying Infrastructure for managed AI services
+
+Core Landing Zone prepares compartments, IAM policies, dynamic groups, and optional network constructs for OCI managed AI services. It does not create models, endpoints, API keys, projects, workbenches, notebooks, compute clusters, GPU instances, OKE clusters, databases, or application pipelines. The five global *enable_* variables default to *false*, can be enabled independently, and require the Application compartment through *deploy_app_cmp = true*. In OCI Resource Manager, select **Define AI Foundations** to display these variables; *define_ai_foundations* is a schema display control rather than a Terraform module input.
+
+### Selecting the managed AI services
+
+| Variable | IAM impact | Networking impact |
+| --- | --- | --- |
+| **enable_generative_ai_infra** | Allows AppDev administrators to manage Generative AI in the Application compartment and creates or reuses runtime dynamic groups for hosted applications, vector store connectors, and semantic stores. | Automatically creates a *GenAI NSG* in every enabled Three-Tier, OKE, and Exadata VCN. Its rules depend on whether that VCN has a private endpoint subnet. |
+| **enable_data_science_infra** | Allows AppDev administrators to manage Data Science and Data Flow, configures the Data Science runtime dynamic group for logging, and allows the Data Science service to use the Network compartment's virtual network resources. | Does not create a subnet, NSG, notebook session, or job. Workload owners select an existing workload subnet or independently enable the shared private endpoint subnet. |
+| **enable_prebuilt_ai_services_infra** | Allows AppDev administrators to manage OCI Language, Vision, Speech, and Document Understanding in the Application compartment. | Does not create networking. A supported service private endpoint can use the independently enabled shared private endpoint subnet. |
+| **enable_ai_compute_infra** | Allows AppDev administrators to manage Compute Management, Compute Clusters, and Compute Capacity Reservations in the Application compartment. | Does not create compute or networking. Workload stacks choose their existing workload subnet and NSGs. |
+| **enable_aidp_infra** | Allows AppDev administrators to manage AI Data Platform (AIDP), grants the AIDP service principal its required Application and Network permissions, and adds database access where Database or Exainfra compartments exist. | Automatically creates an *AIDP NSG* in enabled Three-Tier VCNs and enabled Exadata VCNs with Integration subnets. It does not create an AIDP Workbench. |
+
+All enabled compartment-scoped service grants are consolidated in the AI Foundation policy attached to the Landing Zone enclosing compartment. The existing AppDev administrator group is the AI administrator persona; no separate AI administrator group is created.
+
+When *enable_generative_ai_infra = true*, *generative_ai_data_access_policy_mode* controls ownership of runtime data-access policies. *CORELZ_MANAGED* authorizes the Responses API and grants the Generative AI runtime identities access to the relevant enabled Application, Database, Security, and Exainfra compartments. *WORKLOAD_MANAGED* retains the platform prerequisites but requires workload stacks to supply narrower Responses API and data-access policies.
+
+AIDP requires two tenancy-wide grants for IAM inspection and use of its tag namespace. Core Landing Zone isolates them in the root-attached *\<service-label\>-aidp-root-policy*; all other AIDP grants remain in the enclosing-compartment AI Foundation policy. When *policies_in_root_compartment = "USE"*, Core Landing Zone does not create root policies, so these grants must already be managed externally.
+
+### Choosing networking for managed AI services
+
+The global AI service flags and private endpoint subnets are intentionally independent. This allows a custom solution to use a dedicated private endpoint subnet without enabling any OCI managed AI service IAM profile. Conversely, an AI service can be enabled for IAM without creating the subnet. In that mode, users can associate the service NSG with VNICs in existing subnets whose existing routes reach services through the Oracle Services Network.
+
+#### Private endpoint subnets
+
+Private Endpoints provide in-VCN secure private connectivity to OCI-managed services, avoiding the usage of public endpoints.
+
+Set *define_net = true*, enable the required Three-Tier, OKE, or Exadata VCN, and set its *add_\<vcn_prefix\>_private_endpoint_subnet* variable to *true*. Each of the nine supported spoke VCN slots can have one regional shared private endpoint subnet. It can host Generative AI service private endpoints and AIDP data-access private endpoints such as Autonomous Database, Object Storage, and Streaming.
+
+Core Landing Zone derives a non-overlapping *\/28* from the parent VCN unless an explicit CIDR is supplied. Explicit valid *\/29* and *\/30* subnets are supported, but users must size the subnet for the expected number of endpoint VNICs. The subnet is private and prohibits public IPs. By default, its route table has no managed Service Gateway, NAT Gateway, Internet Gateway, cross-VCN, or on-premises route. Custom route rules can be provided via override variables *\<vcn_prefix\>_private_endpoint_subnet_additional_route_rules* defined in [locals_overrides.tf](./locals_overrides.tf).
+
+#### Generative AI
+
+When *enable_generative_ai_infra = true*, Core Landing Zone creates a *GenAI NSG* in every enabled Three-Tier, OKE, and Exadata VCN.
+
+When the VCN has a private endpoint subnet, users must further associate the *GenAI NSG* with the Generative AI private endpoint VNIC. It has no managed egress and allows stateful TCP/443 ingress from these same-VCN workload NSGs:
+
+- Three-Tier VCN: Application and Database NSGs.
+- OKE VCN: Workers, Pods (for native pod networking), and Database (when its optional DB subnet exists) NSGs.
+- Exadata VCN: Client NSG.
+
+When the VCN does not have a private endpoint subnet, the *GenAI NSG* has no managed ingress and allows stateful TCP/443 egress to *all-services*. Users can further associate it with client workload VNICs that reach Generative AI through their existing subnet's Service Gateway path.
+
+There is no managed cross-VCN access to another spoke VCN's Generative AI private endpoint.
+
+#### AI Data Platform
+
+AIDP uses a Three-Tier Application subnet or an Exadata Integration subnet for workspace private network connectivity. Core Landing Zone does not support AIDP placement in OKE and does not create AIDP NSGs there.
+
+When *enable_aidp_infra = true*, Core Landing Zone automatically creates an *AIDP NSG* in every enabled Three-Tier VCN and every enabled Exadata VCN whose Integration subnet exists. An Exadata VCN without Integration remains valid and simply receives no *AIDP NSG*. The AIDP service principal always receives *manage vnics*, *use subnets*, and *use network-security-groups* in the Network compartment.
+
+When the VCN has a private endpoint subnet, the NSG has stateful self-referencing ingress from *AIDP NSG* on:
+
+- TCP/443 for HTTPS service endpoints.
+- TCP/1521 and TCP/1522 for Database service endpoints.
+- TCP/9092 for Streaming's Kafka-compatible endpoint.
+- The database ports configured for that VCN.
+
+In private endpoint mode, the *AIDP NSG* has no managed OSN egress.
+
+Without the private endpoint subnet, it has no managed ingress and allows stateful TCP/443, TCP/1521, TCP/1522, and TCP/9092 egress to *all-services*; the existing Three-Tier VCN Application subnet or the Exadata Integration subnet provides the Service Gateway path.
+
+In both modes, users must associate the *AIDP NSG* with the AIDP Workspace VNIC.
+
+The *AIDP NSG* retains direct stateful egress to the same-VCN Three-Tier Database or Exadata Client NSG, with matching destination ingress over the configured database ports. AIDP ingress and egress override locals retain their existing names and merge last.
+
+For a Three-Tier AIDP workspace that needs an Exadata database in another routed VCN, users must attach the Three-Tier VCN *cross-vcn-app-nsg* to the AIDP Workspace VNIC. Conversely, on the Exadata VCN, users must attach the *cross-vcn-client-nsg* to the Exadata database resource. Core Landing Zone creates the constrained source-egress and target-ingress pair only when both VCNs are DRG-attached, constrained NSGs are enabled, and the selected topology declares the route.
+
+Use the *AIDP NSG* ingress and egress override locals, or attach another NSG, for private Kafka brokers, MySQL, PostgreSQL, MySQL HeatWave, REST APIs, MCP servers, SaaS data sources, on-premises systems, and other data assets. These overrides change security rules only; they do not create NAT, DRG, peering, DNS, or other routing.
+
+## <a name="governance-4"></a>4.4 Governance
 ### Operational Monitoring
 #### Alerting
 The Landing Zone deploys a notification framework to alert administrators about infrastructure changes. By default, only IAM and networking events are enabled, as mandated by CIS Foundations Benchmark. Events for other resources can be enabled by Landing Zone users. OCI Events service monitors OCI resources for changes and posts a notification to a topic. Topic subscribers are then notified about such changes. This framework is deployed in each compartment including the Root compartment where IAM events are configured. Examples of such events are updates to a policy or the creation of a new VCN.

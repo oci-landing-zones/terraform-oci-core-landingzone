@@ -25,6 +25,9 @@ locals {
   oke_vcn1_db_subnet_display_name       = coalesce(var.oke_vcn1_db_subnet_name, "${var.service_label}-oke-vcn-1-db-subnet")
   oke_vcn1_db_subnet_dns_label          = substr(replace(coalesce(var.oke_vcn1_db_subnet_name, "db-subnet"), "/[^\\w]/", ""), 0, 14)
   oke_vcn1_db_subnet_cidr               = coalesce(var.oke_vcn1_db_subnet_cidr, cidrsubnet(var.oke_vcn1_cidrs[0], 12, 49))
+  oke_vcn1_private_endpoint_subnet_display_name = coalesce(var.oke_vcn1_private_endpoint_subnet_name, "${var.service_label}-oke-vcn-1-private-endpoint-subnet")
+  oke_vcn1_private_endpoint_subnet_dns_label    = substr(replace(coalesce(var.oke_vcn1_private_endpoint_subnet_name, "pe-subnet"), "/[^\\w]/", ""), 0, 14)
+  oke_vcn1_private_endpoint_subnet_cidr         = coalesce(var.oke_vcn1_private_endpoint_subnet_cidr, try(cidrsubnet(var.oke_vcn1_cidrs[0], 28 - tonumber(split("/", var.oke_vcn1_cidrs[0])[1]), pow(2, 27 - tonumber(split("/", var.oke_vcn1_cidrs[0])[1])) - 1), null))
 
   ## This variable defines the allowed CIDR and port combinations for ingress into the OKE-VCN-1 services tier subnet.  
   oke_vcn1_external_allowed_cidrs_to_ports_into_services_tier = local.add_oke_vcn1 == true ? flatten([for cidr in var.oke_vcn1_external_allowed_cidrs_into_services_tier : [for port in var.oke_vcn1_services_ingress_destination_ports : "${trimspace(cidr)},${trimspace(port)}"] if length(var.oke_vcn1_external_allowed_cidrs_into_services_tier) > 0 && length(var.oke_vcn1_services_ingress_destination_ports) > 0]) : []
@@ -110,6 +113,19 @@ locals {
             prohibit_internet_ingress = true
             route_table_key           = "OKE-VCN-1-PODS-SUBNET-ROUTE-TABLE"
             security_list_keys        = ["OKE-VCN-1-PODS-SUBNET-SL"]
+          }
+        } : {},
+        var.add_oke_vcn1_private_endpoint_subnet == true ? {
+          "OKE-VCN-1-PRIVATE-ENDPOINT-SUBNET" = {
+            cidr_block                 = local.oke_vcn1_private_endpoint_subnet_cidr
+            dhcp_options_key           = "default_dhcp_options"
+            display_name               = local.oke_vcn1_private_endpoint_subnet_display_name
+            dns_label                  = local.oke_vcn1_private_endpoint_subnet_dns_label
+            ipv6cidr_blocks            = []
+            prohibit_internet_ingress  = true
+            prohibit_public_ip_on_vnic = true
+            route_table_key            = "OKE-VCN-1-PRIVATE-ENDPOINT-ROUTE-TABLE"
+            security_list_keys         = local.oke_vcn1_private_endpoint_subnet_security_list != null ? ["OKE-VCN-1-PRIVATE-ENDPOINT-SL"] : []
           }
         } : {}
       )
@@ -400,59 +416,61 @@ locals {
         var.add_oke_vcn1_db_subnet ? {
           "OKE-VCN-1-DB-SUBNET-ROUTE-TABLE" = {
             display_name = "db-subnet-route-table"
-            route_rules = local.hub_with_vcn == false ? merge(
-              {
-                "SGW-RULE" = {
-                  network_entity_key = "OKE-VCN-1-SERVICE-GATEWAY"
-                  description        = "Traffic destined for all OCI services in Oracle Services Network is routed through the Service Gateway."
-                  destination        = "all-services"
-                  destination_type   = "SERVICE_CIDR_BLOCK"
-                }
-              },
-              {
-                "NATGW-RULE" = {
-                  network_entity_key = "OKE-VCN-1-NAT-GATEWAY"
-                  description        = "Traffic destined for networks outside the VCN is routed through the NAT Gateway."
-                  destination        = "0.0.0.0/0"
-                  destination_type   = "CIDR_BLOCK"
-                }
-              },
-              local.oke_vcn_1_drg_routing
-              ) : merge(
-              {
-                "HUB-DRG-RULE" = {
-                  network_entity_key = "HUB-DRG"
-                  description        = "Traffic destined for networks outside the VCN is routed through the DRG."
-                  destination        = "0.0.0.0/0"
-                  destination_type   = "CIDR_BLOCK"
-                }
-              },
-              {
-                "SGW-RULE" = {
-                  network_entity_key = "OKE-VCN-1-SERVICE-GATEWAY"
-                  description        = "Traffic destined for all OCI services in Oracle Services Network is routed through the Service Gateway."
-                  destination        = "all-services"
-                  destination_type   = "SERVICE_CIDR_BLOCK"
-                }
-              },
-              local.oke_vcn1_enable_intra_vcn_drg_route == true && var.oke_vcn1_attach_to_drg == true ? merge(
+            route_rules = merge(
+              local.hub_with_vcn == false ? merge(
                 {
-                  "WORKERS-SUBNET-RULE" = {
-                    network_entity_key = "HUB-DRG"
-                    description        = "Traffic destined for ${local.oke_vcn1_workers_subnet_display_name} is routed through the DRG."
-                    destination        = local.oke_vcn1_workers_subnet_cidr
+                  "SGW-RULE" = {
+                    network_entity_key = "OKE-VCN-1-SERVICE-GATEWAY"
+                    description        = "Traffic destined for all OCI services in Oracle Services Network is routed through the Service Gateway."
+                    destination        = "all-services"
+                    destination_type   = "SERVICE_CIDR_BLOCK"
+                  }
+                },
+                {
+                  "NATGW-RULE" = {
+                    network_entity_key = "OKE-VCN-1-NAT-GATEWAY"
+                    description        = "Traffic destined for networks outside the VCN is routed through the NAT Gateway."
+                    destination        = "0.0.0.0/0"
                     destination_type   = "CIDR_BLOCK"
                   }
                 },
-                upper(var.oke_vcn1_cni_type) == "NATIVE" ? {
-                  "PODS-SUBNET-RULE" = {
+                local.oke_vcn_1_drg_routing
+                ) : merge(
+                {
+                  "HUB-DRG-RULE" = {
                     network_entity_key = "HUB-DRG"
-                    description        = "Traffic destined for ${local.oke_vcn1_pods_subnet_display_name} is routed through the DRG."
-                    destination        = local.oke_vcn1_pods_subnet_cidr
+                    description        = "Traffic destined for networks outside the VCN is routed through the DRG."
+                    destination        = "0.0.0.0/0"
                     destination_type   = "CIDR_BLOCK"
                   }
-                } : {}
-              ) : {}
+                },
+                {
+                  "SGW-RULE" = {
+                    network_entity_key = "OKE-VCN-1-SERVICE-GATEWAY"
+                    description        = "Traffic destined for all OCI services in Oracle Services Network is routed through the Service Gateway."
+                    destination        = "all-services"
+                    destination_type   = "SERVICE_CIDR_BLOCK"
+                  }
+                },
+                local.oke_vcn1_enable_intra_vcn_drg_route == true && var.oke_vcn1_attach_to_drg == true ? merge(
+                  {
+                    "WORKERS-SUBNET-RULE" = {
+                      network_entity_key = "HUB-DRG"
+                      description        = "Traffic destined for ${local.oke_vcn1_workers_subnet_display_name} is routed through the DRG."
+                      destination        = local.oke_vcn1_workers_subnet_cidr
+                      destination_type   = "CIDR_BLOCK"
+                    }
+                  },
+                  upper(var.oke_vcn1_cni_type) == "NATIVE" ? {
+                    "PODS-SUBNET-RULE" = {
+                      network_entity_key = "HUB-DRG"
+                      description        = "Traffic destined for ${local.oke_vcn1_pods_subnet_display_name} is routed through the DRG."
+                      destination        = local.oke_vcn1_pods_subnet_cidr
+                      destination_type   = "CIDR_BLOCK"
+                    }
+                  } : {}
+                ) : {}
+              )
             )
           }
         } : {},
@@ -532,6 +550,40 @@ locals {
               )
             )
           }
+        } : {},
+        var.add_oke_vcn1_private_endpoint_subnet == true ? {
+          "OKE-VCN-1-PRIVATE-ENDPOINT-ROUTE-TABLE" = {
+            display_name = "private-endpoint-route-table"
+            route_rules = merge(
+              local.oke_vcn1_enable_intra_vcn_drg_route && var.oke_vcn1_attach_to_drg ? merge(
+                {
+                  "WORKERS-SUBNET-RULE" = {
+                    network_entity_key = "HUB-DRG"
+                    description        = "Traffic destined for the Workers subnet is routed through the DRG."
+                    destination        = local.oke_vcn1_workers_subnet_cidr
+                    destination_type   = "CIDR_BLOCK"
+                  }
+                },
+                upper(var.oke_vcn1_cni_type) == "NATIVE" ? {
+                  "PODS-SUBNET-RULE" = {
+                    network_entity_key = "HUB-DRG"
+                    description        = "Traffic destined for the Pods subnet is routed through the DRG."
+                    destination        = local.oke_vcn1_pods_subnet_cidr
+                    destination_type   = "CIDR_BLOCK"
+                  }
+                } : {},
+                var.add_oke_vcn1_db_subnet ? {
+                  "DB-SUBNET-RULE" = {
+                    network_entity_key = "HUB-DRG"
+                    description        = "Traffic destined for the Database subnet is routed through the DRG."
+                    destination        = local.oke_vcn1_db_subnet_cidr
+                    destination_type   = "CIDR_BLOCK"
+                  }
+                } : {}
+              ) : {},
+              local.oke_vcn1_private_endpoint_subnet_additional_route_rules
+            )
+          }
         } : {}
       )
 
@@ -609,6 +661,9 @@ locals {
         } : {},
         local.oke_vcn1_db_subnet_security_list != null && var.add_oke_vcn1_db_subnet ? {
           "OKE-VCN-1-DB-SUBNET-SL" = local.oke_vcn1_db_subnet_security_list
+        } : {},
+        var.add_oke_vcn1_private_endpoint_subnet && local.oke_vcn1_private_endpoint_subnet_security_list != null ? {
+          "OKE-VCN-1-PRIVATE-ENDPOINT-SL" = local.oke_vcn1_private_endpoint_subnet_security_list
         } : {}
       )
 
@@ -1005,7 +1060,7 @@ locals {
                 dst_port_max = 22
               }
             } : {}
-          } 
+          }
         } : {},
         upper(var.oke_vcn1_cni_type) == "NATIVE" ? {
           "OKE-VCN-1-PODS-NSG" = {
@@ -1173,6 +1228,57 @@ locals {
         local.oke_vcn1_cross_vcn_workers_nsg,
         local.oke_vcn1_cross_vcn_pods_nsg,
         local.oke_vcn1_cross_vcn_db_nsg,
+        var.enable_generative_ai_infra == true ? {
+          "OKE-VCN-1-GEN-AI-NSG" = {
+            display_name = "gen-ai-nsg"
+            ingress_rules = var.add_oke_vcn1_private_endpoint_subnet ? merge(
+              {
+                "INGRESS-FROM-WORKERS-NSG-HTTPS" = {
+                  description  = "Allows HTTPS from the Workers NSG."
+                  stateless    = false
+                  protocol     = "TCP"
+                  src          = "OKE-VCN-1-WORKERS-NSG"
+                  src_type     = "NETWORK_SECURITY_GROUP"
+                  dst_port_min = 443
+                  dst_port_max = 443
+                }
+              },
+              upper(var.oke_vcn1_cni_type) == "NATIVE" ? {
+                "INGRESS-FROM-PODS-NSG-HTTPS" = {
+                  description  = "Allows HTTPS from the Pods NSG."
+                  stateless    = false
+                  protocol     = "TCP"
+                  src          = "OKE-VCN-1-PODS-NSG"
+                  src_type     = "NETWORK_SECURITY_GROUP"
+                  dst_port_min = 443
+                  dst_port_max = 443
+                }
+              } : {},
+              var.add_oke_vcn1_db_subnet ? {
+                "INGRESS-FROM-DB-NSG-HTTPS" = {
+                  description  = "Allows HTTPS from the Database NSG."
+                  stateless    = false
+                  protocol     = "TCP"
+                  src          = "OKE-VCN-1-DB-NSG"
+                  src_type     = "NETWORK_SECURITY_GROUP"
+                  dst_port_min = 443
+                  dst_port_max = 443
+                }
+              } : {}
+            ) : {}
+            egress_rules = var.add_oke_vcn1_private_endpoint_subnet ? {} : {
+              "EGRESS-TO-OSN-HTTPS" = {
+                description  = "Allows HTTPS to Generative AI through the Oracle Services Network."
+                stateless    = false
+                protocol     = "TCP"
+                dst          = "all-services"
+                dst_type     = "SERVICE_CIDR_BLOCK"
+                dst_port_min = 443
+                dst_port_max = 443
+              }
+            }
+          }
+        } : {},
         local.additional_nsgs_by_vcn["OKE-VCN-1"]
       )
 

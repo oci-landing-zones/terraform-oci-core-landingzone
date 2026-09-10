@@ -48,6 +48,11 @@ variable "customize_iam" {
   type        = bool
   default     = false
 }
+variable "define_ai_foundations" {
+  description = "Whether infrastructure resources for AI are provisioned as part of this Landing Zone. By default, no infrastructure resources for AI are created."
+  type        = bool
+  default     = false
+}
 variable "define_net" {
   description = "Whether networking is defined as part of this Landing Zone. By default, no networking resources are created."
   type        = bool

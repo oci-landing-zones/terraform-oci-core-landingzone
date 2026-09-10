@@ -108,6 +108,7 @@
 | enable\_data\_science\_infra | Enables Data Science, Data Flow, and Data Science runtime identity prerequisites in the Application compartment. | bool | false | no |
 | enable\_prebuilt\_ai\_services\_infra | Enables Language, Vision, Speech, and Document Understanding prerequisites in the Application compartment. | bool | false | no |
 | enable\_ai\_compute\_infra | Enables Compute cluster, Compute management, and capacity reservation prerequisites in the Application compartment. | bool | false | no |
+| enable\_aidp\_infra | Enables Oracle AI Data Platform administration, runtime, managed storage, and private network prerequisites in the Application compartment. | bool | false | no |
 | generative\_ai\_data\_access\_policy\_mode | Chooses whether Core LZ or workload stacks own Generative AI API-key authorization and runtime data-access grants. Valid values are CORELZ_MANAGED and WORKLOAD_MANAGED. | string | "CORELZ_MANAGED" | no |
 | existing\_ai\_data\_science\_runtime\_dyn\_group\_name | Existing Default Identity Domain Data Science runtime dynamic group to reuse. | string | "" | no |
 | existing\_ai\_genai\_vector\_store\_connectors\_dyn\_group\_name | Existing Default Identity Domain Generative AI vector store connectors dynamic group to reuse. | string | "" | no |
@@ -118,7 +119,9 @@
 | existing\_id\_domain\_ai\_genai\_hosted\_applications\_dyn\_group\_name | Existing custom Identity Domain Generative AI hosted applications dynamic group to reuse. | string | "" | no |
 | existing\_id\_domain\_ai\_genai\_semantic\_stores\_dyn\_group\_name | Existing custom Identity Domain Generative AI semantic stores dynamic group to reuse. | string | "" | no |
 
-The four `*_infra` inputs enable prerequisites only: Core LZ does not create AI models, endpoints, API keys, projects, vector stores, semantic stores, hosted applications, Data Science projects, OKE clusters, GPU instances, databases, or application pipelines. Every enabled AI service requires `deploy_app_cmp = true`.
+The five `*_infra` inputs enable prerequisites only: Core LZ does not create AI models, endpoints, API keys, projects, vector stores, semantic stores, hosted applications, Data Science projects, AIDP workbenches, OKE clusters, GPU instances, databases, or application pipelines. Every enabled AI service requires `deploy_app_cmp = true`.
+
+When `enable_aidp_infra = true`, compartment-scoped AIDP grants are added to the AI Foundation policy and the two required tenancy-wide IAM inspection and tag-namespace grants are isolated in `<service-label>-aidp-root-policy`. If `policies_in_root_compartment = "USE"`, those root grants must be supplied externally. AIDP receives Application-compartment Generative AI access independently of Database and Exainfra compartment deployment.
 
 `CORELZ_MANAGED` authorizes Generative AI API keys to use the Responses API. Vector store connectors can read Object Storage and semantic stores can read secrets across enabled Application, Database, Security, and Exainfra compartments. Semantic stores can use Database Tools in Application, Database, and Exainfra, and read database metadata in Database and Exainfra. `WORKLOAD_MANAGED` retains all Enterprise AI dynamic groups and required hosted-application and semantic-store platform grants, but leaves the Responses API and data-access policies to workload stacks. IAM allow grants are additive: a narrower workload allow policy does not remove a broader Core LZ allow policy. To migrate safely, deploy the narrower workload policies first, verify API-key and resource-principal access, then update Core LZ to `WORKLOAD_MANAGED` to remove the compartment-level statements.
 
@@ -153,6 +156,18 @@ The four `*_infra` inputs enable prerequisites only: Core LZ does not create AI 
 
 | Variable Name | Description | Type | Default | Required |
 |---------------|-------------|------|---------|----------|
+| add\_tt\_vcn1\_private\_endpoint\_subnet | Whether to add the TT-VCN-1 shared private endpoint subnet. | bool | false | no |
+| tt\_vcn1\_private\_endpoint\_subnet\_name | Private endpoint subnet name. | string | "private-endpoint-subnet" | no |
+| tt\_vcn1\_private\_endpoint\_subnet\_cidr | Optional private endpoint subnet CIDR. Core LZ derives a /28 when null; explicit valid /29 and /30 values are supported. | string | null | no |
+| tt\_vcn1\_private\_endpoint\_subnet\_dns | Private endpoint subnet DNS label. | string | "pe" | no |
+| add\_tt\_vcn2\_private\_endpoint\_subnet | Whether to add the TT-VCN-2 shared private endpoint subnet. | bool | false | no |
+| tt\_vcn2\_private\_endpoint\_subnet\_name | Private endpoint subnet name. | string | "private-endpoint-subnet" | no |
+| tt\_vcn2\_private\_endpoint\_subnet\_cidr | Optional private endpoint subnet CIDR. Core LZ derives a /28 when null; explicit valid /29 and /30 values are supported. | string | null | no |
+| tt\_vcn2\_private\_endpoint\_subnet\_dns | Private endpoint subnet DNS label. | string | "pe" | no |
+| add\_tt\_vcn3\_private\_endpoint\_subnet | Whether to add the TT-VCN-3 shared private endpoint subnet. | bool | false | no |
+| tt\_vcn3\_private\_endpoint\_subnet\_name | Private endpoint subnet name. | string | "private-endpoint-subnet" | no |
+| tt\_vcn3\_private\_endpoint\_subnet\_cidr | Optional private endpoint subnet CIDR. Core LZ derives a /28 when null; explicit valid /29 and /30 values are supported. | string | null | no |
+| tt\_vcn3\_private\_endpoint\_subnet\_dns | Private endpoint subnet DNS label. | string | "pe" | no |
 | add\_tt\_vcn1 | Whether to add a VCN configured for three-tier workload deployments, with up to four subnets: web (public by default), application (private), database (private). An optional subnet (private by default) for bastion deployment is also available. The added VCN is labelled 'TT-VCN-1'. The label should be used in the '*\_routable\_vcns' fields of other VCNs for constraining network traffic to those respective VCNs in a Hub/Spoke topology. | bool | false | no |
 | add\_tt\_vcn2 | Whether to add a second VCN configured for three-tier workload deployments, with up to four subnets: web (public by default), application (private), database (private). An optional subnet (private by default) for bastion deployment is also available. The added VCN is labelled 'TT-VCN-2'. The label should be used in the '*\_routable\_vcns' fields of other VCNs for constraining network traffic to those respective VCNs in a Hub/Spoke topology. | bool | false | no |
 | add\_tt\_vcn3 | Whether to add a third VCN configured for three-tier workload deployments, with up to four subnets: web (public by default), application (private), database (private). An optional subnet (private by default) for bastion deployment is also available. The added VCN is labelled 'TT-VCN-3'. The label should be used in the '*\_routable\_vcns' fields of other VCNs for constraining network traffic to those respective VCNs in a Hub/Spoke topology. | bool | false | no |
@@ -236,6 +251,18 @@ The four `*_infra` inputs enable prerequisites only: Core LZ does not create AI 
 
 | Variable Name | Description | Type | Default | Required |
 |---------------|-------------|------|---------|----------|
+| add\_exa\_vcn1\_private\_endpoint\_subnet | Whether to add the EXA-VCN-1 shared private endpoint subnet. | bool | false | no |
+| exa\_vcn1\_private\_endpoint\_subnet\_name | Private endpoint subnet name. | string | "private-endpoint-subnet" | no |
+| exa\_vcn1\_private\_endpoint\_subnet\_cidr | Optional private endpoint subnet CIDR. Core LZ derives a /28 when null; explicit valid /29 and /30 values are supported. | string | null | no |
+| exa\_vcn1\_private\_endpoint\_subnet\_dns | Private endpoint subnet DNS label. | string | "pe" | no |
+| add\_exa\_vcn2\_private\_endpoint\_subnet | Whether to add the EXA-VCN-2 shared private endpoint subnet. | bool | false | no |
+| exa\_vcn2\_private\_endpoint\_subnet\_name | Private endpoint subnet name. | string | "private-endpoint-subnet" | no |
+| exa\_vcn2\_private\_endpoint\_subnet\_cidr | Optional private endpoint subnet CIDR. Core LZ derives a /28 when null; explicit valid /29 and /30 values are supported. | string | null | no |
+| exa\_vcn2\_private\_endpoint\_subnet\_dns | Private endpoint subnet DNS label. | string | "pe" | no |
+| add\_exa\_vcn3\_private\_endpoint\_subnet | Whether to add the EXA-VCN-3 shared private endpoint subnet. | bool | false | no |
+| exa\_vcn3\_private\_endpoint\_subnet\_name | Private endpoint subnet name. | string | "private-endpoint-subnet" | no |
+| exa\_vcn3\_private\_endpoint\_subnet\_cidr | Optional private endpoint subnet CIDR. Core LZ derives a /28 when null; explicit valid /29 and /30 values are supported. | string | null | no |
+| exa\_vcn3\_private\_endpoint\_subnet\_dns | Private endpoint subnet DNS label. | string | "pe" | no |
 | add\_exa\_vcn1 | Whether to add a VCN configured for Exadata Cloud Service deployment, with two subnets: client (private) and backup (private). The added VCN is labelled 'EXA-VCN-1'. The label should be used in the '*\_routable\_vcns' fields of other VCNs for constraining network traffic to those respective VCNs in a Hub/Spoke topology. | bool | false | no |
 | add\_exa\_vcn1\_integration\_subnet | Whether to add an optional Integration subnet to Exadata VCN 1. | bool | false | no |
 | add\_exa\_vcn2 | Whether to add a second VCN configured for Exadata Cloud Service deployment, with two subnets: client (private) and backup (private). The added VCN is labelled 'EXA-VCN-2'. The label should be used in the '*\_routable\_vcns' fields of other VCNs for constraining network traffic to those respective VCNs in a Hub/Spoke topology. | bool | false | no |
@@ -310,6 +337,18 @@ The four `*_infra` inputs enable prerequisites only: Core LZ does not create AI 
 
 | Variable Name | Description | Type | Default | Required |
 |---------------|-------------|------|---------|----------|
+| add\_oke\_vcn1\_private\_endpoint\_subnet | Whether to add the OKE-VCN-1 shared private endpoint subnet. | bool | false | no |
+| oke\_vcn1\_private\_endpoint\_subnet\_name | Private endpoint subnet name. | string | "private-endpoint-subnet" | no |
+| oke\_vcn1\_private\_endpoint\_subnet\_cidr | Optional private endpoint subnet CIDR. Core LZ derives a /28 when null; explicit valid /29 and /30 values are supported. | string | null | no |
+| oke\_vcn1\_private\_endpoint\_subnet\_dns | Private endpoint subnet DNS label. | string | "pe" | no |
+| add\_oke\_vcn2\_private\_endpoint\_subnet | Whether to add the OKE-VCN-2 shared private endpoint subnet. | bool | false | no |
+| oke\_vcn2\_private\_endpoint\_subnet\_name | Private endpoint subnet name. | string | "private-endpoint-subnet" | no |
+| oke\_vcn2\_private\_endpoint\_subnet\_cidr | Optional private endpoint subnet CIDR. Core LZ derives a /28 when null; explicit valid /29 and /30 values are supported. | string | null | no |
+| oke\_vcn2\_private\_endpoint\_subnet\_dns | Private endpoint subnet DNS label. | string | "pe" | no |
+| add\_oke\_vcn3\_private\_endpoint\_subnet | Whether to add the OKE-VCN-3 shared private endpoint subnet. | bool | false | no |
+| oke\_vcn3\_private\_endpoint\_subnet\_name | Private endpoint subnet name. | string | "private-endpoint-subnet" | no |
+| oke\_vcn3\_private\_endpoint\_subnet\_cidr | Optional private endpoint subnet CIDR. Core LZ derives a /28 when null; explicit valid /29 and /30 values are supported. | string | null | no |
+| oke\_vcn3\_private\_endpoint\_subnet\_dns | Private endpoint subnet DNS label. | string | "pe" | no |
 | add\_oke\_vcn1 | Whether to add a VCN configured for OKE workload deployments, with at least three subnets: service (public by default), workers (private) and API endpoint (private). Additionally, a private subnet for pods deployment is created if the OKE CNI Type is 'Native'. You can also enable an extra private subnet for managing the OKE cluster. The added VCN is labelled 'OKE-VCN-1'. The label should be used in the '*\_routable\_vcns' fields of other VCNs for constraining network traffic to those respective VCNs in a Hub/Spoke topology. | bool | false | no |
 | add\_oke\_vcn1\_mgmt\_subnet | Whether to add a private subnet for cluster management. | bool | false | no |
 | add\_oke\_vcn2 | Whether to add a second VCN configured for OKE workload deployments, with at least three subnets: service (public by default), workers (private) and API endpoint (private). Additionally, a private subnet for pods deployment is created if the OKE CNI Type is 'Native'. You can also enable an extra private subnet for managing the OKE cluster. The added VCN is labelled 'OKE-VCN-2'. The label should be used in the '*\_routable\_vcns' fields of other VCNs for constraining network traffic to those respective VCNs in a Hub/Spoke topology. | bool | false | no |

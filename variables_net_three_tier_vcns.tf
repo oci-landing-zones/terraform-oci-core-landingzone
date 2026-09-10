@@ -597,3 +597,64 @@ variable "tt_vcn3_onprem_route_enable" {
   default     = false
   description = "This will drive the creation of the routes and security list rules."
 }
+
+# ------------------------------------------------------
+# ----- Private endpoint networking
+# ------------------------------------------------------
+variable "add_tt_vcn1_private_endpoint_subnet" {
+  type        = bool
+  default     = false
+  description = "Whether to add the TT-VCN-1 shared private endpoint subnet."
+}
+variable "tt_vcn1_private_endpoint_subnet_name" {
+  type        = string
+  default     = null
+  description = "The TT-VCN-1 private endpoint subnet name."
+}
+variable "tt_vcn1_private_endpoint_subnet_cidr" {
+  type        = string
+  default     = null
+  description = "The TT-VCN-1 private endpoint subnet CIDR. When null, Core Landing Zone derives a /28."
+  validation {
+    condition     = var.tt_vcn1_private_endpoint_subnet_cidr == null || can(cidrhost(var.tt_vcn1_private_endpoint_subnet_cidr, 0))
+    error_message = "VALIDATION FAILURE: tt_vcn1_private_endpoint_subnet_cidr must be null or a valid CIDR."
+  }
+}
+variable "add_tt_vcn2_private_endpoint_subnet" {
+  type        = bool
+  default     = false
+  description = "Whether to add the TT-VCN-2 shared private endpoint subnet."
+}
+variable "tt_vcn2_private_endpoint_subnet_name" {
+  type        = string
+  default     = null
+  description = "The TT-VCN-2 private endpoint subnet name."
+}
+variable "tt_vcn2_private_endpoint_subnet_cidr" {
+  type        = string
+  default     = null
+  description = "The TT-VCN-2 private endpoint subnet CIDR. When null, Core Landing Zone derives a /28."
+  validation {
+    condition     = var.tt_vcn2_private_endpoint_subnet_cidr == null || can(cidrhost(var.tt_vcn2_private_endpoint_subnet_cidr, 0))
+    error_message = "VALIDATION FAILURE: tt_vcn2_private_endpoint_subnet_cidr must be null or a valid CIDR."
+  }
+}
+variable "add_tt_vcn3_private_endpoint_subnet" {
+  type        = bool
+  default     = false
+  description = "Whether to add the TT-VCN-3 shared private endpoint subnet."
+}
+variable "tt_vcn3_private_endpoint_subnet_name" {
+  type        = string
+  default     = null
+  description = "The TT-VCN-3 private endpoint subnet name."
+}
+variable "tt_vcn3_private_endpoint_subnet_cidr" {
+  type        = string
+  default     = null
+  description = "The TT-VCN-3 private endpoint subnet CIDR. When null, Core Landing Zone derives a /28."
+  validation {
+    condition     = var.tt_vcn3_private_endpoint_subnet_cidr == null || can(cidrhost(var.tt_vcn3_private_endpoint_subnet_cidr, 0))
+    error_message = "VALIDATION FAILURE: tt_vcn3_private_endpoint_subnet_cidr must be null or a valid CIDR."
+  }
+}

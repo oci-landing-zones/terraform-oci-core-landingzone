@@ -29,40 +29,30 @@ variable "enable_generative_ai_infra" {
   type        = bool
   default     = false
   description = "Whether Generative AI administration prerequisites and grants are enabled."
-  validation {
-    condition     = !var.enable_generative_ai_infra || var.deploy_app_cmp
-    error_message = "VALIDATION FAILURE: enable_generative_ai_infra requires deploy_app_cmp to be true."
-  }
 }
 
 variable "enable_data_science_infra" {
   type        = bool
   default     = false
   description = "Whether Data Science, Data Flow, and Data Science runtime identity prerequisites are enabled."
-  validation {
-    condition     = !var.enable_data_science_infra || var.deploy_app_cmp
-    error_message = "VALIDATION FAILURE: enable_data_science_infra requires deploy_app_cmp to be true."
-  }
 }
 
 variable "enable_prebuilt_ai_services_infra" {
   type        = bool
   default     = false
   description = "Whether Language, Vision, Speech, and Document Understanding prerequisites are enabled."
-  validation {
-    condition     = !var.enable_prebuilt_ai_services_infra || var.deploy_app_cmp
-    error_message = "VALIDATION FAILURE: enable_prebuilt_ai_services_infra requires deploy_app_cmp to be true."
-  }
 }
 
 variable "enable_ai_compute_infra" {
   type        = bool
   default     = false
   description = "Whether AI compute cluster, compute management, and capacity reservation prerequisites are enabled."
-  validation {
-    condition     = !var.enable_ai_compute_infra || var.deploy_app_cmp
-    error_message = "VALIDATION FAILURE: enable_ai_compute_infra requires deploy_app_cmp to be true."
-  }
+}
+
+variable "enable_aidp_infra" {
+  type        = bool
+  default     = false
+  description = "Whether Oracle AI Data Platform administration, runtime, and private network prerequisites are enabled."
 }
 
 variable "generative_ai_data_access_policy_mode" {

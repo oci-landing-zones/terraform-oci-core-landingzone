@@ -175,13 +175,14 @@ variableGroups:
           - ${customize_iam}
           - true
 
-  - title: "AI Foundation"
+  - title: "AI Foundations"
     variables:
       - "enable_generative_ai_infra"
       - "generative_ai_data_access_policy_mode"
+      - "enable_aidp_infra"
       - "enable_data_science_infra"
-      - "enable_prebuilt_ai_services_infra"
       - "enable_ai_compute_infra"
+      - "enable_prebuilt_ai_services_infra"
     visible: define_ai_foundations
   
   - title: "Network Topology"
@@ -306,6 +307,9 @@ variableGroups:
       - "tt_vcn1_bastion_subnet_cidr"
       - "tt_vcn1_bastion_is_access_via_public_endpoint"
       - "tt_vcn1_bastion_subnet_allowed_cidrs"
+      - "add_tt_vcn1_private_endpoint_subnet"
+      - "tt_vcn1_private_endpoint_subnet_name"
+      - "tt_vcn1_private_endpoint_subnet_cidr"
     visible: define_net
 
   - title: "Networking - Three Tier VCN 2"
@@ -335,6 +339,9 @@ variableGroups:
       - "tt_vcn2_bastion_subnet_cidr"
       - "tt_vcn2_bastion_is_access_via_public_endpoint"
       - "tt_vcn2_bastion_subnet_allowed_cidrs"
+      - "add_tt_vcn2_private_endpoint_subnet"
+      - "tt_vcn2_private_endpoint_subnet_name"
+      - "tt_vcn2_private_endpoint_subnet_cidr"
     visible: define_net
 
   - title: "Networking - Three Tier VCN 3"
@@ -364,6 +371,9 @@ variableGroups:
       - "tt_vcn3_bastion_subnet_cidr"
       - "tt_vcn3_bastion_is_access_via_public_endpoint"
       - "tt_vcn3_bastion_subnet_allowed_cidrs"
+      - "add_tt_vcn3_private_endpoint_subnet"
+      - "tt_vcn3_private_endpoint_subnet_name"
+      - "tt_vcn3_private_endpoint_subnet_cidr"
     visible: define_net
 
   - title: "Networking - Exadata Cloud Service VCN 1"
@@ -389,6 +399,9 @@ variableGroups:
       - "exa_vcn1_integration_subnet_cidr"
       - "exa_vcn1_external_allowed_cidrs_into_integration_tier"
       - "exa_vcn1_integration_ingress_destination_ports"
+      - "add_exa_vcn1_private_endpoint_subnet"
+      - "exa_vcn1_private_endpoint_subnet_name"
+      - "exa_vcn1_private_endpoint_subnet_cidr"
     visible: define_net
 
   - title: "Networking - Exadata Cloud Service VCN 2"
@@ -414,6 +427,9 @@ variableGroups:
       - "exa_vcn2_integration_subnet_cidr"
       - "exa_vcn2_external_allowed_cidrs_into_integration_tier"
       - "exa_vcn2_integration_ingress_destination_ports"
+      - "add_exa_vcn2_private_endpoint_subnet"
+      - "exa_vcn2_private_endpoint_subnet_name"
+      - "exa_vcn2_private_endpoint_subnet_cidr"
     visible: define_net
 
   - title: "Networking - Exadata Cloud Service VCN 3"
@@ -439,6 +455,9 @@ variableGroups:
       - "exa_vcn3_integration_subnet_cidr"
       - "exa_vcn3_external_allowed_cidrs_into_integration_tier"
       - "exa_vcn3_integration_ingress_destination_ports"
+      - "add_exa_vcn3_private_endpoint_subnet"
+      - "exa_vcn3_private_endpoint_subnet_name"
+      - "exa_vcn3_private_endpoint_subnet_cidr"
     visible: define_net
 
   - title: "Networking - OKE VCN 1"
@@ -471,6 +490,9 @@ variableGroups:
       - "oke_vcn1_db_ingress_destination_ports"
       - "enable_oke_vcn1_rcv_infra"
       - "oke_vcn1_rcv_backup_retention_period_in_days"
+      - "add_oke_vcn1_private_endpoint_subnet"
+      - "oke_vcn1_private_endpoint_subnet_name"
+      - "oke_vcn1_private_endpoint_subnet_cidr"
     visible: define_net
 
   - title: "Networking - OKE VCN 2"
@@ -503,6 +525,9 @@ variableGroups:
       - "oke_vcn2_db_ingress_destination_ports"
       - "enable_oke_vcn2_rcv_infra"
       - "oke_vcn2_rcv_backup_retention_period_in_days"
+      - "add_oke_vcn2_private_endpoint_subnet"
+      - "oke_vcn2_private_endpoint_subnet_name"
+      - "oke_vcn2_private_endpoint_subnet_cidr"
     visible: define_net
 
   - title: "Networking - OKE VCN 3"
@@ -535,6 +560,9 @@ variableGroups:
       - "oke_vcn3_db_ingress_destination_ports"
       - "enable_oke_vcn3_rcv_infra"
       - "oke_vcn3_rcv_backup_retention_period_in_days"
+      - "add_oke_vcn3_private_endpoint_subnet"
+      - "oke_vcn3_private_endpoint_subnet_name"
+      - "oke_vcn3_private_endpoint_subnet_cidr"
     visible: define_net
 
   - title: "Networking - Additional NSGs"
@@ -927,7 +955,7 @@ variables:
   enable_generative_ai_infra:
     type: boolean
     title: "Enable Generative AI Infrastructure?"
-    description: "Enables OCI Generative AI administration prerequisites and grants."
+    description: "Check to enable OCI Generative AI administration prerequisites and grants."
     default: false
     required: false
     visible: 
@@ -938,7 +966,7 @@ variables:
   enable_data_science_infra:
     type: boolean
     title: "Enable Data Science Infrastructure?"
-    description: "Enables Data Science, Data Flow, and Data Science runtime identity prerequisites."
+    description: "Check to enable Data Science, Data Flow, and Data Science runtime identity prerequisites."
     default: false
     required: false
     visible: 
@@ -949,7 +977,7 @@ variables:
   enable_prebuilt_ai_services_infra:
     type: boolean
     title: "Enable Prebuilt AI Services Infrastructure?"
-    description: "Enables Language, Vision, Speech, and Document Understanding prerequisites."
+    description: "Check to enable Language, Vision, Speech, and Document Understanding prerequisites."
     default: false
     required: false
     visible: 
@@ -960,7 +988,7 @@ variables:
   enable_ai_compute_infra:
     type: boolean
     title: "Enable AI Compute Infrastructure?"
-    description: "Enables Compute cluster, Compute management, and capacity reservation prerequisites."
+    description: "Check to enable Compute cluster, Compute management, and capacity reservation prerequisites."
     default: false
     required: false
     visible: 
@@ -971,7 +999,7 @@ variables:
   generative_ai_data_access_policy_mode:
     type: enum
     title: "Generative AI Data Access Policy Mode"
-    description: "Choose CORELZ_MANAGED for Core Landing Zone to authorize AI foundations resources at the compartment level. Choose WORKLOAD_MANAGED for having custom policies defined by workload stacks, that can provision stricter policies at the resource level."
+    description: "Choose CORELZ_MANAGED for Core Landing Zone to authorize the Responses API and runtime data access at compartment scope. Choose WORKLOAD_MANAGED for workload stacks to provide narrower policies. OCI IAM allow policies are additive, so WORKLOAD_MANAGED is required before narrower conditional grants can take effect."
     enum:
       - "CORELZ_MANAGED"
       - "WORKLOAD_MANAGED"
@@ -982,6 +1010,17 @@ variables:
         - deploy_app_cmp
         - define_ai_foundations
         - enable_generative_ai_infra
+
+  enable_aidp_infra:
+    type: boolean
+    title: "Enable Oracle AI Data Platform Infrastructure?"
+    description: "Check to enable Oracle AI Data Platform administration, runtime, and private network prerequisites."
+    default: false
+    required: false
+    visible:
+      and:
+        - deploy_app_cmp
+        - define_ai_foundations
 
   deploy_database_cmp:
     type: boolean
@@ -1897,7 +1936,7 @@ variables:
   deploy_tt_vcn1_bastion_subnet:
     type: boolean
     title: "Deploy Bastion Subnet?"
-    description: "Check to to deploy a subnet where you can further deploy OCI Bastion service or a jump host."
+    description: "Check to deploy a subnet where you can further deploy OCI Bastion service or a jump host."
     visible: 
       and:
         - define_net
@@ -1945,7 +1984,7 @@ variables:
       type: string
     uniqueItems: true
     title: "List of CIDR blocks allowed to SSH into the public Bastion subnet where the jump host is going to be deployed"
-    description: "These CIDRs are allowed to SSH into the the jump host that is eventually deployed in the public Bastion subnet. Leave it empty for no access."
+    description: "These CIDRs are allowed to SSH into the jump host that is eventually deployed in the public Bastion subnet. Leave it empty for no access."
     required: false
     visible: 
       and:
@@ -1954,6 +1993,41 @@ variables:
         - add_tt_vcn1
         - deploy_tt_vcn1_bastion_subnet
         - tt_vcn1_bastion_is_access_via_public_endpoint       
+  add_tt_vcn1_private_endpoint_subnet:
+    type: boolean
+    title: "Deploy Private Endpoint Subnet?"
+    description: "Check to create a subnet for service private endpoints, to provide in-VCN secure and private connectivity to OCI-managed services."
+    default: false
+    required: false
+    visible:
+      and:
+        - define_net
+        - add_tt_vcn1
+        - customize_tt_vcn1_subnets
+
+  tt_vcn1_private_endpoint_subnet_name:
+    type: string
+    title: "Private Endpoint Subnet Name"
+    description: "Enter the private endpoint subnet name."
+    required: false
+    visible:
+      and:
+        - define_net
+        - add_tt_vcn1
+        - customize_tt_vcn1_subnets
+        - add_tt_vcn1_private_endpoint_subnet
+
+  tt_vcn1_private_endpoint_subnet_cidr:
+    type: string
+    title: "Private Endpoint Subnet CIDR Block"
+    description: "Enter the private endpoint subnet CIDR block. When empty, Core Landing Zone automatically derives a /28 from the parent VCN CIDR."
+    required: false
+    visible:
+      and:
+        - define_net
+        - add_tt_vcn1
+        - customize_tt_vcn1_subnets
+        - add_tt_vcn1_private_endpoint_subnet
 
   # ------------------------------------------------------
   # ----- Networking - Three-tier VCN 2
@@ -2214,7 +2288,7 @@ variables:
   deploy_tt_vcn2_bastion_subnet:
     type: boolean
     title: "Deploy Bastion Subnet?"
-    description: "Check to to deploy a subnet where you can further deploy OCI Bastion service or a jump host."
+    description: "Check to deploy a subnet where you can further deploy OCI Bastion service or a jump host."
     visible: 
       and:
         - define_net
@@ -2262,7 +2336,7 @@ variables:
       type: string
     uniqueItems: true
     title: "List of CIDR blocks allowed to SSH into the public Bastion subnet where the jump host is going to be deployed"
-    description: "These CIDRs are allowed to SSH into the the jump host that is eventually deployed in the public Bastion subnet. Leave it empty for no access."
+    description: "These CIDRs are allowed to SSH into the jump host that is eventually deployed in the public Bastion subnet. Leave it empty for no access."
     required: false
     visible: 
       and:
@@ -2271,6 +2345,42 @@ variables:
         - add_tt_vcn2
         - tt_vcn2_bastion_is_access_via_public_endpoint
         - deploy_tt_vcn2_bastion_subnet       
+
+  add_tt_vcn2_private_endpoint_subnet:
+    type: boolean
+    title: "Deploy Private Endpoint Subnet?"
+    description: "Check to create a subnet for service private endpoints, to provide in-VCN secure and private connectivity to OCI-managed services."
+    default: false
+    required: false
+    visible:
+      and:
+        - define_net
+        - add_tt_vcn2
+        - customize_tt_vcn2_subnets
+
+  tt_vcn2_private_endpoint_subnet_name:
+    type: string
+    title: "Private Endpoint Subnet Name"
+    description: "Enter the private endpoint subnet name."
+    required: false
+    visible:
+      and:
+        - define_net
+        - add_tt_vcn2
+        - customize_tt_vcn2_subnets
+        - add_tt_vcn2_private_endpoint_subnet
+
+  tt_vcn2_private_endpoint_subnet_cidr:
+    type: string
+    title: "Private Endpoint Subnet CIDR Block"
+    description: "Enter the private endpoint subnet CIDR block. When empty, Core Landing Zone automatically derives a /28 from the parent VCN CIDR."
+    required: false
+    visible:
+      and:
+        - define_net
+        - add_tt_vcn2
+        - customize_tt_vcn2_subnets
+        - add_tt_vcn2_private_endpoint_subnet
 
   # ------------------------------------------------------
   # ----- Networking - Three-tier VCN 3
@@ -2531,7 +2641,7 @@ variables:
   deploy_tt_vcn3_bastion_subnet:
     type: boolean
     title: "Deploy Bastion Subnet?"
-    description: "Check to to deploy a subnet where you can further deploy OCI Bastion service or a jump host."
+    description: "Check to deploy a subnet where you can further deploy OCI Bastion service or a jump host."
     visible: 
       and:
         - define_net
@@ -2579,7 +2689,7 @@ variables:
       type: string
     uniqueItems: true
     title: "List of CIDR blocks allowed to SSH into jump hosts eventually deployed in Bastion subnet"
-    description: "These CIDRs are allowed to SSH into the the jump host that is eventually deployed in the public Bastion subnet. Leave it empty for no access. 0.0.0.0/0 is not allowed."
+    description: "These CIDRs are allowed to SSH into the jump host that is eventually deployed in the public Bastion subnet. Leave it empty for no access. 0.0.0.0/0 is not allowed."
     required: false
     visible: 
       and:
@@ -2588,7 +2698,42 @@ variables:
         - add_tt_vcn3
         - tt_vcn3_bastion_is_access_via_public_endpoint
         - deploy_tt_vcn3_bastion_subnet   
-      
+  add_tt_vcn3_private_endpoint_subnet:
+    type: boolean
+    title: "Deploy Private Endpoint Subnet?"
+    description: "Check to create a subnet for service private endpoints, to provide in-VCN secure and private connectivity to OCI-managed services."
+    default: false
+    required: false
+    visible:
+      and:
+        - define_net
+        - add_tt_vcn3
+        - customize_tt_vcn3_subnets
+
+  tt_vcn3_private_endpoint_subnet_name:
+    type: string
+    title: "Private Endpoint Subnet Name"
+    description: "Enter the private endpoint subnet name."
+    required: false
+    visible:
+      and:
+        - define_net
+        - add_tt_vcn3
+        - customize_tt_vcn3_subnets
+        - add_tt_vcn3_private_endpoint_subnet
+
+  tt_vcn3_private_endpoint_subnet_cidr:
+    type: string
+    title: "Private Endpoint Subnet CIDR Block"
+    description: "Enter the private endpoint subnet CIDR block. When empty, Core Landing Zone automatically derives a /28 from the parent VCN CIDR."
+    required: false
+    visible:
+      and:
+        - define_net
+        - add_tt_vcn3
+        - customize_tt_vcn3_subnets
+        - add_tt_vcn3_private_endpoint_subnet
+
   # ------------------------------------------------------
   # ----- Networking - Exadata Cloud Service VCN 1
   #-------------------------------------------------------
@@ -2857,6 +3002,41 @@ variables:
         - customize_exa_vcn1_subnets
         - add_exa_vcn1
         - add_exa_vcn1_integration_subnet
+  add_exa_vcn1_private_endpoint_subnet:
+    type: boolean
+    title: "Deploy Private Endpoint Subnet?"
+    description: "Check to create a subnet for service private endpoints, to provide in-VCN secure and private connectivity to OCI-managed services."
+    default: false
+    required: false
+    visible:
+      and:
+        - define_net
+        - add_exa_vcn1
+        - customize_exa_vcn1_subnets
+
+  exa_vcn1_private_endpoint_subnet_name:
+    type: string
+    title: "Private Endpoint Subnet Name"
+    description: "Enter the private endpoint subnet name."
+    required: false
+    visible:
+      and:
+        - define_net
+        - add_exa_vcn1
+        - customize_exa_vcn1_subnets
+        - add_exa_vcn1_private_endpoint_subnet
+
+  exa_vcn1_private_endpoint_subnet_cidr:
+    type: string
+    title: "Private Endpoint Subnet CIDR Block"
+    description: "Enter the private endpoint subnet CIDR block. When empty, Core Landing Zone automatically derives a /28 from the parent VCN CIDR."
+    required: false
+    visible:
+      and:
+        - define_net
+        - add_exa_vcn1
+        - customize_exa_vcn1_subnets
+        - add_exa_vcn1_private_endpoint_subnet
 
   # ------------------------------------------------------
   # ----- Networking - Exadata Cloud Service VCN 2
@@ -3126,6 +3306,41 @@ variables:
         - customize_exa_vcn2_subnets
         - add_exa_vcn2
         - add_exa_vcn2_integration_subnet
+  add_exa_vcn2_private_endpoint_subnet:
+    type: boolean
+    title: "Deploy Private Endpoint Subnet?"
+    description: "Check to create a subnet for service private endpoints, to provide in-VCN secure and private connectivity to OCI-managed services."
+    default: false
+    required: false
+    visible:
+      and:
+        - define_net
+        - add_exa_vcn2
+        - customize_exa_vcn2_subnets
+
+  exa_vcn2_private_endpoint_subnet_name:
+    type: string
+    title: "Private Endpoint Subnet Name"
+    description: "Enter the private endpoint subnet name."
+    required: false
+    visible:
+      and:
+        - define_net
+        - add_exa_vcn2
+        - customize_exa_vcn2_subnets
+        - add_exa_vcn2_private_endpoint_subnet
+
+  exa_vcn2_private_endpoint_subnet_cidr:
+    type: string
+    title: "Private Endpoint Subnet CIDR Block"
+    description: "Enter the private endpoint subnet CIDR block. When empty, Core Landing Zone automatically derives a /28 from the parent VCN CIDR."
+    required: false
+    visible:
+      and:
+        - define_net
+        - add_exa_vcn2
+        - customize_exa_vcn2_subnets
+        - add_exa_vcn2_private_endpoint_subnet
 
   # ------------------------------------------------------
   # ----- Networking - Exadata Cloud Service VCN 3
@@ -3395,6 +3610,41 @@ variables:
         - customize_exa_vcn3_subnets
         - add_exa_vcn3
         - add_exa_vcn3_integration_subnet
+  add_exa_vcn3_private_endpoint_subnet:
+    type: boolean
+    title: "Deploy Private Endpoint Subnet?"
+    description: "Check to create a subnet for service private endpoints, to provide in-VCN secure and private connectivity to OCI-managed services."
+    default: false
+    required: false
+    visible:
+      and:
+        - define_net
+        - add_exa_vcn3
+        - customize_exa_vcn3_subnets
+
+  exa_vcn3_private_endpoint_subnet_name:
+    type: string
+    title: "Private Endpoint Subnet Name"
+    description: "Enter the private endpoint subnet name."
+    required: false
+    visible:
+      and:
+        - define_net
+        - add_exa_vcn3
+        - customize_exa_vcn3_subnets
+        - add_exa_vcn3_private_endpoint_subnet
+
+  exa_vcn3_private_endpoint_subnet_cidr:
+    type: string
+    title: "Private Endpoint Subnet CIDR Block"
+    description: "Enter the private endpoint subnet CIDR block. When empty, Core Landing Zone automatically derives a /28 from the parent VCN CIDR."
+    required: false
+    visible:
+      and:
+        - define_net
+        - add_exa_vcn3
+        - customize_exa_vcn3_subnets
+        - add_exa_vcn3_private_endpoint_subnet
 
 # ------------------------------------------------------
 # ----- Networking - OKE VCN 1
@@ -3721,6 +3971,42 @@ variables:
         - add_oke_vcn1
         - add_oke_vcn1_db_subnet
         - enable_oke_vcn1_rcv_infra
+
+  add_oke_vcn1_private_endpoint_subnet:
+    type: boolean
+    title: "Deploy Private Endpoint Subnet?"
+    description: "Check to create a subnet for service private endpoints, to provide in-VCN secure and private connectivity to OCI-managed services."
+    default: false
+    required: false
+    visible:
+      and:
+        - define_net
+        - add_oke_vcn1
+        - customize_oke_vcn1_subnets
+
+  oke_vcn1_private_endpoint_subnet_name:
+    type: string
+    title: "Private Endpoint Subnet Name"
+    description: "Enter the private endpoint subnet name."
+    required: false
+    visible:
+      and:
+        - define_net
+        - add_oke_vcn1
+        - customize_oke_vcn1_subnets
+        - add_oke_vcn1_private_endpoint_subnet
+
+  oke_vcn1_private_endpoint_subnet_cidr:
+    type: string
+    title: "Private Endpoint Subnet CIDR Block"
+    description: "Enter the private endpoint subnet CIDR block. When empty, Core Landing Zone automatically derives a /28 from the parent VCN CIDR."
+    required: false
+    visible:
+      and:
+        - define_net
+        - add_oke_vcn1
+        - customize_oke_vcn1_subnets
+        - add_oke_vcn1_private_endpoint_subnet
 
   oke_vcn1_pods_subnet_name:
     type: string
@@ -4075,6 +4361,42 @@ variables:
         - add_oke_vcn2_db_subnet
         - enable_oke_vcn2_rcv_infra
 
+  add_oke_vcn2_private_endpoint_subnet:
+    type: boolean
+    title: "Deploy Private Endpoint Subnet?"
+    description: "Check to create a subnet for service private endpoints, to provide in-VCN secure and private connectivity to OCI-managed services."
+    default: false
+    required: false
+    visible:
+      and:
+        - define_net
+        - add_oke_vcn2
+        - customize_oke_vcn2_subnets
+
+  oke_vcn2_private_endpoint_subnet_name:
+    type: string
+    title: "Private Endpoint Subnet Name"
+    description: "Enter the private endpoint subnet name."
+    required: false
+    visible:
+      and:
+        - define_net
+        - add_oke_vcn2
+        - customize_oke_vcn2_subnets
+        - add_oke_vcn2_private_endpoint_subnet
+
+  oke_vcn2_private_endpoint_subnet_cidr:
+    type: string
+    title: "Private Endpoint Subnet CIDR Block"
+    description: "Enter the private endpoint subnet CIDR block. When empty, Core Landing Zone automatically derives a /28 from the parent VCN CIDR."
+    required: false
+    visible:
+      and:
+        - define_net
+        - add_oke_vcn2
+        - customize_oke_vcn2_subnets
+        - add_oke_vcn2_private_endpoint_subnet
+
   oke_vcn2_pods_subnet_name:
     type: string
     title: "Pods Subnet Name"
@@ -4427,6 +4749,42 @@ variables:
         - add_oke_vcn3
         - add_oke_vcn3_db_subnet
         - enable_oke_vcn3_rcv_infra
+
+  add_oke_vcn3_private_endpoint_subnet:
+    type: boolean
+    title: "Deploy Private Endpoint Subnet?"
+    description: "Check to create a subnet for service private endpoints, to provide in-VCN secure and private connectivity to OCI-managed services."
+    default: false
+    required: false
+    visible:
+      and:
+        - define_net
+        - add_oke_vcn3
+        - customize_oke_vcn3_subnets
+
+  oke_vcn3_private_endpoint_subnet_name:
+    type: string
+    title: "Private Endpoint Subnet Name"
+    description: "Enter the private endpoint subnet name."
+    required: false
+    visible:
+      and:
+        - define_net
+        - add_oke_vcn3
+        - customize_oke_vcn3_subnets
+        - add_oke_vcn3_private_endpoint_subnet
+
+  oke_vcn3_private_endpoint_subnet_cidr:
+    type: string
+    title: "Private Endpoint Subnet CIDR Block"
+    description: "Enter the private endpoint subnet CIDR block. When empty, Core Landing Zone automatically derives a /28 from the parent VCN CIDR."
+    required: false
+    visible:
+      and:
+        - define_net
+        - add_oke_vcn3
+        - customize_oke_vcn3_subnets
+        - add_oke_vcn3_private_endpoint_subnet
 
   oke_vcn3_pods_subnet_name:
     type: string
