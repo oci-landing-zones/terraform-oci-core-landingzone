@@ -13,7 +13,7 @@ locals {
     "No cross-VCN with on-premises connectivity using an existing DRG"                                                                                 = 6
   }
 
-  chosen_hub_option = var.hub_deployment_option == "" ? var.hub_deployment : local.hub_options[var.hub_deployment_option]
+  chosen_hub_option = try(local.hub_options[var.hub_deployment_option], tonumber(var.hub_deployment_option))
   deploy_new_drg    = var.define_net == true && (local.chosen_hub_option == 1 || local.chosen_hub_option == 3 || local.chosen_hub_option == 5)
   use_existing_drg  = var.define_net == true && (local.chosen_hub_option == 2 || local.chosen_hub_option == 4 || local.chosen_hub_option == 6)
   #hub_with_drg_only = var.define_net == true && ((local.chosen_hub_option == 1 || local.chosen_hub_option == 2 || local.chosen_hub_option == 5 || local.chosen_hub_option == 6) || ((local.chosen_hub_option == 3 || local.chosen_hub_option == 4) && local.chosen_firewall_option == "NO"))
