@@ -48,8 +48,8 @@ variable "customize_iam" {
   type        = bool
   default     = false
 }
-variable "define_ai_foundations" {
-  description = "Whether infrastructure resources for AI are provisioned as part of this Landing Zone. By default, no infrastructure resources for AI are created."
+variable "display_ai_infra_settings" {
+  description = "Whether to display available options for enabling infrastructure resources for OCI managed AI services. Applicable to RMS deployments only, used for UI displaying."
   type        = bool
   default     = false
 }

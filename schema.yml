@@ -23,7 +23,7 @@ variableGroups:
     variables:
     - "extend_landing_zone_to_new_region"
     - "customize_iam"
-    - "define_ai_foundations"
+    - "display_ai_infra_settings"
     - "define_net"
     - "enable_zpr"
     - "zpr_namespace_name"
@@ -175,7 +175,7 @@ variableGroups:
           - ${customize_iam}
           - true
 
-  - title: "AI Foundations"
+  - title: "AI Services Infrastructure"
     variables:
       - "enable_generative_ai_infra"
       - "generative_ai_data_access_policy_mode"
@@ -183,7 +183,7 @@ variableGroups:
       - "enable_data_science_infra"
       - "enable_ai_compute_infra"
       - "enable_prebuilt_ai_services_infra"
-    visible: define_ai_foundations
+    visible: display_ai_infra_settings
   
   - title: "Network Topology"
     variables:
@@ -825,10 +825,10 @@ variables:
     description: "Check if you need to customize the settings for compartments, identity domains, groups, and policies."
     visible: true
 
-  define_ai_foundations:
+  display_ai_infra_settings:
     type: boolean
-    title: "Define AI Foundations?"
-    description: "Check to define AI foundations resources. If you do not select, the Landing Zone does NOT deploy any infrastructure for AI foundations."
+    title: "Enable Infrastructure for OCI Managed AI Services?"
+    description: "Check to choose which OCI AI services to provision infrastructure for."
     visible: true
 
   define_net:
@@ -954,51 +954,51 @@ variables:
   enable_generative_ai_infra:
     type: boolean
     title: "Enable Generative AI Infrastructure?"
-    description: "Check to enable OCI Generative AI administration prerequisites and grants."
+    description: "Check to configure Generative AI IAM grants in the Application compartment (for CORELZ_MANAGED policy mode, in Database, Security, and Exainfra compartments as well), together with runtime dynamic groups and NSGs."
     default: false
     required: false
     visible: 
       and:
         - deploy_app_cmp
-        - define_ai_foundations
+        - display_ai_infra_settings
 
   enable_data_science_infra:
     type: boolean
     title: "Enable Data Science Infrastructure?"
-    description: "Check to enable Data Science, Data Flow, and Data Science runtime identity prerequisites."
+    description: "Check to configure Data Science and Data Flow IAM grants in the Application compartment, Data Science network grants in the Network compartment, and a runtime dynamic group."
     default: false
     required: false
     visible: 
       and:
         - deploy_app_cmp
-        - define_ai_foundations
+        - display_ai_infra_settings
 
   enable_prebuilt_ai_services_infra:
     type: boolean
     title: "Enable Prebuilt AI Services Infrastructure?"
-    description: "Check to enable Language, Vision, Speech, and Document Understanding prerequisites."
+    description: "Check to configure IAM grants for OCI Language, Vision, Speech, and Document Understanding in the Application compartment."
     default: false
     required: false
     visible: 
       and:
         - deploy_app_cmp
-        - define_ai_foundations
+        - display_ai_infra_settings
 
   enable_ai_compute_infra:
     type: boolean
     title: "Enable AI Compute Infrastructure?"
-    description: "Check to enable Compute cluster, Compute management, and capacity reservation prerequisites."
+    description: "Check to configure IAM grants for OCI Compute Management, Compute Clusters, and Compute Capacity Reservations in the Application compartment."
     default: false
     required: false
     visible: 
       and:
         - deploy_app_cmp
-        - define_ai_foundations
+        - display_ai_infra_settings
 
   generative_ai_data_access_policy_mode:
     type: enum
     title: "Generative AI Data Access Policy Mode"
-    description: "Choose CORELZ_MANAGED for Core Landing Zone to authorize the Responses API and runtime data access at compartment scope. Choose WORKLOAD_MANAGED for workload stacks to provide narrower policies. OCI IAM allow policies are additive, so WORKLOAD_MANAGED is required before narrower conditional grants can take effect."
+    description: "Choose CORELZ_MANAGED for Core Landing Zone to authorize the Responses API and runtime data access at compartment scope. Choose WORKLOAD_MANAGED for workload stacks to provide narrower policies."
     enum:
       - "CORELZ_MANAGED"
       - "WORKLOAD_MANAGED"
@@ -1007,19 +1007,19 @@ variables:
     visible:
       and:
         - deploy_app_cmp
-        - define_ai_foundations
+        - display_ai_infra_settings
         - enable_generative_ai_infra
 
   enable_aidp_infra:
     type: boolean
     title: "Enable Oracle AI Data Platform Infrastructure?"
-    description: "Check to enable Oracle AI Data Platform administration, runtime, and private network prerequisites."
+    description: "Check to configure tenancy-wide AIDP IAM grants, compartment grants in the Application, Network, and enabled Database and Exainfra compartments, and NSGs."
     default: false
     required: false
     visible:
       and:
         - deploy_app_cmp
-        - define_ai_foundations
+        - display_ai_infra_settings
 
   deploy_database_cmp:
     type: boolean
