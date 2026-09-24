@@ -230,7 +230,7 @@ locals {
               },
               local.chosen_firewall_option != "OCINFW" ? { 
                 "DRG-RULE" = {
-                  network_entity_key = "HUB-DRG" # All outbound traffic routed to DRG in 3rd-party firewall scenario.
+                  network_entity_key = "HUB-DRG" # All outbound traffic routed to DRG in third-party and no-firewall scenarios.
                   description        = "Traffic destined for networks outside the VCN is routed through the DRG."
                   destination        = "0.0.0.0/0"
                   destination_type   = "CIDR_BLOCK"
@@ -244,14 +244,14 @@ locals {
                   destination        = cidr
                   destination_type   = "CIDR_BLOCK"
                 } if cidr != "0.0.0.0/0" },
-              {
+              local.chosen_firewall_option == "OCINFW" ? {
                 "EVERYWHERE-ELSE-RULE" = {
                   network_entity_key = "HUB-VCN-NAT-GATEWAY" # All remaining outbound traffic routed to NAT Gateway in OCI Firewall scenario.
                   description        = "Traffic destined for networks outside the VCN is routed through the NAT Gateway."
                   destination        = "0.0.0.0/0"
                   destination_type   = "CIDR_BLOCK"
                 }
-              }
+              } : {}
             )
           }
         },
