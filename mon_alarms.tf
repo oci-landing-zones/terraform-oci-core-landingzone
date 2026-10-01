@@ -35,7 +35,7 @@ locals {
   #--------------------------------------------------------------------
   #-- Compute Alarms
   #--------------------------------------------------------------------
-  compute_alarms = length(var.compute_admin_email_endpoints) > 0 ? {
+  compute_alarms = local.enable_app_compartment ? {
     COMPUTE-ALARM-HIGH-CPU-WARNING = {
       compartment_id           = local.app_compartment_id
       display_name             = "${var.service_label}-high-cpu-alarm-warning"
@@ -104,7 +104,7 @@ locals {
   #--------------------------------------------------------------------
   #-- Database Alarms
   #--------------------------------------------------------------------
-  database_alarms = length(var.database_admin_email_endpoints) > 0 && local.enable_database_compartment ? {
+  adb_alarms = local.enable_database_compartment ? {
     ADB-HIGH-CPU-ALARM-WARNING = {
       compartment_id           = local.database_compartment_id
       display_name             = "${var.service_label}-adb-high-cpu-alarm-warning"
@@ -177,6 +177,9 @@ locals {
       freeform_tags            = local.alarms_freeform_tags
       is_enabled               = var.create_alarms_as_enabled
     }
+  } : {}
+
+  database_alarms = local.enable_database_compartment ? {
     # OCI Database cluster and database metrics are common to Base DB, ExaCS, and ExaCC.
     DATABASE-CLUSTER-HIGH-CPU-ALARM-WARNING = {
       compartment_id           = local.database_compartment_id
@@ -315,7 +318,7 @@ locals {
     }
   } : {}
 
-  exainfra_cluster_alarms = length(var.exainfra_admin_email_endpoints) > 0 && local.enable_exainfra_compartment ? {
+  exainfra_alarms = local.enable_exainfra_compartment ? {
     EXAINFRA-CLUSTER-HIGH-CPU-ALARM-WARNING = {
       compartment_id           = local.exainfra_compartment_id
       display_name             = "${var.service_label}-database-cluster-high-cpu-alarm-warning"
@@ -415,9 +418,6 @@ locals {
       freeform_tags            = local.alarms_freeform_tags
       is_enabled               = var.create_alarms_as_enabled
     }
-  } : {}
-
-  exainfra_database_alarms = length(var.database_admin_email_endpoints) > 0 && local.enable_exainfra_compartment ? {
     EXAINFRA-DATABASE-HIGH-CPU-ALARM-WARNING = {
       compartment_id           = local.exainfra_compartment_id
       display_name             = "${var.service_label}-database-high-cpu-alarm-warning"
@@ -454,86 +454,12 @@ locals {
       freeform_tags            = local.alarms_freeform_tags
       is_enabled               = var.create_alarms_as_enabled
     }
-
-    # OCI Database cluster and database metrics are common to Base DB, ExaCS, and ExaCC.
-    DATABASE-ALARM-DBSYSTEM-HIGH-CPU = {
-      compartment_id           = local.database_compartment_id
-      display_name             = "${var.service_label}-dbsystem-high-cpu-alarm"
-      preconfigured_alarm_type = "exadata-vm-cluster-high-cpu-alarm"
-      destination_topic_ids    = ["DATABASE-TOPIC"]
-      defined_tags             = local.alarms_defined_tags
-      freeform_tags            = local.alarms_freeform_tags
-      is_enabled               = var.create_alarms_as_enabled
-    }
-    DATABASE-ALARM-DBSYSTEM-HIGH-MEMORY = {
-      compartment_id           = local.database_compartment_id
-      display_name             = "${var.service_label}-dbsystem-high-memory-alarm"
-      preconfigured_alarm_type = "exadata-vm-cluster-high-memory-alarm"
-      destination_topic_ids    = ["DATABASE-TOPIC"]
-      defined_tags             = local.alarms_defined_tags
-      freeform_tags            = local.alarms_freeform_tags
-      is_enabled               = var.create_alarms_as_enabled
-    }
-    DATABASE-ALARM-DBSYSTEM-FILESYSTEM-UTILIZATION = {
-      compartment_id           = local.database_compartment_id
-      display_name             = "${var.service_label}-dbsystem-filesystem-utilization-alarm"
-      preconfigured_alarm_type = "exadata-vm-cluster-high-filesystem-utilization-alarm"
-      destination_topic_ids    = ["DATABASE-TOPIC"]
-      defined_tags             = local.alarms_defined_tags
-      freeform_tags            = local.alarms_freeform_tags
-      is_enabled               = var.create_alarms_as_enabled
-    }
-    DATABASE-ALARM-DBSYSTEM-ASM-DISKGROUP-UTILIZATION = {
-      compartment_id           = local.database_compartment_id
-      display_name             = "${var.service_label}-dbsystem-asm-diskgroup-utilization-alarm"
-      preconfigured_alarm_type = "exadata-vm-cluster-high-asm-diskgroup-utilization-alarm"
-      destination_topic_ids    = ["DATABASE-TOPIC"]
-      defined_tags             = local.alarms_defined_tags
-      freeform_tags            = local.alarms_freeform_tags
-      is_enabled               = var.create_alarms_as_enabled
-    }
-    DATABASE-ALARM-DBSYSTEM-SWAP-UTILIZATION = {
-      compartment_id           = local.database_compartment_id
-      display_name             = "${var.service_label}-dbsystem-swap-utilization-alarm"
-      preconfigured_alarm_type = "exadata-vm-cluster-high-swap-utilization-alarm"
-      destination_topic_ids    = ["DATABASE-TOPIC"]
-      defined_tags             = local.alarms_defined_tags
-      freeform_tags            = local.alarms_freeform_tags
-      is_enabled               = var.create_alarms_as_enabled
-    }
-    DATABASE-ALARM-DBSYSTEM-NODE-STATUS = {
-      compartment_id           = local.database_compartment_id
-      display_name             = "${var.service_label}-dbsystem-node-status-alarm"
-      preconfigured_alarm_type = "exadata-vm-cluster-node-status-alarm"
-      destination_topic_ids    = ["DATABASE-TOPIC"]
-      defined_tags             = local.alarms_defined_tags
-      freeform_tags            = local.alarms_freeform_tags
-      is_enabled               = var.create_alarms_as_enabled
-    }
-    DATABASE-ALARM-DATABASE-HIGH-CPU = {
-      compartment_id           = local.database_compartment_id
-      display_name             = "${var.service_label}-database-high-cpu-alarm"
-      preconfigured_alarm_type = "exadata-database-high-cpu-alarm"
-      destination_topic_ids    = ["DATABASE-TOPIC"]
-      defined_tags             = local.alarms_defined_tags
-      freeform_tags            = local.alarms_freeform_tags
-      is_enabled               = var.create_alarms_as_enabled
-    }
-    DATABASE-ALARM-DATABASE-STORAGE-UTILIZATION = {
-      compartment_id           = local.database_compartment_id
-      display_name             = "${var.service_label}-database-storage-utilization-alarm"
-      preconfigured_alarm_type = "exadata-database-high-storage-utilization-alarm"
-      destination_topic_ids    = ["DATABASE-TOPIC"]
-      defined_tags             = local.alarms_defined_tags
-      freeform_tags            = local.alarms_freeform_tags
-      is_enabled               = var.create_alarms_as_enabled
-    }
   } : {}
 
   #--------------------------------------------------------------------
   #-- Network Alarms
   #--------------------------------------------------------------------  
-  network_alarms = length(var.network_admin_email_endpoints) > 0 ? {
+  network_alarms = local.enable_network_compartment ? {
     NETWORK-VPN-STATUS-ALARM-CRITICAL = {
       compartment_id           = local.network_compartment_id
       display_name             = "${var.service_label}-network-vpn-status-alarm-critical"
@@ -570,6 +496,6 @@ locals {
     default_compartment_id = null
     default_defined_tags   = local.default_alarms_defined_tags
     default_freeform_tags  = local.default_alarms_freeform_tags
-    alarms                 = merge(local.compute_alarms, local.database_alarms, local.exainfra_cluster_alarms, local.exainfra_database_alarms, local.network_alarms)
+    alarms                 = merge(local.compute_alarms, local.adb_alarms, local.database_alarms, local.exainfra_alarms, local.network_alarms)
   }
 }

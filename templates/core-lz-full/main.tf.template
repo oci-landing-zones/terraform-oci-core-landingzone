@@ -187,12 +187,10 @@ module "core_lz" {
   # AI Foundation
   # ======================================================================================
   # These flags enable Core LZ AI prerequisites and IAM grants in the Application compartment.
-  # Generative AI and AIDP also create their service NSGs automatically in supported VCNs.
   enable_generative_ai_infra        = true
   enable_data_science_infra         = true
   enable_prebuilt_ai_services_infra = true
   enable_ai_compute_infra           = true
-  enable_aidp_infra                 = true
 
   # Core LZ manages the baseline Generative AI API-key and runtime data-access grants.
   generative_ai_data_access_policy_mode = "CORELZ_MANAGED"

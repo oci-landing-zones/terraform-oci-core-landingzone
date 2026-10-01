@@ -28,31 +28,31 @@ variable "deploy_app_cmp" {
 variable "enable_generative_ai_infra" {
   type        = bool
   default     = false
-  description = "Whether Generative AI administration prerequisites and grants are enabled."
+  description = "Whether to configure Generative AI IAM grants in the Application and, for CORELZ_MANAGED, enabled Database, Security, and Exainfra compartments, together with runtime dynamic groups and NSGs."
 }
 
 variable "enable_data_science_infra" {
   type        = bool
   default     = false
-  description = "Whether Data Science, Data Flow, and Data Science runtime identity prerequisites are enabled."
+  description = "Whether to configure Data Science and Data Flow IAM grants in the Application compartment, Data Science network grants in the Network compartment, and a runtime dynamic group."
 }
 
 variable "enable_prebuilt_ai_services_infra" {
   type        = bool
   default     = false
-  description = "Whether Language, Vision, Speech, and Document Understanding prerequisites are enabled."
+  description = "Whether to configure IAM grants for OCI Language, Vision, Speech, and Document Understanding in the Application compartment."
 }
 
 variable "enable_ai_compute_infra" {
   type        = bool
   default     = false
-  description = "Whether AI compute cluster, compute management, and capacity reservation prerequisites are enabled."
+  description = "Whether to configure IAM grants for OCI Compute Management, Compute Clusters, and Compute Capacity Reservations in the Application compartment."
 }
 
 variable "enable_aidp_infra" {
   type        = bool
   default     = false
-  description = "Whether Oracle AI Data Platform administration, runtime, and private network prerequisites are enabled."
+  description = "Whether to configure tenancy-wide AIDP IAM grants, compartment grants in the Application, Network, and enabled Database and Exainfra compartments, and NSGs."
 }
 
 variable "generative_ai_data_access_policy_mode" {

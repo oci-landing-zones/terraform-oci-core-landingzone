@@ -34,7 +34,7 @@ locals {
 }
 
 module "lz_new_identity_domain" {
-  source                                       = "github.com/oci-landing-zones/terraform-oci-modules-iam//identity-domains?ref=v0.3.4"
+  source                                       = "github.com/oci-landing-zones/terraform-oci-modules-iam//identity-domains?ref=v0.3.5"
   count                                        = var.identity_domain_option == "New Identity Domain" ? 1 : 0
   providers                                    = { oci = oci.home }
   tenancy_ocid                                 = var.tenancy_ocid

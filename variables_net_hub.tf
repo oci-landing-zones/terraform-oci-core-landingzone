@@ -7,12 +7,31 @@
 variable "hub_deployment_option" {
   type        = string
   default     = "No cross-VCN or on-premises connectivity"
-  description = "The available options for hub deployment. Valid values: 'No cross-VCN or on-premises connectivity', 'VCN or on-premises connectivity routing via DRG (DRG will be created)', 'VCN or on-premises connectivity routing via DRG (existing DRG)', 'VCN or on-premises connectivity routing through DMZ VCN with Network Virtual Appliance (DRG and DMZ VCN will be created)', 'VCN or on-premises connectivity routed through DMZ VCN with Network Virtual Appliance existing DRG (DMZ VCN will be created and DRG ID required)', 'No cross-VCN with on-premises connectivity using an existing DRG', 'No cross-VCN with on-premises connectivity using a new DRG'. All the VCNs that attach to the DRG join the topology as spokes."
-}
-variable "hub_deployment" {
-  type        = number
-  default     = 0
-  description = "The available options for hub deployment as an integer. 'No cross-VCN or on-premises connectivity' = 0, 'VCN or on-premises connectivity routing via DRG (DRG will be created)' = 1, 'VCN or on-premises connectivity routing via DRG (existing DRG)' = 2, 'VCN or on-premises connectivity routing through DMZ VCN with Network Virtual Appliance (DRG and DMZ VCN will be created)' = 3, 'VCN or on-premises connectivity routed through DMZ VCN with Network Virtual Appliance existing DRG (DMZ VCN will be created and DRG ID required)' = 4, 'No cross-VCN with on-premises connectivity using an existing DRG' = 5, 'No cross-VCN with on-premises connectivity using a new DRG' = 6"
+  description = "The available options for hub deployment, given as the option name or its number. Valid values: 'No cross-VCN or on-premises connectivity' (0), 'VCN or on-premises connectivity routing via DRG (DRG will be created)' (1), 'VCN or on-premises connectivity routing via DRG (existing DRG)' (2), 'VCN or on-premises connectivity routing through DMZ VCN with Network Virtual Appliance (DRG and DMZ VCN will be created)' (3), 'VCN or on-premises connectivity routed through DMZ VCN with Network Virtual Appliance existing DRG (DMZ VCN will be created and DRG ID required)' (4), 'No cross-VCN with on-premises connectivity using a new DRG' (5), 'No cross-VCN with on-premises connectivity using an existing DRG' (6). All the VCNs that attach to the DRG join the topology as spokes."
+  validation {
+    condition = (
+      can(regex("^[0-6]$", var.hub_deployment_option)) ||
+      contains([
+        "No cross-VCN or on-premises connectivity",
+        "VCN or on-premises connectivity routing via DRG (DRG will be created)",
+        "VCN or on-premises connectivity routing via DRG (existing DRG)",
+        "VCN or on-premises connectivity routing through DMZ VCN with Network Virtual Appliance (DRG and DMZ VCN will be created)",
+        "VCN or on-premises connectivity routed through DMZ VCN with Network Virtual Appliance existing DRG (DMZ VCN will be created and DRG ID required)",
+        "No cross-VCN with on-premises connectivity using a new DRG",
+        "No cross-VCN with on-premises connectivity using an existing DRG",
+      ], var.hub_deployment_option)
+    )
+    error_message = <<-EOT
+      Invalid hub_deployment_option "${var.hub_deployment_option}". Use one of the option names below, or its number:
+        0 = No cross-VCN or on-premises connectivity
+        1 = VCN or on-premises connectivity routing via DRG (DRG will be created)
+        2 = VCN or on-premises connectivity routing via DRG (existing DRG)
+        3 = VCN or on-premises connectivity routing through DMZ VCN with Network Virtual Appliance (DRG and DMZ VCN will be created)
+        4 = VCN or on-premises connectivity routed through DMZ VCN with Network Virtual Appliance existing DRG (DMZ VCN will be created and DRG ID required)
+        5 = No cross-VCN with on-premises connectivity using a new DRG
+        6 = No cross-VCN with on-premises connectivity using an existing DRG
+    EOT
+  }
 }
 
 variable "enable_cross_vcn_constrained_nsgs" {

@@ -42,7 +42,7 @@ locals {
   #-- Security Topic
   #--------------------------------------------------------------------
   security_topic_key = "SECURITY-TOPIC"
-  security_topic = length(var.security_admin_email_endpoints) > 0 ? {
+  security_topic = length(var.security_admin_email_endpoints) > 0 && local.enable_security_compartment ? {
     (local.security_topic_key) = {
       compartment_id = local.security_compartment_id
       name           = "${var.service_label}-security-topic"
@@ -61,7 +61,7 @@ locals {
   #-- Cloud Guard Topic
   #--------------------------------------------------------------------
   cloudguard_topic_key = "CLOUDGUARD-TOPIC"
-  cloudguard_topic = length(var.cloud_guard_admin_email_endpoints) > 0 ? {
+  cloudguard_topic = length(var.cloud_guard_admin_email_endpoints) > 0 && local.enable_security_compartment ? {
     (local.cloudguard_topic_key) = {
       compartment_id = local.security_compartment_id
       name           = "${var.service_label}-cloudguard-topic"
@@ -80,7 +80,7 @@ locals {
   #-- Network Topic
   #--------------------------------------------------------------------
   network_topic_key = "NETWORK-TOPIC"
-  network_topic = length(var.network_admin_email_endpoints) > 0 ? {
+  network_topic = length(var.network_admin_email_endpoints) > 0 && local.enable_network_compartment ? {
     (local.network_topic_key) = {
       compartment_id = local.network_compartment_id
       name           = "${var.service_label}-network-topic"
@@ -99,7 +99,7 @@ locals {
   #-- Compute Topic
   #--------------------------------------------------------------------
   compute_topic_key = "COMPUTE-TOPIC"
-  compute_topic = length(var.compute_admin_email_endpoints) > 0 ? {
+  compute_topic = length(var.compute_admin_email_endpoints) > 0 && local.enable_app_compartment ? {
     (local.compute_topic_key) = {
       compartment_id = local.app_compartment_id
       name           = "${var.service_label}-compute-topic"
@@ -137,7 +137,7 @@ locals {
   #-- Storage Topic
   #--------------------------------------------------------------------
   storage_topic_key = "STORAGE-TOPIC"
-  storage_topic = length(var.storage_admin_email_endpoints) > 0 ? {
+  storage_topic = length(var.storage_admin_email_endpoints) > 0 && local.enable_app_compartment ? {
     (local.storage_topic_key) = {
       compartment_id = local.app_compartment_id
       name           = "${var.service_label}-storage-topic"
@@ -156,7 +156,7 @@ locals {
   #-- Budget Topic
   #--------------------------------------------------------------------
   budget_topic_key = "BUDGET-TOPIC"
-  budget_topic = length(var.budget_admin_email_endpoints) > 0 ? {
+  budget_topic = length(var.budget_admin_email_endpoints) > 0  ? {
     (local.budget_topic_key) = {
       compartment_id = var.tenancy_ocid
       name           = "${var.service_label}-budget-topic"

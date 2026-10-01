@@ -1207,8 +1207,8 @@ locals {
                 description  = "Allows ingress connectivity to TCP port 2484."
                 stateless    = false
                 protocol     = "TCP"
-                src          = local.oke_vcn1_db_subnet_cidr
-                src_type     = "CIDR_BLOCK"
+                src          = "OKE-VCN-1-DB-NSG"
+                src_type     = "NETWORK_SECURITY_GROUP"
                 dst_port_min = 2484
                 dst_port_max = 2484
               }
@@ -1216,8 +1216,8 @@ locals {
                 description  = "Allows ingress connectivity to TCP port 8005."
                 stateless    = false
                 protocol     = "TCP"
-                src          = local.oke_vcn1_db_subnet_cidr
-                src_type     = "CIDR_BLOCK"
+                src          = "OKE-VCN-1-DB-NSG"
+                src_type     = "NETWORK_SECURITY_GROUP"
                 dst_port_min = 8005
                 dst_port_max = 8005
               }
