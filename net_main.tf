@@ -15,7 +15,8 @@ locals {
 }
 
 module "lz_network" {
-  source                = "github.com/oci-landing-zones/terraform-oci-modules-networking?ref=v0.8.2"
+  #source                = "github.com/oci-landing-zones/terraform-oci-modules-networking?ref=v0.8.2"
+  source                = "github.com/oci-landing-zones/terraform-oci-modules-networking?ref=subnets_output"
   depends_on            = [module.lz_zpr]
   network_configuration = local.lz_network_configuration
   network_dependency = local.use_existing_drg ? {
