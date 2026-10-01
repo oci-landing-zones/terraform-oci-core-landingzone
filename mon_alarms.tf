@@ -35,7 +35,7 @@ locals {
   #--------------------------------------------------------------------
   #-- Compute Alarms
   #--------------------------------------------------------------------
-  compute_alarms = local.enable_app_compartment ? {
+  compute_alarms = local.enable_app_compartment && length(var.compute_admin_email_endpoints) > 0 ? {
     COMPUTE-ALARM-HIGH-CPU-WARNING = {
       compartment_id           = local.app_compartment_id
       display_name             = "${var.service_label}-high-cpu-alarm-warning"
@@ -104,7 +104,7 @@ locals {
   #--------------------------------------------------------------------
   #-- Database Alarms
   #--------------------------------------------------------------------
-  adb_alarms = local.enable_database_compartment ? {
+  adb_alarms = local.enable_database_compartment && length(var.database_admin_email_endpoints) > 0 ? {
     ADB-HIGH-CPU-ALARM-WARNING = {
       compartment_id           = local.database_compartment_id
       display_name             = "${var.service_label}-adb-high-cpu-alarm-warning"
@@ -179,7 +179,7 @@ locals {
     }
   } : {}
 
-  database_alarms = local.enable_database_compartment ? {
+  database_alarms = local.enable_database_compartment && length(var.database_admin_email_endpoints) > 0 ? {
     # OCI Database cluster and database metrics are common to Base DB, ExaCS, and ExaCC.
     DATABASE-CLUSTER-HIGH-CPU-ALARM-WARNING = {
       compartment_id           = local.database_compartment_id
@@ -318,7 +318,7 @@ locals {
     }
   } : {}
 
-  exainfra_alarms = local.enable_exainfra_compartment ? {
+  exainfra_alarms = local.enable_exainfra_compartment && length(var.exainfra_admin_email_endpoints) > 0 ? {
     EXAINFRA-CLUSTER-HIGH-CPU-ALARM-WARNING = {
       compartment_id           = local.exainfra_compartment_id
       display_name             = "${var.service_label}-database-cluster-high-cpu-alarm-warning"
@@ -422,7 +422,7 @@ locals {
       compartment_id           = local.exainfra_compartment_id
       display_name             = "${var.service_label}-database-high-cpu-alarm-warning"
       preconfigured_alarm_type = "DATABASE-HIGH-CPU-ALARM-WARNING"
-      destination_topic_ids    = ["DATABASE-TOPIC"]
+      destination_topic_ids    = ["EXAINFRA-TOPIC"]
       defined_tags             = local.alarms_defined_tags
       freeform_tags            = local.alarms_freeform_tags
       is_enabled               = var.create_alarms_as_enabled
@@ -431,7 +431,7 @@ locals {
       compartment_id           = local.exainfra_compartment_id
       display_name             = "${var.service_label}-database-high-cpu-alarm-critical"
       preconfigured_alarm_type = "DATABASE-HIGH-CPU-ALARM-CRITICAL"
-      destination_topic_ids    = ["DATABASE-TOPIC"]
+      destination_topic_ids    = ["EXAINFRA-TOPIC"]
       defined_tags             = local.alarms_defined_tags
       freeform_tags            = local.alarms_freeform_tags
       is_enabled               = var.create_alarms_as_enabled
@@ -440,7 +440,7 @@ locals {
       compartment_id           = local.exainfra_compartment_id
       display_name             = "${var.service_label}-database-storage-utilization-alarm-warning"
       preconfigured_alarm_type = "DATABASE-HIGH-STORAGE-UTILIZATION-ALARM-WARNING"
-      destination_topic_ids    = ["DATABASE-TOPIC"]
+      destination_topic_ids    = ["EXAINFRA-TOPIC"]
       defined_tags             = local.alarms_defined_tags
       freeform_tags            = local.alarms_freeform_tags
       is_enabled               = var.create_alarms_as_enabled
@@ -449,7 +449,7 @@ locals {
       compartment_id           = local.exainfra_compartment_id
       display_name             = "${var.service_label}-database-storage-utilization-alarm-critical"
       preconfigured_alarm_type = "DATABASE-HIGH-STORAGE-UTILIZATION-ALARM-CRITICAL"
-      destination_topic_ids    = ["DATABASE-TOPIC"]
+      destination_topic_ids    = ["EXAINFRA-TOPIC"]
       defined_tags             = local.alarms_defined_tags
       freeform_tags            = local.alarms_freeform_tags
       is_enabled               = var.create_alarms_as_enabled
@@ -459,7 +459,7 @@ locals {
   #--------------------------------------------------------------------
   #-- Network Alarms
   #--------------------------------------------------------------------  
-  network_alarms = local.enable_network_compartment ? {
+  network_alarms = local.enable_network_compartment && length(var.network_admin_email_endpoints) > 0 ? {
     NETWORK-VPN-STATUS-ALARM-CRITICAL = {
       compartment_id           = local.network_compartment_id
       display_name             = "${var.service_label}-network-vpn-status-alarm-critical"
