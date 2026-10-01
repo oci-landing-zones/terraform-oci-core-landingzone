@@ -704,8 +704,8 @@ locals {
                 description  = "Allows ingress connectivity to TCP port 2484."
                 stateless    = false
                 protocol     = "TCP"
-                src          = local.tt_vcn3_db_subnet_cidr
-                src_type     = "CIDR_BLOCK"
+                src          = "TT-VCN-3-DB-NSG"
+                src_type     = "NETWORK_SECURITY_GROUP"
                 dst_port_min = 2484
                 dst_port_max = 2484
               }
@@ -713,8 +713,8 @@ locals {
                 description  = "Allows ingress connectivity to TCP port 8005."
                 stateless    = false
                 protocol     = "TCP"
-                src          = local.tt_vcn3_db_subnet_cidr
-                src_type     = "CIDR_BLOCK"
+                src          = "TT-VCN-3-DB-NSG"
+                src_type     = "NETWORK_SECURITY_GROUP"
                 dst_port_min = 8005
                 dst_port_max = 8005
               }
