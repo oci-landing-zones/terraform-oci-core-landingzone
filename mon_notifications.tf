@@ -193,8 +193,14 @@ locals {
   #------------------------------------------------------------------------
   #----- Event Rules configuration definition. Input to module.
   #------------------------------------------------------------------------
-  home_region_events = merge(local.iam_events, local.cloudguard_events)
-  regional_events    = merge(local.network_events, local.storage_events, local.database_events, local.exainfra_events, local.budget_events, local.compute_events)
+  home_region_events = {
+    for key, event in merge(local.iam_events, local.cloudguard_events) :
+    key => event if alltrue([for topic_id in event.destination_topic_ids : contains(keys(local.home_region_topics), topic_id)])
+  }
+  regional_events = {
+    for key, event in merge(local.network_events, local.storage_events, local.database_events, local.exainfra_events, local.budget_events, local.compute_events) :
+    key => event if alltrue([for topic_id in event.destination_topic_ids : contains(keys(local.regional_topics), topic_id)])
+  }
 
   home_region_events_configuration = {
     default_compartment_id = null

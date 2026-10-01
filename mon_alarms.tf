@@ -496,6 +496,9 @@ locals {
     default_compartment_id = null
     default_defined_tags   = local.default_alarms_defined_tags
     default_freeform_tags  = local.default_alarms_freeform_tags
-    alarms                 = merge(local.compute_alarms, local.adb_alarms, local.database_alarms, local.exainfra_alarms, local.network_alarms)
+    alarms                 = {
+      for key, alarm in merge(local.compute_alarms, local.adb_alarms, local.database_alarms, local.exainfra_alarms, local.network_alarms) :
+      key => alarm if alltrue([for topic_id in alarm.destination_topic_ids : contains(keys(local.regional_topics), topic_id)])
+    }
   }
 }
