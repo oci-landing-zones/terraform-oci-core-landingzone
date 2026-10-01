@@ -2,81 +2,81 @@ locals {
   tt_vcn1_rcv_subnet = var.enable_tt_vcn1_rcv_infra && local.add_tt_vcn1 ? {
     "TT-VCN-1-RCV-SUBNET" = {
       display_name       = "${local.tt_vcn1_display_name}-rcv-subnet"
-      vcn_id             = module.lz_network.provisioned_networking_resources.vcns["TT-VCN-1"].id
-      subnet_ids         = [module.lz_network.provisioned_networking_resources.subnets["TT-VCN-1-DB-SUBNET"].id]
-      nsg_ids            = [module.lz_network.provisioned_networking_resources.network_security_groups["TT-VCN-1-RCV-NSG"].id]
+      vcn_id             = module.lz_network.provisioned_vcn_ids["TT-VCN-1"].id
+      subnet_ids         = [module.lz_network.provisioned_subnet_ids["TT-VCN-1-DB-SUBNET"].id]
+      nsg_ids            = [module.lz_network.provisioned_network_security_group_ids["TT-VCN-1-RCV-NSG"].id]
       enable_default_nsg = false
     }
   } : {}
   tt_vcn2_rcv_subnet = var.enable_tt_vcn2_rcv_infra && local.add_tt_vcn2 ? {
     "TT-VCN-2-RCV-SUBNET" = {
       display_name       = "${local.tt_vcn2_display_name}-rcv-subnet"
-      vcn_id             = module.lz_network.provisioned_networking_resources.vcns["TT-VCN-2"].id
-      subnet_ids         = [module.lz_network.provisioned_networking_resources.subnets["TT-VCN-2-DB-SUBNET"].id]
-      nsg_ids            = [module.lz_network.provisioned_networking_resources.network_security_groups["TT-VCN-2-RCV-NSG"].id]
+      vcn_id             = module.lz_network.provisioned_vcn_ids["TT-VCN-2"].id
+      subnet_ids         = [module.lz_network.provisioned_subnet_ids["TT-VCN-2-DB-SUBNET"].id]
+      nsg_ids            = [module.lz_network.provisioned_network_security_group_ids["TT-VCN-2-RCV-NSG"].id]
       enable_default_nsg = false
     }
   } : {}
   tt_vcn3_rcv_subnet = var.enable_tt_vcn3_rcv_infra && local.add_tt_vcn3 ? {
     "TT-VCN-3-RCV-SUBNET" = {
       display_name       = "${local.tt_vcn3_display_name}-rcv-subnet"
-      vcn_id             = module.lz_network.provisioned_networking_resources.vcns["TT-VCN-3"].id
-      subnet_ids         = [module.lz_network.provisioned_networking_resources.subnets["TT-VCN-3-DB-SUBNET"].id]
-      nsg_ids            = [module.lz_network.provisioned_networking_resources.network_security_groups["TT-VCN-3-RCV-NSG"].id]
+      vcn_id             = module.lz_network.provisioned_vcn_ids["TT-VCN-3"].id
+      subnet_ids         = [module.lz_network.provisioned_subnet_ids["TT-VCN-3-DB-SUBNET"].id]
+      nsg_ids            = [module.lz_network.provisioned_network_security_group_ids["TT-VCN-3-RCV-NSG"].id]
       enable_default_nsg = false
     }
   } : {}
   oke_vcn1_rcv_subnet = var.enable_oke_vcn1_rcv_infra && local.add_oke_vcn1 && var.add_oke_vcn1_db_subnet ? {
     "OKE-VCN-1-RCV-SUBNET" = {
       display_name       = "${local.oke_vcn1_display_name}-rcv-subnet"
-      vcn_id             = module.lz_network.provisioned_networking_resources.vcns["OKE-VCN-1"].id
-      subnet_ids         = [module.lz_network.provisioned_networking_resources.subnets["OKE-VCN-1-DB-SUBNET"].id]
-      nsg_ids            = [module.lz_network.provisioned_networking_resources.network_security_groups["OKE-VCN-1-RCV-NSG"].id]
+      vcn_id             = module.lz_network.provisioned_vcn_ids["OKE-VCN-1"].id
+      subnet_ids         = [module.lz_network.provisioned_subnet_ids["OKE-VCN-1-DB-SUBNET"].id]
+      nsg_ids            = [module.lz_network.provisioned_network_security_group_ids["OKE-VCN-1-RCV-NSG"].id]
       enable_default_nsg = false
     }
   } : {}
   oke_vcn2_rcv_subnet = var.enable_oke_vcn2_rcv_infra && local.add_oke_vcn2 && var.add_oke_vcn2_db_subnet ? {
     "OKE-VCN-2-RCV-SUBNET" = {
       display_name       = "${local.oke_vcn2_display_name}-rcv-subnet"
-      vcn_id             = module.lz_network.provisioned_networking_resources.vcns["OKE-VCN-2"].id
-      subnet_ids         = [module.lz_network.provisioned_networking_resources.subnets["OKE-VCN-2-DB-SUBNET"].id]
-      nsg_ids            = [module.lz_network.provisioned_networking_resources.network_security_groups["OKE-VCN-2-RCV-NSG"].id]
+      vcn_id             = module.lz_network.provisioned_vcn_ids["OKE-VCN-2"].id
+      subnet_ids         = [module.lz_network.provisioned_subnet_ids["OKE-VCN-2-DB-SUBNET"].id]
+      nsg_ids            = [module.lz_network.provisioned_network_security_group_ids["OKE-VCN-2-RCV-NSG"].id]
       enable_default_nsg = false
     }
   } : {}
   oke_vcn3_rcv_subnet = var.enable_oke_vcn3_rcv_infra && local.add_oke_vcn3 && var.add_oke_vcn3_db_subnet ? {
     "OKE-VCN-3-RCV-SUBNET" = {
       display_name       = "${local.oke_vcn3_display_name}-rcv-subnet"
-      vcn_id             = module.lz_network.provisioned_networking_resources.vcns["OKE-VCN-3"].id
-      subnet_ids         = [module.lz_network.provisioned_networking_resources.subnets["OKE-VCN-3-DB-SUBNET"].id]
-      nsg_ids            = [module.lz_network.provisioned_networking_resources.network_security_groups["OKE-VCN-3-RCV-NSG"].id]
+      vcn_id             = module.lz_network.provisioned_vcn_ids["OKE-VCN-3"].id
+      subnet_ids         = [module.lz_network.provisioned_subnet_ids["OKE-VCN-3-DB-SUBNET"].id]
+      nsg_ids            = [module.lz_network.provisioned_network_security_group_ids["OKE-VCN-3-RCV-NSG"].id]
       enable_default_nsg = false
     }
   } : {}
   exa_vcn1_rcv_subnet = var.enable_exa_vcn1_rcv_infra && local.add_exa_vcn1 ? {
     "EXA-VCN-1-SUBNET-RCV" = {
       display_name       = "${local.exa_vcn1_display_name}-rcv-subnet"
-      vcn_id             = module.lz_network.provisioned_networking_resources.vcns["EXA-VCN-1"].id
-      subnet_ids         = [var.add_exa_vcn1_backup_subnet ? module.lz_network.provisioned_networking_resources.subnets["EXA-VCN-1-BACKUP-SUBNET"].id : module.lz_network.provisioned_networking_resources.subnets["EXA-VCN-1-CLIENT-SUBNET"].id]
-      nsg_ids            = [module.lz_network.provisioned_networking_resources.network_security_groups["EXA-VCN-1-RCV-NSG"].id]
+      vcn_id             = module.lz_network.provisioned_vcn_ids["EXA-VCN-1"].id
+      subnet_ids         = [var.add_exa_vcn1_backup_subnet ? module.lz_network.provisioned_subnet_ids["EXA-VCN-1-BACKUP-SUBNET"].id : module.lz_network.provisioned_subnet_ids["EXA-VCN-1-CLIENT-SUBNET"].id]
+      nsg_ids            = [module.lz_network.provisioned_network_security_group_ids["EXA-VCN-1-RCV-NSG"].id]
       enable_default_nsg = false
     }
   } : {}
   exa_vcn2_rcv_subnet = var.enable_exa_vcn2_rcv_infra && local.add_exa_vcn2 ? {
     "EXA-VCN-2-SUBNET-RCV" = {
       display_name       = "${local.exa_vcn2_display_name}-rcv-subnet"
-      vcn_id             = module.lz_network.provisioned_networking_resources.vcns["EXA-VCN-2"].id
-      subnet_ids         = [var.add_exa_vcn2_backup_subnet ? module.lz_network.provisioned_networking_resources.subnets["EXA-VCN-2-BACKUP-SUBNET"].id : module.lz_network.provisioned_networking_resources.subnets["EXA-VCN-2-CLIENT-SUBNET"].id]
-      nsg_ids            = [module.lz_network.provisioned_networking_resources.network_security_groups["EXA-VCN-2-RCV-NSG"].id]
+      vcn_id             = module.lz_network.provisioned_vcn_ids["EXA-VCN-2"].id
+      subnet_ids         = [var.add_exa_vcn2_backup_subnet ? module.lz_network.provisioned_subnet_ids["EXA-VCN-2-BACKUP-SUBNET"].id : module.lz_network.provisioned_subnet_ids["EXA-VCN-2-CLIENT-SUBNET"].id]
+      nsg_ids            = [module.lz_network.provisioned_network_security_group_ids["EXA-VCN-2-RCV-NSG"].id]
       enable_default_nsg = false
     }
   } : {}
   exa_vcn3_rcv_subnet = var.enable_exa_vcn3_rcv_infra && local.add_exa_vcn3 ? {
     "EXA-VCN-3-SUBNET-RCV" = {
       display_name       = "${local.exa_vcn3_display_name}-rcv-subnet"
-      vcn_id             = module.lz_network.provisioned_networking_resources.vcns["EXA-VCN-3"].id
-      subnet_ids         = [var.add_exa_vcn3_backup_subnet ? module.lz_network.provisioned_networking_resources.subnets["EXA-VCN-3-BACKUP-SUBNET"].id : module.lz_network.provisioned_networking_resources.subnets["EXA-VCN-3-CLIENT-SUBNET"].id]
-      nsg_ids            = [module.lz_network.provisioned_networking_resources.network_security_groups["EXA-VCN-3-RCV-NSG"].id]
+      vcn_id             = module.lz_network.provisioned_vcn_ids["EXA-VCN-3"].id
+      subnet_ids         = [var.add_exa_vcn3_backup_subnet ? module.lz_network.provisioned_subnet_ids["EXA-VCN-3-BACKUP-SUBNET"].id : module.lz_network.provisioned_subnet_ids["EXA-VCN-3-CLIENT-SUBNET"].id]
+      nsg_ids            = [module.lz_network.provisioned_network_security_group_ids["EXA-VCN-3-RCV-NSG"].id]
       enable_default_nsg = false
     }
   } : {}
