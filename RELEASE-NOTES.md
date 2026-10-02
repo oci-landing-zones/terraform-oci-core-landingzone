@@ -9,7 +9,7 @@
 1. Support for AI services infrastructure resources, including IAM policies, dynamic groups, subnets for private connectivity and network security rules. For details, see [Deploying Infrastructure for managed AI services](./DEPLOYMENT-GUIDE.md#managed-ai-services).
 2. Support for Autonomous Recovery Service infrastructure resources, including IAM policies, recovery service subnet, network security rules and protection policy. For details, see [Autonomous Recovery Service](./DEPLOYMENT-GUIDE.md#rcv).
 3. Support for Exadata Cloud@Customer IAM policies, with enhanced events and alarms. For details, see [Handling Database Infrastructure](./DEPLOYMENT-GUIDE.md#database-infrastructure).
-4. Alarm definitions expanded to all categories. See [mon_alarms.tf](./mon_alarms.tf).
+4. Alarm definitions expanded through all categories. See [mon_alarms.tf](./mon_alarms.tf).
 5. *hub_deployment* variable has been removed. Use *hub_deployment_option* variable instead. It can take either self-explanatory string values or numeric values (as strings).
 
 
