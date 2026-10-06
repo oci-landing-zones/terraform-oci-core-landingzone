@@ -1,4 +1,4 @@
-# October XX, 2026 Release Notes - 1.6.1
+# October 06, 2026 Release Notes - 1.6.1
 
 ## Bug Fixes
 
