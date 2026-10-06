@@ -8,7 +8,7 @@ locals {
   all_flow_logs_defined_tags  = {}
   all_flow_logs_freeform_tags = {}
 
-  all_lz_subnets = module.lz_network.provisioned_networking_resources.subnets
+  all_lz_subnets = module.lz_network.provisioned_subnet_ids
 
   flow_logs = { for k, v in local.all_lz_subnets : "${k}-FLOW-LOG" =>
     {
@@ -52,8 +52,8 @@ locals {
 }
 
 module "lz_flow_logs" {
-  depends_on            = [module.lz_compartments]
-  source                = "github.com/oci-landing-zones/terraform-oci-modules-observability//logging?ref=v0.2.5"
+  #depends_on            = [module.lz_compartments]
+  source                = "github.com/oci-landing-zones/terraform-oci-modules-observability//logging?ref=v0.2.7"
   logging_configuration = local.logging_configuration
   tenancy_ocid          = var.tenancy_ocid
 }

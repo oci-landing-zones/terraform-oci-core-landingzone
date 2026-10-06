@@ -23,6 +23,7 @@ variableGroups:
     variables:
     - "extend_landing_zone_to_new_region"
     - "customize_iam"
+    - "display_ai_infra_settings"
     - "define_net"
     - "enable_zpr"
     - "zpr_namespace_name"
@@ -43,7 +44,7 @@ variableGroups:
       - "deploy_exainfra_cmp"
       - "custom_exainfra_compartment_name"
     visible: customize_iam
-    
+
   - title: "Identity Domains"
     variables:
       - "identity_domain_option"
@@ -94,6 +95,10 @@ variableGroups:
       - "existing_id_domain_compute_agent_dyn_group_name"
       - "existing_id_domain_database_kms_dyn_group_name" 
       - "existing_id_domain_net_fw_app_dyn_group_name"
+      - "existing_id_domain_ai_data_science_runtime_dyn_group_name"
+      - "existing_id_domain_ai_genai_vector_store_connectors_dyn_group_name"
+      - "existing_id_domain_ai_genai_hosted_applications_dyn_group_name"
+      - "existing_id_domain_ai_genai_semantic_stores_dyn_group_name"
     visible:
       and:
         - eq:
@@ -141,6 +146,10 @@ variableGroups:
       - "existing_compute_agent_dyn_group_name"
       - "existing_database_kms_dyn_group_name" 
       - "existing_net_fw_app_dyn_group_name"
+      - "existing_ai_data_science_runtime_dyn_group_name"
+      - "existing_ai_genai_vector_store_connectors_dyn_group_name"
+      - "existing_ai_genai_hosted_applications_dyn_group_name"
+      - "existing_ai_genai_semantic_stores_dyn_group_name"
     visible:
       and:
         - eq:
@@ -165,6 +174,16 @@ variableGroups:
         - eq:
           - ${customize_iam}
           - true
+
+  - title: "AI Services Infrastructure"
+    variables:
+      - "enable_generative_ai_infra"
+      - "generative_ai_data_access_policy_mode"
+      - "enable_aidp_infra"
+      - "enable_data_science_infra"
+      - "enable_ai_compute_infra"
+      - "enable_prebuilt_ai_services_infra"
+    visible: display_ai_infra_settings
   
   - title: "Network Topology"
     variables:
@@ -261,7 +280,7 @@ variableGroups:
         - add_hub_vcn_jumphost_subnet
         - deploy_bastion_jump_host
 
-  - title: "Networking - Three Tier VCNs"
+  - title: "Networking - Three Tier VCN 1"
     variables:
       - "add_tt_vcn1"
       - "tt_vcn1_onprem_route_enable"
@@ -281,11 +300,20 @@ variableGroups:
       - "tt_vcn1_db_subnet_name"
       - "tt_vcn1_db_subnet_cidr"
       - "tt_vcn1_db_ingress_destination_ports"
+      - "enable_tt_vcn1_rcv_infra"
+      - "tt_vcn1_rcv_backup_retention_period_in_days"
       - "deploy_tt_vcn1_bastion_subnet"
       - "tt_vcn1_bastion_subnet_name"
       - "tt_vcn1_bastion_subnet_cidr"
       - "tt_vcn1_bastion_is_access_via_public_endpoint"
       - "tt_vcn1_bastion_subnet_allowed_cidrs"
+      - "add_tt_vcn1_private_endpoint_subnet"
+      - "tt_vcn1_private_endpoint_subnet_name"
+      - "tt_vcn1_private_endpoint_subnet_cidr"
+    visible: define_net
+
+  - title: "Networking - Three Tier VCN 2"
+    variables:
       - "add_tt_vcn2"
       - "tt_vcn2_onprem_route_enable"
       - "tt_vcn2_name"
@@ -304,11 +332,20 @@ variableGroups:
       - "tt_vcn2_db_subnet_name"
       - "tt_vcn2_db_subnet_cidr"
       - "tt_vcn2_db_ingress_destination_ports"
+      - "enable_tt_vcn2_rcv_infra"
+      - "tt_vcn2_rcv_backup_retention_period_in_days"
       - "deploy_tt_vcn2_bastion_subnet"
       - "tt_vcn2_bastion_subnet_name"
       - "tt_vcn2_bastion_subnet_cidr"
       - "tt_vcn2_bastion_is_access_via_public_endpoint"
       - "tt_vcn2_bastion_subnet_allowed_cidrs"
+      - "add_tt_vcn2_private_endpoint_subnet"
+      - "tt_vcn2_private_endpoint_subnet_name"
+      - "tt_vcn2_private_endpoint_subnet_cidr"
+    visible: define_net
+
+  - title: "Networking - Three Tier VCN 3"
+    variables:
       - "add_tt_vcn3"
       - "tt_vcn3_onprem_route_enable"
       - "tt_vcn3_name"
@@ -327,14 +364,19 @@ variableGroups:
       - "tt_vcn3_db_subnet_name"
       - "tt_vcn3_db_subnet_cidr"
       - "tt_vcn3_db_ingress_destination_ports"
+      - "enable_tt_vcn3_rcv_infra"
+      - "tt_vcn3_rcv_backup_retention_period_in_days"
       - "deploy_tt_vcn3_bastion_subnet"
       - "tt_vcn3_bastion_subnet_name"
       - "tt_vcn3_bastion_subnet_cidr"
       - "tt_vcn3_bastion_is_access_via_public_endpoint"
       - "tt_vcn3_bastion_subnet_allowed_cidrs"
+      - "add_tt_vcn3_private_endpoint_subnet"
+      - "tt_vcn3_private_endpoint_subnet_name"
+      - "tt_vcn3_private_endpoint_subnet_cidr"
     visible: define_net
 
-  - title: "Networking - Exadata Cloud Service VCNs"
+  - title: "Networking - Exadata Cloud Service VCN 1"
     variables:
       - "add_exa_vcn1"
       - "exa_vcn1_onprem_route_enable"
@@ -342,6 +384,8 @@ variableGroups:
       - "exa_vcn1_cidrs"
       - "exa_vcn1_attach_to_drg"
       - "exa_vcn1_routable_vcns"
+      - "enable_exa_vcn1_rcv_infra"
+      - "exa_vcn1_rcv_backup_retention_period_in_days"
       - "customize_exa_vcn1_subnets"
       - "exa_vcn1_client_subnet_name"
       - "exa_vcn1_client_subnet_cidr"
@@ -355,12 +399,21 @@ variableGroups:
       - "exa_vcn1_integration_subnet_cidr"
       - "exa_vcn1_external_allowed_cidrs_into_integration_tier"
       - "exa_vcn1_integration_ingress_destination_ports"
+      - "add_exa_vcn1_private_endpoint_subnet"
+      - "exa_vcn1_private_endpoint_subnet_name"
+      - "exa_vcn1_private_endpoint_subnet_cidr"
+    visible: define_net
+
+  - title: "Networking - Exadata Cloud Service VCN 2"
+    variables:
       - "add_exa_vcn2"
       - "exa_vcn2_onprem_route_enable"
       - "exa_vcn2_name"
       - "exa_vcn2_cidrs"
       - "exa_vcn2_attach_to_drg"
       - "exa_vcn2_routable_vcns"
+      - "enable_exa_vcn2_rcv_infra"
+      - "exa_vcn2_rcv_backup_retention_period_in_days"
       - "customize_exa_vcn2_subnets"
       - "exa_vcn2_client_subnet_name"
       - "exa_vcn2_client_subnet_cidr"
@@ -374,12 +427,21 @@ variableGroups:
       - "exa_vcn2_integration_subnet_cidr"
       - "exa_vcn2_external_allowed_cidrs_into_integration_tier"
       - "exa_vcn2_integration_ingress_destination_ports"
+      - "add_exa_vcn2_private_endpoint_subnet"
+      - "exa_vcn2_private_endpoint_subnet_name"
+      - "exa_vcn2_private_endpoint_subnet_cidr"
+    visible: define_net
+
+  - title: "Networking - Exadata Cloud Service VCN 3"
+    variables:
       - "add_exa_vcn3"
       - "exa_vcn3_onprem_route_enable"
       - "exa_vcn3_cidrs"
       - "exa_vcn3_name"
       - "exa_vcn3_attach_to_drg"
       - "exa_vcn3_routable_vcns"
+      - "enable_exa_vcn3_rcv_infra"
+      - "exa_vcn3_rcv_backup_retention_period_in_days"
       - "customize_exa_vcn3_subnets"
       - "exa_vcn3_client_subnet_name"
       - "exa_vcn3_client_subnet_cidr"
@@ -393,9 +455,12 @@ variableGroups:
       - "exa_vcn3_integration_subnet_cidr"
       - "exa_vcn3_external_allowed_cidrs_into_integration_tier"
       - "exa_vcn3_integration_ingress_destination_ports"
+      - "add_exa_vcn3_private_endpoint_subnet"
+      - "exa_vcn3_private_endpoint_subnet_name"
+      - "exa_vcn3_private_endpoint_subnet_cidr"
     visible: define_net
 
-  - title: "Networking - OKE VCNs"
+  - title: "Networking - OKE VCN 1"
     variables:
       - "add_oke_vcn1"
       - "oke_vcn1_onprem_route_enable"
@@ -423,6 +488,15 @@ variableGroups:
       - "oke_vcn1_db_subnet_name"
       - "oke_vcn1_db_subnet_cidr"
       - "oke_vcn1_db_ingress_destination_ports"
+      - "enable_oke_vcn1_rcv_infra"
+      - "oke_vcn1_rcv_backup_retention_period_in_days"
+      - "add_oke_vcn1_private_endpoint_subnet"
+      - "oke_vcn1_private_endpoint_subnet_name"
+      - "oke_vcn1_private_endpoint_subnet_cidr"
+    visible: define_net
+
+  - title: "Networking - OKE VCN 2"
+    variables:
       - "add_oke_vcn2"
       - "oke_vcn2_onprem_route_enable"
       - "oke_vcn2_cni_type"
@@ -449,6 +523,15 @@ variableGroups:
       - "oke_vcn2_db_subnet_name"
       - "oke_vcn2_db_subnet_cidr"
       - "oke_vcn2_db_ingress_destination_ports"
+      - "enable_oke_vcn2_rcv_infra"
+      - "oke_vcn2_rcv_backup_retention_period_in_days"
+      - "add_oke_vcn2_private_endpoint_subnet"
+      - "oke_vcn2_private_endpoint_subnet_name"
+      - "oke_vcn2_private_endpoint_subnet_cidr"
+    visible: define_net
+
+  - title: "Networking - OKE VCN 3"
+    variables:
       - "add_oke_vcn3"
       - "oke_vcn3_onprem_route_enable"
       - "oke_vcn3_cni_type"
@@ -475,6 +558,11 @@ variableGroups:
       - "oke_vcn3_db_subnet_name"
       - "oke_vcn3_db_subnet_cidr"
       - "oke_vcn3_db_ingress_destination_ports"
+      - "enable_oke_vcn3_rcv_infra"
+      - "oke_vcn3_rcv_backup_retention_period_in_days"
+      - "add_oke_vcn3_private_endpoint_subnet"
+      - "oke_vcn3_private_endpoint_subnet_name"
+      - "oke_vcn3_private_endpoint_subnet_cidr"
     visible: define_net
 
   - title: "Networking - Additional NSGs"
@@ -582,6 +670,7 @@ variableGroups:
       - "storage_admin_email_endpoints"
       - "database_admin_email_endpoints"
       - "exainfra_admin_email_endpoints"
+      - "ai_admin_email_endpoints"
       - "budget_admin_email_endpoints"
       - "create_alarms_as_enabled"
       - "create_events_as_enabled"
@@ -680,7 +769,6 @@ variableGroups:
       - "lz_provenant_prefix"
       - "lz_provenant_version"
       - "lz_provenant_label"
-      - "hub_deployment"
       - "firewall_threat_log_name"
       - "firewall_threat_log_type"
       - "firewall_threat_log_category"
@@ -735,6 +823,12 @@ variables:
     type: boolean
     title: "Customize Default IAM Settings?"
     description: "Check if you need to customize the settings for compartments, identity domains, groups, and policies."
+    visible: true
+
+  display_ai_infra_settings:
+    type: boolean
+    title: "Enable Infrastructure for OCI Managed AI Services?"
+    description: "Check to choose which OCI AI services to provision infrastructure for."
     visible: true
 
   define_net:
@@ -857,6 +951,76 @@ variables:
     required: false
     visible: deploy_app_cmp
 
+  enable_generative_ai_infra:
+    type: boolean
+    title: "Enable Generative AI Infrastructure?"
+    description: "Check to configure Generative AI IAM grants in the Application compartment (for CORELZ_MANAGED policy mode, in Database, Security, and Exainfra compartments as well), together with runtime dynamic groups and NSGs."
+    default: false
+    required: false
+    visible: 
+      and:
+        - deploy_app_cmp
+        - display_ai_infra_settings
+
+  enable_data_science_infra:
+    type: boolean
+    title: "Enable Data Science Infrastructure?"
+    description: "Check to configure Data Science and Data Flow IAM grants in the Application compartment, Data Science network grants in the Network compartment, and a runtime dynamic group."
+    default: false
+    required: false
+    visible: 
+      and:
+        - deploy_app_cmp
+        - display_ai_infra_settings
+
+  enable_prebuilt_ai_services_infra:
+    type: boolean
+    title: "Enable Prebuilt AI Services Infrastructure?"
+    description: "Check to configure IAM grants for OCI Language, Vision, Speech, and Document Understanding in the Application compartment."
+    default: false
+    required: false
+    visible: 
+      and:
+        - deploy_app_cmp
+        - display_ai_infra_settings
+
+  enable_ai_compute_infra:
+    type: boolean
+    title: "Enable AI Compute Infrastructure?"
+    description: "Check to configure IAM grants for OCI Compute Management, Compute Clusters, and Compute Capacity Reservations in the Application compartment."
+    default: false
+    required: false
+    visible: 
+      and:
+        - deploy_app_cmp
+        - display_ai_infra_settings
+
+  generative_ai_data_access_policy_mode:
+    type: enum
+    title: "Generative AI Data Access Policy Mode"
+    description: "Choose CORELZ_MANAGED for Core Landing Zone to authorize the Responses API and runtime data access at compartment scope. Choose WORKLOAD_MANAGED for workload stacks to provide narrower policies."
+    enum:
+      - "CORELZ_MANAGED"
+      - "WORKLOAD_MANAGED"
+    default: "CORELZ_MANAGED"
+    required: false
+    visible:
+      and:
+        - deploy_app_cmp
+        - display_ai_infra_settings
+        - enable_generative_ai_infra
+
+  enable_aidp_infra:
+    type: boolean
+    title: "Enable Oracle AI Data Platform Infrastructure?"
+    description: "Check to configure tenancy-wide AIDP IAM grants, compartment grants in the Application, Network, and enabled Database and Exainfra compartments, and NSGs."
+    default: false
+    required: false
+    visible:
+      and:
+        - deploy_app_cmp
+        - display_ai_infra_settings
+
   deploy_database_cmp:
     type: boolean
     title: "Deploy Database Compartment?"
@@ -875,8 +1039,8 @@ variables:
 
   deploy_exainfra_cmp:
     type: boolean
-    title: "Deploy ExaCS Infra Compartment?"
-    description: "Whether a separate compartment for Exadata Cloud Service Infrastructure is deployed."
+    title: "Deploy Exadata Infrastructure Compartment?"
+    description: "Whether a separate infrastructure compartment for Exadata Cloud Service and Exadata Cloud@Customer is deployed."
     visible: 
       eq:
         - ${extend_landing_zone_to_new_region}
@@ -884,8 +1048,8 @@ variables:
 
   custom_exainfra_compartment_name:
     type: string
-    title: "ExaCS Infra Compartment Name"
-    description: "The custom name of the ExaCS Infra compartment. If none is provided, the default name for the ExaCS Infra compartment will be used."
+    title: "Exadata Infrastructure Compartment Name"
+    description: "The custom name of the Exadata infrastructure compartment. If none is provided, the default name will be used."
     required: false
     visible: 
       or:
@@ -1201,6 +1365,54 @@ variables:
         - not:
             - deploy_custom_domain_groups
 
+  existing_id_domain_ai_data_science_runtime_dyn_group_name:
+    type: string
+    title: "Existing Data Science Runtime Dynamic Group Name"
+    description: "Existing dynamic group name in the existing identity domain for Data Science runtimes."
+    visible:
+      and:
+        - eq:
+            - ${identity_domain_option}
+            - "Use Custom Identity Domain"
+        - not:
+            - deploy_custom_domain_groups
+
+  existing_id_domain_ai_genai_vector_store_connectors_dyn_group_name:
+    type: string
+    title: "Existing Generative AI Vector Store Connectors Dynamic Group Name"
+    description: "Existing dynamic group name in the existing identity domain for Generative AI vector store connectors."
+    visible:
+      and:
+        - eq:
+            - ${identity_domain_option}
+            - "Use Custom Identity Domain"
+        - not:
+            - deploy_custom_domain_groups
+
+  existing_id_domain_ai_genai_hosted_applications_dyn_group_name:
+    type: string
+    title: "Existing Generative AI Hosted Applications Dynamic Group Name"
+    description: "Existing dynamic group name in the existing identity domain for Generative AI hosted applications and deployments."
+    visible:
+      and:
+        - eq:
+            - ${identity_domain_option}
+            - "Use Custom Identity Domain"
+        - not:
+            - deploy_custom_domain_groups
+
+  existing_id_domain_ai_genai_semantic_stores_dyn_group_name:
+    type: string
+    title: "Existing Generative AI Semantic Stores Dynamic Group Name"
+    description: "Existing dynamic group name in the existing identity domain for Generative AI semantic stores."
+    visible:
+      and:
+        - eq:
+            - ${identity_domain_option}
+            - "Use Custom Identity Domain"
+        - not:
+            - deploy_custom_domain_groups
+
   groups_options:
     type: enum
     title: "Deploy New Groups?"
@@ -1405,6 +1617,50 @@ variables:
       eq:
         - ${dyn_groups_options}
         - "No, use existing"      
+
+  existing_ai_data_science_runtime_dyn_group_name:
+    type: oci:identity:dynamicgroups:id
+    dependsOn:
+      compartmentId: ${tenancy_ocid}
+    title: "Existing Data Science Runtime Dynamic Group Name"
+    description: "Existing Data Science runtime dynamic group."
+    visible:
+      eq:
+        - ${dyn_groups_options}
+        - "No, use existing"
+
+  existing_ai_genai_vector_store_connectors_dyn_group_name:
+    type: oci:identity:dynamicgroups:id
+    dependsOn:
+      compartmentId: ${tenancy_ocid}
+    title: "Existing Generative AI Vector Store Connectors Dynamic Group Name"
+    description: "Existing Generative AI vector store connectors dynamic group."
+    visible:
+      eq:
+        - ${dyn_groups_options}
+        - "No, use existing"
+
+  existing_ai_genai_hosted_applications_dyn_group_name:
+    type: oci:identity:dynamicgroups:id
+    dependsOn:
+      compartmentId: ${tenancy_ocid}
+    title: "Existing Generative AI Hosted Applications Dynamic Group Name"
+    description: "Existing Generative AI hosted applications and deployments dynamic group."
+    visible:
+      eq:
+        - ${dyn_groups_options}
+        - "No, use existing"
+
+  existing_ai_genai_semantic_stores_dyn_group_name:
+    type: oci:identity:dynamicgroups:id
+    dependsOn:
+      compartmentId: ${tenancy_ocid}
+    title: "Existing Generative AI Semantic Stores Dynamic Group Name"
+    description: "Existing Generative AI semantic stores dynamic group."
+    visible:
+      eq:
+        - ${dyn_groups_options}
+        - "No, use existing"
 
   policies_in_root_compartment:
     type: enum
@@ -1653,10 +1909,33 @@ variables:
         - customize_tt_vcn1_subnets
         - add_tt_vcn1
 
+  enable_tt_vcn1_rcv_infra:
+    type: boolean
+    title: "Enable Autonomous Recovery Service for Oracle databases in this VCN ?"
+    description: "Check to provision the infrastructure required by the Autonomous Recovery Service for Oracle databases in this VCN. The database subnet is registered as the Recovery subnet."
+    required: false
+    visible:
+      and:
+        - define_net
+        - add_tt_vcn1
+        - customize_tt_vcn1_subnets
+
+  tt_vcn1_rcv_backup_retention_period_in_days:
+    type: integer
+    title: "Autonomous Recovery Service Backup Retention Period (in days)"
+    description: "The number of days to retain backups in the Autonomous Recovery Service (RCV) for Oracle databases in this VCN. Use 0 to disable the protection policy; otherwise, the minimum is 14 days."
+    required: false
+    visible:
+      and:
+        - define_net
+        - add_tt_vcn1
+        - customize_tt_vcn1_subnets
+        - enable_tt_vcn1_rcv_infra      
+
   deploy_tt_vcn1_bastion_subnet:
     type: boolean
     title: "Deploy Bastion Subnet?"
-    description: "Check to to deploy a subnet where you can further deploy OCI Bastion service or a jump host."
+    description: "Check to deploy a subnet where you can further deploy OCI Bastion service or a jump host."
     visible: 
       and:
         - define_net
@@ -1704,7 +1983,7 @@ variables:
       type: string
     uniqueItems: true
     title: "List of CIDR blocks allowed to SSH into the public Bastion subnet where the jump host is going to be deployed"
-    description: "These CIDRs are allowed to SSH into the the jump host that is eventually deployed in the public Bastion subnet. Leave it empty for no access."
+    description: "These CIDRs are allowed to SSH into the jump host that is eventually deployed in the public Bastion subnet. Leave it empty for no access."
     required: false
     visible: 
       and:
@@ -1713,6 +1992,41 @@ variables:
         - add_tt_vcn1
         - deploy_tt_vcn1_bastion_subnet
         - tt_vcn1_bastion_is_access_via_public_endpoint       
+  add_tt_vcn1_private_endpoint_subnet:
+    type: boolean
+    title: "Deploy Private Endpoint Subnet?"
+    description: "Check to create a subnet for service private endpoints, to provide in-VCN secure and private connectivity to OCI-managed services."
+    default: false
+    required: false
+    visible:
+      and:
+        - define_net
+        - add_tt_vcn1
+        - customize_tt_vcn1_subnets
+
+  tt_vcn1_private_endpoint_subnet_name:
+    type: string
+    title: "Private Endpoint Subnet Name"
+    description: "Enter the private endpoint subnet name."
+    required: false
+    visible:
+      and:
+        - define_net
+        - add_tt_vcn1
+        - customize_tt_vcn1_subnets
+        - add_tt_vcn1_private_endpoint_subnet
+
+  tt_vcn1_private_endpoint_subnet_cidr:
+    type: string
+    title: "Private Endpoint Subnet CIDR Block"
+    description: "Enter the private endpoint subnet CIDR block. When empty, Core Landing Zone automatically derives a /28 from the parent VCN CIDR."
+    required: false
+    visible:
+      and:
+        - define_net
+        - add_tt_vcn1
+        - customize_tt_vcn1_subnets
+        - add_tt_vcn1_private_endpoint_subnet
 
   # ------------------------------------------------------
   # ----- Networking - Three-tier VCN 2
@@ -1805,7 +2119,6 @@ variables:
           - eq:
             - ${hub_deployment_option}
             - "VCN or on-premises connectivity routing via DRG (existing DRG)"
-
 
   customize_tt_vcn2_subnets:
     type: boolean
@@ -1948,10 +2261,33 @@ variables:
         - customize_tt_vcn2_subnets
         - add_tt_vcn2
 
+  enable_tt_vcn2_rcv_infra:
+    type: boolean
+    title: "Enable Autonomous Recovery Service for Oracle databases in this VCN ?"
+    description: "Check to provision the infrastructure required by the Autonomous Recovery Service for Oracle databases in this VCN. The database subnet is registered as the Recovery subnet."
+    required: false
+    visible:
+      and:
+        - define_net
+        - add_tt_vcn2
+        - customize_tt_vcn2_subnets
+
+  tt_vcn2_rcv_backup_retention_period_in_days:
+    type: integer
+    title: "Autonomous Recovery Service Backup Retention Period (in days)"
+    description: "The number of days to retain backups in the Autonomous Recovery Service (RCV) for Oracle databases in this VCN. Use 0 to disable the protection policy; otherwise, the minimum is 14 days."
+    required: false
+    visible:
+      and:
+        - define_net
+        - add_tt_vcn2
+        - customize_tt_vcn2_subnets
+        - enable_tt_vcn2_rcv_infra
+
   deploy_tt_vcn2_bastion_subnet:
     type: boolean
     title: "Deploy Bastion Subnet?"
-    description: "Check to to deploy a subnet where you can further deploy OCI Bastion service or a jump host."
+    description: "Check to deploy a subnet where you can further deploy OCI Bastion service or a jump host."
     visible: 
       and:
         - define_net
@@ -1999,7 +2335,7 @@ variables:
       type: string
     uniqueItems: true
     title: "List of CIDR blocks allowed to SSH into the public Bastion subnet where the jump host is going to be deployed"
-    description: "These CIDRs are allowed to SSH into the the jump host that is eventually deployed in the public Bastion subnet. Leave it empty for no access."
+    description: "These CIDRs are allowed to SSH into the jump host that is eventually deployed in the public Bastion subnet. Leave it empty for no access."
     required: false
     visible: 
       and:
@@ -2008,6 +2344,42 @@ variables:
         - add_tt_vcn2
         - tt_vcn2_bastion_is_access_via_public_endpoint
         - deploy_tt_vcn2_bastion_subnet       
+
+  add_tt_vcn2_private_endpoint_subnet:
+    type: boolean
+    title: "Deploy Private Endpoint Subnet?"
+    description: "Check to create a subnet for service private endpoints, to provide in-VCN secure and private connectivity to OCI-managed services."
+    default: false
+    required: false
+    visible:
+      and:
+        - define_net
+        - add_tt_vcn2
+        - customize_tt_vcn2_subnets
+
+  tt_vcn2_private_endpoint_subnet_name:
+    type: string
+    title: "Private Endpoint Subnet Name"
+    description: "Enter the private endpoint subnet name."
+    required: false
+    visible:
+      and:
+        - define_net
+        - add_tt_vcn2
+        - customize_tt_vcn2_subnets
+        - add_tt_vcn2_private_endpoint_subnet
+
+  tt_vcn2_private_endpoint_subnet_cidr:
+    type: string
+    title: "Private Endpoint Subnet CIDR Block"
+    description: "Enter the private endpoint subnet CIDR block. When empty, Core Landing Zone automatically derives a /28 from the parent VCN CIDR."
+    required: false
+    visible:
+      and:
+        - define_net
+        - add_tt_vcn2
+        - customize_tt_vcn2_subnets
+        - add_tt_vcn2_private_endpoint_subnet
 
   # ------------------------------------------------------
   # ----- Networking - Three-tier VCN 3
@@ -2242,10 +2614,33 @@ variables:
         - customize_tt_vcn3_subnets
         - add_tt_vcn3
 
+  enable_tt_vcn3_rcv_infra:
+    type: boolean
+    title: "Enable Autonomous Recovery Service for Oracle databases in this VCN ?"
+    description: "Check to provision the infrastructure required by the Autonomous Recovery Service for Oracle databases in this VCN. The database subnet is registered as the Recovery subnet."
+    required: false
+    visible:
+      and:
+        - define_net
+        - add_tt_vcn3
+        - customize_tt_vcn3_subnets
+
+  tt_vcn3_rcv_backup_retention_period_in_days:
+    type: integer
+    title: "Autonomous Recovery Service Backup Retention Period (in days)"
+    description: "The number of days to retain backups in the Autonomous Recovery Service (RCV) for Oracle databases in this VCN. Use 0 to disable the protection policy; otherwise, the minimum is 14 days."
+    required: false
+    visible:
+      and:
+        - define_net
+        - add_tt_vcn3
+        - customize_tt_vcn3_subnets
+        - enable_tt_vcn3_rcv_infra
+
   deploy_tt_vcn3_bastion_subnet:
     type: boolean
     title: "Deploy Bastion Subnet?"
-    description: "Check to to deploy a subnet where you can further deploy OCI Bastion service or a jump host."
+    description: "Check to deploy a subnet where you can further deploy OCI Bastion service or a jump host."
     visible: 
       and:
         - define_net
@@ -2293,7 +2688,7 @@ variables:
       type: string
     uniqueItems: true
     title: "List of CIDR blocks allowed to SSH into jump hosts eventually deployed in Bastion subnet"
-    description: "These CIDRs are allowed to SSH into the the jump host that is eventually deployed in the public Bastion subnet. Leave it empty for no access. 0.0.0.0/0 is not allowed."
+    description: "These CIDRs are allowed to SSH into the jump host that is eventually deployed in the public Bastion subnet. Leave it empty for no access. 0.0.0.0/0 is not allowed."
     required: false
     visible: 
       and:
@@ -2302,7 +2697,42 @@ variables:
         - add_tt_vcn3
         - tt_vcn3_bastion_is_access_via_public_endpoint
         - deploy_tt_vcn3_bastion_subnet   
-      
+  add_tt_vcn3_private_endpoint_subnet:
+    type: boolean
+    title: "Deploy Private Endpoint Subnet?"
+    description: "Check to create a subnet for service private endpoints, to provide in-VCN secure and private connectivity to OCI-managed services."
+    default: false
+    required: false
+    visible:
+      and:
+        - define_net
+        - add_tt_vcn3
+        - customize_tt_vcn3_subnets
+
+  tt_vcn3_private_endpoint_subnet_name:
+    type: string
+    title: "Private Endpoint Subnet Name"
+    description: "Enter the private endpoint subnet name."
+    required: false
+    visible:
+      and:
+        - define_net
+        - add_tt_vcn3
+        - customize_tt_vcn3_subnets
+        - add_tt_vcn3_private_endpoint_subnet
+
+  tt_vcn3_private_endpoint_subnet_cidr:
+    type: string
+    title: "Private Endpoint Subnet CIDR Block"
+    description: "Enter the private endpoint subnet CIDR block. When empty, Core Landing Zone automatically derives a /28 from the parent VCN CIDR."
+    required: false
+    visible:
+      and:
+        - define_net
+        - add_tt_vcn3
+        - customize_tt_vcn3_subnets
+        - add_tt_vcn3_private_endpoint_subnet
+
   # ------------------------------------------------------
   # ----- Networking - Exadata Cloud Service VCN 1
   #-------------------------------------------------------
@@ -2393,6 +2823,27 @@ variables:
           - eq:
             - ${hub_deployment_option}
             - "VCN or on-premises connectivity routing via DRG (existing DRG)"
+
+  enable_exa_vcn1_rcv_infra:
+    type: boolean
+    title: "Enable Autonomous Recovery Service for Oracle databases in this VCN ?"
+    description: "Check to provision the infrastructure required by the Autonomous Recovery Service for Oracle databases in this VCN. The backup subnet is registered as the Recovery subnet, if provided. Otherwise, the client subnet is registered as the Recovery subnet."
+    required: false
+    visible:
+      and:
+        - define_net
+        - add_exa_vcn1
+
+  exa_vcn1_rcv_backup_retention_period_in_days:
+    type: integer
+    title: "Autonomous Recovery Service Backup Retention Period (in days)"
+    description: "The number of days to retain backups in the Autonomous Recovery Service (RCV) for Oracle databases in this VCN. Use 0 to disable the protection policy; otherwise, the minimum is 14 days."
+    required: false
+    visible:
+      and:
+        - define_net
+        - add_exa_vcn1
+        - enable_exa_vcn1_rcv_infra
 
   customize_exa_vcn1_subnets:
     type: boolean
@@ -2550,6 +3001,41 @@ variables:
         - customize_exa_vcn1_subnets
         - add_exa_vcn1
         - add_exa_vcn1_integration_subnet
+  add_exa_vcn1_private_endpoint_subnet:
+    type: boolean
+    title: "Deploy Private Endpoint Subnet?"
+    description: "Check to create a subnet for service private endpoints, to provide in-VCN secure and private connectivity to OCI-managed services."
+    default: false
+    required: false
+    visible:
+      and:
+        - define_net
+        - add_exa_vcn1
+        - customize_exa_vcn1_subnets
+
+  exa_vcn1_private_endpoint_subnet_name:
+    type: string
+    title: "Private Endpoint Subnet Name"
+    description: "Enter the private endpoint subnet name."
+    required: false
+    visible:
+      and:
+        - define_net
+        - add_exa_vcn1
+        - customize_exa_vcn1_subnets
+        - add_exa_vcn1_private_endpoint_subnet
+
+  exa_vcn1_private_endpoint_subnet_cidr:
+    type: string
+    title: "Private Endpoint Subnet CIDR Block"
+    description: "Enter the private endpoint subnet CIDR block. When empty, Core Landing Zone automatically derives a /28 from the parent VCN CIDR."
+    required: false
+    visible:
+      and:
+        - define_net
+        - add_exa_vcn1
+        - customize_exa_vcn1_subnets
+        - add_exa_vcn1_private_endpoint_subnet
 
   # ------------------------------------------------------
   # ----- Networking - Exadata Cloud Service VCN 2
@@ -2641,6 +3127,27 @@ variables:
           - eq:
             - ${hub_deployment_option}
             - "VCN or on-premises connectivity routing via DRG (existing DRG)"
+
+  enable_exa_vcn2_rcv_infra:
+    type: boolean
+    title: "Enable Autonomous Recovery Service for Oracle databases in this VCN ?"
+    description: "Check to provision the infrastructure required by the Autonomous Recovery Service for Oracle databases in this VCN. The backup subnet is registered as the Recovery subnet, if provided. Otherwise, the client subnet is registered as the Recovery subnet."
+    required: false
+    visible:
+      and:
+        - define_net
+        - add_exa_vcn2
+
+  exa_vcn2_rcv_backup_retention_period_in_days:
+    type: integer
+    title: "Autonomous Recovery Service Backup Retention Period (in days)"
+    description: "The number of days to retain backups in the Autonomous Recovery Service (RCV) for Oracle databases in this VCN. Use 0 to disable the protection policy; otherwise, the minimum is 14 days."
+    required: false
+    visible:
+      and:
+        - define_net
+        - add_exa_vcn2
+        - enable_exa_vcn2_rcv_infra
 
   customize_exa_vcn2_subnets:
     type: boolean
@@ -2798,6 +3305,41 @@ variables:
         - customize_exa_vcn2_subnets
         - add_exa_vcn2
         - add_exa_vcn2_integration_subnet
+  add_exa_vcn2_private_endpoint_subnet:
+    type: boolean
+    title: "Deploy Private Endpoint Subnet?"
+    description: "Check to create a subnet for service private endpoints, to provide in-VCN secure and private connectivity to OCI-managed services."
+    default: false
+    required: false
+    visible:
+      and:
+        - define_net
+        - add_exa_vcn2
+        - customize_exa_vcn2_subnets
+
+  exa_vcn2_private_endpoint_subnet_name:
+    type: string
+    title: "Private Endpoint Subnet Name"
+    description: "Enter the private endpoint subnet name."
+    required: false
+    visible:
+      and:
+        - define_net
+        - add_exa_vcn2
+        - customize_exa_vcn2_subnets
+        - add_exa_vcn2_private_endpoint_subnet
+
+  exa_vcn2_private_endpoint_subnet_cidr:
+    type: string
+    title: "Private Endpoint Subnet CIDR Block"
+    description: "Enter the private endpoint subnet CIDR block. When empty, Core Landing Zone automatically derives a /28 from the parent VCN CIDR."
+    required: false
+    visible:
+      and:
+        - define_net
+        - add_exa_vcn2
+        - customize_exa_vcn2_subnets
+        - add_exa_vcn2_private_endpoint_subnet
 
   # ------------------------------------------------------
   # ----- Networking - Exadata Cloud Service VCN 3
@@ -2889,6 +3431,27 @@ variables:
           - eq:
             - ${hub_deployment_option}
             - "VCN or on-premises connectivity routing via DRG (existing DRG)"
+
+  enable_exa_vcn3_rcv_infra:
+    type: boolean
+    title: "Enable Autonomous Recovery Service for Oracle databases in this VCN ?"
+    description: "Check to provision the infrastructure required by the Autonomous Recovery Service for Oracle databases in this VCN. The backup subnet is registered as the Recovery subnet, if provided. Otherwise, the client subnet is registered as the Recovery subnet."
+    required: false
+    visible:
+      and:
+        - define_net
+        - add_exa_vcn3
+
+  exa_vcn3_rcv_backup_retention_period_in_days:
+    type: integer
+    title: "Autonomous Recovery Service Backup Retention Period (in days)"
+    description: "The number of days to retain backups in the Autonomous Recovery Service (RCV) for Oracle databases in this VCN. Use 0 to disable the protection policy; otherwise, the minimum is 14 days."
+    required: false
+    visible:
+      and:
+        - define_net
+        - add_exa_vcn3
+        - enable_exa_vcn3_rcv_infra
 
   customize_exa_vcn3_subnets:
     type: boolean
@@ -3046,6 +3609,41 @@ variables:
         - customize_exa_vcn3_subnets
         - add_exa_vcn3
         - add_exa_vcn3_integration_subnet
+  add_exa_vcn3_private_endpoint_subnet:
+    type: boolean
+    title: "Deploy Private Endpoint Subnet?"
+    description: "Check to create a subnet for service private endpoints, to provide in-VCN secure and private connectivity to OCI-managed services."
+    default: false
+    required: false
+    visible:
+      and:
+        - define_net
+        - add_exa_vcn3
+        - customize_exa_vcn3_subnets
+
+  exa_vcn3_private_endpoint_subnet_name:
+    type: string
+    title: "Private Endpoint Subnet Name"
+    description: "Enter the private endpoint subnet name."
+    required: false
+    visible:
+      and:
+        - define_net
+        - add_exa_vcn3
+        - customize_exa_vcn3_subnets
+        - add_exa_vcn3_private_endpoint_subnet
+
+  exa_vcn3_private_endpoint_subnet_cidr:
+    type: string
+    title: "Private Endpoint Subnet CIDR Block"
+    description: "Enter the private endpoint subnet CIDR block. When empty, Core Landing Zone automatically derives a /28 from the parent VCN CIDR."
+    required: false
+    visible:
+      and:
+        - define_net
+        - add_exa_vcn3
+        - customize_exa_vcn3_subnets
+        - add_exa_vcn3_private_endpoint_subnet
 
 # ------------------------------------------------------
 # ----- Networking - OKE VCN 1
@@ -3347,6 +3945,67 @@ variables:
         - customize_oke_vcn1_subnets
         - add_oke_vcn1
         - add_oke_vcn1_db_subnet
+
+  enable_oke_vcn1_rcv_infra:
+    type: boolean
+    title: "Enable Autonomous Recovery Service for Oracle databases in this VCN ?"
+    description: "Check to provision the infrastructure required by the Autonomous Recovery Service for Oracle databases in this VCN. The database subnet is registered as the Recovery subnet."
+    required: false
+    visible:
+      and:
+        - define_net
+        - customize_oke_vcn1_subnets
+        - add_oke_vcn1
+        - add_oke_vcn1_db_subnet
+
+  oke_vcn1_rcv_backup_retention_period_in_days:
+    type: integer
+    title: "Autonomous Recovery Service Backup Retention Period (in days)"
+    description: "The number of days to retain backups in the Autonomous Recovery Service (RCV) for Oracle databases in this VCN. Use 0 to disable the protection policy; otherwise, the minimum is 14 days."
+    required: false
+    visible:
+      and:
+        - define_net
+        - customize_oke_vcn1_subnets
+        - add_oke_vcn1
+        - add_oke_vcn1_db_subnet
+        - enable_oke_vcn1_rcv_infra
+
+  add_oke_vcn1_private_endpoint_subnet:
+    type: boolean
+    title: "Deploy Private Endpoint Subnet?"
+    description: "Check to create a subnet for service private endpoints, to provide in-VCN secure and private connectivity to OCI-managed services."
+    default: false
+    required: false
+    visible:
+      and:
+        - define_net
+        - add_oke_vcn1
+        - customize_oke_vcn1_subnets
+
+  oke_vcn1_private_endpoint_subnet_name:
+    type: string
+    title: "Private Endpoint Subnet Name"
+    description: "Enter the private endpoint subnet name."
+    required: false
+    visible:
+      and:
+        - define_net
+        - add_oke_vcn1
+        - customize_oke_vcn1_subnets
+        - add_oke_vcn1_private_endpoint_subnet
+
+  oke_vcn1_private_endpoint_subnet_cidr:
+    type: string
+    title: "Private Endpoint Subnet CIDR Block"
+    description: "Enter the private endpoint subnet CIDR block. When empty, Core Landing Zone automatically derives a /28 from the parent VCN CIDR."
+    required: false
+    visible:
+      and:
+        - define_net
+        - add_oke_vcn1
+        - customize_oke_vcn1_subnets
+        - add_oke_vcn1_private_endpoint_subnet
 
   oke_vcn1_pods_subnet_name:
     type: string
@@ -3676,6 +4335,67 @@ variables:
         - add_oke_vcn2
         - add_oke_vcn2_db_subnet
 
+  enable_oke_vcn2_rcv_infra:
+    type: boolean
+    title: "Enable Autonomous Recovery Service for Oracle databases in this VCN ?"
+    description: "Check to provision the infrastructure required by the Autonomous Recovery Service for Oracle databases in this VCN. The database subnet is registered as the Recovery subnet."
+    required: false
+    visible:
+      and:
+        - define_net
+        - customize_oke_vcn2_subnets
+        - add_oke_vcn2
+        - add_oke_vcn2_db_subnet
+
+  oke_vcn2_rcv_backup_retention_period_in_days:
+    type: integer
+    title: "Autonomous Recovery Service Backup Retention Period (in days)"
+    description: "The number of days to retain backups in the Autonomous Recovery Service (RCV) for Oracle databases in this VCN. Use 0 to disable the protection policy; otherwise, the minimum is 14 days."
+    required: false
+    visible:
+      and:
+        - define_net
+        - customize_oke_vcn2_subnets
+        - add_oke_vcn2
+        - add_oke_vcn2_db_subnet
+        - enable_oke_vcn2_rcv_infra
+
+  add_oke_vcn2_private_endpoint_subnet:
+    type: boolean
+    title: "Deploy Private Endpoint Subnet?"
+    description: "Check to create a subnet for service private endpoints, to provide in-VCN secure and private connectivity to OCI-managed services."
+    default: false
+    required: false
+    visible:
+      and:
+        - define_net
+        - add_oke_vcn2
+        - customize_oke_vcn2_subnets
+
+  oke_vcn2_private_endpoint_subnet_name:
+    type: string
+    title: "Private Endpoint Subnet Name"
+    description: "Enter the private endpoint subnet name."
+    required: false
+    visible:
+      and:
+        - define_net
+        - add_oke_vcn2
+        - customize_oke_vcn2_subnets
+        - add_oke_vcn2_private_endpoint_subnet
+
+  oke_vcn2_private_endpoint_subnet_cidr:
+    type: string
+    title: "Private Endpoint Subnet CIDR Block"
+    description: "Enter the private endpoint subnet CIDR block. When empty, Core Landing Zone automatically derives a /28 from the parent VCN CIDR."
+    required: false
+    visible:
+      and:
+        - define_net
+        - add_oke_vcn2
+        - customize_oke_vcn2_subnets
+        - add_oke_vcn2_private_endpoint_subnet
+
   oke_vcn2_pods_subnet_name:
     type: string
     title: "Pods Subnet Name"
@@ -4003,6 +4723,67 @@ variables:
         - customize_oke_vcn3_subnets
         - add_oke_vcn3
         - add_oke_vcn3_db_subnet
+
+  enable_oke_vcn3_rcv_infra:
+    type: boolean
+    title: "Enable Autonomous Recovery Service for Oracle databases in this VCN ?"
+    description: "Check to provision the infrastructure required by the Autonomous Recovery Service for Oracle databases in this VCN. The database subnet is registered as the Recovery subnet."
+    required: false
+    visible:
+      and:
+        - define_net
+        - customize_oke_vcn3_subnets
+        - add_oke_vcn3
+        - add_oke_vcn3_db_subnet
+
+  oke_vcn3_rcv_backup_retention_period_in_days:
+    type: integer
+    title: "Autonomous Recovery Service Backup Retention Period (in days)"
+    description: "The number of days to retain backups in the Autonomous Recovery Service (RCV) for Oracle databases in this VCN. Use 0 to disable the protection policy; otherwise, the minimum is 14 days."
+    required: false
+    visible:
+      and:
+        - define_net
+        - customize_oke_vcn3_subnets
+        - add_oke_vcn3
+        - add_oke_vcn3_db_subnet
+        - enable_oke_vcn3_rcv_infra
+
+  add_oke_vcn3_private_endpoint_subnet:
+    type: boolean
+    title: "Deploy Private Endpoint Subnet?"
+    description: "Check to create a subnet for service private endpoints, to provide in-VCN secure and private connectivity to OCI-managed services."
+    default: false
+    required: false
+    visible:
+      and:
+        - define_net
+        - add_oke_vcn3
+        - customize_oke_vcn3_subnets
+
+  oke_vcn3_private_endpoint_subnet_name:
+    type: string
+    title: "Private Endpoint Subnet Name"
+    description: "Enter the private endpoint subnet name."
+    required: false
+    visible:
+      and:
+        - define_net
+        - add_oke_vcn3
+        - customize_oke_vcn3_subnets
+        - add_oke_vcn3_private_endpoint_subnet
+
+  oke_vcn3_private_endpoint_subnet_cidr:
+    type: string
+    title: "Private Endpoint Subnet CIDR Block"
+    description: "Enter the private endpoint subnet CIDR block. When empty, Core Landing Zone automatically derives a /28 from the parent VCN CIDR."
+    required: false
+    visible:
+      and:
+        - define_net
+        - add_oke_vcn3
+        - customize_oke_vcn3_subnets
+        - add_oke_vcn3_private_endpoint_subnet
 
   oke_vcn3_pods_subnet_name:
     type: string
@@ -4638,14 +5419,13 @@ variables:
           - eq:
             - ${hub_deployment_option}
             - "VCN or on-premises connectivity routed through DMZ VCN with Network Virtual Appliance existing DRG (DMZ VCN will be created and DRG ID required)"
-        - not:
+        - or:
           - eq:
             - ${hub_vcn_deploy_net_appliance_option}
-            - "Don\"t deploy any network appliance at this time"
-        - not:    
-            - eq:
-              - ${hub_vcn_deploy_net_appliance_option}
-              - "OCI Native Firewall"
+            - "Marketplace Image"
+          - eq:
+            - ${hub_vcn_deploy_net_appliance_option}
+            - "User-Provided Virtual Network Appliance"
       
   net_appliance_shape:
     type: oci:core:instanceshape:name
@@ -4664,19 +5444,13 @@ variables:
           - eq:
             - ${hub_deployment_option}
             - "VCN or on-premises connectivity routed through DMZ VCN with Network Virtual Appliance existing DRG (DMZ VCN will be created and DRG ID required)"
-        - and: 
-          - not:   
-            - eq: 
-              - ${hub_vcn_deploy_net_appliance_option}
-              - "Don\"t deploy any network appliance at this time"
-          - not:    
-            - eq:
-              - ${hub_vcn_deploy_net_appliance_option}
-              - "OCI Firewall Service"
-          - not:    
-            - eq:
-              - ${hub_vcn_deploy_net_appliance_option}
-              - "OCI Native Firewall"
+        - or:
+          - eq:
+            - ${hub_vcn_deploy_net_appliance_option}
+            - "Marketplace Image"
+          - eq:
+            - ${hub_vcn_deploy_net_appliance_option}
+            - "User-Provided Virtual Network Appliance"
 
   net_appliance_flex_shape_memory:
     type: string
@@ -4693,19 +5467,13 @@ variables:
           - eq:
             - ${hub_deployment_option}
             - "VCN or on-premises connectivity routed through DMZ VCN with Network Virtual Appliance existing DRG (DMZ VCN will be created and DRG ID required)"
-        - and: 
-          - not:   
-            - eq: 
-              - ${hub_vcn_deploy_net_appliance_option}
-              - "Don\"t deploy any network appliance at this time"
-          - not:    
-            - eq:
-              - ${hub_vcn_deploy_net_appliance_option}
-              - "OCI Firewall Service"
-          - not:    
-            - eq:
-              - ${hub_vcn_deploy_net_appliance_option}
-              - "OCI Native Firewall"
+        - or:
+          - eq:
+            - ${hub_vcn_deploy_net_appliance_option}
+            - "Marketplace Image"
+          - eq:
+            - ${hub_vcn_deploy_net_appliance_option}
+            - "User-Provided Virtual Network Appliance"
 
   net_appliance_flex_shape_cpu:
     type: string
@@ -4722,19 +5490,13 @@ variables:
           - eq:
             - ${hub_deployment_option}
             - "VCN or on-premises connectivity routed through DMZ VCN with Network Virtual Appliance existing DRG (DMZ VCN will be created and DRG ID required)"
-        - and: 
-          - not:   
-            - eq: 
-              - ${hub_vcn_deploy_net_appliance_option}
-              - "Don\"t deploy any network appliance at this time"
-          - not:
-            - eq:
-              - ${hub_vcn_deploy_net_appliance_option}
-              - "OCI Firewall Service" 
-          - not:    
-            - eq:
-              - ${hub_vcn_deploy_net_appliance_option}
-              - "OCI Native Firewall"         
+        - or:
+          - eq:
+            - ${hub_vcn_deploy_net_appliance_option}
+            - "Marketplace Image"
+          - eq:
+            - ${hub_vcn_deploy_net_appliance_option}
+            - "User-Provided Virtual Network Appliance"
 
   net_appliance_boot_volume_size:
     type: string
@@ -4751,19 +5513,13 @@ variables:
           - eq:
             - ${hub_deployment_option}
             - "VCN or on-premises connectivity routed through DMZ VCN with Network Virtual Appliance existing DRG (DMZ VCN will be created and DRG ID required)"
-        - and: 
-          - not:   
-            - eq: 
-              - ${hub_vcn_deploy_net_appliance_option}
-              - "Don\"t deploy any network appliance at this time"
-          - not:    
-            - eq:
-              - ${hub_vcn_deploy_net_appliance_option}
-              - "OCI Firewall Service"
-          - not:    
-            - eq:
-              - ${hub_vcn_deploy_net_appliance_option}
-              - "OCI Native Firewall"
+        - or:
+          - eq:
+            - ${hub_vcn_deploy_net_appliance_option}
+            - "Marketplace Image"
+          - eq:
+            - ${hub_vcn_deploy_net_appliance_option}
+            - "User-Provided Virtual Network Appliance"
 
   net_appliance_public_rsa_key:
     type: oci:core:ssh:publickey
@@ -4780,14 +5536,13 @@ variables:
           - eq:
             - ${hub_deployment_option}
             - "VCN or on-premises connectivity routed through DMZ VCN with Network Virtual Appliance existing DRG (DMZ VCN will be created and DRG ID required)"
-        - not: 
+        - or:
           - eq:
             - ${hub_vcn_deploy_net_appliance_option}
-            - "Don\"t deploy any network appliance at this time"
-        - not:    
-            - eq:
-              - ${hub_vcn_deploy_net_appliance_option}
-              - "OCI Native Firewall"
+            - "Marketplace Image"
+          - eq:
+            - ${hub_vcn_deploy_net_appliance_option}
+            - "User-Provided Virtual Network Appliance"
 
   hub_vcn_north_south_entry_point_ocid:
     type: string
@@ -5595,6 +6350,17 @@ variables:
     required: false
     description: "List of email addresses for all Exadata infrastructure related notifications. (Type an email address and hit enter to enter multiple values)"
     visible: notifications_advanced_options  
+
+  ai_admin_email_endpoints:
+    type: array
+    items:
+      type: string
+    uniqueItems: true
+    title: "AI Admin Email Endpoints"
+    required: false
+    default: []
+    description: "List of email addresses for all AI related notifications. (Type an email address and hit enter to enter multiple values)"
+    visible: notifications_advanced_options
 
   budget_admin_email_endpoints:
     type: array

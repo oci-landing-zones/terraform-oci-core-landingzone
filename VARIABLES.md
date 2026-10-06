@@ -2,10 +2,12 @@
 
 - [General](#general)
 - [Identity](#identity)
+- [AI Foundation](#ai-foundation)
 - [Security](#security)
 - [Three Tier Networking](#three-tier-networking)
 - [EXA Networking](#exa-networking)
 - [OKE Networking](#oke-networking)
+- [Autonomous Recovery Service](#autonomous-recovery-service)
 - [Hub and Spoke Networking](#hub-and-spoke-networking)
 - [On-Premises Networking](#on-prem-networking)
 - [Monitoring](#monitoring)
@@ -20,6 +22,7 @@
 | define\_net | Whether networking is defined as part of this Landing Zone. By default, no networking resources are created. | bool | false | no |
 | display\_output | Whether to display a concise set of select resource outputs with their OCIDs and names. | bool | true | no |
 | display\_security\_logging\_governance\_settings | When true, allows for enabling/configuring settings for some OCI Security, Logging and Governance services. Applicable to RMS deployments only, used for UI displaying. | bool | false | no |
+| display\_ai\_infra\_settings | Whether to display options for enabling infrastructure resources for OCI AI services. Applicable to RMS deployments only, used for UI displaying. | bool | false | no |
 | enable\_zpr | Whether ZPR is enabled as part of this Landing Zone. By default, no ZPR resources are created. | bool | false | no |
 | extend\_landing\_zone\_to\_new\_region | Whether Landing Zone is being extended to another region. When set to true, compartments, groups, policies and resources at the home region are not provisioned. Use this when you want to provision a Landing Zone in a new region, but reuse existing Landing Zone resources in the home region. | bool | false | no |
 | lz\_provenant\_prefix | The provenant landing zone prefix or code that identifies the client of this Landing Zone. This information goes into a freeform tag applied to all deployed resources. | string | "core" | no |
@@ -42,7 +45,7 @@
 | custom\_security\_compartment\_name                         | Custom name of the security compartment. | string | null | no |
 | deploy\_app\_cmp                                            | Whether the application compartment is deployed. | bool | true | no |
 | deploy\_database\_cmp                                       | Whether the database compartment is deployed. | bool | true | no |
-| deploy\_exainfra\_cmp                                       | Whether a separate compartment for Exadata Cloud Service Infrastructure is deployed. | bool | false | no |
+| deploy\_exainfra\_cmp                                       | Whether a separate infrastructure compartment for Exadata Cloud Service and Exadata Cloud@Customer is deployed. | bool | false | no |
 | dyn\_groups\_options                                        | Whether to deploy new dynamic groups or use existing dynamic groups. Applicable to RMS deployments only, used for UI displaying. | string | "Yes" | no |
 | enclosing\_compartment\_parent\_ocid                        | The existing compartment where Landing Zone enclosing compartment is created. | string | null | no |
 | existing\_ag\_admin\_group\_name                            | The existing group to which Access Governance management policies will be granted to. | list(string) | [] | no |
@@ -56,7 +59,7 @@
 | existing\_database\_admin\_group\_name                      | The existing group to which database management policies will be granted to. | list(string) | [] | no |
 | existing\_database\_kms\_dyn\_group\_name                   | Existing database dynamic group for database to access keys. | string | "" | no |
 | existing\_enclosing\_compartment\_ocid                      | The existing compartment where Landing Zone compartments (Network, Security, App, Database) are created. | string | null | no |
-| existing\_exainfra\_admin\_group\_name                      | The existing group to which Exadata Cloud Service infrastructure management policies will be granted to. | list(string) | [] | no |
+| existing\_exainfra\_admin\_group\_name                      | The existing group to which Exadata Cloud Service and Exadata Cloud@Customer infrastructure management policies will be granted. | list(string) | [] | no |
 | existing\_iam\_admin\_group\_name                           | The existing group to which IAM management policies will be granted to. | list(string) | [] | no |
 | existing\_id\_domain\_appdev\_fun\_dyn\_group\_name         | The existing dynamic group name in the existing identity domain for executing applications functions. | string | "" | no |
 | existing\_id\_domain\_compute\_agent\_dyn\_group\_name      | The existing dynamic group name in the existing identity domain for Compute agents. | string | "" | no |
@@ -80,7 +83,7 @@
 | rm\_existing\_cost\_admin\_group\_name                      | Only applicable to RMS deployments. The existing group to which cost management policies will be granted to. | string | "" | no |
 | rm\_existing\_cred\_admin\_group\_name                      | Only applicable to RMS deployments. The existing group to which credentials management policies will be granted to. | string | "" | no |
 | rm\_existing\_database\_admin\_group\_name                  | Only applicable to RMS deployments. The existing group to which database management policies will be granted to. | string | "" | no |
-| rm\_existing\_exainfra\_admin\_group\_name                  | Only applicable to RMS deployments. The existing group to which Exadata Cloud Service infrastructure management policies will be granted to. | string | "" | no |
+| rm\_existing\_exainfra\_admin\_group\_name                  | Only applicable to RMS deployments. The existing group to which Exadata Cloud Service and Exadata Cloud@Customer infrastructure management policies will be granted. | string | "" | no |
 | rm\_existing\_iam\_admin\_group\_name                       | Only applicable to RMS deployments. The existing group to which IAM management policies will be granted to. | string | "" | no |
 | rm\_existing\_network\_admin\_group\_name                   | Only applicable to RMS deployments. The existing group to which network management policies will be granted to. | string | "" | no |
 | rm\_existing\_security\_admin\_group\_name                  | Only applicable to RMS deployments. The existing group to which security policies will be granted to. | string | "" | no |
@@ -92,11 +95,36 @@
 | rm\_existing\_id\_domain\_cost\_admin\_group\_name          | The existing cost admin group name in the existing identity domain. | list(string) | [] | no |
 | rm\_existing\_id\_domain\_cred\_admin\_group\_name          | The existing credentials admin group name in the existing identity domain. | list(string) | [] | no |
 | rm\_existing\_id\_domain\_database\_admin\_group\_name      | The existing database admin group name in the existing identity domain. | list(string) | [] | no |
-| rm\_existing\_id\_domain\_exainfra\_admin\_group\_name      | The existing Exadata CS infrastructure admin group name in the existing identity domain. | list(string) | [] | no |
+| rm\_existing\_id\_domain\_exainfra\_admin\_group\_name      | The existing Exadata infrastructure admin group name in the existing identity domain. | list(string) | [] | no |
 | rm\_existing\_id\_domain\_iam\_admin\_group\_name           | The existing IAM admin group name in the existing identity domain. | list(string) | [] | no |
 | rm\_existing\_id\_domain\_network\_admin\_group\_name       | The existing network admin group name in the existing identity domain. | list(string) | [] | no |
 | rm\_existing\_id\_domain\_security\_admin\_group\_name      | The existing security admin group name in the existing identity domain. | list(string) | [] | no |
 | rm\_existing\_id\_domain\_storage\_admin\_group\_name       | The existing storage admin group name in the existing identity domain. | list(string) | [] | no |
+
+### <a name="ai-foundation"></a> AI Services Infrastructure
+
+| Variable Name | Description | Type | Default | Required |
+|---------------|-------------|------|---------|----------|
+| enable\_generative\_ai\_infra | Configures Generative AI IAM grants in the Application and, for CORELZ\_MANAGED, enabled Database, Security, and Exainfra compartments, together with runtime dynamic groups and NSGs. | bool | false | no |
+| enable\_data\_science\_infra | Configures Data Science and Data Flow IAM grants in the Application compartment, Data Science network grants in the Network compartment, and a runtime dynamic group. | bool | false | no |
+| enable\_prebuilt\_ai\_services\_infra | Configures IAM grants for OCI Language, Vision, Speech, and Document Understanding in the Application compartment. | bool | false | no |
+| enable\_ai\_compute\_infra | Configures IAM grants for OCI Compute Management, Compute Clusters, and Compute Capacity Reservations in the Application compartment. | bool | false | no |
+| enable\_aidp\_infra | Configures tenancy-wide AIDP IAM grants, compartment grants in the Application, Network, and enabled Database and Exainfra compartments, and NSGs. | bool | false | no |
+| generative\_ai\_data\_access\_policy\_mode | Chooses whether Core LZ or workload stacks own Generative AI API-key authorization and runtime data-access grants. Valid values are CORELZ_MANAGED and WORKLOAD_MANAGED. | string | "CORELZ_MANAGED" | no |
+| existing\_ai\_data\_science\_runtime\_dyn\_group\_name | Existing Default Identity Domain Data Science runtime dynamic group to reuse. | string | "" | no |
+| existing\_ai\_genai\_vector\_store\_connectors\_dyn\_group\_name | Existing Default Identity Domain Generative AI vector store connectors dynamic group to reuse. | string | "" | no |
+| existing\_ai\_genai\_hosted\_applications\_dyn\_group\_name | Existing Default Identity Domain Generative AI hosted applications dynamic group to reuse. | string | "" | no |
+| existing\_ai\_genai\_semantic\_stores\_dyn\_group\_name | Existing Default Identity Domain Generative AI semantic stores dynamic group to reuse. | string | "" | no |
+| existing\_id\_domain\_ai\_data\_science\_runtime\_dyn\_group\_name | Existing custom Identity Domain Data Science runtime dynamic group to reuse. | string | "" | no |
+| existing\_id\_domain\_ai\_genai\_vector\_store\_connectors\_dyn\_group\_name | Existing custom Identity Domain Generative AI vector store connectors dynamic group to reuse. | string | "" | no |
+| existing\_id\_domain\_ai\_genai\_hosted\_applications\_dyn\_group\_name | Existing custom Identity Domain Generative AI hosted applications dynamic group to reuse. | string | "" | no |
+| existing\_id\_domain\_ai\_genai\_semantic\_stores\_dyn\_group\_name | Existing custom Identity Domain Generative AI semantic stores dynamic group to reuse. | string | "" | no |
+
+The five `*_infra` inputs enable prerequisites only: Core LZ does not create AI models, endpoints, API keys, projects, vector stores, semantic stores, hosted applications, Data Science projects, AIDP workbenches, OKE clusters, GPU instances, databases, or application pipelines. Every enabled AI service requires `deploy_app_cmp = true`.
+
+When `enable_aidp_infra = true`, compartment-scoped AIDP grants are added to the AI Foundation policy and the two required tenancy-wide IAM inspection and tag-namespace grants are isolated in `<service-label>-aidp-root-policy`. If `policies_in_root_compartment = "USE"`, those root grants must be supplied externally. AIDP receives Application-compartment Generative AI access independently of Database and Exainfra compartment deployment.
+
+`CORELZ_MANAGED` authorizes Generative AI API keys to use the Responses API. Vector store connectors can read Object Storage and semantic stores can read secrets across enabled Application, Database, Security, and Exainfra compartments. Semantic stores can use Database Tools in Application, Database, and Exainfra, and read database metadata in Database and Exainfra. `WORKLOAD_MANAGED` retains all Enterprise AI dynamic groups and required hosted-application and semantic-store platform grants, but leaves the Responses API and data-access policies to workload stacks. IAM allow grants are additive: a narrower workload allow policy does not remove a broader Core LZ allow policy. To migrate safely, deploy the narrower workload policies first, verify API-key and resource-principal access, then update Core LZ to `WORKLOAD_MANAGED` to remove the compartment-level statements.
 
 ### <a name="security"></a> Security
 
@@ -129,6 +157,18 @@
 
 | Variable Name | Description | Type | Default | Required |
 |---------------|-------------|------|---------|----------|
+| add\_tt\_vcn1\_private\_endpoint\_subnet | Whether to add the TT-VCN-1 shared private endpoint subnet. | bool | false | no |
+| tt\_vcn1\_private\_endpoint\_subnet\_name | Private endpoint subnet name. | string | "private-endpoint-subnet" | no |
+| tt\_vcn1\_private\_endpoint\_subnet\_cidr | Optional private endpoint subnet CIDR. Core LZ derives a /28 when null; explicit valid /29 and /30 values are supported. | string | null | no |
+| tt\_vcn1\_private\_endpoint\_subnet\_dns | Private endpoint subnet DNS label. | string | "pe" | no |
+| add\_tt\_vcn2\_private\_endpoint\_subnet | Whether to add the TT-VCN-2 shared private endpoint subnet. | bool | false | no |
+| tt\_vcn2\_private\_endpoint\_subnet\_name | Private endpoint subnet name. | string | "private-endpoint-subnet" | no |
+| tt\_vcn2\_private\_endpoint\_subnet\_cidr | Optional private endpoint subnet CIDR. Core LZ derives a /28 when null; explicit valid /29 and /30 values are supported. | string | null | no |
+| tt\_vcn2\_private\_endpoint\_subnet\_dns | Private endpoint subnet DNS label. | string | "pe" | no |
+| add\_tt\_vcn3\_private\_endpoint\_subnet | Whether to add the TT-VCN-3 shared private endpoint subnet. | bool | false | no |
+| tt\_vcn3\_private\_endpoint\_subnet\_name | Private endpoint subnet name. | string | "private-endpoint-subnet" | no |
+| tt\_vcn3\_private\_endpoint\_subnet\_cidr | Optional private endpoint subnet CIDR. Core LZ derives a /28 when null; explicit valid /29 and /30 values are supported. | string | null | no |
+| tt\_vcn3\_private\_endpoint\_subnet\_dns | Private endpoint subnet DNS label. | string | "pe" | no |
 | add\_tt\_vcn1 | Whether to add a VCN configured for three-tier workload deployments, with up to four subnets: web (public by default), application (private), database (private). An optional subnet (private by default) for bastion deployment is also available. The added VCN is labelled 'TT-VCN-1'. The label should be used in the '*\_routable\_vcns' fields of other VCNs for constraining network traffic to those respective VCNs in a Hub/Spoke topology. | bool | false | no |
 | add\_tt\_vcn2 | Whether to add a second VCN configured for three-tier workload deployments, with up to four subnets: web (public by default), application (private), database (private). An optional subnet (private by default) for bastion deployment is also available. The added VCN is labelled 'TT-VCN-2'. The label should be used in the '*\_routable\_vcns' fields of other VCNs for constraining network traffic to those respective VCNs in a Hub/Spoke topology. | bool | false | no |
 | add\_tt\_vcn3 | Whether to add a third VCN configured for three-tier workload deployments, with up to four subnets: web (public by default), application (private), database (private). An optional subnet (private by default) for bastion deployment is also available. The added VCN is labelled 'TT-VCN-3'. The label should be used in the '*\_routable\_vcns' fields of other VCNs for constraining network traffic to those respective VCNs in a Hub/Spoke topology. | bool | false | no |
@@ -212,6 +252,18 @@
 
 | Variable Name | Description | Type | Default | Required |
 |---------------|-------------|------|---------|----------|
+| add\_exa\_vcn1\_private\_endpoint\_subnet | Whether to add the EXA-VCN-1 shared private endpoint subnet. | bool | false | no |
+| exa\_vcn1\_private\_endpoint\_subnet\_name | Private endpoint subnet name. | string | "private-endpoint-subnet" | no |
+| exa\_vcn1\_private\_endpoint\_subnet\_cidr | Optional private endpoint subnet CIDR. Core LZ derives a /28 when null; explicit valid /29 and /30 values are supported. | string | null | no |
+| exa\_vcn1\_private\_endpoint\_subnet\_dns | Private endpoint subnet DNS label. | string | "pe" | no |
+| add\_exa\_vcn2\_private\_endpoint\_subnet | Whether to add the EXA-VCN-2 shared private endpoint subnet. | bool | false | no |
+| exa\_vcn2\_private\_endpoint\_subnet\_name | Private endpoint subnet name. | string | "private-endpoint-subnet" | no |
+| exa\_vcn2\_private\_endpoint\_subnet\_cidr | Optional private endpoint subnet CIDR. Core LZ derives a /28 when null; explicit valid /29 and /30 values are supported. | string | null | no |
+| exa\_vcn2\_private\_endpoint\_subnet\_dns | Private endpoint subnet DNS label. | string | "pe" | no |
+| add\_exa\_vcn3\_private\_endpoint\_subnet | Whether to add the EXA-VCN-3 shared private endpoint subnet. | bool | false | no |
+| exa\_vcn3\_private\_endpoint\_subnet\_name | Private endpoint subnet name. | string | "private-endpoint-subnet" | no |
+| exa\_vcn3\_private\_endpoint\_subnet\_cidr | Optional private endpoint subnet CIDR. Core LZ derives a /28 when null; explicit valid /29 and /30 values are supported. | string | null | no |
+| exa\_vcn3\_private\_endpoint\_subnet\_dns | Private endpoint subnet DNS label. | string | "pe" | no |
 | add\_exa\_vcn1 | Whether to add a VCN configured for Exadata Cloud Service deployment, with two subnets: client (private) and backup (private). The added VCN is labelled 'EXA-VCN-1'. The label should be used in the '*\_routable\_vcns' fields of other VCNs for constraining network traffic to those respective VCNs in a Hub/Spoke topology. | bool | false | no |
 | add\_exa\_vcn1\_integration\_subnet | Whether to add an optional Integration subnet to Exadata VCN 1. | bool | false | no |
 | add\_exa\_vcn2 | Whether to add a second VCN configured for Exadata Cloud Service deployment, with two subnets: client (private) and backup (private). The added VCN is labelled 'EXA-VCN-2'. The label should be used in the '*\_routable\_vcns' fields of other VCNs for constraining network traffic to those respective VCNs in a Hub/Spoke topology. | bool | false | no |
@@ -286,6 +338,18 @@
 
 | Variable Name | Description | Type | Default | Required |
 |---------------|-------------|------|---------|----------|
+| add\_oke\_vcn1\_private\_endpoint\_subnet | Whether to add the OKE-VCN-1 shared private endpoint subnet. | bool | false | no |
+| oke\_vcn1\_private\_endpoint\_subnet\_name | Private endpoint subnet name. | string | "private-endpoint-subnet" | no |
+| oke\_vcn1\_private\_endpoint\_subnet\_cidr | Optional private endpoint subnet CIDR. Core LZ derives a /28 when null; explicit valid /29 and /30 values are supported. | string | null | no |
+| oke\_vcn1\_private\_endpoint\_subnet\_dns | Private endpoint subnet DNS label. | string | "pe" | no |
+| add\_oke\_vcn2\_private\_endpoint\_subnet | Whether to add the OKE-VCN-2 shared private endpoint subnet. | bool | false | no |
+| oke\_vcn2\_private\_endpoint\_subnet\_name | Private endpoint subnet name. | string | "private-endpoint-subnet" | no |
+| oke\_vcn2\_private\_endpoint\_subnet\_cidr | Optional private endpoint subnet CIDR. Core LZ derives a /28 when null; explicit valid /29 and /30 values are supported. | string | null | no |
+| oke\_vcn2\_private\_endpoint\_subnet\_dns | Private endpoint subnet DNS label. | string | "pe" | no |
+| add\_oke\_vcn3\_private\_endpoint\_subnet | Whether to add the OKE-VCN-3 shared private endpoint subnet. | bool | false | no |
+| oke\_vcn3\_private\_endpoint\_subnet\_name | Private endpoint subnet name. | string | "private-endpoint-subnet" | no |
+| oke\_vcn3\_private\_endpoint\_subnet\_cidr | Optional private endpoint subnet CIDR. Core LZ derives a /28 when null; explicit valid /29 and /30 values are supported. | string | null | no |
+| oke\_vcn3\_private\_endpoint\_subnet\_dns | Private endpoint subnet DNS label. | string | "pe" | no |
 | add\_oke\_vcn1 | Whether to add a VCN configured for OKE workload deployments, with at least three subnets: service (public by default), workers (private) and API endpoint (private). Additionally, a private subnet for pods deployment is created if the OKE CNI Type is 'Native'. You can also enable an extra private subnet for managing the OKE cluster. The added VCN is labelled 'OKE-VCN-1'. The label should be used in the '*\_routable\_vcns' fields of other VCNs for constraining network traffic to those respective VCNs in a Hub/Spoke topology. | bool | false | no |
 | add\_oke\_vcn1\_mgmt\_subnet | Whether to add a private subnet for cluster management. | bool | false | no |
 | add\_oke\_vcn2 | Whether to add a second VCN configured for OKE workload deployments, with at least three subnets: service (public by default), workers (private) and API endpoint (private). Additionally, a private subnet for pods deployment is created if the OKE CNI Type is 'Native'. You can also enable an extra private subnet for managing the OKE cluster. The added VCN is labelled 'OKE-VCN-2'. The label should be used in the '*\_routable\_vcns' fields of other VCNs for constraining network traffic to those respective VCNs in a Hub/Spoke topology. | bool | false | no |
@@ -368,6 +432,29 @@
 | oke\_vcn3\_workers\_subnet\_dns | The Workers subnet DNS name. Use only letters and numbers, no special characters. | string | null | no |
 | oke\_vcn3\_workers\_subnet\_name | The Workers subnet name. | string | null | no |
 
+### <a name="autonomous-recovery-service"></a> Autonomous Recovery Service
+
+| Variable Name | Description | Type | Default | Required |
+|---------------|-------------|------|---------|----------|
+| enable\_tt\_vcn1\_rcv\_infra | Whether to enable the Autonomous Recovery Service infrastructure for databases in TT-VCN-1 db subnet. | bool | false | no |
+| tt\_vcn1\_rcv\_backup\_retention\_period\_in\_days | The number of days to retain backup data in the Autonomous Recovery Service for databases in TT-VCN-1 db subnet. Use 0 to disable the policy; otherwise, the minimum is 14 days. | number | 0 | no |
+| enable\_tt\_vcn2\_rcv\_infra | Whether to enable the Autonomous Recovery Service infrastructure for databases inTT-VCN-2 db subnet. | bool | false | no |
+| tt\_vcn2\_rcv\_backup\_retention\_period\_in\_days | The number of days to retain backup data in the Autonomous Recovery Service for databases in TT-VCN-2 db subnet. Use 0 to disable the policy; otherwise, the minimum is 14 days. | number | 0 | no |
+| enable\_tt\_vcn3\_rcv\_infra | Whether to enable the Autonomous Recovery Service infrastructure for databases in TT-VCN-3 db subnet. | bool | false | no |
+| tt\_vcn3\_rcv\_backup\_retention\_period\_in\_days | The number of days to retain backup data in the Autonomous Recovery Service for databases in TT-VCN-3 db subnet. Use 0 to disable the policy; otherwise, the minimum is 14 days. | number | 0 | no |
+| enable\_oke\_vcn1\_rcv\_infra | Whether to enable the Autonomous Recovery Service infrastructure for databases in OKE-VCN-1 db subnet. | bool | false | no |
+| oke\_vcn1\_rcv\_backup\_retention\_period\_in\_days | The number of days to retain backup data in the Autonomous Recovery Service for databases in OKE-VCN-1 db subnet. Use 0 to disable the policy; otherwise, the minimum is 14 days. | number | 0 | no |
+| enable\_oke\_vcn2\_rcv\_infra | Whether to enable the Autonomous Recovery Service infrastructure for databases in OKE-VCN-2 db subnet. | bool | false | no |
+| oke\_vcn2\_rcv\_backup\_retention\_period\_in\_days | The number of days to retain backup data in the Autonomous Recovery Service for databases in OKE-VCN-2 db subnet. Use 0 to disable the policy; otherwise, the minimum is 14 days. | number | 0 | no |
+| enable\_oke\_vcn3\_rcv\_infra | Whether to enable the Autonomous Recovery Service infrastructure for databases in OKE-VCN-3 db subnet. | bool | false | no |
+| oke\_vcn3\_rcv\_backup\_retention\_period\_in\_days | The number of days to retain backup data in the Autonomous Recovery Service for databases in OKE-VCN-3 db subnet. Use 0 to disable the policy; otherwise, the minimum is 14 days. | number | 0 | no |
+| enable\_exa\_vcn1\_rcv\_infra | Whether to enable the Autonomous Recovery Service infrastructure for databases in EXA-VCN-1 backup (if provided) or client subnet. | bool | false | no |
+| exa\_vcn1\_rcv\_backup\_retention\_period\_in\_days | The number of days to retain backup data in the Autonomous Recovery Service for databases in EXA-VCN-1 backup (if provided) or client subnet. Use 0 to disable the policy; otherwise, the minimum is 14 days. | number | 0 | no |
+| enable\_exa\_vcn2\_rcv\_infra | Whether to enable the Autonomous Recovery Service infrastructure for databases in EXA-VCN-2 backup (if provided) or client subnet. | bool | false | no |
+| exa\_vcn2\_rcv\_backup\_retention\_period\_in\_days | The number of days to retain backup data in the Autonomous Recovery Service for databases in EXA-VCN-2 backup (if provided) or client subnet. Use 0 to disable the policy; otherwise, the minimum is 14 days. | number | 0 | no |
+| enable\_exa\_vcn3\_rcv\_infra | Whether to enable the Autonomous Recovery Service infrastructure for databases in EXA-VCN-3 backup (if provided) or client subnet. | bool | false | no |
+| exa\_vcn3\_rcv\_backup\_retention\_period\_in\_days | The number of days to retain backup data in the Autonomous Recovery Service for databases in EXA-VCN-3 backup (if provided) or client subnet. Use 0 to disable the policy; otherwise, the minimum is 14 days. | number | 0 | no |
+
 ### <a name="hub-and-spoke-networking"></a> Hub and Spoke Networking
 
 | Variable Name | Description | Type | Default | Required |
@@ -379,11 +466,10 @@
 | enable\_native\_firewall\_threat\_log | Enable OCI Native Firewall Threat Log. | bool | false | no |
 | enable\_native\_firewall\_traffic\_log | Enable OCI Native Firewall Traffic Log. | bool | false | no |
 | existing\_drg\_ocid | The OCID of an existing DRG that you want to reuse for hub deployment. Only applicable if hub\_deployment\_option is 'VCN or on-premises connectivity routing via DRG (existing DRG)' or 'VCN or on-premises connectivity routed through DMZ VCN with Network Virtual Appliance existing DRG (DMZ VCN will be created and DRG ID required)'. | string | null | no |
-| hub\_deployment | The available options for hub deployment as an integer. 'No cross-VCN or on-premises connectivity' = 0, 'VCN or on-premises connectivity routing via DRG (DRG will be created)' = 1, 'VCN or on-premises connectivity routing via DRG (existing DRG)' = 2, 'VCN or on-premises connectivity routing through DMZ VCN with Network Virtual Appliance (DRG and DMZ VCN will be created)' = 3, 'VCN or on-premises connectivity routed through DMZ VCN with Network Virtual Appliance existing DRG (DMZ VCN will be created and DRG ID required)' = 4 | number | 0| no |
-| hub\_deployment\_option | The available options for hub deployment. Valid values: 'No cross-VCN or on-premises connectivity', 'VCN or on-premises connectivity routing via DRG (DRG will be created)', 'VCN or on-premises connectivity routing via DRG (existing DRG)', 'VCN or on-premises connectivity routing through DMZ VCN with Network Virtual Appliance (DRG and DMZ VCN will be created)', 'VCN or on-premises connectivity routed through DMZ VCN with Network Virtual Appliance existing DRG (DMZ VCN will be created and DRG ID required)'. All the VCNs that attach to the DRG join the topology as spokes. | string | "No cross-VCN or on-premises connectivity" | no |
+| hub\_deployment\_option | The available options for hub deployment. Each option can be informed as a self-explanatory string or as a number code string. Valid values: 'No cross-VCN or on-premises connectivity' or '0', 'VCN or on-premises connectivity routing via DRG (DRG will be created)' or '1', 'VCN or on-premises connectivity routing via DRG (existing DRG)' or '2', 'VCN or on-premises connectivity routing through DMZ VCN with Network Virtual Appliance (DRG and DMZ VCN will be created)' or '3', 'VCN or on-premises connectivity routed through DMZ VCN with Network Virtual Appliance existing DRG (DMZ VCN will be created and DRG ID required)' or '4', 'No cross-VCN with on-premises connectivity using a new DRG' or '5', 'No cross-VCN with on-premises connectivity using an existing DRG' or '6'. All the VCNs that attach to the DRG join the topology as spokes. | string | "No cross-VCN or on-premises connectivity" | no |
 | hub\_vcn\_additional\_nsgs | Additional NSGs for the Hub VCN. Accepts either a native HCL map/object or a JSON object string. Only used when define\_hub\_vcn\_additional\_nsgs is true. | any | {} | no |
 | hub\_vcn\_cidrs | List of CIDR blocks for the Hub VCN. | list(string) | ["192.168.0.0/26"] | no |
-| hub\_vcn\_deploy\_net\_appliance\_option | The network appliance option for deploying in the Hub VCN. Valid values: 'Don't deploy any network appliance at this time' (default), 'Palo Alto Networks VM-Series Firewall', 'Fortinet FortiGate Firewall', 'User-Provided Virtual Network Appliance', and 'OCI Native Firewall'. Costs are incurred. | string | "Don't deploy any network appliance at this time" | no |
+| hub\_vcn\_deploy\_net\_appliance\_option | The network appliance option for deploying in the Hub VCN. Valid values: 'Don't deploy any network firewall at this time' (default), 'Marketplace Image', 'User-Provided Virtual Network Appliance', and 'OCI Native Firewall'. Costs are incurred. | string | "Don't deploy any network firewall at this time" | no |
 | hub\_vcn\_dns | The Hub VCN DNS name. | string | null | no |
 | hub\_vcn\_enable\_internet\_gateway | When checked, access from the Internet is enabled into the Hub VCN via an Internet Gateway. When unchecked, an Internet Gateway is not deployed and access from Internet is blocked. | bool | true | no |
 | hub\_vcn\_east\_west\_entry\_point\_ocid |The OCID of the private IP address of the Indoor Network Load Balancer, where inbound internal cross-vcn traffic (East/West) traffic is sent to in the Hub VCN. | string | null | no |
@@ -407,7 +493,7 @@
 | hub\_vcn\_web\_subnet\_jump\_host\_allowed\_cidrs | List of CIDRs allowed to SSH into the Web subnet via a jump host eventually deployed in the Web subnet. Leave empty for no access. | list(string) | [] | no |
 | hub\_vcn\_web\_subnet\_name | The Hub VCN Web subnet name. | string | null | no |
 | hub\_vcn\_web\_ingress\_destination\_ports | The list of protocols and destination ports allowed for ingress packets into the Hub VCN App Load Balancer NSG. These ports are allowed from onprem\_cidrs plus hub\_vcn\_external\_allowed\_cidrs\_into\_web\_tier when the Hub VCN Web subnet is public, and from onprem\_cidrs when it is private. Each value is a colon-separated entry like "TCP:443". | list(string) | ["TCP:443"] | no |
-| hub\_vcn\_deploy\_net\_appliance\_option | The network appliance option to deploy in the Hub VCN. | string | Default is "Don't deploy any network appliance at this time". Other valid values: "Marketplace Image", "User-Provided Virtual Network Appliance", "OCI Native Firewall". Costs may be incurred. For "Marketplace Image", users are required to provide either net\_appliance\_marketplace\_image\_ocid or net\_appliance\_marketplace\_image\_name (with optional net\_appliance\_marketplace\_image\_version) variables. **NOTE THAT BY DEPLOYING A MARKETPLACE IMAGE USING THIS TERRAFORM MODULE YOU ARE IMPLICITLY AGREEING WITH ALL OCI MARKETPLACE TERMS, INCLUDING THE PRICING MODEL THAT APPLY TO THE SELECTED IMAGE.** Marketplace image information can be obtained by running [Marketplace Images](https://github.com/oci-landing-zones/terraform-oci-modules-workloads/tree/main/marketplace-images/examples/marketplace-images). For "User-Provided Virtual Network Appliance", users are required to provide net\_appliance\_image\_ocid variable. | no |
+| hub\_vcn\_deploy\_net\_appliance\_option | The network appliance option to deploy in the Hub VCN. | string | Default is "Don't deploy any network firewall at this time". Other valid values: "Marketplace Image", "User-Provided Virtual Network Appliance", "OCI Native Firewall". Costs may be incurred. For "Marketplace Image", users are required to provide either net\_appliance\_marketplace\_image\_ocid or net\_appliance\_marketplace\_image\_name (with optional net\_appliance\_marketplace\_image\_version) variables. **NOTE THAT BY DEPLOYING A MARKETPLACE IMAGE USING THIS TERRAFORM MODULE YOU ARE IMPLICITLY AGREEING WITH ALL OCI MARKETPLACE TERMS, INCLUDING THE PRICING MODEL THAT APPLY TO THE SELECTED IMAGE.** Marketplace image information can be obtained by running [Marketplace Images](https://github.com/oci-landing-zones/terraform-oci-modules-workloads/tree/main/marketplace-images/examples/marketplace-images). For "User-Provided Virtual Network Appliance", users are required to provide net\_appliance\_image\_ocid variable. | no |
 | net\_appliance\_image\_vendor | The image vendor for the network appliance. Valid values are "PALOALTO", "FORTINET", "OTHER". Used to select the default Network Load Balancer health checker for Marketplace Image and User-Provided Virtual Network Appliance deployments. | string | null | no |
 | net\_appliance\_marketplace\_image\_ocid   | The marketplace image OCID for the network appliance. Applicable when hub\_vcn\_deploy\_net\_appliance\_option is set to "Marketplace Image". | string | null | no |
 | net\_appliance\_marketplace\_image\_name   | The marketplace image name for the network appliance. Applicable when hub\_vcn\_deploy\_net\_appliance\_option is set to "Marketplace Image". | string | null | no |
@@ -482,6 +568,7 @@
 | Variable Name | Description | Type | Default | Required |
 |---------------|-------------|------|---------|----------|
 | activate\_service\_connector | Whether Service Connector should be activated. If true, costs my incur due to usage of Object Storage bucket, Streaming or Function. | bool | false | no |
+| ai\_admin\_email\_endpoints | Optional unique email endpoints for AI notifications, alarms, and events in the Application compartment. | list(string) | [] | no |
 | alarm\_message\_format | Format of the message sent by Alarms | string | "PRETTY_JSON" | no |
 | budget\_admin\_email\_endpoints | List of email addresses for all budget related notifications such as budget and finance. (Type an email address and hit enter to enter multiple values) | list(string) | [] | no |
 | compute\_admin\_email\_endpoints | List of email addresses for all compute related notifications. (Type an email address and hit enter to enter multiple values) | list(string) | [] | no |

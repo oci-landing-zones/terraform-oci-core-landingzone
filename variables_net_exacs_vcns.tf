@@ -56,6 +56,21 @@ variable "exa_vcn1_client_ingress_destination_ports" {
     error_message = "VALIDATION FAILURE: Invalid value provided for exa_vcn1_client_ingress_destination_ports variable: all values must be in the form protocol:port, with exactly one ':' separating protocol and port values."
   }
 }
+variable "enable_exa_vcn1_rcv_infra" {
+  type        = bool
+  default     = false
+  description = "Whether to enable the Autonomous Recovery Service infrastructure for databases in EXA-VCN-1 backup or client subnet."
+}
+variable "exa_vcn1_rcv_backup_retention_period_in_days" {
+  type        = number
+  default     = 0
+  description = "The number of days to retain backup data in the Autonomous Recovery Service for databases in EXA-VCN-1 backup or client subnet. Use 0 to disable the policy; otherwise, the minimum is 14 days."
+
+  validation {
+    condition     = var.exa_vcn1_rcv_backup_retention_period_in_days == 0 || var.exa_vcn1_rcv_backup_retention_period_in_days >= 14
+    error_message = "The backup retention period must be 0 or at least 14 days."
+  }
+}
 variable "add_exa_vcn1_backup_subnet" {
   type        = bool
   default     = true
@@ -194,6 +209,21 @@ variable "exa_vcn2_client_ingress_destination_ports" {
   validation {
     condition     = length(var.exa_vcn2_client_ingress_destination_ports) == 0 ? true : alltrue([for v in var.exa_vcn2_client_ingress_destination_ports : can(regex("^[^:]+:[^:]+$", v))])
     error_message = "VALIDATION FAILURE: Invalid value provided for exa_vcn2_client_ingress_destination_ports variable: all values must be in the form protocol:port, with exactly one ':' separating protocol and port values."
+  }
+}
+variable "enable_exa_vcn2_rcv_infra" {
+  type        = bool
+  default     = false
+  description = "Whether to enable the Autonomous Recovery Service infrastructure for databases in EXA-VCN-2 backup or client subnet."
+}
+variable "exa_vcn2_rcv_backup_retention_period_in_days" {
+  type        = number
+  default     = 0
+  description = "The number of days to retain backup data in the Autonomous Recovery Service for databases in EXA-VCN-2 backup or client subnet. Use 0 to disable the policy; otherwise, the minimum is 14 days."
+
+  validation {
+    condition     = var.exa_vcn2_rcv_backup_retention_period_in_days == 0 || var.exa_vcn2_rcv_backup_retention_period_in_days >= 14
+    error_message = "The backup retention period must be 0 or at least 14 days."
   }
 }
 variable "add_exa_vcn2_backup_subnet" {
@@ -336,6 +366,21 @@ variable "exa_vcn3_client_ingress_destination_ports" {
     error_message = "VALIDATION FAILURE: Invalid value provided for exa_vcn3_client_ingress_destination_ports variable: all values must be in the form protocol:port, with exactly one ':' separating protocol and port values."
   }
 }
+variable "enable_exa_vcn3_rcv_infra" {
+  type        = bool
+  default     = false
+  description = "Whether to enable the Autonomous Recovery Service infrastructure for databases in EXA-VCN-3 backup or client subnet."
+}
+variable "exa_vcn3_rcv_backup_retention_period_in_days" {
+  type        = number
+  default     = 0
+  description = "The number of days to retain backup data in the Autonomous Recovery Service for databases in EXA-VCN-3 backup or client subnet. Use 0 to disable the policy; otherwise, the minimum is 14 days."
+
+  validation {
+    condition     = var.exa_vcn3_rcv_backup_retention_period_in_days == 0 || var.exa_vcn3_rcv_backup_retention_period_in_days >= 14
+    error_message = "The backup retention period must be 0 or at least 14 days."
+  }
+}
 variable "add_exa_vcn3_backup_subnet" {
   type        = bool
   default     = true
@@ -419,4 +464,65 @@ variable "customize_exa_vcn3_subnets" {
   type        = bool
   default     = false
   description = "If true, allows for the customization of default subnets settings. Applicable to RMS deployments only, used for UI displaying."
+}
+
+# ------------------------------------------------------
+# ----- Private endpoint networking
+# ------------------------------------------------------
+variable "add_exa_vcn1_private_endpoint_subnet" {
+  type        = bool
+  default     = false
+  description = "Whether to add the EXA-VCN-1 shared private endpoint subnet."
+}
+variable "exa_vcn1_private_endpoint_subnet_name" {
+  type        = string
+  default     = null
+  description = "The EXA-VCN-1 private endpoint subnet name."
+}
+variable "exa_vcn1_private_endpoint_subnet_cidr" {
+  type        = string
+  default     = null
+  description = "The EXA-VCN-1 private endpoint subnet CIDR. When null, Core Landing Zone derives a /28."
+  validation {
+    condition     = var.exa_vcn1_private_endpoint_subnet_cidr == null || can(cidrhost(var.exa_vcn1_private_endpoint_subnet_cidr, 0))
+    error_message = "VALIDATION FAILURE: exa_vcn1_private_endpoint_subnet_cidr must be null or a valid CIDR."
+  }
+}
+variable "add_exa_vcn2_private_endpoint_subnet" {
+  type        = bool
+  default     = false
+  description = "Whether to add the EXA-VCN-2 shared private endpoint subnet."
+}
+variable "exa_vcn2_private_endpoint_subnet_name" {
+  type        = string
+  default     = null
+  description = "The EXA-VCN-2 private endpoint subnet name."
+}
+variable "exa_vcn2_private_endpoint_subnet_cidr" {
+  type        = string
+  default     = null
+  description = "The EXA-VCN-2 private endpoint subnet CIDR. When null, Core Landing Zone derives a /28."
+  validation {
+    condition     = var.exa_vcn2_private_endpoint_subnet_cidr == null || can(cidrhost(var.exa_vcn2_private_endpoint_subnet_cidr, 0))
+    error_message = "VALIDATION FAILURE: exa_vcn2_private_endpoint_subnet_cidr must be null or a valid CIDR."
+  }
+}
+variable "add_exa_vcn3_private_endpoint_subnet" {
+  type        = bool
+  default     = false
+  description = "Whether to add the EXA-VCN-3 shared private endpoint subnet."
+}
+variable "exa_vcn3_private_endpoint_subnet_name" {
+  type        = string
+  default     = null
+  description = "The EXA-VCN-3 private endpoint subnet name."
+}
+variable "exa_vcn3_private_endpoint_subnet_cidr" {
+  type        = string
+  default     = null
+  description = "The EXA-VCN-3 private endpoint subnet CIDR. When null, Core Landing Zone derives a /28."
+  validation {
+    condition     = var.exa_vcn3_private_endpoint_subnet_cidr == null || can(cidrhost(var.exa_vcn3_private_endpoint_subnet_cidr, 0))
+    error_message = "VALIDATION FAILURE: exa_vcn3_private_endpoint_subnet_cidr must be null or a valid CIDR."
+  }
 }

@@ -12,14 +12,14 @@ locals {
 
 module "lz_home_region_topics" {
   count  = var.extend_landing_zone_to_new_region == false ? 1 : 0
-  source = "github.com/oci-landing-zones/terraform-oci-modules-observability//notifications?ref=v0.2.5"
+  source = "github.com/oci-landing-zones/terraform-oci-modules-observability//notifications?ref=v0.2.7"
   # depends_on = [ null_resource.wait_on_compartments ]
   providers                   = { oci = oci.home }
   notifications_configuration = local.home_region_notifications_configuration
 }
 
 module "lz_regional_topics" {
-  source = "github.com/oci-landing-zones/terraform-oci-modules-observability//notifications?ref=v0.2.5"
+  source = "github.com/oci-landing-zones/terraform-oci-modules-observability//notifications?ref=v0.2.7"
   # depends_on = [ null_resource.wait_on_compartments ]
   notifications_configuration = local.regional_notifications_configuration
 }
@@ -42,7 +42,7 @@ locals {
   #-- Security Topic
   #--------------------------------------------------------------------
   security_topic_key = "SECURITY-TOPIC"
-  security_topic = length(var.security_admin_email_endpoints) > 0 ? {
+  security_topic = length(var.security_admin_email_endpoints) > 0 && local.enable_security_compartment ? {
     (local.security_topic_key) = {
       compartment_id = local.security_compartment_id
       name           = "${var.service_label}-security-topic"
@@ -61,7 +61,7 @@ locals {
   #-- Cloud Guard Topic
   #--------------------------------------------------------------------
   cloudguard_topic_key = "CLOUDGUARD-TOPIC"
-  cloudguard_topic = length(var.cloud_guard_admin_email_endpoints) > 0 ? {
+  cloudguard_topic = length(var.cloud_guard_admin_email_endpoints) > 0 && local.enable_security_compartment ? {
     (local.cloudguard_topic_key) = {
       compartment_id = local.security_compartment_id
       name           = "${var.service_label}-cloudguard-topic"
@@ -80,7 +80,7 @@ locals {
   #-- Network Topic
   #--------------------------------------------------------------------
   network_topic_key = "NETWORK-TOPIC"
-  network_topic = length(var.network_admin_email_endpoints) > 0 ? {
+  network_topic = length(var.network_admin_email_endpoints) > 0 && local.enable_network_compartment ? {
     (local.network_topic_key) = {
       compartment_id = local.network_compartment_id
       name           = "${var.service_label}-network-topic"
@@ -99,7 +99,7 @@ locals {
   #-- Compute Topic
   #--------------------------------------------------------------------
   compute_topic_key = "COMPUTE-TOPIC"
-  compute_topic = length(var.compute_admin_email_endpoints) > 0 ? {
+  compute_topic = length(var.compute_admin_email_endpoints) > 0 && local.enable_app_compartment ? {
     (local.compute_topic_key) = {
       compartment_id = local.app_compartment_id
       name           = "${var.service_label}-compute-topic"
@@ -118,9 +118,9 @@ locals {
   #-- Database Topic
   #--------------------------------------------------------------------
   database_topic_key = "DATABASE-TOPIC"
-  database_topic = length(var.database_admin_email_endpoints) > 0 ? {
+  database_topic = length(var.database_admin_email_endpoints) > 0 && local.enable_database_admin_persona ? {
     (local.database_topic_key) = {
-      compartment_id = local.database_compartment_id
+      compartment_id = local.enable_database_compartment ? local.database_compartment_id : local.exainfra_compartment_id
       name           = "${var.service_label}-database-topic"
       description    = "Landing Zone topic for database performance related notifications."
       defined_tags   = local.topics_defined_tags
@@ -137,7 +137,7 @@ locals {
   #-- Storage Topic
   #--------------------------------------------------------------------
   storage_topic_key = "STORAGE-TOPIC"
-  storage_topic = length(var.storage_admin_email_endpoints) > 0 ? {
+  storage_topic = length(var.storage_admin_email_endpoints) > 0 && local.enable_app_compartment ? {
     (local.storage_topic_key) = {
       compartment_id = local.app_compartment_id
       name           = "${var.service_label}-storage-topic"
@@ -156,7 +156,7 @@ locals {
   #-- Budget Topic
   #--------------------------------------------------------------------
   budget_topic_key = "BUDGET-TOPIC"
-  budget_topic = length(var.budget_admin_email_endpoints) > 0 ? {
+  budget_topic = length(var.budget_admin_email_endpoints) > 0  ? {
     (local.budget_topic_key) = {
       compartment_id = var.tenancy_ocid
       name           = "${var.service_label}-budget-topic"
@@ -175,16 +175,16 @@ locals {
   #-- Exadata Topic
   #--------------------------------------------------------------------
   exainfra_topic_key = "EXAINFRA-TOPIC"
-  exainfra_topic = length(var.exainfra_admin_email_endpoints) > 0 && var.deploy_exainfra_cmp == true ? {
+  exainfra_topic = length(var.exainfra_admin_email_endpoints) > 0 && local.enable_database_admin_persona ? {
     (local.exainfra_topic_key) = {
-      compartment_id = local.exainfra_compartment_id
+      compartment_id = local.enable_exainfra_compartment ? local.exainfra_compartment_id : local.database_compartment_id
       name           = "${var.service_label}-exainfra-topic"
       description    = "Landing Zone topic for Exadata infrastructure notifications."
       defined_tags   = local.topics_defined_tags
       freeform_tags  = local.topics_freeform_tags
       subscriptions = [
-        { protocol = "EMAIL"
-          values   = var.exainfra_admin_email_endpoints
+        { protocol = "EMAIL" 
+          values = var.exainfra_admin_email_endpoints 
         }
       ]
     }

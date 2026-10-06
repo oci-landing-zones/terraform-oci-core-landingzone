@@ -11,7 +11,7 @@ locals {
 
 module "lz_top_compartment" {
   count                      = var.extend_landing_zone_to_new_region == false && local.deploy_enclosing_compartment ? 1 : 0
-  source                     = "github.com/oci-landing-zones/terraform-oci-modules-iam//compartments?ref=v0.3.4"
+  source                     = "github.com/oci-landing-zones/terraform-oci-modules-iam//compartments?ref=v0.3.5"
   providers                  = { oci = oci.home }
   tenancy_ocid               = var.tenancy_ocid
   compartments_configuration = local.enclosing_compartment_configuration
@@ -19,7 +19,7 @@ module "lz_top_compartment" {
 
 module "lz_compartments" {
   count                      = var.extend_landing_zone_to_new_region == false ? 1 : 0
-  source                     = "github.com/oci-landing-zones/terraform-oci-modules-iam//compartments?ref=v0.3.4"
+  source                     = "github.com/oci-landing-zones/terraform-oci-modules-iam//compartments?ref=v0.3.5"
   providers                  = { oci = oci.home }
   tenancy_ocid               = var.tenancy_ocid
   compartments_configuration = local.enclosed_compartments_configuration
@@ -138,7 +138,7 @@ locals {
   exainfra_cmp = local.enable_exainfra_compartment ? {
     (local.exainfra_compartment_key) : {
       name : local.provided_exainfra_compartment_name,
-      description : "${var.lz_provenant_label} compartment for Exadata Cloud Service infrastructure.",
+      description : "${var.lz_provenant_label} compartment for Exadata Cloud Service and Exadata Cloud@Customer infrastructure.",
       defined_tags : local.cmps_defined_tags,
       freeform_tags : local.cmps_freeform_tags,
       children : {}

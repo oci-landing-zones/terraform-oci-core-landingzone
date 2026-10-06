@@ -19,6 +19,8 @@ locals {
   database_dynamic_group_policy_name = "${var.service_label}-database-dynamic-group-policy"
   appdev_admin_root_policy_name      = "${var.service_label}-appdev-admin-root-policy"
   appdev_admin_policy_name           = "${var.service_label}-appdev-admin-policy"
+  ai_foundation_policy_name          = "${var.service_label}-ai-foundation-policy"
+  aidp_root_policy_name              = "${var.service_label}-aidp-root-policy"
   iam_admin_policy_name              = "${var.service_label}-iam-admin-policy"
   iam_admin_root_policy_name         = "${var.service_label}-iam-admin-root-policy"
   cred_admin_policy_name             = "${var.service_label}-credential-admin-policy"
@@ -30,6 +32,8 @@ locals {
   access_governance_root_policy_name = "${var.service_label}-access-governance-root-policy"
   net_fw_app_policy_name             = "${var.service_label}-net-firewall-app-policy"
   custom_policy_name                 = "${var.service_label}-custom-policy"
+
+  database_admin_exainfra_policy_name = "${var.service_label}-database-admin-exainfra-policy"
 
   #iam_grants_condition = [for g in local.cred_admin_group_name : "target.group.name != ${g}"]
   cred_admin_groups                  = var.identity_domain_option == "Default Domain" ? [for g in local.cred_admin_group_name : substr(g, 0, 1) == "'" && substr(g, length(g) - 1, 1) == "'" ? "target.group.name != ${g}" : "target.group.name != '${g}'"] : var.identity_domain_option == "New Identity Domain" ? [for g in local.cred_admin_group_name : "target.group.name != ${substr(g, length(local.new_identity_domain_name) + 3, -1)}"] : []
@@ -202,12 +206,13 @@ locals {
   network_admin_grants = concat(local.network_admin_grants_on_network_cmp, local.network_admin_grants_on_security_cmp)
 
   ## Database admin grants on Database compartment
-  database_admin_grants_on_database_cmp = local.enable_database_compartment ? [
+  database_admin_grants_on_database_cmp = local.enable_database_compartment ? concat([
     "allow group ${join(",", local.database_admin_group_name)} to read all-resources in compartment ${local.database_compartment_name}",
     "allow group ${join(",", local.database_admin_group_name)} to manage db-systems in compartment ${local.database_compartment_name}",
     "allow group ${join(",", local.database_admin_group_name)} to manage db-nodes in compartment ${local.database_compartment_name}",
     "allow group ${join(",", local.database_admin_group_name)} to manage db-homes in compartment ${local.database_compartment_name}",
     "allow group ${join(",", local.database_admin_group_name)} to manage databases in compartment ${local.database_compartment_name}",
+    "allow group ${join(",", local.database_admin_group_name)} to manage database-software-images in compartment ${local.database_compartment_name}",
     "allow group ${join(",", local.database_admin_group_name)} to manage pluggable-databases in compartment ${local.database_compartment_name}",
     "allow group ${join(",", local.database_admin_group_name)} to manage db-backups in compartment ${local.database_compartment_name}",
     "allow group ${join(",", local.database_admin_group_name)} to manage autonomous-database-family in compartment ${local.database_compartment_name}",
@@ -232,7 +237,18 @@ locals {
     "allow group ${join(",", local.database_admin_group_name)} to use vnics in compartment ${local.database_compartment_name}",
     "allow group ${join(",", local.database_admin_group_name)} to manage keys in compartment ${local.database_compartment_name}",
     "allow group ${join(",", local.database_admin_group_name)} to use key-delegate in compartment ${local.database_compartment_name}",
-  "allow group ${join(",", local.database_admin_group_name)} to manage secret-family in compartment ${local.database_compartment_name}"] : []
+    "allow group ${join(",", local.database_admin_group_name)} to manage secret-family in compartment ${local.database_compartment_name}",
+    "allow group ${join(",", local.database_admin_group_name)} to manage recovery-service-family in compartment ${local.database_compartment_name}"
+    ], local.enable_exainfra_compartment ? [] : [
+    "allow group ${join(",", local.database_admin_group_name)} to manage cloud-exadata-infrastructures in compartment ${local.database_compartment_name}",
+    "allow group ${join(",", local.database_admin_group_name)} to manage cloud-vmclusters in compartment ${local.database_compartment_name}",
+    "allow group ${join(",", local.database_admin_group_name)} to manage exadata-infrastructures in compartment ${local.database_compartment_name}",
+    "allow group ${join(",", local.database_admin_group_name)} to manage vmclusters in compartment ${local.database_compartment_name}",
+    "allow group ${join(",", local.database_admin_group_name)} to manage backups in compartment ${local.database_compartment_name}",
+    "allow group ${join(",", local.database_admin_group_name)} to manage backup-destinations in compartment ${local.database_compartment_name}",
+    "allow group ${join(",", local.database_admin_group_name)} to manage dbnode-console-connection in compartment ${local.database_compartment_name}",
+    "allow group ${join(",", local.database_admin_group_name)} to manage dbnode-console-history in compartment ${local.database_compartment_name}",
+  ]) : []
 
   ## Database admin grants on Network compartment
   database_admin_grants_on_network_cmp = local.enable_network_compartment ? [
@@ -255,17 +271,25 @@ locals {
   database_admin_grants_on_exainfra_cmp = local.enable_exainfra_compartment ? [
     "allow group ${join(",", local.database_admin_group_name)} to read cloud-exadata-infrastructures in compartment ${local.exainfra_compartment_name}",
     "allow group ${join(",", local.database_admin_group_name)} to use cloud-vmclusters in compartment ${local.exainfra_compartment_name}",
+    "allow group ${join(",", local.database_admin_group_name)} to read exadata-infrastructures in compartment ${local.exainfra_compartment_name}",
+    "allow group ${join(",", local.database_admin_group_name)} to use vmclusters in compartment ${local.exainfra_compartment_name}",
     "allow group ${join(",", local.database_admin_group_name)} to read work-requests in compartment ${local.exainfra_compartment_name}",
     "allow group ${join(",", local.database_admin_group_name)} to manage db-nodes in compartment ${local.exainfra_compartment_name}",
     "allow group ${join(",", local.database_admin_group_name)} to manage db-homes in compartment ${local.exainfra_compartment_name}",
     "allow group ${join(",", local.database_admin_group_name)} to manage databases in compartment ${local.exainfra_compartment_name}",
     "allow group ${join(",", local.database_admin_group_name)} to manage pluggable-databases in compartment ${local.exainfra_compartment_name}",
     "allow group ${join(",", local.database_admin_group_name)} to manage db-backups in compartment ${local.exainfra_compartment_name}",
-  "allow group ${join(",", local.database_admin_group_name)} to manage data-safe-family in compartment ${local.exainfra_compartment_name}"] : []
+    "allow group ${join(",", local.database_admin_group_name)} to manage backups in compartment ${local.exainfra_compartment_name}",
+    "allow group ${join(",", local.database_admin_group_name)} to manage backup-destinations in compartment ${local.exainfra_compartment_name}",
+    "allow group ${join(",", local.database_admin_group_name)} to manage data-safe-family in compartment ${local.exainfra_compartment_name}",
+    "allow group ${join(",", local.database_admin_group_name)} to manage database-software-images in compartment ${local.exainfra_compartment_name}",
+    "allow group ${join(",", local.database_admin_group_name)} to manage dbnode-console-connection in compartment ${local.exainfra_compartment_name}",
+    "allow group ${join(",", local.database_admin_group_name)} to manage dbnode-console-history in compartment ${local.exainfra_compartment_name}",
+  "allow group ${join(",", local.database_admin_group_name)} to manage recovery-service-family in compartment ${local.exainfra_compartment_name}"] : []
 
   ## All database admin grants
   database_admin_grants = concat(local.database_admin_grants_on_database_cmp, local.database_admin_grants_on_network_cmp,
-  local.database_admin_grants_on_security_cmp, local.database_admin_grants_on_exainfra_cmp)
+  local.database_admin_grants_on_security_cmp)
 
   ## AppDev admin grants on AppDev compartment
   appdev_admin_grants_on_appdev_cmp = local.enable_app_compartment ? [
@@ -331,10 +355,97 @@ locals {
   appdev_admin_grants = concat(local.appdev_admin_grants_on_appdev_cmp, local.appdev_admin_grants_on_network_cmp,
   local.appdev_admin_grants_on_security_cmp, local.appdev_admin_grants_on_database_cmp)
 
+  appdev_ai_grants = concat(
+    var.enable_generative_ai_infra && local.enable_app_compartment ? ["allow group ${join(",", local.appdev_admin_group_name)} to manage generative-ai-family in compartment ${local.app_compartment_name}"] : [],
+    var.enable_data_science_infra && local.enable_app_compartment ? ["allow group ${join(",", local.appdev_admin_group_name)} to manage data-science-family in compartment ${local.app_compartment_name}", "allow group ${join(",", local.appdev_admin_group_name)} to manage dataflow-family in compartment ${local.app_compartment_name}"] : [],
+    var.enable_prebuilt_ai_services_infra && local.enable_app_compartment ? ["allow group ${join(",", local.appdev_admin_group_name)} to manage ai-service-language-family in compartment ${local.app_compartment_name}", "allow group ${join(",", local.appdev_admin_group_name)} to manage ai-service-vision-family in compartment ${local.app_compartment_name}", "allow group ${join(",", local.appdev_admin_group_name)} to manage ai-service-speech-family in compartment ${local.app_compartment_name}", "allow group ${join(",", local.appdev_admin_group_name)} to manage ai-service-document-family in compartment ${local.app_compartment_name}"] : [],
+    var.enable_ai_compute_infra && local.enable_app_compartment ? ["allow group ${join(",", local.appdev_admin_group_name)} to manage compute-management-family in compartment ${local.app_compartment_name}", "allow group ${join(",", local.appdev_admin_group_name)} to manage compute-clusters in compartment ${local.app_compartment_name}", "allow group ${join(",", local.appdev_admin_group_name)} to manage compute-capacity-reservations in compartment ${local.app_compartment_name}"] : [],
+    var.enable_aidp_infra && local.enable_app_compartment ? ["allow group ${join(",", local.appdev_admin_group_name)} to manage ai-data-platforms in compartment ${local.app_compartment_name}"] : []
+  )
+
+  ai_data_science_runtime_grants = var.enable_data_science_infra && local.enable_app_compartment ? [
+    "allow dynamic-group ${local.data_science_runtime_dynamic_group_name} to use log-groups in compartment ${local.app_compartment_name} where request.principal.compartment.id = '${local.app_compartment_id}'",
+    "allow dynamic-group ${local.data_science_runtime_dynamic_group_name} to use log-content in compartment ${local.app_compartment_name} where request.principal.compartment.id = '${local.app_compartment_id}'",
+  "allow service datascience to use virtual-network-family in compartment ${local.network_compartment_name}"] : []
+
+  aidp_database_compartment_names = concat(
+    local.enable_database_compartment ? [local.database_compartment_name] : [],
+    local.enable_exainfra_compartment ? [local.exainfra_compartment_name] : []
+  )
+
+  aidp_admin_database_grants = var.enable_aidp_infra ? [for compartment_name in local.aidp_database_compartment_names :
+    "allow group ${join(",", local.appdev_admin_group_name)} to use autonomous-databases in compartment ${compartment_name}"
+  ] : []
+
+  aidp_root_grants = var.enable_aidp_infra ? [
+    "allow any-user to {AUTHENTICATION_INSPECT,DOMAIN_INSPECT,DOMAIN_READ,DYNAMIC_GROUP_INSPECT,GROUP_INSPECT,GROUP_MEMBERSHIP_INSPECT,USER_INSPECT,USER_READ} in tenancy where all {request.principal.type='aidataplatform'}",
+    "allow any-user to {TAG_NAMESPACE_USE} in tenancy where all {request.principal.type='aidataplatform'}"
+  ] : []
+
+  aidp_compartment_grants = var.enable_aidp_infra && local.enable_app_compartment ? [
+    "allow any-user to manage log-groups in compartment ${local.app_compartment_name} where all {request.principal.type='aidataplatform'}",
+    "allow any-user to read log-content in compartment ${local.app_compartment_name} where all {request.principal.type='aidataplatform'}",
+    #"allow any-user to use metrics in compartment ${local.app_compartment_name} where all {request.principal.type='aidataplatform',target.metrics.namespace='oracle_aidataplatform'}", ## buggy statement
+    "allow any-user to manage buckets in compartment ${local.app_compartment_name} where all {request.principal.type='aidataplatform',any {request.permission='BUCKET_CREATE',request.permission='BUCKET_INSPECT',request.permission='BUCKET_READ',request.permission='BUCKET_UPDATE'}}",
+    "allow any-user to manage buckets in compartment ${local.app_compartment_name} where all {request.principal.id=target.resource.tag.orcl-aidp.governingAidpId,any {request.permission='BUCKET_DELETE',request.permission='PAR_MANAGE',request.permission='RETENTION_RULE_LOCK',request.permission='RETENTION_RULE_MANAGE'}}",
+    "allow any-user to read objectstorage-namespaces in compartment ${local.app_compartment_name} where all {request.principal.type='aidataplatform',request.permission='OBJECTSTORAGE_NAMESPACE_READ'}",
+    "allow any-user to manage objects in compartment ${local.app_compartment_name} where all {request.principal.id=target.bucket.system-tag.orcl-aidp.governingAidpId}",
+    "allow any-user to manage vnics in compartment ${local.network_compartment_name} where all {request.principal.type='aidataplatform'}",
+    "allow any-user to use subnets in compartment ${local.network_compartment_name} where all {request.principal.type='aidataplatform'}",
+    "allow any-user to use network-security-groups in compartment ${local.network_compartment_name} where all {request.principal.type='aidataplatform'}",
+    "allow any-user to use generative-ai-family in compartment ${local.app_compartment_name} where all {request.principal.type='aidataplatform'}"
+  ] : []
+
+  aidp_grants = var.enable_aidp_infra ? concat(local.aidp_admin_database_grants, local.aidp_compartment_grants) : []
+
+  generative_ai_object_and_secret_compartment_names = concat(
+    local.enable_app_compartment ? [local.app_compartment_name] : [],
+    local.enable_database_compartment ? [local.database_compartment_name] : [],
+    local.enable_security_compartment ? [local.security_compartment_name] : [],
+    local.enable_exainfra_compartment ? [local.exainfra_compartment_name] : []
+  )
+
+  generative_ai_database_tools_compartment_names = concat(
+    local.enable_app_compartment ? [local.app_compartment_name] : [],
+    local.enable_database_compartment ? [local.database_compartment_name] : [],
+    local.enable_exainfra_compartment ? [local.exainfra_compartment_name] : []
+  )
+
+  generative_ai_database_compartment_names = concat(
+    local.enable_database_compartment ? [local.database_compartment_name] : [],
+    local.enable_exainfra_compartment ? [local.exainfra_compartment_name] : []
+  )
+
+  generative_ai_platform_grants = var.enable_generative_ai_infra && local.enable_app_compartment ? [
+    "allow dynamic-group ${local.genai_hosted_applications_dynamic_group_name} to read repos in compartment ${local.app_compartment_name} where request.principal.compartment.id = '${local.app_compartment_id}'",
+    "allow dynamic-group ${local.genai_hosted_applications_dynamic_group_name} to read vss-family in compartment ${local.app_compartment_name} where request.principal.compartment.id = '${local.app_compartment_id}'",
+  "allow dynamic-group ${local.genai_semantic_stores_dynamic_group_name} to use generative-ai-family in compartment ${local.app_compartment_name} where request.principal.compartment.id = '${local.app_compartment_id}'"] : []
+
+  generative_ai_managed_access_grants = var.enable_generative_ai_infra && var.generative_ai_data_access_policy_mode == "CORELZ_MANAGED" && local.enable_app_compartment ? concat(
+    ["allow any-user to manage generative-ai-response in compartment ${local.app_compartment_name} where ALL {request.principal.type='generativeaiapikey'}"],
+    flatten([for compartment_name in local.generative_ai_object_and_secret_compartment_names : [
+      "allow dynamic-group ${local.genai_vector_store_connectors_dynamic_group_name} to read object-family in compartment ${compartment_name} where request.principal.compartment.id = '${local.app_compartment_id}'",
+      "allow dynamic-group ${local.genai_semantic_stores_dynamic_group_name} to read secret-family in compartment ${compartment_name} where request.principal.compartment.id = '${local.app_compartment_id}'"
+    ]]),
+    [for compartment_name in local.generative_ai_database_tools_compartment_names :
+      "allow dynamic-group ${local.genai_semantic_stores_dynamic_group_name} to use database-tools-family in compartment ${compartment_name} where request.principal.compartment.id = '${local.app_compartment_id}'"
+    ],
+    flatten([for compartment_name in local.generative_ai_database_compartment_names : [
+      "allow dynamic-group ${local.genai_semantic_stores_dynamic_group_name} to read database-family in compartment ${compartment_name} where request.principal.compartment.id = '${local.app_compartment_id}'",
+      "allow dynamic-group ${local.genai_semantic_stores_dynamic_group_name} to read autonomous-database-family in compartment ${compartment_name} where request.principal.compartment.id = '${local.app_compartment_id}'"
+    ]])
+  ) : []
+
+  generative_ai_runtime_grants = concat(local.generative_ai_platform_grants, local.generative_ai_managed_access_grants)
+
+  ai_foundation_grants = concat(local.appdev_ai_grants, local.ai_data_science_runtime_grants, local.generative_ai_runtime_grants, local.aidp_grants)
+
   ## Exainfra admin grants on Exinfra compartment
   exainfra_admin_grants_on_exainfra_cmp = local.enable_exainfra_compartment ? [
     "allow group ${join(",", local.exainfra_admin_group_name)} to manage cloud-exadata-infrastructures in compartment ${local.exainfra_compartment_name}",
     "allow group ${join(",", local.exainfra_admin_group_name)} to manage cloud-vmclusters in compartment ${local.exainfra_compartment_name}",
+    "allow group ${join(",", local.exainfra_admin_group_name)} to manage exadata-infrastructures in compartment ${local.exainfra_compartment_name}",
+    "allow group ${join(",", local.exainfra_admin_group_name)} to manage vmclusters in compartment ${local.exainfra_compartment_name}",
     "allow group ${join(",", local.exainfra_admin_group_name)} to read work-requests in compartment ${local.exainfra_compartment_name}",
     "allow group ${join(",", local.exainfra_admin_group_name)} to manage bastion-session in compartment ${local.exainfra_compartment_name}",
     "allow group ${join(",", local.exainfra_admin_group_name)} to manage instance-family in compartment ${local.exainfra_compartment_name}",
@@ -345,7 +456,10 @@ locals {
     "allow group ${join(",", local.exainfra_admin_group_name)} to manage data-safe-family in compartment ${local.exainfra_compartment_name}",
     "allow group ${join(",", local.exainfra_admin_group_name)} to manage keys in compartment ${local.exainfra_compartment_name}",
     "allow group ${join(",", local.exainfra_admin_group_name)} to use key-delegate in compartment ${local.exainfra_compartment_name}",
-  "allow group ${join(",", local.exainfra_admin_group_name)} to manage secret-family in compartment ${local.exainfra_compartment_name}"] : []
+    "allow group ${join(",", local.exainfra_admin_group_name)} to manage secret-family in compartment ${local.exainfra_compartment_name}",
+    "allow group ${join(",", local.exainfra_admin_group_name)} to manage scheduling-policies in compartment ${local.exainfra_compartment_name}",
+    "allow group ${join(",", local.exainfra_admin_group_name)} to manage scheduling-windows in compartment ${local.exainfra_compartment_name}",
+  ] : []
 
   ## Exainfra admin grants on Security compartment
   exainfra_admin_grants_on_security_cmp = local.enable_security_compartment ? [
@@ -391,7 +505,7 @@ locals {
   autonomous_database_grants = concat(local.autonomous_database_grants_on_database_cmp, local.autonomous_database_grants_on_security_cmp)
 
   ## Network firewall appliance grant. Primarily for Fortinet's Fortigate
-  net_fw_app_grants_on_enclosing_cmp = local.firewall_options[var.hub_vcn_deploy_net_appliance_option] == "FORTINET" && local.net_fw_app_dynamic_group_name != null ? [
+  net_fw_app_grants_on_enclosing_cmp = local.chosen_firewall_option == "FORTINET" && local.net_fw_app_dynamic_group_name != null ? [
   "allow dynamic-group ${local.net_fw_app_dynamic_group_name} to read all-resources in ${local.policy_scope}"] : []
 
   ## Storage admin grants
@@ -493,7 +607,7 @@ locals {
     } : null
   } : {}
 
-  database_admin_policy = local.enable_database_compartment == true ? {
+  database_admin_policy = local.enable_database_admin_persona ? {
     (local.database_admin_policy_name) = length(local.database_admin_grants) > 0 ? {
       compartment_id = local.enclosing_compartment_id
       name           = local.database_admin_policy_name
@@ -501,6 +615,17 @@ locals {
       defined_tags   = local.policies_defined_tags
       freeform_tags  = local.policies_freeform_tags
       statements     = local.database_admin_grants
+    } : null
+  } : {}
+
+  database_admin_exainfra_policy = local.enable_database_admin_persona ? {
+    (local.database_admin_exainfra_policy_name) = length(local.database_admin_grants_on_exainfra_cmp) > 0 ? {
+      compartment_id = local.enclosing_compartment_id
+      name           = local.database_admin_exainfra_policy_name
+      description    = "${var.lz_provenant_label} policy for ${join(",", local.database_admin_group_name)} group to manage database resources in the Exadata infrastructure compartment."
+      defined_tags   = local.policies_defined_tags
+      freeform_tags  = local.policies_freeform_tags
+      statements     = local.database_admin_grants_on_exainfra_cmp
     } : null
   } : {}
 
@@ -513,6 +638,17 @@ locals {
       freeform_tags  = local.policies_freeform_tags
       statements     = local.appdev_admin_grants
     } : null
+  } : {}
+
+  ai_foundation_policy = local.enable_app_compartment && length(local.ai_foundation_grants) > 0 ? {
+    (local.ai_foundation_policy_name) = {
+      compartment_id = local.enclosing_compartment_id
+      name           = local.ai_foundation_policy_name
+      description    = "${var.lz_provenant_label} consolidated policy for enabled AI administration and runtime identities."
+      defined_tags   = local.policies_defined_tags
+      freeform_tags  = local.policies_freeform_tags
+      statements     = local.ai_foundation_grants
+    }
   } : {}
 
   iam_admin_policy = length(local.iam_admin_grants_on_enclosing_cmp) > 0 ? {
@@ -548,7 +684,7 @@ locals {
     } : null
   } : {}
 
-  net_fw_app_policy = local.firewall_options[var.hub_vcn_deploy_net_appliance_option] == "FORTINET" ? {
+  net_fw_app_policy = local.chosen_firewall_option == "FORTINET" ? {
     (local.net_fw_app_policy_name) = length(local.net_fw_app_grants_on_enclosing_cmp) > 0 ? {
       compartment_id = local.enclosing_compartment_id
       name           = local.net_fw_app_policy_name
@@ -570,9 +706,11 @@ locals {
     }
   } : {}
 
-  policies = merge(local.compute_agent_policy, local.database_dyn_group_policy, local.network_admin_policy, local.security_admin_policy,
-    local.database_admin_policy, local.appdev_admin_policy, local.iam_admin_policy, local.storage_admin_policy,
-  local.exainfra_policy, local.net_fw_app_policy, local.custom_policy)
+  policies = {
+    for name, policy in merge(local.compute_agent_policy, local.database_dyn_group_policy, local.network_admin_policy, local.security_admin_policy,
+      local.database_admin_policy, local.database_admin_exainfra_policy, local.appdev_admin_policy, local.iam_admin_policy, local.storage_admin_policy,
+    local.exainfra_policy, local.net_fw_app_policy, local.ai_foundation_policy, local.custom_policy) : name => policy if policy != null
+  }
 
   #-- Basic grants on Root compartment
   basic_grants_default_grantees = concat(local.security_admin_group_name, local.network_admin_group_name, local.appdev_admin_group_name, local.database_admin_group_name, local.storage_admin_group_name)
@@ -731,15 +869,26 @@ locals {
     }
   }
 
+  aidp_root_policy = length(local.aidp_root_grants) > 0 ? {
+    (local.aidp_root_policy_name) = {
+      compartment_id = var.tenancy_ocid
+      name           = local.aidp_root_policy_name
+      description    = "${var.lz_provenant_label} root compartment policy for Oracle AI Data Platform tenancy permissions."
+      defined_tags   = local.policies_defined_tags
+      freeform_tags  = local.policies_freeform_tags
+      statements     = local.aidp_root_grants
+    }
+  } : {}
+
   root_policies = merge(local.basic_root_policy, local.appdev_admin_root_policy, local.security_admin_root_policy, local.network_admin_root_policy,
     local.iam_admin_root_policy, local.auditor_policy, local.announcement_reader_policy, local.cred_admin_policy, local.cost_admin_policy,
-  local.governance_root_policy)
+  local.governance_root_policy, local.aidp_root_policy)
 
 }
 
 module "lz_root_policies" {
   depends_on             = [module.lz_top_compartment, module.lz_groups] ### Explicitly declaring dependencies on the group and compartments modules.
-  source                 = "github.com/oci-landing-zones/terraform-oci-modules-iam//policies?ref=v0.3.4"
+  source                 = "github.com/oci-landing-zones/terraform-oci-modules-iam//policies?ref=v0.3.5"
   providers              = { oci = oci.home }
   tenancy_ocid           = var.tenancy_ocid
   policies_configuration = var.extend_landing_zone_to_new_region == false /*&& var.enable_template_policies == false*/ ? (local.use_existing_root_cmp_grants == true ? local.empty_policies_configuration : local.root_policies_configuration) : local.empty_policies_configuration
@@ -747,7 +896,7 @@ module "lz_root_policies" {
 
 module "lz_policies" {
   depends_on             = [module.lz_compartments, module.lz_groups, module.lz_dynamic_groups]
-  source                 = "github.com/oci-landing-zones/terraform-oci-modules-iam//policies?ref=v0.3.4"
+  source                 = "github.com/oci-landing-zones/terraform-oci-modules-iam//policies?ref=v0.3.5"
   providers              = { oci = oci.home }
   tenancy_ocid           = var.tenancy_ocid
   policies_configuration = var.extend_landing_zone_to_new_region == false /*&& var.enable_template_policies == false*/ ? local.policies_configuration : local.empty_policies_configuration
