@@ -25,7 +25,7 @@ locals {
       LZ-BASTION = {
         bastion_type          = local.bastion_service_type
         compartment_id        = local.security_compartment_id
-        subnet_id             = module.lz_network.provisioned_networking_resources.subnets["JUMPHOST-SUBNET"].id
+        subnet_id             = module.lz_network.provisioned_subnet_ids["JUMPHOST-SUBNET"].id
         defined_tags          = local.bastion_service_defined_tags
         freeform_tags         = local.bastion_service_freeform_tags
         cidr_block_allow_list = var.bastion_service_allowed_cidrs
@@ -74,8 +74,8 @@ locals {
 
         networking = {
           hostname                = "${var.service_label}-jump-host-instance"
-          subnet_id               = module.lz_network.provisioned_networking_resources.subnets["JUMPHOST-SUBNET"].id
-          network_security_groups = [module.lz_network.flat_map_of_provisioned_networking_resources["HUB-VCN-JUMP-HOST-NSG"].id]
+          subnet_id               = module.lz_network.provisioned_subnet_ids["JUMPHOST-SUBNET"].id
+          network_security_groups = [module.lz_network.provisioned_network_security_group_ids["HUB-VCN-JUMP-HOST-NSG"].id]
         }
 
         cloud_agent = var.deploy_bastion_service == true ? { plugins = [{ name : "Bastion", enabled : true }] } : null

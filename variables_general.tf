@@ -48,6 +48,11 @@ variable "customize_iam" {
   type        = bool
   default     = false
 }
+variable "display_ai_infra_settings" {
+  description = "Whether to display available options for enabling infrastructure resources for OCI managed AI services. Applicable to RMS deployments only, used for UI displaying."
+  type        = bool
+  default     = false
+}
 variable "define_net" {
   description = "Whether networking is defined as part of this Landing Zone. By default, no networking resources are created."
   type        = bool

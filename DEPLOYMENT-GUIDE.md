@@ -15,9 +15,12 @@
     1. [Networking](#networking-4)
     1. [Governance](#governance-4)
     1. [Security Services](#security-services)
-    1. [Deploying Lifecycle Environments](#deploying-lifecycle-environments)
+    1. [Handling Database Infrastructure](#database-infrastructure)
+    1. [Autonomous Recovery Service](#rcv)
+    1. [Deploying Infrastructure for managed AI services](#managed-ai-services)
     1. [Zero Trust Packet Routing (ZPR)](#zpr-use)
     1. [Remote Access over SSH](#bastion-use)
+    1. [Deploying Lifecycle Environments](#deploying-lifecycle-environments)
     1. [Express Deployment](#express-use)
     1. [Customizing Compartments](#custom-cmp)
 1. [Ways to Deploy](#ways-to-deploy)
@@ -185,7 +188,7 @@ At least four compartments are provisioned:
 
 Two extra compartments can be provisioned based on user choice:
 
-- **Exainfra**: designed to hold Exadata infrastructure resources that are primarily managed by Exadata administrators. It is recommended for customers where Exadata infrastructure and databases are managed by different groups.
+- **Exainfra**: designed to hold Exadata Cloud Service and Exadata Cloud@Customer infrastructure, VM clusters, and the databases hosted by those VM clusters. It is recommended when Exadata infrastructure and databases are managed by different groups.
 
 - **Enclosing compartment**: designed to enclose the aforementioned compartments within a single top compartment. It is highly recommended as it provides a boundary for your landing zone deployment.
 
@@ -203,8 +206,8 @@ By default, the Landing Zone defines the following personas that account for mos
 - **Security Administrators**: manage security services and resources including Vaults, Keys, Logging, Vulnerability Scanning, Web Application Firewall, Bastion, Service Connector Hub, ZPR.
 - **Network Administrators**: manage OCI network family, including VCNs, Load Balancers, DRGs, VNICs, IP addresses, OCI Network Firewall.
 - **Application Administrators**: manage application related resources including Compute images, OCI Functions, Kubernetes clusters, Streams, Object Storage, Block Storage, File Storage.
-- **Database Administrators**: manage database services, including Oracle VMDB (Virtual Machine), BMDB (Bare Metal), ADB (Autonomous databases), and ExaCS databases in Database compartment (and optionally at ExaCS compartment).
-- **ExaCS (Exadata Cloud Service) Administrators** (only created when ExaCS compartment is created): manage ExaCS infrastructure and VM clusters in the ExaCS compartment.
+- **Database Administrators**: manage database services, including Oracle VMDB (Virtual Machine), BMDB (Bare Metal), ADB (Autonomous databases), and databases hosted by Exadata Cloud Service or Exadata Cloud@Customer VM clusters. When the Exainfra compartment exists, database administrators use its VM clusters and manage the databases and backups hosted there. Otherwise, they also manage Exadata infrastructure and VM clusters in the Database compartment.
+- **Exadata Infrastructure Administrators** (only created when the Exainfra compartment is created): manage Exadata Cloud Service and Exadata Cloud@Customer infrastructure and VM clusters in the Exainfra compartment, while database management remains with Database Administrators.
 - **Storage Administrators**: the only group allowed to delete storage resources, including buckets, volumes and files. Used as a protection measure against inadvertent deletion of storage resources.
 - **Access Governance**: the group used by the Access Governance instance to query OCI services in the tenancy.
 
@@ -222,7 +225,7 @@ The Landing Zone defines four dynamic groups to satisfy common needs of workload
 
 ### Policies
 
-The Landing Zone policies implement segregation of duties and follow least privilege across the different personas (groups). Segregation of duties is implemented by granting specific permissions to a single target group on a single target compartment. For example, only *Network Administrators* can manage the network family, and this is done only in the *Network* compartment. Only *Database Administrators* can manage databases, and this is done only in the *Database* compartment. Least privilege is followed when deploying a database, *Database Administrators* are entitled to use the network managed by *Network Administrators* in the *Network* compartment. Some policies are common to all groups, like the ability to use Cloud Shell in tenancy and to manage Resource Manager stacks in their specific compartments. We recommend reviewing *config/iam\_policies.tf* for additional details.
+The Landing Zone policies implement segregation of duties and follow least privilege across the different personas (groups). Segregation of duties is implemented by granting specific permissions to a single target group on a single target compartment. For example, only *Network Administrators* can manage the network family, and this is done only in the *Network* compartment. Least privilege is followed when deploying a database: *Database Administrators* can use the network managed by *Network Administrators* in the *Network* compartment. When an Exainfra compartment is deployed, *Exadata Infrastructure Administrators* manage Exadata Cloud Service and Exadata Cloud@Customer infrastructure and VM clusters there, while *Database Administrators* use the VM clusters and manage the databases and backups hosted in the same compartment. When no Exainfra compartment is deployed, these Exadata responsibilities are intentionally consolidated under *Database Administrators* in the Database compartment. Some policies are common to all groups, like the ability to use Cloud Shell in tenancy and to manage Resource Manager stacks in their specific compartments. We recommend reviewing *config/iam\_policies.tf* for additional details.
 
 Policies are attached at different compartments depending on the presence of an enclosing compartment. If Landing Zone compartments are deployed directly under the Root compartment (thus no enclosing compartment), all policies are attached to the Root compartment. If Landing Zone compartments are deployed within an enclosing compartment, some policies are attached to the Root compartment, while some are attached to the enclosing compartment itself. This is to allow for free movement of Landing Zone compartments without the need to change policy statements. The policies at Root compartment are applied to resources at the tenancy level.
 
@@ -238,11 +241,11 @@ The Landing Zone now provides the ability to integrate groups and dynamic groups
 
 Core Landing Zone provides a flexible network configuration, ranging from isolated VCNs to Hub/Spoke topology with or without a firewall. It natively manages the following workload-specific VCN configurations:
 
-- **Standard Three-Tier Web Application VCN**: designed for traditional three-tier applications, up to four subnets are provisioned, one to host load balancers, one for application servers (middle-tiers) and one for database servers. Optionally, a subnet (either public or private) for jump hosts is available. The load balancer subnet can be made either public or private. The application servers' and database servers' are always created private. Route rules and network security rules are configured based on typical requirements of three-tier applications.
+- **Standard Three-Tier Web Application VCN**: designed for traditional three-tier applications, up to five subnets are provisioned, one to host load balancers, one for application servers (middle-tiers) and one for database servers. Optionally, three-tier VCNs can also be provisioned with two extra subnets: one for jump hosts (either public or private), and one to host private endpoints. The load balancer subnet can be made either public or private. The application servers' and database servers' are always created private. Route rules and network security rules are configured based on typical requirements of three-tier applications.
 
-- **Exadata Cloud Service (ExaCS) VCN**: designed for Oracle Exadata workloads, up to three private subnets are provisioned. One subnet for the Exadata client (the database itself) and optional subnets database backup and integration (for Oracle GoldenGate, and other integration solutions, for instance). Route rules and network security rules are configured based on Exadata Cloud Service requirements.
+- **Exadata Cloud Service (ExaCS) VCN**: designed for Oracle Exadata workloads, up to three private subnets are provisioned. One subnet for the Exadata client (the database itself) and optional subnets for database backup and integration (for integration solutions like Oracle Golden Gate). Route rules and network security rules are configured based on Exadata Cloud Service requirements.
 
-- **Oracle Kubernetes Engine (OKE) VCN**: designed for Kubernetes-based workloads, up to six subnets are provisioned, according to OKE requirements: Services subnet (public or private), where service like load balancers are expected to be deployed; Workers, API, Management, Pods (available for Native Pod Networking CNI) and Database subnets. Route rules and network security rules are configured based on OKE requirements.
+- **Oracle Kubernetes Engine (OKE) VCN**: designed for Kubernetes-based workloads, up to seven subnets are provisioned, according to OKE requirements: Services subnet (public or private), where service like load balancers are expected to be deployed; Workers, API, Management, Pods (available for Native Pod Networking CNI), Database and Private Endpoint subnets. Route rules and network security rules are configured based on OKE requirements.
 
 Three VCNs of each type are supported. All VCNs can be configured with no Internet connectivity or for on-premises connectivity. Inbound SSH access (TCP port 22) from 0.0.0.0/0 IP range is prohibited, but Core Landing Zone may be configured to leverage OCI Bastion Service for secure, restricted access from the Internet, an on-premises CIDR block, or both.
 
@@ -260,17 +263,17 @@ Core Landing Zone routing is opinionated to keep tenancy-wide guardrails intact 
 
 - Three-tier, OKE, and Exadata spokes can be provisioned with *\*_attach_to_drg = false* (default). In this mode each VCN routes northbound directly to its Internet Gateway. No inter-VCN routes exist and the DRG is not aware of the spoke CIDRs, effectively creating siloed landing pads for workloads that must remain isolated.
 - Internet ingress/egress is controlled per subnet: public subnets route to spoke's local Internet Gateway, whereas private subnets target the NAT Gateway.
-- Access to Oracle Services Network (OSN) endpoints (Object Storage, Autonomous Database, etc.) is handled through service gateways that are local to each isolated VCN, keeping traffic on the Oracle backbone without traversing the public internet.
+- Access to Oracle Services Network (OSN) endpoints (Object Storage, Autonomous Database, etc.) is handled through service gateways or private endpoints that are local to each isolated VCN, keeping traffic on the Oracle backbone without traversing the public internet.
 
 #### 2. Spokes attached to DRG without a Hub VCN
 
 - When *\*_attach_to_drg = true* but no Hub VCN is deployed, the DRG becomes the common hub. Route tables in each spoke point specific CIDRs to the DRG, enabling east-west connectivity still subject to network security rules.
-- Internet egress still goes through each spoke’s local Internet or NAT gateway, and OSN access uses local service gateways. Because there is no centralized Hub VCN, ingress filtering is handled by NSGs and security lists on each VCN boundary.
-- Access to Oracle Services Network (OSN) endpoints (Object Storage, Autonomous Database, etc.) is handled through service gateways that are local to each isolated VCN, keeping traffic on the Oracle backbone without traversing the public internet.
+- Internet egress still goes through each spoke’s local Internet or NAT gateway, and OSN access uses local service gateways or private endpoints. Because there is no centralized Hub VCN, ingress filtering is handled by NSGs and security lists on each VCN boundary.
+- Access to Oracle Services Network (OSN) endpoints (Object Storage, Autonomous Database, etc.) is handled through service gateways or private endpoints that are local to each isolated VCN, keeping traffic on the Oracle backbone without traversing the public internet.
 
 #### 3. Spokes attached to DRG with Hub VCN + firewall/appliance
 
-- Enabling the Hub VCN (with or without OCI Network Firewall/third-party appliance) introduces a DMZ VCN that acts as the DRG attachment point for north-south and east-west flows. Spokes advertise their CIDRs to the DRG and route inter-VCN traffic via the Hub, where additional inspection, traffic steering, or shared services (like OCI Bastion service) live.
+- Enabling the Hub VCN (with or without OCI Network Firewall/third-party appliance) introduces a VCN that acts as the DRG attachment point for north-south and east-west flows. Spokes advertise their CIDRs to the DRG and route inter-VCN traffic via the Hub, where additional inspection, traffic steering, or shared services (like OCI Bastion service) live.
 - Internet-bound routes in the spokes target the DRG, which in turn forwards traffic to the Hub VCN’s NAT Gateway only after passing through the firewall/appliance endpoints. 
 - Internet ingress traffic follows the inverse path (IGW -> firewall/appliance -> DRG -> spoke).
 - Connectivity to Oracle Services Network stays local on each spoke VCN.
@@ -288,7 +291,7 @@ Core Landing Zone favors NSGs (Network Security Groups) over security lists. Sec
 
 Security lists are deployed by Core Landing Zone only for very generic rules in some cases, or to satisfy some services that still do not support NSGs (like OCI Bastion service) or if explicitly requested by users through Terraform overrides.
 
-**Since NSGs are not inherited by resources, they must explicitly associated by customers on a per-resource basis.**.
+**Since NSGs are not inherited by resources, they must explicitly be associated by customers on a per-resource basis.**.
 
 Core Landing Zone native NSGs enforce opinionated connectivity for each workload type. The following sections describe the default NSGs controlling traffic inside each VCN. When the VCNs are connected and on-premises connectivity is configured, another set of cross-vcn NSGs is deployed (see section **Cross-VCN Network Security Rules**). Customers can also bring their own NSGs through the *define_\*_additional_nsgs* and *\*_additional_nsgs* variables.
 
@@ -397,8 +400,8 @@ tt_vcn1_additional_nsgs = {
       }
     }
   }
-  "TT-VCN-1-GENAI-PRIVATE-ENDPOINT-NSG" = {
-    display_name = "tt-vcn-1-genai-private-endpoint-nsg"
+  "TT-VCN-1-CUSTOM-AI-CLIENT-NSG" = {
+    display_name = "custom-ai-client-nsg"
     ingress_rules = {
       "INGRESS-FROM-APP-NSG-HTTPS" = {
         description  = "Allow application hosts in the Core Landing Zone app NSG to reach an OCI Generative AI private endpoint."
@@ -608,7 +611,7 @@ Core Landing Zone requires two Terraform applies to complete the network applian
 
 #### Detailed Deployment Workflow
 
-1. In a Hub VCN deployment, choose the appliance vendor (*hub_vcn_deploy_net_appliance_option = "Palo Alto Networks VM-Series Firewall"|"Fortinet FortiGate Firewall"*), and supply specific parameters like version, SSH public key, shape, allowed management CIDRs, and others.
+1. In a Hub VCN deployment, choose the marketplace appliance path (*hub_vcn_deploy_net_appliance_option = "Marketplace Image"*), set the appliance vendor (*net_appliance_image_vendor = "PaloAlto"|"Fortinet"*), and supply specific parameters like image name or version, SSH public key, shape, allowed management CIDRs, and others.
 2. Run the first *terraform plan/apply* to deploy Hub VCN and the appliances.
 3. Collect the OCIDs of NLB private IPs, available in *nlb_private_ip_addresses.OUTDOOR-NLB* and *nlb_private_ip_addresses.INDOOR_NLB* output variables. These are the OCIDs you will reference as entry points in the second Terraform execution.
 4. Set *hub_vcn_north_south_entry_point_ocid = nlb_private_ip_addresses.OUTDOOR-NLB* and *hub_vcn_east_west_entry_point_ocid = nlb_private_ip_addresses.INDOOR_NLB* in the Terraform configuration input variables.
@@ -979,7 +982,7 @@ Core Landing Zone can scale from single VCN deployment to large hub-and-spoke de
 | Core Landing Zone with Existing DRG and Externally Managed VCNs | [templates/hub-spoke-with-existing-drg-and-externally-managed-vcns](./templates/hub-spoke-with-existing-drg-and-externally-managed-vcns/) | Reuse an existing DRG and route externally managed workload VCNs through landing-zone public or on-premises access paths. |
 | Core Landing Zone with Existing DRG and Custom ExaCS VCN | [templates/hub-spoke-with-existing-drg-and-exa-vcn-custom](./templates/hub-spoke-with-existing-drg-and-exa-vcn-custom/) | Reuse an existing DRG with custom Exadata Cloud Service VCN CIDRs, subnet settings, and DRG attachment behavior. |
 
-## <a name="governance-4"></a>4.3 Governance
+## <a name="governance-4"></a>4.4 Governance
 ### Operational Monitoring
 #### Alerting
 The Landing Zone deploys a notification framework to alert administrators about infrastructure changes. By default, only IAM and networking events are enabled, as mandated by CIS Foundations Benchmark. Events for other resources can be enabled by Landing Zone users. OCI Events service monitors OCI resources for changes and posts a notification to a topic. Topic subscribers are then notified about such changes. This framework is deployed in each compartment including the Root compartment where IAM events are configured. Examples of such events are updates to a policy or the creation of a new VCN.
@@ -1108,31 +1111,163 @@ For more details on VSS in Landing Zone, check blog post [Vulnerability Scanning
 
 > **_NOTE:_** VSS is not mandated by CIS Foundations Benchmark.
 
-## <a name="deploying-lifecycle-environments"></a>4.5 Deploying Lifecycle Environments
+## <a name="database-infrastructure"></a>4.5 Handling Database Infrastructure
 
-Lifecycle environments refer to the different stages a workload goes through in the course of availability: typically, development, test and production or simply dev, test, prod.
+Core Landing Zone does not provision database systems, Exadata infrastructure, VM clusters, or databases. It provisions the compartments, administrator personas, and compartment-scoped IAM policies required to deploy and operate those resources. The Database Administrator persona is enabled whenever either the Database compartment or the Exainfra compartment is enabled.
 
-These environments can take different forms based on customer requirements, ranging from full isolation to no isolation (or full sharing). Some organizations may require completely segregated, where resources are deployed in separate compartments, managed by different groups in different regions (full isolation). Others may want to share a few Landing Zone resources, like networking and security services (middle ground). Others may need to share all Landing Zone resources and segregate environments based on the resources (instances, clusters, functions, databases, storage) where workloads are executed (no isolation). As a best practice we do not recommend no isolation mode, as changes in lower stages may affect production workloads. Say for instance you need to make changes to routing and security rules. A small distraction may get your production service inaccessible. No isolation is a bad choice for blast radius reasons and it limits customers ability to innovate.
+The resulting behavior is:
 
-Full isolation is a much superior option and is straightforward to implement, thanks to *service_label* input variable. The value assigned to this variable is used as prefix to all provisioned resources. Therefore, for creating a dev environment, you can assign it "dev". For a test environment, "test", and so on. For more isolation, **service_label** can be paired together with the *region* variable, and you get Landing Zone environments in a different regions.
+| `deploy_database_cmp` | `deploy_exainfra_cmp` | Database Administrator | Exadata Infrastructure Administrator | Database infrastructure handling |
+|---|---|---|---|---|
+| `false` | `false` | Disabled | Disabled | No Database or Exainfra compartment or corresponding administrator group or policy is deployed. |
+| `true` | `false` | Enabled | Disabled | Database Administrators manage database services and the complete Exadata Cloud Service and Exadata Cloud@Customer stack in the Database compartment. |
+| `false` | `true` | Enabled | Enabled | Exadata Infrastructure Administrators manage infrastructure and VM clusters in the Exainfra compartment. Database Administrators manage the databases and backups hosted by those VM clusters in the same compartment. No Database compartment is deployed. |
+| `true` | `true` | Enabled | Enabled | Database Administrators manage general database services in the Database compartment. Exadata infrastructure, VM clusters, and their hosted databases reside in the Exainfra compartment, with infrastructure and database responsibilities separated as described below. |
 
-A development environment in Phoenix:
-```
-region = "us-phoenix-1"
-service_label = "dev"
-```
+When a persona is enabled, Core Landing Zone either creates its group or grants the policies to the configured existing group.
 
-A production environment in Ashburn:
-```
-region = "us-ashburn-1"
-service_label = "prod"
-```
+### Dedicated Exainfra Compartment
 
-Fully isolated environments require distinct Terraform configurations, therefore distinct variable sets and distinct Terraform state files. With Terraform CLI, create a separate Workspace to each environment. With OCI Resource Manager, create a separate Stack to each environment. Check [Ways to Deploy](#ways-to-deploy) section for more details.
+When **deploy_exainfra_cmp** is `true`, Core Landing Zone preserves segregation of duties in the Exainfra compartment:
 
-The middle ground approach is typically used by organizations that see network and security as shared services and want to provide separate environments for application and database resources. This is coming soon in the Landing Zone.
+- **Exadata Infrastructure Administrators** manage Exadata Cloud Service infrastructure and cloud VM clusters (`cloud-exadata-infrastructures` and `cloud-vmclusters`) and Exadata Cloud@Customer infrastructure and VM clusters (`exadata-infrastructures` and `vmclusters`).
+- **Database Administrators** can read the Exadata infrastructure, use its VM clusters, and manage the database nodes, database homes, databases, pluggable databases, work requests, backups, and backup destinations associated with those clusters.
+- **Database Administrators do not manage the Exadata infrastructure or VM clusters** in this topology.
 
-## <a name="zpr-use"></a>4.6 Zero Trust Packet Routing (ZPR)
+The Database Administrator persona and policy remain enabled when **deploy_database_cmp** is `false`, because databases hosted by the VM clusters still require a database administrator in the Exainfra compartment.
+
+### Database Compartment Without a Dedicated Exainfra Compartment
+
+When **deploy_database_cmp** is `true` and **deploy_exainfra_cmp** is `false`, Core Landing Zone does not create an Exadata Infrastructure Administrator persona or policy. Database Administrators receive compartment-scoped permissions to manage both Exadata Cloud Service and Exadata Cloud@Customer infrastructure, VM clusters, databases, backups, and backup destinations in the Database compartment. This topology intentionally consolidates infrastructure and database administration under one persona.
+
+### VM Cluster and Database Placement
+
+An Exadata database is created from a VM cluster, and OCI presents VM clusters from the selected compartment during database creation. OCI also moves a VM cluster and its dependent resources together when changing compartments for both [Exadata Cloud@Customer VM clusters](https://docs.oracle.com/en-us/iaas/tools/oci-cli/latest/oci_cli_docs/cmdref/db/vm-cluster/change-compartment.html) and [Exadata Cloud Service cloud VM clusters](https://docs.oracle.com/en-us/iaas/tools/oci-cli/latest/oci_cli_docs/cmdref/db/cloud-vm-cluster/change-compartment.html). Consequently, the database-management policies must target the compartment that contains the hosting VM cluster. This is why databases hosted by Exadata VM clusters are managed in the Exainfra compartment when it exists, rather than in the separate Database compartment.
+
+The Exadata grants described in this section are scoped to the Database or Exainfra compartment; they do not grant tenancy-wide management of database infrastructure. For the individual Exadata Cloud@Customer IAM resource types and permissions, see [Policy Details for Oracle Exadata Database Service on Cloud@Customer](https://docs.oracle.com/en-us/iaas/exadata/doc/ecc-policy-details.html).
+
+
+## <a name="rcv"></a>4.7 Autonomous Recovery Service
+
+### Overview
+
+[OCI Database Autonomous Recovery Service](https://docs.oracle.com/en-us/iaas/recovery-service/index.html) is a centralized, fully managed backup solution for OCI databases. Core Landing Zone can provision the network, protection policy, and IAM infrastructure needed to use the service with databases in supported three-tier, OKE, and Exadata VCNs.
+
+Recovery Service support is opt-in for each VCN. Enabling it does not register protected databases or manage backup jobs and restore operations; those database lifecycle actions are performed separately after the Landing Zone infrastructure is available.
+
+### Interface Design
+
+Each supported VCN exposes an enable input and a backup retention input.
+
+| VCN type | Number of VCNs | Enable input | Retention input | Number of VCNs |
+| --- | --- | --- | --- | --- |
+| Three-tier | `enable_tt_vcn1_rcv_infra` | true \| false| `tt_vcn1_rcv_backup_retention_period_in_days` | 0 for disabled, or number of days 14 or more |
+| Three-tier | `enable_tt_vcn2_rcv_infra` | true \| false| `tt_vcn2_rcv_backup_retention_period_in_days` | 0 for disabled, or number of days 14 or more |
+| Three-tier | `enable_tt_vcn3_rcv_infra` | true \| false| `tt_vcn3_rcv_backup_retention_period_in_days` | 0 for disabled, or number of days 14 or more |
+| OKE | `enable_oke_vcn1_rcv_infra` | true \| false| `oke_vcn2_rcv_backup_retention_period_in_days` |  0 for disabled, or number of days 14 or more |
+| OKE | `enable_oke_vcn2_rcv_infra` | true \| false| `oke_vcn2_rcv_backup_retention_period_in_days` |  0 for disabled, or number of days 14 or more |
+| OKE | `enable_oke_vcn3_rcv_infra` | true \| false| `oke_vcn3_rcv_backup_retention_period_in_days` |  0 for disabled, or number of days 14 or more |
+| Exadata | `enable_exa_vcn1_rcv_infra` | true \| false| `exa_vcn3_rcv_backup_retention_period_in_days` | 0 for disabled, or number of days 14 or more |
+| Exadata | `enable_exa_vcn2_rcv_infra` | true \| false| `exa_vcn2_rcv_backup_retention_period_in_days` | 0 for disabled, or number of days 14 or more |
+| Exadata | `enable_exa_vcn3_rcv_infra` | true \| false| `exa_vcn3_rcv_backup_retention_period_in_days` | 0 for disabled, or number of days 14 or more |
+
+The retention inputs are numbers and default to 0 days, meaning protection policies are disabled by default. Use 0 to disable a protection policy; otherwise, the minimum is 14 days. Infrastructure is created only when `deploy_exainfra_cmp` or `deploy_database_cmp` is `true`, the matching VCN is added, and its Recovery Service enable input is `true`. OKE VCN support also requires the matching optional database subnet provisioned.
+
+### Supported Resources
+
+The Landing Zone supports Recovery Service infrastructure for the following VCNs and subnet arrangements:
+
+| VCN type | Supported VCNs | Subnet associated with the Recovery Service subnet | Provisioning condition |
+| --- | --- | --- | --- |
+| Three-tier | TT-VCN-1, TT-VCN-2, TT-VCN-3 | DB subnet | Matching VCN and Recovery Service enable inputs |
+| OKE | OKE-VCN-1, OKE-VCN-2, OKE-VCN-3 | Optional DB subnet | Matching VCN, DB subnet, and Recovery Service enable inputs |
+| Exadata | EXA-VCN-1, EXA-VCN-2, EXA-VCN-3 | Backup subnet when enabled; otherwise client subnet | Matching VCN and Recovery Service enable inputs |
+
+For each enabled VCN, the Landing Zone creates:
+
+- A Recovery Service subnet resource associated with the database-facing subnet shown above.
+- A protection policy using the configured backup retention period (at least 14 days).
+- A VCN-local `rcv-nsg` that allows TCP ports 2484 and 8005. The allowed source is the DB subnet CIDR for three-tier and OKE VCNs, and the client or backup subnet CIDR for Exadata VCNs.
+
+When the Landing Zone manages IAM policies, it grants the database administrators group permission to manage `recovery-service-family` in the exainfra and database compartments. The tenancy-level services policy also allows the Database Service and Recovery Service to manage `recovery-service-family`, and allows the Database Service to manage tag namespaces so protected databases can inherit tags from their source databases.
+
+To preserve least privilege, Core Landing Zone does not grant Recovery Service tenancy-wide management of `virtual-network-family`. OCI databases have built-in access to network resources within their database VCN; if a deployment demonstrates that additional network permissions are required, grant only the necessary individual network resource types in the network compartment.
+
+For a minimal configuration, see [Core Landing Zone with Standalone Default Three-Tier VCN](./templates/standalone-three-tier-vcn-defaults/), which enables Autonomous Recovery Service for `TT-VCN-1` with a 30-day retention period.
+
+
+## <a name="managed-ai-services"></a>4.3 Deploying Infrastructure for managed AI services
+
+Core Landing Zone prepares compartments, IAM policies, dynamic groups, and optional network constructs for OCI managed AI services. It does not create models, endpoints, API keys, projects, workbenches, notebooks, compute clusters, GPU instances, OKE clusters, databases, or application pipelines. The five global *enable_* variables default to *false*, can be enabled independently, and require the Application compartment through *deploy_app_cmp = true*. In OCI Resource Manager, select **Enable Infrastructure for OCI Managed AI Services** to display these variables; *display_ai_infra_settings* is a schema display control rather than a Terraform module input.
+
+### Selecting the managed AI services
+
+| Variable | IAM impact | Networking impact |
+| --- | --- | --- |
+| **enable_generative_ai_infra** | Adds AppDev administrator and runtime grants targeting the Application compartment and creates or reuses dynamic groups for hosted applications, vector store connectors, and semantic stores. In *CORELZ_MANAGED* mode, additional runtime grants target the enabled Application, Database, Security, and Exainfra compartments. | Automatically creates a *GenAI NSG* in every enabled Three-Tier, OKE, and Exadata VCN. Its rules depend on whether that VCN has a private endpoint subnet. |
+| **enable_aidp_infra** | Adds AppDev administrator grants targeting the Application compartment and enabled Database and Exainfra compartments, AIDP service-principal grants targeting the Application and Network compartments, and tenancy-wide IAM inspection and tag-namespace grants in a root policy. | Automatically creates an *AIDP NSG* in enabled Three-Tier VCNs and enabled Exadata VCNs with Integration subnets. It does not create an AIDP Workbench. |
+| **enable_ai_compute_infra** | Allows AppDev administrators to manage Compute Management, Compute Clusters, and Compute Capacity Reservations in the Application compartment. | Does not create compute or networking. Workload stacks choose their existing workload subnet and NSGs. |
+| **enable_data_science_infra** | Allows AppDev administrators to manage Data Science and Data Flow, configures the Data Science runtime dynamic group for logging, and allows the Data Science service to use the Network compartment's virtual network resources. | Does not create a subnet, NSG, notebook session, or job. Workload owners select an existing workload subnet or independently enable the shared private endpoint subnet. |
+| **enable_prebuilt_ai_services_infra** | Allows AppDev administrators to manage OCI Language, Vision, Speech, and Document Understanding in the Application compartment. | Does not create networking. A supported service private endpoint can use the independently enabled shared private endpoint subnet. |
+
+All enabled compartment-scoped service grants are consolidated in the AI Foundation policy attached to the Landing Zone enclosing compartment. The compartments named above are the targets of its policy statements, not the compartment where the policy resource is attached. The existing AppDev administrator group is the AI administrator persona; no separate AI administrator group is created.
+
+When *enable_generative_ai_infra = true*, *generative_ai_data_access_policy_mode* controls ownership of runtime data-access policies. *CORELZ_MANAGED* authorizes the Responses API and grants the Generative AI runtime identities access to the relevant enabled Application, Database, Security, and Exainfra compartments. *WORKLOAD_MANAGED* retains the platform prerequisites but requires workload stacks to supply narrower Responses API and data-access policies.
+
+AIDP requires two tenancy-wide grants for IAM inspection and use of its tag namespace. Core Landing Zone isolates them in the root-attached *\<service-label\>-aidp-root-policy*; all other AIDP grants remain in the enclosing-compartment AI Foundation policy. When *policies_in_root_compartment = "USE"*, Core Landing Zone does not create root policies, so these grants must already be managed externally.
+
+### Choosing networking for managed AI services
+
+The global AI service flags and private endpoint subnets are intentionally independent. This allows a custom solution to use a dedicated private endpoint subnet without enabling any OCI managed AI service IAM profile. Conversely, an AI service can be enabled for IAM without creating the subnet. In that mode, users can associate the service NSG with VNICs in existing subnets whose existing routes reach services through the Oracle Services Network.
+
+#### Private endpoint subnets
+
+Private Endpoints provide in-VCN secure private connectivity to OCI-managed services, avoiding the usage of public endpoints.
+
+Set *define_net = true*, enable the required Three-Tier, OKE, or Exadata VCN, and set its *add_\<vcn_prefix\>_private_endpoint_subnet* variable to *true*. Each of the nine supported spoke VCN slots can have one regional shared private endpoint subnet. It can host Generative AI service private endpoints and AIDP data-access private endpoints such as Autonomous Database, Object Storage, and Streaming.
+
+Core Landing Zone derives a non-overlapping *\/28* from the parent VCN unless an explicit CIDR is supplied. Explicit valid *\/29* and *\/30* subnets are supported, but users must size the subnet for the expected number of endpoint VNICs. The subnet is private and prohibits public IPs. By default, its route table has no managed Service Gateway, NAT Gateway, Internet Gateway, cross-VCN, or on-premises route. Custom route rules can be provided via override variables *\<vcn_prefix\>_private_endpoint_subnet_additional_route_rules* defined in [locals_overrides.tf](./locals_overrides.tf).
+
+#### Generative AI
+
+When *enable_generative_ai_infra = true*, Core Landing Zone creates a *GenAI NSG* in every enabled Three-Tier, OKE, and Exadata VCN.
+
+When the VCN has a private endpoint subnet, users must further associate the *GenAI NSG* with the Generative AI private endpoint VNIC. It has no managed egress and allows stateful TCP/443 ingress from these same-VCN workload NSGs:
+
+- Three-Tier VCN: Application and Database NSGs.
+- OKE VCN: Workers, Pods (for native pod networking), and Database (when its optional DB subnet exists) NSGs.
+- Exadata VCN: Client NSG.
+
+When the VCN does not have a private endpoint subnet, the *GenAI NSG* has no managed ingress and allows stateful TCP/443 egress to *all-services*. Users can further associate it with client workload VNICs that reach Generative AI through their existing subnet's Service Gateway path.
+
+There is no managed cross-VCN access to another spoke VCN's Generative AI private endpoint.
+
+#### AI Data Platform
+
+AIDP uses a Three-Tier Application subnet or an Exadata Integration subnet for connecting AIDP workspaces to data sources privately. Core Landing Zone does not support AIDP Workspace placement in OKE VCNs.
+
+When *enable_aidp_infra = true*, Core Landing Zone automatically creates an *AIDP NSG* in every enabled Three-Tier VCN and every enabled Exadata VCN whose Integration subnet exists. An Exadata VCN without Integration remains valid and simply receives no *AIDP NSG*. The AIDP service principal always receives *manage vnics*, *use subnets*, and *use network-security-groups* in the Network compartment.
+
+When the VCN has a private endpoint subnet, the NSG has stateful self-referencing ingress from *AIDP NSG* on:
+
+- TCP/443 for HTTPS service endpoints.
+- TCP/1521 and TCP/1522 for Database service endpoints.
+- TCP/9092 for Streaming's Kafka-compatible endpoint.
+- The database ports configured for that VCN.
+
+In private endpoint mode, the *AIDP NSG* has no managed OSN egress.
+
+Without the private endpoint subnet, it has no managed ingress and allows stateful TCP/443, TCP/1521, TCP/1522, and TCP/9092 egress to *all-services*; the existing Three-Tier VCN Application subnet or the Exadata Integration subnet provides the Service Gateway path.
+
+In both modes, users must associate the *AIDP NSG* with the AIDP Workspace VNIC.
+
+The *AIDP NSG* retains direct stateful egress to the same-VCN Three-Tier Database or Exadata Client NSG, with matching destination ingress over the configured database ports. AIDP ingress and egress override locals retain their existing names and merge last.
+
+For a Three-Tier AIDP workspace that needs an Exadata database in another routed VCN, users must attach the Three-Tier VCN *cross-vcn-app-nsg* to the AIDP Workspace VNIC. Conversely, on the Exadata VCN, users must attach the *cross-vcn-client-nsg* to the Exadata database resource. Core Landing Zone creates the constrained source-egress and target-ingress pair only when both VCNs are DRG-attached, constrained NSGs are enabled, and the selected topology declares the route.
+
+Use the *AIDP NSG* ingress and egress override locals, or attach another NSG, for private Kafka brokers, MySQL, PostgreSQL, MySQL HeatWave, REST APIs, MCP servers, SaaS data sources, on-premises systems, and other data assets. These overrides change security rules only; they do not create NAT, DRG, peering, DNS, or other routing.
+
+## <a name="zpr-use"></a>4.7 Zero Trust Packet Routing (ZPR)
 
 OCI Core Landing Zone supports Zero Trust Packet Routing (ZPR). ZPR prevents unauthorized access with intent-based security policies that you write for OCI resources and assign security attributes to. Security attributes are labels that ZPR uses to identify and organize OCI resources. ZPR enforces policy at the network level each time access is requested, regardless of potential network architecture changes or misconfigurations.
 
@@ -1220,7 +1355,9 @@ in <zpr_namespace_name>.net:exa-vcn-1 VCN allow '10.1.2.0/24' to connect to <zpr
 ```
 in <zpr_namespace_name>.net:exa-vcn-1 VCN allow '<bastion service CIDR>/32' to connect to <zpr_namespace_name>.bastion:<service_label> endpoints with protocol='tcp/22'
 ```
-## <a name="bastion-use"></a>4.7 Remote Access over SSH
+
+
+## <a name="bastion-use"></a>4.8 Remote Access over SSH
 
 OCI Core Landing Zone enables remote access to private resources via a combination of a jump host with OCI Bastion service. The main idea is providing private access to the jump host via the Bastion service, and using the jump host as a bridge to resources in other VCNs. Both the Bastion service and the jump host are deployed in a specific "JumpHost" subnet within the Hub VCN. 
 
@@ -1276,11 +1413,37 @@ The default bastion service name is the value of *service\_label* variable conca
 <img src="images/Deploy_Bastion2.png" alt="Deploy Bastion" width="800"/>
 <img src="images/Deploy_Bastion3.png" alt="Deploy Bastion" width="800"/>
 
-## <a name="express-use"></a>4.8 Express Deployment
+
+## <a name="deploying-lifecycle-environments"></a>4.6 Deploying Lifecycle Environments
+
+Lifecycle environments refer to the different stages a workload goes through in the course of availability: typically, development, test and production or simply dev, test, prod.
+
+These environments can take different forms based on customer requirements, ranging from full isolation to no isolation (or full sharing). Some organizations may require completely segregated, where resources are deployed in separate compartments, managed by different groups in different regions (full isolation). Others may want to share a few Landing Zone resources, like networking and security services (middle ground). Others may need to share all Landing Zone resources and segregate environments based on the resources (instances, clusters, functions, databases, storage) where workloads are executed (no isolation). As a best practice we do not recommend no isolation mode, as changes in lower stages may affect production workloads. Say for instance you need to make changes to routing and security rules. A small distraction may get your production service inaccessible. No isolation is a bad choice for blast radius reasons and it limits customers ability to innovate.
+
+Full isolation is a much superior option and is straightforward to implement, thanks to *service_label* input variable. The value assigned to this variable is used as prefix to all provisioned resources. Therefore, for creating a dev environment, you can assign it "dev". For a test environment, "test", and so on. For more isolation, **service_label** can be paired together with the *region* variable, and you get Landing Zone environments in a different regions.
+
+A development environment in Phoenix:
+```
+region = "us-phoenix-1"
+service_label = "dev"
+```
+
+A production environment in Ashburn:
+```
+region = "us-ashburn-1"
+service_label = "prod"
+```
+
+Fully isolated environments require distinct Terraform configurations, therefore distinct variable sets and distinct Terraform state files. With Terraform CLI, create a separate Workspace to each environment. With OCI Resource Manager, create a separate Stack to each environment. Check [Ways to Deploy](#ways-to-deploy) section for more details.
+
+The middle ground approach is typically used by organizations that see network and security as shared services and want to provide separate environments for application and database resources. This is coming soon in the Landing Zone.
+
+
+## <a name="express-use"></a>4.9 Express Deployment
 
 Core Landing Zone offers an "express" deployment method for a streamlined RMS experience; the express method provides a reduced number of input options. There is a "Free Tenancy?" option that when checked makes the User Interface hide the Cloud Guard and Security Zones input sections because those services are not available with a free tenancy. The default behavior is false (unchecked). For CLI activation, use the *is\_free\_tenancy* variable. Additionally, there is a "Display Security/Logging/Governance Settings?" checkbox (*display\_security\_logging\_governance\_settings* variable) that when clicked, displays the available settings for setting up Cloud Guard, Security Zones, Logging, Vulnerability Scanning and Cost Management.
 
-## <a name="custom-cmp"></a>4.9 Customizing Compartments
+## <a name="custom-cmp"></a>4.10 Customizing Compartments
 
 Core Landing Zone supports suppressing and adding compartments to its [compartments topology](./images/arch_simple.png).
 
@@ -1291,11 +1454,11 @@ For suppressing compartments, use the following variables:
 
 **Note:** When suppressing a compartment, the Core Landing Zone also suppresses groups, dynamic groups and policies associated with the suppressed compartment.
 
-For adding a compartment for Exadata Cloud service, use the following variable:
+For adding a compartment for Exadata Cloud Service and Exadata Cloud@Customer infrastructure, use the following variable:
 
-- **deploy_exainfa_cmp**: when true, a compartment for Exadata Cloud Service resources is deployed. Default value is false.
+- **deploy_exainfra_cmp**: when true, a compartment for Exadata Cloud Service and Exadata Cloud@Customer infrastructure, VM clusters, and their databases is deployed. Default value is false.
 
-**Note:** When adding a compartment for Exadata Cloud service, the Core Landing Zone also adds a group and policies for managing Exadata Cloud resources in the compartment.
+**Note:** When adding the Exainfra compartment, Core Landing Zone creates separate Exadata infrastructure and database administrator responsibilities. Without it, database administrators manage both Exadata infrastructure and database resources in the Database compartment.
 
 For adding other compartments to Core Landing Zone topology, users should override the **additional_enclosed_compartments** variable, utilizing [Terraform overrides feature](https://developer.hashicorp.com/terraform/language/files/override).The idea is that users provide a file name that ends with *_override.tf*, overriding some existing variables in the Core Landing Zone original code. This approach allows for customizations without changing the original code, thus providing protection against eventual updates to Core Landing Zone code base.  
 
@@ -1323,7 +1486,7 @@ For changing the default compartment names without using an override, users shou
 - **custom_security_compartment_name**: the user-provided security compartment name.
 - **custom_app_compartment_name**: the user-provided app compartment name when **deploy_app_cmp** is true.
 - **custom_database_compartment_name**: the user-provided database compartment name when **deploy_database_cmp** is true.
-- **custom_exainfra_compartment_name**: the user-provided Exadata Cloud Service compartment name when **deploy_exainfa_cmp** is true.
+- **custom_exainfra_compartment_name**: the user-provided Exadata infrastructure compartment name when **deploy_exainfra_cmp** is true.
 
 Note that the custom compartment names are taken literally, i.e., they are not concatenated with service_label variable or any other prefix.
 

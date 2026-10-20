@@ -11,6 +11,66 @@ variable "add_oke_vcn1" {
   description = "Whether to add a VCN configured for OKE workload deployments, with at least three subnets: service (public by default), workers (private) and API endpoint (private). Additionally, a private subnet for pods deployment is created if the OKE CNI Type is 'Native'. You can also enable an extra private subnet for managing the OKE cluster. The added VCN is labelled 'OKE-VCN-1'. The label should be used in the '*_routable_vcns' fields of other VCNs for constraining network traffic to those respective VCNs in a Network topology."
 }
 
+# ------------------------------------------------------
+# ----- private endpoint networking
+# ------------------------------------------------------
+variable "add_oke_vcn1_private_endpoint_subnet" {
+  type        = bool
+  default     = false
+  description = "Whether to add the OKE-VCN-1 shared private endpoint subnet."
+}
+variable "oke_vcn1_private_endpoint_subnet_name" {
+  type        = string
+  default     = null
+  description = "The OKE-VCN-1 private endpoint subnet name."
+}
+variable "oke_vcn1_private_endpoint_subnet_cidr" {
+  type        = string
+  default     = null
+  description = "The OKE-VCN-1 private endpoint subnet CIDR. When null, Core Landing Zone derives a /28."
+  validation {
+    condition     = var.oke_vcn1_private_endpoint_subnet_cidr == null || can(cidrhost(var.oke_vcn1_private_endpoint_subnet_cidr, 0))
+    error_message = "VALIDATION FAILURE: oke_vcn1_private_endpoint_subnet_cidr must be null or a valid CIDR."
+  }
+}
+variable "add_oke_vcn2_private_endpoint_subnet" {
+  type        = bool
+  default     = false
+  description = "Whether to add the OKE-VCN-2 shared private endpoint subnet."
+}
+variable "oke_vcn2_private_endpoint_subnet_name" {
+  type        = string
+  default     = null
+  description = "The OKE-VCN-2 private endpoint subnet name."
+}
+variable "oke_vcn2_private_endpoint_subnet_cidr" {
+  type        = string
+  default     = null
+  description = "The OKE-VCN-2 private endpoint subnet CIDR. When null, Core Landing Zone derives a /28."
+  validation {
+    condition     = var.oke_vcn2_private_endpoint_subnet_cidr == null || can(cidrhost(var.oke_vcn2_private_endpoint_subnet_cidr, 0))
+    error_message = "VALIDATION FAILURE: oke_vcn2_private_endpoint_subnet_cidr must be null or a valid CIDR."
+  }
+}
+variable "add_oke_vcn3_private_endpoint_subnet" {
+  type        = bool
+  default     = false
+  description = "Whether to add the OKE-VCN-3 shared private endpoint subnet."
+}
+variable "oke_vcn3_private_endpoint_subnet_name" {
+  type        = string
+  default     = null
+  description = "The OKE-VCN-3 private endpoint subnet name."
+}
+variable "oke_vcn3_private_endpoint_subnet_cidr" {
+  type        = string
+  default     = null
+  description = "The OKE-VCN-3 private endpoint subnet CIDR. When null, Core Landing Zone derives a /28."
+  validation {
+    condition     = var.oke_vcn3_private_endpoint_subnet_cidr == null || can(cidrhost(var.oke_vcn3_private_endpoint_subnet_cidr, 0))
+    error_message = "VALIDATION FAILURE: oke_vcn3_private_endpoint_subnet_cidr must be null or a valid CIDR."
+  }
+}
 variable "oke_vcn1_cni_type" {
   type        = string
   default     = "Flannel"
@@ -176,6 +236,21 @@ variable "oke_vcn1_db_ingress_destination_ports" {
   validation {
     condition     = length(var.oke_vcn1_db_ingress_destination_ports) == 0 ? true : alltrue([for v in var.oke_vcn1_db_ingress_destination_ports : can(regex("^[^:]+:[^:]+$", v))])
     error_message = "VALIDATION FAILURE: Invalid value provided for oke_vcn1_db_ingress_destination_ports variable: all values must be in the form protocol:port, with exactly one ':' separating protocol and port values."
+  }
+}
+variable "enable_oke_vcn1_rcv_infra" {
+  type        = bool
+  default     = false
+  description = "Whether to enable the Autonomous Recovery Service infrastructure for databases in OKE-VCN-1 db subnet."
+}
+variable "oke_vcn1_rcv_backup_retention_period_in_days" {
+  type        = number
+  default     = 0
+  description = "The number of days to retain backup data in the Autonomous Recovery Service for databases in OKE-VCN-1 db subnet. Use 0 to disable the policy; otherwise, the minimum is 14 days."
+
+  validation {
+    condition     = var.oke_vcn1_rcv_backup_retention_period_in_days == 0 || var.oke_vcn1_rcv_backup_retention_period_in_days >= 14
+    error_message = "The backup retention period must be 0 or at least 14 days."
   }
 }
 
@@ -404,6 +479,21 @@ variable "oke_vcn2_db_ingress_destination_ports" {
     error_message = "VALIDATION FAILURE: Invalid value provided for oke_vcn2_db_ingress_destination_ports variable: all values must be in the form protocol:port, with exactly one ':' separating protocol and port values."
   }
 }
+variable "enable_oke_vcn2_rcv_infra" {
+  type        = bool
+  default     = false
+  description = "Whether to enable the Autonomous Recovery Service infrastructure for databases in OKE-VCN-2 db subnet."
+}
+variable "oke_vcn2_rcv_backup_retention_period_in_days" {
+  type        = number
+  default     = 0
+  description = "The number of days to retain backup data in the Autonomous Recovery Service for databases in OKE-VCN-2 db subnet. Use 0 to disable the policy; otherwise, the minimum is 14 days."
+
+  validation {
+    condition     = var.oke_vcn2_rcv_backup_retention_period_in_days == 0 || var.oke_vcn2_rcv_backup_retention_period_in_days >= 14
+    error_message = "The backup retention period must be 0 or at least 14 days."
+  }
+}
 
 variable "add_oke_vcn2_mgmt_subnet" {
   type        = bool
@@ -628,6 +718,21 @@ variable "oke_vcn3_db_ingress_destination_ports" {
   validation {
     condition     = length(var.oke_vcn3_db_ingress_destination_ports) == 0 ? true : alltrue([for v in var.oke_vcn3_db_ingress_destination_ports : can(regex("^[^:]+:[^:]+$", v))])
     error_message = "VALIDATION FAILURE: Invalid value provided for oke_vcn3_db_ingress_destination_ports variable: all values must be in the form protocol:port, with exactly one ':' separating protocol and port values."
+  }
+}
+variable "enable_oke_vcn3_rcv_infra" {
+  type        = bool
+  default     = false
+  description = "Whether to enable the Autonomous Recovery Service infrastructure for databases in OKE-VCN-3 db subnet."
+}
+variable "oke_vcn3_rcv_backup_retention_period_in_days" {
+  type        = number
+  default     = 0
+  description = "The number of days to retain backup data in the Autonomous Recovery Service for databases in OKE-VCN-3 db subnet. Use 0 to disable the policy; otherwise, the minimum is 14 days."
+
+  validation {
+    condition     = var.oke_vcn3_rcv_backup_retention_period_in_days == 0 || var.oke_vcn3_rcv_backup_retention_period_in_days >= 14
+    error_message = "The backup retention period must be 0 or at least 14 days."
   }
 }
 

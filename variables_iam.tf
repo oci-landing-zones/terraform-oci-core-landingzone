@@ -24,6 +24,46 @@ variable "deploy_app_cmp" {
   default     = true
   description = "Whether the application compartment is deployed."
 }
+
+variable "enable_generative_ai_infra" {
+  type        = bool
+  default     = false
+  description = "Whether to configure Generative AI IAM grants in the Application and, for CORELZ_MANAGED, enabled Database, Security, and Exainfra compartments, together with runtime dynamic groups and NSGs."
+}
+
+variable "enable_data_science_infra" {
+  type        = bool
+  default     = false
+  description = "Whether to configure Data Science and Data Flow IAM grants in the Application compartment, Data Science network grants in the Network compartment, and a runtime dynamic group."
+}
+
+variable "enable_prebuilt_ai_services_infra" {
+  type        = bool
+  default     = false
+  description = "Whether to configure IAM grants for OCI Language, Vision, Speech, and Document Understanding in the Application compartment."
+}
+
+variable "enable_ai_compute_infra" {
+  type        = bool
+  default     = false
+  description = "Whether to configure IAM grants for OCI Compute Management, Compute Clusters, and Compute Capacity Reservations in the Application compartment."
+}
+
+variable "enable_aidp_infra" {
+  type        = bool
+  default     = false
+  description = "Whether to configure tenancy-wide AIDP IAM grants, compartment grants in the Application, Network, and enabled Database and Exainfra compartments, and NSGs."
+}
+
+variable "generative_ai_data_access_policy_mode" {
+  type        = string
+  default     = "CORELZ_MANAGED"
+  description = "Whether Core Landing Zone or workload stacks manage Generative AI API-key authorization and runtime data access."
+  validation {
+    condition     = contains(["CORELZ_MANAGED", "WORKLOAD_MANAGED"], var.generative_ai_data_access_policy_mode)
+    error_message = "VALIDATION FAILURE: generative_ai_data_access_policy_mode must be CORELZ_MANAGED or WORKLOAD_MANAGED."
+  }
+}
 variable "deploy_database_cmp" {
   type        = bool
   default     = true
@@ -32,7 +72,7 @@ variable "deploy_database_cmp" {
 variable "deploy_exainfra_cmp" {
   type        = bool
   default     = false
-  description = "Whether a separate compartment for Exadata Cloud Service Infrastructure is deployed."
+  description = "Whether a separate infrastructure compartment for Exadata Cloud Service and Exadata Cloud@Customer is deployed."
 }
 variable "custom_enclosing_compartment_name" {
   type        = string
@@ -149,7 +189,7 @@ variable "rm_existing_id_domain_announcement_reader_group_name" {
 variable "rm_existing_id_domain_exainfra_admin_group_name" {
   type        = list(string)
   default     = []
-  description = "The existing Exadata CS infrastructure admin group name in the existing identity domain."
+  description = "The existing Exadata infrastructure admin group name in the existing identity domain."
 }
 variable "rm_existing_id_domain_cost_admin_group_name" {
   type        = list(string)
@@ -190,6 +230,26 @@ variable "existing_id_domain_net_fw_app_dyn_group_name" {
   type        = string
   default     = ""
   description = "The existing dynamic group name in the existing identity domain for running network firewall appliances."
+}
+variable "existing_id_domain_ai_data_science_runtime_dyn_group_name" {
+  type        = string
+  default     = ""
+  description = "The existing dynamic group name in the existing identity domain for Data Science runtimes."
+}
+variable "existing_id_domain_ai_genai_vector_store_connectors_dyn_group_name" {
+  type        = string
+  default     = ""
+  description = "The existing dynamic group name in the existing identity domain for Generative AI vector store connectors."
+}
+variable "existing_id_domain_ai_genai_hosted_applications_dyn_group_name" {
+  type        = string
+  default     = ""
+  description = "The existing dynamic group name in the existing identity domain for Generative AI hosted applications and deployments."
+}
+variable "existing_id_domain_ai_genai_semantic_stores_dyn_group_name" {
+  type        = string
+  default     = ""
+  description = "The existing dynamic group name in the existing identity domain for Generative AI semantic stores."
 }
 variable "identity_domain_option" {
   type        = string
@@ -324,12 +384,12 @@ variable "existing_announcement_reader_group_name" {
 variable "rm_existing_exainfra_admin_group_name" {
   type        = string
   default     = ""
-  description = "Only applicable to RMS deployments. The existing group to which Exadata Cloud Service infrastructure management policies will be granted to."
+  description = "Only applicable to RMS deployments. The existing group to which Exadata Cloud Service and Exadata Cloud@Customer infrastructure management policies will be granted."
 }
 variable "existing_exainfra_admin_group_name" {
   type        = list(string)
   default     = []
-  description = "The existing group to which Exadata Cloud Service infrastructure management policies will be granted to."
+  description = "The existing group to which Exadata Cloud Service and Exadata Cloud@Customer infrastructure management policies will be granted."
 }
 
 variable "rm_existing_cost_admin_group_name" {
@@ -398,6 +458,26 @@ variable "existing_net_fw_app_dyn_group_name" {
   type        = string
   default     = ""
   description = "Existing network firewall appliance dynamic group for reading firewall instances."
+}
+variable "existing_ai_data_science_runtime_dyn_group_name" {
+  type        = string
+  default     = ""
+  description = "Existing Data Science runtime dynamic group."
+}
+variable "existing_ai_genai_vector_store_connectors_dyn_group_name" {
+  type        = string
+  default     = ""
+  description = "Existing Generative AI vector store connector dynamic group."
+}
+variable "existing_ai_genai_hosted_applications_dyn_group_name" {
+  type        = string
+  default     = ""
+  description = "Existing Generative AI hosted applications and deployments dynamic group."
+}
+variable "existing_ai_genai_semantic_stores_dyn_group_name" {
+  type        = string
+  default     = ""
+  description = "Existing Generative AI semantic store dynamic group."
 }
 
 # ------------------------------------------------------

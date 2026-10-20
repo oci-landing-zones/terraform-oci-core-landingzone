@@ -380,4 +380,26 @@ locals {
   #         dst_type     = "CIDR_BLOCK"
   #       }
   #     ]
+
+  #     # Private endpoint subnet overrides add a security list and merge additional route rules.
+  #     tt_vcn1_private_endpoint_subnet_security_list = {
+  #       display_name  = "private-endpoint-security-list"
+  #       ingress_rules = []
+  #       egress_rules  = []
+  #     }
+  #     tt_vcn1_private_endpoint_subnet_additional_route_rules = {}
+
+  #     # AIDP NSG overrides are merged after managed OSN and database rules.
+  #     tt_vcn1_aidp_nsg_additional_ingress_rules = {}
+  #     tt_vcn1_aidp_nsg_additional_egress_rules = {
+  #       "EGRESS-TO-PRIVATE-KAFKA" = {
+  #         description  = "Allow AIDP to reach a private Kafka broker."
+  #         stateless    = false
+  #         protocol     = "TCP"
+  #         dst          = "TT-VCN-1-PRIVATE-KAFKA-NSG"
+  #         dst_type     = "NETWORK_SECURITY_GROUP"
+  #         dst_port_min = 9092
+  #         dst_port_max = 9092
+  #       }
+  #     }
 }
